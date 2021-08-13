@@ -1,0 +1,50 @@
+{
+    "name": "@arrai-innovations/reactive-helpers",
+    "version": "1.0.0",
+    "description": "VueJS 3 utility composition functions to help manipulate objects and lists.",
+    "private": true,
+    "scripts": {
+        "test": "jest",
+        "coverage": "npm run coverage:clean; npm test -- --coverage=true",
+        "coverage:clean": "rm -rf coverage",
+        "postinstall": "if [[ \"$NODE_ENV\" != \"production\" && ./node_modules/.bin/is-ci ]]; then ./node_modules/.bin/husky install; fi",
+        "prepublishOnly": "pinst --disable",
+        "postpublish": "pinst --enable"
+    },
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/arrai-innovations/reactive-helpers.git"
+    },
+    "author": "Arrai Innovations Inc. <developers@arrai.com>",
+    "license": "UNLICENSED",
+    "bugs": {
+        "url": "https://github.com/arrai-innovations/reactive-helpers/issues"
+    },
+    "homepage": "https://github.com/arrai-innovations/reactive-helpers#readme",
+    "devDependencies": {
+        "@arrai-innovations/commitlint-config": "^1.1.0",
+        "@commitlint/cli": "^13.1.0",
+        "@types/jest": "^27.0.1",
+        "@vue/eslint-config-prettier": "^6.0.0",
+        "@vue/test-utils": "^2.0.0-rc.11",
+        "babel-eslint": "^10.1.0",
+        "babel-jest": "^27.0.6",
+        "doctoc": "^2.0.1",
+        "eslint": "^7.32.0",
+        "eslint-plugin-jest": "^24.4.0",
+        "eslint-plugin-vue": "^7.16.0",
+        "lint-staged": "^11.1.2",
+        "prettier": "^2.3.2",
+        "vue3-jest": "^27.0.0-alpha.1"
+    },
+    "dependencies": {
+        "flexsearch": "^0.7.21",
+        "husky": "^7.0.1",
+        "is-ci": "^3.0.0",
+        "jest": "^27.0.6",
+        "lodash": "^4.17.21",
+        "pinst": "^2.1.6",
+        "vue": "^3.2.2",
+        "vue-router": "^3.5.2"
+    }
+}
