@@ -23,8 +23,10 @@
     "homepage": "https://github.com/arrai-innovations/reactive-helpers#readme",
     "devDependencies": {
         "@arrai-innovations/commitlint-config": "^1.1.0",
+        "@babel/preset-env": "^7.15.0",
         "@commitlint/cli": "^13.1.0",
         "@types/jest": "^27.0.1",
+        "@vue/compiler-sfc": "^3.2.2",
         "@vue/eslint-config-prettier": "^6.0.0",
         "@vue/test-utils": "^2.0.0-rc.11",
         "babel-eslint": "^10.1.0",
@@ -33,6 +35,7 @@
         "eslint": "^7.32.0",
         "eslint-plugin-jest": "^24.4.0",
         "eslint-plugin-vue": "^7.16.0",
+        "flush-promises": "^1.0.2",
         "lint-staged": "^11.1.2",
         "prettier": "^2.3.2",
         "vue3-jest": "^27.0.0-alpha.1"

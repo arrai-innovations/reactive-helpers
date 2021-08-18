@@ -54,6 +54,7 @@ export default function useObjectInstance({ crudArgs, retrieveArgs }) {
         state.error = null;
         return state.crud
             .retrieve({
+                crudArgs: state.crud.args,
                 id,
                 retrieveArgs,
             })
@@ -83,6 +84,7 @@ export default function useObjectInstance({ crudArgs, retrieveArgs }) {
         state.error = null;
         return state.crud
             .create({
+                crudArgs: state.crud.args,
                 object,
                 retrieveArgs,
             })
@@ -112,6 +114,7 @@ export default function useObjectInstance({ crudArgs, retrieveArgs }) {
         state.error = null;
         return state.crud
             .update({
+                crudArgs: state.crud.args,
                 object,
                 retrieveArgs,
             })
@@ -141,6 +144,7 @@ export default function useObjectInstance({ crudArgs, retrieveArgs }) {
         state.error = null;
         return state.crud
             .patch({
+                crudArgs: state.crud.args,
                 id,
                 partialObject,
                 retrieveArgs,
@@ -167,7 +171,10 @@ export default function useObjectInstance({ crudArgs, retrieveArgs }) {
         state.errored = false;
         state.error = null;
         return state.crud
-            .delete(id)
+            .delete({
+                crudArgs: state.crud.args,
+                id,
+            })
             .then(() => {
                 state.deleted = true;
                 assignReactiveObject(state.object, {});
