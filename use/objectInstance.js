@@ -18,7 +18,7 @@ const defaultCrud = reactive({
     delete: undefined,
 });
 
-export function setObjectInstanceCrud({ retrieve, create, update, patch, delete: deleteFn, args }) {
+export function setObjectInstanceCrud({ retrieve, create, update, patch, delete: deleteFn, args = {} }) {
     defaultCrud.retrieve = retrieve;
     defaultCrud.create = create;
     defaultCrud.update = update;
@@ -29,7 +29,14 @@ export function setObjectInstanceCrud({ retrieve, create, update, patch, delete:
 
 export default function useObjectInstance({ crudArgs, retrieveArgs }) {
     const state = reactive({
-        crud: {},
+        crud: {
+            args: {},
+            retrieve: undefined,
+            create: undefined,
+            update: undefined,
+            patch: undefined,
+            delete: undefined,
+        },
         object: {},
         defaultRetrieveArgs: retrieveArgs,
         loading: undefined,
