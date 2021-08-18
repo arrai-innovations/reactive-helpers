@@ -1,5 +1,5 @@
 import { isEmpty } from "lodash";
-import { reactive, unref } from "vue";
+import { reactive, unref, watch } from "vue";
 import { assignReactiveObject } from "../utils/assignReactiveObject";
 
 export class ObjectError extends Error {
@@ -27,7 +27,7 @@ export function setObjectInstanceCrud({ retrieve, create, update, patch, delete:
     assignReactiveObject(defaultCrud.args, args);
 }
 
-export default function useObjectInstance({ crudArgs, retrieveArgs }) {
+export default function useObjectInstance({ crudArgs, retrieveArgs, emit }) {
     const state = reactive({
         crud: {
             args: {},
@@ -183,8 +183,7 @@ export default function useObjectInstance({ crudArgs, retrieveArgs }) {
                 id,
             })
             .then(() => {
-                state.deleted = true;
-                assignReactiveObject(state.object, {});
+                deleteFromSubscription();
                 return Promise.resolve(true);
             })
             .catch((error) => {
@@ -197,8 +196,32 @@ export default function useObjectInstance({ crudArgs, retrieveArgs }) {
             });
     }
 
+    function deleteFromSubscription() {
+        state.deleted = true;
+        assignReactiveObject(state.object, {});
+    }
+
     function updateFromSubscription(data) {
         assignReactiveObject(state.object, data);
+    }
+
+    if (emit) {
+        watch(
+            () => state.errored,
+            (newErrored, oldErrored) => {
+                if (newErrored !== oldErrored) {
+                    emit("errored", newErrored);
+                }
+            }
+        );
+        watch(
+            () => state.loading,
+            (newLoading, oldLoading) => {
+                if (newLoading !== oldLoading) {
+                    emit("loading", newLoading);
+                }
+            }
+        );
     }
 
     return {
@@ -208,6 +231,7 @@ export default function useObjectInstance({ crudArgs, retrieveArgs }) {
         update,
         patch,
         delete: deleteFn,
+        deleteFromSubscription,
         updateFromSubscription,
     };
 }

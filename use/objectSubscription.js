@@ -94,7 +94,7 @@ export default function useObjectSubscription({ crudArgs, id, retrieveArgs = {},
             retrieveArgs: state.retrieveArgs,
             callback: (data, action) => {
                 if (action === "delete") {
-                    publicState.objectInstance.delete();
+                    publicState.objectInstance.deleteFromSubscription();
                 } else {
                     publicState.objectInstance.updateFromSubscription(data);
                 }
