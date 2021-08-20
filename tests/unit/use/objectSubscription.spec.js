@@ -183,6 +183,31 @@ describe("use/objectSubscription.js", function () {
             expect(objectSubscription.state.objectInstance.deleteFromSubscription).toHaveBeenNthCalledWith(1);
             expect(objectSubscription.state.objectInstance.deleteFromSubscription).toHaveBeenCalledTimes(1);
         });
+        it("intendToSubscribe but dont intendToRetrieve", async function () {
+            const subscribePromise = objectSubscription.subscribe({ retrieve: false });
+            crudSubscribeResolve(crudSubscribeResolved);
+            await expect(subscribePromise).resolves.toBe(true);
+
+            expect(objectSubscription.state.loading).toBe(false);
+            expect(objectSubscription.state.errored).toBe(false);
+            expectErrorToBeNull(objectSubscription.state.error);
+            expect(objectSubscription.state.deleted).toBe(false);
+            expect(objectSubscription.state.subscribed).toBe(true);
+            expect(objectSubscription.state.intendToSubscribe).toBe(true);
+            expect(objectSubscription.state.intendToRetrieve).toBe(false);
+            expect(objectSubscription.state.object).toEqual({});
+
+            expect(globalRetrieve).toHaveBeenCalledTimes(0);
+            expect(globalSubscribe).toHaveBeenNthCalledWith(1, {
+                crudArgs: { stream: "test_stream" },
+                id: 1,
+                retrieveArgs: {
+                    fields,
+                },
+                callback: expect.any(Function),
+            });
+            expect(globalSubscribe).toHaveBeenCalledTimes(1);
+        });
         it("success (delayed)", async function () {
             objectSubscription.state.subscribeState.retrieveArgs = false;
             objectSubscription.state.objectInstance.state.retrieveArgs = false;
@@ -241,7 +266,7 @@ describe("use/objectSubscription.js", function () {
                 ["loading", false],
             ]);
 
-            expect(globalRetrieve).toHaveBeenCalledWith({
+            expect(globalRetrieve).toHaveBeenNthCalledWith(1, {
                 crudArgs: { stream: "test_stream" },
                 id: 1,
                 retrieveArgs: {
@@ -249,7 +274,7 @@ describe("use/objectSubscription.js", function () {
                 },
             });
             expect(globalRetrieve).toHaveBeenCalledTimes(1);
-            expect(globalSubscribe).toHaveBeenCalledWith({
+            expect(globalSubscribe).toHaveBeenNthCalledWith(1, {
                 crudArgs: { stream: "test_stream" },
                 id: 1,
                 retrieveArgs: {
