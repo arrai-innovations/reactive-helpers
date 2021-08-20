@@ -1,4 +1,5 @@
 import flushPromises from "flush-promises";
+import { inspect } from "util";
 import { nextTick } from "vue";
 import { expectErrorToBeNull } from "../expectHelpers";
 import { getMockOnUnmounted } from "../mockOnUnmounted";
@@ -10,8 +11,8 @@ afterAll(() => {
 });
 
 describe("use/objectSubscription.js", function () {
-    let useObjectSubscription, ObjectSubscriptionError;
-    beforeAll(async () => {
+    let useObjectSubscription, ObjectSubscriptionError, useObjectSubscriptions, globalSubscribe, globalRetrieve;
+    beforeEach(async () => {
         const objectInstanceModule = await import("../../../use/objectInstance");
         objectInstanceModule.setObjectInstanceCrud({
             retrieve: jest.fn(),
@@ -20,13 +21,20 @@ describe("use/objectSubscription.js", function () {
             patch: jest.fn(),
             delete: jest.fn(),
         });
+        globalRetrieve = jest.fn();
+        objectInstanceModule.setObjectInstanceCrud({
+            retrieve: globalRetrieve,
+            args: { stream: "test_stream" },
+        });
         const objectSubscriptionModule = await import("../../../use/objectSubscription");
         useObjectSubscription = objectSubscriptionModule.default;
         ObjectSubscriptionError = objectSubscriptionModule.ObjectSubscriptionError;
+        globalSubscribe = jest.fn();
         objectSubscriptionModule.setObjectSubscriptionCrud({
-            subscribe: jest.fn(),
-            unsubscribe: jest.fn(),
+            subscribe: globalSubscribe,
+            args: { stream: "test_stream" },
         });
+        useObjectSubscriptions = objectSubscriptionModule.useObjectSubscriptions;
     });
     afterEach(function () {
         jest.resetAllMocks();
@@ -56,7 +64,6 @@ describe("use/objectSubscription.js", function () {
     const emit = jest.fn();
     beforeEach(() => {
         objectSubscription = useObjectSubscription({
-            crudArgs: { stream: "test_stream" },
             id: 1,
             retrieveArgs: {
                 fields,
@@ -71,14 +78,14 @@ describe("use/objectSubscription.js", function () {
                 crudRetrieveResolve = resolve;
                 crudRetrieveReject = reject;
             });
-            objectSubscription.state.objectInstance.state.crud.retrieve.mockReturnValueOnce(crudRetrievePromise);
+            globalRetrieve.mockReturnValueOnce(crudRetrievePromise);
             const crudSubscribePromise = new Promise((resolve, reject) => {
                 crudSubscribeResolve = resolve;
                 crudSubscribeReject = reject;
             });
             crudSubscribePromise.cancel = jest.fn();
             crudSubscribePromise.cancel.mockReturnValueOnce(true).mockReturnValue(false);
-            objectSubscription.state.subscribeState.crud.subscribe.mockReturnValueOnce(crudSubscribePromise);
+            globalSubscribe.mockReturnValueOnce(crudSubscribePromise);
         });
         it("success", async function () {
             expect(objectSubscription.state.loading).toBeUndefined();
@@ -123,15 +130,15 @@ describe("use/objectSubscription.js", function () {
             ]);
             await expect(subscribePromise).resolves.toBe(true);
 
-            expect(objectSubscription.state.objectInstance.state.crud.retrieve).toHaveBeenCalledWith({
+            expect(globalRetrieve).toHaveBeenCalledWith({
                 crudArgs: { stream: "test_stream" },
                 id: 1,
                 retrieveArgs: {
                     fields,
                 },
             });
-            expect(objectSubscription.state.objectInstance.state.crud.retrieve).toHaveBeenCalledTimes(1);
-            expect(objectSubscription.state.subscribeState.crud.subscribe).toHaveBeenCalledWith({
+            expect(globalRetrieve).toHaveBeenCalledTimes(1);
+            expect(globalSubscribe).toHaveBeenCalledWith({
                 crudArgs: { stream: "test_stream" },
                 id: 1,
                 retrieveArgs: {
@@ -139,7 +146,7 @@ describe("use/objectSubscription.js", function () {
                 },
                 callback: expect.any(Function),
             });
-            expect(objectSubscription.state.subscribeState.crud.subscribe).toHaveBeenCalledTimes(1);
+            expect(globalSubscribe).toHaveBeenCalledTimes(1);
         });
         it("success (delayed)", async function () {
             objectSubscription.state.subscribeState.retrieveArgs = false;
@@ -199,15 +206,15 @@ describe("use/objectSubscription.js", function () {
                 ["loading", false],
             ]);
 
-            expect(objectSubscription.state.objectInstance.state.crud.retrieve).toHaveBeenCalledWith({
+            expect(globalRetrieve).toHaveBeenCalledWith({
                 crudArgs: { stream: "test_stream" },
                 id: 1,
                 retrieveArgs: {
                     fields,
                 },
             });
-            expect(objectSubscription.state.objectInstance.state.crud.retrieve).toHaveBeenCalledTimes(1);
-            expect(objectSubscription.state.subscribeState.crud.subscribe).toHaveBeenCalledWith({
+            expect(globalRetrieve).toHaveBeenCalledTimes(1);
+            expect(globalSubscribe).toHaveBeenCalledWith({
                 crudArgs: { stream: "test_stream" },
                 id: 1,
                 retrieveArgs: {
@@ -215,7 +222,7 @@ describe("use/objectSubscription.js", function () {
                 },
                 callback: expect.any(Function),
             });
-            expect(objectSubscription.state.subscribeState.crud.subscribe).toHaveBeenCalledTimes(1);
+            expect(globalSubscribe).toHaveBeenCalledTimes(1);
         });
         it("errored (retrieve)", async function () {
             expect(objectSubscription.state.loading).toBeUndefined();
@@ -261,15 +268,15 @@ describe("use/objectSubscription.js", function () {
                 ["loading", false],
             ]);
 
-            expect(objectSubscription.state.objectInstance.state.crud.retrieve).toHaveBeenCalledWith({
+            expect(globalRetrieve).toHaveBeenCalledWith({
                 crudArgs: { stream: "test_stream" },
                 id: 1,
                 retrieveArgs: {
                     fields,
                 },
             });
-            expect(objectSubscription.state.objectInstance.state.crud.retrieve).toHaveBeenCalledTimes(1);
-            expect(objectSubscription.state.subscribeState.crud.subscribe).toHaveBeenCalledWith({
+            expect(globalRetrieve).toHaveBeenCalledTimes(1);
+            expect(globalSubscribe).toHaveBeenCalledWith({
                 crudArgs: { stream: "test_stream" },
                 id: 1,
                 retrieveArgs: {
@@ -277,7 +284,7 @@ describe("use/objectSubscription.js", function () {
                 },
                 callback: expect.any(Function),
             });
-            expect(objectSubscription.state.subscribeState.crud.subscribe).toHaveBeenCalledTimes(1);
+            expect(globalSubscribe).toHaveBeenCalledTimes(1);
         });
         it("errored (subscribe)", async function () {
             expect(objectSubscription.state.loading).toBeUndefined();
@@ -323,15 +330,15 @@ describe("use/objectSubscription.js", function () {
                 ["loading", false],
             ]);
 
-            expect(objectSubscription.state.objectInstance.state.crud.retrieve).toHaveBeenCalledWith({
+            expect(globalRetrieve).toHaveBeenCalledWith({
                 crudArgs: { stream: "test_stream" },
                 id: 1,
                 retrieveArgs: {
                     fields,
                 },
             });
-            expect(objectSubscription.state.objectInstance.state.crud.retrieve).toHaveBeenCalledTimes(1);
-            expect(objectSubscription.state.subscribeState.crud.subscribe).toHaveBeenCalledWith({
+            expect(globalRetrieve).toHaveBeenCalledTimes(1);
+            expect(globalSubscribe).toHaveBeenCalledWith({
                 crudArgs: { stream: "test_stream" },
                 id: 1,
                 retrieveArgs: {
@@ -339,7 +346,7 @@ describe("use/objectSubscription.js", function () {
                 },
                 callback: expect.any(Function),
             });
-            expect(objectSubscription.state.subscribeState.crud.subscribe).toHaveBeenCalledTimes(1);
+            expect(globalSubscribe).toHaveBeenCalledTimes(1);
         });
         it("already subscribed", async function () {
             expect(objectSubscription.state.loading).toBeUndefined();
@@ -363,7 +370,7 @@ describe("use/objectSubscription.js", function () {
             const crudRetrievePromise = new Promise((resolve) => {
                 crudRetrieveResolve = resolve;
             });
-            objectSubscription.state.objectInstance.state.crud.retrieve.mockReturnValueOnce(crudRetrievePromise);
+            globalRetrieve.mockReturnValueOnce(crudRetrievePromise);
             crudSubscribePromise = new Promise((resolve) => {
                 crudSubscribeResolve = resolve;
             });
@@ -372,7 +379,7 @@ describe("use/objectSubscription.js", function () {
             });
             crudSubscribePromise.cancel = jest.fn();
             crudSubscribePromise.cancel.mockReturnValueOnce(crudCancelPromise).mockResolvedValue(false);
-            objectSubscription.state.subscribeState.crud.subscribe.mockReturnValueOnce(crudSubscribePromise);
+            globalSubscribe.mockReturnValueOnce(crudSubscribePromise);
         });
         it("success", async function () {
             const subscribePromise = objectSubscription.subscribe();
@@ -467,5 +474,144 @@ describe("use/objectSubscription.js", function () {
             const unsubscribePromise = objectSubscription.unsubscribe();
             await expect(unsubscribePromise).resolves.toBe(false);
         });
+    });
+    describe("custom crud", function () {
+        it("custom crud args", async function () {
+            let crudRetrieveResolve, crudSubscribeResolve;
+            const crudRetrievePromise = new Promise((resolve) => {
+                crudRetrieveResolve = resolve;
+            });
+            globalRetrieve.mockReturnValueOnce(crudRetrievePromise);
+            const crudSubscribePromise = new Promise((resolve) => {
+                crudSubscribeResolve = resolve;
+            });
+            crudSubscribePromise.cancel = jest.fn();
+            crudSubscribePromise.cancel.mockReturnValueOnce(true).mockReturnValue(false);
+            globalSubscribe.mockReturnValueOnce(crudSubscribePromise);
+
+            const objectSubscription = useObjectSubscription({
+                crudArgs: { stream: "test_stream2" },
+                id: 1,
+                retrieveArgs: {
+                    fields,
+                },
+                emit,
+            });
+
+            const subscribePromise = objectSubscription.subscribe();
+            crudRetrieveResolve(crudRetrieveResolved);
+            crudSubscribeResolve(crudSubscribeResolved);
+            await flushPromises();
+            await expect(subscribePromise).resolves.toBe(true);
+
+            expect(globalRetrieve).toHaveBeenCalledWith({
+                crudArgs: { stream: "test_stream2" },
+                id: 1,
+                retrieveArgs: {
+                    fields,
+                },
+            });
+            expect(globalRetrieve).toHaveBeenCalledTimes(1);
+            expect(globalSubscribe).toHaveBeenCalledWith({
+                crudArgs: { stream: "test_stream2" },
+                id: 1,
+                retrieveArgs: {
+                    fields,
+                },
+                callback: expect.any(Function),
+            });
+            expect(globalSubscribe).toHaveBeenCalledTimes(1);
+        });
+        it("override subscribe", async function () {
+            let crudRetrieveResolve, crudSubscribeResolve;
+
+            const customCrudRetrieve = jest.fn();
+            const customCrudSubscribe = jest.fn();
+
+            const crudRetrievePromise = new Promise((resolve) => {
+                crudRetrieveResolve = resolve;
+            });
+            customCrudRetrieve.mockReturnValueOnce(crudRetrievePromise);
+            const crudSubscribePromise = new Promise((resolve) => {
+                crudSubscribeResolve = resolve;
+            });
+            crudSubscribePromise.cancel = jest.fn();
+            crudSubscribePromise.cancel.mockReturnValueOnce(true).mockReturnValue(false);
+            customCrudSubscribe.mockReturnValueOnce(crudSubscribePromise);
+
+            const objectSubscription = useObjectSubscription({
+                id: 1,
+                retrieveArgs: {
+                    fields,
+                },
+                emit,
+            });
+            objectSubscription.state.objectInstance.state.crud.retrieve = customCrudRetrieve;
+            objectSubscription.state.subscribeState.crud.subscribe = customCrudSubscribe;
+
+            const subscribePromise = objectSubscription.subscribe();
+            crudRetrieveResolve(crudRetrieveResolved);
+            crudSubscribeResolve(crudSubscribeResolved);
+            await flushPromises();
+            await expect(subscribePromise).resolves.toBe(true);
+
+            expect(globalRetrieve).toHaveBeenCalledTimes(0);
+            expect(globalSubscribe).toHaveBeenCalledTimes(0);
+            expect(customCrudRetrieve).toHaveBeenCalledWith({
+                crudArgs: { stream: "test_stream" },
+                id: 1,
+                retrieveArgs: {
+                    fields,
+                },
+            });
+            expect(customCrudRetrieve).toHaveBeenCalledTimes(1);
+            expect(customCrudSubscribe).toHaveBeenCalledWith({
+                crudArgs: { stream: "test_stream" },
+                id: 1,
+                retrieveArgs: {
+                    fields,
+                },
+                callback: expect.any(Function),
+            });
+            expect(customCrudSubscribe).toHaveBeenCalledTimes(1);
+        });
+    });
+    it("useObjectSubscriptions", async function () {
+        const objectSubscriptionA = useObjectSubscription({
+            crudArgs: { stream: "test_streamA" },
+            id: 1,
+            retrieveArgs: {
+                fields,
+            },
+            emit,
+        });
+        const objectSubscriptionB = useObjectSubscription({
+            crudArgs: { stream: "test_streamB" },
+            id: 2,
+            retrieveArgs: {
+                fields,
+            },
+            emit,
+        });
+        const objSubs = useObjectSubscriptions({
+            A: {
+                crudArgs: { stream: "test_streamA" },
+                id: 1,
+                retrieveArgs: {
+                    fields,
+                },
+                emit,
+            },
+            B: {
+                crudArgs: { stream: "test_streamB" },
+                id: 2,
+                retrieveArgs: {
+                    fields,
+                },
+                emit,
+            },
+        });
+        expect(inspect(objSubs.A)).toEqual(inspect(objectSubscriptionA));
+        expect(inspect(objSubs.B)).toEqual(inspect(objectSubscriptionB));
     });
 });
