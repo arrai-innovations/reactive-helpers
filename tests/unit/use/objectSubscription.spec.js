@@ -72,14 +72,14 @@ describe("use/objectSubscription.js", function () {
         });
     });
     describe("subscribe", function () {
-        let crudRetrieveResolve, crudRetrieveReject, crudSubscribeResolve, crudSubscribeReject;
+        let crudRetrieveResolve, crudRetrieveReject, crudSubscribeResolve, crudSubscribeReject, crudSubscribePromise;
         beforeEach(() => {
             const crudRetrievePromise = new Promise((resolve, reject) => {
                 crudRetrieveResolve = resolve;
                 crudRetrieveReject = reject;
             });
             globalRetrieve.mockReturnValueOnce(crudRetrievePromise);
-            const crudSubscribePromise = new Promise((resolve, reject) => {
+            crudSubscribePromise = new Promise((resolve, reject) => {
                 crudSubscribeResolve = resolve;
                 crudSubscribeReject = reject;
             });
@@ -147,6 +147,41 @@ describe("use/objectSubscription.js", function () {
                 callback: expect.any(Function),
             });
             expect(globalSubscribe).toHaveBeenCalledTimes(1);
+        });
+        it("subscribe callback", async function () {
+            globalSubscribe.mockReset();
+
+            let subscribeCallback;
+
+            globalSubscribe.mockImplementation(({ callback }) => {
+                subscribeCallback = callback;
+                return crudSubscribePromise;
+            });
+
+            objectSubscription.state.objectInstance.updateFromSubscription = jest.fn();
+            objectSubscription.state.objectInstance.deleteFromSubscription = jest.fn();
+
+            const subscribePromise = objectSubscription.subscribe();
+            crudRetrieveResolve(crudRetrieveResolved);
+            crudSubscribeResolve(crudSubscribeResolved);
+            await expect(subscribePromise).resolves.toBe(true);
+
+            subscribeCallback({ id: 1, __str__: "!asdf", name: "!zxcv" }, "update");
+            subscribeCallback({ id: 1, __str__: "asdf!", name: "zxcv!" }, "create");
+            subscribeCallback({ pk: 1 }, "delete");
+            expect(objectSubscription.state.objectInstance.updateFromSubscription).toHaveBeenNthCalledWith(1, {
+                id: 1,
+                __str__: "!asdf",
+                name: "!zxcv",
+            });
+            expect(objectSubscription.state.objectInstance.updateFromSubscription).toHaveBeenNthCalledWith(2, {
+                id: 1,
+                __str__: "asdf!",
+                name: "zxcv!",
+            });
+            expect(objectSubscription.state.objectInstance.updateFromSubscription).toHaveBeenCalledTimes(2);
+            expect(objectSubscription.state.objectInstance.deleteFromSubscription).toHaveBeenNthCalledWith(1);
+            expect(objectSubscription.state.objectInstance.deleteFromSubscription).toHaveBeenCalledTimes(1);
         });
         it("success (delayed)", async function () {
             objectSubscription.state.subscribeState.retrieveArgs = false;
