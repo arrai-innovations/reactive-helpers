@@ -555,7 +555,6 @@ describe("use/objectSubscription.js", function () {
                 retrieveArgs: {
                     fields,
                 },
-                emit,
             });
 
             const subscribePromise = objectSubscription.subscribe();
