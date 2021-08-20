@@ -108,8 +108,9 @@ export default function useObjectSubscription({ crudArgs, id, retrieveArgs = {},
             .catch((error) => {
                 state.errored = true;
                 state.error = error;
-                if (state.subscribed) {
+                if (cancelSubscription) {
                     cancelSubscription();
+                    cancelSubscription = null;
                     state.subscribed = false;
                 }
                 return Promise.resolve(false);
@@ -131,9 +132,7 @@ export default function useObjectSubscription({ crudArgs, id, retrieveArgs = {},
 
     async function unsubscribe() {
         if (cancelSubscription) {
-            if (state.subscribed) {
-                state.subscribed = false;
-            }
+            state.subscribed = false;
             let returnPromise = cancelSubscription();
             cancelSubscription = null;
             return returnPromise;
