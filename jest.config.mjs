@@ -5,7 +5,7 @@ export default {
     rootDir: path.resolve(dirname(fileURLToPath(import.meta.url))),
     clearMocks: true,
     coverageDirectory: "coverage",
-    coverageProvider: "v8",
+    coverageProvider: "babel",
     coverageReporters: ["json-summary", "html", "clover", "text"],
     moduleFileExtensions: ["vue", "js", "json"],
     moduleNameMapper: {
