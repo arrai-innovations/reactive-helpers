@@ -1,4 +1,4 @@
-import { identity, isEqual } from "lodash";
+import { identity } from "lodash";
 import { computed, onUnmounted, reactive, toRef, watch } from "vue";
 import { assignReactiveObject } from "../utils/assignReactiveObject";
 import useObjectInstance from "./objectInstance";
@@ -146,14 +146,12 @@ export default function useObjectSubscription({ crudArgs, id, retrieveArgs = {},
         async (newArgs, oldArgs) => {
             const everyNew = newArgs.every((e) => e);
             const everyOld = oldArgs.every((e) => e);
-            if (!isEqual(newArgs, oldArgs)) {
-                if (everyOld) {
-                    await unsubscribe();
-                }
-                if (everyNew) {
-                    if (!cancelSubscription && !state.subscribed) {
-                        await subscribe().catch(console.error);
-                    }
+            if (everyOld) {
+                await unsubscribe();
+            }
+            if (everyNew) {
+                if (!cancelSubscription && !state.subscribed) {
+                    await subscribe().catch(console.error);
                 }
             }
         },
@@ -164,13 +162,11 @@ export default function useObjectSubscription({ crudArgs, id, retrieveArgs = {},
 
     watch(
         [() => state.intendToRetrieve, () => state.id, () => state.retrieveArgs],
-        async (newArgs, oldArgs) => {
+        async (newArgs) => {
             const everyNew = newArgs.every((e) => e);
-            if (!isEqual(newArgs, oldArgs)) {
-                if (everyNew) {
-                    if (!objectInstance.state.loading) {
-                        await objectInstance.retrieve({ id: state.id, ...state.retrieveArgs }).catch(console.error);
-                    }
+            if (everyNew) {
+                if (!objectInstance.state.loading) {
+                    await objectInstance.retrieve({ id: state.id, ...state.retrieveArgs }).catch(console.error);
                 }
             }
         },
