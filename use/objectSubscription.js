@@ -176,18 +176,14 @@ export default function useObjectSubscription({ crudArgs, id, retrieveArgs = {},
     if (emit) {
         watch(
             () => publicState.errored,
-            (newErrored, oldErrored) => {
-                if (newErrored !== oldErrored) {
-                    emit("errored", newErrored);
-                }
+            (newErrored) => {
+                emit("errored", newErrored);
             }
         );
         watch(
             () => publicState.loading,
-            (newLoading, oldLoading) => {
-                if (newLoading !== oldLoading) {
-                    emit("loading", newLoading);
-                }
+            (newLoading) => {
+                emit("loading", newLoading);
             }
         );
     }
