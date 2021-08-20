@@ -208,18 +208,14 @@ export default function useObjectInstance({ crudArgs, retrieveArgs, emit }) {
     if (emit) {
         watch(
             () => state.errored,
-            (newErrored, oldErrored) => {
-                if (newErrored !== oldErrored) {
-                    emit("errored", newErrored);
-                }
+            (newErrored) => {
+                emit("errored", newErrored);
             }
         );
         watch(
             () => state.loading,
-            (newLoading, oldLoading) => {
-                if (newLoading !== oldLoading) {
-                    emit("loading", newLoading);
-                }
+            (newLoading) => {
+                emit("loading", newLoading);
             }
         );
     }
