@@ -53,6 +53,7 @@ describe("use/objectSubscription.js", function () {
     };
     const fields = ["id", "__str__", "name"];
     let objectSubscription;
+    const emit = jest.fn();
     beforeEach(() => {
         objectSubscription = useObjectSubscription({
             crudArgs: { stream: "test_stream" },
@@ -60,6 +61,7 @@ describe("use/objectSubscription.js", function () {
             retrieveArgs: {
                 fields,
             },
+            emit,
         });
     });
     describe("subscribe", function () {
@@ -87,6 +89,7 @@ describe("use/objectSubscription.js", function () {
             expect(objectSubscription.state.intendToSubscribe).toBe(false);
             expect(objectSubscription.state.intendToRetrieve).toBe(false);
             expect(objectSubscription.state.object).toEqual({});
+            expect(emit.mock.calls).toEqual([]);
 
             const subscribePromise = objectSubscription.subscribe();
 
@@ -98,6 +101,8 @@ describe("use/objectSubscription.js", function () {
             expect(objectSubscription.state.intendToSubscribe).toBe(true);
             expect(objectSubscription.state.intendToRetrieve).toBe(true);
             expect(objectSubscription.state.object).toEqual({});
+            await nextTick();
+            expect(emit.mock.calls).toEqual([["loading", true]]);
 
             crudRetrieveResolve(crudRetrieveResolved);
             crudSubscribeResolve(crudSubscribeResolved);
@@ -111,6 +116,11 @@ describe("use/objectSubscription.js", function () {
             expect(objectSubscription.state.intendToSubscribe).toBe(true);
             expect(objectSubscription.state.intendToRetrieve).toBe(true);
             expect(objectSubscription.state.object).toEqual(crudRetrieveResolved);
+            await nextTick();
+            expect(emit.mock.calls).toEqual([
+                ["loading", true],
+                ["loading", false],
+            ]);
             await expect(subscribePromise).resolves.toBe(true);
 
             expect(objectSubscription.state.objectInstance.state.crud.retrieve).toHaveBeenCalledWith({
@@ -143,6 +153,7 @@ describe("use/objectSubscription.js", function () {
             expect(objectSubscription.state.intendToSubscribe).toBe(false);
             expect(objectSubscription.state.intendToRetrieve).toBe(false);
             expect(objectSubscription.state.object).toEqual({});
+            expect(emit.mock.calls).toEqual([]);
 
             const subscribePromise = objectSubscription.subscribe();
             await expect(subscribePromise).resolves.toBe(false);
@@ -168,6 +179,7 @@ describe("use/objectSubscription.js", function () {
             expect(objectSubscription.state.intendToSubscribe).toBe(true);
             expect(objectSubscription.state.intendToRetrieve).toBe(true);
             expect(objectSubscription.state.object).toEqual({});
+            expect(emit.mock.calls).toEqual([["loading", true]]);
 
             crudRetrieveResolve(crudRetrieveResolved);
             crudSubscribeResolve(crudSubscribeResolved);
@@ -181,6 +193,11 @@ describe("use/objectSubscription.js", function () {
             expect(objectSubscription.state.intendToSubscribe).toBe(true);
             expect(objectSubscription.state.intendToRetrieve).toBe(true);
             expect(objectSubscription.state.object).toEqual(crudRetrieveResolved);
+            await nextTick();
+            expect(emit.mock.calls).toEqual([
+                ["loading", true],
+                ["loading", false],
+            ]);
 
             expect(objectSubscription.state.objectInstance.state.crud.retrieve).toHaveBeenCalledWith({
                 crudArgs: { stream: "test_stream" },
@@ -209,6 +226,7 @@ describe("use/objectSubscription.js", function () {
             expect(objectSubscription.state.intendToSubscribe).toBe(false);
             expect(objectSubscription.state.intendToRetrieve).toBe(false);
             expect(objectSubscription.state.object).toEqual({});
+            expect(emit.mock.calls).toEqual([]);
 
             const subscribePromise = objectSubscription.subscribe();
 
@@ -220,6 +238,8 @@ describe("use/objectSubscription.js", function () {
             expect(objectSubscription.state.intendToSubscribe).toBe(true);
             expect(objectSubscription.state.intendToRetrieve).toBe(true);
             expect(objectSubscription.state.object).toEqual({});
+            await nextTick();
+            expect(emit.mock.calls).toEqual([["loading", true]]);
 
             crudRetrieveReject(crudRetrieveRejected);
             crudSubscribeResolve(crudSubscribeResolved);
@@ -234,6 +254,12 @@ describe("use/objectSubscription.js", function () {
             expect(objectSubscription.state.intendToRetrieve).toBe(true);
             expect(objectSubscription.state.object).toEqual({});
             await expect(subscribePromise).resolves.toBe(true);
+            await nextTick();
+            expect(emit.mock.calls).toEqual([
+                ["loading", true],
+                ["errored", true],
+                ["loading", false],
+            ]);
 
             expect(objectSubscription.state.objectInstance.state.crud.retrieve).toHaveBeenCalledWith({
                 crudArgs: { stream: "test_stream" },
@@ -262,6 +288,7 @@ describe("use/objectSubscription.js", function () {
             expect(objectSubscription.state.intendToSubscribe).toBe(false);
             expect(objectSubscription.state.intendToRetrieve).toBe(false);
             expect(objectSubscription.state.object).toEqual({});
+            expect(emit.mock.calls).toEqual([]);
 
             const subscribePromise = objectSubscription.subscribe();
 
@@ -273,6 +300,8 @@ describe("use/objectSubscription.js", function () {
             expect(objectSubscription.state.intendToSubscribe).toBe(true);
             expect(objectSubscription.state.intendToRetrieve).toBe(true);
             expect(objectSubscription.state.object).toEqual({});
+            await nextTick();
+            expect(emit.mock.calls).toEqual([["loading", true]]);
 
             crudRetrieveResolve(crudRetrieveResolved);
             crudSubscribeReject(crudSubscribeRejected);
@@ -287,6 +316,12 @@ describe("use/objectSubscription.js", function () {
             expect(objectSubscription.state.intendToRetrieve).toBe(true);
             expect(objectSubscription.state.object).toEqual(crudRetrieveResolved);
             await expect(subscribePromise).resolves.toBe(false);
+            await nextTick();
+            expect(emit.mock.calls).toEqual([
+                ["loading", true],
+                ["errored", true],
+                ["loading", false],
+            ]);
 
             expect(objectSubscription.state.objectInstance.state.crud.retrieve).toHaveBeenCalledWith({
                 crudArgs: { stream: "test_stream" },
@@ -319,6 +354,7 @@ describe("use/objectSubscription.js", function () {
             objectSubscription.subscribe();
             const subscribePromise = objectSubscription.subscribe();
             await expect(subscribePromise).rejects.toThrow(ObjectSubscriptionError);
+            expect(emit.mock.calls).toEqual([["loading", true]]);
         });
     });
     describe("unsubscribe", function () {
