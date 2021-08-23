@@ -187,6 +187,7 @@ export default function useObjectSubscription({ crudArgs, id, retrieveArgs = {},
         );
     }
 
+    /* istanbul ignore next */
     onUnmounted(async () => {
         await unsubscribe();
     });
