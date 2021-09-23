@@ -1,4 +1,4 @@
-[*.{js,jsx,ts,tsx,vue,markdown,md}]
+[*.{js,jsx,ts,tsx,vue,markdown,md,yml}]
 indent_style = space
 indent_size = 4
 trim_trailing_whitespace = true
