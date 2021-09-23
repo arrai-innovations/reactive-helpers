@@ -1,6 +1,9 @@
 # reactive-helpers
 
-<!-- badges here -->
+![Tests for 14.x](https://docs.arrai-dev.com/reactive-helpers/main.node14_tests.svg)
+[![Coverage for 14.x](https://docs.arrai-dev.com/reactive-helpers/main.node14_tests.coverage.svg)](https://docs.arrai-dev.com/reactive-helpers/coverage_main_node14_tests/)
+![ESLint](https://docs.arrai-dev.com/reactive-helpers/main.eslint.svg)
+![Prettier](https://docs.arrai-dev.com/reactive-helpers/main.code_style.svg)
 
 VueJS 3 utility composition functions to help manipulate objects and lists.
 
