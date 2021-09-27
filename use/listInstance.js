@@ -19,14 +19,22 @@ export function setListInstanceCrud({ list, args }) {
     assignReactiveObject(defaultCrud.args, args);
 }
 
-export default function useListInstance({ crudArgs, listArgs, retrieveArgs, emit }) {
+export function useListInstances(args) {
+    const instances = {};
+    for (const [key, value] of Object.entries(args)) {
+        instances[key] = useListInstance(value);
+    }
+    return instances;
+}
+
+export default function useListInstance({ crudArgs, defaultListArgs = {}, defaultRetrieveArgs = {}, emit }) {
     const state = reactive({
         crud: {
             args: {},
             list: undefined,
         },
-        defaultRetrieveArgs: retrieveArgs,
-        defaultListArgs: listArgs,
+        defaultRetrieveArgs,
+        defaultListArgs,
         objects: {},
         loading: undefined,
         errored: false,
