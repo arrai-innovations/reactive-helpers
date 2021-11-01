@@ -2,17 +2,19 @@ import flushPromises from "flush-promises";
 import { nextTick } from "vue";
 import { assignReactiveObject } from "../../../utils/assignReactiveObject";
 import { expectErrorToBeNull } from "../expectHelpers";
+import { inspect } from "util";
 
 afterAll(() => {
     jest.restoreAllMocks();
 });
 
 describe("use/objectInstance.js", function () {
-    let useObjectInstance, ObjectError;
+    let useObjectInstance, ObjectError, useObjectInstances;
     beforeAll(async () => {
         const imported = await import("../../../use/objectInstance");
         useObjectInstance = imported.default;
         ObjectError = imported.ObjectError;
+        useObjectInstances = imported.useObjectInstances;
     });
     afterEach(function () {
         jest.resetAllMocks();
@@ -105,6 +107,7 @@ describe("use/objectInstance.js", function () {
                 crudRetrieveResolve = resolve;
             });
             objectInstance.state.crud.retrieve.mockReturnValueOnce(crudRetrievePromise);
+
             expectErrorToBeNull(objectInstance.state.error);
             expect(objectInstance.state.errored).toBe(false);
             expect(objectInstance.state.loading).toBeUndefined();
@@ -906,23 +909,43 @@ describe("use/objectInstance.js", function () {
             expect(objectInstance.state.crud.delete).toHaveBeenCalledTimes(1);
         });
     });
-    it("updateFromSubscription", function () {
-        const objectInstance = useObjectInstance({
-            stream: "test_stream",
+    it("useObjectSubscriptions", async function () {
+        const emit = jest.fn();
+        const objectInstanceA = useObjectInstance({
+            crudArgs: { stream: "test_streamA" },
+            id: 1,
+            retrieveArgs: {
+                fields,
+            },
+            emit,
         });
-        objectInstance.updateFromSubscription({ name: "asdf" });
-        expect({ ...objectInstance.state.object }).toEqual({ name: "asdf" });
-        objectInstance.updateFromSubscription({ __str__: "zxcv" });
-        expect({ ...objectInstance.state.object }).toEqual({ __str__: "zxcv" });
-    });
-    it("deleteFromSubscription", function () {
-        const objectInstance = useObjectInstance({
-            stream: "test_stream",
+        const objectInstanceB = useObjectInstance({
+            crudArgs: { stream: "test_streamB" },
+            id: 2,
+            retrieveArgs: {
+                fields,
+            },
+            emit,
         });
-        assignReactiveObject(objectInstance.state.object, crudRetrieveResolved);
-        expect(objectInstance.state.deleted).toBe(false);
-        objectInstance.deleteFromSubscription();
-        expect(objectInstance.state.object).toEqual({});
-        expect(objectInstance.state.deleted).toBe(true);
+        const objInstances = useObjectInstances({
+            A: {
+                crudArgs: { stream: "test_streamA" },
+                id: 1,
+                retrieveArgs: {
+                    fields,
+                },
+                emit,
+            },
+            B: {
+                crudArgs: { stream: "test_streamB" },
+                id: 2,
+                retrieveArgs: {
+                    fields,
+                },
+                emit,
+            },
+        });
+        expect(inspect(objInstances.A)).toEqual(inspect(objectInstanceA));
+        expect(inspect(objInstances.B)).toEqual(inspect(objectInstanceB));
     });
 });

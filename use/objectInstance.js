@@ -27,6 +27,14 @@ export function setObjectInstanceCrud({ retrieve, create, update, patch, delete:
     assignReactiveObject(defaultCrud.args, args);
 }
 
+export function useObjectInstances(instanceArgs) {
+    const instances = {};
+    for (const [key, value] of Object.entries(instanceArgs)) {
+        instances[key] = useObjectInstance(value);
+    }
+    return instances;
+}
+
 export default function useObjectInstance({ crudArgs, retrieveArgs, emit }) {
     const state = reactive({
         crud: {
@@ -183,7 +191,8 @@ export default function useObjectInstance({ crudArgs, retrieveArgs, emit }) {
                 id,
             })
             .then(() => {
-                deleteFromSubscription();
+                state.deleted = true;
+                assignReactiveObject(state.object, {});
                 return Promise.resolve(true);
             })
             .catch((error) => {
@@ -194,15 +203,6 @@ export default function useObjectInstance({ crudArgs, retrieveArgs, emit }) {
             .finally(() => {
                 state.loading = false;
             });
-    }
-
-    function deleteFromSubscription() {
-        state.deleted = true;
-        assignReactiveObject(state.object, {});
-    }
-
-    function updateFromSubscription(data) {
-        assignReactiveObject(state.object, data);
     }
 
     if (emit) {
@@ -227,7 +227,5 @@ export default function useObjectInstance({ crudArgs, retrieveArgs, emit }) {
         update,
         patch,
         delete: deleteFn,
-        deleteFromSubscription,
-        updateFromSubscription,
     };
 }

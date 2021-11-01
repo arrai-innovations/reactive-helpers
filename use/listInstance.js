@@ -1,6 +1,6 @@
-import { isEmpty } from "lodash";
+import { isEmpty, keyBy } from "lodash";
 import { reactive, unref, watch } from "vue";
-import { assignReactiveObject } from "../utils/assignReactiveObject";
+import { addOrUpdateReactiveObject, assignReactiveObject } from "../utils/assignReactiveObject";
 
 export class ListError extends Error {
     constructor(message) {
@@ -14,7 +14,7 @@ const defaultCrud = reactive({
     list: undefined,
 });
 
-export function setListInstanceCrud({ list, args }) {
+export function setListInstanceCrud({ list, args = {} } = {}) {
     defaultCrud.list = list;
     assignReactiveObject(defaultCrud.args, args);
 }
@@ -45,7 +45,7 @@ export default function useListInstance({ crudArgs, defaultListArgs = {}, defaul
         assignReactiveObject(state.crud.args, crudArgs);
     }
 
-    async function list({ listArgs, retrieveArgs }) {
+    async function list({ listArgs, retrieveArgs } = {}) {
         if (state.loading) {
             throw new ListError("already loading.");
         }
@@ -64,9 +64,7 @@ export default function useListInstance({ crudArgs, defaultListArgs = {}, defaul
                 retrieveArgs,
                 listArgs,
                 pageCallback: (newObjects) => {
-                    for (const newObject of newObjects) {
-                        updateFromSubscription(newObject);
-                    }
+                    addOrUpdateReactiveObject(state.objects, keyBy(newObjects, "id"));
                 },
             })
             .then(() => {
@@ -80,39 +78,6 @@ export default function useListInstance({ crudArgs, defaultListArgs = {}, defaul
             .finally(() => {
                 state.loading = false;
             });
-    }
-
-    function addFromSubscription(data) {
-        if (!data.id) {
-            throw ListError("addFromSubscription: data missing id.");
-        }
-        if (!(data.id in state.objects)) {
-            state.objects[data.id] = data;
-        } else {
-            throw ListError("addFromSubscription: add for existing data.");
-        }
-    }
-
-    function updateFromSubscription(data) {
-        if (!data.id) {
-            throw ListError("updateFromSubscription: data missing id.");
-        }
-        if (data.id in state.objects) {
-            state.objects[data.id] = data;
-        } else {
-            throw ListError("updateFromSubscription: update for missing data.");
-        }
-    }
-
-    function deleteFromSubscription(id) {
-        if (!id) {
-            throw ListError("deleteFromSubscription: id required.");
-        }
-        if (id in state.objects) {
-            delete state.objects[id];
-        } else {
-            throw ListError("deleteFromSubscription: delete for missing data.");
-        }
     }
 
     if (emit) {
@@ -133,8 +98,5 @@ export default function useListInstance({ crudArgs, defaultListArgs = {}, defaul
     return {
         state,
         list,
-        addFromSubscription,
-        updateFromSubscription,
-        deleteFromSubscription,
     };
 }

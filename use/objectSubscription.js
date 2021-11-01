@@ -63,6 +63,15 @@ export default function useObjectSubscription({ crudArgs, id, retrieveArgs = {},
     publicState.objectInstance = objectInstance;
     let cancelSubscription;
 
+    function updateFromSubscription(data) {
+        assignReactiveObject(objectInstance.state.object, data);
+    }
+
+    function deleteFromSubscription() {
+        objectInstance.state.deleted = true;
+        assignReactiveObject(objectInstance.state.object, {});
+    }
+
     async function publicSubscribe({ retrieve = true } = {}) {
         if (!state.intendToSubscribe) {
             state.intendToSubscribe = true;
@@ -196,5 +205,7 @@ export default function useObjectSubscription({ crudArgs, id, retrieveArgs = {},
         state: publicState,
         subscribe: publicSubscribe,
         unsubscribe: publicUnsubscribe,
+        updateFromSubscription,
+        deleteFromSubscription,
     };
 }

@@ -3,6 +3,7 @@ import { inspect } from "util";
 import { nextTick } from "vue";
 import { expectErrorToBeNull } from "../expectHelpers";
 import { getMockOnUnmounted } from "../mockOnUnmounted";
+import { assignReactiveObject } from "../../../utils/assignReactiveObject";
 
 getMockOnUnmounted();
 
@@ -672,5 +673,33 @@ describe("use/objectSubscription.js", function () {
         });
         expect(inspect(objSubs.A)).toEqual(inspect(objectSubscriptionA));
         expect(inspect(objSubs.B)).toEqual(inspect(objectSubscriptionB));
+    });
+    it("updateFromSubscription", function () {
+        const objectInstance = useObjectSubscription({
+            stream: "test_stream",
+        });
+        assignReactiveObject(objectInstance.state.object, {
+            id: 1,
+            __str__: "asdf",
+            name: "zxcv",
+        });
+        objectInstance.updateFromSubscription({ id: 1, name: "asdf" });
+        expect({ ...objectInstance.state.object }).toEqual({ id: 1, name: "asdf" });
+        objectInstance.updateFromSubscription({ id: 1, __str__: "zxcv" });
+        expect({ ...objectInstance.state.object }).toEqual({ id: 1, __str__: "zxcv" });
+    });
+    it("deleteFromSubscription", function () {
+        const objectInstance = useObjectSubscription({
+            stream: "test_stream",
+        });
+        assignReactiveObject(objectInstance.state.object, {
+            id: 1,
+            __str__: "asdf",
+            name: "zxcv",
+        });
+        expect(objectInstance.state.deleted).toBe(false);
+        objectInstance.deleteFromSubscription();
+        expect(objectInstance.state.object).toEqual({});
+        expect(objectInstance.state.deleted).toBe(true);
     });
 });

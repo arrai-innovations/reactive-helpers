@@ -3,6 +3,23 @@ import { union } from "./set";
 import { isReactive, toRef } from "vue";
 import { isArray } from "lodash";
 
+export function addOrUpdateReactiveObject(target, source, exclude = [], addedKeys = null, sameKeys = null) {
+    if (!addedKeys && !sameKeys) {
+        ({ addedKeys, sameKeys } = keyDiff(Object.keys(source) || [], Object.keys(target) || []));
+    }
+    const targetIsReactive = isReactive(target);
+    const sourceIsReactive = isReactive(source);
+    for (const key of union(addedKeys, sameKeys)) {
+        if (!exclude.includes(key)) {
+            if (targetIsReactive && sourceIsReactive) {
+                target[key] = toRef(source, key);
+            } else if (target[key] !== source[key]) {
+                target[key] = source[key];
+            }
+        }
+    }
+}
+
 export function assignReactiveObject(target, source, exclude = []) {
     if (target === source) {
         return;
@@ -23,15 +40,5 @@ export function assignReactiveObject(target, source, exclude = []) {
             }
         }
     }
-    const targetIsReactive = isReactive(target);
-    const sourceIsReactive = isReactive(source);
-    for (const key of union(addedKeys, sameKeys)) {
-        if (!exclude.includes(key)) {
-            if (targetIsReactive && sourceIsReactive) {
-                target[key] = toRef(source, key);
-            } else if (target[key] !== source[key]) {
-                target[key] = source[key];
-            }
-        }
-    }
+    addOrUpdateReactiveObject(target, source, exclude, addedKeys, sameKeys);
 }

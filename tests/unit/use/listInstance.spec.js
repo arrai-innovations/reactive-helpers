@@ -1,0 +1,404 @@
+import { expectErrorToBeNull } from "../expectHelpers";
+import { nextTick } from "vue";
+import { keyBy } from "lodash";
+import flushPromises from "flush-promises";
+import { inspect } from "util";
+
+afterAll(() => {
+    jest.restoreAllMocks();
+});
+
+const fields = ["id", "__str__", "name"];
+describe("use/listInstance.spec.js", function () {
+    let useListInstance, ListError, useListInstances, globalList;
+    beforeEach(async () => {
+        const imported = await import("../../../use/listInstance");
+        globalList = jest.fn();
+        imported.setListInstanceCrud({
+            list: globalList,
+            args: { stream: "test_stream" },
+        });
+        useListInstance = imported.default;
+        ListError = imported.ListError;
+        useListInstances = imported.useListInstances;
+    });
+    afterEach(function () {
+        jest.resetAllMocks();
+    });
+    const crudListResolvedPage1 = [
+        {
+            id: 1,
+            __str__: "qwer",
+            name: "qwer",
+        },
+        {
+            id: 2,
+            __str__: "asfd",
+            name: "asdf",
+        },
+        {
+            id: 3,
+            __str__: "zxcv",
+            name: "zxcv",
+        },
+    ];
+    const crudListResolvedPage2 = [
+        {
+            id: 4,
+            __str__: "yuio",
+            name: "yiuo",
+        },
+        {
+            id: 5,
+            __str__: "hjkl",
+            name: "hjkl",
+        },
+        {
+            id: 6,
+            __str__: "nm,.",
+            name: "nm,.",
+        },
+    ];
+    const crudListResolvedObjectsMid = keyBy(crudListResolvedPage1, "id");
+    const crudListResolvedObjects = keyBy([...crudListResolvedPage1, ...crudListResolvedPage2], "id");
+    describe("list", function () {
+        it("success", async function () {
+            const emit = jest.fn();
+            const listInstance = useListInstance({
+                emit,
+            });
+            let crudListResolve;
+            const crudListPromise = new Promise((resolve) => {
+                crudListResolve = resolve;
+            });
+            let passedPageCallback;
+            globalList.mockImplementation(({ pageCallback }) => {
+                passedPageCallback = pageCallback;
+                return crudListPromise;
+            });
+
+            expectErrorToBeNull(listInstance.state.error);
+            expect(listInstance.state.errored).toBe(false);
+            expect(listInstance.state.loading).toBeUndefined();
+            expect({ ...listInstance.state.objects }).toEqual({});
+            expect(emit.mock.calls).toEqual([]);
+
+            const liListResolve = listInstance.list({
+                listArgs: { user: 1 },
+                retrieveArgs: { fields: fields },
+            });
+
+            expectErrorToBeNull(listInstance.state.error);
+            expect(listInstance.state.errored).toBe(false);
+            expect(listInstance.state.loading).toBe(true);
+            expect({ ...listInstance.state.object }).toEqual({});
+
+            await nextTick();
+
+            expect(emit.mock.calls).toEqual([["loading", true]]);
+
+            passedPageCallback(crudListResolvedPage1);
+
+            expectErrorToBeNull(listInstance.state.error);
+            expect(listInstance.state.errored).toBe(false);
+            expect(listInstance.state.loading).toBe(true);
+            expect({ ...listInstance.state.objects }).toEqual(crudListResolvedObjectsMid);
+
+            passedPageCallback(crudListResolvedPage2);
+
+            expectErrorToBeNull(listInstance.state.error);
+            expect(listInstance.state.errored).toBe(false);
+            expect(listInstance.state.loading).toBe(true);
+            expect({ ...listInstance.state.objects }).toEqual(crudListResolvedObjects);
+
+            crudListResolve();
+            await flushPromises();
+
+            expect(emit.mock.calls).toEqual([
+                ["loading", true],
+                ["loading", false],
+            ]);
+            await expect(liListResolve).resolves.toBe(true);
+
+            expectErrorToBeNull(listInstance.state.error);
+            expect(listInstance.state.errored).toBe(false);
+            expect(listInstance.state.loading).toBe(false);
+            expect({ ...listInstance.state.objects }).toEqual(crudListResolvedObjects);
+            expect(globalList).toHaveBeenCalledWith({
+                crudArgs: { stream: "test_stream" },
+                listArgs: { user: 1 },
+                retrieveArgs: { fields: fields },
+                pageCallback: passedPageCallback,
+            });
+            expect(globalList).toHaveBeenCalledTimes(1);
+        });
+        it("already loading", async function () {
+            const listInstance = useListInstance({});
+            expectErrorToBeNull(listInstance.state.error);
+            expect(listInstance.state.errored).toBe(false);
+            expect(listInstance.state.loading).toBeUndefined();
+            expect({ ...listInstance.state.objects }).toEqual({});
+            globalList.mockImplementation(() => new Promise(() => {}));
+
+            listInstance.list({
+                listArgs: { user: 1 },
+                retrieveArgs: { fields: fields },
+            });
+            await expect(
+                listInstance.list({
+                    listArgs: { user: 1 },
+                    retrieveArgs: { fields: fields },
+                })
+            ).rejects.toThrow(ListError);
+
+            expect(globalList).toHaveBeenCalledWith({
+                crudArgs: { stream: "test_stream" },
+                listArgs: { user: 1 },
+                retrieveArgs: { fields: fields },
+                pageCallback: expect.any(Function),
+            });
+            expect(globalList).toHaveBeenCalledTimes(1);
+            expectErrorToBeNull(listInstance.state.error);
+            expect(listInstance.state.errored).toBe(false);
+            expect(listInstance.state.loading).toBe(true);
+            expect({ ...listInstance.state.objects }).toEqual({});
+        });
+        it("errored", async function () {
+            const emit = jest.fn();
+            const listInstance = useListInstance({
+                emit,
+            });
+            let crudListReject;
+            const crudListPromise = new Promise((resolve, reject) => {
+                crudListReject = reject;
+            });
+            let passedPageCallback;
+            globalList.mockImplementation(({ pageCallback }) => {
+                passedPageCallback = pageCallback;
+                return crudListPromise;
+            });
+
+            expectErrorToBeNull(listInstance.state.error);
+            expect(listInstance.state.errored).toBe(false);
+            expect(listInstance.state.loading).toBeUndefined();
+            expect({ ...listInstance.state.objects }).toEqual({});
+            expect(emit.mock.calls).toEqual([]);
+
+            const liListResolve = listInstance.list({
+                listArgs: { user: 1 },
+                retrieveArgs: { fields: fields },
+            });
+
+            expectErrorToBeNull(listInstance.state.error);
+            expect(listInstance.state.errored).toBe(false);
+            expect(listInstance.state.loading).toBe(true);
+            expect({ ...listInstance.state.object }).toEqual({});
+
+            await nextTick();
+
+            expect(emit.mock.calls).toEqual([["loading", true]]);
+
+            const rejected = new Error("Test Error");
+            crudListReject(rejected);
+            await flushPromises();
+
+            expect(emit.mock.calls).toEqual([
+                ["loading", true],
+                ["errored", true],
+                ["loading", false],
+            ]);
+            await expect(liListResolve).resolves.toBe(false);
+
+            expect(listInstance.state.error).toBe(rejected);
+            expect(listInstance.state.errored).toBe(true);
+            expect(listInstance.state.loading).toBe(false);
+            expect({ ...listInstance.state.objects }).toEqual({});
+            expect(globalList).toHaveBeenCalledWith({
+                crudArgs: { stream: "test_stream" },
+                listArgs: { user: 1 },
+                retrieveArgs: { fields: fields },
+                pageCallback: passedPageCallback,
+            });
+            expect(globalList).toHaveBeenCalledTimes(1);
+        });
+        it("success (default args)", async function () {
+            const emit = jest.fn();
+            const listInstance = useListInstance({
+                emit,
+                defaultListArgs: { user: 1 },
+                defaultRetrieveArgs: { fields: fields },
+            });
+            let crudListResolve;
+            const crudListPromise = new Promise((resolve) => {
+                crudListResolve = resolve;
+            });
+            let passedPageCallback;
+            globalList.mockImplementation(({ pageCallback }) => {
+                passedPageCallback = pageCallback;
+                return crudListPromise;
+            });
+
+            expectErrorToBeNull(listInstance.state.error);
+            expect(listInstance.state.errored).toBe(false);
+            expect(listInstance.state.loading).toBeUndefined();
+            expect({ ...listInstance.state.objects }).toEqual({});
+            expect(emit.mock.calls).toEqual([]);
+
+            const liListResolve = listInstance.list();
+
+            expectErrorToBeNull(listInstance.state.error);
+            expect(listInstance.state.errored).toBe(false);
+            expect(listInstance.state.loading).toBe(true);
+            expect({ ...listInstance.state.object }).toEqual({});
+
+            await nextTick();
+
+            expect(emit.mock.calls).toEqual([["loading", true]]);
+
+            passedPageCallback(crudListResolvedPage1);
+
+            expectErrorToBeNull(listInstance.state.error);
+            expect(listInstance.state.errored).toBe(false);
+            expect(listInstance.state.loading).toBe(true);
+            expect({ ...listInstance.state.objects }).toEqual(crudListResolvedObjectsMid);
+
+            passedPageCallback(crudListResolvedPage2);
+
+            expectErrorToBeNull(listInstance.state.error);
+            expect(listInstance.state.errored).toBe(false);
+            expect(listInstance.state.loading).toBe(true);
+            expect({ ...listInstance.state.objects }).toEqual(crudListResolvedObjects);
+
+            crudListResolve();
+            await flushPromises();
+
+            expect(emit.mock.calls).toEqual([
+                ["loading", true],
+                ["loading", false],
+            ]);
+            await expect(liListResolve).resolves.toBe(true);
+
+            expectErrorToBeNull(listInstance.state.error);
+            expect(listInstance.state.errored).toBe(false);
+            expect(listInstance.state.loading).toBe(false);
+            expect({ ...listInstance.state.objects }).toEqual(crudListResolvedObjects);
+            expect(globalList).toHaveBeenCalledWith({
+                crudArgs: { stream: "test_stream" },
+                listArgs: { user: 1 },
+                retrieveArgs: { fields: fields },
+                pageCallback: passedPageCallback,
+            });
+            expect(globalList).toHaveBeenCalledTimes(1);
+        });
+        it("success (custom stream)", async function () {
+            const emit = jest.fn();
+            const listInstance = useListInstance({
+                crudArgs: { stream: "custom_stream" },
+                emit,
+            });
+            let crudListResolve;
+            const crudListPromise = new Promise((resolve) => {
+                crudListResolve = resolve;
+            });
+            let passedPageCallback;
+            globalList.mockImplementation(({ pageCallback }) => {
+                passedPageCallback = pageCallback;
+                return crudListPromise;
+            });
+
+            expectErrorToBeNull(listInstance.state.error);
+            expect(listInstance.state.errored).toBe(false);
+            expect(listInstance.state.loading).toBeUndefined();
+            expect({ ...listInstance.state.objects }).toEqual({});
+            expect(emit.mock.calls).toEqual([]);
+
+            const liListResolve = listInstance.list({
+                listArgs: { user: 1 },
+                retrieveArgs: { fields: fields },
+            });
+
+            expectErrorToBeNull(listInstance.state.error);
+            expect(listInstance.state.errored).toBe(false);
+            expect(listInstance.state.loading).toBe(true);
+            expect({ ...listInstance.state.object }).toEqual({});
+
+            await nextTick();
+
+            expect(emit.mock.calls).toEqual([["loading", true]]);
+
+            passedPageCallback(crudListResolvedPage1);
+
+            expectErrorToBeNull(listInstance.state.error);
+            expect(listInstance.state.errored).toBe(false);
+            expect(listInstance.state.loading).toBe(true);
+            expect({ ...listInstance.state.objects }).toEqual(crudListResolvedObjectsMid);
+
+            passedPageCallback(crudListResolvedPage2);
+
+            expectErrorToBeNull(listInstance.state.error);
+            expect(listInstance.state.errored).toBe(false);
+            expect(listInstance.state.loading).toBe(true);
+            expect({ ...listInstance.state.objects }).toEqual(crudListResolvedObjects);
+
+            crudListResolve();
+            await flushPromises();
+
+            expect(emit.mock.calls).toEqual([
+                ["loading", true],
+                ["loading", false],
+            ]);
+            await expect(liListResolve).resolves.toBe(true);
+
+            expectErrorToBeNull(listInstance.state.error);
+            expect(listInstance.state.errored).toBe(false);
+            expect(listInstance.state.loading).toBe(false);
+            expect({ ...listInstance.state.objects }).toEqual(crudListResolvedObjects);
+            expect(globalList).toHaveBeenCalledWith({
+                crudArgs: { stream: "custom_stream" },
+                listArgs: { user: 1 },
+                retrieveArgs: { fields: fields },
+                pageCallback: passedPageCallback,
+            });
+            expect(globalList).toHaveBeenCalledTimes(1);
+        });
+    });
+    it("useListInstances", async function () {
+        const emit = jest.fn();
+        const listInstanceA = useListInstance({
+            crudArgs: { stream: "test_streamA" },
+            id: 1,
+            retrieveArgs: {
+                fields,
+            },
+            emit,
+        });
+        const listInstanceB = useListInstance({
+            crudArgs: { stream: "test_streamB" },
+            id: 2,
+            retrieveArgs: {
+                fields,
+            },
+            emit,
+        });
+        const listInstances = useListInstances({
+            A: {
+                crudArgs: { stream: "test_streamA" },
+                id: 1,
+                retrieveArgs: {
+                    fields,
+                },
+                emit,
+            },
+            B: {
+                crudArgs: { stream: "test_streamB" },
+                id: 2,
+                retrieveArgs: {
+                    fields,
+                },
+                emit,
+            },
+        });
+        expect(inspect(listInstances.A)).toEqual(inspect(listInstanceA));
+        expect(inspect(listInstances.B)).toEqual(inspect(listInstanceB));
+    });
+});
