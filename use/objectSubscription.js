@@ -11,13 +11,11 @@ export class ObjectSubscriptionError extends Error {
 }
 
 const defaultCrud = reactive({
-    args: {},
     subscribe: undefined,
 });
 
-export function setObjectSubscriptionCrud({ subscribe, args = {} }) {
+export function setObjectSubscriptionCrud({ subscribe }) {
     defaultCrud.subscribe = subscribe;
-    assignReactiveObject(defaultCrud.args, args);
 }
 
 export function useObjectSubscriptions(subscriptionArgs) {
@@ -28,11 +26,12 @@ export function useObjectSubscriptions(subscriptionArgs) {
     return subscriptions;
 }
 
-export default function useObjectSubscription({ crudArgs, id, retrieveArgs = {}, emit }) {
-    const objectInstance = useObjectInstance({ crudArgs, retrieveArgs });
+export default function useObjectSubscription({ objectInstance, crudArgs, id, retrieveArgs = {}, emit }) {
+    if (!objectInstance) {
+        objectInstance = useObjectInstance({ crudArgs, retrieveArgs });
+    }
     const state = reactive({
         crud: {
-            args: {},
             subscribe: undefined,
         },
         id,
@@ -45,9 +44,6 @@ export default function useObjectSubscription({ crudArgs, id, retrieveArgs = {},
         intendToRetrieve: false,
     });
     assignReactiveObject(state.crud, defaultCrud);
-    if (crudArgs) {
-        assignReactiveObject(state.crud.args, crudArgs);
-    }
     const publicState = reactive({
         objectInstance,
         subscribeState: state,
@@ -98,7 +94,7 @@ export default function useObjectSubscription({ crudArgs, id, retrieveArgs = {},
         let subscribePromise;
         cancelSubscription = () => subscribePromise.cancel();
         subscribePromise = state.crud.subscribe({
-            crudArgs: state.crud.args,
+            crudArgs: objectInstance.state.crud.args,
             id,
             retrieveArgs: state.retrieveArgs,
             callback: (data, action) => {

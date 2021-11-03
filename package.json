@@ -41,6 +41,7 @@
         "vue3-jest": "^27.0.0-alpha.1"
     },
     "dependencies": {
+        "browser-util-inspect": "^0.2.0",
         "flexsearch": "^0.7.21",
         "husky": "^7.0.1",
         "is-ci": "^3.0.0",
