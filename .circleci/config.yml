@@ -17,7 +17,8 @@ jobs:
                 type: executor
                 default: node
             resource_class:
-                type: string
+                type: enum
+                enum: [small, medium, medium+, large, xlarge, 2xlarge, 2xlarge+]
                 default: medium
         executor: <<parameters.executor>>
         resource_class: <<parameters.resource_class>>
