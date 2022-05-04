@@ -4,6 +4,7 @@ orbs:
     prettier: arrai/prettier@5.0.0
     utils: arrai/utils@1.8.0
     npm: arrai/npm@2.2.0
+    github: arrai/github@1.1.0
 executors:
     node:
         environment:
@@ -31,6 +32,16 @@ workflows:
             - npm/publish:
                   name: publish
                   context: arrai-private-package-publishing
+                  requires:
+                      - tests-no-badge
+                  filters:
+                      tags:
+                          only: /.*/
+                      branches:
+                          ignore: /.*/
+            - github/create_release:
+                  name: release_on_github
+                  context: arrai-global
                   requires:
                       - tests-no-badge
                   filters:
