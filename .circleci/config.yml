@@ -1,8 +1,8 @@
 version: 2.1
 orbs:
-    eslint: arrai/eslint@2.0.2
-    prettier: arrai/prettier@1.0.0
-    utils: arrai/utils@1.5.0
+    eslint: arrai/eslint@7.0.0
+    prettier: arrai/prettier@5.0.0
+    utils: arrai/utils@1.8.0
 executors:
     node14:
         environment:
