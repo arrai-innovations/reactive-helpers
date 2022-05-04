@@ -4,18 +4,18 @@ orbs:
     prettier: arrai/prettier@5.0.0
     utils: arrai/utils@1.8.0
 executors:
-    node14:
+    node:
         environment:
             LANG: C.UTF-8
         docker:
-            - image: circleci/node:14-browsers
+            - image: cimg/node:16.14-browsers
 jobs:
     tests:
         parameters:
             executor:
                 description: "Execution environment for the test job."
                 type: executor
-                default: node14
+                default: node
             resource_class:
                 type: string
                 default: medium
@@ -79,7 +79,7 @@ workflows:
     test:
         jobs:
             - tests:
-                  name: node14_tests
+                  name: node_tests
                   context: arrai-global
     lint:
         jobs:
@@ -119,7 +119,7 @@ workflows:
             - prettier/code_style:
                   name: prettier
                   context: arrai-global
-                  executor: node14
+                  executor: node
                   version: 2.6.2
                   filters:
                       branches:
@@ -128,7 +128,7 @@ workflows:
             - prettier/code_style:
                   name: prettier-no-badge
                   context: arrai-global
-                  executor: node14
+                  executor: node
                   version: 2.6.2
                   create_badges: false
                   filters:
