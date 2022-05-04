@@ -3,7 +3,7 @@ orbs:
     eslint: arrai/eslint@7.0.0
     prettier: arrai/prettier@5.0.0
     utils: arrai/utils@1.8.0
-    npm: arrai/npm@dev:3
+    npm: arrai/npm@dev:4
 executors:
     node:
         environment:
