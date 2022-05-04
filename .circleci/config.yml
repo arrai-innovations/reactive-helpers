@@ -5,12 +5,6 @@ orbs:
     utils: arrai/utils@1.8.0
     npm: arrai/npm@2.2.0
     github: arrai/github@1.1.0
-executors:
-    node:
-        environment:
-            LANG: C.UTF-8
-        docker:
-            - image: cimg/node:16.15-browsers
 workflows:
     test:
         jobs:
@@ -85,7 +79,6 @@ workflows:
             - prettier/code_style:
                   name: prettier
                   context: arrai-global
-                  executor: node
                   version: 2.6.2
                   filters:
                       branches:
@@ -94,7 +87,6 @@ workflows:
             - prettier/code_style:
                   name: prettier-no-badge
                   context: arrai-global
-                  executor: node
                   version: 2.6.2
                   create_badges: false
                   filters:
