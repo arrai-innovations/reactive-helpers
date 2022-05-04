@@ -10,21 +10,6 @@ executors:
             LANG: C.UTF-8
         docker:
             - image: cimg/node:16.14-browsers
-jobs:
-    publish:
-        parameters:
-            executor:
-                description: "Execution environment for the publish job."
-                type: executor
-                default: node
-            resource_class:
-                type: enum
-                enum: [small, medium, medium+, large, xlarge, 2xlarge, 2xlarge+]
-                default: small
-        executor: <<parameters.executor>>
-        resource_class: <<parameters.resource_class>>
-        steps:
-            - checkout
 workflows:
     test:
         jobs:
@@ -43,9 +28,16 @@ workflows:
                       branches:
                           ignore:
                               - main
-            - publish:
-                  name: npm_publish
+            - npm/publish:
+                  name: publish
                   context: arrai-private-package-publishing
+                  requires:
+                      - tests-no-badge
+                  filters:
+                      tags:
+                          only: /.*/
+                      branches:
+                          ignore: /.*/
     lint:
         jobs:
             - eslint/eslint:
