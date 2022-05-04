@@ -76,12 +76,29 @@ jobs:
                             file: ~/coverage.svg
                             remote_file: ${CIRCLE_BRANCH}/${CIRCLE_JOB}.coverage.svg
                             host: docs
+    publish:
+        parameters:
+            executor:
+                description: "Execution environment for the publish job."
+                type: executor
+                default: node
+            resource_class:
+                type: enum
+                enum: [small, medium, medium+, large, xlarge, 2xlarge, 2xlarge+]
+                default: small
+        executor: <<parameters.executor>>
+        resource_class: <<parameters.resource_class>>
+        steps:
+            - checkout
 workflows:
     test:
         jobs:
             - tests:
                   name: node_tests
                   context: arrai-global
+            - publish:
+                  name: npm_publish
+                  context: arrai-private-package-publishing
     lint:
         jobs:
             - eslint/eslint:
