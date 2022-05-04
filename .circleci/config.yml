@@ -86,8 +86,8 @@ workflows:
             - eslint/eslint:
                   name: eslint
                   context: arrai-global
-                  files: '.'
-                  wd: '.'
+                  files: "."
+                  wd: "."
                   config:
                       - run:
                             name: NPM
@@ -102,8 +102,8 @@ workflows:
             - eslint/eslint:
                   name: eslint-no-badge
                   context: arrai-global
-                  files: '.'
-                  wd: '.'
+                  files: "."
+                  wd: "."
                   config:
                       - run:
                             name: NPM
@@ -120,6 +120,7 @@ workflows:
                   name: prettier
                   context: arrai-global
                   executor: node14
+                  version: 2.6.2
                   filters:
                       branches:
                           only:
@@ -128,6 +129,7 @@ workflows:
                   name: prettier-no-badge
                   context: arrai-global
                   executor: node14
+                  version: 2.6.2
                   create_badges: false
                   filters:
                       branches:
