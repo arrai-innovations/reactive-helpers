@@ -9,7 +9,7 @@ executors:
         environment:
             LANG: C.UTF-8
         docker:
-            - image: cimg/node:16.14-browsers
+            - image: cimg/node:16.15-browsers
 workflows:
     test:
         jobs:
