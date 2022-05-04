@@ -16,11 +16,11 @@ export default {
     testMatch: ["<rootDir>/tests/unit/**/*.spec.js"],
     testPathIgnorePatterns: [],
     transform: {
-        "^.+\\.vue$": "vue3-jest",
+        "^.+\\.vue$": "@vue/vue3-jest",
         "^.+\\js$": "babel-jest",
     },
     globals: {
-        "vue3-jest": {
+        "@vue/vue3-jest": {
             babelConfig: true,
         },
     },
