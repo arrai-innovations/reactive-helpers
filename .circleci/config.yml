@@ -3,7 +3,7 @@ orbs:
     eslint: arrai/eslint@7.0.0
     prettier: arrai/prettier@5.0.0
     utils: arrai/utils@1.8.0
-    npm: arrai/npm@2.2.1
+    npm: arrai/npm@2.2.2
     github: arrai/github@1.1.0
 workflows:
     test:
