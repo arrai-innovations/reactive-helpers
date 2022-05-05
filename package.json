@@ -7,7 +7,7 @@
         "test": "jest",
         "coverage": "npm run coverage:clean; npm test -- --coverage=true",
         "coverage:clean": "rm -rf coverage",
-        "postinstall": "if [[ \"$NODE_ENV\" != \"production\" && ./node_modules/.bin/is-ci ]]; then ./node_modules/.bin/husky install; fi",
+        "postinstall": "if [ \"$NODE_ENV\" != \"production\" ] && [ ./node_modules/.bin/is-ci ]; then ./node_modules/.bin/husky install; fi",
         "prepublishOnly": "pinst --disable",
         "postpublish": "pinst --enable"
     },
@@ -37,7 +37,7 @@
         "eslint-plugin-vue": "^8.7.1",
         "flush-promises": "^1.0.2",
         "lint-staged": "^11.1.2",
-        "prettier": "^2.6.2",
+        "prettier": "2.6.2",
         "@vue/vue3-jest": "^27.0.0"
     },
     "dependencies": {
