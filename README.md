@@ -1,9 +1,9 @@
 # reactive-helpers
 
-![Tests for 14.x](https://docs.arrai-dev.com/reactive-helpers/artifacts/main/node14_tests.svg)
-[![Coverage for 14.x](https://docs.arrai-dev.com/reactive-helpers/artifacts/main/node14_tests.coverage.svg)](https://docs.arrai-dev.com/reactive-helpers/artifacts/main/coverage_node14_tests/)
+![Tests for 14.x](https://docs.arrai-dev.com/reactive-helpers/artifacts/main/tests.svg)
+[![Coverage for 14.x](https://docs.arrai-dev.com/reactive-helpers/artifacts/main/coverage.svg)](https://docs.arrai-dev.com/reactive-helpers/artifacts/main/coverage_tests/)
 ![ESLint](https://docs.arrai-dev.com/reactive-helpers/artifacts/main/eslint.svg)
-![Prettier](https://docs.arrai-dev.com/reactive-helpers/artifacts/main/code_style.svg)
+![Prettier](https://docs.arrai-dev.com/reactive-helpers/artifacts/main/prettier.svg)
 
 VueJS 3 utility composition functions to help manipulate objects and lists.
 
