@@ -1,7 +1,7 @@
 # reactive-helpers
 
 ![Tests for 14.x](https://docs.arrai-dev.com/reactive-helpers/artifacts/main/tests.svg)
-[![Coverage for 14.x](https://docs.arrai-dev.com/reactive-helpers/artifacts/main/coverage.svg)](https://docs.arrai-dev.com/reactive-helpers/artifacts/main/coverage_tests/)
+[![Coverage for 14.x](https://docs.arrai-dev.com/reactive-helpers/artifacts/main/tests.coverage.svg)](https://docs.arrai-dev.com/reactive-helpers/artifacts/main/coverage_tests/)
 ![ESLint](https://docs.arrai-dev.com/reactive-helpers/artifacts/main/eslint.svg)
 ![Prettier](https://docs.arrai-dev.com/reactive-helpers/artifacts/main/prettier.svg)
 
