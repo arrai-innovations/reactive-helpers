@@ -1,7 +1,8 @@
 import { identity } from "lodash";
-import { computed, effectScope, onScopeDispose, reactive, toRef, watch } from "vue";
+import { computed, effectScope, onScopeDispose, reactive, watch } from "vue";
 import { assignReactiveObject } from "../utils/assignReactiveObject";
 import useObjectInstance from "./objectInstance";
+import proxyMerge from "proxy-merge";
 
 export class ObjectSubscriptionError extends Error {
     constructor(message) {
@@ -44,14 +45,7 @@ export default function useObjectSubscription({ objectInstance, crudArgs, id, re
         intendToRetrieve: false,
     });
     assignReactiveObject(state.crud, defaultCrud);
-    const publicState = reactive({
-        objectInstance,
-        subscribeState: state,
-        subscribed: toRef(state, "subscribed"),
-        intendToSubscribe: toRef(state, "intendToSubscribe"),
-        intendToRetrieve: toRef(state, "intendToRetrieve"),
-    });
-    publicState.objectInstance = objectInstance;
+    const publicState = reactive({});
     let cancelSubscription;
 
     function updateFromSubscription(data) {
@@ -94,9 +88,9 @@ export default function useObjectSubscription({ objectInstance, crudArgs, id, re
             retrieveArgs: state.retrieveArgs,
             callback: (data, action) => {
                 if (action === "delete") {
-                    publicState.objectInstance.deleteFromSubscription();
+                    objectInstance.deleteFromSubscription();
                 } else {
-                    publicState.objectInstance.updateFromSubscription(data);
+                    objectInstance.updateFromSubscription(data);
                 }
             },
         });
@@ -143,11 +137,9 @@ export default function useObjectSubscription({ objectInstance, crudArgs, id, re
     const es = effectScope();
 
     es.run(() => {
-        publicState.loading = computed(() => publicState.objectInstance.state.loading || state.loading);
-        publicState.errored = computed(() => publicState.objectInstance.state.errored || state.errored);
-        publicState.error = computed(() => publicState.objectInstance.state.error || state.error);
-        publicState.deleted = computed(() => publicState.objectInstance.state.deleted);
-        publicState.object = computed(() => publicState.objectInstance.state.object);
+        publicState.loading = computed(() => objectInstance.state.loading || state.loading);
+        publicState.errored = computed(() => objectInstance.state.errored || state.errored);
+        publicState.error = computed(() => objectInstance.state.error || state.error);
 
         watch(
             [() => state.intendToSubscribe, () => state.id, () => state.retrieveArgs],
@@ -202,7 +194,9 @@ export default function useObjectSubscription({ objectInstance, crudArgs, id, re
     });
 
     return {
-        state: publicState,
+        combinedState: proxyMerge(publicState, state, objectInstance.state),
+        state: proxyMerge(publicState, state),
+        objectInstance,
         subscribe: publicSubscribe,
         unsubscribe: publicUnsubscribe,
         updateFromSubscription,
