@@ -1,5 +1,5 @@
 import { isEmpty } from "lodash";
-import { reactive, unref, watch } from "vue";
+import { effectScope, reactive, unref, watch } from "vue";
 import { assignReactiveObject } from "../utils/assignReactiveObject";
 
 export class ObjectError extends Error {
@@ -205,20 +205,24 @@ export default function useObjectInstance({ crudArgs, retrieveArgs, emit }) {
             });
     }
 
-    if (emit) {
-        watch(
-            () => state.errored,
-            (newErrored) => {
-                emit("errored", newErrored);
-            }
-        );
-        watch(
-            () => state.loading,
-            (newLoading) => {
-                emit("loading", newLoading);
-            }
-        );
-    }
+    const es = effectScope();
+
+    es.run(() => {
+        if (emit) {
+            watch(
+                () => state.errored,
+                (newErrored) => {
+                    emit("errored", newErrored);
+                }
+            );
+            watch(
+                () => state.loading,
+                (newLoading) => {
+                    emit("loading", newLoading);
+                }
+            );
+        }
+    });
 
     return {
         state,
@@ -227,5 +231,6 @@ export default function useObjectInstance({ crudArgs, retrieveArgs, emit }) {
         update,
         patch,
         delete: deleteFn,
+        effectScope: es,
     };
 }
