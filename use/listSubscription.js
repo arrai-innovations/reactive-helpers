@@ -1,4 +1,4 @@
-import { reactive } from "vue";
+import { effectScope, onScopeDispose, reactive } from "vue";
 import useListInstance from "./listInstance";
 import { cloneDeep, isEmpty, isObject } from "lodash";
 import { assignReactiveObject } from "../utils/assignReactiveObject";
@@ -126,11 +126,20 @@ export default function useListSubscription({ listInstance, crudArgs, defaultLis
         }
     }
 
+    const es = effectScope();
+
+    es.run(() => {
+        onScopeDispose(async () => {
+            await unsubscribe();
+        });
+    });
+
     return {
         combinedState: proxyMerge(state, listInstance.state),
         state,
         listInstance,
         subscribe,
         unsubscribe,
+        effectScope: es,
     };
 }
