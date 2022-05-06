@@ -1,145 +1,148 @@
-import { unref, watch } from "vue";
-import { cloneDeep, get, identity, isEmpty, partial, throttle } from "lodash";
-import { assignReactiveObject } from "../utils/assignReactiveObject";
-import { keyDiff } from "../utils/keyDiff";
+import useSearch from "@/use/search";
+import { keyDiff } from "@/utils/key_diff";
+import { get, identity, isEmpty } from "lodash";
+import { computed, effectScope, onScopeDispose, reactive, toRef, watch, watchEffect } from "vue";
 
-export function useListFilters(instances, args) {
-    for (const [key, value] of Object.entries(args)) {
-        useListFilter({ listInstance: instances[key], ...value });
+export function useListFilters(listFilterArgs) {
+    const filters = {};
+    for (const [key, value] of Object.entries(listFilterArgs)) {
+        filters[key] = useListFilter(value);
     }
+    return filters;
 }
 
-export default function useListFilter({ listInstance, filterRules, filterThrottleWait = 100 }) {
-    listInstance.state.filterRules = filterRules;
-    listInstance.state.filterCriteria = {};
-    listInstance.state.filterCriteriaWatches = {};
+export default function useListFilter({
+    listInstanceOrSubscriptionState,
+    useTextSearch = false,
+    textSearchRules = [],
+    textSearchValue = "",
+    allowedValues = {},
+    excludedValues = {},
+    allowedFilter,
+    excludedFilter,
+}) {
+    const state = reactive({
+        listInstanceOrSubscriptionState,
+        objectIndexes: {},
+        objects: {},
+        textSearchRules,
+        textSearchValue,
+        allowedValues,
+        excludedValues,
+        allowedFilter,
+        excludedFilter,
+    });
 
-    function removeFilterCriteria(removedKey) {
-        const stopWatches = listInstance.state.sortCriteriaWatches[removedKey];
-        if (stopWatches?.length) {
-            for (const stopWatch of stopWatches) {
-                if (stopWatch) {
-                    stopWatch();
+    state.orderByRules = toRef(state.listInstanceOrSubscriptionState, "orderByRules");
+    state.loading = toRef(state.listInstanceOrSubscriptionState, "loading");
+    state.errored = toRef(state.listInstanceOrSubscriptionState, "errored");
+    state.error = toRef(state.listInstanceOrSubscriptionState, "error");
+
+    const es = effectScope();
+
+    es.run(() => {
+        const textSearchIndex = useSearch();
+        textSearchIndex.state.search = toRef(state, "textSearchValue");
+        state.searched = toRef(textSearchIndex.state, "searched");
+        state.searching = toRef(textSearchIndex.state, "searching");
+
+        state.order = computed(() => {
+            return state.listInstanceOrSubscriptionState.order.filter((id) => state.objects[id]);
+        });
+        state.objectsInOrder = computed(() => {
+            const order = state.order;
+            const objects = state.objects;
+            return order.map((key) => objects[key]).filter(identity);
+        });
+
+        watchEffect(() => {
+            const allowedValuesEmpty = !state.allowedValues || isEmpty(state.allowedValues);
+            const excludedValuesEmpty = !state.excludedValues || isEmpty(state.excludedValues);
+            const resultsEmpty = !textSearchIndex.state.results || isEmpty(textSearchIndex.state.results);
+            const searched = textSearchIndex.state.searched;
+
+            const inResults = (object) => {
+                if (!allowedValuesEmpty && !state.allowedValues[object.id]) {
+                    return false;
                 }
-            }
-        }
-        delete listInstance.state.sortCriteriaWatches[removedKey];
-        delete listInstance.state.sortCriteria[removedKey];
-    }
-
-    function addFilterCriteria(object, key) {
-        if (listInstance.state.sortCriteriaWatches[key]) {
-            for (const stopWatch of listInstance.state.sortCriteriaWatches[key]) {
-                if (stopWatch) {
-                    stopWatch();
+                if (!excludedValuesEmpty && state.excludedValues[object.id]) {
+                    return false;
                 }
-            }
-        }
-        const stopWatches = [];
-        if (!listInstance.state.sortCriteria[key]) {
-            listInstance.state.sortCriteria[key] = [];
-        }
-        stopWatches.push(
-            watch(
-                [object, listInstance.state.orderByRules],
-                () => {
-                    const newSearchCriteria = [];
-                    for (const orderByObj of listInstance.state.orderByRules.filter(identity)) {
-                        const obo = unref(orderByObj);
-                        const getter = obo.keyFn ? obo.keyFn : partial(get, partial.placeholder, obo.key);
-                        newSearchCriteria.push(getter(object));
-                    }
-                    assignReactiveObject(listInstance.state.sortCriteria[key], newSearchCriteria);
-                },
-                {
-                    deep: true,
-                    immediate: true,
+                if (state.allowedFilter && !state.allowedFilter(object)) {
+                    return false;
                 }
-            )
-        );
-        listInstance.state.sortCriteriaWatches[key] = stopWatches;
-    }
-
-    function filterCriteriaWatch() {
-        if (!listInstance.state.orderByRules || !listInstance.state.orderByRules.filter(identity).length) {
-            if (!isEmpty(listInstance.state.sortCriteria)) {
-                for (const removedKey of Object.keys(listInstance.state.sortCriteria)) {
-                    removeFilterCriteria(removedKey);
+                if (state.excludedFilter && state.excludedFilter(object)) {
+                    return false;
                 }
-            }
-            return;
-        }
-        const { removedKeys, addedKeys } = keyDiff(
-            Object.keys(listInstance.state.objects),
-            Object.keys(listInstance.state.sortCriteria)
-        );
-        for (const removedKey of removedKeys) {
-            removeFilterCriteria(removedKey);
-        }
-
-        for (const addedKey of addedKeys) {
-            const object = listInstance.state.objects[addedKey];
-            addFilterCriteria(object, addedKey);
-        }
-        assignReactiveObject(
-            listInstance.state.orderByDesc,
-            listInstance.state.orderByRules.filter(identity).map((e) => e.desc || false)
-        );
-    }
-
-    // we dont need two immediate watches to the same function.
-    watch(
-        () => Object.keys(listInstance.state.objects),
-        () => {
-            filterCriteriaWatch();
-        }
-    );
-    watch(
-        () => cloneDeep(listInstance.state.filterRules),
-        () => {
-            filterCriteriaWatch();
-        },
-        {
-            deep: true,
-            immediate: true,
-        }
-    );
-
-    function filterWatch() {
-        if (!listInstance.state.orderByRules || !listInstance.state.orderByRules.length) {
-            const serverOrderObjectsInOrder = listInstance.state.serverOrder
-                .map((e) => listInstance.state.objects[e])
-                .filter(identity);
-            assignReactiveObject(
-                listInstance.state.order,
-                serverOrderObjectsInOrder.map((e) => String(e.id))
+                return !(useTextSearch && searched && !resultsEmpty && !textSearchIndex.state.results[object.id]);
+            };
+            const { removedKeys, sameKeys, addedKeys } = keyDiff(
+                Object.keys(state.listInstanceOrSubscriptionState.objects),
+                Object.keys(state.objects)
             );
-            assignReactiveObject(listInstance.state.objectsInOrder, serverOrderObjectsInOrder);
-            return;
+            for (const removedKey of removedKeys) {
+                delete state.objects[removedKey];
+            }
+            for (const addedKey of addedKeys) {
+                if (inResults(state.listInstanceOrSubscriptionState.objects[addedKey])) {
+                    state.objects[addedKey] = toRef(state.listInstanceOrSubscriptionState.objects, addedKey);
+                }
+            }
+            for (const sameKey of sameKeys) {
+                if (inResults(state.listInstanceOrSubscriptionState.objects[sameKey])) {
+                    if (state.objects[sameKey] !== state.listInstanceOrSubscriptionState.objects[sameKey]) {
+                        state.objects[sameKey] = toRef(state.listInstanceOrSubscriptionState.objects, sameKey);
+                    }
+                } else {
+                    delete state.objects[sameKey];
+                }
+            }
+        });
+
+        if (useTextSearch) {
+            const stopIndexWatch = {};
+
+            watchEffect(() => {
+                const { removedKeys, addedKeys } = keyDiff(
+                    Object.keys(state.listInstanceOrSubscriptionState.objects),
+                    Object.keys(state.objectIndexes)
+                );
+                for (const removedKey of removedKeys) {
+                    delete state.objectIndexes[removedKey];
+                    textSearchIndex.removeIndex(removedKey);
+                    if (stopIndexWatch[removedKey]) {
+                        stopIndexWatch[removedKey]();
+                        delete stopIndexWatch[removedKey];
+                    }
+                }
+                for (const addedKey of addedKeys) {
+                    state.objectIndexes[addedKey] = true;
+                    textSearchIndex.addIndex(
+                        addedKey,
+                        state.textSearchRules
+                            .map((o) => get(state.listInstanceOrSubscriptionState.objects[addedKey], o))
+                            .join(" ")
+                    );
+                    stopIndexWatch[addedKey] = watch(
+                        [
+                            toRef(state, "textSearchRules"),
+                            toRef(state.listInstanceOrSubscriptionState.objects, "addedKey"),
+                        ],
+                        (textSearchRules, object) => {
+                            textSearchIndex.updateIndex(addedKey, textSearchRules.map((o) => get(object, o)).join(" "));
+                        }
+                    );
+                }
+            });
+            onScopeDispose(() => {
+                for (const key in stopIndexWatch) {
+                    stopIndexWatch[key]();
+                }
+            });
         }
-
-        let idList = Object.keys(listInstance.state.objects);
-
-        // filter idList
-
-        assignReactiveObject(listInstance.state.order, idList);
-        assignReactiveObject(
-            listInstance.state.objectsInOrder,
-            idList.map((e) => listInstance.state.objects[e]).filter(identity)
-        );
-    }
-
-    const throttledFilterWatch = throttle(filterWatch, filterThrottleWait);
-
-    watch(
-        [
-            () => listInstance.state.orderByDesc,
-            () => listInstance.state.sortCriteria,
-            () => listInstance.state.serverOrder,
-        ],
-        throttledFilterWatch,
-        {
-            deep: true,
-        }
-    );
+    });
+    return {
+        state,
+        effectScope: es,
+    };
 }
