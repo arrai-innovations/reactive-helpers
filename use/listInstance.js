@@ -1,11 +1,13 @@
 import { isEmpty, keyBy } from "lodash";
-import { reactive, unref, watch } from "vue";
+import { effectScope, reactive, unref, watch } from "vue";
 import { addOrUpdateReactiveObject, assignReactiveObject } from "../utils/assignReactiveObject";
+import inspect from "browser-util-inspect";
 
 export class ListError extends Error {
-    constructor(message) {
+    constructor(message, code) {
         super(message);
         this.name = "ListError";
+        this.code = code;
     }
 }
 
@@ -19,17 +21,22 @@ export function setListInstanceCrud({ list, args = {} } = {}) {
     assignReactiveObject(defaultCrud.args, args);
 }
 
-export function useListInstances(args) {
+export function useListInstances(listInstanceArgs) {
     const instances = {};
-    for (const [key, value] of Object.entries(args)) {
+    for (const [key, value] of Object.entries(listInstanceArgs)) {
         instances[key] = useListInstance(value);
     }
     return instances;
 }
 
-export default function useListInstance({ crudArgs, defaultListArgs = {}, defaultRetrieveArgs = {}, emit }) {
+export default function useListInstance({
+    crudArgs,
+    defaultListArgs = {},
+    defaultRetrieveArgs = {},
+    emit, // emit is not reactive
+}) {
     const state = reactive({
-        crud: {
+        listInstanceCrud: {
             args: {},
             list: undefined,
         },
@@ -40,9 +47,9 @@ export default function useListInstance({ crudArgs, defaultListArgs = {}, defaul
         errored: false,
         error: null,
     });
-    assignReactiveObject(state.crud, defaultCrud);
+    assignReactiveObject(state.listInstanceCrud, defaultCrud);
     if (crudArgs) {
-        assignReactiveObject(state.crud.args, crudArgs);
+        assignReactiveObject(state.listInstanceCrud.args, crudArgs);
     }
 
     async function list({ listArgs, retrieveArgs } = {}) {
@@ -58,9 +65,9 @@ export default function useListInstance({ crudArgs, defaultListArgs = {}, defaul
         state.loading = true;
         state.errored = false;
         state.error = null;
-        return state.crud
+        return state.listInstanceCrud
             .list({
-                crudArgs: state.crud.args,
+                crudArgs: state.listInstanceCrud.args,
                 retrieveArgs,
                 listArgs,
                 pageCallback: (newObjects) => {
@@ -80,23 +87,75 @@ export default function useListInstance({ crudArgs, defaultListArgs = {}, defaul
             });
     }
 
-    if (emit) {
-        watch(
-            () => state.errored,
-            (newErrored) => {
-                emit("errored", newErrored);
-            }
-        );
-        watch(
-            () => state.loading,
-            (newLoading) => {
-                emit("loading", newLoading);
-            }
-        );
+    function addListObject(object) {
+        if (!object.id) {
+            throw new ListError(`addListObject: object missing id.\n${inspect(object)}`, "missing-id");
+        }
+        if (object.id in state.objects) {
+            throw new ListError(`addListObject: list already has object for id: ${inspect(object.id)}`, "duplicate-id");
+        }
+        state.objects[object.id] = {};
+        assignReactiveObject(state.objects[object.id], object);
     }
 
+    function updateListObject(object) {
+        if (!object.id) {
+            throw new ListError(`updateListObject: object missing id.\n${inspect(object)}`, "missing-id");
+        }
+        if (!(object.id in state.objects)) {
+            throw new ListError(
+                `updateListObject: list missing object for update by id: ${inspect(object.id)}`,
+                "missing-object"
+            );
+        }
+        assignReactiveObject(state.objects[object.id], object);
+    }
+
+    function deleteListObject(objectId) {
+        if (!(objectId in state.objects)) {
+            throw new ListError(
+                `deleteListObject: list missing object for removal by id: ${inspect(objectId)}`,
+                "missing-object"
+            );
+        }
+        delete state.objects[objectId];
+    }
+
+    function getFakeId() {
+        let fakeId;
+        do {
+            fakeId = Math.floor(Math.random() * Number.MIN_SAFE_INTEGER);
+        } while (fakeId in state.objects);
+        return fakeId;
+    }
+
+    const es = effectScope();
+
+    es.run(() => {
+        if (emit) {
+            watch(
+                () => state.errored,
+                (newErrored) => {
+                    emit("errored", newErrored);
+                }
+            );
+            watch(
+                () => state.loading,
+                (newLoading) => {
+                    emit("loading", newLoading);
+                }
+            );
+        }
+    });
+
     return {
+        combinedState: state,
         state,
         list,
+        addListObject,
+        updateListObject,
+        deleteListObject,
+        effectScope: es,
+        getFakeId,
     };
 }

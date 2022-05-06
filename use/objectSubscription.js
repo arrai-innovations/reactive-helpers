@@ -1,7 +1,8 @@
 import { identity } from "lodash";
-import { computed, onUnmounted, reactive, toRef, watch } from "vue";
+import { computed, effectScope, onScopeDispose, reactive, watch } from "vue";
 import { assignReactiveObject } from "../utils/assignReactiveObject";
 import useObjectInstance from "./objectInstance";
+import flattenProxy from "../utils/flattenProxy";
 
 export class ObjectSubscriptionError extends Error {
     constructor(message) {
@@ -31,7 +32,7 @@ export default function useObjectSubscription({ objectInstance, crudArgs, id, re
         objectInstance = useObjectInstance({ crudArgs, retrieveArgs });
     }
     const state = reactive({
-        crud: {
+        objectSubscriptionCrud: {
             subscribe: undefined,
         },
         id,
@@ -43,20 +44,8 @@ export default function useObjectSubscription({ objectInstance, crudArgs, id, re
         intendToSubscribe: false,
         intendToRetrieve: false,
     });
-    assignReactiveObject(state.crud, defaultCrud);
-    const publicState = reactive({
-        objectInstance,
-        subscribeState: state,
-        loading: computed(() => publicState.objectInstance.state.loading || state.loading),
-        errored: computed(() => publicState.objectInstance.state.errored || state.errored),
-        error: computed(() => publicState.objectInstance.state.error || state.error),
-        deleted: computed(() => publicState.objectInstance.state.deleted),
-        subscribed: toRef(state, "subscribed"),
-        intendToSubscribe: toRef(state, "intendToSubscribe"),
-        intendToRetrieve: toRef(state, "intendToRetrieve"),
-        object: computed(() => publicState.objectInstance.state.object),
-    });
-    publicState.objectInstance = objectInstance;
+    assignReactiveObject(state.objectSubscriptionCrud, defaultCrud);
+    const publicState = reactive({});
     let cancelSubscription;
 
     function updateFromSubscription(data) {
@@ -93,15 +82,15 @@ export default function useObjectSubscription({ objectInstance, crudArgs, id, re
         state.error = null;
         let subscribePromise;
         cancelSubscription = () => subscribePromise.cancel();
-        subscribePromise = state.crud.subscribe({
-            crudArgs: objectInstance.state.crud.args,
+        subscribePromise = state.objectSubscriptionCrud.subscribe({
+            crudArgs: objectInstance.state.objectInstanceCrud.args,
             id,
             retrieveArgs: state.retrieveArgs,
             callback: (data, action) => {
                 if (action === "delete") {
-                    publicState.objectInstance.deleteFromSubscription();
+                    objectInstance.deleteFromSubscription();
                 } else {
-                    publicState.objectInstance.updateFromSubscription(data);
+                    objectInstance.updateFromSubscription(data);
                 }
             },
         });
@@ -145,63 +134,73 @@ export default function useObjectSubscription({ objectInstance, crudArgs, id, re
         return false;
     }
 
-    watch(
-        [() => state.intendToSubscribe, () => state.id, () => state.retrieveArgs],
-        async (newArgs, oldArgs) => {
-            const everyNew = newArgs.every((e) => e);
-            const everyOld = oldArgs.every((e) => e);
-            if (everyOld) {
-                await unsubscribe();
-            }
-            if (everyNew) {
-                if (!cancelSubscription && !state.subscribed) {
-                    await subscribe().catch(console.error);
+    const es = effectScope();
+
+    es.run(() => {
+        publicState.loading = computed(() => objectInstance.state.loading || state.loading);
+        publicState.errored = computed(() => objectInstance.state.errored || state.errored);
+        publicState.error = computed(() => objectInstance.state.error || state.error);
+
+        watch(
+            [() => state.intendToSubscribe, () => state.id, () => state.retrieveArgs],
+            async (newArgs, oldArgs) => {
+                const everyNew = newArgs.every((e) => e);
+                const everyOld = oldArgs.every((e) => e);
+                if (everyOld) {
+                    await unsubscribe();
                 }
+                if (everyNew) {
+                    if (!cancelSubscription && !state.subscribed) {
+                        await subscribe().catch(console.error);
+                    }
+                }
+            },
+            {
+                deep: true,
             }
-        },
-        {
-            deep: true,
+        );
+
+        watch(
+            [() => state.intendToRetrieve, () => state.id, () => state.retrieveArgs],
+            async (newArgs) => {
+                const everyNew = newArgs.every((e) => e);
+                if (everyNew) {
+                    if (!objectInstance.state.loading) {
+                        await objectInstance.retrieve({ id: state.id, ...state.retrieveArgs }).catch(console.error);
+                    }
+                }
+            },
+            { deep: true }
+        );
+
+        if (emit) {
+            watch(
+                () => publicState.errored,
+                (newErrored) => {
+                    emit("errored", newErrored);
+                }
+            );
+            watch(
+                () => publicState.loading,
+                (newLoading) => {
+                    emit("loading", newLoading);
+                }
+            );
         }
-    );
 
-    watch(
-        [() => state.intendToRetrieve, () => state.id, () => state.retrieveArgs],
-        async (newArgs) => {
-            const everyNew = newArgs.every((e) => e);
-            if (everyNew) {
-                if (!objectInstance.state.loading) {
-                    await objectInstance.retrieve({ id: state.id, ...state.retrieveArgs }).catch(console.error);
-                }
-            }
-        },
-        { deep: true }
-    );
-
-    if (emit) {
-        watch(
-            () => publicState.errored,
-            (newErrored) => {
-                emit("errored", newErrored);
-            }
-        );
-        watch(
-            () => publicState.loading,
-            (newLoading) => {
-                emit("loading", newLoading);
-            }
-        );
-    }
-
-    /* istanbul ignore next */
-    onUnmounted(async () => {
-        await unsubscribe();
+        onScopeDispose(async () => {
+            await unsubscribe();
+        });
     });
 
     return {
-        state: publicState,
+        combinedState: flattenProxy(publicState, state, objectInstance.state),
+        state,
+        objectInstance,
         subscribe: publicSubscribe,
         unsubscribe: publicUnsubscribe,
         updateFromSubscription,
         deleteFromSubscription,
+        effectScope: es,
     };
 }

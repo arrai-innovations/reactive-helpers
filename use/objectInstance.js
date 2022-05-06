@@ -1,5 +1,5 @@
 import { isEmpty } from "lodash";
-import { reactive, unref, watch } from "vue";
+import { effectScope, reactive, unref, watch } from "vue";
 import { assignReactiveObject } from "../utils/assignReactiveObject";
 
 export class ObjectError extends Error {
@@ -37,7 +37,7 @@ export function useObjectInstances(instanceArgs) {
 
 export default function useObjectInstance({ crudArgs, retrieveArgs, emit }) {
     const state = reactive({
-        crud: {
+        objectInstanceCrud: {
             args: {},
             retrieve: undefined,
             create: undefined,
@@ -52,9 +52,9 @@ export default function useObjectInstance({ crudArgs, retrieveArgs, emit }) {
         error: null,
         deleted: false,
     });
-    assignReactiveObject(state.crud, defaultCrud);
+    assignReactiveObject(state.objectInstanceCrud, defaultCrud);
     if (crudArgs) {
-        assignReactiveObject(state.crud.args, crudArgs);
+        assignReactiveObject(state.objectInstanceCrud.args, crudArgs);
     }
 
     async function retrieve({ id, ...retrieveArgs }) {
@@ -67,9 +67,9 @@ export default function useObjectInstance({ crudArgs, retrieveArgs, emit }) {
         state.loading = true;
         state.errored = false;
         state.error = null;
-        return state.crud
+        return state.objectInstanceCrud
             .retrieve({
-                crudArgs: state.crud.args,
+                crudArgs: state.objectInstanceCrud.args,
                 id,
                 retrieveArgs,
             })
@@ -97,9 +97,9 @@ export default function useObjectInstance({ crudArgs, retrieveArgs, emit }) {
         state.loading = true;
         state.errored = false;
         state.error = null;
-        return state.crud
+        return state.objectInstanceCrud
             .create({
-                crudArgs: state.crud.args,
+                crudArgs: state.objectInstanceCrud.args,
                 object,
                 retrieveArgs,
             })
@@ -127,9 +127,9 @@ export default function useObjectInstance({ crudArgs, retrieveArgs, emit }) {
         state.loading = true;
         state.errored = false;
         state.error = null;
-        return state.crud
+        return state.objectInstanceCrud
             .update({
-                crudArgs: state.crud.args,
+                crudArgs: state.objectInstanceCrud.args,
                 object,
                 retrieveArgs,
             })
@@ -157,9 +157,9 @@ export default function useObjectInstance({ crudArgs, retrieveArgs, emit }) {
         state.loading = true;
         state.errored = false;
         state.error = null;
-        return state.crud
+        return state.objectInstanceCrud
             .patch({
-                crudArgs: state.crud.args,
+                crudArgs: state.objectInstanceCrud.args,
                 id,
                 partialObject,
                 retrieveArgs,
@@ -185,9 +185,9 @@ export default function useObjectInstance({ crudArgs, retrieveArgs, emit }) {
         state.loading = true;
         state.errored = false;
         state.error = null;
-        return state.crud
+        return state.objectInstanceCrud
             .delete({
-                crudArgs: state.crud.args,
+                crudArgs: state.objectInstanceCrud.args,
                 id,
             })
             .then(() => {
@@ -205,20 +205,24 @@ export default function useObjectInstance({ crudArgs, retrieveArgs, emit }) {
             });
     }
 
-    if (emit) {
-        watch(
-            () => state.errored,
-            (newErrored) => {
-                emit("errored", newErrored);
-            }
-        );
-        watch(
-            () => state.loading,
-            (newLoading) => {
-                emit("loading", newLoading);
-            }
-        );
-    }
+    const es = effectScope();
+
+    es.run(() => {
+        if (emit) {
+            watch(
+                () => state.errored,
+                (newErrored) => {
+                    emit("errored", newErrored);
+                }
+            );
+            watch(
+                () => state.loading,
+                (newLoading) => {
+                    emit("loading", newLoading);
+                }
+            );
+        }
+    });
 
     return {
         state,
@@ -227,5 +231,6 @@ export default function useObjectInstance({ crudArgs, retrieveArgs, emit }) {
         update,
         patch,
         delete: deleteFn,
+        effectScope: es,
     };
 }
