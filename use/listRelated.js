@@ -1,4 +1,4 @@
-import { computed, effectScope, reactive, watch } from "vue";
+import { computed, effectScope, onScopeDispose, reactive, watch } from "vue";
 import { get, isArray, isEmpty, isUndefined } from "lodash";
 import { keyDiff } from "../utils/keyDiff";
 import proxyMerge from "proxy-merge";
@@ -103,6 +103,12 @@ export default function useListRelated({
             relatedObjectsWatch,
             { immediate: true }
         );
+
+        onScopeDispose(() => {
+            for (const objectKey of Object.keys(state.relatedObjectsEffectScopes)) {
+                state.relatedObjectsEffectScopes[objectKey].stop();
+            }
+        });
     });
     return {
         combinedState: proxyMerge(state, parentState),
