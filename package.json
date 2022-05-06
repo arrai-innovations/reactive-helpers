@@ -2,7 +2,12 @@
     "name": "@arrai-innovations/reactive-helpers",
     "version": "1.0.0",
     "description": "VueJS 3 utility composition functions to help manipulate objects and lists.",
-    "private": true,
+    "main": "use/index.js",
+    "directories": {
+        "use": "use",
+        "utils": "utils",
+        "tests": "tests"
+    },
     "scripts": {
         "test": "jest",
         "coverage": "npm run coverage:clean; npm test -- --coverage=true",
@@ -29,6 +34,7 @@
         "@vue/compiler-sfc": "^3.2.33",
         "@vue/eslint-config-prettier": "^7.0.0",
         "@vue/test-utils": "^2.0.0-rc.21",
+        "@vue/vue3-jest": "^27.0.0",
         "babel-eslint": "^10.1.0",
         "babel-jest": "^27.5.1",
         "doctoc": "^2.1.0",
@@ -37,8 +43,7 @@
         "eslint-plugin-vue": "^8.7.1",
         "flush-promises": "^1.0.2",
         "lint-staged": "^11.1.2",
-        "prettier": "2.6.2",
-        "@vue/vue3-jest": "^27.0.0"
+        "prettier": "2.6.2"
     },
     "dependencies": {
         "browser-util-inspect": "^0.2.0",
@@ -48,6 +53,7 @@
         "jest": "^27.5.1",
         "lodash": "^4.17.21",
         "pinst": "^3.0.0",
+        "proxy-merge": "^1.0.0",
         "vue": "^3.2.33",
         "vue-router": "^4.0.15"
     }
