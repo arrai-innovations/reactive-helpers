@@ -2,6 +2,7 @@ import useSearch from "@/use/search";
 import { keyDiff } from "@/utils/key_diff";
 import { get, identity, isEmpty } from "lodash";
 import { computed, effectScope, onScopeDispose, reactive, toRef, watch, watchEffect } from "vue";
+import proxyMerge from "proxy-merge";
 
 export function useListFilters(listFilterArgs) {
     const filters = {};
@@ -12,7 +13,7 @@ export function useListFilters(listFilterArgs) {
 }
 
 export default function useListFilter({
-    listInstanceOrSubscriptionState,
+    parentState,
     useTextSearch = false,
     textSearchRules = [],
     textSearchValue = "",
@@ -22,7 +23,6 @@ export default function useListFilter({
     excludedFilter,
 }) {
     const state = reactive({
-        listInstanceOrSubscriptionState,
         objectIndexes: {},
         objects: {},
         textSearchRules,
@@ -33,21 +33,18 @@ export default function useListFilter({
         excludedFilter,
     });
 
-    state.orderByRules = toRef(state.listInstanceOrSubscriptionState, "orderByRules");
-    state.loading = toRef(state.listInstanceOrSubscriptionState, "loading");
-    state.errored = toRef(state.listInstanceOrSubscriptionState, "errored");
-    state.error = toRef(state.listInstanceOrSubscriptionState, "error");
-
     const es = effectScope();
 
+    let textSearchIndex;
+
     es.run(() => {
-        const textSearchIndex = useSearch();
+        textSearchIndex = useSearch();
         textSearchIndex.state.search = toRef(state, "textSearchValue");
         state.searched = toRef(textSearchIndex.state, "searched");
         state.searching = toRef(textSearchIndex.state, "searching");
 
         state.order = computed(() => {
-            return state.listInstanceOrSubscriptionState.order.filter((id) => state.objects[id]);
+            return parentState.order.filter((id) => state.objects[id]);
         });
         state.objectsInOrder = computed(() => {
             const order = state.order;
@@ -77,21 +74,21 @@ export default function useListFilter({
                 return !(useTextSearch && searched && !resultsEmpty && !textSearchIndex.state.results[object.id]);
             };
             const { removedKeys, sameKeys, addedKeys } = keyDiff(
-                Object.keys(state.listInstanceOrSubscriptionState.objects),
+                Object.keys(parentState.objects),
                 Object.keys(state.objects)
             );
             for (const removedKey of removedKeys) {
                 delete state.objects[removedKey];
             }
             for (const addedKey of addedKeys) {
-                if (inResults(state.listInstanceOrSubscriptionState.objects[addedKey])) {
-                    state.objects[addedKey] = toRef(state.listInstanceOrSubscriptionState.objects, addedKey);
+                if (inResults(parentState.objects[addedKey])) {
+                    state.objects[addedKey] = toRef(parentState.objects, addedKey);
                 }
             }
             for (const sameKey of sameKeys) {
-                if (inResults(state.listInstanceOrSubscriptionState.objects[sameKey])) {
-                    if (state.objects[sameKey] !== state.listInstanceOrSubscriptionState.objects[sameKey]) {
-                        state.objects[sameKey] = toRef(state.listInstanceOrSubscriptionState.objects, sameKey);
+                if (inResults(parentState.objects[sameKey])) {
+                    if (state.objects[sameKey] !== parentState.objects[sameKey]) {
+                        state.objects[sameKey] = toRef(parentState.objects, sameKey);
                     }
                 } else {
                     delete state.objects[sameKey];
@@ -104,7 +101,7 @@ export default function useListFilter({
 
             watchEffect(() => {
                 const { removedKeys, addedKeys } = keyDiff(
-                    Object.keys(state.listInstanceOrSubscriptionState.objects),
+                    Object.keys(parentState.objects),
                     Object.keys(state.objectIndexes)
                 );
                 for (const removedKey of removedKeys) {
@@ -119,15 +116,10 @@ export default function useListFilter({
                     state.objectIndexes[addedKey] = true;
                     textSearchIndex.addIndex(
                         addedKey,
-                        state.textSearchRules
-                            .map((o) => get(state.listInstanceOrSubscriptionState.objects[addedKey], o))
-                            .join(" ")
+                        state.textSearchRules.map((o) => get(parentState.objects[addedKey], o)).join(" ")
                     );
                     stopIndexWatch[addedKey] = watch(
-                        [
-                            toRef(state, "textSearchRules"),
-                            toRef(state.listInstanceOrSubscriptionState.objects, "addedKey"),
-                        ],
+                        [toRef(state, "textSearchRules"), toRef(parentState.objects, "addedKey")],
                         (textSearchRules, object) => {
                             textSearchIndex.updateIndex(addedKey, textSearchRules.map((o) => get(object, o)).join(" "));
                         }
@@ -142,7 +134,10 @@ export default function useListFilter({
         }
     });
     return {
+        combinedState: proxyMerge(state, parentState),
         state,
+        parentState,
+        textSearchIndex,
         effectScope: es,
     };
 }
