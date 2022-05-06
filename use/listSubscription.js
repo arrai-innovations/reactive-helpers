@@ -3,7 +3,7 @@ import useListInstance from "./listInstance";
 import { cloneDeep, isEmpty, isObject } from "lodash";
 import { assignReactiveObject } from "../utils/assignReactiveObject";
 import inspect from "browser-util-inspect";
-import proxyMerge from "proxy-merge";
+import flattenProxy from "../utils/flattenProxy";
 
 export class ListSubscriptionError extends Error {
     constructor(message) {
@@ -135,7 +135,7 @@ export default function useListSubscription({ listInstance, crudArgs, defaultLis
     });
 
     return {
-        combinedState: proxyMerge(state, listInstance.state),
+        combinedState: flattenProxy(state, listInstance.state),
         state,
         listInstance,
         subscribe,

@@ -1,7 +1,7 @@
 import { computed, effectScope, onScopeDispose, reactive, watch } from "vue";
 import { get, isArray, isEmpty, isUndefined } from "lodash";
 import { keyDiff } from "../utils/keyDiff";
-import proxyMerge from "proxy-merge";
+import flattenProxy from "../utils/flattenProxy";
 
 export function useListRelateds(instances, args) {
     for (const [key, value] of Object.entries(args)) {
@@ -36,7 +36,10 @@ export default function useListRelated({
         }
         for (const addedKey of addedKeys) {
             state.relatedObjectsObjects[addedKey] = {};
-            state.objects[addedKey] = proxyMerge(parentState.objects[addedKey], state.relatedObjectsObjects[addedKey]);
+            state.objects[addedKey] = flattenProxy(
+                parentState.objects[addedKey],
+                state.relatedObjectsObjects[addedKey]
+            );
         }
     }
 
@@ -111,7 +114,7 @@ export default function useListRelated({
         });
     });
     return {
-        combinedState: proxyMerge(state, parentState),
+        combinedState: flattenProxy(state, parentState),
         state,
         parentState,
         effectScope: es,
