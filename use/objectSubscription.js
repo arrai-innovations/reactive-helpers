@@ -32,7 +32,7 @@ export default function useObjectSubscription({ objectInstance, crudArgs, id, re
         objectInstance = useObjectInstance({ crudArgs, retrieveArgs });
     }
     const state = reactive({
-        crud: {
+        objectSubscriptionCrud: {
             subscribe: undefined,
         },
         id,
@@ -44,7 +44,7 @@ export default function useObjectSubscription({ objectInstance, crudArgs, id, re
         intendToSubscribe: false,
         intendToRetrieve: false,
     });
-    assignReactiveObject(state.crud, defaultCrud);
+    assignReactiveObject(state.objectSubscriptionCrud, defaultCrud);
     const publicState = reactive({});
     let cancelSubscription;
 
@@ -82,8 +82,8 @@ export default function useObjectSubscription({ objectInstance, crudArgs, id, re
         state.error = null;
         let subscribePromise;
         cancelSubscription = () => subscribePromise.cancel();
-        subscribePromise = state.crud.subscribe({
-            crudArgs: objectInstance.state.crud.args,
+        subscribePromise = state.objectSubscriptionCrud.subscribe({
+            crudArgs: objectInstance.state.objectInstanceCrud.args,
             id,
             retrieveArgs: state.retrieveArgs,
             callback: (data, action) => {
@@ -195,7 +195,7 @@ export default function useObjectSubscription({ objectInstance, crudArgs, id, re
 
     return {
         combinedState: flattenProxy(publicState, state, objectInstance.state),
-        state: flattenProxy(publicState, state),
+        state,
         objectInstance,
         subscribe: publicSubscribe,
         unsubscribe: publicUnsubscribe,
