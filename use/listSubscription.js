@@ -3,6 +3,7 @@ import useListInstance from "./listInstance";
 import { cloneDeep, isEmpty, isObject } from "lodash";
 import { assignReactiveObject } from "../utils/assignReactiveObject";
 import inspect from "browser-util-inspect";
+import proxyMerge from "proxy-merge";
 
 export class ListSubscriptionError extends Error {
     constructor(message) {
@@ -33,10 +34,10 @@ export default function useListSubscription({ listInstance, crudArgs, defaultLis
     }
     let cancelSubscription = null;
     const state = reactive({
-        crud: {},
+        listSubscriptionCrud: {},
         intendToSubscribe: false,
     });
-    assignReactiveObject(state.crud, defaultCrud);
+    assignReactiveObject(state.listSubscriptionCrud, defaultCrud);
 
     async function subscribe({ listArgs, retrieveArgs } = {}) {
         if (!listArgs) {
@@ -46,8 +47,8 @@ export default function useListSubscription({ listInstance, crudArgs, defaultLis
             retrieveArgs = cloneDeep(listInstance.state.defaultRetrieveArgs);
         }
         if (!cancelSubscription) {
-            cancelSubscription = await state.crud.subscribe({
-                crudArgs: listInstance.state.crud.args,
+            cancelSubscription = await state.listSubscriptionCrud.subscribe({
+                crudArgs: listInstance.state.listInstanceCrud.args,
                 listArgs,
                 retrieveArgs,
                 subscriptionEventCallback,
@@ -86,10 +87,13 @@ export default function useListSubscription({ listInstance, crudArgs, defaultLis
         if (!data.id) {
             throw new ListSubscriptionError(`addFromSubscription: data missing id.\n${inspect(data)}`);
         }
-        if (!(data.id in listInstance.state.objects)) {
-            listInstance.state.objects[data.id] = data;
-        } else {
-            throw new ListSubscriptionError(`addFromSubscription: add for existing id in objects (${data.id}).`);
+        try {
+            listInstance.addListObject(data);
+        } catch (err) {
+            if (err.name === "ListError" && err.code === "duplicate-id") {
+                throw new ListSubscriptionError(`addFromSubscription: add for existing id in objects (${data.id}).`);
+            }
+            throw err;
         }
     }
 
@@ -97,28 +101,36 @@ export default function useListSubscription({ listInstance, crudArgs, defaultLis
         if (!data.id) {
             throw new ListSubscriptionError(`updateFromSubscription: data missing id.\n${inspect(data)}`);
         }
-        if (data.id in listInstance.state.objects) {
-            listInstance.state.objects[data.id] = data;
-        } else {
-            throw new ListSubscriptionError(`updateFromSubscription: update for id not in objects (${data.id}).`);
+        try {
+            listInstance.updateListObject(data);
+        } catch (err) {
+            if (err.name === "ListError" && err.code === "missing-object") {
+                throw new ListSubscriptionError(
+                    `updateFromSubscription: update for id not in objects (${inspect(data.id)}).`
+                );
+            }
+            throw err;
         }
     }
 
     function deleteFromSubscription(id) {
-        if (id in listInstance.state.objects) {
-            delete listInstance.state.objects[id];
-        } else {
-            throw new ListSubscriptionError(`deleteFromSubscription: delete for id not in objects (${inspect(id)}).`);
+        try {
+            listInstance.deleteListObject(id);
+        } catch (err) {
+            if (err.name === "ListError" && err.code === "missing-object") {
+                throw new ListSubscriptionError(
+                    `deleteFromSubscription: delete for id not in objects (${inspect(id)}).`
+                );
+            }
+            throw err;
         }
     }
 
     return {
+        combinedState: proxyMerge(state, listInstance.state),
         state,
         listInstance,
         subscribe,
         unsubscribe,
-        addFromSubscription,
-        updateFromSubscription,
-        deleteFromSubscription,
     };
 }

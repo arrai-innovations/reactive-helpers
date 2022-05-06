@@ -2,7 +2,6 @@ import { isEmpty, keyBy } from "lodash";
 import { effectScope, reactive, unref, watch } from "vue";
 import { addOrUpdateReactiveObject, assignReactiveObject } from "../utils/assignReactiveObject";
 import inspect from "browser-util-inspect";
-import proxyMerge from "proxy-merge";
 
 export class ListError extends Error {
     constructor(message, code) {
@@ -150,7 +149,7 @@ export default function useListInstance({
     });
 
     return {
-        combinedState: proxyMerge(state),
+        combinedState: state,
         state,
         list,
         addListObject,
