@@ -1,5 +1,5 @@
-import { keyDiff } from "./keyDiff";
-import { union } from "./set";
+import { keyDiff } from "./keyDiff.js";
+import { union } from "./set.js";
 import { isReactive, toRef } from "vue";
 import { isArray, isObject } from "lodash";
 import { inspect } from "util";

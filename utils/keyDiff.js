@@ -1,4 +1,4 @@
-import { difference, intersection } from "./set";
+import { difference, intersection } from "./set.js";
 
 export function keyDiff(newKeys, oldKeys) {
     const newKeysSet = new Set(newKeys);

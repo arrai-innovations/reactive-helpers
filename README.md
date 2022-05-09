@@ -24,6 +24,7 @@ VueJS 3 utility composition functions to help manipulate objects and lists.
   - [Object](#object)
   - [Search](#search)
   - [Utils](#utils)
+    - [assignReactiveObject.js](#assignreactiveobjectjs)
     - [flattenProxy](#flattenproxy)
 - [Development](#development)
 
@@ -390,6 +391,40 @@ const search = useSearch({});
 
 ### Utils
 
+#### assignReactiveObject.js
+
+`addOrUpdateReactiveObject` - Assigns properties of a source object onto a target object, using refs if both source and
+target are reactive.
+
+`assignReactiveObject` - same as `addOrUpdateReactiveObject`, but deletes keys from target that are not in source.
+
+```js
+import { reactive, toRef, computed } from "vue";
+import { assignReactiveObject, addOrUpdateReactiveObject } from "../../../utils/assignReactiveObject.js";
+
+const target = reactive({ a: 1 });
+const source = { a: 3, b: 4 };
+const source2 = reactive({ b: 5 });
+
+const a = toRef(target, "a");
+const b = toRef(target, "b");
+const mySum = computed(() => (a.value || 0) + (b.value || 0));
+
+console.log(mySum.value); // 1
+assignReactiveObject(target, source);
+console.log(mySum.value); // 7
+addOrUpdateReactiveObject(target, source2);
+console.log({ ...target }); // { a: 3, b: 5 }
+console.log(mySum.value); // 8
+source2.b = 6;
+console.log(mySum.value); // 9
+assignReactiveObject(target, source2);
+console.log({ ...target }); // { b: 6 }
+console.log(mySum.value); // 6
+source2.b = 10;
+console.log(mySum.value); // 10
+```
+
 #### flattenProxy
 
 allows access to a list of objects as if it were a single flat object, but maintains vue reactive references to the source objects.
@@ -408,7 +443,7 @@ console.log({ ...fp }); // { a: 10, b: 2, c: 3, d: 5, e: 20 }
 a.c = toRef(b, "c");
 console.log({ ...fp }); // { a: 10, b: 2, c: 4, d: 5, e: 20 }
 fp.c = 10; // throws error "Cannot set on flattenProxy".
-```
+
 
 ## Development
 
