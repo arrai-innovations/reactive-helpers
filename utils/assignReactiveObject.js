@@ -1,9 +1,10 @@
 import { keyDiff } from "./keyDiff";
 import { union } from "./set";
 import { isReactive, toRef } from "vue";
-import { isArray, isUndefined } from "lodash";
+import { isArray, isObject, isUndefined } from "lodash";
+import { inspect } from "util";
 
-class AssignReactiveObjectError extends Error {
+export class AssignReactiveObjectError extends Error {
     constructor(message) {
         super(message);
         this.name = "AssignReactiveObjectError";
@@ -37,11 +38,11 @@ export function assignReactiveObject(target, source, exclude = []) {
     if (target === source) {
         return;
     }
-    if (isUndefined(target)) {
-        throw new AssignReactiveObjectError(`target is undefined`);
+    if (!(isArray(target) || isObject(target))) {
+        throw new AssignReactiveObjectError(`target must be an object or an array, not ${inspect(target)}`);
     }
-    if (isUndefined(source)) {
-        throw new AssignReactiveObjectError(`source is undefined`);
+    if (!(isArray(source) || isObject(source))) {
+        throw new AssignReactiveObjectError(`source must be an object or an array, not ${inspect(source)}`);
     }
     const targetIsArray = isArray(target);
     const { addedKeys, sameKeys, removedKeys } = keyDiff(Object.keys(source) || [], Object.keys(target) || []);
