@@ -21,6 +21,7 @@ VueJS 3 utility composition functions to help manipulate objects and lists.
     - [Sort](#sort)
     - [Filter](#filter)
     - [All](#all)
+  - [Object](#object)
   - [Search](#search)
 - [Development](#development)
 
@@ -369,15 +370,13 @@ console.log(contactsSorted.combinedState.objectsInOrder);
 // array of contacts, updating as new ones are created, related to organization, filtered by organziation name, sort organization name & lexical name.
 ```
 
-````
-
 ### Object
 
 ```js
 const contact = useObjectInstance({});
 // or
 const contact = useObjectSubscription({});
-````
+```
 
 ### Search
 
