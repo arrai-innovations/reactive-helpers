@@ -53,8 +53,6 @@ describe("utils/set", function () {
         it("should return a set with the difference of the two sets", function () {
             const set1 = new Set([1, 2, 3, 4]);
             const set2 = new Set([3, 4, 5, 6]);
-            console.log(difference(set1, set2));
-            console.log(difference(set2, set1));
             expect(difference(set1, set2)).toEqual(new Set([1, 2]));
             expect(difference(set2, set1)).toEqual(new Set([5, 6]));
         });
