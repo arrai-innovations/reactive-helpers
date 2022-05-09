@@ -48,6 +48,7 @@ import {
     addOrUpdateReactiveObject,
     assignReactiveObject,
     difference,
+    flattenProxy,
     intersection,
     isSuperset,
     keyDiff,
