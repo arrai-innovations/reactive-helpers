@@ -1,7 +1,12 @@
 import { union } from "./set";
+import { isArray } from "lodash";
 
 export default function flattenProxy(...objects) {
     const target = {};
+    if (objects.length === 1 && isArray(objects[1])) {
+        // help the user out
+        objects = objects[1];
+    }
     return new Proxy(target, {
         get(target, name) {
             let got;
@@ -22,13 +27,14 @@ export default function flattenProxy(...objects) {
             throw new Error("Cannot set on flattenProxy");
         },
         getOwnPropertyDescriptor(target, p) {
-            return objects.reduce((acc, obj) => {
-                const desc = Reflect.getOwnPropertyDescriptor(obj, p);
+            let desc = undefined;
+            objects.some((obj) => {
+                desc = Reflect.getOwnPropertyDescriptor(obj, p);
                 if (desc) {
-                    return desc;
+                    return true;
                 }
-                return acc;
-            }, undefined);
+            });
+            return desc;
         },
     });
 }
