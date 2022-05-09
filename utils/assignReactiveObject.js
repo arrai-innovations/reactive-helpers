@@ -1,7 +1,7 @@
 import { keyDiff } from "./keyDiff";
 import { union } from "./set";
 import { isReactive, toRef } from "vue";
-import { isArray, isObject, isUndefined } from "lodash";
+import { isArray, isObject } from "lodash";
 import { inspect } from "util";
 
 export class AssignReactiveObjectError extends Error {
@@ -11,13 +11,15 @@ export class AssignReactiveObjectError extends Error {
     }
 }
 
+function isArrayOrObject(key, value) {
+    if (!(isArray(value) || isObject(value))) {
+        throw new AssignReactiveObjectError(`${key} must be an object or an array, not ${inspect(value)}`);
+    }
+}
+
 export function addOrUpdateReactiveObject(target, source, exclude = [], addedKeys = null, sameKeys = null) {
-    if (isUndefined(target)) {
-        throw new AssignReactiveObjectError(`target is undefined`);
-    }
-    if (isUndefined(source)) {
-        throw new AssignReactiveObjectError(`source is undefined`);
-    }
+    isArrayOrObject("target", target);
+    isArrayOrObject("source", source);
     if (!addedKeys && !sameKeys) {
         ({ addedKeys, sameKeys } = keyDiff(Object.keys(source) || [], Object.keys(target) || []));
     }
@@ -38,12 +40,8 @@ export function assignReactiveObject(target, source, exclude = []) {
     if (target === source) {
         return;
     }
-    if (!(isArray(target) || isObject(target))) {
-        throw new AssignReactiveObjectError(`target must be an object or an array, not ${inspect(target)}`);
-    }
-    if (!(isArray(source) || isObject(source))) {
-        throw new AssignReactiveObjectError(`source must be an object or an array, not ${inspect(source)}`);
-    }
+    isArrayOrObject("target", target);
+    isArrayOrObject("source", source);
     const targetIsArray = isArray(target);
     const { addedKeys, sameKeys, removedKeys } = keyDiff(Object.keys(source) || [], Object.keys(target) || []);
     if (targetIsArray) {
