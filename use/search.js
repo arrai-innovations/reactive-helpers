@@ -1,7 +1,7 @@
 import FlexSearch from "flexsearch";
 import { fromPairs, throttle } from "lodash";
 import { effectScope, reactive, toRef, watch } from "vue";
-import { assignReactiveObject } from "@/utils/assignReactiveObject";
+import { assignReactiveObject } from "../utils/assignReactiveObject";
 
 const indexOptions = {
     tokenize: "forward",
@@ -20,7 +20,7 @@ export function setDefaultSearchOptions(newDefaultSearchOptions = {}) {
     Object.assign(searchOptions, newDefaultSearchOptions);
 }
 
-export default function useSearch(
+export function useSearch(
     customIndexOptions = {}, // custom index options are not reactive.
     customSearchOptions = {} // custom search options are reactive.
 ) {

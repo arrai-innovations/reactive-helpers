@@ -28,7 +28,7 @@ export function useListSubscriptions(args, listInstances = {}) {
     return instances;
 }
 
-export default function useListSubscription({ listInstance, crudArgs, defaultListArgs, defaultRetrieveArgs }) {
+export function useListSubscription({ listInstance, crudArgs, defaultListArgs, defaultRetrieveArgs }) {
     if (!listInstance) {
         listInstance = useListInstance({ crudArgs, defaultListArgs, defaultRetrieveArgs });
     }

@@ -9,7 +9,7 @@ export function useListRelateds(instances, args) {
     }
 }
 
-export default function useListRelated({
+export function useListRelated({
     parentState,
     relatedObjectsRules,
     relatedObjectsPropertyName = "relatedObjects", // NOT REACTIVE

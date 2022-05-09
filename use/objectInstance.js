@@ -35,7 +35,7 @@ export function useObjectInstances(instanceArgs) {
     return instances;
 }
 
-export default function useObjectInstance({ crudArgs, retrieveArgs, emit }) {
+export function useObjectInstance({ crudArgs, retrieveArgs, emit }) {
     const state = reactive({
         objectInstanceCrud: {
             args: {},

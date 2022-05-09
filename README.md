@@ -26,7 +26,6 @@ VueJS 3 utility composition functions to help manipulate objects and lists.
   - [Utils](#utils)
     - [assignReactiveObject.js](#assignreactiveobjectjs)
     - [flattenProxy](#flattenproxy)
-- [Development](#development)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 <!-- prettier-ignore-end -->
@@ -42,42 +41,14 @@ $ npm install @arrai-innovations/reactive-helpers
 ### Import
 
 ```js
-// import items as needed
-import {
-    ListError,
-    ListSubscriptionError,
-    ObjectError,
-    ObjectSubscriptionError,
-    addOrUpdateReactiveObject,
-    assignReactiveObject,
-    difference,
-    flattenProxy,
-    intersection,
-    isSuperset,
-    keyDiff,
-    setDefaultSearchOptions,
-    setListInstanceCrud,
-    setListSubscriptionCrud,
-    setObjectInstanceCrud,
-    setObjectSubscriptionCrud,
-    symmetricDifference,
-    union,
-    useListFilter,
-    useListFilters,
-    useListInstance,
-    useListInstances,
-    useListRelated,
-    useListRelateds,
-    useListSort,
-    useListSorts,
-    useListSubscription,
-    useListSubscriptions,
-    useObjectInstance,
-    useObjectInstances,
-    useObjectSubscription,
-    useObjectSubscriptions,
-    useSearch,
-} from "@arrai-innovations/reactive-helpers";
+// base import contains all exports
+import { useListInstance, useObjectInstance } from "@arrai-innovations/reactive-helpers";
+// can also use util vs use exports
+import { assignReactiveObject } from "@arrai-innovations/reactive-helpers/utils";
+import { useSearch } from "@arrai-innovations/reactive-helpers/use";
+// or individual file exports
+import { keyDiff } from "@arrai-innovations/reactive-helpers/utils/keydiff";
+import { useListSort } from "@arrai-innovations/reactive-helpers/use/listSort";
 ```
 
 ### List
@@ -429,7 +400,7 @@ console.log(mySum.value); // 10
 
 allows access to a list of objects as if it were a single flat object, but maintains vue reactive references to the source objects.
 
-```js
+````js
 import { reactive, toRef } from "vue";
 import { flattenProxy } from "@arrai-innovations/reactive-helpers";
 
@@ -463,3 +434,4 @@ fp.c = 10; // throws error "Cannot set on flattenProxy".
     ```bash
     $ npm run coverage
     ```
+````

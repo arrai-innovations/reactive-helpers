@@ -27,7 +27,7 @@ export function useObjectSubscriptions(subscriptionArgs) {
     return subscriptions;
 }
 
-export default function useObjectSubscription({ objectInstance, crudArgs, id, retrieveArgs = {}, emit }) {
+export function useObjectSubscription({ objectInstance, crudArgs, id, retrieveArgs = {}, emit }) {
     if (!objectInstance) {
         objectInstance = useObjectInstance({ crudArgs, retrieveArgs });
     }
