@@ -62,7 +62,6 @@ workflows:
                               - main
             - eslint/eslint:
                   name: eslint-no-badge
-                  context: arrai-global
                   files: "."
                   wd: "."
                   config:
@@ -86,7 +85,6 @@ workflows:
                               - main
             - prettier/code_style:
                   name: prettier-no-badge
-                  context: arrai-global
                   version: 2.6.2
                   create_badges: false
                   filters:
