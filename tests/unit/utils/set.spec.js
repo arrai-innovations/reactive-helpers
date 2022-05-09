@@ -2,20 +2,30 @@ import { difference, intersection, isSuperset, symmetricDifference, union } from
 
 describe("utils/set", function () {
     describe("isSuperset", function () {
-        it("should return true if the first set is a super set of the second set", function () {
-            const set1 = new Set([1, 2, 3, 4]);
-            const set2 = new Set([1, 2, 3]);
-            expect(isSuperset(set1, set2)).toBe(true);
+        it("should return true if the first set is a super set of the subset", function () {
+            const set = new Set([1, 2, 3, 4]);
+            const subset = new Set([1, 2, 3]);
+            expect(isSuperset(set, subset)).toBe(true);
         });
-        it("should return false if the first set is not a super set of the second set", function () {
-            const set1 = new Set([1, 2, 3, 4]);
-            const set2 = new Set([1, 2, 5]);
-            expect(isSuperset(set1, set2)).toBe(false);
+        it("should return false if the first set is not a super set of the subset", function () {
+            const set = new Set([1, 2, 3, 4]);
+            const subset = new Set([1, 2, 5]);
+            expect(isSuperset(set, subset)).toBe(false);
         });
-        it("should return true if the second set is equal to the first set", function () {
-            const set1 = new Set([1, 2, 3]);
-            const set2 = new Set([1, 2, 3]);
-            expect(isSuperset(set1, set2)).toBe(true);
+        it("should return true if the subset is equal to the first set", function () {
+            const set = new Set([1, 2, 3]);
+            const subset = new Set([1, 2, 3]);
+            expect(isSuperset(set, subset)).toBe(true);
+        });
+        it("should return true if the subset is empty", function () {
+            const set = new Set([1, 2, 3]);
+            const subset = new Set([]);
+            expect(isSuperset(set, subset)).toBe(true);
+        });
+        it("should return false if the set is empty", function () {
+            const set = new Set([]);
+            const subset = new Set([1, 2, 3]);
+            expect(isSuperset(set, subset)).toBe(false);
         });
     });
     describe("union", function () {
