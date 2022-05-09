@@ -1,6 +1,6 @@
 version: 2.1
 orbs:
-    eslint: arrai/eslint@7.2.0
+    eslint: arrai/eslint@7.3.0
     prettier: arrai/prettier@5.1.0
     utils: arrai/utils@1.9.0
     npm: arrai/npm@2.3.0
