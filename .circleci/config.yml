@@ -53,9 +53,7 @@ workflows:
                   config:
                       - run:
                             name: NPM
-                            command: |
-                                sudo npm install -g --upgrade npm
-                                npm ci
+                            command: npm ci
                   filters:
                       branches:
                           only:
@@ -67,9 +65,7 @@ workflows:
                   config:
                       - run:
                             name: NPM
-                            command: |
-                                sudo npm install -g --upgrade npm
-                                npm ci
+                            command: npm ci
                   create_badges: false
                   filters:
                       branches:
