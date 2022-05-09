@@ -21,6 +21,7 @@ VueJS 3 utility composition functions to help manipulate objects and lists.
     - [Sort](#sort)
     - [Filter](#filter)
     - [All](#all)
+  - [Object](#object)
   - [Search](#search)
   - [Utils](#utils)
     - [assignReactiveObject.js](#assignreactiveobjectjs)
@@ -372,15 +373,13 @@ console.log(contactsSorted.combinedState.objectsInOrder);
 // array of contacts, updating as new ones are created, related to organization, filtered by organziation name, sort organization name & lexical name.
 ```
 
-````
-
 ### Object
 
 ```js
 const contact = useObjectInstance({});
 // or
 const contact = useObjectSubscription({});
-````
+```
 
 ### Search
 
@@ -425,6 +424,21 @@ source2.b = 10;
 console.log(mySum.value); // 10
 ```
 
-## Testing
-
 ## Development
+
+1. Checkout this repo:
+    ```bash
+    $ git clone git@github.com:arrai-innovations/reactive-helpers.git
+    ```
+2. Install dependencies:
+    ```bash
+    $ npm ci
+    ```
+3. Run tests via jest:
+    ```bash
+    $ npm test
+    ```
+4. Run tests with coverage output:
+    ```bash
+    $ npm run coverage
+    ```

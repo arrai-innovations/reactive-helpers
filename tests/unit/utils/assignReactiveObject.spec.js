@@ -1,0 +1,96 @@
+import { assignReactiveObject, AssignReactiveObjectError } from "../../../utils/assignReactiveObject";
+import { computed, effectScope, reactive } from "vue";
+
+describe("utils/assignReactiveObject", function () {
+    describe("addOrUpdateReactiveObject", function () {});
+    describe("assignReactiveObject", function () {
+        describe("should update the target", function () {
+            it("when both target and source are not reactive", function () {
+                const target = {
+                    a: 1,
+                    b: 2,
+                    c: 3,
+                };
+                const source = {
+                    a: 4,
+                    b: 5,
+                    c: 6,
+                };
+                assignReactiveObject(target, source);
+                expect(target).toEqual({
+                    a: 4,
+                    b: 5,
+                    c: 6,
+                });
+            });
+            it("when both target and source are reactive, to not break reactivity", function () {
+                const target = reactive({
+                    a: 1,
+                    b: 2,
+                    c: 3,
+                });
+                const source = reactive({
+                    a: 4,
+                    b: 5,
+                    c: 6,
+                });
+                const tes = effectScope();
+                let computedSum;
+                tes.run(() => {
+                    computedSum = computed(() => {
+                        return target.a + target.b + target.c;
+                    });
+                });
+                try {
+                    expect(computedSum.value).toBe(6);
+                    assignReactiveObject(target, source);
+                    expect(target).toEqual({
+                        a: 4,
+                        b: 5,
+                        c: 6,
+                    });
+                    expect(computedSum.value).toBe(15);
+                } finally {
+                    computedSum = null;
+                    tes.stop();
+                }
+            });
+        });
+        describe("should throw an error", function () {
+            it("when target is not an array or object", function () {
+                expect(() => assignReactiveObject(null, {})).toThrowError(
+                    new AssignReactiveObjectError("target must be an object or an array, not null")
+                );
+                expect(() => assignReactiveObject(undefined, {})).toThrowError(
+                    new AssignReactiveObjectError("target must be an object or an array, not undefined")
+                );
+                expect(() => assignReactiveObject(1, {})).toThrowError(
+                    new AssignReactiveObjectError("target must be an object or an array, not 1")
+                );
+                expect(() => assignReactiveObject(NaN, {})).toThrowError(
+                    new AssignReactiveObjectError("target must be an object or an array, not NaN")
+                );
+                expect(() => assignReactiveObject(Infinity, {})).toThrowError(
+                    new AssignReactiveObjectError("target must be an object or an array, not Infinity")
+                );
+            });
+            it("when source is not an array or object", function () {
+                expect(() => assignReactiveObject({}, null)).toThrowError(
+                    new AssignReactiveObjectError("source must be an object or an array, not null")
+                );
+                expect(() => assignReactiveObject({}, undefined)).toThrowError(
+                    new AssignReactiveObjectError("source must be an object or an array, not undefined")
+                );
+                expect(() => assignReactiveObject({}, 1)).toThrowError(
+                    new AssignReactiveObjectError("source must be an object or an array, not 1")
+                );
+                expect(() => assignReactiveObject({}, NaN)).toThrowError(
+                    new AssignReactiveObjectError("source must be an object or an array, not NaN")
+                );
+                expect(() => assignReactiveObject({}, Infinity)).toThrowError(
+                    new AssignReactiveObjectError("source must be an object or an array, not Infinity")
+                );
+            });
+        });
+    });
+});
