@@ -59,6 +59,11 @@ describe("use/listInstance.spec.js", function () {
             name: "nm,.",
         },
     ];
+    const listObject = {
+        id: null,
+        __str__: "nvm",
+        name: "nvm",
+    };
     const crudListResolvedObjectsMid = keyBy(crudListResolvedPage1, "id");
     const crudListResolvedObjects = keyBy([...crudListResolvedPage1, ...crudListResolvedPage2], "id");
     describe("list", function () {
@@ -400,5 +405,34 @@ describe("use/listInstance.spec.js", function () {
         });
         expect(inspect(listInstances.A)).toEqual(inspect(listInstanceA));
         expect(inspect(listInstances.B)).toEqual(inspect(listInstanceB));
+    });
+    describe("addListObject", function () {
+        it("errored", function () {
+            const emit = jest.fn();
+            const listInstance = useListInstance({
+                emit,
+            });
+            expect(() => listInstance.addListObject({ listObject })).toThrowError(ListError);
+        });
+    });
+    describe("updateListObject", function () {
+        it("errored", function () {
+            const emit = jest.fn();
+            const listInstance = useListInstance({
+                emit,
+            });
+            expect(() => listInstance.updateListObject({ listObject })).toThrowError(ListError);
+        });
+    });
+    describe("getFakeId", function () {
+        it("returns fakeId", function () {
+            const emit = jest.fn();
+            const listInstance = useListInstance({
+                emit,
+            });
+            const fakeId = listInstance.getFakeId();
+
+            expect(fakeId).toBeTruthy();
+        });
     });
 });
