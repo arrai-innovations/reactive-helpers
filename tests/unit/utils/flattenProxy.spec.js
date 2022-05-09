@@ -1,4 +1,4 @@
-import flattenProxy from "../../../utils/flattenProxy";
+import { flattenProxy } from "../../../utils/flattenProxy";
 
 describe("utils/flattenProxy.js", function () {
     it("should return properties from multiple objects", function () {

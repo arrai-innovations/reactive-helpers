@@ -1,7 +1,7 @@
 import { computed, effectScope, onScopeDispose, reactive, watch } from "vue";
 import { get, isArray, isEmpty, isUndefined } from "lodash";
 import { keyDiff } from "../utils/keyDiff";
-import flattenProxy from "../utils/flattenProxy";
+import { flattenProxy } from "../utils/flattenProxy";
 
 export function useListRelateds(instances, args) {
     for (const [key, value] of Object.entries(args)) {

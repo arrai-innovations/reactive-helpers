@@ -1,9 +1,9 @@
 import { effectScope, onScopeDispose, reactive } from "vue";
-import useListInstance from "./listInstance";
+import { useListInstance } from "./listInstance";
 import { cloneDeep, isEmpty, isObject } from "lodash";
 import { assignReactiveObject } from "../utils/assignReactiveObject";
 import inspect from "browser-util-inspect";
-import flattenProxy from "../utils/flattenProxy";
+import { flattenProxy } from "../utils/flattenProxy";
 
 export class ListSubscriptionError extends Error {
     constructor(message) {
