@@ -16,6 +16,7 @@ import useObjectSubscription, {
 import useSearch, { setDefaultSearchOptions } from "./search";
 
 import { addOrUpdateReactiveObject, assignReactiveObject } from "../utils/assignReactiveObject";
+import { flattenProxy } from "../utils/flattenProxy";
 import { keyDiff } from "../utils/keyDiff";
 import { difference, intersection, isSuperset, symmetricDifference, union } from "../utils/set";
 
@@ -27,6 +28,7 @@ export {
     addOrUpdateReactiveObject,
     assignReactiveObject,
     difference,
+    flattenProxy,
     intersection,
     isSuperset,
     keyDiff,

@@ -25,7 +25,7 @@ VueJS 3 utility composition functions to help manipulate objects and lists.
   - [Search](#search)
   - [Utils](#utils)
     - [assignReactiveObject.js](#assignreactiveobjectjs)
-- [Testing](#testing)
+    - [flattenProxy](#flattenproxy)
 - [Development](#development)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
@@ -51,6 +51,7 @@ import {
     addOrUpdateReactiveObject,
     assignReactiveObject,
     difference,
+    flattenProxy,
     intersection,
     isSuperset,
     keyDiff,
@@ -423,6 +424,26 @@ console.log(mySum.value); // 6
 source2.b = 10;
 console.log(mySum.value); // 10
 ```
+
+#### flattenProxy
+
+allows access to a list of objects as if it were a single flat object, but maintains vue reactive references to the source objects.
+
+```js
+import { reactive, toRef } from "vue";
+import { flattenProxy } from "@arrai-innovations/reactive-helpers";
+
+const a = reactive({ a: 1, b: 2, c: 3 });
+const b = reactive({ c: 4, d: 5, e: 6 });
+const fp = flattenProxy([a, b]);
+console.log({ ...fp }); // { a: 1, b: 2, c: 3, d: 5, e: 6 }
+a.a = 10;
+b.e = 20;
+console.log({ ...fp }); // { a: 10, b: 2, c: 3, d: 5, e: 20 }
+a.c = toRef(b, "c");
+console.log({ ...fp }); // { a: 10, b: 2, c: 4, d: 5, e: 20 }
+fp.c = 10; // throws error "Cannot set on flattenProxy".
+
 
 ## Development
 
