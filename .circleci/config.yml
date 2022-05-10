@@ -1,9 +1,9 @@
 version: 2.1
 orbs:
-    eslint: arrai/eslint@7.0.0
-    prettier: arrai/prettier@5.0.0
-    utils: arrai/utils@1.8.0
-    npm: arrai/npm@2.2.2
+    eslint: arrai/eslint@7.3.0
+    prettier: arrai/prettier@5.1.0
+    utils: arrai/utils@1.9.0
+    npm: arrai/npm@2.3.0
     github: arrai/github@1.1.0
 workflows:
     test:
@@ -53,24 +53,19 @@ workflows:
                   config:
                       - run:
                             name: NPM
-                            command: |
-                                sudo npm install -g --upgrade npm
-                                npm ci
+                            command: npm ci
                   filters:
                       branches:
                           only:
                               - main
             - eslint/eslint:
                   name: eslint-no-badge
-                  context: arrai-global
                   files: "."
                   wd: "."
                   config:
                       - run:
                             name: NPM
-                            command: |
-                                sudo npm install -g --upgrade npm
-                                npm ci
+                            command: npm ci
                   create_badges: false
                   filters:
                       branches:
@@ -86,7 +81,6 @@ workflows:
                               - main
             - prettier/code_style:
                   name: prettier-no-badge
-                  context: arrai-global
                   version: 2.6.2
                   create_badges: false
                   filters:

@@ -18,7 +18,7 @@ describe("use/listInstance.spec.js", function () {
             list: globalList,
             args: { stream: "test_stream" },
         });
-        useListInstance = imported.default;
+        useListInstance = imported.useListInstance;
         ListError = imported.ListError;
         useListInstances = imported.useListInstances;
     });

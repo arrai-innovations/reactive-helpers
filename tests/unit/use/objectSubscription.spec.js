@@ -28,7 +28,7 @@ describe("use/objectSubscription.js", function () {
             args: { stream: "test_stream" },
         });
         const objectSubscriptionModule = await import("../../../use/objectSubscription");
-        useObjectSubscription = objectSubscriptionModule.default;
+        useObjectSubscription = objectSubscriptionModule.useObjectSubscription;
         ObjectSubscriptionError = objectSubscriptionModule.ObjectSubscriptionError;
         globalSubscribe = jest.fn();
         objectSubscriptionModule.setObjectSubscriptionCrud({

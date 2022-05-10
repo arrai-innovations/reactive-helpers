@@ -11,7 +11,7 @@ export function useListSorts(instances, args) {
     }
 }
 
-export default function useListSort({ listInstance, orderByRules, sortThrottleWait = 100 }) {
+export function useListSort({ listInstance, orderByRules, sortThrottleWait = 100 }) {
     listInstance.state.orderByRules = orderByRules;
     listInstance.state.order = [];
     listInstance.state.objectsInOrder = [];
