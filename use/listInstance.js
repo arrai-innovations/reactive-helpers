@@ -29,7 +29,7 @@ export function useListInstances(listInstanceArgs) {
     return instances;
 }
 
-export default function useListInstance({
+export function useListInstance({
     crudArgs,
     defaultListArgs = {},
     defaultRetrieveArgs = {},

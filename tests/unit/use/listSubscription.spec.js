@@ -18,7 +18,7 @@ describe("use/listSubscription.spec.js", function () {
             list: globalList,
             args: { stream: "test_stream" },
         });
-        useListInstance = listInstanceModule.default;
+        useListInstance = listInstanceModule.useListInstance;
         useListInstances = listInstanceModule.useListInstances;
         const imported = await import("../../../use/listSubscription");
         globalUnsubscribe = jest.fn();
@@ -30,7 +30,7 @@ describe("use/listSubscription.spec.js", function () {
         imported.setListSubscriptionCrud({
             subscribe: globalSubscribe,
         });
-        useListSubscription = imported.default;
+        useListSubscription = imported.useListSubscription;
         ListSubscriptionError = imported.ListSubscriptionError;
         useListSubscriptions = imported.useListSubscriptions;
     });

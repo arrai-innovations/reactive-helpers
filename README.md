@@ -26,6 +26,7 @@ VueJS 3 utility composition functions to help manipulate objects and lists.
   - [Utils](#utils)
     - [assignReactiveObject.js](#assignreactiveobjectjs)
     - [flattenProxy](#flattenproxy)
+- [Development](#development)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 <!-- prettier-ignore-end -->
@@ -41,42 +42,8 @@ $ npm install @arrai-innovations/reactive-helpers
 ### Import
 
 ```js
-// import items as needed
-import {
-    ListError,
-    ListSubscriptionError,
-    ObjectError,
-    ObjectSubscriptionError,
-    addOrUpdateReactiveObject,
-    assignReactiveObject,
-    difference,
-    flattenProxy,
-    intersection,
-    isSuperset,
-    keyDiff,
-    setDefaultSearchOptions,
-    setListInstanceCrud,
-    setListSubscriptionCrud,
-    setObjectInstanceCrud,
-    setObjectSubscriptionCrud,
-    symmetricDifference,
-    union,
-    useListFilter,
-    useListFilters,
-    useListInstance,
-    useListInstances,
-    useListRelated,
-    useListRelateds,
-    useListSort,
-    useListSorts,
-    useListSubscription,
-    useListSubscriptions,
-    useObjectInstance,
-    useObjectInstances,
-    useObjectSubscription,
-    useObjectSubscriptions,
-    useSearch,
-} from "@arrai-innovations/reactive-helpers";
+// base import contains all exports
+import { useListInstance, useObjectInstance } from "@arrai-innovations/reactive-helpers";
 ```
 
 ### List
@@ -87,6 +54,7 @@ The container for your list of objects, providing loading or error status.
 
 ```js
 // do this in your main.js
+import { setListInstanceCrud } from "@arrai-innovations/reactive-helpers";
 setListInstanceCrud({
     list: async function listCrudAdaptor({ crudArgs, retrieveArgs, listArgs, pageCallback }) {
         // todo: your implemenation here.
@@ -98,6 +66,7 @@ setListInstanceCrud({
 });
 
 // then use in your component
+import { useListInstance } from "@arrai-innovations/reactive-helpers";
 const contacts = useListInstance({
     crudArgs: {
         stream: "contacts",
@@ -134,6 +103,7 @@ Adds functionality to a list instance to receive updates from the server.
 
 ```js
 // do this in your main.js
+import { setListSubscriptionCrud } from "@arrai-innovations/reactive-helpers";
 setListSubscriptionCrud({
     subscribe: function subscribeCrudAdaptor({ crudArgs, retrieveArgs, listArgs, eventCallback }) {
         // todo: your implemenation here.
@@ -149,6 +119,7 @@ setListSubscriptionCrud({
 });
 
 // then use in your component
+import { useListInstance, useListSubscription } from "@arrai-innovations/reactive-helpers";
 const contacts = useListInstance({
     crudArgs: {
         stream: "contacts",
@@ -193,6 +164,7 @@ Lookup foreign keys between list instances via watch, for using dot notation in 
 import { nextTick } from "vue";
 
 // use in your component
+import { useListInstance, useListRelated } from "@arrai-innovations/reactive-helpers";
 const organizations = useListInstance({});
 const contacts = useListInstance({
     defaultRetrieveArgs: {
@@ -260,6 +232,7 @@ console.log(contacts.objects["15"].myRelatedObjects);
 import { nextTick } from "vue";
 
 // use in your component
+import { useListInstance, useListSort } from "@arrai-innovations/reactive-helpers";
 const contacts = useListInstance({
     defaultRetrieveArgs: {
         fields: ["id", "has_name", "lexical_name", "organization"],
@@ -292,6 +265,7 @@ console.log(contactsSort.state.order);
 import { nextTick } from "vue";
 
 // use in your component
+import { useListInstance, useListFilter } from "@arrai-innovations/reactive-helpers";
 const contacts = useListInstance({
     defaultRetrieveArgs: {
         fields: ["id", "has_name", "lexical_name", "organization"],
@@ -320,6 +294,13 @@ console.log(contactsFilter.state.objects);
 Example using all of the above.
 
 ```js
+import {
+    useListInstance,
+    useListSubscription,
+    useListRelated,
+    useListFilter,
+    useListSort,
+} from "@arrai-innovations/reactive-helpers";
 const organizationNameSearch = ref("");
 const organizations = useListInstance({
     crudArgs: {
@@ -376,8 +357,10 @@ console.log(contactsSorted.combinedState.objectsInOrder);
 ### Object
 
 ```js
+import { useObjectInstance } from "@arrai-innovations/reactive-helpers";
 const contact = useObjectInstance({});
 // or
+import { useObjectSubscription } from "@arrai-innovations/reactive-helpers";
 const contact = useObjectSubscription({});
 ```
 
@@ -385,6 +368,7 @@ const contact = useObjectSubscription({});
 
 ```js
 // no main.js setup required.
+import { useSearch } from "@arrai-innovations/reactive-helpers";
 const search = useSearch({});
 ```
 
@@ -399,7 +383,7 @@ target are reactive.
 
 ```js
 import { reactive, toRef, computed } from "vue";
-import { assignReactiveObject, addOrUpdateReactiveObject } from "../../../utils/assignReactiveObject.js";
+import { assignReactiveObject, addOrUpdateReactiveObject } from "@arrai-innovations/reactive-helpers";
 
 const target = reactive({ a: 1 });
 const source = { a: 3, b: 4 };
@@ -428,7 +412,7 @@ console.log(mySum.value); // 10
 
 allows access to a list of objects as if it were a single flat object, but maintains vue reactive references to the source objects.
 
-````js
+```js
 import { reactive, toRef } from "vue";
 import { flattenProxy } from "@arrai-innovations/reactive-helpers";
 
@@ -442,7 +426,7 @@ console.log({ ...fp }); // { a: 10, b: 2, c: 3, d: 5, e: 20 }
 a.c = toRef(b, "c");
 console.log({ ...fp }); // { a: 10, b: 2, c: 4, d: 5, e: 20 }
 fp.c = 10; // throws error "Cannot set on flattenProxy".
-
+```
 
 ## Development
 
@@ -462,4 +446,3 @@ fp.c = 10; // throws error "Cannot set on flattenProxy".
     ```bash
     $ npm run coverage
     ```
-````

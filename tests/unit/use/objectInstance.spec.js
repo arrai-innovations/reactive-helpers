@@ -12,7 +12,7 @@ describe("use/objectInstance.js", function () {
     let useObjectInstance, ObjectError, useObjectInstances;
     beforeAll(async () => {
         const imported = await import("../../../use/objectInstance");
-        useObjectInstance = imported.default;
+        useObjectInstance = imported.useObjectInstance;
         ObjectError = imported.ObjectError;
         useObjectInstances = imported.useObjectInstances;
     });
