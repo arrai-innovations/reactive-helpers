@@ -1,7 +1,7 @@
 import { union } from "./set";
 import { isArray } from "lodash";
 
-export default function flattenProxy(...objects) {
+export function flattenProxy(...objects) {
     const target = {};
     if (objects.length === 1 && isArray(objects[1])) {
         // help the user out

@@ -20,7 +20,7 @@ export function setDefaultSearchOptions(newDefaultSearchOptions = {}) {
     Object.assign(searchOptions, newDefaultSearchOptions);
 }
 
-export default function useSearch(
+export function useSearch(
     customIndexOptions = {}, // custom index options are not reactive.
     customSearchOptions = {} // custom search options are reactive.
 ) {
