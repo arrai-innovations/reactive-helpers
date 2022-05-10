@@ -1,5 +1,5 @@
-import useSearch from "@/use/search";
-import { keyDiff } from "@/utils/key_diff";
+import { useSearch } from "./search";
+import { keyDiff } from "../utils/keyDiff";
 import { get, identity, isEmpty } from "lodash";
 import { computed, effectScope, onScopeDispose, reactive, toRef, watch, watchEffect } from "vue";
 import flattenProxy from "../utils/flattenProxy";
@@ -38,10 +38,12 @@ export default function useListFilter({
     let textSearchIndex;
 
     es.run(() => {
-        textSearchIndex = useSearch();
-        textSearchIndex.state.search = toRef(state, "textSearchValue");
-        state.searched = toRef(textSearchIndex.state, "searched");
-        state.searching = toRef(textSearchIndex.state, "searching");
+        if (useTextSearch) {
+            textSearchIndex = useSearch();
+            textSearchIndex.state.search = toRef(state, "textSearchValue");
+            state.searched = toRef(textSearchIndex.state, "searched");
+            state.searching = toRef(textSearchIndex.state, "searching");
+        }
 
         state.order = computed(() => {
             return parentState.order.filter((id) => state.objects[id]);
@@ -55,8 +57,10 @@ export default function useListFilter({
         watchEffect(() => {
             const allowedValuesEmpty = !state.allowedValues || isEmpty(state.allowedValues);
             const excludedValuesEmpty = !state.excludedValues || isEmpty(state.excludedValues);
-            const resultsEmpty = !textSearchIndex.state.results || isEmpty(textSearchIndex.state.results);
-            const searched = textSearchIndex.state.searched;
+            const resultsEmpty = useTextSearch
+                ? !textSearchIndex.state.results || isEmpty(textSearchIndex.state.results)
+                : undefined;
+            const searched = useTextSearch ? textSearchIndex.state.searched : undefined;
 
             const inResults = (object) => {
                 if (!allowedValuesEmpty && !state.allowedValues[object.id]) {
@@ -71,7 +75,13 @@ export default function useListFilter({
                 if (state.excludedFilter && state.excludedFilter(object)) {
                     return false;
                 }
-                return !(useTextSearch && searched && !resultsEmpty && !textSearchIndex.state.results[object.id]);
+                if (!useTextSearch) {
+                    return true;
+                }
+                if (!searched && resultsEmpty) {
+                    return true;
+                }
+                return !!textSearchIndex.state.results[object.id];
             };
             const { removedKeys, sameKeys, addedKeys } = keyDiff(
                 Object.keys(parentState.objects),

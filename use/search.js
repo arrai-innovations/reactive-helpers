@@ -1,7 +1,7 @@
 import FlexSearch from "flexsearch";
 import { fromPairs, throttle } from "lodash";
 import { effectScope, reactive, toRef, watch } from "vue";
-import { assignReactiveObject } from "@/utils/assignReactiveObject";
+import { assignReactiveObject } from "../utils/assignReactiveObject";
 
 const indexOptions = {
     tokenize: "forward",
@@ -39,6 +39,7 @@ export default function useSearch(
         searching: false,
     });
     const addIndex = (id, indexValue) => {
+        console.log("search addIndex");
         // numeric ids consume less memory in flexsearch.
         const numericId = +id;
         const numericIfPossible = isNaN(numericId) ? id : numericId;
@@ -66,6 +67,7 @@ export default function useSearch(
     };
 
     async function doSearch() {
+        console.log("search doSearch");
         if (!state.search) {
             assignReactiveObject(state.results, {});
             state.searched = false;
@@ -88,6 +90,7 @@ export default function useSearch(
         watch(
             toRef(state, "search"),
             function () {
+                console.log("search watch");
                 if (!indexOptions.minlength || state.search.length >= indexOptions.minlength) {
                     throttledDoSearch();
                 } else {
