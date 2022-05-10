@@ -435,7 +435,3 @@ fp.c = 10; // throws error "Cannot set on flattenProxy".
     ```bash
     $ npm run coverage
     ```
-
-```
-
-```
