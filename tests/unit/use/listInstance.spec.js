@@ -1,5 +1,5 @@
 import { expectErrorToBeNull } from "../expectHelpers";
-import { nextTick } from "vue";
+import { isReactive, nextTick } from "vue";
 import { keyBy } from "lodash";
 import flushPromises from "flush-promises";
 import { inspect } from "util";
@@ -413,15 +413,61 @@ describe("use/listInstance.spec.js", function () {
                 emit,
             });
             expect(() => listInstance.addListObject({ listObject })).toThrowError(ListError);
+            const newId = listInstance.getFakeId();
+            listObject.id = newId;
+            listInstance.addListObject(listObject);
+            expect(() => listInstance.addListObject({ listObject })).toThrowError(ListError);
+        });
+        it("succeeded", function () {
+            const emit = jest.fn();
+            const listInstance = useListInstance({
+                emit,
+            });
+            const newId = listInstance.getFakeId();
+            listObject.id = newId;
+            listInstance.addListObject(listObject);
+            expect(listInstance.state.objects[newId]).toEqual(listObject);
+            const reactiveProxy = listInstance.state.objects[newId];
+            expect(isReactive(reactiveProxy)).toBe(true);
         });
     });
     describe("updateListObject", function () {
-        it("errored", function () {
+        it("errors", function () {
             const emit = jest.fn();
             const listInstance = useListInstance({
                 emit,
             });
             expect(() => listInstance.updateListObject({ listObject })).toThrowError(ListError);
+            listObject.id = -50002000;
+            listInstance.addListObject(listObject);
+            expect(() => listInstance.updateListObject({ listObject })).toThrowError(ListError);
+        });
+        it("succeeds", async function () {
+            const emit = jest.fn();
+            const listInstance = useListInstance({
+                emit,
+                defaultListArgs: { user: 1 },
+                defaultRetrieveArgs: { fields: fields },
+            });
+            let crudListResolve;
+            const crudListPromise = new Promise((resolve) => {
+                crudListResolve = resolve;
+            });
+            let passedPageCallback;
+            globalList.mockImplementation(({ pageCallback }) => {
+                passedPageCallback = pageCallback;
+                return crudListPromise;
+            });
+
+            listInstance.list();
+
+            passedPageCallback(crudListResolvedPage1);
+            crudListResolve();
+
+            let updateObject = listInstance.state.objects["1"];
+            updateObject.name = "updated";
+            listInstance.updateListObject(updateObject);
+            expect(listInstance.state.objects["1"]).toEqual(updateObject);
         });
     });
     describe("getFakeId", function () {
