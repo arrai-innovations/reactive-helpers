@@ -44,12 +44,6 @@ $ npm install @arrai-innovations/reactive-helpers
 ```js
 // base import contains all exports
 import { useListInstance, useObjectInstance } from "@arrai-innovations/reactive-helpers";
-// can also use util vs use exports
-import { assignReactiveObject } from "@arrai-innovations/reactive-helpers/utils";
-import { useSearch } from "@arrai-innovations/reactive-helpers/use";
-// or individual file exports
-import { keyDiff } from "@arrai-innovations/reactive-helpers/utils/keydiff";
-import { useListSort } from "@arrai-innovations/reactive-helpers/use/listSort";
 ```
 
 ### List
@@ -60,6 +54,7 @@ The container for your list of objects, providing loading or error status.
 
 ```js
 // do this in your main.js
+import { setListInstanceCrud } from "@arrai-innovations/reactive-helpers";
 setListInstanceCrud({
     list: async function listCrudAdaptor({ crudArgs, retrieveArgs, listArgs, pageCallback }) {
         // todo: your implemenation here.
@@ -71,6 +66,7 @@ setListInstanceCrud({
 });
 
 // then use in your component
+import { useListInstance } from "@arrai-innovations/reactive-helpers";
 const contacts = useListInstance({
     crudArgs: {
         stream: "contacts",
@@ -107,6 +103,7 @@ Adds functionality to a list instance to receive updates from the server.
 
 ```js
 // do this in your main.js
+import { setListSubscriptionCrud } from "@arrai-innovations/reactive-helpers";
 setListSubscriptionCrud({
     subscribe: function subscribeCrudAdaptor({ crudArgs, retrieveArgs, listArgs, eventCallback }) {
         // todo: your implemenation here.
@@ -122,6 +119,7 @@ setListSubscriptionCrud({
 });
 
 // then use in your component
+import { useListInstance, useListSubscription } from "@arrai-innovations/reactive-helpers";
 const contacts = useListInstance({
     crudArgs: {
         stream: "contacts",
@@ -166,6 +164,7 @@ Lookup foreign keys between list instances via watch, for using dot notation in 
 import { nextTick } from "vue";
 
 // use in your component
+import { useListInstance, useListRelated } from "@arrai-innovations/reactive-helpers";
 const organizations = useListInstance({});
 const contacts = useListInstance({
     defaultRetrieveArgs: {
@@ -233,6 +232,7 @@ console.log(contacts.objects["15"].myRelatedObjects);
 import { nextTick } from "vue";
 
 // use in your component
+import { useListInstance, useListSort } from "@arrai-innovations/reactive-helpers";
 const contacts = useListInstance({
     defaultRetrieveArgs: {
         fields: ["id", "has_name", "lexical_name", "organization"],
@@ -265,6 +265,7 @@ console.log(contactsSort.state.order);
 import { nextTick } from "vue";
 
 // use in your component
+import { useListInstance, useListFilter } from "@arrai-innovations/reactive-helpers";
 const contacts = useListInstance({
     defaultRetrieveArgs: {
         fields: ["id", "has_name", "lexical_name", "organization"],
@@ -293,6 +294,13 @@ console.log(contactsFilter.state.objects);
 Example using all of the above.
 
 ```js
+import {
+    useListInstance,
+    useListSubscription,
+    useListRelated,
+    useListFilter,
+    useListSort,
+} from "@arrai-innovations/reactive-helpers";
 const organizationNameSearch = ref("");
 const organizations = useListInstance({
     crudArgs: {
@@ -349,8 +357,10 @@ console.log(contactsSorted.combinedState.objectsInOrder);
 ### Object
 
 ```js
+import { useObjectInstance } from "@arrai-innovations/reactive-helpers";
 const contact = useObjectInstance({});
 // or
+import { useObjectSubscription } from "@arrai-innovations/reactive-helpers";
 const contact = useObjectSubscription({});
 ```
 
@@ -358,6 +368,7 @@ const contact = useObjectSubscription({});
 
 ```js
 // no main.js setup required.
+import { useSearch } from "@arrai-innovations/reactive-helpers";
 const search = useSearch({});
 ```
 
@@ -372,7 +383,7 @@ target are reactive.
 
 ```js
 import { reactive, toRef, computed } from "vue";
-import { assignReactiveObject, addOrUpdateReactiveObject } from "../../../utils/assignReactiveObject.js";
+import { assignReactiveObject, addOrUpdateReactiveObject } from "@arrai-innovations/reactive-helpers";
 
 const target = reactive({ a: 1 });
 const source = { a: 3, b: 4 };
