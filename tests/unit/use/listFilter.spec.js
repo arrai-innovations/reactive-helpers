@@ -88,44 +88,61 @@ describe("use/listFilter", () => {
             textSearchRules: ["name"],
             textSearchValue,
         });
-        expect(filter.state.objects).toEqual({});
-        list.addListObject({ id: 1, name: "one", has_things: true });
+        await nextTick();
+        // todo: it would be nice to wait for all searches to finish, instead of awaiting the first one back.
         await doAwaitNot({
             obj: filter.state,
             prop: "searching",
         });
+        await nextTick();
+        expect(filter.state.objects).toEqual({});
+        list.addListObject({ id: 1, name: "one", has_things: true });
+        await nextTick();
+        await doAwaitNot({
+            obj: filter.state,
+            prop: "searching",
+        });
+        await nextTick();
         expect(filter.state.objects).toEqual({
             1: { id: 1, name: "one", has_things: true },
         });
         list.addListObject({ id: 2, name: "two", has_things: true });
+        await nextTick();
         await doAwaitNot({
             obj: filter.state,
             prop: "searching",
         });
+        await nextTick();
         expect(filter.state.objects).toEqual({
             1: { id: 1, name: "one", has_things: true },
         });
         list.addListObject({ id: 3, name: "three", has_things: true });
+        await nextTick();
         await doAwaitNot({
             obj: filter.state,
             prop: "searching",
         });
+        await nextTick();
         expect(filter.state.objects).toEqual({
             1: { id: 1, name: "one", has_things: true },
         });
         textSearchValue.value = "three";
+        await nextTick();
         await doAwaitNot({
             obj: filter.state,
             prop: "searching",
         });
+        await nextTick();
         expect(filter.state.objects).toEqual({
             3: { id: 3, name: "three", has_things: true },
         });
         list.addListObject({ id: 4, name: "four", has_things: true });
+        await nextTick();
         await doAwaitNot({
             obj: filter.state,
             prop: "searching",
         });
+        await nextTick();
         expect(filter.state.objects).toEqual({
             3: { id: 3, name: "three", has_things: true },
         });

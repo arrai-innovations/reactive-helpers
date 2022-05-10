@@ -39,7 +39,6 @@ export function useSearch(
         searching: false,
     });
     const addIndex = (id, indexValue) => {
-        console.log("search addIndex");
         // numeric ids consume less memory in flexsearch.
         const numericId = +id;
         const numericIfPossible = isNaN(numericId) ? id : numericId;
@@ -67,7 +66,6 @@ export function useSearch(
     };
 
     async function doSearch() {
-        console.log("search doSearch");
         if (!state.search) {
             assignReactiveObject(state.results, {});
             state.searched = false;
@@ -90,7 +88,6 @@ export function useSearch(
         watch(
             toRef(state, "search"),
             function () {
-                console.log("search watch");
                 if (!indexOptions.minlength || state.search.length >= indexOptions.minlength) {
                     throttledDoSearch();
                 } else {
