@@ -431,7 +431,6 @@ describe("use/listInstance.spec.js", function () {
                 emit,
             });
             const fakeId = listInstance.getFakeId();
-
             expect(fakeId).toBeTruthy();
         });
     });
