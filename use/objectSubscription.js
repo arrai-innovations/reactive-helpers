@@ -2,7 +2,6 @@ import { identity } from "lodash";
 import { computed, effectScope, onScopeDispose, reactive, watch } from "vue";
 import { assignReactiveObject } from "../utils/assignReactiveObject";
 import { useObjectInstance } from "./objectInstance";
-import { flattenProxy } from "../utils/flattenProxy";
 
 export class ObjectSubscriptionError extends Error {
     constructor(message) {
@@ -194,7 +193,6 @@ export function useObjectSubscription({ objectInstance, crudArgs, id, retrieveAr
     });
 
     return {
-        combinedState: flattenProxy(publicState, state, objectInstance.state),
         state,
         objectInstance,
         subscribe: publicSubscribe,

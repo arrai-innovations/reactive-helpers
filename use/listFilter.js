@@ -2,7 +2,6 @@ import { useSearch } from "./search";
 import { keyDiff } from "../utils/keyDiff";
 import { get, identity, isEmpty } from "lodash";
 import { computed, effectScope, onScopeDispose, reactive, toRef, watch, watchEffect } from "vue";
-import { flattenProxy } from "../utils/flattenProxy";
 
 export function useListFilters(listFilterArgs) {
     const filters = {};
@@ -144,7 +143,6 @@ export function useListFilter({
         }
     });
     return {
-        combinedState: flattenProxy(state, parentState),
         state,
         parentState,
         textSearchIndex,
