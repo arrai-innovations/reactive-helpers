@@ -1,7 +1,6 @@
-import { computed, effectScope, onScopeDispose, reactive, watch } from "vue";
+import { computed, effectScope, onScopeDispose, reactive, toRefs, watch } from "vue";
 import { get, isArray, isEmpty, isUndefined } from "lodash";
 import { keyDiff } from "../utils/keyDiff";
-import { flattenProxy } from "../utils/flattenProxy";
 
 export function useListRelateds(instances, args) {
     for (const [key, value] of Object.entries(args)) {
@@ -17,29 +16,40 @@ export function useListRelated({
     const state = reactive({
         relatedObjectsRules: relatedObjectsRules,
         relatedObjectsObjects: {},
-        relatedObjectsEffectScopes: {},
         objects: {},
     });
+    const relatedObjectsEffectScopes = {};
+    const combinedEffectScopes = {};
 
     // don't change relatedObjectsPropertyName on us or it will break
     const ropn = relatedObjectsPropertyName + "";
 
     function parentStateObjectsWatch() {
-        const { addedKeys, removedKeys } = keyDiff(state.relatedObjectsObjects, parentState.objects);
+        const { addedKeys, removedKeys } = keyDiff(
+            Object.keys(parentState.objects),
+            Object.keys(state.relatedObjectsObjects)
+        );
         for (const removedKey of removedKeys) {
             delete state.relatedObjectsObjects[removedKey];
             delete state.objects[removedKey];
-            if (state.relatedObjectsEffectScopes[removedKey]) {
-                state.relatedObjectsEffectScopes[removedKey].stop();
-                delete state.relatedObjectsEffectScopes[removedKey];
+            if (relatedObjectsEffectScopes[removedKey]) {
+                relatedObjectsEffectScopes[removedKey].stop();
+                delete relatedObjectsEffectScopes[removedKey];
+            }
+            if (combinedEffectScopes[removedKey]) {
+                combinedEffectScopes[removedKey].stop();
+                delete combinedEffectScopes[removedKey];
             }
         }
         for (const addedKey of addedKeys) {
             state.relatedObjectsObjects[addedKey] = {};
-            state.objects[addedKey] = flattenProxy(
-                parentState.objects[addedKey],
-                state.relatedObjectsObjects[addedKey]
-            );
+            combinedEffectScopes[addedKey] = effectScope();
+            combinedEffectScopes[addedKey].run(() => {
+                state.objects[addedKey] = computed(() => ({
+                    ...toRefs(state.relatedObjectsObjects[addedKey]),
+                    ...toRefs(parentState.objects[addedKey]),
+                }));
+            });
         }
     }
 
@@ -90,14 +100,15 @@ export function useListRelated({
                     });
                 }
             });
-            state.relatedObjectsEffectScopes[objectKey] = relatedObjectsEffectScope;
+            relatedObjectsEffectScopes[objectKey] = relatedObjectsEffectScope;
         }
+        parentStateObjectsWatch();
     }
 
     const es = effectScope();
 
     es.run(() => {
-        watch(() => Object.key(parentState.objects), parentStateObjectsWatch, { immediate: true });
+        watch(() => Object.keys(parentState.objects), parentStateObjectsWatch, { immediate: true });
         watch(
             [
                 () => Object.keys(state.relatedObjectsObjects),
@@ -108,13 +119,15 @@ export function useListRelated({
         );
 
         onScopeDispose(() => {
-            for (const objectKey of Object.keys(state.relatedObjectsEffectScopes)) {
-                state.relatedObjectsEffectScopes[objectKey].stop();
+            for (const objectKey of Object.keys(relatedObjectsEffectScopes)) {
+                relatedObjectsEffectScopes[objectKey].stop();
+            }
+            for (const objectKey of Object.keys(combinedEffectScopes)) {
+                combinedEffectScopes[objectKey].stop();
             }
         });
     });
     return {
-        combinedState: flattenProxy(state, parentState),
         state,
         parentState,
         effectScope: es,

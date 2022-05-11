@@ -149,7 +149,6 @@ export function useListInstance({
     });
 
     return {
-        combinedState: state,
         state,
         list,
         addListObject,

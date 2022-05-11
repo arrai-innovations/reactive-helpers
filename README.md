@@ -326,7 +326,7 @@ const contactsSubscription = useListSubscription({
     listInstance: contacts,
 });
 const contactsRelated = useListRelated({
-    parentState: contactsSubscription.combinedState,
+    parentState: contactsSubscription.state,
     relatedObjectsRules: {
         organization: {
             // desired key on relatedObjects
@@ -336,21 +336,21 @@ const contactsRelated = useListRelated({
     },
 });
 const contactsFiltered = useListFilter({
-    parentState: contactsRelated.combinedState,
+    parentState: contactsRelated.state,
     useTextSearch: true,
     textSearchRules: ["relatedObjects.organization.name"],
     textSearchValue: organizationNameSearch,
 });
 const contactsSorted = useListSort({
-    parentState: contactsFiltered.combinedState,
+    parentState: contactsFiltered.state,
     orderByRules: [
         { key: "relatedObjects.organization.name", desc: false, localeCompare: true },
         { key: "lexical_name", desc: false, localeCompare: true },
     ],
 });
-console.log(contactsSorted.combinedState.objects);
-console.log(contactsSorted.combinedState.order);
-console.log(contactsSorted.combinedState.objectsInOrder);
+console.log(contactsSorted.state.value.objects);
+console.log(contactsSorted.state.value.order);
+console.log(contactsSorted.state.value.objectsInOrder);
 // array of contacts, updating as new ones are created, related to organization, filtered by organziation name, sort organization name & lexical name.
 ```
 
