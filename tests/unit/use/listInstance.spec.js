@@ -368,14 +368,12 @@ describe("use/listInstance.spec.js", function () {
         });
     });
     it("useListInstances", async function () {
-        const emit = jest.fn();
         const listInstanceA = useListInstance({
             crudArgs: { stream: "test_streamA" },
             id: 1,
             retrieveArgs: {
                 fields,
             },
-            emit,
         });
         const listInstanceB = useListInstance({
             crudArgs: { stream: "test_streamB" },
@@ -383,7 +381,6 @@ describe("use/listInstance.spec.js", function () {
             retrieveArgs: {
                 fields,
             },
-            emit,
         });
         const listInstances = useListInstances({
             A: {
@@ -392,7 +389,6 @@ describe("use/listInstance.spec.js", function () {
                 retrieveArgs: {
                     fields,
                 },
-                emit,
             },
             B: {
                 crudArgs: { stream: "test_streamB" },
@@ -400,7 +396,6 @@ describe("use/listInstance.spec.js", function () {
                 retrieveArgs: {
                     fields,
                 },
-                emit,
             },
         });
         expect(inspect(listInstances.A)).toEqual(inspect(listInstanceA));
@@ -408,21 +403,14 @@ describe("use/listInstance.spec.js", function () {
     });
     describe("addListObject", function () {
         it("errored", function () {
-            const emit = jest.fn();
-            const listInstance = useListInstance({
-                emit,
-            });
+            const listInstance = useListInstance({});
             expect(() => listInstance.addListObject({ listObject })).toThrowError(ListError);
-            const newId = listInstance.getFakeId();
-            listObject.id = newId;
+            listObject.id = listInstance.getFakeId();
             listInstance.addListObject(listObject);
             expect(() => listInstance.addListObject({ listObject })).toThrowError(ListError);
         });
         it("succeeded", function () {
-            const emit = jest.fn();
-            const listInstance = useListInstance({
-                emit,
-            });
+            const listInstance = useListInstance({});
             const newId = listInstance.getFakeId();
             listObject.id = newId;
             listInstance.addListObject(listObject);
@@ -433,19 +421,14 @@ describe("use/listInstance.spec.js", function () {
     });
     describe("updateListObject", function () {
         it("errors", function () {
-            const emit = jest.fn();
-            const listInstance = useListInstance({
-                emit,
-            });
+            const listInstance = useListInstance({});
             expect(() => listInstance.updateListObject({ listObject })).toThrowError(ListError);
             listObject.id = -50002000;
             listInstance.addListObject(listObject);
             expect(() => listInstance.updateListObject({ listObject })).toThrowError(ListError);
         });
         it("succeeds", async function () {
-            const emit = jest.fn();
             const listInstance = useListInstance({
-                emit,
                 defaultListArgs: { user: 1 },
                 defaultRetrieveArgs: { fields: fields },
             });
@@ -472,10 +455,7 @@ describe("use/listInstance.spec.js", function () {
     });
     describe("getFakeId", function () {
         it("returns fakeId", function () {
-            const emit = jest.fn();
-            const listInstance = useListInstance({
-                emit,
-            });
+            const listInstance = useListInstance({});
             const fakeId = listInstance.getFakeId();
             expect(fakeId).toBeTruthy();
         });
