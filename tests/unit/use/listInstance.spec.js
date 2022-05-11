@@ -1,5 +1,5 @@
 import { expectErrorToBeNull } from "../expectHelpers";
-import { nextTick } from "vue";
+import { isReactive, nextTick } from "vue";
 import { keyBy } from "lodash";
 import flushPromises from "flush-promises";
 import { inspect } from "util";
@@ -59,6 +59,11 @@ describe("use/listInstance.spec.js", function () {
             name: "nm,.",
         },
     ];
+    const listObject = {
+        id: null,
+        __str__: "nvm",
+        name: "nvm",
+    };
     const crudListResolvedObjectsMid = keyBy(crudListResolvedPage1, "id");
     const crudListResolvedObjects = keyBy([...crudListResolvedPage1, ...crudListResolvedPage2], "id");
     describe("list", function () {
@@ -363,14 +368,12 @@ describe("use/listInstance.spec.js", function () {
         });
     });
     it("useListInstances", async function () {
-        const emit = jest.fn();
         const listInstanceA = useListInstance({
             crudArgs: { stream: "test_streamA" },
             id: 1,
             retrieveArgs: {
                 fields,
             },
-            emit,
         });
         const listInstanceB = useListInstance({
             crudArgs: { stream: "test_streamB" },
@@ -378,7 +381,6 @@ describe("use/listInstance.spec.js", function () {
             retrieveArgs: {
                 fields,
             },
-            emit,
         });
         const listInstances = useListInstances({
             A: {
@@ -387,7 +389,6 @@ describe("use/listInstance.spec.js", function () {
                 retrieveArgs: {
                     fields,
                 },
-                emit,
             },
             B: {
                 crudArgs: { stream: "test_streamB" },
@@ -395,10 +396,68 @@ describe("use/listInstance.spec.js", function () {
                 retrieveArgs: {
                     fields,
                 },
-                emit,
             },
         });
         expect(inspect(listInstances.A)).toEqual(inspect(listInstanceA));
         expect(inspect(listInstances.B)).toEqual(inspect(listInstanceB));
+    });
+    describe("addListObject", function () {
+        it("errored", function () {
+            const listInstance = useListInstance({});
+            expect(() => listInstance.addListObject({ listObject })).toThrowError(ListError);
+            listObject.id = listInstance.getFakeId();
+            listInstance.addListObject(listObject);
+            expect(() => listInstance.addListObject({ listObject })).toThrowError(ListError);
+        });
+        it("succeeded", function () {
+            const listInstance = useListInstance({});
+            const newId = listInstance.getFakeId();
+            listObject.id = newId;
+            listInstance.addListObject(listObject);
+            expect(listInstance.state.objects[newId]).toEqual(listObject);
+            const reactiveProxy = listInstance.state.objects[newId];
+            expect(isReactive(reactiveProxy)).toBe(true);
+        });
+    });
+    describe("updateListObject", function () {
+        it("errors", function () {
+            const listInstance = useListInstance({});
+            expect(() => listInstance.updateListObject({ listObject })).toThrowError(ListError);
+            listObject.id = -50002000;
+            listInstance.addListObject(listObject);
+            expect(() => listInstance.updateListObject({ listObject })).toThrowError(ListError);
+        });
+        it("succeeds", async function () {
+            const listInstance = useListInstance({
+                defaultListArgs: { user: 1 },
+                defaultRetrieveArgs: { fields: fields },
+            });
+            let crudListResolve;
+            const crudListPromise = new Promise((resolve) => {
+                crudListResolve = resolve;
+            });
+            let passedPageCallback;
+            globalList.mockImplementation(({ pageCallback }) => {
+                passedPageCallback = pageCallback;
+                return crudListPromise;
+            });
+
+            listInstance.list();
+
+            passedPageCallback(crudListResolvedPage1);
+            crudListResolve();
+
+            let updateObject = listInstance.state.objects["1"];
+            updateObject.name = "updated";
+            listInstance.updateListObject(updateObject);
+            expect(listInstance.state.objects["1"]).toEqual(updateObject);
+        });
+    });
+    describe("getFakeId", function () {
+        it("returns fakeId", function () {
+            const listInstance = useListInstance({});
+            const fakeId = listInstance.getFakeId();
+            expect(fakeId).toBeTruthy();
+        });
     });
 });
