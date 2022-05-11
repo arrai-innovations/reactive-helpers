@@ -20,6 +20,8 @@ workflows:
                   context: arrai-global
                   create_badges: false
                   filters:
+                      tags:
+                          only: /.*/
                       branches:
                           ignore:
                               - main
