@@ -36,15 +36,14 @@ export function useObjectSubscription({ objectInstance, crudArgs, id, retrieveAr
         },
         id,
         retrieveArgs,
-        loading: undefined,
-        errored: false,
-        error: null,
+        subscriptionLoading: undefined,
+        subscriptionErrored: false,
+        subscriptionError: null,
         subscribed: false,
         intendToSubscribe: false,
         intendToRetrieve: false,
     });
     assignReactiveObject(state.objectSubscriptionCrud, defaultCrud);
-    const publicState = reactive({});
     let cancelSubscription;
 
     function updateFromSubscription(data) {
@@ -76,9 +75,9 @@ export function useObjectSubscription({ objectInstance, crudArgs, id, retrieveAr
             // delayed until stuff is true;
             return false;
         }
-        state.loading = true;
-        state.errored = false;
-        state.error = null;
+        state.subscriptionLoading = true;
+        state.subscriptionErrored = false;
+        state.subscriptionError = null;
         let subscribePromise;
         cancelSubscription = () => subscribePromise.cancel();
         subscribePromise = state.objectSubscriptionCrud.subscribe({
@@ -99,8 +98,8 @@ export function useObjectSubscription({ objectInstance, crudArgs, id, retrieveAr
                 return Promise.resolve(true);
             })
             .catch((error) => {
-                state.errored = true;
-                state.error = error;
+                state.subscriptionErrored = true;
+                state.subscriptionError = error;
                 if (cancelSubscription) {
                     cancelSubscription();
                     cancelSubscription = null;
@@ -109,7 +108,7 @@ export function useObjectSubscription({ objectInstance, crudArgs, id, retrieveAr
                 return Promise.resolve(false);
             })
             .finally(() => {
-                state.loading = false;
+                state.subscriptionLoading = false;
             });
     }
 
@@ -136,9 +135,9 @@ export function useObjectSubscription({ objectInstance, crudArgs, id, retrieveAr
     const es = effectScope();
 
     es.run(() => {
-        publicState.loading = computed(() => objectInstance.state.loading || state.loading);
-        publicState.errored = computed(() => objectInstance.state.errored || state.errored);
-        publicState.error = computed(() => objectInstance.state.error || state.error);
+        state.loading = computed(() => objectInstance.state.loading || state.subscriptionLoading);
+        state.errored = computed(() => objectInstance.state.errored || state.subscriptionErrored);
+        state.error = computed(() => objectInstance.state.error || state.subscriptionError);
 
         watch(
             [() => state.intendToSubscribe, () => state.id, () => state.retrieveArgs],
@@ -174,13 +173,13 @@ export function useObjectSubscription({ objectInstance, crudArgs, id, retrieveAr
 
         if (emit) {
             watch(
-                () => publicState.errored,
+                () => state.errored,
                 (newErrored) => {
                     emit("errored", newErrored);
                 }
             );
             watch(
-                () => publicState.loading,
+                () => state.loading,
                 (newLoading) => {
                     emit("loading", newLoading);
                 }

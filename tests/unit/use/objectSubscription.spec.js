@@ -189,7 +189,7 @@ describe("use/objectSubscription.js", function () {
             crudSubscribeResolve(crudSubscribeResolved);
             await expect(subscribePromise).resolves.toBe(true);
 
-            expect(objectSubscription.state.loading).toBe(undefined);
+            expect(objectSubscription.state.loading).toBe(false);
             expect(objectSubscription.state.errored).toBe(false);
             expectErrorToBeNull(objectSubscription.state.error);
             expect(objectSubscription.objectInstance.state.deleted).toBe(false);
