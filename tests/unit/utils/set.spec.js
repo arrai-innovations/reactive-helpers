@@ -57,4 +57,12 @@ describe("utils/set", function () {
             expect(difference(set2, set1)).toEqual(new Set([5, 6]));
         });
     });
+    it("should work as in the example for the readme", function () {
+        expect(isSuperset(new Set([1, 2, 3, 4]), new Set([1, 2, 3]))).toBe(true);
+        expect(union(new Set([1, 2, 3, 4]), new Set([1, 2, 3]))).toEqual(new Set([1, 2, 3, 4]));
+        expect(intersection(new Set([1, 2, 3, 4]), new Set([1, 2, 3]))).toEqual(new Set([1, 2, 3]));
+        expect(symmetricDifference(new Set([1, 2, 3, 4]), new Set([1, 2, 3, 5]))).toEqual(new Set([4, 5]));
+        expect(difference(new Set([1, 2, 3, 4]), new Set([1, 2, 3, 5]))).toEqual(new Set([4]));
+        expect(difference(new Set([1, 2, 3, 5]), new Set([1, 2, 3, 4]))).toEqual(new Set([5]));
+    });
 });

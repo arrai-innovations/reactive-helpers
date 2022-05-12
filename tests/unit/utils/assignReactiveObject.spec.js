@@ -1,5 +1,9 @@
-import { assignReactiveObject, AssignReactiveObjectError } from "../../../utils/assignReactiveObject";
-import { computed, effectScope, reactive } from "vue";
+import {
+    addOrUpdateReactiveObject,
+    assignReactiveObject,
+    AssignReactiveObjectError,
+} from "../../../utils/assignReactiveObject";
+import { computed, EffectScope, effectScope, reactive, toRef } from "vue";
 
 describe("utils/assignReactiveObject", function () {
     describe("addOrUpdateReactiveObject", function () {});
@@ -92,5 +96,32 @@ describe("utils/assignReactiveObject", function () {
                 );
             });
         });
+    });
+    it("should work as in the example for the readme", function () {
+        const es = new EffectScope();
+        es.run(() => {
+            const target = reactive({ a: 1 });
+            const source = { a: 3, b: 4 };
+            const source2 = reactive({ b: 5 });
+
+            const a = toRef(target, "a");
+            const b = toRef(target, "b");
+            const mySum = computed(() => (a.value || 0) + (b.value || 0));
+
+            expect(mySum.value).toBe(1);
+            assignReactiveObject(target, source);
+            expect(mySum.value).toBe(7);
+            addOrUpdateReactiveObject(target, source2);
+            expect({ ...target }).toEqual({ a: 3, b: 5 });
+            expect(mySum.value).toBe(8);
+            source2.b = 6;
+            expect(mySum.value).toBe(9);
+            assignReactiveObject(target, source2);
+            expect({ ...target }).toEqual({ b: 6 });
+            expect(mySum.value).toBe(6);
+            source2.b = 10;
+            expect(mySum.value).toBe(10);
+        });
+        es.stop();
     });
 });

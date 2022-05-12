@@ -24,8 +24,9 @@ VueJS 3 utility composition functions to help manipulate objects and lists.
   - [Object](#object)
   - [Search](#search)
   - [Utils](#utils)
-    - [assignReactiveObject.js](#assignreactiveobjectjs)
-    - [flattenProxy](#flattenproxy)
+    - [addOrUpdateReactiveObject & assignReactiveObject](#addorupdatereactiveobject--assignreactiveobject)
+    - [keyDiff](#keydiff)
+    - [set](#set)
 - [Development](#development)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
@@ -326,7 +327,7 @@ const contactsSubscription = useListSubscription({
     listInstance: contacts,
 });
 const contactsRelated = useListRelated({
-    parentState: contactsSubscription.combinedState,
+    parentState: contactsSubscription.state,
     relatedObjectsRules: {
         organization: {
             // desired key on relatedObjects
@@ -336,21 +337,21 @@ const contactsRelated = useListRelated({
     },
 });
 const contactsFiltered = useListFilter({
-    parentState: contactsRelated.combinedState,
+    parentState: contactsRelated.state,
     useTextSearch: true,
     textSearchRules: ["relatedObjects.organization.name"],
     textSearchValue: organizationNameSearch,
 });
 const contactsSorted = useListSort({
-    parentState: contactsFiltered.combinedState,
+    parentState: contactsFiltered.state,
     orderByRules: [
         { key: "relatedObjects.organization.name", desc: false, localeCompare: true },
         { key: "lexical_name", desc: false, localeCompare: true },
     ],
 });
-console.log(contactsSorted.combinedState.objects);
-console.log(contactsSorted.combinedState.order);
-console.log(contactsSorted.combinedState.objectsInOrder);
+console.log(contactsSorted.state.value.objects);
+console.log(contactsSorted.state.value.order);
+console.log(contactsSorted.state.value.objectsInOrder);
 // array of contacts, updating as new ones are created, related to organization, filtered by organziation name, sort organization name & lexical name.
 ```
 
@@ -374,7 +375,7 @@ const search = useSearch({});
 
 ### Utils
 
-#### assignReactiveObject.js
+#### addOrUpdateReactiveObject & assignReactiveObject
 
 `addOrUpdateReactiveObject` - Assigns properties of a source object onto a target object, using refs if both source and
 target are reactive.
@@ -408,24 +409,32 @@ source2.b = 10;
 console.log(mySum.value); // 10
 ```
 
-#### flattenProxy
+#### keyDiff
 
-allows access to a list of objects as if it were a single flat object, but maintains vue reactive references to the source objects.
+`keyDiff` - returns the various set results related to figuring out the changes in keys over time on an object or related objects. Returns the intersection as sameKeys, the difference of old and new as removedKeys, and the difference of new and old as addedKeys.
 
 ```js
-import { reactive, toRef } from "vue";
-import { flattenProxy } from "@arrai-innovations/reactive-helpers";
+import { keyDiff } from "@arrai-innovations/reactive-helpers";
+const newKeys = Object.keys({ a: 1, b: 2 });
+const oldKeys = Object.keys({ a: 1, c: 3 });
+const { addedKeys, removedKeys, sameKeys } = keyDiff(newKeys, oldKeys);
+console.log({ addedKeys, removedKeys, sameKeys });
+// { addedKeys: Set(1) { 'b' }, removedKeys: Set(1) { 'c' }, sameKeys: Set(1) { 'a' } }
+```
 
-const a = reactive({ a: 1, b: 2, c: 3 });
-const b = reactive({ c: 4, d: 5, e: 6 });
-const fp = flattenProxy([a, b]);
-console.log({ ...fp }); // { a: 1, b: 2, c: 3, d: 5, e: 6 }
-a.a = 10;
-b.e = 20;
-console.log({ ...fp }); // { a: 10, b: 2, c: 3, d: 5, e: 20 }
-a.c = toRef(b, "c");
-console.log({ ...fp }); // { a: 10, b: 2, c: 4, d: 5, e: 20 }
-fp.c = 10; // throws error "Cannot set on flattenProxy".
+#### set
+
+We make use of the basic set operations provided as example on mdn:
+https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Set#implementing_basic_set_operations
+
+```js
+import { isSuperset, union, intersection, symmetricDifference, difference } from "@arrai-innovations/reactive-helpers";
+isSuperset(new Set([1, 2, 3, 4]), new Set([1, 2, 3])); // true
+union(new Set([1, 2, 3, 4]), new Set([1, 2, 3])); // Set { 1, 2, 3, 4 }
+intersection(new Set([1, 2, 3, 4]), new Set([1, 2, 3])); // Set { 1, 2, 3 }
+symmetricDifference(new Set([1, 2, 3, 4]), new Set([1, 2, 3, 5])); // Set { 4, 5 }
+difference(new Set([1, 2, 3, 4]), new Set([1, 2, 3, 5])); // Set { 4 }
+difference(new Set([1, 2, 3, 5]), new Set([1, 2, 3, 4])); // Set { 5 }
 ```
 
 ## Development
