@@ -1,7 +1,7 @@
 import { useListSort } from "../../../use/listSort";
 
 describe("use/useListSort", () => {
-    let listInstance, orderByRules, sortThrottleWait, globalList, useListInstance;
+    let listInstance, orderByRules, sortThrottleWait, useListInstance;
     const contactsResolved = [
         {
             id: 15,
@@ -30,11 +30,6 @@ describe("use/useListSort", () => {
     ];
     beforeEach(async () => {
         const imported = await import("../../../use/listInstance");
-        globalList = jest.fn();
-        imported.setListInstanceCrud({
-            list: globalList,
-            args: { stream: "test_stream" },
-        });
         useListInstance = imported.useListInstance;
         orderByRules = [
             { key: "organization", desc: true, localeCompare: false },
