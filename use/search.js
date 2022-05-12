@@ -56,7 +56,7 @@ export function useSearch(
         // numeric ids consume less memory in flexsearch.
         const numericId = +id;
         const numericIfPossible = isNaN(numericId) ? id : numericId;
-        searchIndex.delete(numericIfPossible);
+        searchIndex.remove(numericIfPossible);
         throttledDoSearch();
     };
     const clearIndex = () => {
