@@ -18,6 +18,14 @@ export class ImmediateStopWatch {
     }
 }
 
+export class AwaitTimeoutError extends Error {
+    constructor(message, code) {
+        super(message);
+        this.name = "AwaitTimeoutError";
+        this.code = code;
+    }
+}
+
 export class AwaitNotError extends Error {
     constructor(message, code) {
         super(message);
@@ -26,13 +34,61 @@ export class AwaitNotError extends Error {
     }
 }
 
-export class AwaitNot {
-    constructor({ obj, prop, couldAlreadyBeLoaded = true, timeout = 1000 }) {
+export class AwaitTimeout {
+    constructor({ timeout = 1000 }) {
         this.promise = new Promise((resolve, reject) => {
             this.resolve = resolve;
             this.reject = reject;
         });
         this.timeout = timeout;
+        this.timeoutId = null;
+    }
+
+    start() {
+        if (this.timeout) {
+            this.timeoutId = setTimeout(this.doTimeout.bind(this), this.timeout);
+        } else {
+            this.doTimeout();
+        }
+    }
+
+    doTimeout() {
+        delete this.timeoutId;
+        if (this.resolve) {
+            this.resolve();
+            delete this.resolve;
+        }
+        this.stop();
+    }
+
+    stop() {
+        if (this.timeoutId) {
+            clearTimeout(this.timeoutId);
+            delete this.timeoutId;
+            this.reject(new AwaitTimeoutError("Cancelled", "timeout_cancelled"));
+        }
+        if (this.resolve) {
+            delete this.resolve;
+        }
+        if (this.reject) {
+            delete this.reject;
+        }
+    }
+}
+
+export function doAwaitTimeout(timeout) {
+    const newAwaitTimeout = new AwaitTimeout({ timeout });
+    newAwaitTimeout.start();
+    return newAwaitTimeout.promise;
+}
+
+export class AwaitNot {
+    constructor({ obj, prop, couldAlreadyBeLoaded = true, timeout = 1000 }) {
+        this.timeout = new AwaitTimeout({ timeout });
+        this.promise = new Promise((resolve, reject) => {
+            this.resolve = resolve;
+            this.reject = reject;
+        });
         this.couldAlreadyBeLoaded = couldAlreadyBeLoaded;
         this.obj = obj;
         this.prop = prop;
@@ -41,13 +97,22 @@ export class AwaitNot {
     }
 
     start() {
+        this.timeout.promise
+            .then(() => {
+                this.stop();
+                this.reject(new AwaitNotError("Timeout", "timeout"));
+            })
+            .catch((err) => {
+                this.stop();
+                if (!(err instanceof AwaitTimeoutError)) {
+                    this.reject(err);
+                }
+            });
+        this.timeout.start();
         if (this.obj[this.prop] === false && !this.couldAlreadyBeLoaded) {
             this.waitForTrue();
         } else {
             this.waitForFalse();
-        }
-        if (this.timeout) {
-            this.timeoutId = setTimeout(this.doTimeout.bind(this), this.timeout);
         }
     }
 
@@ -91,23 +156,10 @@ export class AwaitNot {
         }
     }
 
-    doTimeout() {
-        delete this.timeoutId;
-        this.stop();
-        this.reject(new AwaitNotError("Timed out", "timeout"));
-    }
-
-    stopTimeout() {
-        if (this.timeoutId) {
-            clearTimeout(this.timeoutId);
-            delete this.timeoutId;
-        }
-    }
-
     stop() {
+        this.timeout.stop();
         this.stopTrue();
         this.stopFalse();
-        this.stopTimeout();
     }
 }
 
