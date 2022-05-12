@@ -37,12 +37,12 @@ describe("use/useListSort", () => {
         });
         useListInstance = imported.useListInstance;
         orderByRules = [
-            { key: "has_name", desc: true, localeCompare: false },
+            { key: "organization", desc: true, localeCompare: false },
             { key: "lexical_name", desc: false, localeCompare: true },
         ];
         listInstance = useListInstance({
             defaultRetrieveArgs: {
-                fields: ["id", "has_name", "lexical_name", "organization"],
+                fields: ["id", "lexical_name", "organization", "relatedObjects"],
             },
             crudArgs: {
                 stream: "test_stream",
@@ -64,22 +64,33 @@ describe("use/useListSort", () => {
         expect(listInstance.state.sortCriteriaWatches).toEqual({});
         expect(listInstance.state.orderByDesc).toEqual([true, false]);
     });
-    describe("addSortCriteria", () => {
-        it("adds keys to sort criteria watches", async () => {
-            console.log(listInstance.state.orderByRules);
-            contactsResolved.forEach((c) => listInstance.addListObject(c));
-            console.log(listInstance.state.objects);
-            useListSort({ listInstance, orderByRules, sortThrottleWait });
-            console.log(listInstance.state.sortCriteriaWatches);
-            console.log(Object.keys(listInstance.state.objects));
-            console.log(listInstance.state.order);
-            // array of ids in order, based on the specified rules.
-            console.log(listInstance.state.objectsInOrder);
-            // computed array of the previous that also looks up the object ids in .objects
+    describe("addSortCriteria and removeSortCriteria", () => {
+        it("adds and removes keys to sort criteria watches", async () => {
+            const addObject = {
+                id: 35,
+                lexical_name: "six, JWST",
+                organization: 67,
+                relatedObjects: {
+                    organization: { id: 67, name: "NASA" },
+                },
+            };
+            const sortCriteria1 = {
+                9: [9, "nine, number"],
+                12: [51, "three, first contact"],
+                15: [42, "one, contact"],
+            };
+            const sortCriteria2 = { 9: [9], 15: [42], 35: [67] };
+            for (const contact of contactsResolved) {
+                listInstance.addListObject(contact);
+            }
+            useListSort({ listInstance, orderByRules });
+            expect(listInstance.state.sortCriteria).toEqual(sortCriteria1);
+            listInstance.addListObject(addObject);
+            listInstance.deleteListObject(12);
             expect(listInstance.state.orderByRules[0].desc).toBe(true);
+            orderByRules = [{ key: "organization", desc: true, localeCompare: true }];
+            useListSort({ listInstance, orderByRules });
+            expect(listInstance.state.sortCriteria).toEqual(sortCriteria2);
         });
     });
-    describe("sortCriteriaWatch", () => {});
-    describe("removeSortCriteria", () => {});
-    describe("sortWatch", () => {});
 });
