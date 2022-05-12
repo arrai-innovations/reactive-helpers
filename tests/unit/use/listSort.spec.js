@@ -47,9 +47,6 @@ describe("use/useListSort", () => {
     });
     afterEach(() => jest.resetAllMocks());
 
-    it("passes a base test", () => {
-        expect(listInstance).toBeTruthy();
-    });
     it("generates initial values from inputs", () => {
         useListSort({ listInstance, orderByRules, sortThrottleWait });
         expect(listInstance.state.orderByRules).toEqual(orderByRules);
