@@ -39,9 +39,6 @@ describe("use/useListSort", () => {
             defaultRetrieveArgs: {
                 fields: ["id", "lexical_name", "organization", "relatedObjects"],
             },
-            crudArgs: {
-                stream: "test_stream",
-            },
         });
         sortThrottleWait = 100;
     });
