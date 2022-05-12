@@ -24,7 +24,9 @@ VueJS 3 utility composition functions to help manipulate objects and lists.
   - [Object](#object)
   - [Search](#search)
   - [Utils](#utils)
-    - [assignReactiveObject.js](#assignreactiveobjectjs)
+    - [addOrUpdateReactiveObject & assignReactiveObject](#addorupdatereactiveobject--assignreactiveobject)
+    - [keyDiff](#keydiff)
+    - [set](#set)
 - [Development](#development)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
@@ -373,7 +375,7 @@ const search = useSearch({});
 
 ### Utils
 
-#### assignReactiveObject.js
+#### addOrUpdateReactiveObject & assignReactiveObject
 
 `addOrUpdateReactiveObject` - Assigns properties of a source object onto a target object, using refs if both source and
 target are reactive.
@@ -405,6 +407,34 @@ console.log({ ...target }); // { b: 6 }
 console.log(mySum.value); // 6
 source2.b = 10;
 console.log(mySum.value); // 10
+```
+
+#### keyDiff
+
+`keyDiff` - returns the various set results related to figuring out the changes in keys over time on an object or related objects. Returns the intersection as sameKeys, the difference of old and new as removedKeys, and the difference of new and old as addedKeys.
+
+```js
+import { keyDiff } from "@arrai-innovations/reactive-helpers";
+const newKeys = Object.keys({ a: 1, b: 2 });
+const oldKeys = Object.keys({ a: 1, c: 3 });
+const { addedKeys, removedKeys, sameKeys } = keyDiff(newKeys, oldKeys);
+console.log({ addedKeys, removedKeys, sameKeys });
+// { addedKeys: Set(1) { 'b' }, removedKeys: Set(1) { 'c' }, sameKeys: Set(1) { 'a' } }
+```
+
+#### set
+
+We make use of the basic set operations provided as example on mdn:
+https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Set#implementing_basic_set_operations
+
+```js
+import { isSuperset, union, intersection, symmetricDifference, difference } from "@arrai-innovations/reactive-helpers";
+isSuperset(new Set([1, 2, 3, 4]), new Set([1, 2, 3])); // true
+union(new Set([1, 2, 3, 4]), new Set([1, 2, 3])); // Set { 1, 2, 3, 4 }
+intersection(new Set([1, 2, 3, 4]), new Set([1, 2, 3])); // Set { 1, 2, 3 }
+symmetricDifference(new Set([1, 2, 3, 4]), new Set([1, 2, 3, 5])); // Set { 4, 5 }
+difference(new Set([1, 2, 3, 4]), new Set([1, 2, 3, 5])); // Set { 4 }
+difference(new Set([1, 2, 3, 5]), new Set([1, 2, 3, 4])); // Set { 5 }
 ```
 
 ## Development
