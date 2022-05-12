@@ -1,7 +1,6 @@
-import { isReactive, isReadonly, isRef, ref, toRaw, unref } from "vue";
+import { isReactive, isReadonly, isRef, ref, toRefs, unref } from "vue";
 import { isArray, isObject } from "lodash";
 import { clone } from "lodash/lang";
-import { inspect } from "util";
 
 export const circular = Symbol("circular");
 
@@ -18,8 +17,14 @@ export function unrefAndToRawDeep(obj, seen) {
         raw = unref(raw);
     }
     if (isReactive(raw) || isReadonly(raw)) {
-        seen.value.push(raw);
-        raw = toRaw(raw);
+        // seen.value.push(raw);
+        if (isArray(raw)) {
+            raw = [...toRefs(raw)];
+        } else {
+            raw = {
+                ...toRefs(raw),
+            };
+        }
     }
     if (!isObject(raw) && !isArray(raw)) {
         return raw;
@@ -40,7 +45,6 @@ export function unrefAndToRawDeepBFS(obj) {
     }
     while (queue.length) {
         const [writePosition, key, value] = queue.shift();
-        console.log("shift", writePosition, key, value);
         if (seen.some((item) => item === value)) {
             console.log("circular");
             writePosition[key] = circular;
@@ -48,24 +52,25 @@ export function unrefAndToRawDeepBFS(obj) {
         }
         let raw = value;
         if (isRef(raw)) {
-            console.log("ref");
             seen.push(raw);
             raw = unref(raw);
         }
         if (isReactive(raw) || isReadonly(raw)) {
-            console.log("reactive");
-            seen.push(raw);
-            raw = toRaw(raw);
+            // seen.push(raw);
+            if (isArray(raw)) {
+                raw = [...toRefs(raw)];
+            } else {
+                raw = {
+                    ...toRefs(raw),
+                };
+            }
         }
         if (!isObject(raw) && !isArray(raw)) {
-            console.log("primitive");
             writePosition[key] = raw;
             continue;
         }
-        console.log("raw", inspect(raw));
         writePosition[key] = isArray(raw) ? [] : {};
         for (const [nextKey, nextValue] of Object.entries(raw)) {
-            console.log("queued", writePosition[key], nextKey, nextValue);
             queue.push([writePosition[key], nextKey, nextValue]);
         }
     }

@@ -98,10 +98,10 @@ describe("unrefAndToRawDeep", () => {
             },
         });
         state.objects["1"].relatedObjects = {
-            children: [toRef(state.objects, "2")],
+            parent: toRef(state.objects, "2"),
         };
         state.objects["2"].relatedObjects = {
-            parent: toRef(state.objects, "1"),
+            children: [toRef(state.objects, "1")],
         };
         expect(unrefAndToRawDeep(state)).toEqual({
             objects: {
@@ -111,25 +111,33 @@ describe("unrefAndToRawDeep", () => {
                     parent: 2,
                     children: [],
                     relatedObjects: {
-                        children: [
-                            {
-                                id: 2,
-                                name: "two",
-                                parent: null,
-                                children: [1],
-                                relatedObjects: {
-                                    parent: {
+                        parent: {
+                            id: 2,
+                            name: "two",
+                            parent: null,
+                            children: [1],
+                            relatedObjects: {
+                                children: [
+                                    {
                                         id: 1,
                                         name: "one",
                                         parent: 2,
                                         children: [],
                                         relatedObjects: {
-                                            children: [circular],
+                                            parent: {
+                                                id: 2,
+                                                name: "two",
+                                                parent: null,
+                                                children: [1],
+                                                relatedObjects: {
+                                                    children: [circular],
+                                                },
+                                            },
                                         },
                                     },
-                                },
+                                ],
                             },
-                        ],
+                        },
                     },
                 },
                 2: {
@@ -138,7 +146,7 @@ describe("unrefAndToRawDeep", () => {
                     parent: null,
                     children: [1],
                     relatedObjects: {
-                        parent: circular,
+                        children: [circular],
                     },
                 },
             },
@@ -151,17 +159,15 @@ describe("unrefAndToRawDeep", () => {
                     parent: 2,
                     children: [],
                     relatedObjects: {
-                        children: [
-                            {
-                                id: 2,
-                                name: "two",
-                                parent: null,
-                                children: [1],
-                                relatedObjects: {
-                                    parent: circular,
-                                },
+                        parent: {
+                            id: 2,
+                            name: "two",
+                            parent: null,
+                            children: [1],
+                            relatedObjects: {
+                                children: [circular],
                             },
-                        ],
+                        },
                     },
                 },
                 2: {
@@ -170,15 +176,25 @@ describe("unrefAndToRawDeep", () => {
                     parent: null,
                     children: [1],
                     relatedObjects: {
-                        parent: {
-                            id: 1,
-                            name: "one",
-                            parent: 2,
-                            children: [],
-                            relatedObjects: {
-                                children: [circular],
+                        children: [
+                            {
+                                id: 1,
+                                name: "one",
+                                parent: 2,
+                                children: [],
+                                relatedObjects: {
+                                    parent: {
+                                        id: 2,
+                                        name: "two",
+                                        parent: null,
+                                        children: [1],
+                                        relatedObjects: {
+                                            children: [circular],
+                                        },
+                                    },
+                                },
                             },
-                        },
+                        ],
                     },
                 },
             },
