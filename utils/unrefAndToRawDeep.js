@@ -1,40 +1,10 @@
 import { isProxy, isRef, toRaw, unref } from "vue";
 import { isArray } from "lodash";
-import { clone, isObjectLike } from "lodash/lang";
+import { isObjectLike } from "lodash/lang";
 
 export const circular = Symbol("circular");
 
-export function unrefAndToRawDeep(obj, seen) {
-    if (!seen) {
-        seen = new Set();
-    }
-    if (seen.has(obj)) {
-        return circular;
-    }
-    let raw = obj;
-    if (isRef(raw)) {
-        const refValue = raw.value;
-        if (isObjectLike(refValue)) {
-            seen.add(raw);
-        }
-        raw = unref(raw);
-    }
-    if (isProxy(raw)) {
-        // this doesn't seem to do anything for the current test case.
-        // seen.add(raw);
-        raw = toRaw(raw);
-    }
-    if (!isObjectLike(raw)) {
-        return raw;
-    }
-    raw = clone(raw);
-    for (const [key, value] of Object.entries(raw)) {
-        raw[key] = unrefAndToRawDeep(value, seen);
-    }
-    return raw;
-}
-
-export function unrefAndToRawDeepBFS(obj) {
+export function unrefAndToRawDeep(obj) {
     const seen = new Set();
     const returnValue = isArray(obj) ? [] : {};
     const queue = [];

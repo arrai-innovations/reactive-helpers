@@ -1,5 +1,5 @@
 import { reactive, ref, toRef, unref } from "vue";
-import { circular, unrefAndToRawDeep, unrefAndToRawDeepBFS } from "../../../utils";
+import { circular, unrefAndToRawDeep } from "../../../utils";
 
 describe("unrefAndToRawDeep", () => {
     it("should unref refs", () => {
@@ -10,12 +10,6 @@ describe("unrefAndToRawDeep", () => {
             d: ref(null),
         };
         expect(unrefAndToRawDeep(obj)).toEqual({
-            a: 1,
-            b: true,
-            c: "foo",
-            d: null,
-        });
-        expect(unrefAndToRawDeepBFS(obj)).toEqual({
             a: 1,
             b: true,
             c: "foo",
@@ -51,20 +45,6 @@ describe("unrefAndToRawDeep", () => {
                 d: null,
             },
         });
-        expect(unrefAndToRawDeepBFS(obj)).toEqual({
-            state: {
-                a: 1,
-                b: true,
-                c: "foo",
-                d: null,
-            },
-            parentState: {
-                a: 1,
-                b: true,
-                c: "foo",
-                d: null,
-            },
-        });
     });
     it("should handle arrays", () => {
         const arr = [ref(1), ref(true), ref("foo"), ref(null)];
@@ -84,22 +64,6 @@ describe("unrefAndToRawDeep", () => {
         ];
         expect(unrefAndToRawDeep(arr)).toEqual([1, true, "foo", null]);
         expect(unrefAndToRawDeep(arr2)).toEqual([
-            {
-                a: 1,
-                b: true,
-                c: "foo",
-                d: null,
-            },
-            {
-                a: 2,
-
-                b: false,
-                c: "bar",
-                d: NaN,
-            },
-        ]);
-        expect(unrefAndToRawDeepBFS(arr)).toEqual([1, true, "foo", null]);
-        expect(unrefAndToRawDeepBFS(arr2)).toEqual([
             {
                 a: 1,
                 b: true,
@@ -151,56 +115,6 @@ describe("unrefAndToRawDeep", () => {
         expect(state.objects["2"]).toEqual(state.objects["1"].relatedObjects.parent);
         expect(state.objects["1"]).toEqual(unref(state.objects["2"].relatedObjects.children[0]));
         expect(unrefAndToRawDeep(state)).toEqual({
-            objects: {
-                1: {
-                    id: 1,
-                    name: "one",
-                    parent: 2,
-                    children: [],
-                    refProperty: "three",
-                    relatedObjects: {
-                        parent: {
-                            id: 2,
-                            name: "two",
-                            parent: null,
-                            children: [1],
-                            refProperty: "three",
-                            relatedObjects: {
-                                children: [
-                                    {
-                                        id: 1,
-                                        name: "one",
-                                        parent: 2,
-                                        children: [],
-                                        refProperty: "three",
-                                        relatedObjects: {
-                                            parent: circular,
-                                        },
-                                    },
-                                ],
-                            },
-                        },
-                    },
-                },
-                2: {
-                    id: 2,
-                    name: "two",
-                    parent: null,
-                    children: [1],
-                    refProperty: "three",
-                    relatedObjects: {
-                        children: [circular],
-                    },
-                },
-                3: {
-                    id: 3,
-                    name: "three",
-                    parent: null,
-                    children: [],
-                },
-            },
-        });
-        expect(unrefAndToRawDeepBFS(state)).toEqual({
             objects: {
                 1: {
                     id: 1,
