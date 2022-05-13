@@ -1,4 +1,5 @@
 import { useListSort } from "../../../use/listSort";
+import { nextTick, reactive } from "vue";
 
 describe("use/useListSort", () => {
     let listInstance, orderByRules, sortThrottleWait, useListInstance;
@@ -54,7 +55,7 @@ describe("use/useListSort", () => {
         expect(listInstance.state.orderByDesc).toEqual([true, false]);
     });
     describe("addSortCriteria and removeSortCriteria", () => {
-        it("adds and removes keys to sort criteria watches", async () => {
+        it("triggers on watches updating state and sortCriteria", async () => {
             const addObject = {
                 id: 35,
                 lexical_name: "six, JWST",
@@ -68,7 +69,11 @@ describe("use/useListSort", () => {
                 12: [51, "three, first contact"],
                 15: [42, "one, contact"],
             };
-            const sortCriteria2 = { 9: [9], 15: [42], 35: [67] };
+            const sortCriteria2 = {
+                9: [9, "nine, number"],
+                15: [42, "one, contact"],
+                35: [67, "six, JWST"],
+            };
             for (const contact of contactsResolved) {
                 listInstance.addListObject(contact);
             }
@@ -78,8 +83,41 @@ describe("use/useListSort", () => {
             listInstance.deleteListObject(12);
             expect(listInstance.state.orderByRules[0].desc).toBe(true);
             orderByRules = [{ key: "organization", desc: true, localeCompare: true }];
-            useListSort({ listInstance, orderByRules });
+            const state = reactive({
+                orderByRules,
+            });
+            expect(state.orderByRules).toEqual(orderByRules);
+            orderByRules.push({ key: "name", desc: false, localeCompare: true });
+            await nextTick();
+            expect(state.orderByRules).toEqual(orderByRules);
+            state.orderByRules.push({ key: "lexical_name", desc: false, localeCompare: true });
+            await nextTick();
+            expect(state.orderByRules).toEqual(orderByRules);
             expect(listInstance.state.sortCriteria).toEqual(sortCriteria2);
+        });
+    });
+    describe("sortWatch sifts various criteria", () => {
+        it("sorts without orderByObj.desc", async () => {
+            for (const contact of contactsResolved) {
+                listInstance.addListObject(contact);
+            }
+            listInstance.state.serverOrder = contactsResolved;
+            useListSort({ listInstance, orderByRules });
+            const state = reactive({
+                orderByRules,
+            });
+            state.orderByRules.pop();
+            state.orderByRules.pop();
+            orderByRules.push({ key: "name", desc: false, localeCompare: true });
+            await nextTick();
+            expect(state.orderByRules).toEqual(orderByRules);
+            state.orderByRules.pop();
+            orderByRules.push({ key: "organization", desc: false, localeCompare: false });
+            await nextTick();
+            expect(state.orderByRules).toEqual(orderByRules);
+            state.orderByRules.pop();
+            await nextTick();
+            expect(state.orderByRules).toEqual([]);
         });
     });
 });
