@@ -1,33 +1,46 @@
-import { isReactive, isReadonly, isRef, toRaw, unref } from "vue";
-import { isArray, isObject } from "lodash";
+import { isProxy, isRef, toRaw, unref } from "vue";
+import { isArray } from "lodash";
+import { isObjectLike } from "lodash/lang";
 
-export function unrefAndToRawDeep(obj, depth = 0) {
-    if (depth === 88) {
-        return obj;
+export const circular = Symbol("circular");
+
+export function unrefAndToRawDeep(obj) {
+    const seen = new Set();
+    const returnValue = isArray(obj) ? [] : {};
+    const queue = [];
+    for (const [key, value] of Object.entries(obj)) {
+        queue.push([returnValue, key, value]);
     }
-    let raw = obj;
-    if (isRef(raw)) {
-        raw = unref(raw);
-    }
-    if (isReactive(raw) || isReadonly(raw)) {
-        raw = toRaw(raw);
-    }
-    if (!isObject(raw)) {
-        return raw;
-    }
-    let returnValue;
-    if (isArray(raw)) {
-        returnValue = [];
-        raw.forEach((item, index) => {
-            const rawValue = unrefAndToRawDeep(item, depth + 1);
-            returnValue[index] = rawValue;
-        });
-    } else {
-        returnValue = {};
-        Object.entries(raw).forEach(([key, value]) => {
-            const rawValue = unrefAndToRawDeep(value, depth + 1);
-            returnValue[key] = rawValue;
-        });
+    while (queue.length) {
+        const [writePosition, key, value] = queue.shift();
+        if (seen.has(value)) {
+            // if (seen.some((item) => item === value)) {
+            writePosition[key] = circular;
+            continue;
+        }
+        let raw = value;
+        if (isRef(raw)) {
+            const refValue = unref(raw);
+            // primitive values are not added to the seen set
+            if (isObjectLike(refValue)) {
+                seen.add(raw);
+            }
+            raw = unref(raw);
+        }
+        if (isProxy(raw)) {
+            // this doesn't seem to do anything for the current test case.
+            // seen.add(raw);
+            raw = toRaw(raw);
+        }
+        if (!isObjectLike(raw)) {
+            // primitive values don't need to add to the queue
+            writePosition[key] = raw;
+            continue;
+        }
+        writePosition[key] = isArray(raw) ? [] : {};
+        for (const [nextKey, nextValue] of Object.entries(raw)) {
+            queue.push([writePosition[key], nextKey, nextValue]);
+        }
     }
     return returnValue;
 }
