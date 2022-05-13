@@ -112,8 +112,10 @@ describe("unrefAndToRawDeep", () => {
         });
         state.objects["1"].refProperty = toRef(state.objects["3"], "name");
         state.objects["2"].refProperty = toRef(state.objects["3"], "name");
-        expect(state.objects["2"]).toEqual(state.objects["1"].relatedObjects.parent);
-        expect(state.objects["1"]).toEqual(unref(state.objects["2"].relatedObjects.children[0]));
+        expect(state.objects["1"]).toBe(unref(state.objects["2"].relatedObjects.children[0]));
+        expect(state.objects["2"]).toBe(state.objects["1"].relatedObjects.parent);
+        expect(state.objects["1"].refProperty).toBe(state.objects["3"].name);
+        expect(state.objects["2"].refProperty).toBe(state.objects["3"].name);
         expect(unrefAndToRawDeep(state)).toEqual({
             objects: {
                 1: {
