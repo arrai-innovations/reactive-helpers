@@ -1,32 +1,30 @@
-import { isReactive, isReadonly, isRef, ref, toRefs, unref } from "vue";
-import { isArray, isObject } from "lodash";
-import { clone } from "lodash/lang";
+import { isProxy, isRef, toRaw, unref } from "vue";
+import { isArray } from "lodash";
+import { clone, isObjectLike } from "lodash/lang";
 
 export const circular = Symbol("circular");
 
 export function unrefAndToRawDeep(obj, seen) {
     if (!seen) {
-        seen = ref([]);
+        seen = new Set();
     }
-    if (seen.value.some((item) => item === obj)) {
+    if (seen.has(obj)) {
         return circular;
     }
     let raw = obj;
     if (isRef(raw)) {
-        seen.value.push(raw);
+        const refValue = raw.value;
+        if (isObjectLike(refValue)) {
+            seen.add(raw);
+        }
         raw = unref(raw);
     }
-    if (isReactive(raw) || isReadonly(raw)) {
-        // seen.value.push(raw);
-        if (isArray(raw)) {
-            raw = [...toRefs(raw)];
-        } else {
-            raw = {
-                ...toRefs(raw),
-            };
-        }
+    if (isProxy(raw)) {
+        // this doesn't seem to do anything for the current test case.
+        // seen.add(raw);
+        raw = toRaw(raw);
     }
-    if (!isObject(raw) && !isArray(raw)) {
+    if (!isObjectLike(raw)) {
         return raw;
     }
     raw = clone(raw);
@@ -37,7 +35,7 @@ export function unrefAndToRawDeep(obj, seen) {
 }
 
 export function unrefAndToRawDeepBFS(obj) {
-    const seen = [];
+    const seen = new Set();
     const returnValue = isArray(obj) ? [] : {};
     const queue = [];
     for (const [key, value] of Object.entries(obj)) {
@@ -45,27 +43,27 @@ export function unrefAndToRawDeepBFS(obj) {
     }
     while (queue.length) {
         const [writePosition, key, value] = queue.shift();
-        if (seen.some((item) => item === value)) {
-            console.log("circular");
+        if (seen.has(value)) {
+            // if (seen.some((item) => item === value)) {
             writePosition[key] = circular;
             continue;
         }
         let raw = value;
         if (isRef(raw)) {
-            seen.push(raw);
+            const refValue = unref(raw);
+            // primitive values are not added to the seen set
+            if (isObjectLike(refValue)) {
+                seen.add(raw);
+            }
             raw = unref(raw);
         }
-        if (isReactive(raw) || isReadonly(raw)) {
-            // seen.push(raw);
-            if (isArray(raw)) {
-                raw = [...toRefs(raw)];
-            } else {
-                raw = {
-                    ...toRefs(raw),
-                };
-            }
+        if (isProxy(raw)) {
+            // this doesn't seem to do anything for the current test case.
+            // seen.add(raw);
+            raw = toRaw(raw);
         }
-        if (!isObject(raw) && !isArray(raw)) {
+        if (!isObjectLike(raw)) {
+            // primitive values don't need to add to the queue
             writePosition[key] = raw;
             continue;
         }

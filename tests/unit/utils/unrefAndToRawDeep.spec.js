@@ -1,4 +1,4 @@
-import { reactive, ref, toRef } from "vue";
+import { reactive, ref, toRef, unref } from "vue";
 import { circular, unrefAndToRawDeep, unrefAndToRawDeepBFS } from "../../../utils";
 
 describe("unrefAndToRawDeep", () => {
@@ -9,8 +9,13 @@ describe("unrefAndToRawDeep", () => {
             c: ref("foo"),
             d: ref(null),
         };
-        const raw = unrefAndToRawDeep(obj);
-        expect(raw).toEqual({
+        expect(unrefAndToRawDeep(obj)).toEqual({
+            a: 1,
+            b: true,
+            c: "foo",
+            d: null,
+        });
+        expect(unrefAndToRawDeepBFS(obj)).toEqual({
             a: 1,
             b: true,
             c: "foo",
@@ -33,6 +38,20 @@ describe("unrefAndToRawDeep", () => {
             }),
         };
         expect(unrefAndToRawDeep(obj)).toEqual({
+            state: {
+                a: 1,
+                b: true,
+                c: "foo",
+                d: null,
+            },
+            parentState: {
+                a: 1,
+                b: true,
+                c: "foo",
+                d: null,
+            },
+        });
+        expect(unrefAndToRawDeepBFS(obj)).toEqual({
             state: {
                 a: 1,
                 b: true,
@@ -79,6 +98,22 @@ describe("unrefAndToRawDeep", () => {
                 d: NaN,
             },
         ]);
+        expect(unrefAndToRawDeepBFS(arr)).toEqual([1, true, "foo", null]);
+        expect(unrefAndToRawDeepBFS(arr2)).toEqual([
+            {
+                a: 1,
+                b: true,
+                c: "foo",
+                d: null,
+            },
+            {
+                a: 2,
+
+                b: false,
+                c: "bar",
+                d: NaN,
+            },
+        ]);
     });
     it("should toRaw reactive with circular ref", () => {
         const state = reactive({
@@ -88,21 +123,33 @@ describe("unrefAndToRawDeep", () => {
                     name: "one",
                     parent: 2,
                     children: [],
+                    refProperty: ref(null),
                 },
                 2: {
                     id: 2,
                     name: "two",
                     parent: null,
                     children: [1],
+                    refProperty: ref(null),
+                },
+                3: {
+                    id: 3,
+                    name: "three",
+                    parent: null,
+                    children: [],
                 },
             },
         });
-        state.objects["1"].relatedObjects = {
+        state.objects["1"].relatedObjects = reactive({
             parent: toRef(state.objects, "2"),
-        };
-        state.objects["2"].relatedObjects = {
+        });
+        state.objects["2"].relatedObjects = reactive({
             children: [toRef(state.objects, "1")],
-        };
+        });
+        state.objects["1"].refProperty = toRef(state.objects["3"], "name");
+        state.objects["2"].refProperty = toRef(state.objects["3"], "name");
+        expect(state.objects["2"]).toEqual(state.objects["1"].relatedObjects.parent);
+        expect(state.objects["1"]).toEqual(unref(state.objects["2"].relatedObjects.children[0]));
         expect(unrefAndToRawDeep(state)).toEqual({
             objects: {
                 1: {
@@ -110,12 +157,14 @@ describe("unrefAndToRawDeep", () => {
                     name: "one",
                     parent: 2,
                     children: [],
+                    refProperty: "three",
                     relatedObjects: {
                         parent: {
                             id: 2,
                             name: "two",
                             parent: null,
                             children: [1],
+                            refProperty: "three",
                             relatedObjects: {
                                 children: [
                                     {
@@ -123,16 +172,9 @@ describe("unrefAndToRawDeep", () => {
                                         name: "one",
                                         parent: 2,
                                         children: [],
+                                        refProperty: "three",
                                         relatedObjects: {
-                                            parent: {
-                                                id: 2,
-                                                name: "two",
-                                                parent: null,
-                                                children: [1],
-                                                relatedObjects: {
-                                                    children: [circular],
-                                                },
-                                            },
+                                            parent: circular,
                                         },
                                     },
                                 ],
@@ -145,9 +187,16 @@ describe("unrefAndToRawDeep", () => {
                     name: "two",
                     parent: null,
                     children: [1],
+                    refProperty: "three",
                     relatedObjects: {
                         children: [circular],
                     },
+                },
+                3: {
+                    id: 3,
+                    name: "three",
+                    parent: null,
+                    children: [],
                 },
             },
         });
@@ -158,12 +207,14 @@ describe("unrefAndToRawDeep", () => {
                     name: "one",
                     parent: 2,
                     children: [],
+                    refProperty: "three",
                     relatedObjects: {
                         parent: {
                             id: 2,
                             name: "two",
                             parent: null,
                             children: [1],
+                            refProperty: "three",
                             relatedObjects: {
                                 children: [circular],
                             },
@@ -175,6 +226,7 @@ describe("unrefAndToRawDeep", () => {
                     name: "two",
                     parent: null,
                     children: [1],
+                    refProperty: "three",
                     relatedObjects: {
                         children: [
                             {
@@ -182,20 +234,19 @@ describe("unrefAndToRawDeep", () => {
                                 name: "one",
                                 parent: 2,
                                 children: [],
+                                refProperty: "three",
                                 relatedObjects: {
-                                    parent: {
-                                        id: 2,
-                                        name: "two",
-                                        parent: null,
-                                        children: [1],
-                                        relatedObjects: {
-                                            children: [circular],
-                                        },
-                                    },
+                                    parent: circular,
                                 },
                             },
                         ],
                     },
+                },
+                3: {
+                    id: 3,
+                    name: "three",
+                    parent: null,
+                    children: [],
                 },
             },
         });
