@@ -41,8 +41,9 @@ describe("use/useListSort", () => {
                 fields: ["id", "lexical_name", "organization", "relatedObjects"],
             },
         });
-        sortThrottleWait = 100;
+        sortThrottleWait = 0;
     });
+
     afterEach(() => jest.resetAllMocks());
 
     it("generates initial values from inputs", () => {
@@ -74,50 +75,45 @@ describe("use/useListSort", () => {
                 15: [42, "one, contact"],
                 35: [67, "six, JWST"],
             };
+
             for (const contact of contactsResolved) {
                 listInstance.addListObject(contact);
             }
-            useListSort({ listInstance, orderByRules });
+
+            useListSort({ listInstance, orderByRules, sortThrottleWait });
             expect(listInstance.state.sortCriteria).toEqual(sortCriteria1);
+            await nextTick();
             listInstance.addListObject(addObject);
+            await nextTick();
             listInstance.deleteListObject(12);
-            expect(listInstance.state.orderByRules[0].desc).toBe(true);
-            orderByRules = [{ key: "organization", desc: true, localeCompare: true }];
-            const state = reactive({
-                orderByRules,
-            });
-            expect(state.orderByRules).toEqual(orderByRules);
-            orderByRules.push({ key: "name", desc: false, localeCompare: true });
             await nextTick();
-            expect(state.orderByRules).toEqual(orderByRules);
-            state.orderByRules.push({ key: "lexical_name", desc: false, localeCompare: true });
-            await nextTick();
-            expect(state.orderByRules).toEqual(orderByRules);
             expect(listInstance.state.sortCriteria).toEqual(sortCriteria2);
         });
     });
     describe("sortWatch sifts various criteria", () => {
-        it("sorts without orderByObj.desc", async () => {
+        it("sorts with orderByObj.desc and x/yCriteria", async () => {
             for (const contact of contactsResolved) {
                 listInstance.addListObject(contact);
             }
             listInstance.state.serverOrder = contactsResolved;
-            useListSort({ listInstance, orderByRules });
             const state = reactive({
                 orderByRules,
             });
+            useListSort({ listInstance, orderByRules, sortThrottleWait });
             state.orderByRules.pop();
             state.orderByRules.pop();
-            orderByRules.push({ key: "name", desc: false, localeCompare: true });
+            listInstance.state.orderByRules.push({ key: "lexical_name", desc: false, localeCompare: true });
+
             await nextTick();
-            expect(state.orderByRules).toEqual(orderByRules);
+            expect(listInstance.state.orderByRules).toEqual(orderByRules);
             state.orderByRules.pop();
-            orderByRules.push({ key: "organization", desc: false, localeCompare: false });
+            state.orderByRules.push({ key: "organization", desc: true, localeCompare: true });
+
             await nextTick();
-            expect(state.orderByRules).toEqual(orderByRules);
+            expect(listInstance.state.orderByRules).toEqual(orderByRules);
             state.orderByRules.pop();
             await nextTick();
-            expect(state.orderByRules).toEqual([]);
+            expect(listInstance.state.orderByRules).toEqual([]);
         });
     });
 });
