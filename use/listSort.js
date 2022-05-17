@@ -113,7 +113,7 @@ export function useListSort({ listInstance, orderByRules, sortThrottleWait = 100
     function sortWatch() {
         if (!listInstance.state.orderByRules || !listInstance.state.orderByRules.length) {
             const serverOrderObjectsInOrder = listInstance.state.addedOrder
-                .map((e) => listInstance.state.objects[e.id])
+                .map((e) => listInstance.state.objects[e])
                 .filter(identity);
             assignReactiveObject(
                 listInstance.state.order,
