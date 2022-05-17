@@ -111,6 +111,7 @@ describe("use/useListSort", () => {
             expect(listInstance.state.order).toEqual(testOrder4);
             listInstance.state.orderByRules.push({ key: "organization", desc: false, localeCompare: false });
             await nextTick();
+            expect(listInstance.state.order).toEqual(testOrder2);
         });
     });
 });
