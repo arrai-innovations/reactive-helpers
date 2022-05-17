@@ -1,5 +1,5 @@
 import { useListSort } from "../../../use/listSort";
-import { nextTick, reactive } from "vue";
+import { nextTick } from "vue";
 
 describe("use/useListSort", () => {
     let listInstance, orderByRules, sortThrottleWait, useListInstance;
@@ -65,55 +65,50 @@ describe("use/useListSort", () => {
                     organization: { id: 67, name: "NASA" },
                 },
             };
-            const sortCriteria1 = {
-                9: [9, "nine, number"],
-                12: [51, "three, first contact"],
-                15: [42, "one, contact"],
-            };
-            const sortCriteria2 = {
-                9: [9, "nine, number"],
-                15: [42, "one, contact"],
-                35: [67, "six, JWST"],
-            };
+            const testOrder1 = [];
+            const testOrder2 = ["35", "12", "15", "9"];
+            const testOrder3 = ["35", "15", "9"];
 
             for (const contact of contactsResolved) {
                 listInstance.addListObject(contact);
             }
 
             useListSort({ listInstance, orderByRules, sortThrottleWait });
-            expect(listInstance.state.sortCriteria).toEqual(sortCriteria1);
             await nextTick();
+            expect(listInstance.state.order).toEqual(testOrder1);
             listInstance.addListObject(addObject);
             await nextTick();
+            expect(listInstance.state.order).toEqual(testOrder2);
             listInstance.deleteListObject(12);
             await nextTick();
-            expect(listInstance.state.sortCriteria).toEqual(sortCriteria2);
+            expect(listInstance.state.order).toEqual(testOrder3);
         });
     });
     describe("sortWatch sifts various criteria", () => {
         it("sorts with orderByObj.desc and x/yCriteria", async () => {
+            const testOrder1 = [];
+            const testOrder2 = ["9", "15", "12"];
+            const testOrder3 = ["12", "15", "9"];
+            listInstance.state.serverOrder = contactsResolved;
+
             for (const contact of contactsResolved) {
                 listInstance.addListObject(contact);
             }
-            listInstance.state.serverOrder = contactsResolved;
-            const state = reactive({
-                orderByRules,
-            });
+
             useListSort({ listInstance, orderByRules, sortThrottleWait });
-            state.orderByRules.pop();
-            state.orderByRules.pop();
+            listInstance.state.orderByRules.pop();
+            listInstance.state.orderByRules.pop();
             listInstance.state.orderByRules.push({ key: "lexical_name", desc: false, localeCompare: true });
-
+            expect(listInstance.state.order).toEqual(testOrder1);
             await nextTick();
-            expect(listInstance.state.orderByRules).toEqual(orderByRules);
-            state.orderByRules.pop();
-            state.orderByRules.push({ key: "organization", desc: true, localeCompare: true });
-
+            expect(listInstance.state.order).toEqual(testOrder2);
+            listInstance.state.orderByRules.pop();
+            listInstance.state.orderByRules.push({ key: "organization", desc: true, localeCompare: true });
             await nextTick();
-            expect(listInstance.state.orderByRules).toEqual(orderByRules);
-            state.orderByRules.pop();
+            expect(listInstance.state.order).toEqual(testOrder3);
+            listInstance.state.orderByRules.pop();
             await nextTick();
-            expect(listInstance.state.orderByRules).toEqual([]);
+            expect(listInstance.state.order).toEqual(testOrder1);
         });
     });
 });
