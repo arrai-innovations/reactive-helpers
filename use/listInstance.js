@@ -46,6 +46,7 @@ export function useListInstance({
         loading: undefined,
         errored: false,
         error: null,
+        addedOrder: [],
     });
     assignReactiveObject(state.listInstanceCrud, defaultCrud);
     if (crudArgs) {
@@ -95,6 +96,7 @@ export function useListInstance({
             throw new ListError(`addListObject: list already has object for id: ${inspect(object.id)}`, "duplicate-id");
         }
         state.objects[object.id] = {};
+        state.addedOrder.push(object);
         assignReactiveObject(state.objects[object.id], object);
     }
 
@@ -118,6 +120,8 @@ export function useListInstance({
                 "missing-object"
             );
         }
+        const removalObject = state.addedOrder.filter((obj) => obj.id === objectId);
+        state.addedOrder.splice(state.addedOrder.indexOf(...removalObject), 1);
         delete state.objects[objectId];
     }
 

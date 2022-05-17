@@ -89,7 +89,7 @@ describe("use/useListSort", () => {
             const testOrder1 = [];
             const testOrder2 = ["9", "15", "12"];
             const testOrder3 = ["12", "15", "9"];
-            listInstance.state.serverOrder = contactsResolved;
+            const testOrder4 = ["15", "12", "9"];
 
             for (const contact of contactsResolved) {
                 listInstance.addListObject(contact);
@@ -108,7 +108,9 @@ describe("use/useListSort", () => {
             expect(listInstance.state.order).toEqual(testOrder3);
             listInstance.state.orderByRules.pop();
             await nextTick();
-            expect(listInstance.state.order).toEqual(testOrder1);
+            expect(listInstance.state.order).toEqual(testOrder4);
+            listInstance.state.orderByRules.push({ key: "organization", desc: false, localeCompare: false });
+            await nextTick();
         });
     });
 });
