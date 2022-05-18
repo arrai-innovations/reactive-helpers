@@ -129,14 +129,12 @@ describe("use/useListSort", () => {
     it("useListSorts & useListInstances", async function () {
         const fields = ["id", "__str__", "name"];
         const orderByRules = [{ key: "name", desc: true, localeCompare: true }];
-        const emit = jest.fn();
         const listInstanceA = useListInstance({
             crudArgs: { stream: "test_streamA" },
             listArgs: { user: 1 },
             retrieveArgs: {
                 fields,
             },
-            emit,
         });
         const listInstanceB = useListInstance({
             crudArgs: { stream: "test_streamB" },
@@ -144,7 +142,6 @@ describe("use/useListSort", () => {
             retrieveArgs: {
                 fields,
             },
-            emit,
         });
         const listSortA = useListSort({
             parentState: listInstanceA.state,
@@ -161,7 +158,6 @@ describe("use/useListSort", () => {
                 retrieveArgs: {
                     fields,
                 },
-                emit,
             },
             B: {
                 crudArgs: { stream: "test_streamB" },
@@ -169,7 +165,6 @@ describe("use/useListSort", () => {
                 retrieveArgs: {
                     fields,
                 },
-                emit,
             },
         });
         const listSorts = useListSorts(
