@@ -26,7 +26,7 @@ export function useObjectSubscriptions(subscriptionArgs) {
     return subscriptions;
 }
 
-export function useObjectSubscription({ objectInstance, crudArgs, id, retrieveArgs = {}, emit }) {
+export function useObjectSubscription({ objectInstance, crudArgs, id, retrieveArgs = {} }) {
     if (!objectInstance) {
         objectInstance = useObjectInstance({ crudArgs, retrieveArgs });
     }
@@ -170,21 +170,6 @@ export function useObjectSubscription({ objectInstance, crudArgs, id, retrieveAr
             },
             { deep: true }
         );
-
-        if (emit) {
-            watch(
-                () => state.errored,
-                (newErrored) => {
-                    emit("errored", newErrored);
-                }
-            );
-            watch(
-                () => state.loading,
-                (newLoading) => {
-                    emit("loading", newLoading);
-                }
-            );
-        }
 
         onScopeDispose(async () => {
             await unsubscribe();
