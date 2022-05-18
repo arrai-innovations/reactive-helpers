@@ -37,7 +37,6 @@ describe("use/listSubscription.spec.js", function () {
     afterEach(function () {
         jest.resetAllMocks();
     });
-    const emit = jest.fn();
     const fields = ["id", "__str__", "name"];
     describe("lifecycle", function () {
         it("success", async function () {
@@ -51,7 +50,6 @@ describe("use/listSubscription.spec.js", function () {
             const listSubscription = useListSubscription({
                 defaultListArgs,
                 defaultRetrieveArgs,
-                emit,
             });
             await listSubscription.subscribe();
             expect(globalSubscribe).toHaveBeenCalledWith({
@@ -117,7 +115,6 @@ describe("use/listSubscription.spec.js", function () {
             const listSubscription = useListSubscription({
                 defaultListArgs,
                 defaultRetrieveArgs,
-                emit,
             });
             await listSubscription.subscribe({});
             expect(globalSubscribe).toHaveBeenCalledWith({
@@ -292,7 +289,6 @@ describe("use/listSubscription.spec.js", function () {
             const listSubscription = useListSubscription({
                 defaultListArgs,
                 defaultRetrieveArgs,
-                emit,
             });
             await listSubscription.subscribe({});
             expect(globalSubscribe).toHaveBeenCalledWith({
@@ -320,7 +316,6 @@ describe("use/listSubscription.spec.js", function () {
             const listSubscription = useListSubscription({
                 defaultListArgs,
                 defaultRetrieveArgs,
-                emit,
             });
 
             const returnValue = await listSubscription.unsubscribe();
@@ -336,9 +331,7 @@ describe("use/listSubscription.spec.js", function () {
             const retrieveArgs = reactive({
                 fields: fields,
             });
-            const listSubscription = useListSubscription({
-                emit,
-            });
+            const listSubscription = useListSubscription({});
             await listSubscription.subscribe({
                 listArgs,
                 retrieveArgs,
@@ -365,9 +358,7 @@ describe("use/listSubscription.spec.js", function () {
             const retrieveArgs = reactive({
                 fields: fields,
             });
-            const listSubscription = useListSubscription({
-                emit,
-            });
+            const listSubscription = useListSubscription({});
             const firstReturnValue = await listSubscription.subscribe({
                 listArgs,
                 retrieveArgs,
@@ -407,7 +398,6 @@ describe("use/listSubscription.spec.js", function () {
             });
             const listSubscription = useListSubscription({
                 listInstance,
-                emit,
             });
             expect(listSubscription.listInstance).toBe(listInstance);
             await listSubscription.subscribe();
@@ -465,14 +455,12 @@ describe("use/listSubscription.spec.js", function () {
         });
     });
     it("useListSubscriptions", async function () {
-        const emit = jest.fn();
         const listSubscriptionA = useListSubscription({
             crudArgs: { stream: "test_streamA" },
             listArgs: { user: 1 },
             retrieveArgs: {
                 fields,
             },
-            emit,
         });
         const listSubscriptionB = useListSubscription({
             crudArgs: { stream: "test_streamB" },
@@ -480,7 +468,6 @@ describe("use/listSubscription.spec.js", function () {
             retrieveArgs: {
                 fields,
             },
-            emit,
         });
         const listSubscription = useListSubscriptions({
             A: {
@@ -489,7 +476,6 @@ describe("use/listSubscription.spec.js", function () {
                 retrieveArgs: {
                     fields,
                 },
-                emit,
             },
             B: {
                 crudArgs: { stream: "test_streamB" },
@@ -497,21 +483,18 @@ describe("use/listSubscription.spec.js", function () {
                 retrieveArgs: {
                     fields,
                 },
-                emit,
             },
         });
         expect(inspect(listSubscription.A)).toEqual(inspect(listSubscriptionA));
         expect(inspect(listSubscription.B)).toEqual(inspect(listSubscriptionB));
     });
     it("useListSubscriptions & useListInstances", async function () {
-        const emit = jest.fn();
         const listInstanceA = useListInstance({
             crudArgs: { stream: "test_streamA" },
             listArgs: { user: 1 },
             retrieveArgs: {
                 fields,
             },
-            emit,
         });
         const listInstanceB = useListInstance({
             crudArgs: { stream: "test_streamB" },
@@ -519,15 +502,12 @@ describe("use/listSubscription.spec.js", function () {
             retrieveArgs: {
                 fields,
             },
-            emit,
         });
         const listSubscriptionA = useListSubscription({
             listInstance: listInstanceA,
-            emit,
         });
         const listSubscriptionB = useListSubscription({
             listInstance: listInstanceB,
-            emit,
         });
         const listInstances = useListInstances({
             A: {
@@ -536,7 +516,6 @@ describe("use/listSubscription.spec.js", function () {
                 retrieveArgs: {
                     fields,
                 },
-                emit,
             },
             B: {
                 crudArgs: { stream: "test_streamB" },
@@ -544,17 +523,12 @@ describe("use/listSubscription.spec.js", function () {
                 retrieveArgs: {
                     fields,
                 },
-                emit,
             },
         });
         const listSubscription = useListSubscriptions(
             {
-                A: {
-                    emit,
-                },
-                B: {
-                    emit,
-                },
+                A: {},
+                B: {},
             },
             listInstances
         );

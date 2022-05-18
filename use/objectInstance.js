@@ -1,5 +1,5 @@
 import { isEmpty } from "lodash";
-import { effectScope, reactive, unref, watch } from "vue";
+import { effectScope, reactive, unref } from "vue";
 import { assignReactiveObject } from "../utils/assignReactiveObject";
 
 export class ObjectError extends Error {
@@ -35,7 +35,7 @@ export function useObjectInstances(instanceArgs) {
     return instances;
 }
 
-export function useObjectInstance({ crudArgs, retrieveArgs, emit }) {
+export function useObjectInstance({ crudArgs, retrieveArgs }) {
     const state = reactive({
         objectInstanceCrud: {
             args: {},
@@ -207,22 +207,8 @@ export function useObjectInstance({ crudArgs, retrieveArgs, emit }) {
 
     const es = effectScope();
 
-    es.run(() => {
-        if (emit) {
-            watch(
-                () => state.errored,
-                (newErrored) => {
-                    emit("errored", newErrored);
-                }
-            );
-            watch(
-                () => state.loading,
-                (newLoading) => {
-                    emit("loading", newLoading);
-                }
-            );
-        }
-    });
+    // we could have effects? let's keep the interface to keep our options open to add without major changes.
+    es.run(() => {});
 
     return {
         state,

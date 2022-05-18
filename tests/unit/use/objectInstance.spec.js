@@ -1,6 +1,6 @@
 import flushPromises from "flush-promises";
 import { nextTick } from "vue";
-import { assignReactiveObject } from "../../../utils/assignReactiveObject";
+import { assignReactiveObject } from "../../../utils";
 import { expectErrorToBeNull } from "../expectHelpers";
 import { inspect } from "util";
 
@@ -96,10 +96,8 @@ describe("use/objectInstance.js", function () {
     const fields = ["id", "__str__", "name"];
     describe("retrieve", function () {
         it("success", async function () {
-            const emit = jest.fn();
             const objectInstance = useObjectInstance({
                 crudArgs: { stream: "test_stream" },
-                emit,
             });
             objectInstance.state.objectInstanceCrud.retrieve = jest.fn();
             let crudRetrieveResolve;
@@ -112,14 +110,12 @@ describe("use/objectInstance.js", function () {
             expect(objectInstance.state.errored).toBe(false);
             expect(objectInstance.state.loading).toBeUndefined();
             expect({ ...objectInstance.state.object }).toEqual({});
-            expect(emit.mock.calls).toEqual([]);
             const oiRetrieveResolve = objectInstance.retrieve({ id: 1, fields });
             expectErrorToBeNull(objectInstance.state.error);
             expect(objectInstance.state.errored).toBe(false);
             expect(objectInstance.state.loading).toBe(true);
             expect({ ...objectInstance.state.object }).toEqual({});
             await nextTick();
-            expect(emit.mock.calls).toEqual([["loading", true]]);
             crudRetrieveResolve(crudRetrieveResolved);
             await flushPromises();
             expectErrorToBeNull(objectInstance.state.error);
@@ -133,10 +129,6 @@ describe("use/objectInstance.js", function () {
             });
             expect(objectInstance.state.objectInstanceCrud.retrieve).toHaveBeenCalledTimes(1);
             await nextTick();
-            expect(emit.mock.calls).toEqual([
-                ["loading", true],
-                ["loading", false],
-            ]);
             await expect(oiRetrieveResolve).resolves.toBe(true);
         });
         it("success (defaultRetrieveArgs)", async function () {
@@ -234,10 +226,8 @@ describe("use/objectInstance.js", function () {
     });
     describe("create", function () {
         it("success", async function () {
-            const emit = jest.fn();
             const objectInstance = useObjectInstance({
                 crudArgs: { stream: "test_stream" },
-                emit,
             });
             objectInstance.state.objectInstanceCrud.create = jest.fn();
             let crudCreateResolve;
@@ -249,7 +239,6 @@ describe("use/objectInstance.js", function () {
             expect(objectInstance.state.errored).toBe(false);
             expect(objectInstance.state.loading).toBeUndefined();
             expect({ ...objectInstance.state.object }).toEqual({});
-            expect(emit.mock.calls).toEqual([]);
             const oiCreateResolve = objectInstance.create({
                 object: {
                     name: "qwer",
@@ -261,7 +250,6 @@ describe("use/objectInstance.js", function () {
             expect(objectInstance.state.loading).toBe(true);
             expect({ ...objectInstance.state.object }).toEqual({});
             await nextTick();
-            expect(emit.mock.calls).toEqual([["loading", true]]);
             crudCreateResolve(crudCreateResolved);
             await flushPromises();
             expectErrorToBeNull(objectInstance.state.error);
@@ -279,10 +267,6 @@ describe("use/objectInstance.js", function () {
             });
             expect(objectInstance.state.objectInstanceCrud.create).toHaveBeenCalledTimes(1);
             await nextTick();
-            expect(emit.mock.calls).toEqual([
-                ["loading", true],
-                ["loading", false],
-            ]);
             await expect(oiCreateResolve).resolves.toBe(true);
         });
         it("success (defaultRetrieveArgs)", async function () {
@@ -414,10 +398,8 @@ describe("use/objectInstance.js", function () {
     });
     describe("update", function () {
         it("success", async function () {
-            const emit = jest.fn();
             const objectInstance = useObjectInstance({
                 crudArgs: { stream: "test_stream" },
-                emit,
             });
             let crudUpdateResolve;
             const crudUpdatePromise = new Promise((resolve) => {
@@ -429,7 +411,6 @@ describe("use/objectInstance.js", function () {
             expect(objectInstance.state.errored).toBe(false);
             expect(objectInstance.state.loading).toBeUndefined();
             expect({ ...objectInstance.state.object }).toEqual({});
-            expect(emit.mock.calls).toEqual([]);
             const oiUpdatePromise = objectInstance.update({
                 object: {
                     id: 1,
@@ -442,7 +423,6 @@ describe("use/objectInstance.js", function () {
             expect(objectInstance.state.loading).toBe(true);
             expect({ ...objectInstance.state.object }).toEqual({});
             await nextTick();
-            expect(emit.mock.calls).toEqual([["loading", true]]);
             crudUpdateResolve(crudUpdateResolved);
             await flushPromises();
             expectErrorToBeNull(objectInstance.state.error);
@@ -450,10 +430,6 @@ describe("use/objectInstance.js", function () {
             expect(objectInstance.state.loading).toBe(false);
             expect({ ...objectInstance.state.object }).toEqual(crudUpdateResolved);
             await nextTick();
-            expect(emit.mock.calls).toEqual([
-                ["loading", true],
-                ["loading", false],
-            ]);
             await expect(oiUpdatePromise).resolves.toBe(true);
             expect(objectInstance.state.objectInstanceCrud.update).toHaveBeenCalledWith({
                 crudArgs: {
@@ -601,10 +577,8 @@ describe("use/objectInstance.js", function () {
     });
     describe("patch", function () {
         it("success", async function () {
-            const emit = jest.fn();
             const objectInstance = useObjectInstance({
                 crudArgs: { stream: "test_stream" },
-                emit,
             });
             let crudPatchResolve;
             const crudPatchPromise = new Promise((resolve) => {
@@ -616,7 +590,6 @@ describe("use/objectInstance.js", function () {
             expect(objectInstance.state.errored).toBe(false);
             expect(objectInstance.state.loading).toBeUndefined();
             expect({ ...objectInstance.state.object }).toEqual({});
-            expect(emit.mock.calls).toEqual([]);
             const oiPatchPromise = objectInstance.patch({
                 id: 1,
                 partialObject: {
@@ -630,7 +603,6 @@ describe("use/objectInstance.js", function () {
             expect(objectInstance.state.loading).toBe(true);
             expect({ ...objectInstance.state.object }).toEqual({});
             await nextTick();
-            expect(emit.mock.calls).toEqual([["loading", true]]);
             crudPatchResolve(crudPatchResolved);
             await flushPromises();
             expectErrorToBeNull(objectInstance.state.error);
@@ -638,10 +610,6 @@ describe("use/objectInstance.js", function () {
             expect(objectInstance.state.loading).toBe(false);
             expect({ ...objectInstance.state.object }).toEqual(crudPatchResolved);
             await nextTick();
-            expect(emit.mock.calls).toEqual([
-                ["loading", true],
-                ["loading", false],
-            ]);
             await expect(oiPatchPromise).resolves.toBe(true);
             expect(objectInstance.state.objectInstanceCrud.patch).toHaveBeenCalledWith({
                 crudArgs: {
@@ -789,10 +757,8 @@ describe("use/objectInstance.js", function () {
     });
     describe("delete", function () {
         it("success", async function () {
-            const emit = jest.fn();
             const objectInstance = useObjectInstance({
                 crudArgs: { stream: "test_stream" },
-                emit,
             });
             assignReactiveObject(objectInstance.state.object, crudRetrieveResolved);
             let deleteResolve;
@@ -807,7 +773,6 @@ describe("use/objectInstance.js", function () {
             expect(objectInstance.state.loading).toBeUndefined();
             expect(objectInstance.state.deleted).toBe(false);
             expect({ ...objectInstance.state.object }).toEqual(crudRetrieveResolved);
-            expect(emit.mock.calls).toEqual([]);
 
             const returnsPromise = objectInstance.delete(1);
 
@@ -817,7 +782,6 @@ describe("use/objectInstance.js", function () {
             expect(objectInstance.state.deleted).toBe(false);
             expect({ ...objectInstance.state.object }).toEqual(crudRetrieveResolved);
             await nextTick();
-            expect(emit.mock.calls).toEqual([["loading", true]]);
 
             deleteResolve(crudDeleteResolved);
             await flushPromises();
@@ -828,10 +792,6 @@ describe("use/objectInstance.js", function () {
             expect(objectInstance.state.deleted).toBe(true);
             expect({ ...objectInstance.state.object }).toEqual({});
             await nextTick();
-            expect(emit.mock.calls).toEqual([
-                ["loading", true],
-                ["loading", false],
-            ]);
 
             await expect(returnsPromise).resolves.toBe(true);
             expect(objectInstance.state.objectInstanceCrud.delete).toHaveBeenCalledWith({
@@ -841,10 +801,8 @@ describe("use/objectInstance.js", function () {
             expect(objectInstance.state.objectInstanceCrud.delete).toHaveBeenCalledTimes(1);
         });
         it("errored", async function () {
-            const emit = jest.fn();
             const objectInstance = useObjectInstance({
                 crudArgs: { stream: "test_stream" },
-                emit,
             });
             assignReactiveObject(objectInstance.state.object, crudRetrieveResolved);
             let deleteReject;
@@ -859,7 +817,6 @@ describe("use/objectInstance.js", function () {
             expect(objectInstance.state.loading).toBeUndefined();
             expect(objectInstance.state.deleted).toBe(false);
             expect({ ...objectInstance.state.object }).toEqual(crudRetrieveResolved);
-            expect(emit.mock.calls).toEqual([]);
 
             const returnsPromise = objectInstance.delete(1);
 
@@ -869,7 +826,6 @@ describe("use/objectInstance.js", function () {
             expect(objectInstance.state.deleted).toBe(false);
             expect({ ...objectInstance.state.object }).toEqual(crudRetrieveResolved);
             await nextTick();
-            expect(emit.mock.calls).toEqual([["loading", true]]);
 
             deleteReject(crudDeleteRejected);
             await flushPromises();
@@ -880,11 +836,6 @@ describe("use/objectInstance.js", function () {
             expect(objectInstance.state.deleted).toBe(false);
             expect({ ...objectInstance.state.object }).toEqual(crudRetrieveResolved);
             await nextTick();
-            expect(emit.mock.calls).toEqual([
-                ["loading", true],
-                ["errored", true],
-                ["loading", false],
-            ]);
 
             await expect(returnsPromise).resolves.toBe(false);
             expect(objectInstance.state.objectInstanceCrud.delete).toHaveBeenCalledWith({
@@ -910,14 +861,12 @@ describe("use/objectInstance.js", function () {
         });
     });
     it("useObjectSubscriptions", async function () {
-        const emit = jest.fn();
         const objectInstanceA = useObjectInstance({
             crudArgs: { stream: "test_streamA" },
             id: 1,
             retrieveArgs: {
                 fields,
             },
-            emit,
         });
         const objectInstanceB = useObjectInstance({
             crudArgs: { stream: "test_streamB" },
@@ -925,7 +874,6 @@ describe("use/objectInstance.js", function () {
             retrieveArgs: {
                 fields,
             },
-            emit,
         });
         const objInstances = useObjectInstances({
             A: {
@@ -934,7 +882,6 @@ describe("use/objectInstance.js", function () {
                 retrieveArgs: {
                     fields,
                 },
-                emit,
             },
             B: {
                 crudArgs: { stream: "test_streamB" },
@@ -942,7 +889,6 @@ describe("use/objectInstance.js", function () {
                 retrieveArgs: {
                     fields,
                 },
-                emit,
             },
         });
         expect(inspect(objInstances.A)).toEqual(inspect(objectInstanceA));
