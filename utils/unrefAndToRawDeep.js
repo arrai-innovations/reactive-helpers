@@ -1,10 +1,13 @@
 import { isProxy, isRef, toRaw, unref } from "vue";
-import { isArray } from "lodash";
+import { isArray, isUndefined } from "lodash";
 import { isObjectLike } from "lodash/lang";
 
 export const circular = Symbol("circular");
 
 export function unrefAndToRawDeep(obj) {
+    if (isUndefined(obj)) {
+        return obj;
+    }
     const seen = new Set();
     const returnValue = isArray(obj) ? [] : {};
     const queue = [];
