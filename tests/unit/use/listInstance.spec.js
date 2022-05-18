@@ -68,10 +68,7 @@ describe("use/listInstance.spec.js", function () {
     const crudListResolvedObjects = keyBy([...crudListResolvedPage1, ...crudListResolvedPage2], "id");
     describe("list", function () {
         it("success", async function () {
-            const emit = jest.fn();
-            const listInstance = useListInstance({
-                emit,
-            });
+            const listInstance = useListInstance({});
             let crudListResolve;
             const crudListPromise = new Promise((resolve) => {
                 crudListResolve = resolve;
@@ -86,7 +83,6 @@ describe("use/listInstance.spec.js", function () {
             expect(listInstance.state.errored).toBe(false);
             expect(listInstance.state.loading).toBeUndefined();
             expect({ ...listInstance.state.objects }).toEqual({});
-            expect(emit.mock.calls).toEqual([]);
 
             const liListResolve = listInstance.list({
                 listArgs: { user: 1 },
@@ -99,8 +95,6 @@ describe("use/listInstance.spec.js", function () {
             expect({ ...listInstance.state.object }).toEqual({});
 
             await nextTick();
-
-            expect(emit.mock.calls).toEqual([["loading", true]]);
 
             passedPageCallback(crudListResolvedPage1);
 
@@ -119,10 +113,6 @@ describe("use/listInstance.spec.js", function () {
             crudListResolve();
             await flushPromises();
 
-            expect(emit.mock.calls).toEqual([
-                ["loading", true],
-                ["loading", false],
-            ]);
             await expect(liListResolve).resolves.toBe(true);
 
             expectErrorToBeNull(listInstance.state.error);
@@ -169,10 +159,7 @@ describe("use/listInstance.spec.js", function () {
             expect({ ...listInstance.state.objects }).toEqual({});
         });
         it("errored", async function () {
-            const emit = jest.fn();
-            const listInstance = useListInstance({
-                emit,
-            });
+            const listInstance = useListInstance({});
             let crudListReject;
             const crudListPromise = new Promise((resolve, reject) => {
                 crudListReject = reject;
@@ -187,7 +174,6 @@ describe("use/listInstance.spec.js", function () {
             expect(listInstance.state.errored).toBe(false);
             expect(listInstance.state.loading).toBeUndefined();
             expect({ ...listInstance.state.objects }).toEqual({});
-            expect(emit.mock.calls).toEqual([]);
 
             const liListResolve = listInstance.list({
                 listArgs: { user: 1 },
@@ -201,17 +187,10 @@ describe("use/listInstance.spec.js", function () {
 
             await nextTick();
 
-            expect(emit.mock.calls).toEqual([["loading", true]]);
-
             const rejected = new Error("Test Error");
             crudListReject(rejected);
             await flushPromises();
 
-            expect(emit.mock.calls).toEqual([
-                ["loading", true],
-                ["errored", true],
-                ["loading", false],
-            ]);
             await expect(liListResolve).resolves.toBe(false);
 
             expect(listInstance.state.error).toBe(rejected);
@@ -227,9 +206,7 @@ describe("use/listInstance.spec.js", function () {
             expect(globalList).toHaveBeenCalledTimes(1);
         });
         it("success (default args)", async function () {
-            const emit = jest.fn();
             const listInstance = useListInstance({
-                emit,
                 defaultListArgs: { user: 1 },
                 defaultRetrieveArgs: { fields: fields },
             });
@@ -247,7 +224,6 @@ describe("use/listInstance.spec.js", function () {
             expect(listInstance.state.errored).toBe(false);
             expect(listInstance.state.loading).toBeUndefined();
             expect({ ...listInstance.state.objects }).toEqual({});
-            expect(emit.mock.calls).toEqual([]);
 
             const liListResolve = listInstance.list();
 
@@ -257,8 +233,6 @@ describe("use/listInstance.spec.js", function () {
             expect({ ...listInstance.state.object }).toEqual({});
 
             await nextTick();
-
-            expect(emit.mock.calls).toEqual([["loading", true]]);
 
             passedPageCallback(crudListResolvedPage1);
 
@@ -277,10 +251,6 @@ describe("use/listInstance.spec.js", function () {
             crudListResolve();
             await flushPromises();
 
-            expect(emit.mock.calls).toEqual([
-                ["loading", true],
-                ["loading", false],
-            ]);
             await expect(liListResolve).resolves.toBe(true);
 
             expectErrorToBeNull(listInstance.state.error);
@@ -296,10 +266,8 @@ describe("use/listInstance.spec.js", function () {
             expect(globalList).toHaveBeenCalledTimes(1);
         });
         it("success (custom stream)", async function () {
-            const emit = jest.fn();
             const listInstance = useListInstance({
                 crudArgs: { stream: "custom_stream" },
-                emit,
             });
             let crudListResolve;
             const crudListPromise = new Promise((resolve) => {
@@ -315,7 +283,6 @@ describe("use/listInstance.spec.js", function () {
             expect(listInstance.state.errored).toBe(false);
             expect(listInstance.state.loading).toBeUndefined();
             expect({ ...listInstance.state.objects }).toEqual({});
-            expect(emit.mock.calls).toEqual([]);
 
             const liListResolve = listInstance.list({
                 listArgs: { user: 1 },
@@ -328,8 +295,6 @@ describe("use/listInstance.spec.js", function () {
             expect({ ...listInstance.state.object }).toEqual({});
 
             await nextTick();
-
-            expect(emit.mock.calls).toEqual([["loading", true]]);
 
             passedPageCallback(crudListResolvedPage1);
 
@@ -348,10 +313,6 @@ describe("use/listInstance.spec.js", function () {
             crudListResolve();
             await flushPromises();
 
-            expect(emit.mock.calls).toEqual([
-                ["loading", true],
-                ["loading", false],
-            ]);
             await expect(liListResolve).resolves.toBe(true);
 
             expectErrorToBeNull(listInstance.state.error);

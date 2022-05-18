@@ -1,5 +1,5 @@
 import { isEmpty, keyBy } from "lodash";
-import { effectScope, reactive, unref, watch } from "vue";
+import { effectScope, reactive, unref } from "vue";
 import { addOrUpdateReactiveObject, assignReactiveObject } from "../utils/assignReactiveObject";
 import inspect from "browser-util-inspect";
 
@@ -29,12 +29,7 @@ export function useListInstances(listInstanceArgs) {
     return instances;
 }
 
-export function useListInstance({
-    crudArgs,
-    defaultListArgs = {},
-    defaultRetrieveArgs = {},
-    emit, // emit is not reactive
-}) {
+export function useListInstance({ crudArgs, defaultListArgs = {}, defaultRetrieveArgs = {} }) {
     const state = reactive({
         listInstanceCrud: {
             args: {},
@@ -134,22 +129,8 @@ export function useListInstance({
 
     const es = effectScope();
 
-    es.run(() => {
-        if (emit) {
-            watch(
-                () => state.errored,
-                (newErrored) => {
-                    emit("errored", newErrored);
-                }
-            );
-            watch(
-                () => state.loading,
-                (newLoading) => {
-                    emit("loading", newLoading);
-                }
-            );
-        }
-    });
+    // we could have effects? let's keep the interface to keep our options open to add without major changes.
+    es.run(() => {});
 
     return {
         state,
