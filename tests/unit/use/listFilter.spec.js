@@ -1,5 +1,6 @@
 import { nextTick, reactive, ref } from "vue";
 import { doAwaitNot } from "../../../utils/watches";
+import { useListSort } from "../../../use";
 
 describe("use/listFilter", () => {
     let useListInstance, useListFilter, setDefaultSearchOptions;
@@ -14,6 +15,7 @@ describe("use/listFilter", () => {
             throttle: 0,
         });
     });
+
     it("should match an allowed values list", async () => {
         const list = useListInstance({});
         const filter = useListFilter({
@@ -145,6 +147,39 @@ describe("use/listFilter", () => {
         await nextTick();
         expect(filter.state.objects).toEqual({
             3: { id: 3, name: "three", has_things: true },
+        });
+    });
+    describe("useListFilter operates on parentState from useListSort", () => {
+        it("computes state.order and state.objects in order", async () => {
+            jest.resetAllMocks();
+            const orderByRules = [{ key: "name", desc: true, localeCompare: false }];
+            const sortThrottleWait = 0;
+            const listInstance = useListInstance({});
+            const listItems = [
+                { id: 4, name: "four", has_things: true },
+                { id: 2, name: "two", has_things: true },
+                { id: 3, name: "three", has_things: true },
+                { id: 1, name: "one", has_things: true },
+            ];
+            const expectedOrder = ["2", "3", "1", "4"];
+            const orderedObjects = [
+                { id: 2, name: "two", has_things: true },
+                { id: 3, name: "three", has_things: true },
+                { id: 1, name: "one", has_things: true },
+                { id: 4, name: "four", has_things: true },
+            ];
+            const filter = useListFilter({
+                parentState: listInstance.state,
+            });
+
+            useListSort({ listInstance, orderByRules, sortThrottleWait });
+            for (const item of listItems) {
+                listInstance.addListObject(item);
+            }
+
+            await nextTick();
+            expect(filter.state.order).toEqual(expectedOrder);
+            expect(filter.state.objectsInOrder).toEqual(orderedObjects);
         });
     });
 });
