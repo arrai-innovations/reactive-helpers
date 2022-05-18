@@ -20,11 +20,11 @@ export function setListSubscriptionCrud({ subscribe }) {
 }
 
 export function useListSubscriptions(args, listInstances = {}) {
-    const instances = {};
+    const subscriptions = {};
     for (const [key, value] of Object.entries(args)) {
-        instances[key] = useListSubscription({ listInstance: listInstances[key], ...value });
+        subscriptions[key] = useListSubscription({ listInstance: listInstances[key], ...value });
     }
-    return instances;
+    return subscriptions;
 }
 
 export function useListSubscription({ listInstance, crudArgs, defaultListArgs, defaultRetrieveArgs }) {
