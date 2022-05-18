@@ -149,7 +149,7 @@ describe("use/listFilter", () => {
             3: { id: 3, name: "three", has_things: true },
         });
     });
-    describe("useListFilter operates on parentState from useListSort", () => {
+    describe("useListFilter operates on parentState modified by useListSort", () => {
         it("computes state.order and state.objects in order", async () => {
             jest.resetAllMocks();
             const orderByRules = [{ key: "name", desc: true, localeCompare: false }];
@@ -168,15 +168,13 @@ describe("use/listFilter", () => {
                 { id: 1, name: "one", has_things: true },
                 { id: 4, name: "four", has_things: true },
             ];
-            const filter = useListFilter({
-                parentState: listInstance.state,
-            });
-
-            useListSort({ listInstance, orderByRules, sortThrottleWait });
+            const listSort = useListSort({ parentState: listInstance.state, orderByRules, sortThrottleWait });
             for (const item of listItems) {
                 listInstance.addListObject(item);
             }
-
+            const filter = useListFilter({
+                parentState: listSort.state,
+            });
             await nextTick();
             expect(filter.state.order).toEqual(expectedOrder);
             expect(filter.state.objectsInOrder).toEqual(orderedObjects);
