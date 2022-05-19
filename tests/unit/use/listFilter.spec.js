@@ -215,7 +215,7 @@ describe("use/listFilter", () => {
             3: { id: 3, name: "three", has_things: true },
         });
     });
-    it("no args/sort: returns an unfiltered, unsorted list", async () => {
+    it("no args: returns objects unfiltered", async () => {
         const listInstance = useListInstance({});
         const listItems = [
             { id: 4, name: "four", has_things: true },
