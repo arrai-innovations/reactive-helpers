@@ -268,16 +268,13 @@ describe("use/listFilter", () => {
         it("returns filtered objects", async () => {
             jest.resetAllMocks();
             const fields = ["id", "__str__", "name"];
-            const listInstance = useListInstance({});
-            const listItems = [
-                { id: 4, name: "four", has_things: true },
-                { id: 2, name: "two", has_things: true },
-                { id: 3, name: "three", has_things: true },
-                { id: 1, name: "one", has_things: true },
-            ];
-            for (const item of listItems) {
-                listInstance.addListObject(item);
-            }
+            const listInstanceA = useListInstance({
+                crudArgs: { stream: "test_streamA" },
+                listArgs: { user: 1 },
+                retrieveArgs: {
+                    fields,
+                },
+            });
             const listInstanceB = useListInstance({
                 crudArgs: { stream: "test_streamB" },
                 listArgs: { user: 2 },
@@ -285,8 +282,6 @@ describe("use/listFilter", () => {
                     fields,
                 },
             });
-
-            await nextTick();
             const args = {
                 A: {
                     excludedValues: {
@@ -304,20 +299,18 @@ describe("use/listFilter", () => {
             const listInstanceModule = await import("../../../use/listInstance");
             const listInstances = listInstanceModule.useListInstances({
                 A: {
-                    listInstance,
+                    listInstanceA,
                 },
                 B: {
                     listInstanceB,
                 },
             });
             const listFilters = useListFilters(args, listInstances);
-            // const listFilterA = useListFilter({ parentState: listInstance.state });
-            await nextTick();
+
             expect(listFilters.A.state.excludedValues).toEqual({ id: 1, name: "three" });
             expect(listFilters.B.state.allowedValues).toEqual({ id: 2, name: "four" });
-
+            expect(unrefAndToRawDeep(listFilters.A.parentState)).toEqual(unrefAndToRawDeep(listInstanceA.state));
             expect(unrefAndToRawDeep(listFilters.B.parentState)).toEqual(unrefAndToRawDeep(listInstanceB.state));
-            // expect(unrefAndToRawDeep(listFilters.A.parentState)).toEqual(unrefAndToRawDeep(listFilterA.state));
         });
     });
 });
