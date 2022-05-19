@@ -150,6 +150,72 @@ describe("use/listFilter", () => {
             3: { id: 3, name: "three", has_things: true },
         });
     });
+    it("should match an excluded filter function", async () => {
+        const list = useListInstance({});
+        const filter = useListFilter({
+            parentState: list.state,
+            excludedFilter: (object) => object.id == 2 || object.id == 4,
+        });
+        await nextTick();
+        expect(filter.state.objects).toEqual({});
+        list.addListObject({ id: 1, name: "one", has_things: true });
+        await nextTick();
+        expect(filter.state.objects).toEqual({
+            1: { id: 1, name: "one", has_things: true },
+        });
+        list.addListObject({ id: 2, name: "two", has_things: true });
+        await nextTick();
+        expect(filter.state.objects).toEqual({
+            1: { id: 1, name: "one", has_things: true },
+        });
+        list.addListObject({ id: 3, name: "three", has_things: true });
+        await nextTick();
+        expect(filter.state.objects).toEqual({
+            1: { id: 1, name: "one", has_things: true },
+            3: { id: 3, name: "three", has_things: true },
+        });
+        list.addListObject({ id: 4, name: "four", has_things: true });
+        await nextTick();
+        expect(filter.state.objects).toEqual({
+            1: { id: 1, name: "one", has_things: true },
+            3: { id: 3, name: "three", has_things: true },
+        });
+    });
+    it("should exclude an excludedValues parameter", async () => {
+        jest.resetAllMocks();
+        const list = useListInstance({});
+        const filter = useListFilter({
+            parentState: list.state,
+            excludedValues: reactive({
+                2: true,
+                4: true,
+            }),
+        });
+        await nextTick();
+        expect(filter.state.objects).toEqual({});
+        list.addListObject({ id: 1, name: "one", has_things: true });
+        await nextTick();
+        expect(filter.state.objects).toEqual({
+            1: { id: 1, name: "one", has_things: true },
+        });
+        list.addListObject({ id: 2, name: "two", has_things: true });
+        await nextTick();
+        expect(filter.state.objects).toEqual({
+            1: { id: 1, name: "one", has_things: true },
+        });
+        list.addListObject({ id: 3, name: "three", has_things: true });
+        await nextTick();
+        expect(filter.state.objects).toEqual({
+            1: { id: 1, name: "one", has_things: true },
+            3: { id: 3, name: "three", has_things: true },
+        });
+        list.addListObject({ id: 4, name: "four", has_things: true });
+        await nextTick();
+        expect(filter.state.objects).toEqual({
+            1: { id: 1, name: "one", has_things: true },
+            3: { id: 3, name: "three", has_things: true },
+        });
+    });
     describe("useListFilter operates on parentState modified by useListSort", () => {
         it("computes state.order and state.objects in order", async () => {
             jest.resetAllMocks();
