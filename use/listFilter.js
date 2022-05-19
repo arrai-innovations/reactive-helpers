@@ -3,10 +3,10 @@ import { keyDiff } from "../utils/keyDiff";
 import { get, identity, isEmpty } from "lodash";
 import { computed, effectScope, onScopeDispose, reactive, toRef, watch, watchEffect } from "vue";
 
-export function useListFilters(listFilterArgs) {
+export function useListFilters(listFilterArgs, parentInstances) {
     const filters = {};
     for (const [key, value] of Object.entries(listFilterArgs)) {
-        filters[key] = useListFilter(value);
+        filters[key] = useListFilter({ parentState: parentInstances[key].state || parentInstances[key], ...value });
     }
     return filters;
 }

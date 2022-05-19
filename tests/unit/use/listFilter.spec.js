@@ -1,6 +1,7 @@
 import { nextTick, reactive, ref } from "vue";
 import { doAwaitNot } from "../../../utils/watches";
-import { useListSort } from "../../../use";
+import { useListFilters, useListSort } from "../../../use";
+import { unrefAndToRawDeep } from "../../../utils";
 
 describe("use/listFilter", () => {
     let useListInstance, useListFilter, setDefaultSearchOptions;
@@ -178,6 +179,62 @@ describe("use/listFilter", () => {
             await nextTick();
             expect(filter.state.order).toEqual(expectedOrder);
             expect(filter.state.objectsInOrder).toEqual(orderedObjects);
+        });
+    });
+    describe("useListFilters accepts args and parentInstances", () => {
+        it("returns filtered objects", async () => {
+            jest.resetAllMocks();
+            const fields = ["id", "__str__", "name"];
+            const listInstance = useListInstance({});
+            const listItems = [
+                { id: 4, name: "four", has_things: true },
+                { id: 2, name: "two", has_things: true },
+                { id: 3, name: "three", has_things: true },
+                { id: 1, name: "one", has_things: true },
+            ];
+            for (const item of listItems) {
+                listInstance.addListObject(item);
+            }
+            const listInstanceB = useListInstance({
+                crudArgs: { stream: "test_streamB" },
+                listArgs: { user: 2 },
+                retrieveArgs: {
+                    fields,
+                },
+            });
+
+            await nextTick();
+            const args = {
+                A: {
+                    excludedValues: {
+                        id: 1,
+                        name: "three",
+                    },
+                },
+                B: {
+                    allowedValues: {
+                        id: 2,
+                        name: "four",
+                    },
+                },
+            };
+            const listInstanceModule = await import("../../../use/listInstance");
+            const listInstances = listInstanceModule.useListInstances({
+                A: {
+                    listInstance,
+                },
+                B: {
+                    listInstanceB,
+                },
+            });
+            const listFilters = useListFilters(args, listInstances);
+            // const listFilterA = useListFilter({ parentState: listInstance.state });
+            await nextTick();
+            expect(listFilters.A.state.excludedValues).toEqual({ id: 1, name: "three" });
+            expect(listFilters.B.state.allowedValues).toEqual({ id: 2, name: "four" });
+
+            expect(unrefAndToRawDeep(listFilters.B.parentState)).toEqual(unrefAndToRawDeep(listInstanceB.state));
+            // expect(unrefAndToRawDeep(listFilters.A.parentState)).toEqual(unrefAndToRawDeep(listFilterA.state));
         });
     });
 });
