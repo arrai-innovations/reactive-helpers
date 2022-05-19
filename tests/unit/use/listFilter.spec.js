@@ -182,7 +182,6 @@ describe("use/listFilter", () => {
         });
     });
     it("should exclude an excludedValues parameter", async () => {
-        jest.resetAllMocks();
         const list = useListInstance({});
         const filter = useListFilter({
             parentState: list.state,
@@ -215,6 +214,24 @@ describe("use/listFilter", () => {
             1: { id: 1, name: "one", has_things: true },
             3: { id: 3, name: "three", has_things: true },
         });
+    });
+    it("no args/sort: returns an unfiltered, unsorted list", async () => {
+        const listInstance = useListInstance({});
+        const listItems = [
+            { id: 4, name: "four", has_things: true },
+            { id: 2, name: "two", has_things: true },
+            { id: 3, name: "three", has_things: true },
+            { id: 1, name: "one", has_things: true },
+        ];
+        for (const item of listItems) {
+            listInstance.addListObject(item);
+        }
+        const filter = useListFilter({
+            parentState: listInstance.state,
+            useTextSearch: true,
+        });
+        await nextTick();
+        expect(filter.state.objects).toEqual(listInstance.state.objects);
     });
     describe("useListFilter operates on parentState modified by useListSort", () => {
         it("computes state.order and state.objects in order", async () => {
