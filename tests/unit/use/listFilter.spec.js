@@ -282,6 +282,20 @@ describe("use/listFilter", () => {
                     fields,
                 },
             });
+            const listFilterA = useListFilter({
+                parentState: listInstanceA.state,
+                excludedValues: {
+                    id: 1,
+                    name: "three",
+                },
+            });
+            const listFilterB = useListFilter({
+                parentState: listInstanceB.state,
+                allowedValues: {
+                    id: 2,
+                    name: "four",
+                },
+            });
             const args = {
                 A: {
                     excludedValues: {
@@ -311,6 +325,8 @@ describe("use/listFilter", () => {
             expect(listFilters.B.state.allowedValues).toEqual({ id: 2, name: "four" });
             expect(unrefAndToRawDeep(listFilters.A.parentState)).toEqual(unrefAndToRawDeep(listInstanceA.state));
             expect(unrefAndToRawDeep(listFilters.B.parentState)).toEqual(unrefAndToRawDeep(listInstanceB.state));
+            expect(unrefAndToRawDeep(listFilters.A.state)).toEqual(unrefAndToRawDeep(listFilterA.state));
+            expect(unrefAndToRawDeep(listFilters.B.state)).toEqual(unrefAndToRawDeep(listFilterB.state));
         });
     });
 });

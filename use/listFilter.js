@@ -45,9 +45,15 @@ export function useListFilter({
         }
 
         state.order = computed(() => {
+            if (!parentState.order) {
+                return parentState.order;
+            }
             return parentState.order.filter((id) => state.objects[id]);
         });
         state.objectsInOrder = computed(() => {
+            if (!parentState.order) {
+                return [];
+            }
             const order = state.order;
             const objects = state.objects;
             return order.map((key) => objects[key]).filter(identity);
