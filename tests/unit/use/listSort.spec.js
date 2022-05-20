@@ -1,5 +1,5 @@
 import { nextTick } from "vue";
-import { unrefAndToRawDeep } from "../../../utils";
+import { doAwaitTimeout, unrefAndToRawDeep } from "../../../utils";
 
 describe("use/useListSort", () => {
     let listInstance,
@@ -182,5 +182,39 @@ describe("use/useListSort", () => {
         expect(unrefAndToRawDeep(listSorts.B.parentState)).toEqual(unrefAndToRawDeep(listInstanceB.state));
         expect(unrefAndToRawDeep(listSorts.A.state)).toEqual(unrefAndToRawDeep(listSortA.state));
         expect(unrefAndToRawDeep(listSorts.B.state)).toEqual(unrefAndToRawDeep(listSortB.state));
+    });
+    describe("useListSort/sortThrottleWait", () => {
+        it("respects throttle time prior to triggering", async () => {
+            setListSortDefaultOptions({
+                sortThrottleWait: 200,
+            });
+            const addObject = {
+                id: 35,
+                lexical_name: "six, JWST",
+                organization: 67,
+                relatedObjects: {
+                    organization: { id: 67, name: "NASA" },
+                },
+            };
+            for (const contact of contactsResolved) {
+                listInstance.addListObject(contact);
+            }
+
+            const testOrder1 = [];
+            const testOrder2 = ["35", "12", "15", "9"];
+            const testOrder3 = ["35", "15", "9"];
+
+            const listSort = useListSort({ parentState: listInstance.state, orderByRules, sortThrottleWait });
+            await nextTick();
+            expect(listSort.state.order).toEqual(testOrder1);
+            listInstance.addListObject(addObject);
+            await nextTick();
+            expect(listSort.state.order).toEqual(testOrder2);
+            listInstance.deleteListObject(12);
+            await nextTick();
+            expect(listSort.state.order).toEqual(testOrder2);
+            await doAwaitTimeout(200);
+            expect(listSort.state.order).toEqual(testOrder3);
+        });
     });
 });
