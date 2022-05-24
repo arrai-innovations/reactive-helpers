@@ -33,20 +33,23 @@ describe("use/watches", () => {
         });
     });
     describe("doAwaitNot", () => {
-        it("resolves with reactiveObject.props = true && couldAlreadyBeFalse: true", async () => {
+        it("resolves with reactiveObject.prop = true && couldAlreadyBeFalse: true", async () => {
             awaitNot.couldAlreadyBeFalse = true;
+            reactiveObject.prop = true;
             awaitNot.start();
             reactiveObject.prop = false;
             await nextTick();
             await expect(awaitNot.promise).resolves.toBe(undefined);
         });
-        it("rejects with reactiveObject.props = true && couldAlreadyBeFalse: true", async () => {
+        it("rejects with reactiveObject.prop = true && couldAlreadyBeFalse: true", async () => {
             awaitNot.couldAlreadyBeFalse = true;
+            reactiveObject.prop = true;
             awaitNot.start();
             await nextTick();
             await expect(awaitNot.promise).rejects.toThrow(AwaitNotError);
         });
-        it("resolves with reactiveObject.props = true && couldAlreadyBeFalse: false", async () => {
+        it("resolves with reactiveObject.prop = true && couldAlreadyBeFalse: false", async () => {
+            reactiveObject.prop = true;
             awaitNot.start();
             reactiveObject.prop = true;
             await nextTick();
@@ -54,11 +57,12 @@ describe("use/watches", () => {
             await nextTick();
             await expect(awaitNot.promise).resolves.toBe(undefined);
         });
-        it("rejects with reactiveObject.props = true && couldAlreadyBeFalse: false", async () => {
+        it("rejects with reactiveObject.prop = true && couldAlreadyBeFalse: false", async () => {
+            reactiveObject.prop = true;
             awaitNot.start();
             await expect(awaitNot.promise).rejects.toThrow(AwaitNotError);
         });
-        it("resolves with reactiveObject.props = false && couldAlreadyBeFalse: false", async () => {
+        it("resolves with reactiveObject.prop = false && couldAlreadyBeFalse: false", async () => {
             reactiveObject.prop = false;
             awaitNot.start();
             reactiveObject.prop = true;
@@ -66,13 +70,13 @@ describe("use/watches", () => {
             reactiveObject.prop = false;
             await expect(awaitNot.promise).resolves.toBe(undefined);
         });
-        it("rejects with reactiveObject.props = false && couldAlreadyBeFalse: false", async () => {
+        it("rejects with reactiveObject.prop = false && couldAlreadyBeFalse: false", async () => {
             reactiveObject.prop = false;
             awaitNot.start();
             await nextTick();
             await expect(awaitNot.promise).rejects.toThrow(AwaitNotError);
         });
-        it("resolves with reactiveObject.props = undefined && couldAlreadyBeFalse: false", async () => {
+        it("resolves with reactiveObject.prop = undefined && couldAlreadyBeFalse: false", async () => {
             reactiveObject.prop = undefined;
             awaitNot.start();
             reactiveObject.prop = true;
@@ -80,13 +84,13 @@ describe("use/watches", () => {
             reactiveObject.prop = false;
             await expect(awaitNot.promise).resolves.toBe(undefined);
         });
-        it("rejects with reactiveObject.props = undefined && couldAlreadyBeFalse: false", async () => {
+        it("rejects with reactiveObject.prop = undefined && couldAlreadyBeFalse: false", async () => {
             reactiveObject.prop = undefined;
             awaitNot.start();
             await nextTick();
             await expect(awaitNot.promise).rejects.toThrow(AwaitNotError);
         });
-        it("resolves with reactiveObject.props = undefined && couldAlreadyBeFalse: true", async () => {
+        it("resolves with reactiveObject.prop = undefined && couldAlreadyBeFalse: true", async () => {
             reactiveObject.prop = undefined;
             awaitNot.couldAlreadyBeFalse = true;
             awaitNot.start();
@@ -94,7 +98,7 @@ describe("use/watches", () => {
             await nextTick();
             await expect(awaitNot.promise).resolves.toBe(undefined);
         });
-        it("rejects with reactiveObject.props = undefined && couldAlreadyBeFalse: true", async () => {
+        it("rejects with reactiveObject.prop = undefined && couldAlreadyBeFalse: true", async () => {
             reactiveObject.prop = undefined;
             awaitNot.couldAlreadyBeFalse = true;
             awaitNot.start();
