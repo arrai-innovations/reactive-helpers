@@ -70,11 +70,10 @@ describe("use/watches", () => {
             reactiveObject.prop = false;
             await expect(awaitNot.promise).resolves.toBe(undefined);
         });
-        it("rejects with reactiveObject.prop = false && couldAlreadyBeFalse: false", async () => {
+        it("resolves with reactiveObject.prop = false && couldAlreadyBeFalse: false 2", async () => {
             reactiveObject.prop = false;
             awaitNot.start();
-            await nextTick();
-            await expect(awaitNot.promise).rejects.toThrow(AwaitNotError);
+            await expect(awaitNot.promise).resolves.toBe(undefined);
         });
         it("resolves with reactiveObject.prop = undefined && couldAlreadyBeFalse: false", async () => {
             awaitNot.start();
