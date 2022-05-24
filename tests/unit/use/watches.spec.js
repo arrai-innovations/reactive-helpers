@@ -49,6 +49,13 @@ describe("use/watches", () => {
             reactiveObject.prop = false;
             await expect(awaitNot.promise).resolves.toBe(undefined);
         });
+        it("rejects on cycling through true to undefined && couldAlreadyBeFalse = false", async () => {
+            awaitNot.start();
+            reactiveObject.prop = true;
+            await nextTick();
+            reactiveObject.prop = undefined;
+            await expect(awaitNot.promise).rejects.toThrow(AwaitNotError);
+        });
         it("rejects as static undefined && couldAlreadyBeFalse: false", async () => {
             awaitNot.start();
             await nextTick();
@@ -67,6 +74,15 @@ describe("use/watches", () => {
             reactiveObject.prop = true;
             await nextTick();
             reactiveObject.prop = false;
+            await nextTick();
+            await expect(awaitNot.promise).resolves.toBe(undefined);
+        });
+        it("rejects on cycling through false and undefined && couldAlreadyBeFalse: true", async () => {
+            awaitNot.couldAlreadyBeFalse = true;
+            awaitNot.start();
+            reactiveObject.prop = false;
+            await nextTick();
+            reactiveObject.prop = undefined;
             await nextTick();
             await expect(awaitNot.promise).resolves.toBe(undefined);
         });
@@ -129,6 +145,27 @@ describe("use/watches", () => {
         });
     });
     describe("doAwaitNot instance's obj.prop loading pattern begins as true...", () => {
+        it("resolves on cycling through true and false && couldAlreadyBeFalse: false", async () => {
+            reactiveObject.prop = true;
+            awaitNot.start();
+            reactiveObject.prop = true;
+            await nextTick();
+            reactiveObject.prop = false;
+            await nextTick();
+            await expect(awaitNot.promise).resolves.toBe(undefined);
+        });
+        it("resolves on cycling through false && couldAlreadyBeFalse: false", async () => {
+            reactiveObject.prop = true;
+            awaitNot.start();
+            reactiveObject.prop = false;
+            await nextTick();
+            await expect(awaitNot.promise).resolves.toBe(undefined);
+        });
+        it("rejects as static true && couldAlreadyBeFalse: false", async () => {
+            reactiveObject.prop = true;
+            awaitNot.start();
+            await expect(awaitNot.promise).rejects.toThrow(AwaitNotError);
+        });
         it("resolves on cycling through false && couldAlreadyBeFalse: true", async () => {
             awaitNot.couldAlreadyBeFalse = true;
             reactiveObject.prop = true;
@@ -152,27 +189,6 @@ describe("use/watches", () => {
             reactiveObject.prop = true;
             awaitNot.start();
             await nextTick();
-            await expect(awaitNot.promise).rejects.toThrow(AwaitNotError);
-        });
-        it("resolves on cycling through true and false && couldAlreadyBeFalse: false", async () => {
-            reactiveObject.prop = true;
-            awaitNot.start();
-            reactiveObject.prop = true;
-            await nextTick();
-            reactiveObject.prop = false;
-            await nextTick();
-            await expect(awaitNot.promise).resolves.toBe(undefined);
-        });
-        it("resolves on cycling through false && couldAlreadyBeFalse: false", async () => {
-            reactiveObject.prop = true;
-            awaitNot.start();
-            reactiveObject.prop = false;
-            await nextTick();
-            await expect(awaitNot.promise).resolves.toBe(undefined);
-        });
-        it("rejects as static true && couldAlreadyBeFalse: false", async () => {
-            reactiveObject.prop = true;
-            awaitNot.start();
             await expect(awaitNot.promise).rejects.toThrow(AwaitNotError);
         });
     });
