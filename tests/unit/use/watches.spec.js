@@ -41,7 +41,7 @@ describe("use/watches", () => {
             await expect(awaitNot.promise).resolves.toBe(undefined);
         });
         it("rejects with reactiveObject.props = true && couldAlreadyBeFalse: true", async () => {
-            awaitNot.couldAlreadyBeFalse = false;
+            awaitNot.couldAlreadyBeFalse = true;
             awaitNot.start();
             await nextTick();
             await expect(awaitNot.promise).rejects.toThrow(AwaitNotError);
@@ -68,6 +68,35 @@ describe("use/watches", () => {
         });
         it("rejects with reactiveObject.props = false && couldAlreadyBeFalse: false", async () => {
             reactiveObject.prop = false;
+            awaitNot.start();
+            await nextTick();
+            await expect(awaitNot.promise).rejects.toThrow(AwaitNotError);
+        });
+        it("resolves with reactiveObject.props = undefined && couldAlreadyBeFalse: false", async () => {
+            reactiveObject.prop = undefined;
+            awaitNot.start();
+            reactiveObject.prop = true;
+            await nextTick();
+            reactiveObject.prop = false;
+            await expect(awaitNot.promise).resolves.toBe(undefined);
+        });
+        it("rejects with reactiveObject.props = undefined && couldAlreadyBeFalse: false", async () => {
+            reactiveObject.prop = undefined;
+            awaitNot.start();
+            await nextTick();
+            await expect(awaitNot.promise).rejects.toThrow(AwaitNotError);
+        });
+        it("resolves with reactiveObject.props = undefined && couldAlreadyBeFalse: true", async () => {
+            reactiveObject.prop = undefined;
+            awaitNot.couldAlreadyBeFalse = true;
+            awaitNot.start();
+            reactiveObject.prop = false;
+            await nextTick();
+            await expect(awaitNot.promise).resolves.toBe(undefined);
+        });
+        it("rejects with reactiveObject.props = undefined && couldAlreadyBeFalse: true", async () => {
+            reactiveObject.prop = undefined;
+            awaitNot.couldAlreadyBeFalse = true;
             awaitNot.start();
             await nextTick();
             await expect(awaitNot.promise).rejects.toThrow(AwaitNotError);
