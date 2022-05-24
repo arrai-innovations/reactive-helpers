@@ -83,7 +83,7 @@ export function doAwaitTimeout(timeout) {
 }
 
 export class AwaitNot {
-    constructor({ obj, prop, couldAlreadyBeFalse = true, timeout = 1000 }) {
+    constructor({ obj, prop, couldAlreadyBeFalse = false, timeout = 1000 }) {
         this.timeout = new AwaitTimeout({ timeout });
         this.promise = new Promise((resolve, reject) => {
             this.resolve = resolve;
@@ -109,7 +109,7 @@ export class AwaitNot {
                 }
             });
         this.timeout.start();
-        if (this.obj[this.prop] === false && !this.couldAlreadyBeFalse) {
+        if (this.obj[this.prop] === false && this.couldAlreadyBeFalse) {
             this.waitForTrue();
         } else {
             this.waitForFalse();
