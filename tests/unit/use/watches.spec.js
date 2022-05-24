@@ -75,6 +75,21 @@ describe("use/watches", () => {
             awaitNot.start();
             await expect(awaitNot.promise).resolves.toBe(undefined);
         });
+        it("conditionally resolves with reactiveObject.prop = false && couldAlreadyBeFalse: true", async () => {
+            awaitNot.couldAlreadyBeFalse = true;
+            reactiveObject.prop = false;
+            awaitNot.start();
+            reactiveObject.prop = true;
+            await nextTick();
+            reactiveObject.prop = false;
+            await expect(awaitNot.promise).resolves.toBe(undefined);
+        });
+        it("immediately resolves with reactiveObject.prop = false && couldAlreadyBeFalse: true", async () => {
+            awaitNot.couldAlreadyBeFalse = true;
+            reactiveObject.prop = false;
+            awaitNot.start();
+            await expect(awaitNot.promise).resolves.toBe(undefined);
+        });
         it("resolves with reactiveObject.prop = undefined && couldAlreadyBeFalse: false", async () => {
             awaitNot.start();
             reactiveObject.prop = true;
