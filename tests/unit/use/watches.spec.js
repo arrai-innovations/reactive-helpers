@@ -1,4 +1,5 @@
-import { doAwaitTimeout } from "../../../utils";
+import { AwaitTimeout, AwaitTimeoutError, doAwaitTimeout } from "../../../utils";
+import { performance } from "perf_hooks";
 
 describe("use/watches", () => {
     let timeout;
@@ -8,18 +9,21 @@ describe("use/watches", () => {
     });
     describe("doAwaitTimeout", () => {
         it("should resolve after the passed timeout", async () => {
-            timeout = 500;
-            let checker = 0;
-            const checked = () => {
-                checker++;
-            };
-            const checking = () => {
-                setInterval(checked, 1);
-            };
-            checking();
+            timeout = 200;
+            const start = performance.now();
             await doAwaitTimeout(timeout);
-            clearInterval(checking);
-            expect(checker).toBeGreaterThanOrEqual(timeout * 0.75);
+            const end = performance.now();
+            expect(end - start).toBeLessThan(timeout * 1.1);
         });
+        it("rejects the promise when stopped manually", async () => {
+            timeout = 200;
+            const awaitTimeout = new AwaitTimeout(timeout);
+            awaitTimeout.start();
+            setTimeout(() => awaitTimeout.stop(), timeout / 2);
+            await expect(awaitTimeout.promise).rejects.toThrow(AwaitTimeoutError);
+        });
+    });
+    describe("doAwaitNot", () => {
+        it("resolves its stages as prop transitions & couldAlreadyBeLoaded: false", async () => {});
     });
 });
