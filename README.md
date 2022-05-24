@@ -27,6 +27,7 @@ VueJS 3 utility composition functions to help manipulate objects and lists.
     - [addOrUpdateReactiveObject & assignReactiveObject](#addorupdatereactiveobject--assignreactiveobject)
     - [keyDiff](#keydiff)
     - [set](#set)
+    - [watches](#watches)
 - [Development](#development)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
@@ -435,6 +436,143 @@ intersection(new Set([1, 2, 3, 4]), new Set([1, 2, 3])); // Set { 1, 2, 3 }
 symmetricDifference(new Set([1, 2, 3, 4]), new Set([1, 2, 3, 5])); // Set { 4, 5 }
 difference(new Set([1, 2, 3, 4]), new Set([1, 2, 3, 5])); // Set { 4 }
 difference(new Set([1, 2, 3, 5]), new Set([1, 2, 3, 4])); // Set { 5 }
+```
+
+#### watches
+
+`ImmediateStopWatch` - a vue.js watch that can be stopped in the first iteration
+
+```js
+import { ImmediateStopWatch } from "@arrai-innovations/reactive-helpers";
+const reactiveObject = reactive({ a: 1 });
+const watch = new ImmediateStopWatch();
+const watch2 = new ImmediateStopWatch();
+watch.start(
+    () => reactiveObject.a,
+    (newA) => {
+        if (newA === 2) {
+            console.log("a is now 2!");
+            watch.stop();
+        }
+    },
+    [reactiveObject.a]
+);
+watch2.start(
+    () => reactiveObject.a,
+    (newA) => {
+        if (newA === 1) {
+            console.log("a is now 1!");
+            watch2.stop();
+        }
+    },
+    [reactiveObject.a]
+);
+// a is now 1!
+await nextTick();
+reactiveObject.a = 2;
+await nextTick();
+// a is now 2!
+await nextTick();
+reactiveObject.a = 1;
+await nextTick();
+// no output;
+reactiveObject.a = 2;
+await nextTick();
+// no output;
+```
+
+`AwaitTimeout` - a class that provides a promise that resolves after a timeout.
+
+```js
+import { AwaitTimeout } from "@arrai-innovations/reactive-helpers";
+const awaitTimeout = new AwaitTimeout({ timeout: 1000 });
+awaitTimeout.start();
+await awaitTimeout.promise; // waits 1 second
+const awaitTimeout2 = new AwaitTimeout({ timeout: 1000 });
+awaitTimeout2.start();
+setTimeout(() => awaitTimeout2.stop(), 500);
+await awaitTimeout2.promise; // waits 500 ms then rejects with new AwaitTimeoutError("Cancelled", "timeout_cancelled")
+```
+
+`doAwaitTimeout` - a function that returns a promise that resolves after a timeout.
+
+```js
+import { doAwaitTimeout } from "@arrai-innovations/reactive-helpers";
+// non cancellable AwaitTimeout helper
+await doAwaitTimeout(1000); // waits 1 second
+```
+
+`AwaitNot` - a class that provides a promise that resolves when a watched prop switches to true then to false.
+
+```mermaid
+flowchart TD
+  A["new AwaitNot"] --> B["AwaitNot.start()"];
+  B -- timeout --> G["AwaitNot.promise is rejected"]
+  B --> C["prop is false and !cannotAlreadyBeFalse"]
+  C -- prop is true --> D["AwaitNot.waitForTrue()"];
+  C -- prop is false --> E["AwaitNot.waitForFalse()"];
+  D -- timeout --> G
+  E -- timeout --> G
+  E -- prop is false -->  F["AwaitNot.promise is resolved"]
+  D -- prop is true --> E
+```
+
+```js
+import { reactive } from "vue";
+const reactiveObject = reactive({});
+import { AwaitNot } from "@arrai-innovations/reactive-helpers";
+const awaitNot = new AwaitNot({
+    obj: reactiveObject,
+    prop: "prop",
+    couldAlreadyBeFalse: true, // default
+    timeout: 1000, // default
+});
+awaitNot.promise
+    .then(() => {
+        console.log("resolved");
+    })
+    .catch(() => {
+        console.log("rejected");
+    });
+awaitNot.start();
+await nextTick();
+reactiveObject.prop = true;
+await nextTick();
+reactiveObject.prop = false;
+await nextTick();
+// resolved
+const awaitNot2 = new AwaitNot({
+    obj: reactiveObject,
+    prop: "prop",
+    couldAlreadyBeFalse: true, // default
+    timeout: 500,
+});
+awaitNot2.promise
+    .then(() => {
+        console.log("resolved");
+    })
+    .catch(() => {
+        console.log("rejected");
+    });
+awaitNot2.start();
+await awaitNot2.promise;
+// rejected
+const awaitNot3 = new AwaitNot({
+    obj: reactiveObject,
+    prop: "prop",
+    couldAlreadyBeFalse: false,
+    timeout: 1000, // default
+});
+awaitNot3.promise
+    .then(() => {
+        console.log("resolved");
+    })
+    .catch(() => {
+        console.log("rejected");
+    });
+awaitNot3.start();
+await awaitNot3.promise;
+// resolved
 ```
 
 ## Development

@@ -83,13 +83,13 @@ export function doAwaitTimeout(timeout) {
 }
 
 export class AwaitNot {
-    constructor({ obj, prop, couldAlreadyBeLoaded = true, timeout = 1000 }) {
+    constructor({ obj, prop, couldAlreadyBeFalse = true, timeout = 1000 }) {
         this.timeout = new AwaitTimeout({ timeout });
         this.promise = new Promise((resolve, reject) => {
             this.resolve = resolve;
             this.reject = reject;
         });
-        this.couldAlreadyBeLoaded = couldAlreadyBeLoaded;
+        this.couldAlreadyBeFalse = couldAlreadyBeFalse;
         this.obj = obj;
         this.prop = prop;
         this.trueISW = new ImmediateStopWatch();
@@ -109,7 +109,7 @@ export class AwaitNot {
                 }
             });
         this.timeout.start();
-        if (this.obj[this.prop] === false && !this.couldAlreadyBeLoaded) {
+        if (this.obj[this.prop] === false && !this.couldAlreadyBeFalse) {
             this.waitForTrue();
         } else {
             this.waitForFalse();
@@ -163,8 +163,8 @@ export class AwaitNot {
     }
 }
 
-export function doAwaitNot({ obj, prop, couldAlreadyBeLoaded = true, timeout = 1000 }) {
-    const awaitNot = new AwaitNot({ obj, prop, couldAlreadyBeLoaded, timeout });
+export function doAwaitNot({ obj, prop, couldAlreadyBeFalse = true, timeout = 1000 }) {
+    const awaitNot = new AwaitNot({ obj, prop, couldAlreadyBeFalse, timeout });
     awaitNot.start();
     return awaitNot.promise;
 }
