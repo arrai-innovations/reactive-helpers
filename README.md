@@ -508,12 +508,12 @@ await doAwaitTimeout(1000); // waits 1 second
 flowchart TD
   A["new AwaitNot"] --> B["AwaitNot.start()"];
   B -- timeout --> G["AwaitNot.promise is rejected"]
-  B --> C{"prop is false"}
-  C -- true --> H{"!canAlreadyBeFalse"}
-  H -- true --> D["AwaitNot.waitForTrue()"];
-  C -- false --> E["AwaitNot.waitForFalse()"];
-  H -- false --> E;
-  
+  B --> C{"prop is false"};
+  C -- false --> D["AwaitNot.waitForTrue()"];
+  C -- true --> H{"canAlreadyBeFalse"}
+  H -- true --> D;
+  H -- false --> E["AwaitNot.waitForFalse()"];
+
   D -- timeout --> G
   E -- timeout --> G
   E -- prop is false -->  F["AwaitNot.promise is resolved"]
