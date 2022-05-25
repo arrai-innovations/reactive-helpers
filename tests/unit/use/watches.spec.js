@@ -204,9 +204,7 @@ describe("use/watches", () => {
             const immediateStopWatch = new ImmediateStopWatch({});
             reactiveObject.prop = true;
             const watchSources = () => reactiveObject.prop;
-            const watchFunc = jest.fn((newValue) => {
-                console.log(newValue);
-            });
+            const watchFunc = jest.fn();
             const watchFuncArgs = [reactiveObject.prop];
 
             const propsList = [true, false, true, false];
@@ -223,6 +221,32 @@ describe("use/watches", () => {
             expect(watchFunc).toBeCalled();
             await cycleProp(propsList);
             expect(watchFunc).toHaveBeenCalledTimes(6);
+        });
+        it("stops when expected", async () => {
+            const immediateStopWatch = new ImmediateStopWatch({});
+            reactiveObject.prop = true;
+            const watchSources = () => reactiveObject.prop;
+            const watchFunc = jest.fn((newValue) => {
+                if (newValue === undefined) {
+                    immediateStopWatch.stop();
+                }
+            });
+            const watchFuncArgs = [reactiveObject.prop];
+
+            const propsList = [true, false, undefined, true, false];
+            const cycleProp = async (propsList) => {
+                for (let prop of propsList) {
+                    reactiveObject.prop = prop;
+                    await nextTick();
+                }
+            };
+
+            immediateStopWatch.start(watchSources, watchFunc, watchFuncArgs);
+            reactiveObject.prop = false;
+            await nextTick();
+            expect(watchFunc).toBeCalled();
+            await cycleProp(propsList);
+            expect(watchFunc).toHaveBeenCalledTimes(5);
         });
     });
 });
