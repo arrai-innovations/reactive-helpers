@@ -1,4 +1,11 @@
-import { AwaitNot, AwaitNotError, AwaitTimeout, AwaitTimeoutError, doAwaitTimeout } from "../../../utils";
+import {
+    AwaitNot,
+    AwaitNotError,
+    AwaitTimeout,
+    AwaitTimeoutError,
+    doAwaitTimeout,
+    ImmediateStopWatch,
+} from "../../../utils";
 import { performance } from "perf_hooks";
 import { nextTick, reactive } from "vue";
 
@@ -190,6 +197,32 @@ describe("use/watches", () => {
             awaitNot.start();
             await nextTick();
             await expect(awaitNot.promise).rejects.toThrow(AwaitNotError);
+        });
+    });
+    describe("ImmediateStopWatch", () => {
+        it("responds to multiple calls", async () => {
+            const immediateStopWatch = new ImmediateStopWatch({});
+            reactiveObject.prop = true;
+            const watchSources = () => reactiveObject.prop;
+            const watchFunc = jest.fn((newValue) => {
+                console.log(newValue);
+            });
+            const watchFuncArgs = [reactiveObject.prop];
+
+            const propsList = [true, false, true, false];
+            const cycleProp = async (propsList) => {
+                for (let prop of propsList) {
+                    reactiveObject.prop = prop;
+                    await nextTick();
+                }
+            };
+
+            immediateStopWatch.start(watchSources, watchFunc, watchFuncArgs);
+            reactiveObject.prop = false;
+            await nextTick();
+            expect(watchFunc).toBeCalled();
+            await cycleProp(propsList);
+            expect(watchFunc).toHaveBeenCalledTimes(6);
         });
     });
 });
