@@ -2,7 +2,7 @@ import { keyDiff } from "./keyDiff.js";
 import { union } from "./set.js";
 import { isReactive, toRef } from "vue";
 import { isArray, isObject } from "lodash";
-import { inspect } from "util";
+import inspect from "browser-util-inspect";
 
 export class AssignReactiveObjectError extends Error {
     constructor(message) {
