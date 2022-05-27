@@ -1,6 +1,6 @@
-import { isEmpty, keyBy } from "lodash";
+import { isEmpty } from "lodash";
 import { effectScope, reactive, unref } from "vue";
-import { addOrUpdateReactiveObject, assignReactiveObject } from "../utils/assignReactiveObject";
+import { assignReactiveObject } from "../utils/assignReactiveObject";
 import inspect from "browser-util-inspect";
 
 export class ListError extends Error {
@@ -67,7 +67,13 @@ export function useListInstance({ crudArgs, defaultListArgs = {}, defaultRetriev
                 retrieveArgs,
                 listArgs,
                 pageCallback: (newObjects) => {
-                    addOrUpdateReactiveObject(state.objects, keyBy(newObjects, "id"));
+                    newObjects.forEach((newObject) => {
+                        if (newObject.id in state.objects) {
+                            updateListObject(newObject);
+                        } else {
+                            addListObject(newObject);
+                        }
+                    });
                 },
             })
             .then(() => {
