@@ -1,5 +1,5 @@
 import { isEmpty } from "lodash";
-import { effectScope, reactive, unref } from "vue";
+import { computed, effectScope, reactive, unref } from "vue";
 import { assignReactiveObject } from "../utils/assignReactiveObject";
 import inspect from "browser-util-inspect";
 
@@ -135,8 +135,9 @@ export function useListInstance({ crudArgs, defaultListArgs = {}, defaultRetriev
 
     const es = effectScope();
 
-    // we could have effects? let's keep the interface to keep our options open to add without major changes.
-    es.run(() => {});
+    es.run(() => {
+        state.objectsInOrder = computed(() => state.addedOrder.map((id) => state.objects[id]));
+    });
 
     return {
         state,
