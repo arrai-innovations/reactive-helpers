@@ -1,6 +1,6 @@
-import { isEmpty, keyBy } from "lodash";
-import { effectScope, reactive, unref } from "vue";
-import { addOrUpdateReactiveObject, assignReactiveObject } from "../utils/assignReactiveObject";
+import { isEmpty } from "lodash";
+import { computed, effectScope, reactive, unref } from "vue";
+import { assignReactiveObject } from "../utils/assignReactiveObject";
 import inspect from "browser-util-inspect";
 
 export class ListError extends Error {
@@ -67,7 +67,13 @@ export function useListInstance({ crudArgs, defaultListArgs = {}, defaultRetriev
                 retrieveArgs,
                 listArgs,
                 pageCallback: (newObjects) => {
-                    addOrUpdateReactiveObject(state.objects, keyBy(newObjects, "id"));
+                    newObjects.forEach((newObject) => {
+                        if (newObject.id in state.objects) {
+                            updateListObject(newObject);
+                        } else {
+                            addListObject(newObject);
+                        }
+                    });
                 },
             })
             .then(() => {
@@ -129,8 +135,9 @@ export function useListInstance({ crudArgs, defaultListArgs = {}, defaultRetriev
 
     const es = effectScope();
 
-    // we could have effects? let's keep the interface to keep our options open to add without major changes.
-    es.run(() => {});
+    es.run(() => {
+        state.objectsInOrder = computed(() => state.addedOrder.map((id) => state.objects[id]));
+    });
 
     return {
         state,

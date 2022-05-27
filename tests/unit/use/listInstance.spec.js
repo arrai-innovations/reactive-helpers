@@ -421,4 +421,53 @@ describe("use/listInstance.spec.js", function () {
             expect(fakeId).toBeTruthy();
         });
     });
+    it("computes objectsInOrder and maintains state", () => {
+        const crudListResolvedPage3 = [
+            {
+                id: 3,
+                __str__: "qwer",
+                name: "qwer",
+            },
+            {
+                id: 8,
+                __str__: "asfd",
+                name: "asdf",
+            },
+            {
+                id: 2,
+                __str__: "zxcv",
+                name: "zxcv",
+            },
+        ];
+        const addObject = {
+            id: 4,
+            __str__: "yuio",
+            name: "yiuo",
+        };
+        const listInstance = useListInstance({
+            defaultListArgs: { user: 1 },
+            defaultRetrieveArgs: { fields: fields },
+        });
+        let crudListResolve;
+        const crudListPromise = new Promise((resolve) => {
+            crudListResolve = resolve;
+        });
+        let passedPageCallback;
+        globalList.mockImplementation(({ pageCallback }) => {
+            passedPageCallback = pageCallback;
+            return crudListPromise;
+        });
+
+        listInstance.list();
+
+        passedPageCallback(crudListResolvedPage3);
+        crudListResolve();
+        expect(listInstance.state.objectsInOrder).toEqual(crudListResolvedPage3);
+        listInstance.addListObject(addObject);
+        crudListResolvedPage3.push(addObject);
+        expect(listInstance.state.objectsInOrder).toEqual(crudListResolvedPage3);
+        listInstance.deleteListObject(8);
+        crudListResolvedPage3.splice(1, 1);
+        expect(listInstance.state.objectsInOrder).toEqual(crudListResolvedPage3);
+    });
 });
