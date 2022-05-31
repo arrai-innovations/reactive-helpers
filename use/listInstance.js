@@ -48,6 +48,16 @@ export function useListInstance({ crudArgs, defaultListArgs = {}, defaultRetriev
         assignReactiveObject(state.listInstanceCrud.args, crudArgs);
     }
 
+    const defaultPageCallback = (newObjects) => {
+        newObjects.forEach((newObject) => {
+            if (newObject.id in state.objects) {
+                updateListObject(newObject);
+            } else {
+                addListObject(newObject);
+            }
+        });
+    };
+
     async function list({ listArgs, retrieveArgs } = {}) {
         if (state.loading) {
             throw new ListError("already loading.");
@@ -66,15 +76,7 @@ export function useListInstance({ crudArgs, defaultListArgs = {}, defaultRetriev
                 crudArgs: state.listInstanceCrud.args,
                 retrieveArgs,
                 listArgs,
-                pageCallback: (newObjects) => {
-                    newObjects.forEach((newObject) => {
-                        if (newObject.id in state.objects) {
-                            updateListObject(newObject);
-                        } else {
-                            addListObject(newObject);
-                        }
-                    });
-                },
+                pageCallback: returnedObject.pageCallback,
             })
             .then(() => {
                 return Promise.resolve(true);
@@ -125,6 +127,13 @@ export function useListInstance({ crudArgs, defaultListArgs = {}, defaultRetriev
         delete state.objects[objectId];
     }
 
+    function clearList() {
+        state.addedOrder.splice(0);
+        for (const item in state.objects) {
+            delete state.objects[item];
+        }
+    }
+
     function getFakeId() {
         let fakeId;
         do {
@@ -139,13 +148,17 @@ export function useListInstance({ crudArgs, defaultListArgs = {}, defaultRetriev
         state.objectsInOrder = computed(() => state.addedOrder.map((id) => state.objects[id]));
     });
 
-    return {
+    const returnedObject = {
         state,
         list,
         addListObject,
         updateListObject,
         deleteListObject,
+        clearList,
         effectScope: es,
         getFakeId,
+        defaultPageCallback,
+        pageCallback: defaultPageCallback,
     };
+    return returnedObject;
 }
