@@ -5,4 +5,5 @@ export * from "./listSort.js";
 export * from "./listSubscription.js";
 export * from "./objectInstance.js";
 export * from "./objectSubscription.js";
+export * from "./paginatedListInstance.js";
 export * from "./search.js";
