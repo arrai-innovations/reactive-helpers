@@ -5,10 +5,9 @@ export function usePagedListInstance({ crudArgs, defaultListArgs = {}, defaultRe
 
     listInstance.state.totalRecords = 0;
     listInstance.state.totalPages = 0;
-    listInstance.state.page = 0;
     listInstance.state.perPage = 0;
 
-    listInstance.pageCallback = (newObjects, { totalRecords, totalPages, page, perPage }) => {
+    listInstance.pageCallback = (newObjects, { totalRecords, totalPages, perPage }) => {
         // display one page at a time, clear the list
         listInstance.clearList();
 
@@ -18,9 +17,6 @@ export function usePagedListInstance({ crudArgs, defaultListArgs = {}, defaultRe
         }
         if (totalPages !== undefined) {
             listInstance.state.totalPages = totalPages;
-        }
-        if (page !== undefined) {
-            listInstance.state.page = page;
         }
         if (perPage !== undefined) {
             listInstance.state.perPage = perPage;
