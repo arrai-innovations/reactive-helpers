@@ -1,4 +1,4 @@
-import { computed, effectScope, onScopeDispose, reactive, toRefs, watch } from "vue";
+import { computed, effectScope, onScopeDispose, reactive, toRef, toRefs, watch } from "vue";
 import { get, isArray, isEmpty, isUndefined } from "lodash";
 import { keyDiff } from "../utils/keyDiff";
 
@@ -108,6 +108,9 @@ export function useListRelated({
     const es = effectScope();
 
     es.run(() => {
+        state.order = toRef(parentState, "order");
+        state.objectsInOrder = computed(() => state.order.map((id) => state.objects[id]));
+
         watch(() => Object.keys(parentState.objects), parentStateObjectsWatch, { immediate: true });
         watch(
             [

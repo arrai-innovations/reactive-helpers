@@ -41,7 +41,7 @@ export function useListInstance({ crudArgs, defaultListArgs = {}, defaultRetriev
         loading: undefined,
         errored: false,
         error: null,
-        addedOrder: [],
+        order: [],
     });
     assignReactiveObject(state.listInstanceCrud, defaultCrud);
     if (crudArgs) {
@@ -99,7 +99,8 @@ export function useListInstance({ crudArgs, defaultListArgs = {}, defaultRetriev
             throw new ListError(`addListObject: list already has object for id: ${inspect(object.id)}`, "duplicate-id");
         }
         state.objects[object.id] = {};
-        state.addedOrder.push(object.id);
+        // objects keys are always strings.
+        state.order.push(`${object.id}`);
         assignReactiveObject(state.objects[object.id], object);
     }
 
@@ -123,12 +124,13 @@ export function useListInstance({ crudArgs, defaultListArgs = {}, defaultRetriev
                 "missing-object"
             );
         }
-        state.addedOrder.splice(state.addedOrder.indexOf(objectId), 1);
+        // objects keys are always strings.
+        state.order.splice(state.order.indexOf(`${objectId}`), 1);
         delete state.objects[objectId];
     }
 
     function clearList() {
-        state.addedOrder.splice(0);
+        state.order.splice(0);
         for (const item in state.objects) {
             delete state.objects[item];
         }
@@ -145,7 +147,7 @@ export function useListInstance({ crudArgs, defaultListArgs = {}, defaultRetriev
     const es = effectScope();
 
     es.run(() => {
-        state.objectsInOrder = computed(() => state.addedOrder.map((id) => state.objects[id]));
+        state.objectsInOrder = computed(() => state.order.map((id) => state.objects[id]));
     });
 
     const returnedObject = {

@@ -44,20 +44,8 @@ export function useListFilter({
             state.searching = toRef(textSearchIndex.state, "searching");
         }
 
-        state.order = computed(() => {
-            if (!parentState.order) {
-                return parentState.order;
-            }
-            return parentState.order.filter((id) => state.objects[id]);
-        });
-        state.objectsInOrder = computed(() => {
-            if (!parentState.order) {
-                return [];
-            }
-            const order = state.order;
-            const objects = state.objects;
-            return order.map((key) => objects[key]).filter(identity);
-        });
+        state.objectsInOrder = computed(() => parentState.order.map((id) => state.objects[id]).filter(identity));
+        state.order = computed(() => state.objectsInOrder.map((object) => `${object.id}`));
 
         watchEffect(() => {
             const allowedValuesEmpty = !state.allowedValues || isEmpty(state.allowedValues);

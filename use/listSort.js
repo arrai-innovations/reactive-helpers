@@ -105,9 +105,7 @@ export function useListSort({ parentState, orderByRules, sortThrottleWait = defa
 
     function sortWatch() {
         if (!state.orderByRules || !state.orderByRules.length) {
-            const serverOrderObjectsInOrder = parentState.addedOrder
-                .map((e) => parentState.objects[e])
-                .filter(identity);
+            const serverOrderObjectsInOrder = parentState.order.map((e) => parentState.objects[e]).filter(identity);
             assignReactiveObject(
                 state.order,
                 serverOrderObjectsInOrder.map((e) => String(e.id))
@@ -168,13 +166,9 @@ export function useListSort({ parentState, orderByRules, sortThrottleWait = defa
             immediate: true,
         });
 
-        watch(
-            [toRef(state, "orderByDesc"), () => state.sortCriteria, () => parentState.addedOrder],
-            throttledSortWatch,
-            {
-                deep: true,
-            }
-        );
+        watch([toRef(state, "orderByDesc"), () => state.sortCriteria, () => parentState.order], throttledSortWatch, {
+            deep: true,
+        });
         onScopeDispose(() => {
             Object.keys(state.sortCriteriaWatches).forEach((key) => {
                 removeSortCriteria(key);
