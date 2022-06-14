@@ -1,4 +1,4 @@
-import { effectScope, onScopeDispose, reactive } from "vue";
+import { effectScope, onScopeDispose, reactive, toRef } from "vue";
 import { useListInstance } from "./listInstance";
 import { cloneDeep, isEmpty, isObject } from "lodash";
 import { assignReactiveObject } from "../utils/assignReactiveObject";
@@ -128,6 +128,9 @@ export function useListSubscription({ listInstance, crudArgs, defaultListArgs, d
     const es = effectScope();
 
     es.run(() => {
+        state.objects = toRef(listInstance.state, "objects");
+        state.order = toRef(listInstance.state, "order");
+        state.objectsInOrder = toRef(listInstance.state, "objectsInOrder");
         onScopeDispose(async () => {
             await unsubscribe();
         });
