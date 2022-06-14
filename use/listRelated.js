@@ -45,10 +45,12 @@ export function useListRelated({
             state.relatedObjectsObjects[addedKey] = {};
             combinedEffectScopes[addedKey] = effectScope();
             combinedEffectScopes[addedKey].run(() => {
-                state.objects[addedKey] = computed(() => ({
-                    ...toRefs(state.relatedObjectsObjects[addedKey]),
-                    ...toRefs(parentState.objects[addedKey]),
-                }));
+                state.objects[addedKey] = computed(() =>
+                    reactive({
+                        ...toRefs(state.relatedObjectsObjects[addedKey]),
+                        ...toRefs(parentState.objects[addedKey]),
+                    })
+                );
             });
         }
     }
