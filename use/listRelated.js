@@ -1,4 +1,4 @@
-import { computed, effectScope, onScopeDispose, reactive, toRef, toRefs, watch } from "vue";
+import { computed, effectScope, onScopeDispose, reactive, toRef, toRefs, unref, watch } from "vue";
 import { get, isArray, isEmpty, isUndefined } from "lodash";
 import { keyDiff } from "../utils/keyDiff";
 
@@ -84,7 +84,8 @@ export function useListRelated({
                 }
                 for (const addedRuleKey of addedRuleKeys) {
                     relatedObjectsObject[ropn][addedRuleKey] = computed(() => {
-                        const ruleObjects = state.relatedObjectsRules?.[addedRuleKey]?.objects;
+                        // deal with computed objects being passed.
+                        const ruleObjects = unref(state.relatedObjectsRules?.[addedRuleKey]?.objects);
                         const rulePkKey = state.relatedObjectsRules?.[addedRuleKey]?.pkKey || addedRuleKey;
                         if (!ruleObjects || !rulePkKey) {
                             return undefined;
