@@ -11,9 +11,9 @@ export class ListSubscriptionError extends Error {
     }
 }
 
-const defaultCrud = reactive({
+const defaultCrud = {
     subscribe: undefined,
-});
+};
 
 export function setListSubscriptionCrud({ subscribe }) {
     defaultCrud.subscribe = subscribe;
@@ -36,7 +36,7 @@ export function useListSubscription({ listInstance, crudArgs, defaultListArgs, d
         listSubscriptionCrud: {},
         intendToSubscribe: false,
     });
-    assignReactiveObject(state.listSubscriptionCrud, defaultCrud);
+    assignReactiveObject(state.listSubscriptionCrud, cloneDeep(defaultCrud));
 
     async function subscribe({ listArgs, retrieveArgs } = {}) {
         if (!listArgs) {
