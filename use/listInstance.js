@@ -1,4 +1,4 @@
-import { isEmpty } from "lodash";
+import { cloneDeep, isEmpty } from "lodash";
 import { computed, effectScope, reactive, unref } from "vue";
 import { assignReactiveObject } from "../utils/assignReactiveObject";
 import inspect from "browser-util-inspect";
@@ -11,14 +11,14 @@ export class ListError extends Error {
     }
 }
 
-const defaultCrud = reactive({
+const defaultCrud = {
     args: {},
     list: undefined,
-});
+};
 
 export function setListInstanceCrud({ list, args = {} } = {}) {
     defaultCrud.list = list;
-    assignReactiveObject(defaultCrud.args, args);
+    Object.assign(defaultCrud.args, args);
 }
 
 export function useListInstances(listInstanceArgs) {
@@ -43,7 +43,7 @@ export function useListInstance({ crudArgs, defaultListArgs = {}, defaultRetriev
         error: null,
         order: [],
     });
-    assignReactiveObject(state.listInstanceCrud, defaultCrud);
+    Object.assign(state.listInstanceCrud, cloneDeep(defaultCrud));
     if (crudArgs) {
         assignReactiveObject(state.listInstanceCrud.args, crudArgs);
     }
