@@ -296,7 +296,7 @@ describe("use/listFilter", () => {
                     name: "four",
                 },
             });
-            const args = {
+            const listFilterArgs = {
                 A: {
                     excludedValues: {
                         id: 1,
@@ -310,21 +310,16 @@ describe("use/listFilter", () => {
                     },
                 },
             };
-            const listInstanceModule = await import("../../../use/listInstance");
-            const listInstances = listInstanceModule.useListInstances({
-                A: {
-                    listInstanceA,
-                },
-                B: {
-                    listInstanceB,
-                },
-            });
-            const listFilters = useListFilters(args, listInstances);
+            const listInstances = {
+                A: listInstanceA,
+                B: listInstanceB,
+            };
+            const listFilters = useListFilters(listFilterArgs, listInstances);
 
             expect(listFilters.A.state.excludedValues).toEqual({ id: 1, name: "three" });
             expect(listFilters.B.state.allowedValues).toEqual({ id: 2, name: "four" });
-            expect(unrefAndToRawDeep(listFilters.A.parentState)).toEqual(unrefAndToRawDeep(listInstanceA.state));
-            expect(unrefAndToRawDeep(listFilters.B.parentState)).toEqual(unrefAndToRawDeep(listInstanceB.state));
+            expect(unrefAndToRawDeep(listFilters.A.parentState)).toEqual(unrefAndToRawDeep(listFilterA.parentState));
+            expect(unrefAndToRawDeep(listFilters.B.parentState)).toEqual(unrefAndToRawDeep(listFilterB.parentState));
             expect(unrefAndToRawDeep(listFilters.A.state)).toEqual(unrefAndToRawDeep(listFilterA.state));
             expect(unrefAndToRawDeep(listFilters.B.state)).toEqual(unrefAndToRawDeep(listFilterB.state));
         });
