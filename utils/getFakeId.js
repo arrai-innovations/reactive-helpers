@@ -4,7 +4,7 @@ export function getFakeId(arrayOrObject) {
     let fakeId;
     let test;
     if (isArray(arrayOrObject)) {
-        test = () => arrayOrObject.any((item) => item.id === fakeId);
+        test = () => arrayOrObject.some((item) => item.id === fakeId);
     } else {
         test = () => fakeId in arrayOrObject;
     }
