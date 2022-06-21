@@ -1,6 +1,7 @@
 import { cloneDeep, isEmpty } from "lodash";
 import { computed, effectScope, reactive, unref } from "vue";
 import { assignReactiveObject } from "../utils/assignReactiveObject";
+import { getFakeId } from "../utils/getFakeId";
 import inspect from "browser-util-inspect";
 
 export class ListError extends Error {
@@ -136,12 +137,8 @@ export function useListInstance({ crudArgs, defaultListArgs = {}, defaultRetriev
         }
     }
 
-    function getFakeId() {
-        let fakeId;
-        do {
-            fakeId = Math.floor(Math.random() * Number.MIN_SAFE_INTEGER);
-        } while (fakeId in state.objects);
-        return fakeId;
+    function ourGetFakeId() {
+        return getFakeId(state.objects);
     }
 
     const es = effectScope();
@@ -158,7 +155,7 @@ export function useListInstance({ crudArgs, defaultListArgs = {}, defaultRetriev
         deleteListObject,
         clearList,
         effectScope: es,
-        getFakeId,
+        getFakeId: ourGetFakeId,
         defaultPageCallback,
         pageCallback: defaultPageCallback,
     };
