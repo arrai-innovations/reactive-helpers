@@ -1,4 +1,4 @@
-import { isEmpty } from "lodash";
+import { cloneDeep, isEmpty } from "lodash";
 import { effectScope, reactive, unref } from "vue";
 import { assignReactiveObject } from "../utils/assignReactiveObject";
 
@@ -9,14 +9,14 @@ export class ObjectError extends Error {
     }
 }
 
-const defaultCrud = reactive({
+const defaultCrud = {
     args: {},
     retrieve: undefined,
     create: undefined,
     update: undefined,
     patch: undefined,
     delete: undefined,
-});
+};
 
 export function setObjectInstanceCrud({ retrieve, create, update, patch, delete: deleteFn, args = {} }) {
     defaultCrud.retrieve = retrieve;
@@ -52,7 +52,7 @@ export function useObjectInstance({ crudArgs, retrieveArgs }) {
         error: null,
         deleted: false,
     });
-    assignReactiveObject(state.objectInstanceCrud, defaultCrud);
+    assignReactiveObject(state.objectInstanceCrud, cloneDeep(defaultCrud));
     if (crudArgs) {
         assignReactiveObject(state.objectInstanceCrud.args, crudArgs);
     }
