@@ -7,5 +7,8 @@
     ],
     "**/*.{js,cjs,mjs,ts,jsx,tsx,less,scss,css,vue,markdown,json,md,yml,yaml,html}": [
         "npx --no-install prettier --write"
+    ],
+    ".circleci/config.yml": [
+        "circleci config validate"
     ]
 }
