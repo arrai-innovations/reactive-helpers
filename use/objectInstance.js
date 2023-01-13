@@ -24,7 +24,7 @@ export function setObjectInstanceCrud({ retrieve, create, update, patch, delete:
     defaultCrud.update = update;
     defaultCrud.patch = patch;
     defaultCrud.delete = deleteFn;
-    assignReactiveObject(defaultCrud.args, args);
+    Object.assign(defaultCrud.args, args);
 }
 
 export function useObjectInstances(instanceArgs) {
@@ -35,9 +35,9 @@ export function useObjectInstances(instanceArgs) {
     return instances;
 }
 
-export function useObjectInstance({ crudArgs, retrieveArgs }) {
+export function useObjectInstance({ crudArgs, id, retrieveArgs }) {
     const state = reactive({
-        objectInstanceCrud: {
+        crud: {
             args: {},
             retrieve: undefined,
             create: undefined,
@@ -46,30 +46,32 @@ export function useObjectInstance({ crudArgs, retrieveArgs }) {
             delete: undefined,
         },
         object: {},
-        defaultRetrieveArgs: retrieveArgs,
+        id,
+        retrieveArgs,
         loading: undefined,
         errored: false,
         error: null,
         deleted: false,
     });
-    assignReactiveObject(state.objectInstanceCrud, cloneDeep(defaultCrud));
+    // prevent linking of all instances to the same default .args object
+    Object.assign(state.crud, cloneDeep(defaultCrud));
     if (crudArgs) {
-        assignReactiveObject(state.objectInstanceCrud.args, crudArgs);
+        assignReactiveObject(state.crud.args, crudArgs);
     }
 
     async function retrieve({ id, ...retrieveArgs }) {
         if (state.loading) {
             throw new ObjectError("already loading.");
         }
-        if (isEmpty(retrieveArgs) && !isEmpty(unref(state.defaultRetrieveArgs))) {
-            retrieveArgs = unref(state.defaultRetrieveArgs);
+        if (isEmpty(retrieveArgs) && !isEmpty(unref(state.retrieveArgs))) {
+            retrieveArgs = unref(state.retrieveArgs);
         }
         state.loading = true;
         state.errored = false;
         state.error = null;
-        return state.objectInstanceCrud
+        return state.crud
             .retrieve({
-                crudArgs: state.objectInstanceCrud.args,
+                crudArgs: state.crud.args,
                 id,
                 retrieveArgs,
             })
@@ -91,15 +93,15 @@ export function useObjectInstance({ crudArgs, retrieveArgs }) {
         if (state.loading) {
             throw new ObjectError("already loading.");
         }
-        if (isEmpty(retrieveArgs) && !isEmpty(unref(state.defaultRetrieveArgs))) {
-            retrieveArgs = unref(state.defaultRetrieveArgs);
+        if (isEmpty(retrieveArgs) && !isEmpty(unref(state.retrieveArgs))) {
+            retrieveArgs = unref(state.retrieveArgs);
         }
         state.loading = true;
         state.errored = false;
         state.error = null;
-        return state.objectInstanceCrud
+        return state.crud
             .create({
-                crudArgs: state.objectInstanceCrud.args,
+                crudArgs: state.crud.args,
                 object,
                 retrieveArgs,
             })
@@ -121,15 +123,15 @@ export function useObjectInstance({ crudArgs, retrieveArgs }) {
         if (state.loading) {
             throw new ObjectError("already loading.");
         }
-        if (isEmpty(retrieveArgs) && !isEmpty(unref(state.defaultRetrieveArgs))) {
-            retrieveArgs = unref(state.defaultRetrieveArgs);
+        if (isEmpty(retrieveArgs) && !isEmpty(unref(state.retrieveArgs))) {
+            retrieveArgs = unref(state.retrieveArgs);
         }
         state.loading = true;
         state.errored = false;
         state.error = null;
-        return state.objectInstanceCrud
+        return state.crud
             .update({
-                crudArgs: state.objectInstanceCrud.args,
+                crudArgs: state.crud.args,
                 object,
                 retrieveArgs,
             })
@@ -151,15 +153,15 @@ export function useObjectInstance({ crudArgs, retrieveArgs }) {
         if (state.loading) {
             throw new ObjectError("already loading.");
         }
-        if (isEmpty(retrieveArgs) && !isEmpty(unref(state.defaultRetrieveArgs))) {
-            retrieveArgs = unref(state.defaultRetrieveArgs);
+        if (isEmpty(retrieveArgs) && !isEmpty(unref(state.retrieveArgs))) {
+            retrieveArgs = unref(state.retrieveArgs);
         }
         state.loading = true;
         state.errored = false;
         state.error = null;
-        return state.objectInstanceCrud
+        return state.crud
             .patch({
-                crudArgs: state.objectInstanceCrud.args,
+                crudArgs: state.crud.args,
                 id,
                 partialObject,
                 retrieveArgs,
@@ -185,9 +187,9 @@ export function useObjectInstance({ crudArgs, retrieveArgs }) {
         state.loading = true;
         state.errored = false;
         state.error = null;
-        return state.objectInstanceCrud
+        return state.crud
             .delete({
-                crudArgs: state.objectInstanceCrud.args,
+                crudArgs: state.crud.args,
                 id,
             })
             .then(() => {

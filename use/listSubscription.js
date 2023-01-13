@@ -1,4 +1,4 @@
-import { effectScope, onScopeDispose, reactive, toRef } from "vue";
+import { computed, effectScope, onScopeDispose, reactive, toRef } from "vue";
 import { useListInstance } from "./listInstance";
 import { cloneDeep, isEmpty, isObject } from "lodash";
 import { assignReactiveObject } from "../utils/assignReactiveObject";
@@ -12,11 +12,13 @@ export class ListSubscriptionError extends Error {
 }
 
 const defaultCrud = {
+    args: {},
     subscribe: undefined,
 };
 
-export function setListSubscriptionCrud({ subscribe }) {
+export function setListSubscriptionCrud({ subscribe, args = {} }) {
     defaultCrud.subscribe = subscribe;
+    Object.assign(defaultCrud.args, args);
 }
 
 export function useListSubscriptions(args, listInstances = {}) {
@@ -27,29 +29,47 @@ export function useListSubscriptions(args, listInstances = {}) {
     return subscriptions;
 }
 
-export function useListSubscription({ listInstance, crudArgs, defaultListArgs, defaultRetrieveArgs }) {
+export function useListSubscription({ listInstance, crudArgs, listArgs, retrieveArgs }) {
     if (!listInstance) {
-        listInstance = useListInstance({ crudArgs, defaultListArgs, defaultRetrieveArgs });
+        listInstance = useListInstance({ crudArgs, listArgs, retrieveArgs });
     }
     let cancelSubscription = null;
     const state = reactive({
-        listSubscriptionCrud: {},
+        crud: {
+            args: {},
+            subscribe: undefined,
+        },
+        subscriptionLoading: undefined,
+        subscriptionErrored: false,
+        subscriptionError: null,
+        subscribed: undefined,
+        intendToList: false,
         intendToSubscribe: false,
     });
-    assignReactiveObject(state.listSubscriptionCrud, cloneDeep(defaultCrud));
+    // prevent linking of all instances to the same default .args object
+    Object.assign(state.crud, cloneDeep(defaultCrud));
+    if (crudArgs) {
+        assignReactiveObject(state.crud.args, crudArgs);
+    }
 
-    async function subscribe({ listArgs, retrieveArgs } = {}) {
-        if (!listArgs) {
-            listArgs = cloneDeep(listInstance.state.defaultListArgs);
+    async function publicSubscribe({ list = true } = {}) {
+        if (!state.intendToSubscribe) {
+            state.intendToSubscribe = true;
         }
-        if (!retrieveArgs) {
-            retrieveArgs = cloneDeep(listInstance.state.defaultRetrieveArgs);
+        if (list) {
+            if (!state.intendToList) {
+                state.intendToList = true;
+            }
         }
+        return subscribe();
+    }
+
+    async function subscribe() {
         if (!cancelSubscription) {
-            cancelSubscription = await state.listSubscriptionCrud.subscribe({
-                crudArgs: listInstance.state.listInstanceCrud.args,
-                listArgs,
-                retrieveArgs,
+            cancelSubscription = await state.crud.subscribe({
+                crudArgs: state.crud.args,
+                listArgs: listInstance.state.listArgs,
+                retrieveArgs: listInstance.state.retrieveArgs,
                 subscriptionEventCallback,
             });
             state.subscribed = true;
@@ -70,6 +90,16 @@ export function useListSubscription({ listInstance, crudArgs, defaultListArgs, d
         } else {
             throw new ListSubscriptionError(`got update for unknown action: ${action}\n${inspect(data)}`);
         }
+    }
+
+    async function publicUnsubscribe() {
+        if (state.intendToSubscribe) {
+            state.intendToSubscribe = false;
+        }
+        if (state.intendToList) {
+            state.intendToList = false;
+        }
+        return unsubscribe();
     }
 
     async function unsubscribe() {
@@ -128,6 +158,10 @@ export function useListSubscription({ listInstance, crudArgs, defaultListArgs, d
     const es = effectScope();
 
     es.run(() => {
+        state.loading = computed(() => listInstance.state.loading || state.subscriptionLoading);
+        state.errored = computed(() => listInstance.state.errored || state.subscriptionErrored);
+        state.error = computed(() => listInstance.state.error || state.subscriptionError);
+
         state.objects = toRef(listInstance.state, "objects");
         state.order = toRef(listInstance.state, "order");
         state.objectsInOrder = toRef(listInstance.state, "objectsInOrder");
@@ -139,8 +173,8 @@ export function useListSubscription({ listInstance, crudArgs, defaultListArgs, d
     return {
         state,
         listInstance,
-        subscribe,
-        unsubscribe,
+        subscribe: publicSubscribe,
+        unsubscribe: publicUnsubscribe,
         effectScope: es,
     };
 }

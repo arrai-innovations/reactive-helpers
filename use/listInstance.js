@@ -1,5 +1,5 @@
-import { cloneDeep, isEmpty } from "lodash";
-import { computed, effectScope, reactive, unref } from "vue";
+import { cloneDeep } from "lodash";
+import { computed, effectScope, reactive } from "vue";
 import { assignReactiveObject } from "../utils/assignReactiveObject";
 import { getFakeId } from "../utils/getFakeId";
 import inspect from "browser-util-inspect";
@@ -30,23 +30,24 @@ export function useListInstances(listInstanceArgs) {
     return instances;
 }
 
-export function useListInstance({ crudArgs, defaultListArgs = {}, defaultRetrieveArgs = {} }) {
+export function useListInstance({ crudArgs, listArgs = {}, retrieveArgs = {} }) {
     const state = reactive({
-        listInstanceCrud: {
+        crud: {
             args: {},
             list: undefined,
         },
-        defaultRetrieveArgs,
-        defaultListArgs,
+        retrieveArgs,
+        listArgs,
         objects: {},
         loading: undefined,
         errored: false,
         error: null,
         order: [],
     });
-    Object.assign(state.listInstanceCrud, cloneDeep(defaultCrud));
+    // prevent linking of all instances to the same default .args object
+    Object.assign(state.crud, cloneDeep(defaultCrud));
     if (crudArgs) {
-        assignReactiveObject(state.listInstanceCrud.args, crudArgs);
+        assignReactiveObject(state.crud.args, crudArgs);
     }
 
     const defaultPageCallback = (newObjects) => {
@@ -59,24 +60,18 @@ export function useListInstance({ crudArgs, defaultListArgs = {}, defaultRetriev
         });
     };
 
-    async function list({ listArgs, retrieveArgs } = {}) {
+    async function list() {
         if (state.loading) {
             throw new ListError("already loading.");
-        }
-        if (isEmpty(retrieveArgs) && !isEmpty(unref(state.defaultRetrieveArgs))) {
-            retrieveArgs = unref(state.defaultRetrieveArgs);
-        }
-        if (isEmpty(listArgs) && !isEmpty(unref(state.defaultListArgs))) {
-            listArgs = unref(state.defaultListArgs);
         }
         state.loading = true;
         state.errored = false;
         state.error = null;
-        return state.listInstanceCrud
+        return state.crud
             .list({
-                crudArgs: state.listInstanceCrud.args,
-                retrieveArgs,
-                listArgs,
+                crudArgs: state.crud.args,
+                retrieveArgs: state.retrieveArgs,
+                listArgs: state.listArgs,
                 pageCallback: returnedObject.pageCallback,
             })
             .then(() => {

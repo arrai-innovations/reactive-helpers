@@ -68,17 +68,19 @@ setListInstanceCrud({
 });
 
 // then use in your component
+import { reactive } from "vue";
 import { useListInstance } from "@arrai-innovations/reactive-helpers";
+const listArgs = reactive({
+    has_organization: true,
+});
 const contacts = useListInstance({
     crudArgs: {
         stream: "contacts",
     },
-    defaultRetrieveArgs: {
+    retrieveArgs: {
         fields: ["id", "has_name", "lexical_name", "organization", "phone"],
     },
-    defaultListArgs: {
-        has_organization: true,
-    },
+    listArgs,
 });
 
 await contacts.list();
@@ -90,11 +92,14 @@ console.log(contacts.error);
 // null
 console.log(contacts.objects);
 // { contacts keyed by 'id' }
-contacts.defaultRetrieveArgs.fields.push("message_count");
+// change list or retrieve args directly
+contacts.state.retrieveArgs.fields.push("message_count");
 await contacts.list();
 console.log(contacts.objects);
 // { contacts keyed by 'id' with message_count  }
-await contacts.list({ listArgs: {} });
+// change list or retrieve args indirectly
+listArgs.has_organization = false;
+await contacts.list();
 console.log(contacts.objects);
 // { contacts keyed by 'id' with organizationless contacts  }
 ```
@@ -126,10 +131,10 @@ const contacts = useListInstance({
     crudArgs: {
         stream: "contacts",
     },
-    defaultRetrieveArgs: {
+    retrieveArgs: {
         fields: ["id", "has_name", "lexical_name", "organization", "phone"],
     },
-    defaultListArgs: {
+    listArgs: {
         has_organization: true,
     },
 });
@@ -144,15 +149,15 @@ const contactsSubscription = useListSubscription({
 });
 
 // only get new or updated contacts, not existing.
-contactsSubscription.subscribe({ list: false });
+contactsSubscription.subscribe();
 // or, subscribe and get the existing list.
 contactsSubscription.subscribe();
 // stop getting updates.
 contactsSubscription.unsubscribe();
 // re-retreive the list of existing contacts including another field.
-contacts.defaultRetrieveArgs.fields.push("message_count");
+contacts.retrieveArgs.fields.push("message_count");
 // re-retreive the list of all existing contacts.
-delete contacts.defaultListArgs.has_organization;
+delete contacts.listArgs.has_organization;
 ```
 
 #### Related
@@ -169,7 +174,7 @@ import { nextTick } from "vue";
 import { useListInstance, useListRelated } from "@arrai-innovations/reactive-helpers";
 const organizations = useListInstance({});
 const contacts = useListInstance({
-    defaultRetrieveArgs: {
+    retrieveArgs: {
         fields: ["id", "lexical_name", "organization"],
     },
 });
@@ -236,7 +241,7 @@ import { nextTick } from "vue";
 // use in your component
 import { useListInstance, useListSort } from "@arrai-innovations/reactive-helpers";
 const contacts = useListInstance({
-    defaultRetrieveArgs: {
+    retrieveArgs: {
         fields: ["id", "has_name", "lexical_name", "organization"],
     },
 });
@@ -269,7 +274,7 @@ import { nextTick } from "vue";
 // use in your component
 import { useListInstance, useListFilter } from "@arrai-innovations/reactive-helpers";
 const contacts = useListInstance({
-    defaultRetrieveArgs: {
+    retrieveArgs: {
         fields: ["id", "has_name", "lexical_name", "organization"],
     },
 });
@@ -313,10 +318,10 @@ const contacts = useListInstance({
     crudArgs: {
         stream: "contacts",
     },
-    defaultRetrieveArgs: {
+    retrieveArgs: {
         fields: ["id", "has_name", "lexical_name", "organization", "phone"],
     },
-    defaultListArgs: {
+    listArgs: {
         has_organization: true,
     },
 });

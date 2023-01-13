@@ -45,7 +45,7 @@ describe("use/useListSort", () => {
             { key: "lexical_name", desc: false, localeCompare: true },
         ];
         listInstance = useListInstance({
-            defaultRetrieveArgs: {
+            retrieveArgs: {
                 fields: ["id", "lexical_name", "organization", "relatedObjects"],
             },
         });

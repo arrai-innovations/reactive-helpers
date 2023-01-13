@@ -1,5 +1,5 @@
-import { identity } from "lodash";
-import { computed, effectScope, onScopeDispose, reactive, watch } from "vue";
+import { cloneDeep, identity } from "lodash";
+import { computed, effectScope, onScopeDispose, reactive, toRef, watch } from "vue";
 import { assignReactiveObject } from "../utils/assignReactiveObject";
 import { useObjectInstance } from "./objectInstance";
 
@@ -10,12 +10,14 @@ export class ObjectSubscriptionError extends Error {
     }
 }
 
-const defaultCrud = reactive({
+const defaultCrud = {
+    args: {},
     subscribe: undefined,
-});
+};
 
-export function setObjectSubscriptionCrud({ subscribe }) {
+export function setObjectSubscriptionCrud({ subscribe, args = {} }) {
     defaultCrud.subscribe = subscribe;
+    Object.assign(defaultCrud.args, args);
 }
 
 export function useObjectSubscriptions(subscriptionArgs) {
@@ -27,32 +29,42 @@ export function useObjectSubscriptions(subscriptionArgs) {
 }
 
 export function useObjectSubscription({ objectInstance, crudArgs, id, retrieveArgs = {} }) {
+    if (retrieveArgs && objectInstance) {
+        throw new ObjectSubscriptionError(
+            "Cannot use retrieveArgs and objectInstance together, set retrieveArgs on objectInstance instead"
+        );
+    }
     if (!objectInstance) {
-        objectInstance = useObjectInstance({ crudArgs, retrieveArgs });
+        objectInstance = useObjectInstance({ crudArgs, id, retrieveArgs });
     }
     const state = reactive({
-        objectSubscriptionCrud: {
+        crud: {
+            args: {},
             subscribe: undefined,
         },
         id,
-        retrieveArgs,
         subscriptionLoading: undefined,
         subscriptionErrored: false,
         subscriptionError: null,
-        subscribed: false,
+        subscribed: undefined,
         intendToSubscribe: false,
         intendToRetrieve: false,
     });
-    assignReactiveObject(state.objectSubscriptionCrud, defaultCrud);
+    // prevent linking of all instances to the same default .args object
+    Object.assign(state.crud, cloneDeep(defaultCrud));
+    if (crudArgs) {
+        assignReactiveObject(state.crud.args, crudArgs);
+    }
+
     let cancelSubscription;
 
     function updateFromSubscription(data) {
-        assignReactiveObject(objectInstance.state.object, data);
+        assignReactiveObject(state.object, data);
     }
 
     function deleteFromSubscription() {
-        objectInstance.state.deleted = true;
-        assignReactiveObject(objectInstance.state.object, {});
+        state.deleted = true;
+        assignReactiveObject(state.object, {});
     }
 
     async function publicSubscribe({ retrieve = true } = {}) {
@@ -80,8 +92,8 @@ export function useObjectSubscription({ objectInstance, crudArgs, id, retrieveAr
         state.subscriptionError = null;
         let subscribePromise;
         cancelSubscription = () => subscribePromise.cancel();
-        subscribePromise = state.objectSubscriptionCrud.subscribe({
-            crudArgs: objectInstance.state.objectInstanceCrud.args,
+        subscribePromise = state.crud.subscribe({
+            crudArgs: state.crud.args,
             id,
             retrieveArgs: state.retrieveArgs,
             callback: (data, action) => {
@@ -139,6 +151,9 @@ export function useObjectSubscription({ objectInstance, crudArgs, id, retrieveAr
         state.errored = computed(() => objectInstance.state.errored || state.subscriptionErrored);
         state.error = computed(() => objectInstance.state.error || state.subscriptionError);
 
+        state.retrieveArgs = computed(() => objectInstance.state.retrieveArgs);
+        state.object = toRef(objectInstance.state, "object");
+        state.deleted = toRef(objectInstance.state, "deleted");
         watch(
             [() => state.intendToSubscribe, () => state.id, () => state.retrieveArgs],
             async (newArgs, oldArgs) => {

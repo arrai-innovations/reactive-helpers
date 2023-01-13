@@ -1,7 +1,7 @@
 import { useListInstance } from "./listInstance";
 
-export function usePagedListInstance({ crudArgs, defaultListArgs = {}, defaultRetrieveArgs = {} }) {
-    const listInstance = useListInstance({ crudArgs, defaultListArgs, defaultRetrieveArgs });
+export function usePagedListInstance({ crudArgs, listArgs = {}, retrieveArgs = {} }) {
+    const listInstance = useListInstance({ crudArgs, listArgs, retrieveArgs });
 
     listInstance.state.totalRecords = 0;
     listInstance.state.totalPages = 0;

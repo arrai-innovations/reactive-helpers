@@ -20,16 +20,21 @@ describe("use/listSubscription.spec.js", function () {
         });
         useListInstance = listInstanceModule.useListInstance;
         useListInstances = listInstanceModule.useListInstances;
-        const imported = await import("../../../use/listSubscription");
         globalUnsubscribe = jest.fn();
         globalSubscribe = jest.fn();
         globalSubscribe.mockImplementation(({ subscriptionEventCallback } = {}) => {
             passedSubscriptionEventCallback = subscriptionEventCallback;
             return Promise.resolve(globalUnsubscribe);
         });
+        globalUnsubscribe.mockImplementation(() => {
+            return true;
+        });
+        const imported = await import("../../../use/listSubscription");
         imported.setListSubscriptionCrud({
             subscribe: globalSubscribe,
+            args: { stream: "test_stream" },
         });
+
         useListSubscription = imported.useListSubscription;
         ListSubscriptionError = imported.ListSubscriptionError;
         useListSubscriptions = imported.useListSubscriptions;
@@ -41,15 +46,15 @@ describe("use/listSubscription.spec.js", function () {
     describe("lifecycle", function () {
         it("success", async function () {
             globalUnsubscribe.mockImplementation(() => Promise.resolve(true));
-            const defaultListArgs = reactive({
+            const listArgs = reactive({
                 user: 1,
             });
-            const defaultRetrieveArgs = reactive({
+            const retrieveArgs = reactive({
                 fields: fields,
             });
             const listSubscription = useListSubscription({
-                defaultListArgs,
-                defaultRetrieveArgs,
+                listArgs,
+                retrieveArgs,
             });
             await listSubscription.subscribe();
             expect(globalSubscribe).toHaveBeenCalledWith({
@@ -106,17 +111,17 @@ describe("use/listSubscription.spec.js", function () {
         });
         it("missing data", async function () {
             globalUnsubscribe.mockImplementation(() => Promise.resolve(true));
-            const defaultListArgs = reactive({
+            const listArgs = reactive({
                 user: 1,
             });
-            const defaultRetrieveArgs = reactive({
+            const retrieveArgs = reactive({
                 fields: fields,
             });
             const listSubscription = useListSubscription({
-                defaultListArgs,
-                defaultRetrieveArgs,
+                listArgs,
+                retrieveArgs,
             });
-            await listSubscription.subscribe({});
+            await listSubscription.subscribe();
             expect(globalSubscribe).toHaveBeenCalledWith({
                 crudArgs: { stream: "test_stream" },
                 listArgs: { user: 1 },
@@ -280,17 +285,17 @@ describe("use/listSubscription.spec.js", function () {
         });
         it("unsubscribe false", async function () {
             globalUnsubscribe.mockImplementation(() => Promise.resolve(false));
-            const defaultListArgs = reactive({
+            const listArgs = reactive({
                 user: 1,
             });
-            const defaultRetrieveArgs = reactive({
+            const retrieveArgs = reactive({
                 fields: fields,
             });
             const listSubscription = useListSubscription({
-                defaultListArgs,
-                defaultRetrieveArgs,
+                listArgs,
+                retrieveArgs,
             });
-            await listSubscription.subscribe({});
+            await listSubscription.subscribe();
             expect(globalSubscribe).toHaveBeenCalledWith({
                 crudArgs: { stream: "test_stream" },
                 listArgs: { user: 1 },
@@ -307,48 +312,21 @@ describe("use/listSubscription.spec.js", function () {
         });
         it("just unsubscribe", async function () {
             globalUnsubscribe.mockImplementation(() => Promise.resolve(false));
-            const defaultListArgs = reactive({
-                user: 1,
-            });
-            const defaultRetrieveArgs = reactive({
-                fields: fields,
-            });
-            const listSubscription = useListSubscription({
-                defaultListArgs,
-                defaultRetrieveArgs,
-            });
-
-            const returnValue = await listSubscription.unsubscribe();
-            expect(globalUnsubscribe).toHaveBeenCalledTimes(0);
-            expect(returnValue).toBe(false);
-            expect(listSubscription.state.subscribed).toBe(undefined);
-        });
-        it("passed subscribe args", async function () {
-            globalUnsubscribe.mockImplementation(() => Promise.resolve(true));
             const listArgs = reactive({
                 user: 1,
             });
             const retrieveArgs = reactive({
                 fields: fields,
             });
-            const listSubscription = useListSubscription({});
-            await listSubscription.subscribe({
+            const listSubscription = useListSubscription({
                 listArgs,
                 retrieveArgs,
             });
-            expect(globalSubscribe).toHaveBeenCalledWith({
-                crudArgs: { stream: "test_stream" },
-                listArgs: { user: 1 },
-                retrieveArgs: { fields: fields },
-                subscriptionEventCallback: expect.any(Function),
-            });
-            expect(globalSubscribe).toHaveBeenCalledTimes(1);
 
             const returnValue = await listSubscription.unsubscribe();
-            expect(globalUnsubscribe).toHaveBeenCalledWith();
-            expect(globalUnsubscribe).toHaveBeenCalledTimes(1);
-            expect(returnValue).toBe(true);
-            expect(listSubscription.state.subscribed).toBe(false);
+            expect(globalUnsubscribe).toHaveBeenCalledTimes(0);
+            expect(returnValue).toBe(false);
+            expect(listSubscription.state.subscribed).toBe(undefined);
         });
         it("double subscribe", async function () {
             globalUnsubscribe.mockImplementation(() => Promise.resolve(true));
@@ -358,15 +336,12 @@ describe("use/listSubscription.spec.js", function () {
             const retrieveArgs = reactive({
                 fields: fields,
             });
-            const listSubscription = useListSubscription({});
-            const firstReturnValue = await listSubscription.subscribe({
+            const listSubscription = useListSubscription({
                 listArgs,
                 retrieveArgs,
             });
-            const secondReturnValue = await listSubscription.subscribe({
-                listArgs,
-                retrieveArgs,
-            });
+            const firstReturnValue = await listSubscription.subscribe();
+            const secondReturnValue = await listSubscription.subscribe();
             expect(globalSubscribe).toHaveBeenCalledWith({
                 crudArgs: { stream: "test_stream" },
                 listArgs: { user: 1 },
@@ -386,15 +361,15 @@ describe("use/listSubscription.spec.js", function () {
         });
         it("manual list instance", async function () {
             globalUnsubscribe.mockImplementation(() => Promise.resolve(true));
-            const defaultListArgs = reactive({
+            const listArgs = reactive({
                 user: 1,
             });
-            const defaultRetrieveArgs = reactive({
+            const retrieveArgs = reactive({
                 fields: fields,
             });
             const listInstance = useListInstance({
-                defaultListArgs,
-                defaultRetrieveArgs,
+                listArgs,
+                retrieveArgs,
             });
             const listSubscription = useListSubscription({
                 listInstance,
