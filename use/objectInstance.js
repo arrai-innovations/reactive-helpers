@@ -1,5 +1,5 @@
-import { cloneDeep, isEmpty } from "lodash";
-import { effectScope, reactive, unref } from "vue";
+import { cloneDeep } from "lodash";
+import { effectScope, reactive } from "vue";
 import { assignReactiveObject } from "../utils/assignReactiveObject";
 
 export class ObjectError extends Error {
@@ -59,12 +59,9 @@ export function useObjectInstance({ crudArgs, id, retrieveArgs }) {
         assignReactiveObject(state.crud.args, crudArgs);
     }
 
-    async function retrieve({ id, ...retrieveArgs }) {
+    async function retrieve() {
         if (state.loading) {
             throw new ObjectError("already loading.");
-        }
-        if (isEmpty(retrieveArgs) && !isEmpty(unref(state.retrieveArgs))) {
-            retrieveArgs = unref(state.retrieveArgs);
         }
         state.loading = true;
         state.errored = false;
@@ -72,8 +69,8 @@ export function useObjectInstance({ crudArgs, id, retrieveArgs }) {
         return state.crud
             .retrieve({
                 crudArgs: state.crud.args,
-                id,
-                retrieveArgs,
+                id: state.id,
+                retrieveArgs: state.retrieveArgs,
             })
             .then((object) => {
                 assignReactiveObject(state.object, object);
@@ -89,12 +86,9 @@ export function useObjectInstance({ crudArgs, id, retrieveArgs }) {
             });
     }
 
-    async function create({ object, ...retrieveArgs }) {
+    async function create({ object }) {
         if (state.loading) {
             throw new ObjectError("already loading.");
-        }
-        if (isEmpty(retrieveArgs) && !isEmpty(unref(state.retrieveArgs))) {
-            retrieveArgs = unref(state.retrieveArgs);
         }
         state.loading = true;
         state.errored = false;
@@ -103,7 +97,7 @@ export function useObjectInstance({ crudArgs, id, retrieveArgs }) {
             .create({
                 crudArgs: state.crud.args,
                 object,
-                retrieveArgs,
+                retrieveArgs: state.retrieveArgs,
             })
             .then((object) => {
                 assignReactiveObject(state.object, object);
@@ -119,12 +113,9 @@ export function useObjectInstance({ crudArgs, id, retrieveArgs }) {
             });
     }
 
-    async function update({ object, ...retrieveArgs }) {
+    async function update({ object }) {
         if (state.loading) {
             throw new ObjectError("already loading.");
-        }
-        if (isEmpty(retrieveArgs) && !isEmpty(unref(state.retrieveArgs))) {
-            retrieveArgs = unref(state.retrieveArgs);
         }
         state.loading = true;
         state.errored = false;
@@ -133,7 +124,7 @@ export function useObjectInstance({ crudArgs, id, retrieveArgs }) {
             .update({
                 crudArgs: state.crud.args,
                 object,
-                retrieveArgs,
+                retrieveArgs: state.retrieveArgs,
             })
             .then((object) => {
                 assignReactiveObject(state.object, object);
@@ -149,12 +140,9 @@ export function useObjectInstance({ crudArgs, id, retrieveArgs }) {
             });
     }
 
-    async function patch({ id, partialObject, ...retrieveArgs }) {
+    async function patch({ partialObject }) {
         if (state.loading) {
             throw new ObjectError("already loading.");
-        }
-        if (isEmpty(retrieveArgs) && !isEmpty(unref(state.retrieveArgs))) {
-            retrieveArgs = unref(state.retrieveArgs);
         }
         state.loading = true;
         state.errored = false;
@@ -162,9 +150,9 @@ export function useObjectInstance({ crudArgs, id, retrieveArgs }) {
         return state.crud
             .patch({
                 crudArgs: state.crud.args,
-                id,
+                id: state.id,
                 partialObject,
-                retrieveArgs,
+                retrieveArgs: state.retrieveArgs,
             })
             .then((object) => {
                 assignReactiveObject(state.object, object);
@@ -180,7 +168,7 @@ export function useObjectInstance({ crudArgs, id, retrieveArgs }) {
             });
     }
 
-    async function deleteFn(id) {
+    async function deleteFn() {
         if (state.loading) {
             throw new ObjectError("already loading.");
         }
@@ -190,7 +178,7 @@ export function useObjectInstance({ crudArgs, id, retrieveArgs }) {
         return state.crud
             .delete({
                 crudArgs: state.crud.args,
-                id,
+                id: state.id,
             })
             .then(() => {
                 state.deleted = true;

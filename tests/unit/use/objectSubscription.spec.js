@@ -4,6 +4,8 @@ import { nextTick } from "vue";
 import { expectErrorToBeNull } from "../expectHelpers";
 import { getMockOnUnmounted } from "../mockOnUnmounted";
 import { assignReactiveObject } from "../../../utils/assignReactiveObject";
+import { cloneDeep } from "lodash";
+import { doAwaitTimeout } from "../../../utils";
 
 getMockOnUnmounted();
 
@@ -17,7 +19,8 @@ describe("use/objectSubscription.js", function () {
         useObjectSubscriptions,
         globalSubscribe,
         globalUnsubscribe,
-        globalRetrieve;
+        globalRetrieve,
+        objectSubscription;
     beforeEach(async () => {
         const objectInstanceModule = await import("../../../use/objectInstance");
         globalRetrieve = jest.fn();
@@ -46,6 +49,11 @@ describe("use/objectSubscription.js", function () {
         useObjectSubscription = imported.useObjectSubscription;
         ObjectSubscriptionError = imported.ObjectSubscriptionError;
         useObjectSubscriptions = imported.useObjectSubscriptions;
+
+        objectSubscription = useObjectSubscription({
+            id: 1,
+            retrieveArgs: cloneDeep({ fields }),
+        });
     });
     afterEach(function () {
         jest.resetAllMocks();
@@ -71,15 +79,6 @@ describe("use/objectSubscription.js", function () {
         request_id: "60799141-959a-4ff7-80bc-1ad6b805a8fd",
     };
     const fields = ["id", "__str__", "name"];
-    let objectSubscription;
-    beforeEach(() => {
-        objectSubscription = useObjectSubscription({
-            id: 1,
-            retrieveArgs: {
-                fields,
-            },
-        });
-    });
     describe("subscribe", function () {
         let crudRetrieveResolve, crudRetrieveReject, crudSubscribeResolve, crudSubscribeReject, crudSubscribePromise;
         beforeEach(() => {
@@ -108,6 +107,8 @@ describe("use/objectSubscription.js", function () {
 
             const subscribePromise = objectSubscription.subscribe();
 
+            await nextTick();
+
             expect(objectSubscription.state.loading).toBe(true);
             expect(objectSubscription.state.errored).toBe(false);
             expectErrorToBeNull(objectSubscription.state.error);
@@ -132,6 +133,7 @@ describe("use/objectSubscription.js", function () {
             expect(objectSubscription.state.object).toEqual(crudRetrieveResolved);
             await nextTick();
             await expect(subscribePromise).resolves.toBe(true);
+            await flushPromises();
 
             expect(globalRetrieve).toHaveBeenCalledWith({
                 crudArgs: { stream: "test_stream" },
@@ -149,6 +151,7 @@ describe("use/objectSubscription.js", function () {
                 },
                 callback: expect.any(Function),
             });
+            await doAwaitTimeout(1000);
             expect(globalSubscribe).toHaveBeenCalledTimes(1);
         });
         it("subscribe callback", async function () {
@@ -211,7 +214,7 @@ describe("use/objectSubscription.js", function () {
             });
             expect(globalSubscribe).toHaveBeenCalledTimes(1);
         });
-        it("success (delayed)", async function () {
+        it("delayed success", async function () {
             objectSubscription.objectInstance.state.retrieveArgs = false;
 
             expect(objectSubscription.state.loading).toBeUndefined();
@@ -279,7 +282,7 @@ describe("use/objectSubscription.js", function () {
             });
             expect(globalSubscribe).toHaveBeenCalledTimes(1);
         });
-        it("errored (retrieve)", async function () {
+        it("retrieve errored", async function () {
             expect(objectSubscription.state.loading).toBeUndefined();
             expect(objectSubscription.state.errored).toBe(false);
             expectErrorToBeNull(objectSubscription.state.error);
@@ -334,7 +337,7 @@ describe("use/objectSubscription.js", function () {
             });
             expect(globalSubscribe).toHaveBeenCalledTimes(1);
         });
-        it("errored (subscribe)", async function () {
+        it("subscribe errored", async function () {
             expect(objectSubscription.state.loading).toBeUndefined();
             expect(objectSubscription.state.errored).toBe(false);
             expectErrorToBeNull(objectSubscription.state.error);

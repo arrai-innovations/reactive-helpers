@@ -1,5 +1,7 @@
-import { reactive } from "vue";
+import { nextTick, reactive } from "vue";
 import { inspect } from "util";
+import { doAwaitTimeout } from "../../../utils";
+import flushPromises from "flush-promises";
 
 describe("use/listSubscription.spec.js", function () {
     let useListSubscription,
@@ -10,10 +12,23 @@ describe("use/listSubscription.spec.js", function () {
         globalList,
         globalSubscribe,
         globalUnsubscribe,
-        passedSubscriptionEventCallback;
+        passedSubscriptionEventCallback,
+        globalListCancel,
+        globalListPromise;
+    // globalListPromiseResolve,
+    // globalListPromiseReject;
     beforeEach(async () => {
         const listInstanceModule = await import("../../../use/listInstance");
+        globalListCancel = jest.fn();
         globalList = jest.fn();
+        globalList.mockImplementation(async () => {
+            globalListPromise = new Promise((/*resolve, reject*/) => {
+                // globalListPromiseResolve = resolve;
+                // globalListPromiseReject = reject;
+            });
+            globalListPromise.cancel = globalListCancel;
+            return globalListPromise;
+        });
         listInstanceModule.setListInstanceCrud({
             list: globalList,
             args: { stream: "test_stream" },
@@ -56,7 +71,9 @@ describe("use/listSubscription.spec.js", function () {
                 listArgs,
                 retrieveArgs,
             });
-            await listSubscription.subscribe();
+            listSubscription.subscribe();
+            await nextTick();
+            await flushPromises();
             expect(globalSubscribe).toHaveBeenCalledWith({
                 crudArgs: { stream: "test_stream" },
                 listArgs: { user: 1 },
@@ -104,6 +121,8 @@ describe("use/listSubscription.spec.js", function () {
             expect(listSubscription.listInstance.state.objects).toEqual({});
 
             const returnValue = await listSubscription.unsubscribe();
+            await nextTick();
+            await flushPromises();
             expect(globalUnsubscribe).toHaveBeenCalledWith();
             expect(globalUnsubscribe).toHaveBeenCalledTimes(1);
             expect(returnValue).toBe(true);
@@ -121,7 +140,9 @@ describe("use/listSubscription.spec.js", function () {
                 listArgs,
                 retrieveArgs,
             });
-            await listSubscription.subscribe();
+            listSubscription.subscribe();
+            await nextTick();
+            await flushPromises();
             expect(globalSubscribe).toHaveBeenCalledWith({
                 crudArgs: { stream: "test_stream" },
                 listArgs: { user: 1 },
@@ -425,6 +446,46 @@ describe("use/listSubscription.spec.js", function () {
             const returnValue = await listSubscription.unsubscribe();
             expect(globalUnsubscribe).toHaveBeenCalledWith();
             expect(globalUnsubscribe).toHaveBeenCalledTimes(1);
+            expect(returnValue).toBe(true);
+            expect(listSubscription.state.subscribed).toBe(false);
+        });
+        it("subscribe resubscribes when listArgs or retrieveArgs change", async function () {
+            globalUnsubscribe.mockImplementation(() => Promise.resolve(true));
+            const listArgs = reactive({
+                user: 1,
+            });
+            const retrieveArgs = reactive({
+                fields: fields,
+            });
+            const listSubscription = useListSubscription({
+                listArgs,
+                retrieveArgs,
+            });
+            await listSubscription.subscribe();
+            expect(globalSubscribe).toHaveBeenCalledWith({
+                crudArgs: { stream: "test_stream" },
+                listArgs: { user: 1 },
+                retrieveArgs: { fields: fields },
+                subscriptionEventCallback: expect.any(Function),
+            });
+            expect(globalSubscribe).toHaveBeenCalledTimes(1);
+
+            listArgs.user = 2;
+            retrieveArgs.fields = ["name"];
+            await doAwaitTimeout(200);
+            expect(globalUnsubscribe).toHaveBeenCalledWith();
+            expect(globalUnsubscribe).toHaveBeenCalledTimes(1);
+            expect(globalSubscribe).toHaveBeenCalledWith({
+                crudArgs: { stream: "test_stream" },
+                listArgs: { user: 2 },
+                retrieveArgs: { fields: ["name"] },
+                subscriptionEventCallback: expect.any(Function),
+            });
+            expect(globalSubscribe).toHaveBeenCalledTimes(2);
+
+            const returnValue = await listSubscription.unsubscribe();
+            expect(globalUnsubscribe).toHaveBeenCalledWith();
+            expect(globalUnsubscribe).toHaveBeenCalledTimes(2);
             expect(returnValue).toBe(true);
             expect(listSubscription.state.subscribed).toBe(false);
         });

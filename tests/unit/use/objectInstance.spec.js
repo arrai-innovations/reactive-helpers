@@ -1,5 +1,5 @@
 import flushPromises from "flush-promises";
-import { nextTick } from "vue";
+import { nextTick, reactive, ref } from "vue";
 import { assignReactiveObject } from "../../../utils";
 import { expectErrorToBeNull } from "../expectHelpers";
 import { inspect } from "util";
@@ -96,8 +96,12 @@ describe("use/objectInstance.js", function () {
     const fields = ["id", "__str__", "name"];
     describe("retrieve", function () {
         it("success", async function () {
+            const id = ref(1);
+            const retrieveArgs = reactive({ fields });
             const objectInstance = useObjectInstance({
                 crudArgs: { stream: "test_stream" },
+                id,
+                retrieveArgs,
             });
             objectInstance.state.crud.retrieve = jest.fn();
             let crudRetrieveResolve;
@@ -110,7 +114,7 @@ describe("use/objectInstance.js", function () {
             expect(objectInstance.state.errored).toBe(false);
             expect(objectInstance.state.loading).toBeUndefined();
             expect({ ...objectInstance.state.object }).toEqual({});
-            const oiRetrieveResolve = objectInstance.retrieve({ id: 1, fields });
+            const oiRetrieveResolve = objectInstance.retrieve();
             expectErrorToBeNull(objectInstance.state.error);
             expect(objectInstance.state.errored).toBe(false);
             expect(objectInstance.state.loading).toBe(true);
@@ -132,9 +136,12 @@ describe("use/objectInstance.js", function () {
             await expect(oiRetrieveResolve).resolves.toBe(true);
         });
         it("success (retrieveArgs)", async function () {
+            const id = ref(1);
+            const retrieveArgs = reactive({ fields });
             const objectInstance = useObjectInstance({
                 crudArgs: { stream: "test_stream" },
-                retrieveArgs: { fields },
+                id,
+                retrieveArgs,
             });
             objectInstance.state.crud.retrieve = jest.fn();
             let crudRetrieveResolve;
@@ -146,7 +153,7 @@ describe("use/objectInstance.js", function () {
             expect(objectInstance.state.errored).toBe(false);
             expect(objectInstance.state.loading).toBeUndefined();
             expect({ ...objectInstance.state.object }).toEqual({});
-            const oiRetrieveResolve = objectInstance.retrieve({ id: 1 });
+            const oiRetrieveResolve = objectInstance.retrieve();
             expectErrorToBeNull(objectInstance.state.error);
             expect(objectInstance.state.errored).toBe(false);
             expect(objectInstance.state.loading).toBe(true);
@@ -167,8 +174,12 @@ describe("use/objectInstance.js", function () {
             expect(returnValue).toBe(true);
         });
         it("errored", async function () {
+            const id = ref(1);
+            const retrieveArgs = reactive({ fields });
             const objectInstance = useObjectInstance({
                 crudArgs: { stream: "test_stream" },
+                id,
+                retrieveArgs,
             });
             objectInstance.state.crud.retrieve = jest.fn();
             let crudRetrieveReject;
@@ -180,7 +191,7 @@ describe("use/objectInstance.js", function () {
             expect(objectInstance.state.errored).toBe(false);
             expect(objectInstance.state.loading).toBeUndefined();
             expect({ ...objectInstance.state.object }).toEqual({});
-            const oiRetrieveResolve = objectInstance.retrieve({ id: 1, fields });
+            const oiRetrieveResolve = objectInstance.retrieve();
             expectErrorToBeNull(objectInstance.state.error);
             expect(objectInstance.state.errored).toBe(false);
             expect(objectInstance.state.loading).toBe(true);
@@ -201,8 +212,12 @@ describe("use/objectInstance.js", function () {
             expect(returnValue).toBe(false);
         });
         it("already loading", async function () {
+            const id = ref(1);
+            const retrieveArgs = reactive({ fields });
             const objectInstance = useObjectInstance({
                 crudArgs: { stream: "test_stream" },
+                id,
+                retrieveArgs,
             });
             objectInstance.state.crud.retrieve = jest.fn();
             objectInstance.state.crud.retrieve.mockImplementation(() => new Promise(() => {}));
@@ -210,8 +225,8 @@ describe("use/objectInstance.js", function () {
             expect(objectInstance.state.errored).toBe(false);
             expect(objectInstance.state.loading).toBeUndefined();
             expect({ ...objectInstance.state.object }).toEqual({});
-            objectInstance.retrieve({ id: 1, fields });
-            await expect(() => objectInstance.retrieve({ id: 1, fields })).rejects.toThrow(ObjectError);
+            objectInstance.retrieve();
+            await expect(() => objectInstance.retrieve()).rejects.toThrow(ObjectError);
             expect(objectInstance.state.crud.retrieve).toHaveBeenCalledWith({
                 crudArgs: { stream: "test_stream" },
                 id: 1,
@@ -226,8 +241,12 @@ describe("use/objectInstance.js", function () {
     });
     describe("create", function () {
         it("success", async function () {
+            const id = ref(1);
+            const retrieveArgs = reactive({ fields });
             const objectInstance = useObjectInstance({
                 crudArgs: { stream: "test_stream" },
+                id,
+                retrieveArgs,
             });
             objectInstance.state.crud.create = jest.fn();
             let crudCreateResolve;
@@ -270,9 +289,12 @@ describe("use/objectInstance.js", function () {
             await expect(oiCreateResolve).resolves.toBe(true);
         });
         it("success (retrieveArgs)", async function () {
+            const id = ref(undefined);
+            const retrieveArgs = reactive({ fields });
             const objectInstance = useObjectInstance({
                 crudArgs: { stream: "test_stream" },
-                retrieveArgs: { fields },
+                id,
+                retrieveArgs,
             });
             objectInstance.state.crud.create = jest.fn();
             let crudCreateResolve;
@@ -313,8 +335,12 @@ describe("use/objectInstance.js", function () {
             expect(returnValue).toBe(true);
         });
         it("errored", async function () {
+            const id = ref(undefined);
+            const retrieveArgs = reactive({ fields });
             const objectInstance = useObjectInstance({
                 crudArgs: { stream: "test_stream" },
+                id,
+                retrieveArgs,
             });
             objectInstance.state.crud.create = jest.fn();
             let crudCreateReject;
@@ -356,8 +382,12 @@ describe("use/objectInstance.js", function () {
             expect(returnValue).toBe(false);
         });
         it("already loading", async function () {
+            const id = ref(1);
+            const retrieveArgs = reactive({ fields });
             const objectInstance = useObjectInstance({
                 crudArgs: { stream: "test_stream" },
+                id,
+                retrieveArgs,
             });
             objectInstance.state.crud.create = jest.fn();
             const crudCreatePromise = new Promise(() => {});
@@ -370,14 +400,12 @@ describe("use/objectInstance.js", function () {
                 object: {
                     name: "qwer",
                 },
-                fields,
             });
             await expect(() =>
                 objectInstance.create({
                     object: {
                         name: "qwer",
                     },
-                    fields,
                 })
             ).rejects.toThrow(ObjectError);
             expect(objectInstance.state.crud.create).toHaveBeenCalledWith({
@@ -398,8 +426,12 @@ describe("use/objectInstance.js", function () {
     });
     describe("update", function () {
         it("success", async function () {
+            const id = ref(1);
+            const retrieveArgs = reactive({ fields });
             const objectInstance = useObjectInstance({
                 crudArgs: { stream: "test_stream" },
+                id,
+                retrieveArgs,
             });
             let crudUpdateResolve;
             const crudUpdatePromise = new Promise((resolve) => {
@@ -416,7 +448,6 @@ describe("use/objectInstance.js", function () {
                     id: 1,
                     name: "zxcv!",
                 },
-                fields,
             });
             expectErrorToBeNull(objectInstance.state.error);
             expect(objectInstance.state.errored).toBe(false);
@@ -444,9 +475,12 @@ describe("use/objectInstance.js", function () {
             expect(objectInstance.state.crud.update).toHaveBeenCalledTimes(1);
         });
         it("success (retrieveArgs)", async function () {
+            const id = ref(1);
+            const retrieveArgs = reactive({ fields });
             const objectInstance = useObjectInstance({
                 crudArgs: { stream: "test_stream" },
-                retrieveArgs: { fields },
+                id,
+                retrieveArgs,
             });
             let crudUpdateResolve;
             const crudUpdatePromise = new Promise((resolve) => {
@@ -488,8 +522,12 @@ describe("use/objectInstance.js", function () {
             expect(objectInstance.state.crud.update).toHaveBeenCalledTimes(1);
         });
         it("errored", async function () {
+            const id = ref(1);
+            const retrieveArgs = reactive({ fields });
             const objectInstance = useObjectInstance({
                 crudArgs: { stream: "test_stream" },
+                id,
+                retrieveArgs,
             });
             let crudUpdateReject;
             const crudUpdatePromise = new Promise((resolve, reject) => {
@@ -506,7 +544,6 @@ describe("use/objectInstance.js", function () {
                     id: 1,
                     name: "zxcv!",
                 },
-                fields,
             });
             expectErrorToBeNull(objectInstance.state.error);
             expect(objectInstance.state.errored).toBe(false);
@@ -532,8 +569,12 @@ describe("use/objectInstance.js", function () {
             expect(objectInstance.state.crud.update).toHaveBeenCalledTimes(1);
         });
         it("already loading", async function () {
+            const id = ref(1);
+            const retrieveArgs = reactive({ fields });
             const objectInstance = useObjectInstance({
                 crudArgs: { stream: "test_stream" },
+                id,
+                retrieveArgs,
             });
             const crudUpdatePromise = new Promise(() => {});
             objectInstance.state.crud.update = jest.fn();
@@ -547,7 +588,6 @@ describe("use/objectInstance.js", function () {
                     id: 1,
                     name: "zxcv!",
                 },
-                fields,
             });
             await expect(() =>
                 objectInstance.update({
@@ -555,7 +595,6 @@ describe("use/objectInstance.js", function () {
                         id: 1,
                         name: "zxcv!",
                     },
-                    fields,
                 })
             ).rejects.toThrow(ObjectError);
             expectErrorToBeNull(objectInstance.state.error);
@@ -577,8 +616,12 @@ describe("use/objectInstance.js", function () {
     });
     describe("patch", function () {
         it("success", async function () {
+            const id = ref(1);
+            const retrieveArgs = reactive({ fields });
             const objectInstance = useObjectInstance({
                 crudArgs: { stream: "test_stream" },
+                id,
+                retrieveArgs,
             });
             let crudPatchResolve;
             const crudPatchPromise = new Promise((resolve) => {
@@ -591,12 +634,10 @@ describe("use/objectInstance.js", function () {
             expect(objectInstance.state.loading).toBeUndefined();
             expect({ ...objectInstance.state.object }).toEqual({});
             const oiPatchPromise = objectInstance.patch({
-                id: 1,
                 partialObject: {
                     id: 1,
                     name: "zxcv!",
                 },
-                fields,
             });
             expectErrorToBeNull(objectInstance.state.error);
             expect(objectInstance.state.errored).toBe(false);
@@ -610,52 +651,6 @@ describe("use/objectInstance.js", function () {
             expect(objectInstance.state.loading).toBe(false);
             expect({ ...objectInstance.state.object }).toEqual(crudPatchResolved);
             await nextTick();
-            await expect(oiPatchPromise).resolves.toBe(true);
-            expect(objectInstance.state.crud.patch).toHaveBeenCalledWith({
-                crudArgs: {
-                    stream: "test_stream",
-                },
-                id: 1,
-                partialObject: {
-                    id: 1,
-                    name: "zxcv!",
-                },
-                retrieveArgs: { fields: ["id", "__str__", "name"] },
-            });
-            expect(objectInstance.state.crud.patch).toHaveBeenCalledTimes(1);
-        });
-        it("success (retrieveArgs)", async function () {
-            const objectInstance = useObjectInstance({
-                crudArgs: { stream: "test_stream" },
-                retrieveArgs: { fields },
-            });
-            let crudPatchResolve;
-            const crudPatchPromise = new Promise((resolve) => {
-                crudPatchResolve = resolve;
-            });
-            objectInstance.state.crud.patch = jest.fn();
-            objectInstance.state.crud.patch.mockReturnValueOnce(crudPatchPromise);
-            expectErrorToBeNull(objectInstance.state.error);
-            expect(objectInstance.state.errored).toBe(false);
-            expect(objectInstance.state.loading).toBeUndefined();
-            expect({ ...objectInstance.state.object }).toEqual({});
-            const oiPatchPromise = objectInstance.patch({
-                id: 1,
-                partialObject: {
-                    id: 1,
-                    name: "zxcv!",
-                },
-            });
-            expectErrorToBeNull(objectInstance.state.error);
-            expect(objectInstance.state.errored).toBe(false);
-            expect(objectInstance.state.loading).toBe(true);
-            expect({ ...objectInstance.state.object }).toEqual({});
-            crudPatchResolve(crudPatchResolved);
-            await flushPromises();
-            expectErrorToBeNull(objectInstance.state.error);
-            expect(objectInstance.state.errored).toBe(false);
-            expect(objectInstance.state.loading).toBe(false);
-            expect({ ...objectInstance.state.object }).toEqual(crudPatchResolved);
             await expect(oiPatchPromise).resolves.toBe(true);
             expect(objectInstance.state.crud.patch).toHaveBeenCalledWith({
                 crudArgs: {
@@ -671,8 +666,12 @@ describe("use/objectInstance.js", function () {
             expect(objectInstance.state.crud.patch).toHaveBeenCalledTimes(1);
         });
         it("errored", async function () {
+            const id = ref(1);
+            const retrieveArgs = reactive({ fields });
             const objectInstance = useObjectInstance({
                 crudArgs: { stream: "test_stream" },
+                id,
+                retrieveArgs,
             });
             let crudPatchReject;
             const crudPatchPromise = new Promise((resolve, reject) => {
@@ -685,12 +684,10 @@ describe("use/objectInstance.js", function () {
             expect(objectInstance.state.loading).toBeUndefined();
             expect({ ...objectInstance.state.object }).toEqual({});
             const oiPatchPromise = objectInstance.patch({
-                id: 1,
                 partialObject: {
                     id: 1,
                     name: "zxcv!",
                 },
-                fields,
             });
             expectErrorToBeNull(objectInstance.state.error);
             expect(objectInstance.state.errored).toBe(false);
@@ -717,28 +714,28 @@ describe("use/objectInstance.js", function () {
             expect(objectInstance.state.crud.patch).toHaveBeenCalledTimes(1);
         });
         it("already loading", async function () {
+            const id = ref(1);
+            const retrieveArgs = reactive({ fields });
             const objectInstance = useObjectInstance({
                 crudArgs: { stream: "test_stream" },
+                id,
+                retrieveArgs,
             });
             const crudPatchPromise = new Promise(() => {});
             objectInstance.state.crud.patch = jest.fn();
             objectInstance.state.crud.patch.mockReturnValueOnce(crudPatchPromise);
             objectInstance.patch({
-                id: 1,
                 partialObject: {
                     id: 1,
                     name: "zxcv!",
                 },
-                fields,
             });
             await expect(() =>
                 objectInstance.patch({
-                    id: 1,
                     partialObject: {
                         id: 1,
                         name: "zxcv!",
                     },
-                    fields,
                 })
             ).rejects.toThrow(ObjectError);
             expect(objectInstance.state.crud.patch).toHaveBeenCalledWith({
@@ -757,8 +754,12 @@ describe("use/objectInstance.js", function () {
     });
     describe("delete", function () {
         it("success", async function () {
+            const id = ref(1);
+            const retrieveArgs = reactive({ fields });
             const objectInstance = useObjectInstance({
                 crudArgs: { stream: "test_stream" },
+                id,
+                retrieveArgs,
             });
             assignReactiveObject(objectInstance.state.object, crudRetrieveResolved);
             let deleteResolve;
@@ -774,7 +775,7 @@ describe("use/objectInstance.js", function () {
             expect(objectInstance.state.deleted).toBe(false);
             expect({ ...objectInstance.state.object }).toEqual(crudRetrieveResolved);
 
-            const returnsPromise = objectInstance.delete(1);
+            const returnsPromise = objectInstance.delete();
 
             expectErrorToBeNull(objectInstance.state.error);
             expect(objectInstance.state.errored).toBe(false);
@@ -801,8 +802,12 @@ describe("use/objectInstance.js", function () {
             expect(objectInstance.state.crud.delete).toHaveBeenCalledTimes(1);
         });
         it("errored", async function () {
+            const id = ref(1);
+            const retrieveArgs = reactive({ fields });
             const objectInstance = useObjectInstance({
                 crudArgs: { stream: "test_stream" },
+                id,
+                retrieveArgs,
             });
             assignReactiveObject(objectInstance.state.object, crudRetrieveResolved);
             let deleteReject;
@@ -818,7 +823,7 @@ describe("use/objectInstance.js", function () {
             expect(objectInstance.state.deleted).toBe(false);
             expect({ ...objectInstance.state.object }).toEqual(crudRetrieveResolved);
 
-            const returnsPromise = objectInstance.delete(1);
+            const returnsPromise = objectInstance.delete();
 
             expectErrorToBeNull(objectInstance.state.error);
             expect(objectInstance.state.errored).toBe(false);
@@ -845,14 +850,18 @@ describe("use/objectInstance.js", function () {
             expect(objectInstance.state.crud.delete).toHaveBeenCalledTimes(1);
         });
         it("already loading", async function () {
+            const id = ref(1);
+            const retrieveArgs = reactive({ fields });
             const objectInstance = useObjectInstance({
                 crudArgs: { stream: "test_stream" },
+                id,
+                retrieveArgs,
             });
             const deletePromise = new Promise(() => {});
             objectInstance.state.crud.delete = jest.fn();
             objectInstance.state.crud.delete.mockReturnValueOnce(deletePromise);
             objectInstance.delete(1);
-            await expect(() => objectInstance.delete(1)).rejects.toThrow(ObjectError);
+            await expect(() => objectInstance.delete()).rejects.toThrow(ObjectError);
             expect(objectInstance.state.crud.delete).toHaveBeenCalledWith({
                 crudArgs: { stream: "test_stream" },
                 id: 1,

@@ -64,27 +64,42 @@ export function useListInstance({ crudArgs, listArgs = {}, retrieveArgs = {} }) 
         if (state.loading) {
             throw new ListError("already loading.");
         }
+        let returnPromiseResolve;
+        const returnPromise = new Promise((resolve) => {
+            returnPromiseResolve = resolve;
+        });
         state.loading = true;
         state.errored = false;
         state.error = null;
-        return state.crud
-            .list({
-                crudArgs: state.crud.args,
-                retrieveArgs: state.retrieveArgs,
-                listArgs: state.listArgs,
-                pageCallback: returnedObject.pageCallback,
-            })
+        const listPromise = state.crud.list({
+            crudArgs: state.crud.args,
+            retrieveArgs: state.retrieveArgs,
+            listArgs: state.listArgs,
+            pageCallback: returnedObject.pageCallback,
+        });
+        if (listPromise.cancel) {
+            returnPromise.cancel = async () => {
+                let promise = listPromise.cancel();
+                state.loading = false;
+                returnPromiseResolve(false);
+                if (promise) {
+                    await promise;
+                }
+            };
+        }
+        // the indirection of promises here is to allow us to do additional work on listPromise's cancel
+        listPromise
             .then(() => {
-                return Promise.resolve(true);
+                state.loading = false;
+                returnPromiseResolve(true);
             })
             .catch((error) => {
+                state.loading = false;
                 state.errored = true;
                 state.error = error;
-                return Promise.resolve(false);
-            })
-            .finally(() => {
-                state.loading = false;
+                returnPromiseResolve(false);
             });
+        return returnPromise;
     }
 
     function addListObject(object) {

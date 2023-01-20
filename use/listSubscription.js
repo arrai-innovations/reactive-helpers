@@ -1,8 +1,10 @@
-import { computed, effectScope, onScopeDispose, reactive, toRef } from "vue";
+import { computed, effectScope, reactive, toRef } from "vue";
 import { useListInstance } from "./listInstance";
 import { cloneDeep, isEmpty, isObject } from "lodash";
 import { assignReactiveObject } from "../utils/assignReactiveObject";
 import inspect from "browser-util-inspect";
+import { useCancellableIntent } from "../utils/cancellableIntent";
+import { ObjectSubscriptionError } from "./objectSubscription";
 
 export class ListSubscriptionError extends Error {
     constructor(message) {
@@ -33,7 +35,7 @@ export function useListSubscription({ listInstance, crudArgs, listArgs, retrieve
     if (!listInstance) {
         listInstance = useListInstance({ crudArgs, listArgs, retrieveArgs });
     }
-    let cancelSubscription = null;
+    let subscribeIntent;
     const state = reactive({
         crud: {
             args: {},
@@ -45,6 +47,10 @@ export function useListSubscription({ listInstance, crudArgs, listArgs, retrieve
         subscribed: undefined,
         intendToList: false,
         intendToSubscribe: false,
+        previousListArgs: null,
+        previousRetrieveArgs: null,
+        previousIntendToList: false,
+        previousIntendToSubscribe: false,
     });
     // prevent linking of all instances to the same default .args object
     Object.assign(state.crud, cloneDeep(defaultCrud));
@@ -61,21 +67,35 @@ export function useListSubscription({ listInstance, crudArgs, listArgs, retrieve
                 state.intendToList = true;
             }
         }
-        return subscribe();
     }
 
     async function subscribe() {
-        if (!cancelSubscription) {
-            cancelSubscription = await state.crud.subscribe({
-                crudArgs: state.crud.args,
-                listArgs: listInstance.state.listArgs,
-                retrieveArgs: listInstance.state.retrieveArgs,
-                subscriptionEventCallback,
-            });
-            state.subscribed = true;
-            return true;
+        if (subscribeIntent.state.active) {
+            throw new ObjectSubscriptionError("already subscribed or subscribing.");
         }
-        return false;
+        state.subscriptionLoading = true;
+        let subscribePromise = state.crud.subscribe({
+            crudArgs: state.crud.args,
+            listArgs: listInstance.state.listArgs,
+            retrieveArgs: listInstance.state.retrieveArgs,
+            subscriptionEventCallback,
+        });
+        let originalCancel = subscribePromise.cancel;
+        subscribePromise.cancel = () => {
+            originalCancel();
+        };
+        return subscribePromise
+            .then(() => {
+                state.subscriptionLoading = false;
+                state.subscriptionErrored = false;
+                state.subscriptionError = null;
+            })
+            .catch(async (error) => {
+                state.subscriptionLoading = false;
+                state.subscriptionErrored = true;
+                state.subscriptionError = error;
+                throw error;
+            });
     }
 
     function subscriptionEventCallback(data, action) {
@@ -99,17 +119,6 @@ export function useListSubscription({ listInstance, crudArgs, listArgs, retrieve
         if (state.intendToList) {
             state.intendToList = false;
         }
-        return unsubscribe();
-    }
-
-    async function unsubscribe() {
-        if (cancelSubscription) {
-            const returnValue = await cancelSubscription();
-            state.subscribed = false;
-            cancelSubscription = null;
-            return returnValue;
-        }
-        return false;
     }
 
     function addFromSubscription(data) {
@@ -162,11 +171,21 @@ export function useListSubscription({ listInstance, crudArgs, listArgs, retrieve
         state.errored = computed(() => listInstance.state.errored || state.subscriptionErrored);
         state.error = computed(() => listInstance.state.error || state.subscriptionError);
 
+        state.retrieveArgs = computed(() => listInstance.state.retrieveArgs);
+        state.listArgs = computed(() => listInstance.state.listArgs);
         state.objects = toRef(listInstance.state, "objects");
         state.order = toRef(listInstance.state, "order");
         state.objectsInOrder = toRef(listInstance.state, "objectsInOrder");
-        onScopeDispose(async () => {
-            await unsubscribe();
+
+        subscribeIntent = useCancellableIntent({
+            awaitableWithCancel: subscribe,
+            watchArguments: [toRef(state, "intendToSubscribe"), toRef(state, "listArgs"), toRef(state, "retrieveArgs")],
+            clearActiveOnResolved: false,
+        });
+
+        useCancellableIntent({
+            awaitableWithCancel: listInstance.list,
+            watchArguments: [toRef(state, "intendToList"), toRef(state, "listArgs"), toRef(state, "retrieveArgs")],
         });
     });
 
