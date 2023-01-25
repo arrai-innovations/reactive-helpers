@@ -57,7 +57,7 @@ export function useObjectSubscription({ objectInstance, crudArgs, id, retrieveAr
         assignReactiveObject(state.crud.args, crudArgs);
     }
 
-    let subscribeIntent;
+    let subscribeIntent, retrieveIntent;
 
     function updateFromSubscription(data) {
         assignReactiveObject(state.object, data);
@@ -163,7 +163,7 @@ export function useObjectSubscription({ objectInstance, crudArgs, id, retrieveAr
             clearActiveOnResolved: false,
         });
 
-        useCancellableIntent({
+        retrieveIntent = useCancellableIntent({
             awaitableWithCancel: objectInstance.retrieve,
             watchArguments: [toRef(state, "intendToRetrieve"), toRef(state, "id"), toRef(state, "retrieveArgs")],
         });
@@ -172,6 +172,8 @@ export function useObjectSubscription({ objectInstance, crudArgs, id, retrieveAr
     return {
         state,
         objectInstance,
+        subscribeIntent,
+        retrieveIntent,
         subscribe: publicSubscribe,
         unsubscribe: publicUnsubscribe,
         updateFromSubscription,
