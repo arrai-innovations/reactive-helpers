@@ -175,7 +175,10 @@ export function useListSubscription({ listInstance, crudArgs, listArgs, retrieve
         state.subscribed = toRef(subscribeIntent.state, "active");
 
         listIntent = useCancellableIntent({
-            awaitableWithCancel: listInstance.list,
+            awaitableWithCancel: () => {
+                listInstance.clearList();
+                return listInstance.list();
+            },
             watchArguments: [toRef(state, "intendToList"), toRef(state, "listArgs"), toRef(state, "retrieveArgs")],
         });
     });
