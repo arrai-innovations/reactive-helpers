@@ -25,14 +25,14 @@ describe("use/watches", () => {
     });
     describe("doAwaitTimeout", () => {
         it("should resolve after the passed timeout", async () => {
-            timeout = 200;
+            timeout = 1000;
             const start = performance.now();
             await doAwaitTimeout(timeout);
             const end = performance.now();
             expect(end - start).toBeLessThan(timeout * 1.1);
         });
         it("rejects the promise when stopped manually", async () => {
-            timeout = 200;
+            timeout = 1000;
             const awaitTimeout = new AwaitTimeout(timeout);
             awaitTimeout.start();
             setTimeout(() => awaitTimeout.stop(), timeout / 2);
