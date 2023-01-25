@@ -1,4 +1,5 @@
 export * from "./assignReactiveObject";
+export * from "./cancellableIntent";
 export * from "./getFakeId";
 export * from "./keyDiff";
 export * from "./set";

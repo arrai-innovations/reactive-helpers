@@ -1,7 +1,8 @@
-import { identity } from "lodash";
-import { computed, effectScope, onScopeDispose, reactive, watch } from "vue";
+import { cloneDeep } from "lodash";
+import { computed, effectScope, reactive, toRef } from "vue";
 import { assignReactiveObject } from "../utils/assignReactiveObject";
 import { useObjectInstance } from "./objectInstance";
+import { useCancellableIntent } from "../utils/cancellableIntent";
 
 export class ObjectSubscriptionError extends Error {
     constructor(message) {
@@ -10,12 +11,14 @@ export class ObjectSubscriptionError extends Error {
     }
 }
 
-const defaultCrud = reactive({
+const defaultCrud = {
+    args: {},
     subscribe: undefined,
-});
+};
 
-export function setObjectSubscriptionCrud({ subscribe }) {
+export function setObjectSubscriptionCrud({ subscribe, args = {} }) {
     defaultCrud.subscribe = subscribe;
+    Object.assign(defaultCrud.args, args);
 }
 
 export function useObjectSubscriptions(subscriptionArgs) {
@@ -27,61 +30,70 @@ export function useObjectSubscriptions(subscriptionArgs) {
 }
 
 export function useObjectSubscription({ objectInstance, crudArgs, id, retrieveArgs = {} }) {
+    if (retrieveArgs && objectInstance) {
+        throw new ObjectSubscriptionError(
+            "Cannot use retrieveArgs and objectInstance together, set retrieveArgs on objectInstance instead"
+        );
+    }
     if (!objectInstance) {
-        objectInstance = useObjectInstance({ crudArgs, retrieveArgs });
+        objectInstance = useObjectInstance({ crudArgs, id, retrieveArgs });
     }
     const state = reactive({
-        objectSubscriptionCrud: {
+        crud: {
+            args: {},
             subscribe: undefined,
         },
         id,
-        retrieveArgs,
         subscriptionLoading: undefined,
         subscriptionErrored: false,
         subscriptionError: null,
-        subscribed: false,
+        subscribed: undefined,
         intendToSubscribe: false,
         intendToRetrieve: false,
     });
-    assignReactiveObject(state.objectSubscriptionCrud, defaultCrud);
-    let cancelSubscription;
+    // prevent linking of all instances to the same default .args object
+    Object.assign(state.crud, cloneDeep(defaultCrud));
+    if (crudArgs) {
+        assignReactiveObject(state.crud.args, crudArgs);
+    }
+
+    let subscribeIntent, retrieveIntent;
 
     function updateFromSubscription(data) {
-        assignReactiveObject(objectInstance.state.object, data);
+        assignReactiveObject(state.object, data);
     }
 
     function deleteFromSubscription() {
-        objectInstance.state.deleted = true;
-        assignReactiveObject(objectInstance.state.object, {});
+        state.deleted = true;
+        assignReactiveObject(state.object, {});
     }
 
-    async function publicSubscribe({ retrieve = true } = {}) {
+    function publicSubscribe({ retrieve = true } = {}) {
+        let didSubscribe = false;
         if (!state.intendToSubscribe) {
             state.intendToSubscribe = true;
+            didSubscribe = true;
         }
         if (retrieve) {
             if (!state.intendToRetrieve) {
                 state.intendToRetrieve = true;
+                didSubscribe = true;
             }
         }
-        return subscribe();
+        return didSubscribe;
     }
 
-    async function subscribe() {
-        if (cancelSubscription || state.subscribed) {
-            throw new ObjectSubscriptionError("already subscribed.");
-        }
-        if (![state.id, state.retrieveArgs].every(identity)) {
-            // delayed until stuff is true;
-            return false;
+    function subscribe() {
+        // this function cannot be async, or the resulting promise will lose its .cancel() method
+        if (subscribeIntent.state.active || state.subscribed) {
+            return Promise.reject(new ObjectSubscriptionError("already subscribed or subscribing."));
         }
         state.subscriptionLoading = true;
         state.subscriptionErrored = false;
         state.subscriptionError = null;
         let subscribePromise;
-        cancelSubscription = () => subscribePromise.cancel();
-        subscribePromise = state.objectSubscriptionCrud.subscribe({
-            crudArgs: objectInstance.state.objectInstanceCrud.args,
+        subscribePromise = state.crud.subscribe({
+            crudArgs: state.crud.args,
             id,
             retrieveArgs: state.retrieveArgs,
             callback: (data, action) => {
@@ -92,7 +104,14 @@ export function useObjectSubscription({ objectInstance, crudArgs, id, retrieveAr
                 }
             },
         });
-        return subscribePromise
+        let cancelSubscription = async () => {
+            let cancelPromise = subscribePromise.cancel();
+            cancelSubscription = null;
+            state.subscribed = false;
+            return cancelPromise;
+        };
+        // then/catch/finally makes a new promise, we need to make sure the cancel method lives on.
+        const catchPromise = subscribePromise
             .then(() => {
                 state.subscribed = true;
                 return Promise.resolve(true);
@@ -110,26 +129,21 @@ export function useObjectSubscription({ objectInstance, crudArgs, id, retrieveAr
             .finally(() => {
                 state.subscriptionLoading = false;
             });
+        catchPromise.cancel = cancelSubscription;
+        return catchPromise;
     }
 
-    async function publicUnsubscribe() {
+    function publicUnsubscribe() {
+        let didUnsubscribe = false;
         if (state.intendToSubscribe) {
             state.intendToSubscribe = false;
+            didUnsubscribe = true;
         }
         if (state.intendToRetrieve) {
             state.intendToRetrieve = false;
+            didUnsubscribe = true;
         }
-        return unsubscribe();
-    }
-
-    async function unsubscribe() {
-        if (cancelSubscription) {
-            state.subscribed = false;
-            let returnPromise = cancelSubscription();
-            cancelSubscription = null;
-            return returnPromise;
-        }
-        return false;
+        return didUnsubscribe;
     }
 
     const es = effectScope();
@@ -139,46 +153,27 @@ export function useObjectSubscription({ objectInstance, crudArgs, id, retrieveAr
         state.errored = computed(() => objectInstance.state.errored || state.subscriptionErrored);
         state.error = computed(() => objectInstance.state.error || state.subscriptionError);
 
-        watch(
-            [() => state.intendToSubscribe, () => state.id, () => state.retrieveArgs],
-            async (newArgs, oldArgs) => {
-                const everyNew = newArgs.every((e) => e);
-                const everyOld = oldArgs.every((e) => e);
-                if (everyOld) {
-                    await unsubscribe();
-                }
-                if (everyNew) {
-                    if (!cancelSubscription && !state.subscribed) {
-                        await subscribe().catch(console.error);
-                    }
-                }
-            },
-            {
-                deep: true,
-            }
-        );
+        state.retrieveArgs = computed(() => objectInstance.state.retrieveArgs);
+        state.object = toRef(objectInstance.state, "object");
+        state.deleted = toRef(objectInstance.state, "deleted");
 
-        watch(
-            [() => state.intendToRetrieve, () => state.id, () => state.retrieveArgs],
-            async (newArgs) => {
-                const everyNew = newArgs.every((e) => e);
-                if (everyNew) {
-                    if (!objectInstance.state.loading) {
-                        await objectInstance.retrieve({ id: state.id, ...state.retrieveArgs }).catch(console.error);
-                    }
-                }
-            },
-            { deep: true }
-        );
+        subscribeIntent = useCancellableIntent({
+            awaitableWithCancel: subscribe,
+            watchArguments: [toRef(state, "intendToSubscribe"), toRef(state, "id"), toRef(state, "retrieveArgs")],
+            clearActiveOnResolved: false,
+        });
 
-        onScopeDispose(async () => {
-            await unsubscribe();
+        retrieveIntent = useCancellableIntent({
+            awaitableWithCancel: objectInstance.retrieve,
+            watchArguments: [toRef(state, "intendToRetrieve"), toRef(state, "id"), toRef(state, "retrieveArgs")],
         });
     });
 
     return {
         state,
         objectInstance,
+        subscribeIntent,
+        retrieveIntent,
         subscribe: publicSubscribe,
         unsubscribe: publicUnsubscribe,
         updateFromSubscription,

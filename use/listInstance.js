@@ -1,5 +1,5 @@
-import { cloneDeep, isEmpty } from "lodash";
-import { computed, effectScope, reactive, unref } from "vue";
+import { cloneDeep } from "lodash";
+import { computed, effectScope, reactive } from "vue";
 import { assignReactiveObject } from "../utils/assignReactiveObject";
 import { getFakeId } from "../utils/getFakeId";
 import inspect from "browser-util-inspect";
@@ -30,23 +30,24 @@ export function useListInstances(listInstanceArgs) {
     return instances;
 }
 
-export function useListInstance({ crudArgs, defaultListArgs = {}, defaultRetrieveArgs = {} }) {
+export function useListInstance({ crudArgs, listArgs = {}, retrieveArgs = {} }) {
     const state = reactive({
-        listInstanceCrud: {
+        crud: {
             args: {},
             list: undefined,
         },
-        defaultRetrieveArgs,
-        defaultListArgs,
+        retrieveArgs,
+        listArgs,
         objects: {},
         loading: undefined,
         errored: false,
         error: null,
         order: [],
     });
-    Object.assign(state.listInstanceCrud, cloneDeep(defaultCrud));
+    // prevent linking of all instances to the same default .args object
+    Object.assign(state.crud, cloneDeep(defaultCrud));
     if (crudArgs) {
-        assignReactiveObject(state.listInstanceCrud.args, crudArgs);
+        assignReactiveObject(state.crud.args, crudArgs);
     }
 
     const defaultPageCallback = (newObjects) => {
@@ -59,37 +60,47 @@ export function useListInstance({ crudArgs, defaultListArgs = {}, defaultRetriev
         });
     };
 
-    async function list({ listArgs, retrieveArgs } = {}) {
+    function list() {
+        // this function cannot be async, or the resulting promise will lose its .cancel() method
         if (state.loading) {
-            throw new ListError("already loading.");
+            return Promise.reject(new ListError("already loading."));
         }
-        if (isEmpty(retrieveArgs) && !isEmpty(unref(state.defaultRetrieveArgs))) {
-            retrieveArgs = unref(state.defaultRetrieveArgs);
-        }
-        if (isEmpty(listArgs) && !isEmpty(unref(state.defaultListArgs))) {
-            listArgs = unref(state.defaultListArgs);
-        }
+        let returnPromiseResolve;
+        const returnPromise = new Promise((resolve) => {
+            returnPromiseResolve = resolve;
+        });
         state.loading = true;
         state.errored = false;
         state.error = null;
-        return state.listInstanceCrud
-            .list({
-                crudArgs: state.listInstanceCrud.args,
-                retrieveArgs,
-                listArgs,
-                pageCallback: returnedObject.pageCallback,
-            })
+        const listPromise = state.crud.list({
+            crudArgs: state.crud.args,
+            retrieveArgs: state.retrieveArgs,
+            listArgs: state.listArgs,
+            pageCallback: returnedObject.pageCallback,
+        });
+        if (listPromise.cancel) {
+            returnPromise.cancel = async () => {
+                let promise = listPromise.cancel();
+                state.loading = false;
+                returnPromiseResolve(false);
+                if (promise) {
+                    await promise;
+                }
+            };
+        }
+        // the indirection of promises here is to allow us to do additional work on listPromise's cancel
+        listPromise
             .then(() => {
-                return Promise.resolve(true);
+                state.loading = false;
+                returnPromiseResolve(true);
             })
             .catch((error) => {
+                state.loading = false;
                 state.errored = true;
                 state.error = error;
-                return Promise.resolve(false);
-            })
-            .finally(() => {
-                state.loading = false;
+                returnPromiseResolve(false);
             });
+        return returnPromise;
     }
 
     function addListObject(object) {

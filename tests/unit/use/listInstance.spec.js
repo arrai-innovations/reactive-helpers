@@ -1,5 +1,5 @@
 import { expectErrorToBeNull } from "../expectHelpers";
-import { isReactive, nextTick } from "vue";
+import { isReactive, nextTick, reactive } from "vue";
 import { keyBy } from "lodash";
 import flushPromises from "flush-promises";
 import { inspect } from "util";
@@ -68,147 +68,15 @@ describe("use/listInstance.spec.js", function () {
     const crudListResolvedObjects = keyBy([...crudListResolvedPage1, ...crudListResolvedPage2], "id");
     describe("list", function () {
         it("success", async function () {
-            const listInstance = useListInstance({});
-            let crudListResolve;
-            const crudListPromise = new Promise((resolve) => {
-                crudListResolve = resolve;
+            const listArgs = reactive({
+                user: 1,
             });
-            let passedPageCallback;
-            globalList.mockImplementation(({ pageCallback }) => {
-                passedPageCallback = pageCallback;
-                return crudListPromise;
+            const retrieveArgs = reactive({
+                fields,
             });
-
-            expectErrorToBeNull(listInstance.state.error);
-            expect(listInstance.state.errored).toBe(false);
-            expect(listInstance.state.loading).toBeUndefined();
-            expect({ ...listInstance.state.objects }).toEqual({});
-
-            const liListResolve = listInstance.list({
-                listArgs: { user: 1 },
-                retrieveArgs: { fields: fields },
-            });
-
-            expectErrorToBeNull(listInstance.state.error);
-            expect(listInstance.state.errored).toBe(false);
-            expect(listInstance.state.loading).toBe(true);
-            expect({ ...listInstance.state.object }).toEqual({});
-
-            await nextTick();
-
-            passedPageCallback(crudListResolvedPage1);
-
-            expectErrorToBeNull(listInstance.state.error);
-            expect(listInstance.state.errored).toBe(false);
-            expect(listInstance.state.loading).toBe(true);
-            expect({ ...listInstance.state.objects }).toEqual(crudListResolvedObjectsMid);
-
-            passedPageCallback(crudListResolvedPage2);
-
-            expectErrorToBeNull(listInstance.state.error);
-            expect(listInstance.state.errored).toBe(false);
-            expect(listInstance.state.loading).toBe(true);
-            expect({ ...listInstance.state.objects }).toEqual(crudListResolvedObjects);
-
-            crudListResolve();
-            await flushPromises();
-
-            await expect(liListResolve).resolves.toBe(true);
-
-            expectErrorToBeNull(listInstance.state.error);
-            expect(listInstance.state.errored).toBe(false);
-            expect(listInstance.state.loading).toBe(false);
-            expect({ ...listInstance.state.objects }).toEqual(crudListResolvedObjects);
-            expect(globalList).toHaveBeenCalledWith({
-                crudArgs: { stream: "test_stream" },
-                listArgs: { user: 1 },
-                retrieveArgs: { fields: fields },
-                pageCallback: passedPageCallback,
-            });
-            expect(globalList).toHaveBeenCalledTimes(1);
-        });
-        it("already loading", async function () {
-            const listInstance = useListInstance({});
-            expectErrorToBeNull(listInstance.state.error);
-            expect(listInstance.state.errored).toBe(false);
-            expect(listInstance.state.loading).toBeUndefined();
-            expect({ ...listInstance.state.objects }).toEqual({});
-            globalList.mockImplementation(() => new Promise(() => {}));
-
-            listInstance.list({
-                listArgs: { user: 1 },
-                retrieveArgs: { fields: fields },
-            });
-            await expect(
-                listInstance.list({
-                    listArgs: { user: 1 },
-                    retrieveArgs: { fields: fields },
-                })
-            ).rejects.toThrow(ListError);
-
-            expect(globalList).toHaveBeenCalledWith({
-                crudArgs: { stream: "test_stream" },
-                listArgs: { user: 1 },
-                retrieveArgs: { fields: fields },
-                pageCallback: expect.any(Function),
-            });
-            expect(globalList).toHaveBeenCalledTimes(1);
-            expectErrorToBeNull(listInstance.state.error);
-            expect(listInstance.state.errored).toBe(false);
-            expect(listInstance.state.loading).toBe(true);
-            expect({ ...listInstance.state.objects }).toEqual({});
-        });
-        it("errored", async function () {
-            const listInstance = useListInstance({});
-            let crudListReject;
-            const crudListPromise = new Promise((resolve, reject) => {
-                crudListReject = reject;
-            });
-            let passedPageCallback;
-            globalList.mockImplementation(({ pageCallback }) => {
-                passedPageCallback = pageCallback;
-                return crudListPromise;
-            });
-
-            expectErrorToBeNull(listInstance.state.error);
-            expect(listInstance.state.errored).toBe(false);
-            expect(listInstance.state.loading).toBeUndefined();
-            expect({ ...listInstance.state.objects }).toEqual({});
-
-            const liListResolve = listInstance.list({
-                listArgs: { user: 1 },
-                retrieveArgs: { fields: fields },
-            });
-
-            expectErrorToBeNull(listInstance.state.error);
-            expect(listInstance.state.errored).toBe(false);
-            expect(listInstance.state.loading).toBe(true);
-            expect({ ...listInstance.state.object }).toEqual({});
-
-            await nextTick();
-
-            const rejected = new Error("Test Error");
-            crudListReject(rejected);
-            await flushPromises();
-
-            await expect(liListResolve).resolves.toBe(false);
-
-            expect(listInstance.state.error).toBe(rejected);
-            expect(listInstance.state.errored).toBe(true);
-            expect(listInstance.state.loading).toBe(false);
-            expect({ ...listInstance.state.objects }).toEqual({});
-            expect(globalList).toHaveBeenCalledWith({
-                crudArgs: { stream: "test_stream" },
-                listArgs: { user: 1 },
-                retrieveArgs: { fields: fields },
-                pageCallback: passedPageCallback,
-            });
-            expect(globalList).toHaveBeenCalledTimes(1);
-        });
-        it("success (default args)", async function () {
             const listInstance = useListInstance({
-                defaultListArgs: { user: 1 },
-                defaultRetrieveArgs: { fields: fields },
+                listArgs,
+                retrieveArgs,
             });
             let crudListResolve;
             const crudListPromise = new Promise((resolve) => {
@@ -265,8 +133,101 @@ describe("use/listInstance.spec.js", function () {
             });
             expect(globalList).toHaveBeenCalledTimes(1);
         });
-        it("success (custom stream)", async function () {
+        it("already loading", async function () {
+            const listArgs = reactive({
+                user: 1,
+            });
+            const retrieveArgs = reactive({
+                fields,
+            });
             const listInstance = useListInstance({
+                listArgs,
+                retrieveArgs,
+            });
+            expectErrorToBeNull(listInstance.state.error);
+            expect(listInstance.state.errored).toBe(false);
+            expect(listInstance.state.loading).toBeUndefined();
+            expect({ ...listInstance.state.objects }).toEqual({});
+            globalList.mockImplementation(() => new Promise(() => {}));
+
+            listInstance.list();
+            await expect(listInstance.list()).rejects.toThrow(ListError);
+
+            expect(globalList).toHaveBeenCalledWith({
+                crudArgs: { stream: "test_stream" },
+                listArgs: { user: 1 },
+                retrieveArgs: { fields: fields },
+                pageCallback: expect.any(Function),
+            });
+            expect(globalList).toHaveBeenCalledTimes(1);
+            expectErrorToBeNull(listInstance.state.error);
+            expect(listInstance.state.errored).toBe(false);
+            expect(listInstance.state.loading).toBe(true);
+            expect({ ...listInstance.state.objects }).toEqual({});
+        });
+        it("errored", async function () {
+            const listArgs = reactive({
+                user: 1,
+            });
+            const retrieveArgs = reactive({
+                fields,
+            });
+            const listInstance = useListInstance({
+                listArgs,
+                retrieveArgs,
+            });
+            let crudListReject;
+            const crudListPromise = new Promise((resolve, reject) => {
+                crudListReject = reject;
+            });
+            let passedPageCallback;
+            globalList.mockImplementation(({ pageCallback }) => {
+                passedPageCallback = pageCallback;
+                return crudListPromise;
+            });
+
+            expectErrorToBeNull(listInstance.state.error);
+            expect(listInstance.state.errored).toBe(false);
+            expect(listInstance.state.loading).toBeUndefined();
+            expect({ ...listInstance.state.objects }).toEqual({});
+
+            const liListResolve = listInstance.list();
+
+            expectErrorToBeNull(listInstance.state.error);
+            expect(listInstance.state.errored).toBe(false);
+            expect(listInstance.state.loading).toBe(true);
+            expect({ ...listInstance.state.object }).toEqual({});
+
+            await nextTick();
+
+            const rejected = new Error("Test Error");
+            crudListReject(rejected);
+            await flushPromises();
+
+            await expect(liListResolve).resolves.toBe(false);
+
+            expect(listInstance.state.error).toBe(rejected);
+            expect(listInstance.state.errored).toBe(true);
+            expect(listInstance.state.loading).toBe(false);
+            expect({ ...listInstance.state.objects }).toEqual({});
+            expect(globalList).toHaveBeenCalledWith({
+                crudArgs: { stream: "test_stream" },
+                listArgs: { user: 1 },
+                retrieveArgs: { fields: fields },
+                pageCallback: passedPageCallback,
+            });
+            expect(globalList).toHaveBeenCalledTimes(1);
+        });
+        it("success (custom stream)", async function () {
+            const listArgs = reactive({
+                user: 1,
+            });
+            const retrieveArgs = reactive({
+                fields,
+            });
+            const listInstance = useListInstance({
+                listArgs,
+                retrieveArgs,
                 crudArgs: { stream: "custom_stream" },
             });
             let crudListResolve;
@@ -284,10 +245,7 @@ describe("use/listInstance.spec.js", function () {
             expect(listInstance.state.loading).toBeUndefined();
             expect({ ...listInstance.state.objects }).toEqual({});
 
-            const liListResolve = listInstance.list({
-                listArgs: { user: 1 },
-                retrieveArgs: { fields: fields },
-            });
+            const liListResolve = listInstance.list();
 
             expectErrorToBeNull(listInstance.state.error);
             expect(listInstance.state.errored).toBe(false);
@@ -390,8 +348,8 @@ describe("use/listInstance.spec.js", function () {
         });
         it("succeeds", async function () {
             const listInstance = useListInstance({
-                defaultListArgs: { user: 1 },
-                defaultRetrieveArgs: { fields: fields },
+                listArgs: { user: 1 },
+                retrieveArgs: { fields: fields },
             });
             let crudListResolve;
             const crudListPromise = new Promise((resolve) => {
@@ -445,8 +403,8 @@ describe("use/listInstance.spec.js", function () {
             name: "yiuo",
         };
         const listInstance = useListInstance({
-            defaultListArgs: { user: 1 },
-            defaultRetrieveArgs: { fields: fields },
+            listArgs: { user: 1 },
+            retrieveArgs: { fields: fields },
         });
         let crudListResolve;
         const crudListPromise = new Promise((resolve) => {

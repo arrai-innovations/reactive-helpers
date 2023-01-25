@@ -1,5 +1,5 @@
-import { cloneDeep, isEmpty } from "lodash";
-import { effectScope, reactive, unref } from "vue";
+import { cloneDeep } from "lodash";
+import { effectScope, reactive } from "vue";
 import { assignReactiveObject } from "../utils/assignReactiveObject";
 
 export class ObjectError extends Error {
@@ -24,7 +24,7 @@ export function setObjectInstanceCrud({ retrieve, create, update, patch, delete:
     defaultCrud.update = update;
     defaultCrud.patch = patch;
     defaultCrud.delete = deleteFn;
-    assignReactiveObject(defaultCrud.args, args);
+    Object.assign(defaultCrud.args, args);
 }
 
 export function useObjectInstances(instanceArgs) {
@@ -35,9 +35,9 @@ export function useObjectInstances(instanceArgs) {
     return instances;
 }
 
-export function useObjectInstance({ crudArgs, retrieveArgs }) {
+export function useObjectInstance({ crudArgs, id, retrieveArgs }) {
     const state = reactive({
-        objectInstanceCrud: {
+        crud: {
             args: {},
             retrieve: undefined,
             create: undefined,
@@ -46,32 +46,32 @@ export function useObjectInstance({ crudArgs, retrieveArgs }) {
             delete: undefined,
         },
         object: {},
-        defaultRetrieveArgs: retrieveArgs,
+        id,
+        retrieveArgs,
         loading: undefined,
         errored: false,
         error: null,
         deleted: false,
     });
-    assignReactiveObject(state.objectInstanceCrud, cloneDeep(defaultCrud));
+    // prevent linking of all instances to the same default .args object
+    Object.assign(state.crud, cloneDeep(defaultCrud));
     if (crudArgs) {
-        assignReactiveObject(state.objectInstanceCrud.args, crudArgs);
+        assignReactiveObject(state.crud.args, crudArgs);
     }
 
-    async function retrieve({ id, ...retrieveArgs }) {
+    function retrieve() {
+        // this function cannot be async, or the resulting promise will lose its .cancel() method
         if (state.loading) {
-            throw new ObjectError("already loading.");
-        }
-        if (isEmpty(retrieveArgs) && !isEmpty(unref(state.defaultRetrieveArgs))) {
-            retrieveArgs = unref(state.defaultRetrieveArgs);
+            return Promise.reject(new ObjectError("already loading."));
         }
         state.loading = true;
         state.errored = false;
         state.error = null;
-        return state.objectInstanceCrud
+        return state.crud
             .retrieve({
-                crudArgs: state.objectInstanceCrud.args,
-                id,
-                retrieveArgs,
+                crudArgs: state.crud.args,
+                id: state.id,
+                retrieveArgs: state.retrieveArgs,
             })
             .then((object) => {
                 assignReactiveObject(state.object, object);
@@ -87,21 +87,18 @@ export function useObjectInstance({ crudArgs, retrieveArgs }) {
             });
     }
 
-    async function create({ object, ...retrieveArgs }) {
+    async function create({ object }) {
         if (state.loading) {
             throw new ObjectError("already loading.");
-        }
-        if (isEmpty(retrieveArgs) && !isEmpty(unref(state.defaultRetrieveArgs))) {
-            retrieveArgs = unref(state.defaultRetrieveArgs);
         }
         state.loading = true;
         state.errored = false;
         state.error = null;
-        return state.objectInstanceCrud
+        return state.crud
             .create({
-                crudArgs: state.objectInstanceCrud.args,
+                crudArgs: state.crud.args,
                 object,
-                retrieveArgs,
+                retrieveArgs: state.retrieveArgs,
             })
             .then((object) => {
                 assignReactiveObject(state.object, object);
@@ -117,21 +114,18 @@ export function useObjectInstance({ crudArgs, retrieveArgs }) {
             });
     }
 
-    async function update({ object, ...retrieveArgs }) {
+    async function update({ object }) {
         if (state.loading) {
             throw new ObjectError("already loading.");
-        }
-        if (isEmpty(retrieveArgs) && !isEmpty(unref(state.defaultRetrieveArgs))) {
-            retrieveArgs = unref(state.defaultRetrieveArgs);
         }
         state.loading = true;
         state.errored = false;
         state.error = null;
-        return state.objectInstanceCrud
+        return state.crud
             .update({
-                crudArgs: state.objectInstanceCrud.args,
+                crudArgs: state.crud.args,
                 object,
-                retrieveArgs,
+                retrieveArgs: state.retrieveArgs,
             })
             .then((object) => {
                 assignReactiveObject(state.object, object);
@@ -147,22 +141,19 @@ export function useObjectInstance({ crudArgs, retrieveArgs }) {
             });
     }
 
-    async function patch({ id, partialObject, ...retrieveArgs }) {
+    async function patch({ partialObject }) {
         if (state.loading) {
             throw new ObjectError("already loading.");
-        }
-        if (isEmpty(retrieveArgs) && !isEmpty(unref(state.defaultRetrieveArgs))) {
-            retrieveArgs = unref(state.defaultRetrieveArgs);
         }
         state.loading = true;
         state.errored = false;
         state.error = null;
-        return state.objectInstanceCrud
+        return state.crud
             .patch({
-                crudArgs: state.objectInstanceCrud.args,
-                id,
+                crudArgs: state.crud.args,
+                id: state.id,
                 partialObject,
-                retrieveArgs,
+                retrieveArgs: state.retrieveArgs,
             })
             .then((object) => {
                 assignReactiveObject(state.object, object);
@@ -178,17 +169,17 @@ export function useObjectInstance({ crudArgs, retrieveArgs }) {
             });
     }
 
-    async function deleteFn(id) {
+    async function deleteFn() {
         if (state.loading) {
             throw new ObjectError("already loading.");
         }
         state.loading = true;
         state.errored = false;
         state.error = null;
-        return state.objectInstanceCrud
+        return state.crud
             .delete({
-                crudArgs: state.objectInstanceCrud.args,
-                id,
+                crudArgs: state.crud.args,
+                id: state.id,
             })
             .then(() => {
                 state.deleted = true;
