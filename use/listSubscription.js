@@ -4,7 +4,6 @@ import { cloneDeep, isEmpty, isObject } from "lodash";
 import { assignReactiveObject } from "../utils/assignReactiveObject";
 import inspect from "browser-util-inspect";
 import { useCancellableIntent } from "../utils/cancellableIntent";
-import { ObjectSubscriptionError } from "./objectSubscription";
 
 export class ListSubscriptionError extends Error {
     constructor(message) {
@@ -35,7 +34,7 @@ export function useListSubscription({ listInstance, crudArgs, listArgs, retrieve
     if (!listInstance) {
         listInstance = useListInstance({ crudArgs, listArgs, retrieveArgs });
     }
-    let subscribeIntent;
+    let subscribeIntent, listIntent;
     const state = reactive({
         crud: {
             args: {},
@@ -44,13 +43,8 @@ export function useListSubscription({ listInstance, crudArgs, listArgs, retrieve
         subscriptionLoading: undefined,
         subscriptionErrored: false,
         subscriptionError: null,
-        subscribed: undefined,
         intendToList: false,
         intendToSubscribe: false,
-        previousListArgs: null,
-        previousRetrieveArgs: null,
-        previousIntendToList: false,
-        previousIntendToSubscribe: false,
     });
     // prevent linking of all instances to the same default .args object
     Object.assign(state.crud, cloneDeep(defaultCrud));
@@ -58,44 +52,19 @@ export function useListSubscription({ listInstance, crudArgs, listArgs, retrieve
         assignReactiveObject(state.crud.args, crudArgs);
     }
 
-    async function publicSubscribe({ list = true } = {}) {
+    function publicSubscribe({ list = true } = {}) {
+        let didSubscribe = false;
         if (!state.intendToSubscribe) {
             state.intendToSubscribe = true;
+            didSubscribe = true;
         }
         if (list) {
             if (!state.intendToList) {
                 state.intendToList = true;
+                didSubscribe = true;
             }
         }
-    }
-
-    async function subscribe() {
-        if (subscribeIntent.state.active) {
-            throw new ObjectSubscriptionError("already subscribed or subscribing.");
-        }
-        state.subscriptionLoading = true;
-        let subscribePromise = state.crud.subscribe({
-            crudArgs: state.crud.args,
-            listArgs: listInstance.state.listArgs,
-            retrieveArgs: listInstance.state.retrieveArgs,
-            subscriptionEventCallback,
-        });
-        let originalCancel = subscribePromise.cancel;
-        subscribePromise.cancel = () => {
-            originalCancel();
-        };
-        return subscribePromise
-            .then(() => {
-                state.subscriptionLoading = false;
-                state.subscriptionErrored = false;
-                state.subscriptionError = null;
-            })
-            .catch(async (error) => {
-                state.subscriptionLoading = false;
-                state.subscriptionErrored = true;
-                state.subscriptionError = error;
-                throw error;
-            });
+        return didSubscribe;
     }
 
     function subscriptionEventCallback(data, action) {
@@ -112,13 +81,17 @@ export function useListSubscription({ listInstance, crudArgs, listArgs, retrieve
         }
     }
 
-    async function publicUnsubscribe() {
+    function publicUnsubscribe() {
+        let didUnsubscribe = false;
         if (state.intendToSubscribe) {
             state.intendToSubscribe = false;
+            didUnsubscribe = true;
         }
         if (state.intendToList) {
             state.intendToList = false;
+            didUnsubscribe = true;
         }
+        return didUnsubscribe;
     }
 
     function addFromSubscription(data) {
@@ -178,12 +151,30 @@ export function useListSubscription({ listInstance, crudArgs, listArgs, retrieve
         state.objectsInOrder = toRef(listInstance.state, "objectsInOrder");
 
         subscribeIntent = useCancellableIntent({
-            awaitableWithCancel: subscribe,
+            awaitableWithCancel: () => {
+                // this function cannot be async, or the resulting promise will lose its .cancel() method
+                const subscribePromise = state.crud.subscribe({
+                    crudArgs: cloneDeep(state.crud.args),
+                    listArgs: cloneDeep(listInstance.state.listArgs),
+                    retrieveArgs: cloneDeep(listInstance.state.retrieveArgs),
+                    subscriptionEventCallback,
+                });
+                // catching makes a new promise, we need to make sure the cancel method lives on.
+                const catchPromise = subscribePromise.catch((err) => {
+                    console.error(err);
+                    state.subscriptionErrored = true;
+                    state.subscriptionError = err;
+                });
+                catchPromise.cancel = subscribePromise.cancel;
+                return catchPromise;
+            },
             watchArguments: [toRef(state, "intendToSubscribe"), toRef(state, "listArgs"), toRef(state, "retrieveArgs")],
             clearActiveOnResolved: false,
         });
 
-        useCancellableIntent({
+        state.subscribed = toRef(subscribeIntent.state, "active");
+
+        listIntent = useCancellableIntent({
             awaitableWithCancel: listInstance.list,
             watchArguments: [toRef(state, "intendToList"), toRef(state, "listArgs"), toRef(state, "retrieveArgs")],
         });
@@ -192,6 +183,8 @@ export function useListSubscription({ listInstance, crudArgs, listArgs, retrieve
     return {
         state,
         listInstance,
+        listIntent,
+        subscribeIntent,
         subscribe: publicSubscribe,
         unsubscribe: publicUnsubscribe,
         effectScope: es,

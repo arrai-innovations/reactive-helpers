@@ -59,9 +59,10 @@ export function useObjectInstance({ crudArgs, id, retrieveArgs }) {
         assignReactiveObject(state.crud.args, crudArgs);
     }
 
-    async function retrieve() {
+    function retrieve() {
+        // this function cannot be async, or the resulting promise will lose its .cancel() method
         if (state.loading) {
-            throw new ObjectError("already loading.");
+            return Promise.reject(new ObjectError("already loading."));
         }
         state.loading = true;
         state.errored = false;

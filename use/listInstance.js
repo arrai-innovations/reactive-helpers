@@ -60,9 +60,10 @@ export function useListInstance({ crudArgs, listArgs = {}, retrieveArgs = {} }) 
         });
     };
 
-    async function list() {
+    function list() {
+        // this function cannot be async, or the resulting promise will lose its .cancel() method
         if (state.loading) {
-            throw new ListError("already loading.");
+            return Promise.reject(new ListError("already loading."));
         }
         let returnPromiseResolve;
         const returnPromise = new Promise((resolve) => {

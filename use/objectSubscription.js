@@ -69,30 +69,29 @@ export function useObjectSubscription({ objectInstance, crudArgs, id, retrieveAr
     }
 
     function publicSubscribe({ retrieve = true } = {}) {
+        let didSubscribe = false;
         if (!state.intendToSubscribe) {
             state.intendToSubscribe = true;
+            didSubscribe = true;
         }
         if (retrieve) {
             if (!state.intendToRetrieve) {
                 state.intendToRetrieve = true;
+                didSubscribe = true;
             }
         }
+        return didSubscribe;
     }
 
-    async function subscribe() {
+    function subscribe() {
+        // this function cannot be async, or the resulting promise will lose its .cancel() method
         if (subscribeIntent.state.active || state.subscribed) {
-            throw new ObjectSubscriptionError("already subscribed or subscribing.");
+            return Promise.reject(new ObjectSubscriptionError("already subscribed or subscribing."));
         }
         state.subscriptionLoading = true;
         state.subscriptionErrored = false;
         state.subscriptionError = null;
         let subscribePromise;
-        let cancelSubscription = async () => {
-            let cancelPromise = subscribePromise.cancel();
-            cancelSubscription = null;
-            state.subscribed = false;
-            return cancelPromise;
-        };
         subscribePromise = state.crud.subscribe({
             crudArgs: state.crud.args,
             id,
@@ -105,7 +104,14 @@ export function useObjectSubscription({ objectInstance, crudArgs, id, retrieveAr
                 }
             },
         });
-        return subscribePromise
+        let cancelSubscription = async () => {
+            let cancelPromise = subscribePromise.cancel();
+            cancelSubscription = null;
+            state.subscribed = false;
+            return cancelPromise;
+        };
+        // then/catch/finally makes a new promise, we need to make sure the cancel method lives on.
+        const catchPromise = subscribePromise
             .then(() => {
                 state.subscribed = true;
                 return Promise.resolve(true);
@@ -123,15 +129,21 @@ export function useObjectSubscription({ objectInstance, crudArgs, id, retrieveAr
             .finally(() => {
                 state.subscriptionLoading = false;
             });
+        catchPromise.cancel = cancelSubscription;
+        return catchPromise;
     }
 
     function publicUnsubscribe() {
+        let didUnsubscribe = false;
         if (state.intendToSubscribe) {
             state.intendToSubscribe = false;
+            didUnsubscribe = true;
         }
         if (state.intendToRetrieve) {
             state.intendToRetrieve = false;
+            didUnsubscribe = true;
         }
+        return didUnsubscribe;
     }
 
     const es = effectScope();

@@ -6,12 +6,7 @@ import { cloneDeep, isEqual } from "lodash";
  * Watch arguments can be an array or an object.
  * If the promise is not resolved before the watch arguments change again, the previous promise is cancelled.
  */
-export function useCancellableIntent({
-    awaitableWithCancel,
-    watchArguments = {},
-    awaitableArguments = {},
-    clearActiveOnResolved = true,
-}) {
+export function useCancellableIntent({ awaitableWithCancel, watchArguments = {}, clearActiveOnResolved = true }) {
     if (!awaitableWithCancel) {
         throw new Error("awaitableWithCancel is required");
     }
@@ -19,8 +14,7 @@ export function useCancellableIntent({
         throw new Error("awaitableWithCancel must be a function");
     }
     const state = reactive({
-        awaitableArguments,
-        active: null,
+        active: undefined,
         errored: false,
         error: null,
         clearActiveOnResolved,
@@ -37,7 +31,10 @@ export function useCancellableIntent({
 
     async function cancel() {
         if (cancelFunction) {
-            return cancelFunction().catch(console.error);
+            state.active = false;
+            const cancelPromise = cancelFunction().catch(console.error);
+            cancelFunction = null;
+            return cancelPromise;
         }
         return false;
     }
@@ -45,35 +42,35 @@ export function useCancellableIntent({
     es.run(() => {
         watch(
             isReactive(watchArguments) || isRef(watchArguments) ? watchArguments : Object.values(watchArguments),
-            async () => {
+            () => {
+                let newArguments = cloneDeep(watchArguments.map((arg) => unref(arg)));
                 if (isEqual(unref(watchArguments), previousWatchArguments)) {
                     return;
                 }
-                previousWatchArguments = cloneDeep(unref(watchArguments));
-                if (cancelFunction) {
-                    await cancelFunction().catch(console.error);
-                }
+                previousWatchArguments = newArguments;
+                cancel().catch(console.error);
                 if (Object.values(previousWatchArguments).every((v) => unref(v))) {
                     state.errored = false;
                     state.error = null;
-                    let awaitablePromise = awaitableWithCancel(cloneDeep(unref(state.awaitableArguments)));
+                    let awaitablePromise = awaitableWithCancel();
+                    state.active = true;
                     if (awaitablePromise.cancel) {
                         cancelFunction = async () => {
+                            state.active = false;
                             cancelFunction = null;
                             return awaitablePromise.cancel();
                         };
                     }
-                    return awaitablePromise
+                    awaitablePromise
                         .then(() => {
                             if (state.clearActiveOnResolved) {
                                 cancelFunction = null;
+                                state.active = false;
                             }
                         })
                         .catch(async (err) => {
-                            if (cancelFunction) {
-                                cancelFunction();
-                            }
-                            cancelFunction = null;
+                            await cancel();
+                            console.error(err);
                             state.errored = true;
                             state.error = err;
                             throw err;
@@ -81,7 +78,7 @@ export function useCancellableIntent({
                 }
             },
             {
-                // watching reactive is already deep
+                deep: true,
                 immediate: true,
             }
         );

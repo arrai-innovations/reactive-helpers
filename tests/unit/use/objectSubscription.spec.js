@@ -6,6 +6,7 @@ import { getMockOnUnmounted } from "../mockOnUnmounted";
 import { assignReactiveObject } from "../../../utils/assignReactiveObject";
 import { cloneDeep } from "lodash";
 import { doAwaitTimeout } from "../../../utils";
+import { poll } from "../poll";
 
 getMockOnUnmounted();
 
@@ -15,7 +16,6 @@ afterAll(() => {
 
 describe("use/objectSubscription.js", function () {
     let useObjectSubscription,
-        ObjectSubscriptionError,
         useObjectSubscriptions,
         globalSubscribe,
         globalUnsubscribe,
@@ -47,7 +47,6 @@ describe("use/objectSubscription.js", function () {
         });
 
         useObjectSubscription = imported.useObjectSubscription;
-        ObjectSubscriptionError = imported.ObjectSubscriptionError;
         useObjectSubscriptions = imported.useObjectSubscriptions;
 
         objectSubscription = useObjectSubscription({
@@ -105,7 +104,7 @@ describe("use/objectSubscription.js", function () {
             expect(objectSubscription.state.intendToRetrieve).toBe(false);
             expect(objectSubscription.state.object).toEqual({});
 
-            const subscribePromise = objectSubscription.subscribe();
+            objectSubscription.subscribe();
 
             await nextTick();
 
@@ -132,7 +131,6 @@ describe("use/objectSubscription.js", function () {
             expect(objectSubscription.state.intendToRetrieve).toBe(true);
             expect(objectSubscription.state.object).toEqual(crudRetrieveResolved);
             await nextTick();
-            await expect(subscribePromise).resolves.toBe(true);
             await flushPromises();
 
             expect(globalRetrieve).toHaveBeenCalledWith({
@@ -167,10 +165,12 @@ describe("use/objectSubscription.js", function () {
             objectSubscription.objectInstance.updateFromSubscription = jest.fn();
             objectSubscription.objectInstance.deleteFromSubscription = jest.fn();
 
-            const subscribePromise = objectSubscription.subscribe();
+            const subscribeResult = objectSubscription.subscribe();
             crudRetrieveResolve(crudRetrieveResolved);
             crudSubscribeResolve(crudSubscribeResolved);
-            await expect(subscribePromise).resolves.toBe(true);
+            expect(subscribeResult).toBe(true);
+
+            await poll(() => subscribeCallback);
 
             subscribeCallback({ id: 1, __str__: "!asdf", name: "!zxcv" }, "update");
             subscribeCallback({ id: 1, __str__: "asdf!", name: "zxcv!" }, "create");
@@ -190,9 +190,12 @@ describe("use/objectSubscription.js", function () {
             expect(objectSubscription.objectInstance.deleteFromSubscription).toHaveBeenCalledTimes(1);
         });
         it("intendToSubscribe but dont intendToRetrieve", async function () {
-            const subscribePromise = objectSubscription.subscribe({ retrieve: false });
+            const returnValue = objectSubscription.subscribe({ retrieve: false });
             crudSubscribeResolve(crudSubscribeResolved);
-            await expect(subscribePromise).resolves.toBe(true);
+            expect(returnValue).toBe(true);
+
+            await nextTick();
+            await flushPromises();
 
             expect(objectSubscription.state.loading).toBe(false);
             expect(objectSubscription.state.errored).toBe(false);
@@ -226,8 +229,10 @@ describe("use/objectSubscription.js", function () {
             expect(objectSubscription.state.intendToRetrieve).toBe(false);
             expect(objectSubscription.state.object).toEqual({});
 
-            const subscribePromise = objectSubscription.subscribe();
-            await expect(subscribePromise).resolves.toBe(false);
+            const returnValue = objectSubscription.subscribe();
+            expect(returnValue).toBe(true);
+            await nextTick();
+            await flushPromises();
 
             expect(objectSubscription.state.loading).toBeUndefined();
             expect(objectSubscription.state.errored).toBe(false);
@@ -292,7 +297,10 @@ describe("use/objectSubscription.js", function () {
             expect(objectSubscription.state.intendToRetrieve).toBe(false);
             expect(objectSubscription.state.object).toEqual({});
 
-            const subscribePromise = objectSubscription.subscribe();
+            const returnValue = objectSubscription.subscribe();
+            expect(returnValue).toBe(true);
+            await nextTick();
+            await flushPromises();
 
             expect(objectSubscription.state.loading).toBe(true);
             expect(objectSubscription.state.errored).toBe(false);
@@ -316,7 +324,6 @@ describe("use/objectSubscription.js", function () {
             expect(objectSubscription.state.intendToSubscribe).toBe(true);
             expect(objectSubscription.state.intendToRetrieve).toBe(true);
             expect(objectSubscription.state.object).toEqual({});
-            await expect(subscribePromise).resolves.toBe(true);
             await nextTick();
 
             expect(globalRetrieve).toHaveBeenCalledWith({
@@ -347,7 +354,11 @@ describe("use/objectSubscription.js", function () {
             expect(objectSubscription.state.intendToRetrieve).toBe(false);
             expect(objectSubscription.state.object).toEqual({});
 
-            const subscribePromise = objectSubscription.subscribe();
+            const returnValue = objectSubscription.subscribe();
+            expect(returnValue).toBe(true);
+
+            await nextTick();
+            await flushPromises();
 
             expect(objectSubscription.state.loading).toBe(true);
             expect(objectSubscription.state.errored).toBe(false);
@@ -371,7 +382,7 @@ describe("use/objectSubscription.js", function () {
             expect(objectSubscription.state.intendToSubscribe).toBe(true);
             expect(objectSubscription.state.intendToRetrieve).toBe(true);
             expect(objectSubscription.state.object).toEqual(crudRetrieveResolved);
-            await expect(subscribePromise).resolves.toBe(false);
+
             await nextTick();
 
             expect(globalRetrieve).toHaveBeenCalledWith({
@@ -403,8 +414,8 @@ describe("use/objectSubscription.js", function () {
             expect(objectSubscription.state.object).toEqual({});
 
             objectSubscription.subscribe();
-            const subscribePromise = objectSubscription.subscribe();
-            await expect(subscribePromise).rejects.toThrow(ObjectSubscriptionError);
+            const returnValue = objectSubscription.subscribe();
+            expect(returnValue).toBe(false);
         });
     });
     describe("unsubscribe", function () {
@@ -425,10 +436,12 @@ describe("use/objectSubscription.js", function () {
             globalSubscribe.mockReturnValueOnce(crudSubscribePromise);
         });
         it("success", async function () {
-            const subscribePromise = objectSubscription.subscribe();
+            expect(objectSubscription.subscribe()).toBe(true);
             crudSubscribeResolve(crudSubscribeResolved);
             crudRetrieveResolve(crudRetrieveResolved);
-            await expect(subscribePromise).resolves.toBe(true);
+
+            await nextTick();
+            await flushPromises();
 
             expect(objectSubscription.state.loading).toBe(false);
             expect(objectSubscription.state.errored).toBe(false);
@@ -439,7 +452,10 @@ describe("use/objectSubscription.js", function () {
             expect(objectSubscription.state.intendToRetrieve).toBe(true);
             expect(objectSubscription.state.object).toEqual(crudRetrieveResolved);
 
-            const unsubscribePromise = objectSubscription.unsubscribe();
+            expect(objectSubscription.unsubscribe()).toBe(true);
+
+            await nextTick();
+            await flushPromises();
 
             expect(objectSubscription.state.loading).toBe(false);
             expect(objectSubscription.state.errored).toBe(false);
@@ -451,6 +467,8 @@ describe("use/objectSubscription.js", function () {
             expect(objectSubscription.state.object).toEqual(crudRetrieveResolved);
 
             crudCancelResolve(true);
+            await nextTick();
+            await flushPromises();
 
             expect(objectSubscription.state.loading).toBe(false);
             expect(objectSubscription.state.errored).toBe(false);
@@ -460,14 +478,14 @@ describe("use/objectSubscription.js", function () {
             expect(objectSubscription.state.intendToSubscribe).toBe(false);
             expect(objectSubscription.state.intendToRetrieve).toBe(false);
             expect(objectSubscription.state.object).toEqual(crudRetrieveResolved);
-
-            await expect(unsubscribePromise).resolves.toBe(true);
         });
         it("errored", async function () {
-            const subscribePromise = objectSubscription.subscribe();
+            expect(objectSubscription.subscribe()).toBe(true);
             crudSubscribeResolve(crudSubscribeResolved);
             crudRetrieveResolve(crudRetrieveResolved);
-            await expect(subscribePromise).resolves.toBe(true);
+
+            await nextTick();
+            await flushPromises();
 
             expect(objectSubscription.state.loading).toBe(false);
             expect(objectSubscription.state.errored).toBe(false);
@@ -478,7 +496,9 @@ describe("use/objectSubscription.js", function () {
             expect(objectSubscription.state.intendToRetrieve).toBe(true);
             expect(objectSubscription.state.object).toEqual(crudRetrieveResolved);
 
-            const unsubscribePromise = objectSubscription.unsubscribe();
+            expect(objectSubscription.unsubscribe()).toBe(true);
+            await nextTick();
+            await flushPromises();
 
             expect(objectSubscription.state.loading).toBe(false);
             expect(objectSubscription.state.errored).toBe(false);
@@ -499,23 +519,17 @@ describe("use/objectSubscription.js", function () {
             expect(objectSubscription.state.intendToSubscribe).toBe(false);
             expect(objectSubscription.state.intendToRetrieve).toBe(false);
             expect(objectSubscription.state.object).toEqual(crudRetrieveResolved);
-
-            await expect(unsubscribePromise).resolves.toBe(false);
         });
         it("already unsubscribed", async function () {
-            const subscribePromise = objectSubscription.subscribe();
+            expect(objectSubscription.subscribe()).toBe(true);
             crudSubscribeResolve(crudSubscribeResolved);
             crudRetrieveResolve(crudRetrieveResolved);
-            await expect(subscribePromise).resolves.toBe(true);
-
             objectSubscription.unsubscribe();
-            const unsubscribePromise = objectSubscription.unsubscribe();
-            await expect(unsubscribePromise).resolves.toBe(false);
+            expect(objectSubscription.unsubscribe()).toBe(false);
         });
 
         it("not subscribed", async function () {
-            const unsubscribePromise = objectSubscription.unsubscribe();
-            await expect(unsubscribePromise).resolves.toBe(false);
+            expect(objectSubscription.unsubscribe()).toBe(false);
         });
     });
     describe("custom crud", function () {
@@ -540,11 +554,10 @@ describe("use/objectSubscription.js", function () {
                 },
             });
 
-            const subscribePromise = objectSubscription.subscribe();
+            expect(objectSubscription.subscribe()).toBe(true);
             crudRetrieveResolve(crudRetrieveResolved);
             crudSubscribeResolve(crudSubscribeResolved);
             await flushPromises();
-            await expect(subscribePromise).resolves.toBe(true);
 
             expect(globalRetrieve).toHaveBeenCalledWith({
                 crudArgs: { stream: "test_stream2" },
@@ -594,7 +607,7 @@ describe("use/objectSubscription.js", function () {
             crudRetrieveResolve(crudRetrieveResolved);
             crudSubscribeResolve(crudSubscribeResolved);
             await flushPromises();
-            await expect(subscribePromise).resolves.toBe(true);
+            expect(subscribePromise).toBe(true);
 
             expect(globalRetrieve).toHaveBeenCalledTimes(0);
             expect(globalSubscribe).toHaveBeenCalledTimes(0);
