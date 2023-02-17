@@ -3,6 +3,7 @@ import { computed, effectScope, reactive, toRef } from "vue";
 import { assignReactiveObject } from "../utils/assignReactiveObject";
 import { useObjectInstance } from "./objectInstance";
 import { useCancellableIntent } from "../utils/cancellableIntent";
+import loadingCombine from "../utils/loadingCombine";
 
 export class ObjectSubscriptionError extends Error {
     constructor(message) {
@@ -149,7 +150,7 @@ export function useObjectSubscription({ objectInstance, crudArgs, id, retrieveAr
     const es = effectScope();
 
     es.run(() => {
-        state.loading = computed(() => objectInstance.state.loading || state.subscriptionLoading);
+        state.loading = computed(() => loadingCombine(objectInstance.state.loading, state.subscriptionLoading));
         state.errored = computed(() => objectInstance.state.errored || state.subscriptionErrored);
         state.error = computed(() => objectInstance.state.error || state.subscriptionError);
 

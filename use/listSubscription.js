@@ -4,6 +4,7 @@ import { cloneDeep, isEmpty, isObject } from "lodash";
 import { assignReactiveObject } from "../utils/assignReactiveObject";
 import inspect from "browser-util-inspect";
 import { useCancellableIntent } from "../utils/cancellableIntent";
+import loadingCombine from "../utils/loadingCombine";
 
 export class ListSubscriptionError extends Error {
     constructor(message) {
@@ -140,7 +141,7 @@ export function useListSubscription({ listInstance, crudArgs, listArgs, retrieve
     const es = effectScope();
 
     es.run(() => {
-        state.loading = computed(() => listInstance.state.loading || state.subscriptionLoading);
+        state.loading = computed(() => loadingCombine(listInstance.state.loading, state.subscriptionLoading));
         state.errored = computed(() => listInstance.state.errored || state.subscriptionErrored);
         state.error = computed(() => listInstance.state.error || state.subscriptionError);
 
