@@ -152,6 +152,11 @@ export function useListInstance({ crudArgs, listArgs = {}, retrieveArgs = {} }) 
         return getFakeId(state.objects);
     }
 
+    function clearError() {
+        state.errored = false;
+        state.error = null;
+    }
+
     const es = effectScope();
 
     es.run(() => {
@@ -165,10 +170,11 @@ export function useListInstance({ crudArgs, listArgs = {}, retrieveArgs = {} }) 
         updateListObject,
         deleteListObject,
         clearList,
-        effectScope: es,
+        clearError,
         getFakeId: ourGetFakeId,
         defaultPageCallback,
         pageCallback: defaultPageCallback,
+        effectScope: es,
     };
     return returnedObject;
 }

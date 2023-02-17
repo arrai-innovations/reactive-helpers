@@ -138,6 +138,12 @@ export function useListSubscription({ listInstance, crudArgs, listArgs, retrieve
         }
     }
 
+    function clearErrors() {
+        state.subscriptionErrored = false;
+        state.subscriptionError = null;
+        listInstance.clearErrors();
+    }
+
     const es = effectScope();
 
     es.run(() => {
@@ -191,6 +197,7 @@ export function useListSubscription({ listInstance, crudArgs, listArgs, retrieve
         subscribeIntent,
         subscribe: publicSubscribe,
         unsubscribe: publicUnsubscribe,
+        clearErrors,
         effectScope: es,
     };
 }

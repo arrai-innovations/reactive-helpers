@@ -147,6 +147,12 @@ export function useObjectSubscription({ objectInstance, crudArgs, id, retrieveAr
         return didUnsubscribe;
     }
 
+    function clearError() {
+        state.subscriptionErrored = false;
+        state.subscriptionError = null;
+        objectInstance.clearError();
+    }
+
     const es = effectScope();
 
     es.run(() => {
@@ -179,6 +185,7 @@ export function useObjectSubscription({ objectInstance, crudArgs, id, retrieveAr
         unsubscribe: publicUnsubscribe,
         updateFromSubscription,
         deleteFromSubscription,
+        clearError,
         effectScope: es,
     };
 }

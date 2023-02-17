@@ -209,6 +209,11 @@ export function useObjectInstance({ crudArgs, id, retrieveArgs }) {
             });
     }
 
+    function clearError() {
+        state.errored = false;
+        state.error = null;
+    }
+
     const es = effectScope();
 
     // we could have effects? let's keep the interface to keep our options open to add without major changes.
@@ -221,6 +226,7 @@ export function useObjectInstance({ crudArgs, id, retrieveArgs }) {
         update,
         patch,
         delete: deleteFn,
+        clearError,
         effectScope: es,
     };
 }
