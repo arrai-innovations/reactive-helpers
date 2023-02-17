@@ -59,15 +59,26 @@ export function useObjectInstance({ crudArgs, id, retrieveArgs }) {
         assignReactiveObject(state.crud.args, crudArgs);
     }
 
+    // due to retrieve being called by `useCancelleableIntent`, if called manually then by the watch,
+    //  it will run into the loading check. Instead, return the current retrieve promise if it exists.
+    const promises = {
+        retrieve: null,
+    };
+
     function retrieve() {
         // this function cannot be async, or the resulting promise will lose its .cancel() method
+        if (promises.retrieve) {
+            // if a retrieve is already in progress, return the existing promise
+            return promises.retrieve;
+        }
         if (state.loading) {
+            // if another operation is already in progress, return a rejected promise
             return Promise.reject(new ObjectError("already loading."));
         }
         state.loading = true;
         state.errored = false;
         state.error = null;
-        return state.crud
+        promises.retrieve = state.crud
             .retrieve({
                 crudArgs: state.crud.args,
                 id: state.id,
@@ -84,7 +95,9 @@ export function useObjectInstance({ crudArgs, id, retrieveArgs }) {
             })
             .finally(() => {
                 state.loading = false;
+                promises.retrieve = null;
             });
+        return promises.retrieve;
     }
 
     async function create({ object }) {

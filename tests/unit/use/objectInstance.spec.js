@@ -219,14 +219,45 @@ describe("use/objectInstance.js", function () {
                 id,
                 retrieveArgs,
             });
+            objectInstance.state.crud.create = jest.fn();
+            objectInstance.state.crud.create.mockImplementation(() => new Promise(() => {}));
             objectInstance.state.crud.retrieve = jest.fn();
             objectInstance.state.crud.retrieve.mockImplementation(() => new Promise(() => {}));
             expectErrorToBeNull(objectInstance.state.error);
             expect(objectInstance.state.errored).toBe(false);
             expect(objectInstance.state.loading).toBeUndefined();
             expect({ ...objectInstance.state.object }).toEqual({});
-            objectInstance.retrieve();
+            objectInstance.create({
+                fake: "object",
+            });
+            expectErrorToBeNull(objectInstance.state.error);
+            expect(objectInstance.state.errored).toBe(false);
+            expect(objectInstance.state.loading).toBe(true);
             await expect(() => objectInstance.retrieve()).rejects.toThrow(ObjectError);
+            expect(objectInstance.state.crud.retrieve).toHaveBeenCalledTimes(0);
+            expectErrorToBeNull(objectInstance.state.error);
+            expect(objectInstance.state.errored).toBe(false);
+            expect(objectInstance.state.loading).toBe(true);
+            expect({ ...objectInstance.state.object }).toEqual({});
+        });
+        it("double retrieve gets the same promise", async function () {
+            const id = ref(1);
+            const retrieveArgs = reactive({ fields });
+            const objectInstance = useObjectInstance({
+                crudArgs: { stream: "test_stream" },
+                id,
+                retrieveArgs,
+            });
+            objectInstance.state.crud.retrieve = jest.fn();
+            objectInstance.state.crud.retrieve.mockImplementation(() => new Promise(() => {}));
+            expectErrorToBeNull(objectInstance.state.error);
+            expect(objectInstance.state.errored).toBe(false);
+            expect(objectInstance.state.loading).toBeUndefined();
+            expect({ ...objectInstance.state.object }).toEqual({});
+            const firstPromise = objectInstance.retrieve();
+            const secondPromise = objectInstance.retrieve();
+            // await expect(() => objectInstance.retrieve()).rejects.toThrow(ObjectError);
+            expect(firstPromise).toBe(secondPromise);
             expect(objectInstance.state.crud.retrieve).toHaveBeenCalledWith({
                 crudArgs: { stream: "test_stream" },
                 id: 1,
