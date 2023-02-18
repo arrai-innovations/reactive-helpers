@@ -40,8 +40,8 @@ export function useObjectCalculated({
             [() => Object.keys(state.calculatedObjectRules)],
             () => {
                 const { addedKeys, removedKeys, changedKeys } = keyDiff(
-                    state.calculatedObjectRules,
-                    calculatedObjectOriginalFunctions
+                    Object.keys(state.calculatedObjectRules),
+                    Object.keys(calculatedObjectOriginalFunctions)
                 );
                 for (const removedKey of removedKeys) {
                     delete calculatedObjectOriginalFunctions[removedKey];
