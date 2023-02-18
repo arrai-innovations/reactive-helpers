@@ -39,7 +39,7 @@ export function useObjectCalculated({
         watch(
             [() => Object.keys(state.calculatedObjectRules)],
             () => {
-                const { addedKeys, removedKeys, changedKeys } = keyDiff(
+                const { addedKeys, removedKeys, sameKeys } = keyDiff(
                     Object.keys(state.calculatedObjectRules),
                     Object.keys(calculatedObjectOriginalFunctions)
                 );
@@ -60,13 +60,13 @@ export function useObjectCalculated({
                         );
                     });
                 }
-                for (const changedKey of changedKeys) {
-                    calculatedObjectOriginalFunctions[changedKey] = state.calculatedObjectRules[changedKey];
-                    calculatedObjectEffectScopes[changedKey].stop();
-                    calculatedObjectEffectScopes[changedKey] = effectScope();
-                    calculatedObjectEffectScopes[changedKey].run(() => {
-                        state.calculatedObjectObject[changedKey] = computed(() =>
-                            calculatedObjectOriginalFunctions[changedKey](state.object)
+                for (const sameKey of sameKeys) {
+                    calculatedObjectOriginalFunctions[sameKey] = state.calculatedObjectRules[sameKey];
+                    calculatedObjectEffectScopes[sameKey].stop();
+                    calculatedObjectEffectScopes[sameKey] = effectScope();
+                    calculatedObjectEffectScopes[sameKey].run(() => {
+                        state.calculatedObjectObject[sameKey] = computed(() =>
+                            calculatedObjectOriginalFunctions[sameKey](state.object)
                         );
                     });
                 }
