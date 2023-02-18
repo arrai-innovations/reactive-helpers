@@ -4,7 +4,10 @@ import { keyDiff } from "../utils/keyDiff";
 
 export function useListRelateds(instances, args) {
     for (const [key, value] of Object.entries(args)) {
-        useListRelated({ listInstance: instances[key], ...value });
+        useListRelated({
+            parentState: instances[key].state,
+            ...value,
+        });
     }
 }
 
