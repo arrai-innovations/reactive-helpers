@@ -85,4 +85,9 @@ export function useObjectCalculated({
             }
         });
     });
+    return {
+        state,
+        parentState,
+        effectScope: es,
+    };
 }
