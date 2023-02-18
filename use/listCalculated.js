@@ -2,6 +2,14 @@ import { isEmpty } from "lodash";
 import { computed, effectScope, onScopeDispose, reactive, toRef, toRefs, watch } from "vue";
 import { keyDiff } from "../utils";
 
+export function useListCalculateds(instances, args) {
+    for (const [key, value] of Object.entries(args)) {
+        useListCalculated({
+            parentState: instances[key].state,
+            ...value,
+        });
+    }
+}
 // the simpler sibling of useListRelated
 // rules are just keys to functions that will be called with the object
 // and the result will be added as a computed property
