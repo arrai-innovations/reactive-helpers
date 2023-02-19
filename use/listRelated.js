@@ -1,5 +1,5 @@
-import { computed, effectScope, onScopeDispose, reactive, toRef, toRefs, unref, watch } from "vue";
-import { get, isArray, isEmpty, isUndefined } from "lodash";
+import { get, isArray, isEmpty } from "lodash";
+import { computed, effectScope, onScopeDispose, reactive, toRef, unref, watch } from "vue";
 import { keyDiff } from "../utils/keyDiff";
 
 export function useListRelateds(instances, args) {
@@ -22,7 +22,6 @@ export function useListRelated({
         objects: {},
     });
     const relatedObjectsEffectScopes = {};
-    const combinedEffectScopes = {};
 
     // don't change relatedObjectsPropertyName on us or it will break
     const ropn = relatedObjectsPropertyName + "";
@@ -39,21 +38,20 @@ export function useListRelated({
                 relatedObjectsEffectScopes[removedKey].stop();
                 delete relatedObjectsEffectScopes[removedKey];
             }
-            if (combinedEffectScopes[removedKey]) {
-                combinedEffectScopes[removedKey].stop();
-                delete combinedEffectScopes[removedKey];
-            }
         }
         for (const addedKey of addedKeys) {
             state.relatedObjectsObjects[addedKey] = {};
-            combinedEffectScopes[addedKey] = effectScope();
-            combinedEffectScopes[addedKey].run(() => {
-                state.objects[addedKey] = computed(() =>
-                    reactive({
-                        ...toRefs(state.relatedObjectsObjects[addedKey]),
-                        ...toRefs(parentState.objects[addedKey]),
-                    })
-                );
+            state.objects[addedKey] = new Proxy(parentState.objects[addedKey], {
+                get(target, prop, receiver) {
+                    if (prop === ropn) {
+                        return state.relatedObjectsObjects[addedKey];
+                    }
+                    return Reflect.get(target, prop, receiver);
+                },
+                ownKeys(target) {
+                    console.log("ownKeys", addedKey, target);
+                    return Reflect.ownKeys(target).concat(ropn);
+                },
             });
         }
     }
@@ -68,42 +66,46 @@ export function useListRelated({
             relatedObjectsEffectScope.run(() => {
                 const relatedObjectsObject = state.relatedObjectsObjects[objectKey];
                 const originalObject = parentState.objects[objectKey];
-                if (!relatedObjectsObject[ropn]) {
-                    relatedObjectsObject[ropn] = {};
-                }
                 let removedRuleKeys, addedRuleKeys;
                 if (!relatedObjectsRulesIsEmpty) {
                     ({ removedKeys: removedRuleKeys, addedKeys: addedRuleKeys } = keyDiff(
                         Object.keys(state.relatedObjectsRules),
-                        Object.keys(relatedObjectsObject[ropn])
+                        Object.keys(relatedObjectsObject)
                     ));
                 } else {
-                    if (isEmpty(relatedObjectsObject[ropn])) {
+                    if (isEmpty(relatedObjectsObject)) {
                         return;
                     }
-                    removedRuleKeys = Object.keys(relatedObjectsObject[ropn]);
+                    removedRuleKeys = Object.keys(relatedObjectsObject);
                     addedRuleKeys = [];
                 }
                 for (const removedRuleKey of removedRuleKeys) {
-                    delete relatedObjectsObject[ropn][removedRuleKey];
+                    delete relatedObjectsObject[removedRuleKey];
                 }
                 for (const addedRuleKey of addedRuleKeys) {
-                    relatedObjectsObject[ropn][addedRuleKey] = computed(() => {
-                        // deal with computed objects being passed.
-                        const ruleObjects = unref(state.relatedObjectsRules?.[addedRuleKey]?.objects);
-                        const rulePkKey = state.relatedObjectsRules?.[addedRuleKey]?.pkKey || addedRuleKey;
-                        if (!ruleObjects || !rulePkKey) {
-                            return undefined;
+                    relatedObjectsObject[addedRuleKey] = new Proxy(
+                        {},
+                        {
+                            getRealTarget() {
+                                const ruleObjects = unref(state.relatedObjectsRules?.[addedRuleKey]?.objects);
+                                const rulePkKey = state.relatedObjectsRules?.[addedRuleKey]?.pkKey || addedRuleKey;
+                                const originalValueIsArray = isArray(get(originalObject, rulePkKey));
+                                const value = get(originalObject, rulePkKey);
+                                return originalValueIsArray ? value.map((e) => ruleObjects[e]) : ruleObjects[value];
+                            },
+                            get(target, prop, receiver) {
+                                const realTarget = this.getRealTarget();
+                                if (realTarget === undefined) {
+                                    // reflect doesn't like undefined as a target
+                                    return undefined;
+                                }
+                                return Reflect.get(this.getRealTarget(), prop, receiver);
+                            },
+                            ownKeys() {
+                                return Reflect.ownKeys(this.getRealTarget());
+                            },
                         }
-                        const value = get(originalObject, rulePkKey);
-                        if (isUndefined(value)) {
-                            return undefined;
-                        }
-                        if (isArray(value)) {
-                            return value.map((e) => ruleObjects[e]);
-                        }
-                        return ruleObjects[value];
-                    });
+                    );
                 }
             });
             relatedObjectsEffectScopes[objectKey] = relatedObjectsEffectScope;
@@ -130,9 +132,6 @@ export function useListRelated({
         onScopeDispose(() => {
             for (const objectKey of Object.keys(relatedObjectsEffectScopes)) {
                 relatedObjectsEffectScopes[objectKey].stop();
-            }
-            for (const objectKey of Object.keys(combinedEffectScopes)) {
-                combinedEffectScopes[objectKey].stop();
             }
         });
     });
