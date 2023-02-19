@@ -40,6 +40,26 @@ export function useObjectCalculated({
             ownKeys(target) {
                 return Reflect.ownKeys(target).concat(copn);
             },
+            has(target, key) {
+                if (key === copn) {
+                    return true;
+                }
+                return Reflect.has(target, key);
+            },
+            getOwnPropertyDescriptor(target, key) {
+                if (key === copn) {
+                    return {
+                        configurable: true,
+                        enumerable: true,
+                        value: state.calculatedObjectObject,
+                        writable: true,
+                    };
+                }
+                return Reflect.getOwnPropertyDescriptor(target, key);
+            },
+            defineProperty() {
+                return false;
+            },
         });
 
         watch(

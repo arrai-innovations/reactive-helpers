@@ -45,6 +45,12 @@ describe("use/listRelated", () => {
             relatedObjectsPropertyName: "myRelatedObjects",
         });
         await nextTick();
+        // listRelated.state.objects is doing proxy shenanigans
+        // in uses handler.has
+        expect("myRelatedObjects" in listRelated.state.objects[1]).toBe(true);
+        expect("relatedItems" in listRelated.state.objects[1].myRelatedObjects).toBe(true);
+        expect("relatedItem" in listRelated.state.objects[1].myRelatedObjects).toBe(true);
+        // expect uses enumeration, which uses handler.ownKeys and handler.getOwnPropertyDescriptor
         expect(unrefAndToRawDeep(listRelated.state.objects)).toEqual({
             1: {
                 id: "1",

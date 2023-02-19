@@ -1,4 +1,4 @@
-import { get, isArray, isEmpty } from "lodash";
+import { get, isArray, isEmpty, isUndefined } from "lodash";
 import { computed, effectScope, onScopeDispose, reactive, toRef, unref, watch } from "vue";
 import { keyDiff } from "../utils/keyDiff";
 
@@ -51,6 +51,26 @@ export function useListRelated({
                 ownKeys(target) {
                     return Reflect.ownKeys(target).concat(ropn);
                 },
+                has(target, prop) {
+                    if (prop === ropn) {
+                        return true;
+                    }
+                    return Reflect.has(target, prop);
+                },
+                getOwnPropertyDescriptor(target, p) {
+                    if (p === ropn) {
+                        return {
+                            configurable: true,
+                            enumerable: true,
+                            value: state.relatedObjectsObjects[addedKey],
+                            writable: true,
+                        };
+                    }
+                    return Reflect.getOwnPropertyDescriptor(target, p);
+                },
+                defineProperty() {
+                    return false;
+                },
             });
         }
     }
@@ -61,6 +81,9 @@ export function useListRelated({
         }
         const relatedObjectsRulesIsEmpty = isEmpty(state.relatedObjectsRules);
         for (const objectKey of Object.keys(state.relatedObjectsObjects)) {
+            if (relatedObjectsEffectScopes[objectKey]) {
+                relatedObjectsEffectScopes[objectKey].stop();
+            }
             const relatedObjectsEffectScope = effectScope();
             relatedObjectsEffectScope.run(() => {
                 const relatedObjectsObject = state.relatedObjectsObjects[objectKey];
@@ -82,29 +105,22 @@ export function useListRelated({
                     delete relatedObjectsObject[removedRuleKey];
                 }
                 for (const addedRuleKey of addedRuleKeys) {
-                    relatedObjectsObject[addedRuleKey] = new Proxy(
-                        {},
-                        {
-                            getRealTarget() {
-                                const ruleObjects = unref(state.relatedObjectsRules?.[addedRuleKey]?.objects);
-                                const rulePkKey = state.relatedObjectsRules?.[addedRuleKey]?.pkKey || addedRuleKey;
-                                const originalValueIsArray = isArray(get(originalObject, rulePkKey));
-                                const value = get(originalObject, rulePkKey);
-                                return originalValueIsArray ? value.map((e) => ruleObjects[e]) : ruleObjects[value];
-                            },
-                            get(target, prop, receiver) {
-                                const realTarget = this.getRealTarget();
-                                if (realTarget === undefined) {
-                                    // reflect doesn't like undefined as a target
-                                    return undefined;
-                                }
-                                return Reflect.get(this.getRealTarget(), prop, receiver);
-                            },
-                            ownKeys() {
-                                return Reflect.ownKeys(this.getRealTarget());
-                            },
+                    relatedObjectsObject[addedRuleKey] = computed(() => {
+                        // deal with computed objects being passed.
+                        const ruleObjects = unref(state.relatedObjectsRules?.[addedRuleKey]?.objects);
+                        const rulePkKey = state.relatedObjectsRules?.[addedRuleKey]?.pkKey || addedRuleKey;
+                        if (!ruleObjects || !rulePkKey) {
+                            return undefined;
                         }
-                    );
+                        const value = get(originalObject, rulePkKey);
+                        if (isUndefined(value)) {
+                            return undefined;
+                        }
+                        if (isArray(value)) {
+                            return value.map((e) => ruleObjects[e]);
+                        }
+                        return ruleObjects[value];
+                    });
                 }
             });
             relatedObjectsEffectScopes[objectKey] = relatedObjectsEffectScope;
