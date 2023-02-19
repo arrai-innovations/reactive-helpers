@@ -1,5 +1,5 @@
 import { isEmpty } from "lodash";
-import { computed, effectScope, onScopeDispose, reactive, toRef, toRefs, watch } from "vue";
+import { computed, effectScope, onScopeDispose, reactive, toRef, watch } from "vue";
 import { keyDiff } from "../utils";
 
 export function useListCalculateds(instances, args) {
@@ -10,6 +10,7 @@ export function useListCalculateds(instances, args) {
         });
     }
 }
+
 // the simpler sibling of useListRelated
 // rules are just keys to functions that will be called with the object
 // and the result will be added as a computed property
@@ -24,7 +25,6 @@ export function useListCalculated({
         objects: {},
     });
     const calculatedObjectsEffectScopes = {};
-    const combinedEffectScopes = {};
 
     // don't change calculatedObjectsPropertyName on us or it will break
     const copn = calculatedObjectsPropertyName + "";
@@ -41,21 +41,19 @@ export function useListCalculated({
                 calculatedObjectsEffectScopes[removedKey].stop();
                 delete calculatedObjectsEffectScopes[removedKey];
             }
-            if (combinedEffectScopes[removedKey]) {
-                combinedEffectScopes[removedKey].stop();
-                delete combinedEffectScopes[removedKey];
-            }
         }
         for (const addedKey of addedKeys) {
             state.calculatedObjectsObjects[addedKey] = {};
-            combinedEffectScopes[addedKey] = effectScope();
-            combinedEffectScopes[addedKey].run(() => {
-                state.objects[addedKey] = computed(() =>
-                    reactive({
-                        ...toRefs(state.calculatedObjectsObjects[addedKey]),
-                        ...toRefs(parentState.objects[addedKey]),
-                    })
-                );
+            state.objects[addedKey] = new Proxy(parentState.objects[addedKey], {
+                get(target, prop, receiver) {
+                    if (prop === copn) {
+                        return state.calculatedObjectsObjects[addedKey];
+                    }
+                    return Reflect.get(target, prop, receiver);
+                },
+                ownKeys(target) {
+                    return Reflect.ownKeys(target).concat(copn);
+                },
             });
         }
     }
@@ -122,9 +120,6 @@ export function useListCalculated({
         onScopeDispose(() => {
             for (const objectKey of Object.keys(calculatedObjectsEffectScopes)) {
                 calculatedObjectsEffectScopes[objectKey].stop();
-            }
-            for (const objectKey of Object.keys(combinedEffectScopes)) {
-                combinedEffectScopes[objectKey].stop();
             }
         });
     });

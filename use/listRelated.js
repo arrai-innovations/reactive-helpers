@@ -49,7 +49,6 @@ export function useListRelated({
                     return Reflect.get(target, prop, receiver);
                 },
                 ownKeys(target) {
-                    console.log("ownKeys", addedKey, target);
                     return Reflect.ownKeys(target).concat(ropn);
                 },
             });
