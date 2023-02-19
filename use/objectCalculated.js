@@ -1,4 +1,4 @@
-import { computed, effectScope, onScopeDispose, reactive, toRef, toRefs, watch } from "vue";
+import { computed, effectScope, onScopeDispose, reactive, watch } from "vue";
 import { keyDiff } from "../utils";
 
 export function useObjectCalculateds(instances, args) {
@@ -9,6 +9,7 @@ export function useObjectCalculateds(instances, args) {
         });
     }
 }
+
 // the single object version of useListCalculated
 export function useObjectCalculated({
     parentState,
@@ -29,12 +30,17 @@ export function useObjectCalculated({
     const es = effectScope();
 
     es.run(() => {
-        state.object = computed(() =>
-            reactive({
-                [copn]: toRef(state, "calculatedObjectObject"),
-                ...toRefs(parentState.object),
-            })
-        );
+        state.object = new Proxy(parentState.object, {
+            get(target, key, receiver) {
+                if (key === copn) {
+                    return state.calculatedObjectObject;
+                }
+                return Reflect.get(target, key, receiver);
+            },
+            ownKeys(target) {
+                return Reflect.ownKeys(target).concat(copn);
+            },
+        });
 
         watch(
             [() => Object.keys(state.calculatedObjectRules)],
