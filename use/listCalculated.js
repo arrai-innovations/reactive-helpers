@@ -101,6 +101,12 @@ export function useListCalculated({
     const es = effectScope();
 
     es.run(() => {
+        state.loading = toRef(parentState, "loading");
+        state.errored = toRef(parentState, "errored");
+        state.error = toRef(parentState, "error");
+
+        state.retrieveArgs = toRef(parentState, "retrieveArgs");
+        state.listArgs = toRef(parentState, "listArgs");
         state.order = toRef(parentState, "order");
         state.objectsInOrder = computed(() => state.order.map((id) => state.objects[id]));
 
