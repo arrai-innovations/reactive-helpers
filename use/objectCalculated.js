@@ -1,4 +1,4 @@
-import { computed, effectScope, onScopeDispose, reactive, watch } from "vue";
+import { computed, effectScope, onScopeDispose, reactive, toRef, watch } from "vue";
 import { keyDiff } from "../utils";
 
 export function useObjectCalculateds(instances, args) {
@@ -61,6 +61,10 @@ export function useObjectCalculated({
                 return false;
             },
         });
+        state.loading = toRef(parentState, "loading");
+        state.error = toRef(parentState, "error");
+        state.errored = toRef(parentState, "errored");
+        state.deleted = toRef(parentState, "deleted");
 
         watch(
             [() => Object.keys(state.calculatedObjectRules)],
