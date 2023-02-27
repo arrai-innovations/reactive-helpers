@@ -1,8 +1,8 @@
-import { expectErrorToBeNull } from "../expectHelpers";
-import { isReactive, nextTick, reactive } from "vue";
-import { keyBy } from "lodash";
 import flushPromises from "flush-promises";
+import { keyBy } from "lodash";
 import { inspect } from "util";
+import { isReactive, nextTick, reactive } from "vue";
+import { expectErrorToBeNull } from "../expectHelpers";
 
 afterAll(() => {
     jest.restoreAllMocks();
@@ -333,7 +333,7 @@ describe("use/listInstance.spec.js", function () {
             expect(listInstance.state.errored).toBe(false);
             expect(listInstance.state.loading).toBe(false);
             expect({ ...listInstance.state.objects }).toEqual({});
-            await nextTick();
+            await flushPromises();
             expect(listInstance.state.order).toEqual([]);
             expect(listInstance.state.objectsInOrder).toEqual([]);
         });
