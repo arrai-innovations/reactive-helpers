@@ -105,17 +105,12 @@ export function useListSort({ parentState, orderByRules, sortThrottleWait = defa
 
     function sortWatch() {
         if (!state.orderByRules || !state.orderByRules.length) {
-            const serverOrderObjectsInOrder = parentState.order.map((e) => parentState.objects[e]).filter(identity);
-            assignReactiveObject(
-                state.order,
-                serverOrderObjectsInOrder.map((e) => String(e.id))
-            );
-            assignReactiveObject(state.objectsInOrder, serverOrderObjectsInOrder);
+            assignReactiveObject(state.order, Object.keys(parentState.objects));
+            assignReactiveObject(state.objectsInOrder, Object.values(parentState.objects));
             return;
         }
 
         let idList = Object.keys(parentState.objects);
-
         idList.sort((xKey, yKey) => {
             const xCriteria = state.sortCriteria[xKey];
             const yCriteria = state.sortCriteria[yKey];
@@ -166,7 +161,8 @@ export function useListSort({ parentState, orderByRules, sortThrottleWait = defa
             immediate: true,
         });
 
-        watch([toRef(state, "orderByDesc"), () => state.sortCriteria, () => parentState.order], throttledSortWatch, {
+        // watching parentState.order triggers some out of order `computed`s, now that listInstance.order is a computed.
+        watch([toRef(state, "orderByDesc"), () => state.sortCriteria], throttledSortWatch, {
             deep: true,
         });
         onScopeDispose(() => {

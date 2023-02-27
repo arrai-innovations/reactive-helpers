@@ -1,8 +1,8 @@
+import inspect from "browser-util-inspect";
 import { cloneDeep } from "lodash";
 import { computed, effectScope, reactive } from "vue";
 import { assignReactiveObject } from "../utils/assignReactiveObject";
 import { getFakeId } from "../utils/getFakeId";
-import inspect from "browser-util-inspect";
 
 export class ListError extends Error {
     constructor(message, code) {
@@ -31,6 +31,40 @@ export function useListInstances(listInstanceArgs) {
 }
 
 export function useListInstance({ crudArgs, listArgs = {}, retrieveArgs = {} }) {
+    // ### touching the _objectsMap or _objectsProxy directly will not trigger reactivity ###
+    const _objectsMap = new Map();
+    // ### touching the _objectsMap or _objectsProxy directly will not trigger reactivity ###
+    const _objectsProxy = new Proxy(_objectsMap, {
+        get(target, prop) {
+            return target.get(prop); // map's get not Reflect.get
+        },
+        has(target, prop) {
+            return target.has(prop); // map's has not Reflect.has
+        },
+        set(target, prop, value) {
+            target.set(prop, value); // map.set() returns the map, we don't need that
+            return true;
+        },
+        ownKeys(target) {
+            return [...target.keys()]; // map.keys() returns an iterator, we need an array
+        },
+        deleteProperty(target, p) {
+            target.delete(p); // map.delete() returns false if the key didn't exist
+            return true; // objects return true regardless of whether the property existed
+        },
+        getOwnPropertyDescriptor(target, p) {
+            const value = target.get(p);
+            return value
+                ? {
+                      configurable: true,
+                      enumerable: true,
+                      value,
+                      writable: true,
+                  }
+                : Reflect.getOwnPropertyDescriptor(target, p); // we can't report target properties as non-existent re: proxy invariants
+        },
+    });
+    // ### touching the _objectsMap or _objectsProxy directly will not trigger reactivity ###
     const state = reactive({
         crud: {
             args: {},
@@ -38,11 +72,10 @@ export function useListInstance({ crudArgs, listArgs = {}, retrieveArgs = {} }) 
         },
         retrieveArgs,
         listArgs,
-        objects: {},
+        objects: _objectsProxy,
         loading: undefined,
         errored: false,
         error: null,
-        order: [],
     });
     // prevent linking of all instances to the same default .args object
     Object.assign(state.crud, cloneDeep(defaultCrud));
@@ -110,10 +143,7 @@ export function useListInstance({ crudArgs, listArgs = {}, retrieveArgs = {} }) 
         if (object.id in state.objects) {
             throw new ListError(`addListObject: list already has object for id: ${inspect(object.id)}`, "duplicate-id");
         }
-        state.objects[object.id] = {};
-        // objects keys are always strings.
-        state.order.push(`${object.id}`);
-        assignReactiveObject(state.objects[object.id], object);
+        state.objects[object.id] = object;
     }
 
     function updateListObject(object) {
@@ -136,16 +166,12 @@ export function useListInstance({ crudArgs, listArgs = {}, retrieveArgs = {} }) 
                 "missing-object"
             );
         }
-        // objects keys are always strings.
-        state.order.splice(state.order.indexOf(`${objectId}`), 1);
         delete state.objects[objectId];
     }
 
     function clearList() {
-        state.order.splice(0);
-        for (const item in state.objects) {
-            delete state.objects[item];
-        }
+        assignReactiveObject(state.objects, {});
+        clearError();
     }
 
     function ourGetFakeId() {
@@ -160,7 +186,8 @@ export function useListInstance({ crudArgs, listArgs = {}, retrieveArgs = {} }) 
     const es = effectScope();
 
     es.run(() => {
-        state.objectsInOrder = computed(() => state.order.map((id) => state.objects[id]));
+        state.objectsInOrder = computed(() => Object.values(state.objects));
+        state.order = computed(() => Object.keys(state.objects));
     });
 
     const returnedObject = {
