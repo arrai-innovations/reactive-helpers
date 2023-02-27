@@ -98,7 +98,7 @@ describe("use/listInstance.spec.js", function () {
             expectErrorToBeNull(listInstance.state.error);
             expect(listInstance.state.errored).toBe(false);
             expect(listInstance.state.loading).toBe(true);
-            expect({ ...listInstance.state.object }).toEqual({});
+            expect({ ...listInstance.state.objects }).toEqual({});
 
             await nextTick();
 
@@ -196,7 +196,7 @@ describe("use/listInstance.spec.js", function () {
             expectErrorToBeNull(listInstance.state.error);
             expect(listInstance.state.errored).toBe(false);
             expect(listInstance.state.loading).toBe(true);
-            expect({ ...listInstance.state.object }).toEqual({});
+            expect({ ...listInstance.state.objects }).toEqual({});
 
             await nextTick();
 
@@ -250,7 +250,7 @@ describe("use/listInstance.spec.js", function () {
             expectErrorToBeNull(listInstance.state.error);
             expect(listInstance.state.errored).toBe(false);
             expect(listInstance.state.loading).toBe(true);
-            expect({ ...listInstance.state.object }).toEqual({});
+            expect({ ...listInstance.state.objects }).toEqual({});
 
             await nextTick();
 
@@ -284,6 +284,58 @@ describe("use/listInstance.spec.js", function () {
                 pageCallback: passedPageCallback,
             });
             expect(globalList).toHaveBeenCalledTimes(1);
+        });
+        it("clearList should empty the list", async function () {
+            const listArgs = reactive({
+                user: 1,
+            });
+            const retrieveArgs = reactive({
+                fields,
+            });
+            const listInstance = useListInstance({
+                listArgs,
+                retrieveArgs,
+            });
+            let crudListResolve;
+            const crudListPromise = new Promise((resolve) => {
+                crudListResolve = resolve;
+            });
+            let passedPageCallback;
+            globalList.mockImplementation(({ pageCallback }) => {
+                passedPageCallback = pageCallback;
+                return crudListPromise;
+            });
+            const liListResolve = listInstance.list();
+            passedPageCallback(crudListResolvedPage1);
+            passedPageCallback(crudListResolvedPage2);
+            crudListResolve();
+            await flushPromises();
+
+            await expect(liListResolve).resolves.toBe(true);
+
+            expectErrorToBeNull(listInstance.state.error);
+            expect(listInstance.state.errored).toBe(false);
+            expect(listInstance.state.loading).toBe(false);
+            expect({ ...listInstance.state.objects }).toEqual(crudListResolvedObjects);
+            await flushPromises();
+            expect(listInstance.state.order).toEqual(Object.keys(crudListResolvedObjects));
+            expect(listInstance.state.objectsInOrder).toEqual(Object.values(crudListResolvedObjects));
+            expect(globalList).toHaveBeenCalledWith({
+                crudArgs: { stream: "test_stream" },
+                listArgs: { user: 1 },
+                retrieveArgs: { fields: fields },
+                pageCallback: passedPageCallback,
+            });
+            expect(globalList).toHaveBeenCalledTimes(1);
+
+            listInstance.clearList();
+            expectErrorToBeNull(listInstance.state.error);
+            expect(listInstance.state.errored).toBe(false);
+            expect(listInstance.state.loading).toBe(false);
+            expect({ ...listInstance.state.objects }).toEqual({});
+            await nextTick();
+            expect(listInstance.state.order).toEqual([]);
+            expect(listInstance.state.objectsInOrder).toEqual([]);
         });
     });
     it("useListInstances", async function () {
