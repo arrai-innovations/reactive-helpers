@@ -9,7 +9,7 @@ export function getFakeId(arraySetMapOrObject, key = "id") {
     if (isSet(arraySetMapOrObject) || isMap(arraySetMapOrObject)) {
         test = () => arraySetMapOrObject.has(fakeId);
     } else if (isArray(arraySetMapOrObject)) {
-        test = () => arraySetMapOrObject.some((item) => item[key] === fakeId);
+        test = () => arraySetMapOrObject.some((item) => item?.[key] === fakeId);
     } else {
         test = () => fakeId in arraySetMapOrObject;
     }
