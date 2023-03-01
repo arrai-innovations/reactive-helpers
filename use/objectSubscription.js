@@ -3,7 +3,7 @@ import { computed, effectScope, reactive, toRef } from "vue";
 import { assignReactiveObject } from "../utils/assignReactiveObject";
 import { useObjectInstance } from "./objectInstance";
 import { useCancellableIntent } from "../utils/cancellableIntent";
-import loadingCombine from "../utils/loadingCombine";
+import { loadingCombine } from "../utils/loadingCombine";
 
 export class ObjectSubscriptionError extends Error {
     constructor(message) {
