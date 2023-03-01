@@ -1,4 +1,4 @@
-export default function (...loadingStates) {
+export function loadingCombine(...loadingStates) {
     // loadingStates is an array of booleans or undefined
     // if any true, return true
     // if all undefined, return undefined
