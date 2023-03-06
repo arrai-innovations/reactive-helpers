@@ -6,6 +6,7 @@ export * from "./listSort.js";
 export * from "./listSubscription.js";
 export * from "./objectCalculated.js";
 export * from "./objectInstance.js";
+export * from "./objectRelated.js";
 export * from "./objectSubscription.js";
 export * from "./paginatedListInstance.js";
 export * from "./search.js";
