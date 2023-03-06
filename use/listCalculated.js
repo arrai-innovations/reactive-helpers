@@ -93,6 +93,9 @@ export function useListCalculated({
                     });
                 }
             });
+            if (calculatedObjectsEffectScopes[objectKey]) {
+                calculatedObjectsEffectScopes[objectKey].stop();
+            }
             calculatedObjectsEffectScopes[objectKey] = calculatedObjectsEffectScope;
         }
         parentStateObjectsWatch();
