@@ -18,7 +18,7 @@ export function useObjectCalculated({
 }) {
     const state = reactive({
         calculatedObjectRules,
-        calculatedObjectObject: {},
+        calculatedObjectObjects: {},
         object: {},
     });
     const calculatedObjectEffectScopes = {};
@@ -33,7 +33,7 @@ export function useObjectCalculated({
         state.object = new Proxy(parentState.object, {
             get(target, key, receiver) {
                 if (key === copn) {
-                    return state.calculatedObjectObject;
+                    return state.calculatedObjectObjects;
                 }
                 return Reflect.get(target, key, receiver);
             },
@@ -51,7 +51,7 @@ export function useObjectCalculated({
                     return {
                         configurable: true,
                         enumerable: true,
-                        value: state.calculatedObjectObject,
+                        value: state.calculatedObjectObjects,
                         writable: true,
                     };
                 }
@@ -73,9 +73,15 @@ export function useObjectCalculated({
                     Object.keys(state.calculatedObjectRules),
                     Object.keys(calculatedObjectOriginalFunctions)
                 );
+                for (const sameKey of sameKeys) {
+                    if (calculatedObjectOriginalFunctions[sameKey] !== state.calculatedObjectRules[sameKey]) {
+                        removedKeys.push(sameKey);
+                        addedKeys.push(sameKey);
+                    }
+                }
                 for (const removedKey of removedKeys) {
                     delete calculatedObjectOriginalFunctions[removedKey];
-                    delete state.calculatedObjectObject[removedKey];
+                    delete state.calculatedObjectObjects[removedKey];
                     if (calculatedObjectEffectScopes[removedKey]) {
                         calculatedObjectEffectScopes[removedKey].stop();
                         delete calculatedObjectEffectScopes[removedKey];
@@ -85,18 +91,8 @@ export function useObjectCalculated({
                     calculatedObjectOriginalFunctions[addedKey] = state.calculatedObjectRules[addedKey];
                     calculatedObjectEffectScopes[addedKey] = effectScope();
                     calculatedObjectEffectScopes[addedKey].run(() => {
-                        state.calculatedObjectObject[addedKey] = computed(() =>
+                        state.calculatedObjectObjects[addedKey] = computed(() =>
                             calculatedObjectOriginalFunctions[addedKey](state.object)
-                        );
-                    });
-                }
-                for (const sameKey of sameKeys) {
-                    calculatedObjectOriginalFunctions[sameKey] = state.calculatedObjectRules[sameKey];
-                    calculatedObjectEffectScopes[sameKey].stop();
-                    calculatedObjectEffectScopes[sameKey] = effectScope();
-                    calculatedObjectEffectScopes[sameKey].run(() => {
-                        state.calculatedObjectObject[sameKey] = computed(() =>
-                            calculatedObjectOriginalFunctions[sameKey](state.object)
                         );
                     });
                 }
