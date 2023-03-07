@@ -1,9 +1,9 @@
 import { cloneDeep } from "lodash";
 import { computed, effectScope, reactive, toRef } from "vue";
 import { assignReactiveObject } from "../utils/assignReactiveObject";
-import { useObjectInstance } from "./objectInstance";
 import { useCancellableIntent } from "../utils/cancellableIntent";
 import { loadingCombine } from "../utils/loadingCombine";
+import { useObjectInstance } from "./objectInstance";
 
 export class ObjectSubscriptionError extends Error {
     constructor(message) {
@@ -30,7 +30,7 @@ export function useObjectSubscriptions(subscriptionArgs) {
     return subscriptions;
 }
 
-export function useObjectSubscription({ objectInstance, crudArgs, id, retrieveArgs = {} }) {
+export function useObjectSubscription({ objectInstance, crudArgs, id, retrieveArgs }) {
     if (retrieveArgs && objectInstance) {
         throw new ObjectSubscriptionError(
             "Cannot use retrieveArgs and objectInstance together, set retrieveArgs on objectInstance instead"
@@ -44,7 +44,6 @@ export function useObjectSubscription({ objectInstance, crudArgs, id, retrieveAr
             args: {},
             subscribe: undefined,
         },
-        id,
         subscriptionLoading: undefined,
         subscriptionErrored: false,
         subscriptionError: null,
@@ -95,7 +94,7 @@ export function useObjectSubscription({ objectInstance, crudArgs, id, retrieveAr
         let subscribePromise;
         subscribePromise = state.crud.subscribe({
             crudArgs: state.crud.args,
-            id,
+            id: objectInstance.state.id,
             retrieveArgs: state.retrieveArgs,
             callback: (data, action) => {
                 if (action === "delete") {
@@ -166,13 +165,22 @@ export function useObjectSubscription({ objectInstance, crudArgs, id, retrieveAr
 
         subscribeIntent = useCancellableIntent({
             awaitableWithCancel: subscribe,
-            watchArguments: [toRef(state, "intendToSubscribe"), toRef(state, "id"), toRef(state, "retrieveArgs")],
+            watchArguments: [
+                toRef(state, "intendToSubscribe"),
+                toRef(objectInstance.state, "id"),
+                toRef(state, "retrieveArgs"),
+            ],
             clearActiveOnResolved: false,
         });
 
         retrieveIntent = useCancellableIntent({
             awaitableWithCancel: objectInstance.retrieve,
-            watchArguments: [toRef(state, "intendToRetrieve"), toRef(state, "id"), toRef(state, "retrieveArgs")],
+            watchArguments: [
+                toRef(state, "intendToRetrieve"),
+                toRef(objectInstance.state, "id"),
+                toRef(state, "retrieveArgs"),
+            ],
+            nameForLog: "retrieveIntent",
         });
     });
 
