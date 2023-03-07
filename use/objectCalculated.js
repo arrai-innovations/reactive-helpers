@@ -67,12 +67,19 @@ export function useObjectCalculated({
         state.deleted = toRef(parentState, "deleted");
 
         watch(
-            [() => Object.keys(state.calculatedObjectRules)],
+            [() => state.calculatedObjectRules && Object.keys(state.calculatedObjectRules)],
             () => {
-                const { addedKeys, removedKeys, sameKeys } = keyDiff(
-                    Object.keys(state.calculatedObjectRules),
-                    Object.keys(calculatedObjectOriginalFunctions)
-                );
+                let addedKeys = [],
+                    removedKeys = [],
+                    sameKeys = [];
+                if (!state.calculatedObjectRules) {
+                    removedKeys = Object.keys(calculatedObjectOriginalFunctions);
+                } else {
+                    ({ addedKeys, removedKeys, sameKeys } = keyDiff(
+                        Object.keys(state.calculatedObjectRules),
+                        Object.keys(calculatedObjectOriginalFunctions)
+                    ));
+                }
                 for (const sameKey of sameKeys) {
                     if (calculatedObjectOriginalFunctions[sameKey] !== state.calculatedObjectRules[sameKey]) {
                         removedKeys.push(sameKey);

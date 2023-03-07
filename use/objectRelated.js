@@ -67,12 +67,19 @@ export function useObjectRelated({
         state.deleted = toRef(parentState, "deleted");
 
         watch(
-            [() => Object.keys(state.relatedObjectRules)],
+            [() => state.relatedObjectRules && Object.keys(state.relatedObjectRules)],
             () => {
-                const { addedKeys: addedRuleKeys, removedKeys: removedRuleKeys } = keyDiff(
-                    Object.keys(state.relatedObjectRules),
-                    Object.keys(state.relatedObjectObjects)
-                );
+                let addedRuleKeys = [],
+                    removedRuleKeys = [];
+                if (!state.relatedObjectRules) {
+                    removedRuleKeys = Object.keys(state.relatedObjectObjects);
+                } else {
+                    ({ addedKeys: addedRuleKeys, removedKeys: removedRuleKeys } = keyDiff(
+                        Object.keys(state.relatedObjectRules),
+                        Object.keys(state.relatedObjectObjects)
+                    ));
+                }
+
                 for (const removedRuleKey of removedRuleKeys) {
                     delete state.relatedObjectObjects[removedRuleKey];
                     if (relatedObjectEffectScopes[removedRuleKey]) {
