@@ -1,5 +1,5 @@
 import { cloneDeep } from "lodash";
-import { effectScope, reactive } from "vue";
+import { effectScope, reactive, unref } from "vue";
 import { assignReactiveObject } from "../utils/assignReactiveObject";
 
 export class ObjectError extends Error {
@@ -56,7 +56,9 @@ export function useObjectInstance({ crudArgs, id, retrieveArgs }) {
     // prevent linking of all instances to the same default .args object
     Object.assign(state.crud, cloneDeep(defaultCrud));
     if (crudArgs) {
-        assignReactiveObject(state.crud.args, crudArgs);
+        // generally you won't have a ref to an object, but indirectly, you could have a ref to a reactive.
+        // either way, we want a reactive or plain object. computed isn't going to work for this.
+        assignReactiveObject(state.crud.args, unref(crudArgs));
     }
 
     // due to retrieve being called by `useCancelleableIntent`, if called manually then by the watch,
