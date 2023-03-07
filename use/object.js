@@ -14,7 +14,6 @@ export const useObject = ({ props }) => {
     });
     const es = effectScope();
 
-    console.log("useObject making objectInstance");
     managed.objectInstance = useObjectInstance({
         crudArgs: toRef(props, "crudArgs"),
         id: toRef(props, "id"),
