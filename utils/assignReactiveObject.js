@@ -1,6 +1,6 @@
 import { keyDiff } from "./keyDiff.js";
 import { union } from "./set.js";
-import { isReactive, toRef } from "vue";
+import { isReactive, isRef, toRef, unref } from "vue";
 import { isArray, isObject } from "lodash";
 import inspect from "browser-util-inspect";
 
@@ -42,6 +42,16 @@ export function assignReactiveObject(target, source, exclude = []) {
     }
     isArrayOrObject("target", target);
     isArrayOrObject("source", source);
+    if (isRef(target)) {
+        const unrefedTarget = unref(target);
+        isArrayOrObject("unrefedTarget", unrefedTarget);
+        target = unrefedTarget;
+    }
+    if (isRef(source)) {
+        const unrefedSource = unref(source);
+        isArrayOrObject("unrefedSource", unrefedSource);
+        source = unrefedSource;
+    }
     const targetIsArray = isArray(target);
     const { addedKeys, sameKeys, removedKeys } = keyDiff(Object.keys(source) || [], Object.keys(target) || []);
     if (targetIsArray) {
