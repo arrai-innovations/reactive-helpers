@@ -601,7 +601,7 @@ describe("use/objectSubscription.js", function () {
                 },
             });
             objectSubscription.objectInstance.state.crud.retrieve = customCrudRetrieve;
-            objectSubscription.state.crud.subscribe = customCrudSubscribe;
+            objectSubscription.objectInstance.state.crud.subscribe = customCrudSubscribe;
 
             const subscribePromise = objectSubscription.subscribe();
             crudRetrieveResolve(crudRetrieveResolved);
