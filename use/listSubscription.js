@@ -1,10 +1,10 @@
-import { computed, effectScope, reactive, toRef } from "vue";
-import { useListInstance } from "./listInstance";
-import { cloneDeep, isEmpty, isObject } from "lodash";
-import { assignReactiveObject } from "../utils/assignReactiveObject";
 import inspect from "browser-util-inspect";
+import { cloneDeep, isEmpty, isObject } from "lodash";
+import { computed, effectScope, reactive, toRef } from "vue";
+import { addOrUpdateReactiveObject } from "../utils/assignReactiveObject";
 import { useCancellableIntent } from "../utils/cancellableIntent";
 import { loadingCombine } from "../utils/loadingCombine";
+import { useListInstance } from "./listInstance";
 
 export class ListSubscriptionError extends Error {
     constructor(message) {
@@ -50,7 +50,7 @@ export function useListSubscription({ listInstance, crudArgs, listArgs, retrieve
     // prevent linking of all instances to the same default .args object
     Object.assign(state.crud, cloneDeep(defaultCrud));
     if (crudArgs) {
-        assignReactiveObject(state.crud.args, crudArgs);
+        addOrUpdateReactiveObject(state.crud.args, crudArgs);
     }
 
     function publicSubscribe({ list = true } = {}) {
@@ -175,7 +175,11 @@ export function useListSubscription({ listInstance, crudArgs, listArgs, retrieve
                 catchPromise.cancel = subscribePromise.cancel;
                 return catchPromise;
             },
-            watchArguments: [toRef(state, "intendToSubscribe"), toRef(state, "listArgs"), toRef(state, "retrieveArgs")],
+            watchArguments: [
+                toRef(state, "intendToSubscribe"),
+                toRef(listInstance.state, "listArgs"),
+                toRef(state, "retrieveArgs"),
+            ],
             clearActiveOnResolved: false,
         });
 
@@ -186,7 +190,12 @@ export function useListSubscription({ listInstance, crudArgs, listArgs, retrieve
                 listInstance.clearList();
                 return listInstance.list();
             },
-            watchArguments: [toRef(state, "intendToList"), toRef(state, "listArgs"), toRef(state, "retrieveArgs")],
+            watchArguments: [
+                toRef(state, "intendToList"),
+                toRef(listInstance.state, "listArgs"),
+                toRef(state, "retrieveArgs"),
+            ],
+            nameOnLog: "listIntent",
         });
     });
 

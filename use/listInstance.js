@@ -1,7 +1,7 @@
 import inspect from "browser-util-inspect";
 import { cloneDeep } from "lodash";
 import { computed, effectScope, reactive } from "vue";
-import { assignReactiveObject } from "../utils/assignReactiveObject";
+import { addOrUpdateReactiveObject, assignReactiveObject } from "../utils/assignReactiveObject";
 import { getFakeId } from "../utils/getFakeId";
 
 export class ListError extends Error {
@@ -80,7 +80,7 @@ export function useListInstance({ crudArgs, listArgs = {}, retrieveArgs = {} }) 
     // prevent linking of all instances to the same default .args object
     Object.assign(state.crud, cloneDeep(defaultCrud));
     if (crudArgs) {
-        assignReactiveObject(state.crud.args, crudArgs);
+        addOrUpdateReactiveObject(state.crud.args, crudArgs);
     }
 
     const defaultPageCallback = (newObjects) => {
