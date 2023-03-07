@@ -1,4 +1,3 @@
-import { cloneDeep } from "lodash";
 import { computed, effectScope, reactive, toRef } from "vue";
 import { assignReactiveObject } from "../utils/assignReactiveObject";
 import { useCancellableIntent } from "../utils/cancellableIntent";
@@ -13,13 +12,11 @@ export class ObjectSubscriptionError extends Error {
 }
 
 const defaultCrud = {
-    args: {},
     subscribe: undefined,
 };
 
-export function setObjectSubscriptionCrud({ subscribe, args = {} }) {
+export function setObjectSubscriptionCrud({ subscribe }) {
     defaultCrud.subscribe = subscribe;
-    Object.assign(defaultCrud.args, args);
 }
 
 export function useObjectSubscriptions(subscriptionArgs) {
@@ -39,11 +36,10 @@ export function useObjectSubscription({ objectInstance, crudArgs, id, retrieveAr
     if (!objectInstance) {
         objectInstance = useObjectInstance({ crudArgs, id, retrieveArgs });
     }
+    if (!objectInstance.state.crud.subscribe) {
+        objectInstance.state.crud.subscribe = defaultCrud.subscribe;
+    }
     const state = reactive({
-        crud: {
-            args: {},
-            subscribe: undefined,
-        },
         subscriptionLoading: undefined,
         subscriptionErrored: false,
         subscriptionError: null,
@@ -51,11 +47,6 @@ export function useObjectSubscription({ objectInstance, crudArgs, id, retrieveAr
         intendToSubscribe: false,
         intendToRetrieve: false,
     });
-    // prevent linking of all instances to the same default .args object
-    Object.assign(state.crud, cloneDeep(defaultCrud));
-    if (crudArgs) {
-        assignReactiveObject(state.crud.args, crudArgs);
-    }
 
     let subscribeIntent, retrieveIntent;
 
@@ -92,8 +83,8 @@ export function useObjectSubscription({ objectInstance, crudArgs, id, retrieveAr
         state.subscriptionErrored = false;
         state.subscriptionError = null;
         let subscribePromise;
-        subscribePromise = state.crud.subscribe({
-            crudArgs: state.crud.args,
+        subscribePromise = objectInstance.state.crud.subscribe({
+            crudArgs: objectInstance.state.crud.args,
             id: objectInstance.state.id,
             retrieveArgs: state.retrieveArgs,
             callback: (data, action) => {

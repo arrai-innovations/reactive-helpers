@@ -1,8 +1,8 @@
+import inspect from "browser-util-inspect";
+import { isArray, isObject } from "lodash";
+import { isReactive, isRef, toRef, unref } from "vue";
 import { keyDiff } from "./keyDiff.js";
 import { union } from "./set.js";
-import { isReactive, toRef } from "vue";
-import { isArray, isObject } from "lodash";
-import inspect from "browser-util-inspect";
 
 export class AssignReactiveObjectError extends Error {
     constructor(message) {
@@ -20,6 +20,16 @@ function isArrayOrObject(key, value) {
 export function addOrUpdateReactiveObject(target, source, exclude = [], addedKeys = null, sameKeys = null) {
     isArrayOrObject("target", target);
     isArrayOrObject("source", source);
+    if (isRef(target)) {
+        const unrefedTarget = unref(target);
+        isArrayOrObject("unrefedTarget", unrefedTarget);
+        target = unrefedTarget;
+    }
+    if (isRef(source)) {
+        const unrefedSource = unref(source);
+        isArrayOrObject("unrefedSource", unrefedSource);
+        source = unrefedSource;
+    }
     if (!addedKeys && !sameKeys) {
         ({ addedKeys, sameKeys } = keyDiff(Object.keys(source) || [], Object.keys(target) || []));
     }
@@ -42,6 +52,16 @@ export function assignReactiveObject(target, source, exclude = []) {
     }
     isArrayOrObject("target", target);
     isArrayOrObject("source", source);
+    if (isRef(target)) {
+        const unrefedTarget = unref(target);
+        isArrayOrObject("unrefedTarget", unrefedTarget);
+        target = unrefedTarget;
+    }
+    if (isRef(source)) {
+        const unrefedSource = unref(source);
+        isArrayOrObject("unrefedSource", unrefedSource);
+        source = unrefedSource;
+    }
     const targetIsArray = isArray(target);
     const { addedKeys, sameKeys, removedKeys } = keyDiff(Object.keys(source) || [], Object.keys(target) || []);
     if (targetIsArray) {

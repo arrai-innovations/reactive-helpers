@@ -1,10 +1,9 @@
-import { computed, effectScope, reactive, toRef } from "vue";
-import { useListInstance } from "./listInstance";
-import { cloneDeep, isEmpty, isObject } from "lodash";
-import { assignReactiveObject } from "../utils/assignReactiveObject";
 import inspect from "browser-util-inspect";
+import { cloneDeep, isEmpty, isObject } from "lodash";
+import { computed, effectScope, reactive, toRef } from "vue";
 import { useCancellableIntent } from "../utils/cancellableIntent";
 import { loadingCombine } from "../utils/loadingCombine";
+import { useListInstance } from "./listInstance";
 
 export class ListSubscriptionError extends Error {
     constructor(message) {
@@ -14,13 +13,11 @@ export class ListSubscriptionError extends Error {
 }
 
 const defaultCrud = {
-    args: {},
     subscribe: undefined,
 };
 
-export function setListSubscriptionCrud({ subscribe, args = {} }) {
+export function setListSubscriptionCrud({ subscribe }) {
     defaultCrud.subscribe = subscribe;
-    Object.assign(defaultCrud.args, args);
 }
 
 export function useListSubscriptions(args, listInstances = {}) {
@@ -35,23 +32,18 @@ export function useListSubscription({ listInstance, crudArgs, listArgs, retrieve
     if (!listInstance) {
         listInstance = useListInstance({ crudArgs, listArgs, retrieveArgs });
     }
+    if (!listInstance.state.crud.subscribe) {
+        listInstance.state.crud.subscribe = defaultCrud.subscribe;
+    }
+
     let subscribeIntent, listIntent;
     const state = reactive({
-        crud: {
-            args: {},
-            subscribe: undefined,
-        },
         subscriptionLoading: undefined,
         subscriptionErrored: false,
         subscriptionError: null,
         intendToList: false,
         intendToSubscribe: false,
     });
-    // prevent linking of all instances to the same default .args object
-    Object.assign(state.crud, cloneDeep(defaultCrud));
-    if (crudArgs) {
-        assignReactiveObject(state.crud.args, crudArgs);
-    }
 
     function publicSubscribe({ list = true } = {}) {
         let didSubscribe = false;
@@ -160,8 +152,8 @@ export function useListSubscription({ listInstance, crudArgs, listArgs, retrieve
         subscribeIntent = useCancellableIntent({
             awaitableWithCancel: () => {
                 // this function cannot be async, or the resulting promise will lose its .cancel() method
-                const subscribePromise = state.crud.subscribe({
-                    crudArgs: cloneDeep(state.crud.args),
+                const subscribePromise = listInstance.state.crud.subscribe({
+                    crudArgs: cloneDeep(listInstance.state.crud.args),
                     listArgs: cloneDeep(listInstance.state.listArgs),
                     retrieveArgs: cloneDeep(listInstance.state.retrieveArgs),
                     subscriptionEventCallback,
@@ -175,7 +167,11 @@ export function useListSubscription({ listInstance, crudArgs, listArgs, retrieve
                 catchPromise.cancel = subscribePromise.cancel;
                 return catchPromise;
             },
-            watchArguments: [toRef(state, "intendToSubscribe"), toRef(state, "listArgs"), toRef(state, "retrieveArgs")],
+            watchArguments: [
+                toRef(state, "intendToSubscribe"),
+                toRef(listInstance.state, "listArgs"),
+                toRef(state, "retrieveArgs"),
+            ],
             clearActiveOnResolved: false,
         });
 
@@ -186,7 +182,12 @@ export function useListSubscription({ listInstance, crudArgs, listArgs, retrieve
                 listInstance.clearList();
                 return listInstance.list();
             },
-            watchArguments: [toRef(state, "intendToList"), toRef(state, "listArgs"), toRef(state, "retrieveArgs")],
+            watchArguments: [
+                toRef(state, "intendToList"),
+                toRef(listInstance.state, "listArgs"),
+                toRef(state, "retrieveArgs"),
+            ],
+            nameOnLog: "listIntent",
         });
     });
 
