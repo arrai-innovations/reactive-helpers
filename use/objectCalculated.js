@@ -1,3 +1,4 @@
+import { isEmpty } from "lodash";
 import { computed, effectScope, onScopeDispose, reactive, toRef, watch } from "vue";
 import { keyDiff, loadingCombine } from "../utils";
 import { useWatchesRunning } from "./watchesRunning";
@@ -115,14 +116,14 @@ export function useObjectCalculated({
         );
 
         watchesRunning = useWatchesRunning({
-            triggerRef: toRef(parentState, "loading"),
+            triggerRefs: [computed(() => (!isEmpty(state.calculatedObjectRules) ? parentState.loading : false))],
             watchSentinelRefs: [
                 toRef(state, "parentStateObjectWatchRunning"),
                 toRef(state, "calculatedObjectWatchRunning"),
             ],
         });
 
-        state.running = computed(() => loadingCombine(state.running, parentState.running));
+        state.running = computed(() => loadingCombine(watchesRunning.state.running, parentState.running));
 
         onScopeDispose(() => {
             for (const key in calculatedObjectEffectScopes) {

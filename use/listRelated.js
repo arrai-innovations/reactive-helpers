@@ -156,14 +156,14 @@ export function useListRelated({
         );
 
         watchesRunning = useWatchesRunning({
-            triggerRef: toRef(parentState, "loading"),
+            triggerRefs: [computed(() => (!isEmpty(state.relatedObjectsRules) ? parentState.loading : false))],
             watchSentinelRefs: [
                 toRef(state, "parentStateObjectsWatchRunning"),
                 toRef(state, "relatedObjectsWatchRunning"),
             ],
         });
 
-        state.running = computed(() => loadingCombine(state.running, parentState.running));
+        state.running = computed(() => loadingCombine(watchesRunning.state.running, parentState.running));
 
         onScopeDispose(() => {
             for (const objectKey of Object.keys(relatedObjectsEffectScopes)) {

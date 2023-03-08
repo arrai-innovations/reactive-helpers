@@ -1,25 +1,27 @@
-import { computed, effectScope, reactive, watch } from "vue";
+import { computed, effectScope, reactive, unref, watch } from "vue";
 import { loadingCombine } from "../utils";
 
-export function useWatchesRunning({ triggerRef, watchSentinelRefs }) {
-    const state = reactive({
-        trigger: triggerRef,
-        watchSentinels: watchSentinelRefs,
-    });
+export function useWatchesRunning({ triggerRefs, watchSentinelRefs }) {
+    const state = reactive({});
 
     const es = effectScope();
 
     es.run(() => {
-        watch(state.trigger, (value) => {
-            if (value) {
-                Object.keys(state.watchSentinels).forEach((key) => {
-                    state.watchSentinels[key].value = true;
-                });
+        watch(
+            triggerRefs,
+            (values) => {
+                if (values.every((value) => unref(value))) {
+                    watchSentinelRefs.forEach((ref) => {
+                        ref.value = true;
+                    });
+                }
+            },
+            {
+                immediate: true,
+                deep: true,
             }
-        });
-        state.running = computed(() => {
-            return loadingCombine(...state.watchSentinels);
-        });
+        );
+        state.running = computed(() => loadingCombine(watchSentinelRefs.map((ref) => ref.value)));
     });
 
     return {

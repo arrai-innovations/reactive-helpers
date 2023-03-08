@@ -1,4 +1,4 @@
-import { get, isArray, isUndefined } from "lodash";
+import { get, isArray, isEmpty, isUndefined } from "lodash";
 import { computed, effectScope, onScopeDispose, reactive, toRef, unref, watch } from "vue";
 import { keyDiff, loadingCombine } from "../utils";
 import { useWatchesRunning } from "./watchesRunning";
@@ -120,14 +120,14 @@ export function useObjectRelated({
         );
 
         watchesRunning = useWatchesRunning({
-            triggerRef: toRef(parentState, "loading"),
+            triggerRefs: [computed(() => (!isEmpty(state.relatedObjectRules) ? parentState.loading : false))],
             watchSentinelRefs: [
                 toRef(state, "parentStateObjectWatchRunning"),
                 toRef(state, "relatedObjectWatchRunning"),
             ],
         });
 
-        state.running = computed(() => loadingCombine(state.running, parentState.running));
+        state.running = computed(() => loadingCombine(watchesRunning.state.running, parentState.running));
 
         onScopeDispose(() => {
             for (const key in relatedObjectEffectScopes) {
@@ -135,6 +135,7 @@ export function useObjectRelated({
             }
         });
     });
+
     return {
         state,
         parentState,
