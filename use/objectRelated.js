@@ -71,53 +71,47 @@ export function useObjectRelated({
         state.errored = toRef(parentState, "errored");
         state.deleted = toRef(parentState, "deleted");
 
-        watch(
-            [() => state.relatedObjectRules && Object.keys(state.relatedObjectRules)],
-            () => {
-                let addedRuleKeys = [],
-                    removedRuleKeys = [];
-                if (!state.relatedObjectRules) {
-                    removedRuleKeys = Object.keys(state.relatedObjectObjects);
-                } else {
-                    ({ addedKeys: addedRuleKeys, removedKeys: removedRuleKeys } = keyDiff(
-                        Object.keys(state.relatedObjectRules),
-                        Object.keys(state.relatedObjectObjects)
-                    ));
-                }
-
-                for (const removedRuleKey of removedRuleKeys) {
-                    delete state.relatedObjectObjects[removedRuleKey];
-                    if (relatedObjectEffectScopes[removedRuleKey]) {
-                        relatedObjectEffectScopes[removedRuleKey].stop();
-                        delete relatedObjectEffectScopes[removedRuleKey];
-                    }
-                }
-                for (const addedRuleKey of addedRuleKeys) {
-                    relatedObjectEffectScopes[addedRuleKey] = effectScope();
-                    relatedObjectEffectScopes[addedRuleKey].run(() => {
-                        state.relatedObjectObjects[addedRuleKey] = computed(() => {
-                            // deal with computed objects being passed.
-                            const ruleObjects = unref(state.relatedObjectRules?.[addedRuleKey]?.objects);
-                            const rulePkKey = state.relatedObjectRules?.[addedRuleKey]?.pkKey || addedRuleKey;
-                            if (!ruleObjects || !rulePkKey) {
-                                return undefined;
-                            }
-                            const value = get(parentState.object, rulePkKey);
-                            if (isUndefined(value)) {
-                                return undefined;
-                            }
-                            if (isArray(value)) {
-                                return value.map((e) => ruleObjects[e]);
-                            }
-                            return ruleObjects[value];
-                        });
-                    });
-                }
-            },
-            {
-                immediate: true,
+        watch([() => state.relatedObjectRules && Object.keys(state.relatedObjectRules)], () => {
+            let addedRuleKeys = [],
+                removedRuleKeys = [];
+            if (!state.relatedObjectRules) {
+                removedRuleKeys = Object.keys(state.relatedObjectObjects);
+            } else {
+                ({ addedKeys: addedRuleKeys, removedKeys: removedRuleKeys } = keyDiff(
+                    Object.keys(state.relatedObjectRules),
+                    Object.keys(state.relatedObjectObjects)
+                ));
             }
-        );
+
+            for (const removedRuleKey of removedRuleKeys) {
+                delete state.relatedObjectObjects[removedRuleKey];
+                if (relatedObjectEffectScopes[removedRuleKey]) {
+                    relatedObjectEffectScopes[removedRuleKey].stop();
+                    delete relatedObjectEffectScopes[removedRuleKey];
+                }
+            }
+            for (const addedRuleKey of addedRuleKeys) {
+                relatedObjectEffectScopes[addedRuleKey] = effectScope();
+                relatedObjectEffectScopes[addedRuleKey].run(() => {
+                    state.relatedObjectObjects[addedRuleKey] = computed(() => {
+                        // deal with computed objects being passed.
+                        const ruleObjects = unref(state.relatedObjectRules?.[addedRuleKey]?.objects);
+                        const rulePkKey = state.relatedObjectRules?.[addedRuleKey]?.pkKey || addedRuleKey;
+                        if (!ruleObjects || !rulePkKey) {
+                            return undefined;
+                        }
+                        const value = get(parentState.object, rulePkKey);
+                        if (isUndefined(value)) {
+                            return undefined;
+                        }
+                        if (isArray(value)) {
+                            return value.map((e) => ruleObjects[e]);
+                        }
+                        return ruleObjects[value];
+                    });
+                });
+            }
+        });
 
         watchesRunning = useWatchesRunning({
             triggerRefs: [computed(() => (!isEmpty(state.relatedObjectRules) ? parentState.loading : false))],
