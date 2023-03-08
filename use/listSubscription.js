@@ -1,7 +1,7 @@
 import inspect from "browser-util-inspect";
 import { cloneDeep, isEmpty, isObject } from "lodash";
 import { computed, effectScope, reactive, toRef } from "vue";
-import { useCancellableIntent } from "../utils/cancellableIntent";
+import { useCancellableIntent } from "./cancellableIntent";
 import { loadingCombine } from "../utils/loadingCombine";
 import { useListInstance } from "./listInstance";
 

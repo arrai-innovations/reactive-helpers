@@ -1,6 +1,7 @@
-import { get, isArray, isUndefined } from "lodash";
+import { get, isArray, isEmpty, isUndefined } from "lodash";
 import { computed, effectScope, onScopeDispose, reactive, toRef, unref, watch } from "vue";
-import { keyDiff } from "../utils";
+import { keyDiff, loadingCombine } from "../utils";
+import { useWatchesRunning } from "./watchesRunning";
 
 export function useObjectRelateds(instances, args) {
     for (const [key, value] of Object.entries(args)) {
@@ -21,11 +22,15 @@ export function useObjectRelated({
         relatedObjectRules,
         relatedObjectObjects: {},
         object: {},
+        parentStateObjectWatchRunning: false,
+        relatedObjectWatchRunning: false,
     });
     const relatedObjectEffectScopes = {};
 
     // don't change relatedObjectPropertyName on us or it will break
     const ropn = relatedObjectPropertyName + "";
+
+    let watchesRunning = null;
 
     const es = effectScope();
 
@@ -114,15 +119,27 @@ export function useObjectRelated({
             }
         );
 
+        watchesRunning = useWatchesRunning({
+            triggerRefs: [computed(() => (!isEmpty(state.relatedObjectRules) ? parentState.loading : false))],
+            watchSentinelRefs: [
+                toRef(state, "parentStateObjectWatchRunning"),
+                toRef(state, "relatedObjectWatchRunning"),
+            ],
+        });
+
+        state.running = computed(() => loadingCombine(watchesRunning.state.running, parentState.running));
+
         onScopeDispose(() => {
             for (const key in relatedObjectEffectScopes) {
                 relatedObjectEffectScopes[key].stop();
             }
         });
     });
+
     return {
         state,
         parentState,
+        watchesRunning,
         effectScope: es,
     };
 }

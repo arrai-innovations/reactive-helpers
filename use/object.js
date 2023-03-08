@@ -82,6 +82,7 @@ export const useObject = ({ props }) => {
             error: null,
             errored: null,
             object: null,
+            running: null,
         });
         exposedState = new Proxy(proxyBase, {
             // get values from the current state

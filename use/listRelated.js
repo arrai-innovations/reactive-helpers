@@ -1,6 +1,7 @@
 import { get, isArray, isEmpty, isUndefined } from "lodash";
 import { computed, effectScope, onScopeDispose, reactive, toRef, unref, watch } from "vue";
-import { keyDiff } from "../utils/keyDiff";
+import { keyDiff, loadingCombine } from "../utils";
+import { useWatchesRunning } from "./watchesRunning";
 
 export function useListRelateds(instances, args) {
     for (const [key, value] of Object.entries(args)) {
@@ -20,6 +21,8 @@ export function useListRelated({
         relatedObjectsRules: relatedObjectsRules,
         relatedObjectsObjects: {},
         objects: {},
+        parentStateObjectsWatchRunning: false,
+        relatedObjectsWatchRunning: false,
     });
     const relatedObjectsEffectScopes = {};
 
@@ -128,6 +131,8 @@ export function useListRelated({
         parentStateObjectsWatch();
     }
 
+    let watchesRunning = null;
+
     const es = effectScope();
 
     es.run(() => {
@@ -150,6 +155,16 @@ export function useListRelated({
             { immediate: true }
         );
 
+        watchesRunning = useWatchesRunning({
+            triggerRefs: [computed(() => (!isEmpty(state.relatedObjectsRules) ? parentState.loading : false))],
+            watchSentinelRefs: [
+                toRef(state, "parentStateObjectsWatchRunning"),
+                toRef(state, "relatedObjectsWatchRunning"),
+            ],
+        });
+
+        state.running = computed(() => loadingCombine(watchesRunning.state.running, parentState.running));
+
         onScopeDispose(() => {
             for (const objectKey of Object.keys(relatedObjectsEffectScopes)) {
                 relatedObjectsEffectScopes[objectKey].stop();
@@ -159,6 +174,7 @@ export function useListRelated({
     return {
         state,
         parentState,
+        watchesRunning,
         effectScope: es,
     };
 }
