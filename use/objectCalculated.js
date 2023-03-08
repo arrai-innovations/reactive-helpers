@@ -1,5 +1,6 @@
 import { computed, effectScope, onScopeDispose, reactive, toRef, watch } from "vue";
-import { keyDiff } from "../utils";
+import { keyDiff, loadingCombine } from "../utils";
+import { useWatchesRunning } from "./watchesRunning";
 
 export function useObjectCalculateds(instances, args) {
     for (const [key, value] of Object.entries(args)) {
@@ -20,12 +21,16 @@ export function useObjectCalculated({
         calculatedObjectRules,
         calculatedObjectObjects: {},
         object: {},
+        parentStateObjectWatchRunning: false,
+        calculatedObjectWatchRunning: false,
     });
     const calculatedObjectEffectScopes = {};
     const calculatedObjectOriginalFunctions = {};
 
     // don't change calculatedObjectPropertyName on us or it will break
     const copn = calculatedObjectPropertyName + "";
+
+    let watchesRunning = null;
 
     const es = effectScope();
 
@@ -109,6 +114,16 @@ export function useObjectCalculated({
             }
         );
 
+        watchesRunning = useWatchesRunning({
+            triggerRef: toRef(parentState, "loading"),
+            watchSentinelRefs: [
+                toRef(state, "parentStateObjectWatchRunning"),
+                toRef(state, "calculatedObjectWatchRunning"),
+            ],
+        });
+
+        state.running = computed(() => loadingCombine(state.running, parentState.running));
+
         onScopeDispose(() => {
             for (const key in calculatedObjectEffectScopes) {
                 calculatedObjectEffectScopes[key].stop();
@@ -121,6 +136,7 @@ export function useObjectCalculated({
     return {
         state,
         parentState,
+        watchesRunning,
         effectScope: es,
     };
 }

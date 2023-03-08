@@ -1,6 +1,7 @@
 import { isEmpty } from "lodash";
 import { computed, effectScope, onScopeDispose, reactive, toRef, watch } from "vue";
-import { keyDiff } from "../utils";
+import { keyDiff, loadingCombine } from "../utils";
+import { useWatchesRunning } from "./watchesRunning";
 
 export function useListCalculateds(instances, args) {
     for (const [key, value] of Object.entries(args)) {
@@ -23,6 +24,8 @@ export function useListCalculated({
         calculatedObjectsRules,
         calculatedObjectsObjects: {},
         objects: {},
+        parentStateObjectsWatchRunning: false,
+        calculatedObjectsWatchRunning: false,
     });
     const calculatedObjectsEffectScopes = {};
 
@@ -56,6 +59,7 @@ export function useListCalculated({
                 },
             });
         }
+        state.parentStateObjectsWatchRunning = false;
     }
 
     function calculatedObjectsWatch() {
@@ -98,8 +102,11 @@ export function useListCalculated({
             }
             calculatedObjectsEffectScopes[objectKey] = calculatedObjectsEffectScope;
         }
+        state.calculatedObjectsWatchRunning = false;
         parentStateObjectsWatch();
     }
+
+    let watchesRunning = null;
 
     const es = effectScope();
 
@@ -126,6 +133,16 @@ export function useListCalculated({
             { immediate: true }
         );
 
+        watchesRunning = useWatchesRunning({
+            triggerRef: toRef(parentState, "loading"),
+            watchSentinelRefs: [
+                toRef(state, "parentStateObjectsWatchRunning"),
+                toRef(state, "calculatedObjectsWatchRunning"),
+            ],
+        });
+
+        state.running = computed(() => loadingCombine(state.running, parentState.running));
+
         onScopeDispose(() => {
             for (const objectKey of Object.keys(calculatedObjectsEffectScopes)) {
                 calculatedObjectsEffectScopes[objectKey].stop();
@@ -135,6 +152,8 @@ export function useListCalculated({
 
     return {
         state,
+        parentState,
+        watchesRunning,
         effectScope: es,
     };
 }
