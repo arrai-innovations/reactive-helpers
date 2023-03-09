@@ -72,48 +72,42 @@ export function useObjectCalculated({
         state.errored = toRef(parentState, "errored");
         state.deleted = toRef(parentState, "deleted");
 
-        watch(
-            [() => state.calculatedObjectRules && Object.keys(state.calculatedObjectRules)],
-            () => {
-                let addedKeys = [],
-                    removedKeys = [],
-                    sameKeys = [];
-                if (!state.calculatedObjectRules) {
-                    removedKeys = Object.keys(calculatedObjectOriginalFunctions);
-                } else {
-                    ({ addedKeys, removedKeys, sameKeys } = keyDiff(
-                        Object.keys(state.calculatedObjectRules),
-                        Object.keys(calculatedObjectOriginalFunctions)
-                    ));
-                }
-                for (const sameKey of sameKeys) {
-                    if (calculatedObjectOriginalFunctions[sameKey] !== state.calculatedObjectRules[sameKey]) {
-                        removedKeys.push(sameKey);
-                        addedKeys.push(sameKey);
-                    }
-                }
-                for (const removedKey of removedKeys) {
-                    delete calculatedObjectOriginalFunctions[removedKey];
-                    delete state.calculatedObjectObjects[removedKey];
-                    if (calculatedObjectEffectScopes[removedKey]) {
-                        calculatedObjectEffectScopes[removedKey].stop();
-                        delete calculatedObjectEffectScopes[removedKey];
-                    }
-                }
-                for (const addedKey of addedKeys) {
-                    calculatedObjectOriginalFunctions[addedKey] = state.calculatedObjectRules[addedKey];
-                    calculatedObjectEffectScopes[addedKey] = effectScope();
-                    calculatedObjectEffectScopes[addedKey].run(() => {
-                        state.calculatedObjectObjects[addedKey] = computed(() =>
-                            calculatedObjectOriginalFunctions[addedKey](state.object)
-                        );
-                    });
-                }
-            },
-            {
-                immediate: true,
+        watch([() => state.calculatedObjectRules && Object.keys(state.calculatedObjectRules)], () => {
+            let addedKeys = [],
+                removedKeys = [],
+                sameKeys = [];
+            if (!state.calculatedObjectRules) {
+                removedKeys = Object.keys(calculatedObjectOriginalFunctions);
+            } else {
+                ({ addedKeys, removedKeys, sameKeys } = keyDiff(
+                    Object.keys(state.calculatedObjectRules),
+                    Object.keys(calculatedObjectOriginalFunctions)
+                ));
             }
-        );
+            for (const sameKey of sameKeys) {
+                if (calculatedObjectOriginalFunctions[sameKey] !== state.calculatedObjectRules[sameKey]) {
+                    removedKeys.push(sameKey);
+                    addedKeys.push(sameKey);
+                }
+            }
+            for (const removedKey of removedKeys) {
+                delete calculatedObjectOriginalFunctions[removedKey];
+                delete state.calculatedObjectObjects[removedKey];
+                if (calculatedObjectEffectScopes[removedKey]) {
+                    calculatedObjectEffectScopes[removedKey].stop();
+                    delete calculatedObjectEffectScopes[removedKey];
+                }
+            }
+            for (const addedKey of addedKeys) {
+                calculatedObjectOriginalFunctions[addedKey] = state.calculatedObjectRules[addedKey];
+                calculatedObjectEffectScopes[addedKey] = effectScope();
+                calculatedObjectEffectScopes[addedKey].run(() => {
+                    state.calculatedObjectObjects[addedKey] = computed(() =>
+                        calculatedObjectOriginalFunctions[addedKey](state.object)
+                    );
+                });
+            }
+        });
 
         watchesRunning = useWatchesRunning({
             triggerRefs: [computed(() => (!isEmpty(state.calculatedObjectRules) ? parentState.loading : false))],
