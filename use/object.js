@@ -5,7 +5,7 @@ import { useObjectRelated } from "./objectRelated";
 import { useObjectSubscription } from "./objectSubscription";
 
 // Manages a chain of useObject functions, based on existence of keys in props: intendToRetrieve, relatedObjectRules, calculatedObjectRules
-export const useObject = ({ props }) => {
+export const useObject = ({ props, functions }) => {
     const managed = shallowReactive({
         objectInstance: null,
         objectSubscription: null,
@@ -18,6 +18,7 @@ export const useObject = ({ props }) => {
         crudArgs: toRef(props, "crudArgs"),
         id: toRef(props, "id"),
         retrieveArgs: toRef(props, "retrieveArgs"),
+        functions,
     });
 
     const intentPropsWatch = () => {
@@ -86,8 +87,8 @@ export const useObject = ({ props }) => {
         });
         exposedState = new Proxy(proxyBase, {
             // get values from the current state
-            get(target, key) {
-                return Reflect.get(getState(), key);
+            get(target, prop) {
+                return Reflect.get(getState(), prop);
             },
         });
     });

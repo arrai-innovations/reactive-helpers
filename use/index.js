@@ -1,4 +1,5 @@
 export * from "./cancellableIntent.js";
+export * from "./list.js";
 export * from "./listCalculated.js";
 export * from "./listFilter.js";
 export * from "./listInstance.js";

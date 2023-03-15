@@ -1,5 +1,6 @@
 import inspect from "browser-util-inspect";
 import { cloneDeep } from "lodash";
+import { isFunction } from "lodash";
 import { computed, effectScope, reactive } from "vue";
 import { addOrUpdateReactiveObject, assignReactiveObject } from "../utils/assignReactiveObject";
 import { getFakeId } from "../utils/getFakeId";
@@ -30,7 +31,7 @@ export function useListInstances(listInstanceArgs) {
     return instances;
 }
 
-export function useListInstance({ crudArgs, listArgs = {}, retrieveArgs = {} }) {
+export function useListInstance({ crudArgs, listArgs = {}, retrieveArgs = {}, functions = {} }) {
     // ### touching the _objectsMap or _objectsProxy directly will not trigger reactivity ###
     const _objectsMap = new Map();
     // ### touching the _objectsMap or _objectsProxy directly will not trigger reactivity ###
@@ -81,6 +82,13 @@ export function useListInstance({ crudArgs, listArgs = {}, retrieveArgs = {} }) 
     Object.assign(state.crud, cloneDeep(defaultCrud));
     if (crudArgs) {
         addOrUpdateReactiveObject(state.crud.args, crudArgs);
+    }
+    for (const [key, value] of Object.entries(functions)) {
+        if (isFunction(value) && key in state.crud) {
+            state.crud[key] = value;
+        } else {
+            throw ListError(`Invalid function "${key}" for useListInstance: invalid key or not a function.`);
+        }
     }
 
     const defaultPageCallback = (newObjects) => {

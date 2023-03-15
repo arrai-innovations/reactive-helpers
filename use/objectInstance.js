@@ -1,4 +1,4 @@
-import { cloneDeep } from "lodash";
+import { cloneDeep, isFunction } from "lodash";
 import { effectScope, reactive } from "vue";
 import { addOrUpdateReactiveObject, assignReactiveObject } from "../utils/assignReactiveObject";
 
@@ -35,7 +35,7 @@ export function useObjectInstances(instanceArgs) {
     return instances;
 }
 
-export function useObjectInstance({ crudArgs, id, retrieveArgs }) {
+export function useObjectInstance({ crudArgs, id, retrieveArgs, functions = {} }) {
     const state = reactive({
         crud: {
             args: {},
@@ -57,6 +57,13 @@ export function useObjectInstance({ crudArgs, id, retrieveArgs }) {
     Object.assign(state.crud, cloneDeep(defaultCrud));
     if (crudArgs) {
         addOrUpdateReactiveObject(state.crud.args, crudArgs);
+    }
+    for (const [key, value] of Object.entries(functions)) {
+        if (isFunction(value) && key in state.crud) {
+            state[key] = value;
+        } else {
+            throw ObjectError(`Invalid function "${key}" for useObjectInstance: invalid key or not a function.`);
+        }
     }
 
     // due to retrieve being called by `useCancelleableIntent`, if called manually then by the watch,
