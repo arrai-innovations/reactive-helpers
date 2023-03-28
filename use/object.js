@@ -1,4 +1,4 @@
-import { effectScope, shallowReactive, shallowReadonly, toRef, watch } from "vue";
+import { effectScope, reactive, shallowReactive, shallowReadonly, toRef, watch } from "vue";
 import { useObjectCalculated } from "./objectCalculated";
 import { useObjectInstance } from "./objectInstance";
 import { useObjectRelated } from "./objectRelated";
@@ -60,7 +60,7 @@ export const useObject = ({ props, functions }) => {
         });
     };
 
-    let exposedState;
+    const exposedState = reactive({});
 
     es.run(() => {
         watch(
@@ -72,30 +72,40 @@ export const useObject = ({ props, functions }) => {
             intentPropsWatch,
             { immediate: true }
         );
-        const getState = () =>
-            managed.objectCalculated?.state ||
-            managed.objectRelated?.state ||
-            managed.objectSubscription?.state ||
-            managed.objectInstance.state;
-        // used as proxy to have the properties and not be settable, so we only have to override get
-        const proxyBase = shallowReadonly({
-            loading: null,
-            error: null,
-            errored: null,
-            object: null,
-            running: null,
-        });
-        exposedState = new Proxy(proxyBase, {
-            // get values from the current state
-            get(target, prop) {
-                return Reflect.get(getState(), prop);
+
+        // todo: need a way to specify additional properties to pass through
+        const propertiesToRelay = [
+            "loading",
+            "error",
+            "errored",
+            "object",
+            "running",
+            "relatedObject",
+            "calculatedObject",
+        ];
+        watch(
+            () =>
+                managed.objectCalculated?.state ||
+                managed.objectRelated?.state ||
+                managed.objectSubscription?.state ||
+                managed.objectInstance.state,
+            (newState, oldState) => {
+                if (newState !== oldState && newState) {
+                    propertiesToRelay.forEach((x) => {
+                        exposedState[x] = toRef(newState, x);
+                    });
+                }
             },
-        });
+            {
+                immediate: true,
+            }
+        );
     });
 
     return {
+        // we manage the keys on both of these, so hands off the root.
         managed: shallowReadonly(managed),
-        state: exposedState,
+        state: shallowReadonly(exposedState),
         effectScope: es,
     };
 };
