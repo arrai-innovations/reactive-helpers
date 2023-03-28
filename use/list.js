@@ -6,7 +6,7 @@ import { useListSubscription } from "./listSubscription";
 import { usePagedListInstance } from "./paginatedListInstance";
 
 // the big brother of useObject, managing a chain of useList* instances.
-export const useList = ({ props, functions, paged = false }) => {
+export const useList = ({ props, functions, paged = false, passThroughPropertyNames = [] }) => {
     const managed = shallowReactive({
         listInstance: null,
         listSubscription: null,
@@ -84,6 +84,10 @@ export const useList = ({ props, functions, paged = false }) => {
             "running",
             "relatedObjects",
             "calculatedObjects",
+            "totalRecords",
+            "totalPages",
+            "perPage",
+            ...passThroughPropertyNames,
         ];
         watch(
             () =>
