@@ -1,5 +1,6 @@
 import { identity, isEqual } from "lodash";
 import { effectScope, nextTick, onScopeDispose, reactive, readonly, watch } from "vue";
+import { deepUnref } from "vue-deepunref";
 
 /*
  * Calls your awaitable function with the arguments you pass in, when the watch arguments change and are all truthy.
@@ -15,6 +16,7 @@ export function useCancellableIntent({ awaitableWithCancel, watchArguments = {},
     }
     const state = reactive({
         active: undefined,
+        resolving: undefined,
         errored: false,
         error: null,
         clearActiveOnResolved,
@@ -32,6 +34,7 @@ export function useCancellableIntent({ awaitableWithCancel, watchArguments = {},
     async function cancel() {
         if (cancelFunction) {
             state.active = false;
+            state.resolving = false;
             const cancelPromise = cancelFunction().catch(console.error);
             cancelFunction = null;
             return cancelPromise;
@@ -40,7 +43,7 @@ export function useCancellableIntent({ awaitableWithCancel, watchArguments = {},
     }
 
     const watchFn = () => {
-        let newWatchValues = Object.values(watchArguments);
+        let newWatchValues = deepUnref(Object.values(watchArguments));
         if (isEqual(newWatchValues, previousWatchValues)) {
             return;
         }
@@ -51,15 +54,18 @@ export function useCancellableIntent({ awaitableWithCancel, watchArguments = {},
             state.error = null;
             let awaitablePromise = awaitableWithCancel();
             state.active = true;
+            state.resolving = true;
             if (awaitablePromise.cancel) {
                 cancelFunction = async () => {
                     state.active = false;
+                    state.resolving = false;
                     cancelFunction = null;
                     return awaitablePromise.cancel();
                 };
             }
             awaitablePromise
                 .then(() => {
+                    state.resolving = false;
                     if (state.clearActiveOnResolved) {
                         cancelFunction = null;
                         state.active = false;

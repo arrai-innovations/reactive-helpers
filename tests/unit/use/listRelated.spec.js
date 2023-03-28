@@ -1,5 +1,5 @@
 import { nextTick } from "vue";
-import { unrefAndToRawDeep } from "../../../utils/unrefAndToRawDeep";
+import { deepUnref } from "vue-deepunref";
 
 describe("use/listRelated", () => {
     let useListInstance, useListRelated;
@@ -52,7 +52,7 @@ describe("use/listRelated", () => {
         expect("relatedItems" in listRelated.state.myRelatedObjects[1]).toBe(true);
         expect("relatedItem" in listRelated.state.myRelatedObjects[1]).toBe(true);
         // expect uses enumeration, which uses handler.ownKeys and handler.getOwnPropertyDescriptor
-        expect(unrefAndToRawDeep(listRelated.state.objects)).toEqual({
+        expect(deepUnref(listRelated.state.objects)).toEqual({
             1: {
                 id: "1",
                 name: "main",
@@ -60,7 +60,7 @@ describe("use/listRelated", () => {
                 related_items: ["2", "3"],
             },
         });
-        expect(unrefAndToRawDeep(listRelated.state.myRelatedObjects)).toEqual({
+        expect(deepUnref(listRelated.state.myRelatedObjects)).toEqual({
             1: {
                 relatedItems: [
                     {
