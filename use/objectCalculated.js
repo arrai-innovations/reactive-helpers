@@ -42,7 +42,7 @@ export function useObjectCalculated({
         state.deleted = toRef(parentState, "deleted");
         state.object = toRef(parentState, "object");
         state[copn] = toRef(state, "calculatedObjectObjects");
-        for (let key in passThroughPropertyNames) {
+        for (let key of passThroughPropertyNames) {
             state[key] = toRef(parentState, key);
         }
 

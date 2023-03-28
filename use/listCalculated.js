@@ -103,7 +103,7 @@ export function useListCalculated({
         state.objects = toRef(parentState, "objects");
         state.objectsInOrder = toRef(parentState, "objectsInOrder");
         state[copn] = toRef(state, "calculatedObjectsObjects");
-        for (let key in passThroughPropertyNames) {
+        for (let key of passThroughPropertyNames) {
             state[key] = toRef(parentState, key);
         }
 

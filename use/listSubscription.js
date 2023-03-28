@@ -155,7 +155,7 @@ export function useListSubscription({
         state.objects = toRef(parentState, "objects");
         state.order = toRef(parentState, "order");
         state.objectsInOrder = toRef(parentState, "objectsInOrder");
-        for (let key in passThroughPropertyNames) {
+        for (let key of passThroughPropertyNames) {
             state[key] = toRef(parentState, key);
         }
 

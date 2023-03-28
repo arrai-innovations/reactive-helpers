@@ -41,7 +41,7 @@ export function useObjectRelated({
         state.deleted = toRef(parentState, "deleted");
         state.object = toRef(parentState, "object");
         state[ropn] = toRef(state, "relatedObjectObjects");
-        for (let key in passThroughPropertyNames) {
+        for (let key of passThroughPropertyNames) {
             state[key] = toRef(parentState, key);
         }
 

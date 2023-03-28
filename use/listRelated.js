@@ -110,7 +110,7 @@ export function useListRelated({
         state.objects = toRef(parentState, "objects");
         state.objectsInOrder = toRef(parentState, "objectsInOrder");
         state[ropn] = toRef(state, "relatedObjectsObjects");
-        for (let key in passThroughPropertyNames) {
+        for (let key of passThroughPropertyNames) {
             state[key] = toRef(parentState, key);
         }
 
