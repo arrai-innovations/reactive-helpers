@@ -167,11 +167,11 @@ export function useListSubscription({ listInstance, crudArgs, listArgs, retrieve
                 catchPromise.cancel = subscribePromise.cancel;
                 return catchPromise;
             },
-            watchArguments: [
-                toRef(state, "intendToSubscribe"),
-                toRef(listInstance.state, "listArgs"),
-                toRef(state, "retrieveArgs"),
-            ],
+            watchArguments: reactive({
+                intendToSubscribe: toRef(state, "intendToSubscribe"),
+                listArgs: toRef(listInstance.state, "listArgs"),
+                retrieveArgs: toRef(listInstance.state, "retrieveArgs"),
+            }),
             clearActiveOnResolved: false,
         });
 
@@ -182,12 +182,11 @@ export function useListSubscription({ listInstance, crudArgs, listArgs, retrieve
                 listInstance.clearList();
                 return listInstance.list();
             },
-            watchArguments: [
-                toRef(state, "intendToList"),
-                toRef(listInstance.state, "listArgs"),
-                toRef(state, "retrieveArgs"),
-            ],
-            nameOnLog: "listIntent",
+            watchArguments: reactive({
+                intendToList: toRef(state, "intendToList"),
+                listArgs: toRef(listInstance.state, "listArgs"),
+                retrieveArgs: toRef(listInstance.state, "retrieveArgs"),
+            }),
         });
     });
 
