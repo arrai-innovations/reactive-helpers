@@ -3,9 +3,10 @@ import { useListCalculated } from "./listCalculated";
 import { useListInstance } from "./listInstance";
 import { useListRelated } from "./listRelated";
 import { useListSubscription } from "./listSubscription";
+import { usePagedListInstance } from "./paginatedListInstance";
 
 // the big brother of useObject, managing a chain of useList* instances.
-export const useList = ({ props, functions }) => {
+export const useList = ({ props, functions, paged = false }) => {
     const managed = shallowReactive({
         listInstance: null,
         listSubscription: null,
@@ -14,7 +15,7 @@ export const useList = ({ props, functions }) => {
     });
     const es = effectScope();
 
-    managed.listInstance = useListInstance({
+    managed.listInstance = (paged ? usePagedListInstance : useListInstance)({
         crudArgs: toRef(props, "crudArgs"),
         functions,
         retrieveArgs: toRef(props, "retrieveArgs"),
