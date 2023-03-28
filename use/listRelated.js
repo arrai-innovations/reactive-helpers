@@ -20,7 +20,6 @@ export function useListRelated({
     const state = reactive({
         relatedObjectsRules: relatedObjectsRules,
         relatedObjectsObjects: {},
-        objects: {},
         parentStateObjectsWatchRunning: false,
         relatedObjectsWatchRunning: false,
     });
@@ -36,7 +35,6 @@ export function useListRelated({
         );
         for (const removedKey of removedKeys) {
             delete state.relatedObjectsObjects[removedKey];
-            delete state.objects[removedKey];
             if (relatedObjectsEffectScopes[removedKey]) {
                 relatedObjectsEffectScopes[removedKey].stop();
                 delete relatedObjectsEffectScopes[removedKey];
@@ -44,69 +42,35 @@ export function useListRelated({
         }
         for (const addedKey of addedKeys) {
             state.relatedObjectsObjects[addedKey] = {};
-            state.objects[addedKey] = new Proxy(parentState.objects[addedKey], {
-                get(target, prop, receiver) {
-                    if (prop === ropn) {
-                        return state.relatedObjectsObjects[addedKey];
-                    }
-                    return Reflect.get(target, prop, receiver);
-                },
-                ownKeys(target) {
-                    return Reflect.ownKeys(target).concat(ropn);
-                },
-                has(target, prop) {
-                    if (prop === ropn) {
-                        return true;
-                    }
-                    return Reflect.has(target, prop);
-                },
-                getOwnPropertyDescriptor(target, p) {
-                    if (p === ropn) {
-                        return {
-                            configurable: true,
-                            enumerable: true,
-                            value: state.relatedObjectsObjects[addedKey],
-                            writable: true,
-                        };
-                    }
-                    return Reflect.getOwnPropertyDescriptor(target, p);
-                },
-                defineProperty() {
-                    return false;
-                },
-            });
         }
+        state.parentStateObjectsWatchRunning = false;
     }
 
     function relatedObjectsWatch() {
-        if (state.relatedObjectsRules === false) {
-            return;
-        }
-        const relatedObjectsRulesIsEmpty = isEmpty(state.relatedObjectsRules);
+        const relatedObjectsRulesIsEmpty = !state.relatedObjectsRules || isEmpty(state.relatedObjectsRules);
         for (const objectKey of Object.keys(state.relatedObjectsObjects)) {
-            if (relatedObjectsEffectScopes[objectKey]) {
-                relatedObjectsEffectScopes[objectKey].stop();
+            const relatedObjectsObject = state.relatedObjectsObjects[objectKey];
+            const originalObject = parentState.objects[objectKey];
+            let removedRuleKeys, addedRuleKeys;
+            if (!relatedObjectsRulesIsEmpty) {
+                ({ removedKeys: removedRuleKeys, addedKeys: addedRuleKeys } = keyDiff(
+                    Object.keys(state.relatedObjectsRules),
+                    Object.keys(relatedObjectsObject)
+                ));
+            } else {
+                if (isEmpty(relatedObjectsObject)) {
+                    return;
+                }
+                removedRuleKeys = Object.keys(relatedObjectsObject);
+                addedRuleKeys = [];
             }
-            const relatedObjectsEffectScope = effectScope();
-            relatedObjectsEffectScope.run(() => {
-                const relatedObjectsObject = state.relatedObjectsObjects[objectKey];
-                const originalObject = parentState.objects[objectKey];
-                let removedRuleKeys, addedRuleKeys;
-                if (!relatedObjectsRulesIsEmpty) {
-                    ({ removedKeys: removedRuleKeys, addedKeys: addedRuleKeys } = keyDiff(
-                        Object.keys(state.relatedObjectsRules),
-                        Object.keys(relatedObjectsObject)
-                    ));
-                } else {
-                    if (isEmpty(relatedObjectsObject)) {
-                        return;
-                    }
-                    removedRuleKeys = Object.keys(relatedObjectsObject);
-                    addedRuleKeys = [];
-                }
-                for (const removedRuleKey of removedRuleKeys) {
-                    delete relatedObjectsObject[removedRuleKey];
-                }
+            for (const removedRuleKey of removedRuleKeys) {
+                delete relatedObjectsObject[removedRuleKey];
+            }
+            if (!relatedObjectsEffectScopes[objectKey]) {
+                relatedObjectsEffectScopes[objectKey] = effectScope();
+            }
+            relatedObjectsEffectScopes[objectKey].run(() => {
                 for (const addedRuleKey of addedRuleKeys) {
                     relatedObjectsObject[addedRuleKey] = computed(() => {
                         // deal with computed objects being passed.
@@ -126,9 +90,8 @@ export function useListRelated({
                     });
                 }
             });
-            relatedObjectsEffectScopes[objectKey] = relatedObjectsEffectScope;
         }
-        parentStateObjectsWatch();
+        state.relatedObjectsWatchRunning = false;
     }
 
     let watchesRunning = null;
@@ -143,7 +106,13 @@ export function useListRelated({
         state.retrieveArgs = toRef(parentState, "retrieveArgs");
         state.listArgs = toRef(parentState, "listArgs");
         state.order = toRef(parentState, "order");
-        state.objectsInOrder = computed(() => state.order.map((id) => state.objects[id]));
+        state.objects = toRef(parentState, "objects");
+        state.objectsInOrder = toRef(parentState, "objectsInOrder");
+        state[ropn] = toRef(state, "relatedObjectsObjects");
+        // todo: need a way to specify additional properties to pass through
+        if (parentState.caculatedObjects) {
+            state.caculatedObjects = toRef(parentState, "caculatedObjects");
+        }
 
         watch(() => Object.keys(parentState.objects), parentStateObjectsWatch, { immediate: true });
         watch(
@@ -156,7 +125,11 @@ export function useListRelated({
         );
 
         watchesRunning = useWatchesRunning({
-            triggerRefs: [computed(() => (!isEmpty(state.relatedObjectsRules) ? parentState.loading : false))],
+            triggerRefs: [
+                computed(() =>
+                    state.relatedObjectsRules && !isEmpty(state.relatedObjectsRules) ? parentState.loading : false
+                ),
+            ],
             watchSentinelRefs: [
                 toRef(state, "parentStateObjectsWatchRunning"),
                 toRef(state, "relatedObjectsWatchRunning"),

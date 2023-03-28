@@ -21,7 +21,6 @@ export function useObjectRelated({
     const state = reactive({
         relatedObjectRules,
         relatedObjectObjects: {},
-        object: {},
         parentStateObjectWatchRunning: false,
         relatedObjectWatchRunning: false,
     });
@@ -35,41 +34,16 @@ export function useObjectRelated({
     const es = effectScope();
 
     es.run(() => {
-        state.object = new Proxy(parentState.object, {
-            get(target, key, receiver) {
-                if (key === ropn) {
-                    return state.relatedObjectObjects;
-                }
-                return Reflect.get(target, key, receiver);
-            },
-            ownKeys(target) {
-                return Reflect.ownKeys(target).concat(ropn);
-            },
-            has(target, key) {
-                if (key === ropn) {
-                    return true;
-                }
-                return Reflect.has(target, key);
-            },
-            getOwnPropertyDescriptor(target, key) {
-                if (key === ropn) {
-                    return {
-                        configurable: true,
-                        enumerable: true,
-                        value: state.relatedObjectObjects,
-                        writable: true,
-                    };
-                }
-                return Reflect.getOwnPropertyDescriptor(target, key);
-            },
-            defineProperty() {
-                return false;
-            },
-        });
         state.loading = toRef(parentState, "loading");
         state.error = toRef(parentState, "error");
         state.errored = toRef(parentState, "errored");
         state.deleted = toRef(parentState, "deleted");
+        state.object = toRef(parentState, "object");
+        state[ropn] = toRef(state, "relatedObjectObjects");
+        // todo: need a way to specify additional properties to pass through
+        if (parentState.calculatedObject) {
+            state.calculatedObject = toRef(parentState, "calculatedObject");
+        }
 
         watch([() => state.relatedObjectRules && Object.keys(state.relatedObjectRules)], () => {
             let addedRuleKeys = [],
