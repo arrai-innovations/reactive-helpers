@@ -16,7 +16,7 @@ export function useListRelated({
     parentState,
     relatedObjectsRules,
     relatedObjectsPropertyName = "relatedObjects", // NOT REACTIVE
-    passThroughPropertyNames = ["calculatedObjects"], // NOT REACTIVE
+    passThroughPropertyNames = ["calculatedObjects", "totalRecords", "totalPages", "perPage"], // NOT REACTIVE
 }) {
     const state = reactive({
         relatedObjectsRules: relatedObjectsRules,

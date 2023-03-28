@@ -28,13 +28,20 @@ export function useListSubscriptions(args, listInstances = {}) {
     return subscriptions;
 }
 
-export function useListSubscription({ listInstance, crudArgs, listArgs, retrieveArgs }) {
+export function useListSubscription({
+    listInstance,
+    crudArgs,
+    listArgs,
+    retrieveArgs,
+    passThroughPropertyNames = ["totalRecords", "totalPages", "perPage"],
+}) {
     if (!listInstance) {
         listInstance = useListInstance({ crudArgs, listArgs, retrieveArgs });
     }
     if (!listInstance.state.crud.subscribe) {
         listInstance.state.crud.subscribe = defaultCrud.subscribe;
     }
+    const parentState = listInstance.state;
 
     let subscribeIntent, listIntent;
     const state = reactive({
@@ -139,23 +146,26 @@ export function useListSubscription({ listInstance, crudArgs, listArgs, retrieve
     const es = effectScope();
 
     es.run(() => {
-        state.loading = computed(() => loadingCombine(listInstance.state.loading, state.subscriptionLoading));
-        state.errored = computed(() => listInstance.state.errored || state.subscriptionErrored);
-        state.error = computed(() => listInstance.state.error || state.subscriptionError);
+        state.loading = computed(() => loadingCombine(parentState.loading, state.subscriptionLoading));
+        state.errored = computed(() => parentState.errored || state.subscriptionErrored);
+        state.error = computed(() => parentState.error || state.subscriptionError);
 
-        state.retrieveArgs = computed(() => listInstance.state.retrieveArgs);
-        state.listArgs = computed(() => listInstance.state.listArgs);
-        state.objects = toRef(listInstance.state, "objects");
-        state.order = toRef(listInstance.state, "order");
-        state.objectsInOrder = toRef(listInstance.state, "objectsInOrder");
+        state.retrieveArgs = computed(() => parentState.retrieveArgs);
+        state.listArgs = computed(() => parentState.listArgs);
+        state.objects = toRef(parentState, "objects");
+        state.order = toRef(parentState, "order");
+        state.objectsInOrder = toRef(parentState, "objectsInOrder");
+        for (let key in passThroughPropertyNames) {
+            state[key] = toRef(parentState, key);
+        }
 
         subscribeIntent = useCancellableIntent({
             awaitableWithCancel: () => {
                 // this function cannot be async, or the resulting promise will lose its .cancel() method
-                const subscribePromise = listInstance.state.crud.subscribe({
-                    crudArgs: cloneDeep(listInstance.state.crud.args),
-                    listArgs: cloneDeep(listInstance.state.listArgs),
-                    retrieveArgs: cloneDeep(listInstance.state.retrieveArgs),
+                const subscribePromise = parentState.crud.subscribe({
+                    crudArgs: cloneDeep(parentState.crud.args),
+                    listArgs: cloneDeep(parentState.listArgs),
+                    retrieveArgs: cloneDeep(parentState.retrieveArgs),
                     subscriptionEventCallback,
                 });
                 // catching makes a new promise, we need to make sure the cancel method lives on.
@@ -169,8 +179,8 @@ export function useListSubscription({ listInstance, crudArgs, listArgs, retrieve
             },
             watchArguments: reactive({
                 intendToSubscribe: toRef(state, "intendToSubscribe"),
-                listArgs: toRef(listInstance.state, "listArgs"),
-                retrieveArgs: toRef(listInstance.state, "retrieveArgs"),
+                listArgs: toRef(parentState, "listArgs"),
+                retrieveArgs: toRef(parentState, "retrieveArgs"),
             }),
             clearActiveOnResolved: false,
         });
@@ -184,8 +194,8 @@ export function useListSubscription({ listInstance, crudArgs, listArgs, retrieve
             },
             watchArguments: reactive({
                 intendToList: toRef(state, "intendToList"),
-                listArgs: toRef(listInstance.state, "listArgs"),
-                retrieveArgs: toRef(listInstance.state, "retrieveArgs"),
+                listArgs: toRef(parentState, "listArgs"),
+                retrieveArgs: toRef(parentState, "retrieveArgs"),
             }),
         });
     });

@@ -19,7 +19,7 @@ export function useListCalculated({
     parentState,
     calculatedObjectsRules,
     calculatedObjectsPropertyName = "calculatedObjects", // NOT REACTIVE
-    passThroughPropertyNames = ["relatedObjects"], // NOT REACTIVE
+    passThroughPropertyNames = ["relatedObjects", "totalRecords", "totalPages", "perPage"], // NOT REACTIVE
 }) {
     const state = reactive({
         calculatedObjectsRules,
