@@ -17,11 +17,11 @@ export function useObjectCalculated({
     parentState,
     calculatedObjectRules,
     calculatedObjectPropertyName = "calculatedObject", // NOT REACTIVE
+    passThroughPropertyNames = ["relatedObject"], // NOT REACTIVE
 }) {
     const state = reactive({
         calculatedObjectRules,
         calculatedObjectObjects: {},
-        object: {},
         parentStateObjectWatchRunning: false,
         calculatedObjectWatchRunning: false,
     });
@@ -36,41 +36,15 @@ export function useObjectCalculated({
     const es = effectScope();
 
     es.run(() => {
-        state.object = new Proxy(parentState.object, {
-            get(target, key, receiver) {
-                if (key === copn) {
-                    return state.calculatedObjectObjects;
-                }
-                return Reflect.get(target, key, receiver);
-            },
-            ownKeys(target) {
-                return Reflect.ownKeys(target).concat(copn);
-            },
-            has(target, key) {
-                if (key === copn) {
-                    return true;
-                }
-                return Reflect.has(target, key);
-            },
-            getOwnPropertyDescriptor(target, key) {
-                if (key === copn) {
-                    return {
-                        configurable: true,
-                        enumerable: true,
-                        value: state.calculatedObjectObjects,
-                        writable: true,
-                    };
-                }
-                return Reflect.getOwnPropertyDescriptor(target, key);
-            },
-            defineProperty() {
-                return false;
-            },
-        });
         state.loading = toRef(parentState, "loading");
         state.error = toRef(parentState, "error");
         state.errored = toRef(parentState, "errored");
         state.deleted = toRef(parentState, "deleted");
+        state.object = toRef(parentState, "object");
+        state[copn] = toRef(state, "calculatedObjectObjects");
+        for (let key in passThroughPropertyNames) {
+            state[key] = toRef(parentState, key);
+        }
 
         watch([() => state.calculatedObjectRules && Object.keys(state.calculatedObjectRules)], () => {
             let addedKeys = [],

@@ -1,5 +1,6 @@
 import { nextTick } from "vue";
-import { doAwaitTimeout, unrefAndToRawDeep } from "../../../utils";
+import { deepUnref } from "vue-deepunref";
+import { doAwaitTimeout } from "../../../utils";
 
 describe("use/useListSort", () => {
     let listInstance,
@@ -178,10 +179,10 @@ describe("use/useListSort", () => {
             },
             listInstances
         );
-        expect(unrefAndToRawDeep(listSorts.A.parentState)).toEqual(unrefAndToRawDeep(listInstanceA.state));
-        expect(unrefAndToRawDeep(listSorts.B.parentState)).toEqual(unrefAndToRawDeep(listInstanceB.state));
-        expect(unrefAndToRawDeep(listSorts.A.state)).toEqual(unrefAndToRawDeep(listSortA.state));
-        expect(unrefAndToRawDeep(listSorts.B.state)).toEqual(unrefAndToRawDeep(listSortB.state));
+        expect(deepUnref(listSorts.A.parentState)).toEqual(deepUnref(listInstanceA.state));
+        expect(deepUnref(listSorts.B.parentState)).toEqual(deepUnref(listInstanceB.state));
+        expect(deepUnref(listSorts.A.state)).toEqual(deepUnref(listSortA.state));
+        expect(deepUnref(listSorts.B.state)).toEqual(deepUnref(listSortB.state));
     });
     describe("useListSort/sortThrottleWait", () => {
         it("respects throttle time prior to triggering", async () => {

@@ -42,6 +42,8 @@ export class AwaitTimeout {
         });
         this.timeout = timeout;
         this.timeoutId = null;
+        // prebuild the exception for a more useful stack.
+        this.cancelledError = new AwaitTimeoutError("Cancelled", "timeout_cancelled");
     }
 
     start() {
@@ -65,7 +67,7 @@ export class AwaitTimeout {
         if (this.timeoutId) {
             clearTimeout(this.timeoutId);
             delete this.timeoutId;
-            this.reject(new AwaitTimeoutError("Cancelled", "timeout_cancelled"));
+            this.reject(this.cancelledError);
         }
         if (this.resolve) {
             delete this.resolve;
@@ -94,13 +96,15 @@ export class AwaitNot {
         this.prop = prop;
         this.trueISW = new ImmediateStopWatch();
         this.falseISW = new ImmediateStopWatch();
+        // prebuild the exception for a more useful stack.
+        this.timeoutError = new AwaitNotError("Timeout", "timeout");
     }
 
     start() {
         this.timeout.promise
             .then(() => {
                 this.stop();
-                this.reject(new AwaitNotError("Timeout", "timeout"));
+                this.reject(this.timeoutError);
             })
             .catch((err) => {
                 this.stop();

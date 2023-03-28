@@ -19,11 +19,11 @@ export function useListCalculated({
     parentState,
     calculatedObjectsRules,
     calculatedObjectsPropertyName = "calculatedObjects", // NOT REACTIVE
+    passThroughPropertyNames = ["relatedObjects"], // NOT REACTIVE
 }) {
     const state = reactive({
         calculatedObjectsRules,
         calculatedObjectsObjects: {},
-        objects: {},
         parentStateObjectsWatchRunning: false,
         calculatedObjectsWatchRunning: false,
     });
@@ -39,7 +39,6 @@ export function useListCalculated({
         );
         for (const removedKey of removedKeys) {
             delete state.calculatedObjectsObjects[removedKey];
-            delete state.objects[removedKey];
             if (calculatedObjectsEffectScopes[removedKey]) {
                 calculatedObjectsEffectScopes[removedKey].stop();
                 delete calculatedObjectsEffectScopes[removedKey];
@@ -47,63 +46,46 @@ export function useListCalculated({
         }
         for (const addedKey of addedKeys) {
             state.calculatedObjectsObjects[addedKey] = {};
-            state.objects[addedKey] = new Proxy(parentState.objects[addedKey], {
-                get(target, prop, receiver) {
-                    if (prop === copn) {
-                        return state.calculatedObjectsObjects[addedKey];
-                    }
-                    return Reflect.get(target, prop, receiver);
-                },
-                ownKeys(target) {
-                    return Reflect.ownKeys(target).concat(copn);
-                },
-            });
         }
         state.parentStateObjectsWatchRunning = false;
     }
 
     function calculatedObjectsWatch() {
-        if (state.calculatedObjectsRules === false) {
-            return;
-        }
-        const calculatedObjectsRulesIsEmpty = isEmpty(state.calculatedObjectsRules);
+        const calculatedObjectsRulesIsEmpty = !state.calculatedObjectsRules || isEmpty(state.calculatedObjectsRules);
         for (const objectKey of Object.keys(state.calculatedObjectsObjects)) {
-            const calculatedObjectsEffectScope = effectScope();
-            calculatedObjectsEffectScope.run(() => {
-                const calculatedObjectsObject = state.calculatedObjectsObjects[objectKey];
-                const originalObject = parentState.objects[objectKey];
-                if (!calculatedObjectsObject[copn]) {
-                    calculatedObjectsObject[copn] = {};
+            if (!calculatedObjectsEffectScopes[objectKey]) {
+                calculatedObjectsEffectScopes[objectKey] = effectScope();
+            }
+            const originalObject = parentState.objects[objectKey];
+            if (!state.calculatedObjectsObjects[objectKey]) {
+                state.calculatedObjectsObjects[objectKey] = {};
+            }
+            const calculatedObjectsObject = state.calculatedObjectsObjects[objectKey];
+            let removedRuleKeys, addedRuleKeys;
+            if (!calculatedObjectsRulesIsEmpty) {
+                ({ removedKeys: removedRuleKeys, addedKeys: addedRuleKeys } = keyDiff(
+                    Object.keys(state.calculatedObjectsRules),
+                    Object.keys(calculatedObjectsObject)
+                ));
+            } else {
+                if (isEmpty(calculatedObjectsObject)) {
+                    return;
                 }
-                let removedRuleKeys, addedRuleKeys;
-                if (!calculatedObjectsRulesIsEmpty) {
-                    ({ removedKeys: removedRuleKeys, addedKeys: addedRuleKeys } = keyDiff(
-                        Object.keys(state.calculatedObjectsRules),
-                        Object.keys(calculatedObjectsObject[copn])
-                    ));
-                } else {
-                    if (isEmpty(calculatedObjectsObject[copn])) {
-                        return;
-                    }
-                    removedRuleKeys = Object.keys(calculatedObjectsObject[copn]);
-                    addedRuleKeys = [];
-                }
-                for (const removedRuleKey of removedRuleKeys) {
-                    delete calculatedObjectsObject[copn][removedRuleKey];
-                }
+                removedRuleKeys = Object.keys(calculatedObjectsObject);
+                addedRuleKeys = [];
+            }
+            for (const removedRuleKey of removedRuleKeys) {
+                delete calculatedObjectsObject[removedRuleKey];
+            }
+            calculatedObjectsEffectScopes[objectKey].run(() => {
                 for (const addedRuleKey of addedRuleKeys) {
-                    calculatedObjectsObject[copn][addedRuleKey] = computed(() => {
+                    calculatedObjectsObject[addedRuleKey] = computed(() => {
                         return state.calculatedObjectsRules?.[addedRuleKey]?.(originalObject);
                     });
                 }
             });
-            if (calculatedObjectsEffectScopes[objectKey]) {
-                calculatedObjectsEffectScopes[objectKey].stop();
-            }
-            calculatedObjectsEffectScopes[objectKey] = calculatedObjectsEffectScope;
         }
         state.calculatedObjectsWatchRunning = false;
-        parentStateObjectsWatch();
     }
 
     let watchesRunning = null;
@@ -118,7 +100,12 @@ export function useListCalculated({
         state.retrieveArgs = toRef(parentState, "retrieveArgs");
         state.listArgs = toRef(parentState, "listArgs");
         state.order = toRef(parentState, "order");
-        state.objectsInOrder = computed(() => state.order.map((id) => state.objects[id]));
+        state.objects = toRef(parentState, "objects");
+        state.objectsInOrder = toRef(parentState, "objectsInOrder");
+        state[copn] = toRef(state, "calculatedObjectsObjects");
+        for (let key in passThroughPropertyNames) {
+            state[key] = toRef(parentState, key);
+        }
 
         watch(() => Object.keys(parentState.objects), parentStateObjectsWatch, { immediate: true });
         watch(
@@ -134,7 +121,11 @@ export function useListCalculated({
         );
 
         watchesRunning = useWatchesRunning({
-            triggerRefs: [computed(() => (!isEmpty(state.calculatedObjectsRules) ? parentState.loading : false))],
+            triggerRefs: [
+                computed(() =>
+                    state.calculatedObjectsRules && !isEmpty(state.calculatedObjectsRules) ? parentState.loading : false
+                ),
+            ],
             watchSentinelRefs: [
                 toRef(state, "parentStateObjectsWatchRunning"),
                 toRef(state, "calculatedObjectsWatchRunning"),

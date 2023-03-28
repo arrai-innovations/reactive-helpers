@@ -1,7 +1,7 @@
-import { nextTick, reactive } from "vue";
-import { inspect } from "util";
-import { doAwaitTimeout } from "../../../utils";
 import flushPromises from "flush-promises";
+import { inspect } from "util";
+import { nextTick, reactive } from "vue";
+import { doAwaitNot, doAwaitTimeout } from "../../../utils";
 import { CancellableResolvable } from "../crudPromise";
 import { poll } from "../poll";
 
@@ -512,8 +512,12 @@ describe("use/listSubscription.spec.js", function () {
             listArgs.user = 2;
             retrieveArgs.fields = ["name"];
             await nextTick();
-            await flushPromises();
-            await doAwaitTimeout(1500);
+            await crudSubscribeResolvable[1].resolve();
+            await crudListResolvable[1].resolve();
+            await doAwaitNot({
+                obj: listSubscription.listIntent.state,
+                prop: "resolving",
+            });
             expect(crudSubscribeResolvable[0].promise.cancel).toHaveBeenCalledWith();
             expect(crudSubscribeResolvable[0].promise.cancel).toHaveBeenCalledTimes(1);
             expect(crudSubscribe).toHaveBeenCalledWith({

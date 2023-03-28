@@ -1,7 +1,7 @@
 import { nextTick, reactive, ref } from "vue";
-import { doAwaitNot } from "../../../utils/watches";
+import { deepUnref } from "vue-deepunref";
 import { useListFilters, useListSort } from "../../../use";
-import { unrefAndToRawDeep } from "../../../utils";
+import { doAwaitNot } from "../../../utils/watches";
 
 describe("use/listFilter", () => {
     let useListInstance, useListFilter, setDefaultSearchOptions;
@@ -318,10 +318,10 @@ describe("use/listFilter", () => {
 
             expect(listFilters.A.state.excludedValues).toEqual({ id: 1, name: "three" });
             expect(listFilters.B.state.allowedValues).toEqual({ id: 2, name: "four" });
-            expect(unrefAndToRawDeep(listFilters.A.parentState)).toEqual(unrefAndToRawDeep(listFilterA.parentState));
-            expect(unrefAndToRawDeep(listFilters.B.parentState)).toEqual(unrefAndToRawDeep(listFilterB.parentState));
-            expect(unrefAndToRawDeep(listFilters.A.state)).toEqual(unrefAndToRawDeep(listFilterA.state));
-            expect(unrefAndToRawDeep(listFilters.B.state)).toEqual(unrefAndToRawDeep(listFilterB.state));
+            expect(deepUnref(listFilters.A.parentState)).toEqual(deepUnref(listFilterA.parentState));
+            expect(deepUnref(listFilters.B.parentState)).toEqual(deepUnref(listFilterB.parentState));
+            expect(deepUnref(listFilters.A.state)).toEqual(deepUnref(listFilterA.state));
+            expect(deepUnref(listFilters.B.state)).toEqual(deepUnref(listFilterB.state));
         });
     });
 });

@@ -155,22 +155,21 @@ export function useObjectSubscription({ objectInstance, crudArgs, id, retrieveAr
 
         subscribeIntent = useCancellableIntent({
             awaitableWithCancel: subscribe,
-            watchArguments: [
-                toRef(state, "intendToSubscribe"),
-                toRef(objectInstance.state, "id"),
-                toRef(state, "retrieveArgs"),
-            ],
+            watchArguments: reactive({
+                intendToSubscribe: toRef(state, "intendToSubscribe"),
+                listArgs: toRef(objectInstance.state, "id"),
+                retrieveArgs: toRef(objectInstance.state, "retrieveArgs"),
+            }),
             clearActiveOnResolved: false,
         });
 
         retrieveIntent = useCancellableIntent({
             awaitableWithCancel: objectInstance.retrieve,
-            watchArguments: [
-                toRef(state, "intendToRetrieve"),
-                toRef(objectInstance.state, "id"),
-                toRef(state, "retrieveArgs"),
-            ],
-            nameForLog: "retrieveIntent",
+            watchArguments: reactive({
+                intendToSubscribe: toRef(state, "intendToRetrieve"),
+                listArgs: toRef(objectInstance.state, "id"),
+                retrieveArgs: toRef(objectInstance.state, "retrieveArgs"),
+            }),
         });
     });
 
