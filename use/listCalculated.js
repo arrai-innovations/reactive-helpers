@@ -56,30 +56,30 @@ export function useListCalculated({
             if (!calculatedObjectsEffectScopes[objectKey]) {
                 calculatedObjectsEffectScopes[objectKey] = effectScope();
             }
-            const calculatedObjectsObject = state.calculatedObjectsObjects[objectKey];
             const originalObject = parentState.objects[objectKey];
-            if (!calculatedObjectsObject[copn]) {
-                calculatedObjectsObject[copn] = {};
+            if (!state.calculatedObjectsObjects[objectKey]) {
+                state.calculatedObjectsObjects[objectKey] = {};
             }
+            const calculatedObjectsObject = state.calculatedObjectsObjects[objectKey];
             let removedRuleKeys, addedRuleKeys;
             if (!calculatedObjectsRulesIsEmpty) {
                 ({ removedKeys: removedRuleKeys, addedKeys: addedRuleKeys } = keyDiff(
                     Object.keys(state.calculatedObjectsRules),
-                    Object.keys(calculatedObjectsObject[copn])
+                    Object.keys(calculatedObjectsObject)
                 ));
             } else {
-                if (isEmpty(calculatedObjectsObject[copn])) {
+                if (isEmpty(calculatedObjectsObject)) {
                     return;
                 }
-                removedRuleKeys = Object.keys(calculatedObjectsObject[copn]);
+                removedRuleKeys = Object.keys(calculatedObjectsObject);
                 addedRuleKeys = [];
             }
             for (const removedRuleKey of removedRuleKeys) {
-                delete calculatedObjectsObject[copn][removedRuleKey];
+                delete calculatedObjectsObject[removedRuleKey];
             }
             calculatedObjectsEffectScopes[objectKey].run(() => {
                 for (const addedRuleKey of addedRuleKeys) {
-                    calculatedObjectsObject[copn][addedRuleKey] = computed(() => {
+                    calculatedObjectsObject[addedRuleKey] = computed(() => {
                         return state.calculatedObjectsRules?.[addedRuleKey]?.(originalObject);
                     });
                 }
@@ -102,7 +102,7 @@ export function useListCalculated({
         state.order = toRef(parentState, "order");
         state.objects = toRef(parentState, "objects");
         state.objectsInOrder = toRef(parentState, "objectsInOrder");
-        state[copn] = computed(() => state.calculatedObjectsObjects);
+        state[copn] = toRef(state, "calculatedObjectsObjects");
         for (let key in passThroughPropertyNames) {
             state[key] = toRef(parentState, key);
         }

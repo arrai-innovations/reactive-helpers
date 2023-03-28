@@ -47,9 +47,10 @@ describe("use/listRelated", () => {
         await nextTick();
         // listRelated.state.objects is doing proxy shenanigans
         // in uses handler.has
-        expect("myRelatedObjects" in listRelated.state.objects[1]).toBe(true);
-        expect("relatedItems" in listRelated.state.objects[1].myRelatedObjects).toBe(true);
-        expect("relatedItem" in listRelated.state.objects[1].myRelatedObjects).toBe(true);
+        expect("myRelatedObjects" in listRelated.state).toBe(true);
+        expect(!!listRelated.state.myRelatedObjects?.[1]).toBe(true);
+        expect("relatedItems" in listRelated.state.myRelatedObjects[1]).toBe(true);
+        expect("relatedItem" in listRelated.state.myRelatedObjects[1]).toBe(true);
         // expect uses enumeration, which uses handler.ownKeys and handler.getOwnPropertyDescriptor
         expect(unrefAndToRawDeep(listRelated.state.objects)).toEqual({
             1: {
@@ -57,21 +58,23 @@ describe("use/listRelated", () => {
                 name: "main",
                 related_id: "4",
                 related_items: ["2", "3"],
-                myRelatedObjects: {
-                    relatedItems: [
-                        {
-                            id: "2",
-                            name: "related1",
-                        },
-                        {
-                            id: "3",
-                            name: "related2",
-                        },
-                    ],
-                    relatedItem: {
-                        id: "4",
-                        name: "related3",
+            },
+        });
+        expect(unrefAndToRawDeep(listRelated.state.myRelatedObjects)).toEqual({
+            1: {
+                relatedItems: [
+                    {
+                        id: "2",
+                        name: "related1",
                     },
+                    {
+                        id: "3",
+                        name: "related2",
+                    },
+                ],
+                relatedItem: {
+                    id: "4",
+                    name: "related3",
                 },
             },
         });
