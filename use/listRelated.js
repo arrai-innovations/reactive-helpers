@@ -16,6 +16,7 @@ export function useListRelated({
     parentState,
     relatedObjectsRules,
     relatedObjectsPropertyName = "relatedObjects", // NOT REACTIVE
+    passThroughPropertyNames = ["calculatedObjects"], // NOT REACTIVE
 }) {
     const state = reactive({
         relatedObjectsRules: relatedObjectsRules,
@@ -109,9 +110,8 @@ export function useListRelated({
         state.objects = toRef(parentState, "objects");
         state.objectsInOrder = toRef(parentState, "objectsInOrder");
         state[ropn] = toRef(state, "relatedObjectsObjects");
-        // todo: need a way to specify additional properties to pass through
-        if (parentState.caculatedObjects) {
-            state.caculatedObjects = toRef(parentState, "caculatedObjects");
+        for (let key in passThroughPropertyNames) {
+            state[key] = toRef(parentState, key);
         }
 
         watch(() => Object.keys(parentState.objects), parentStateObjectsWatch, { immediate: true });

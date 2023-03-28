@@ -73,7 +73,6 @@ export const useObject = ({ props, functions }) => {
             { immediate: true }
         );
 
-        // todo: need a way to specify additional properties to pass through
         const propertiesToRelay = [
             "loading",
             "error",

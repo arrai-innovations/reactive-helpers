@@ -17,6 +17,7 @@ export function useObjectCalculated({
     parentState,
     calculatedObjectRules,
     calculatedObjectPropertyName = "calculatedObject", // NOT REACTIVE
+    passThroughPropertyNames = ["relatedObject"], // NOT REACTIVE
 }) {
     const state = reactive({
         calculatedObjectRules,
@@ -41,9 +42,8 @@ export function useObjectCalculated({
         state.deleted = toRef(parentState, "deleted");
         state.object = toRef(parentState, "object");
         state[copn] = toRef(state, "calculatedObjectObjects");
-        // todo: need a way to specify additional properties to pass through
-        if (parentState.relatedObject) {
-            state.relatedObject = toRef(parentState, "relatedObject");
+        for (let key in passThroughPropertyNames) {
+            state[key] = toRef(parentState, key);
         }
 
         watch([() => state.calculatedObjectRules && Object.keys(state.calculatedObjectRules)], () => {

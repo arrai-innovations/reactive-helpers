@@ -17,6 +17,7 @@ export function useObjectRelated({
     parentState,
     relatedObjectRules,
     relatedObjectPropertyName = "relatedObject", // NOT REACTIVE
+    passThroughPropertyNames = ["calculatedObject"], // NOT REACTIVE
 }) {
     const state = reactive({
         relatedObjectRules,
@@ -40,9 +41,8 @@ export function useObjectRelated({
         state.deleted = toRef(parentState, "deleted");
         state.object = toRef(parentState, "object");
         state[ropn] = toRef(state, "relatedObjectObjects");
-        // todo: need a way to specify additional properties to pass through
-        if (parentState.calculatedObject) {
-            state.calculatedObject = toRef(parentState, "calculatedObject");
+        for (let key in passThroughPropertyNames) {
+            state[key] = toRef(parentState, key);
         }
 
         watch([() => state.relatedObjectRules && Object.keys(state.relatedObjectRules)], () => {
