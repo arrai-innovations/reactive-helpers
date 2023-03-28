@@ -1,9 +1,9 @@
-import { effectScope, isReactive, isRef, onScopeDispose, reactive, unref, watch } from "vue";
-import { cloneDeep, isEqual } from "lodash";
+import { identity, isEqual } from "lodash";
+import { effectScope, onScopeDispose, reactive, readonly, watch } from "vue";
 
 /*
  * Calls your awaitable function with the arguments you pass in, when the watch arguments change and are all truthy.
- * Watch arguments can be an array or an object.
+ * Watch arguments should be a reactive object.
  * If the promise is not resolved before the watch arguments change again, the previous promise is cancelled.
  */
 export function useCancellableIntent({ awaitableWithCancel, watchArguments = {}, clearActiveOnResolved = true }) {
@@ -19,7 +19,7 @@ export function useCancellableIntent({ awaitableWithCancel, watchArguments = {},
         error: null,
         clearActiveOnResolved,
     });
-    let previousWatchArguments = null,
+    let previousWatchValues = null,
         cancelFunction = null;
 
     const es = effectScope();
@@ -41,15 +41,15 @@ export function useCancellableIntent({ awaitableWithCancel, watchArguments = {},
 
     es.run(() => {
         watch(
-            isReactive(watchArguments) || isRef(watchArguments) ? watchArguments : Object.values(watchArguments),
+            Object.values(watchArguments),
             () => {
-                let newArguments = cloneDeep(watchArguments.map((arg) => unref(arg)));
-                if (isEqual(unref(watchArguments), previousWatchArguments)) {
+                let newWatchValues = Object.values(watchArguments);
+                if (isEqual(newWatchValues, previousWatchValues)) {
                     return;
                 }
-                previousWatchArguments = newArguments;
+                previousWatchValues = newWatchValues;
                 cancel().catch(console.error);
-                if (Object.values(previousWatchArguments).every((v) => unref(v))) {
+                if (Object.values(previousWatchValues).every(identity)) {
                     state.errored = false;
                     state.error = null;
                     let awaitablePromise = awaitableWithCancel();
@@ -78,8 +78,8 @@ export function useCancellableIntent({ awaitableWithCancel, watchArguments = {},
                 }
             },
             {
+                // this can't be immediate because subscribe wants to look at our state, which won't exist yet.
                 deep: true,
-                immediate: true,
             }
         );
 
@@ -87,6 +87,7 @@ export function useCancellableIntent({ awaitableWithCancel, watchArguments = {},
     });
     return {
         state,
+        watchArguments: readonly(watchArguments),
         stop,
         cancel,
     };
