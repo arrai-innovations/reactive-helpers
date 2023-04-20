@@ -1,9 +1,9 @@
-import inspect from "browser-util-inspect";
-import { cloneDeep } from "lodash";
-import { isFunction } from "lodash";
-import { computed, effectScope, reactive } from "vue";
 import { addOrUpdateReactiveObject, assignReactiveObject } from "../utils/assignReactiveObject";
 import { getFakeId } from "../utils/getFakeId";
+import inspect from "browser-util-inspect";
+import cloneDeep from "lodash-es/cloneDeep";
+import isFunction from "lodash-es/isFunction";
+import { computed, effectScope, reactive } from "vue";
 
 export class ListError extends Error {
     constructor(message, code) {

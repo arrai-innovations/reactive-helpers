@@ -1,7 +1,7 @@
-import { nextTick, reactive, ref } from "vue";
-import { deepUnref } from "vue-deepunref";
 import { useListFilters, useListSort } from "../../../use";
 import { doAwaitNot } from "../../../utils/watches";
+import { nextTick, reactive, ref } from "vue";
+import { deepUnref } from "vue-deepunref";
 
 describe("use/listFilter", () => {
     let useListInstance, useListFilter, setDefaultSearchOptions;

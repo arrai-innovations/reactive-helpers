@@ -1,6 +1,6 @@
+import { doAwaitTimeout } from "../../../utils";
 import { nextTick } from "vue";
 import { deepUnref } from "vue-deepunref";
-import { doAwaitTimeout } from "../../../utils";
 
 describe("use/useListSort", () => {
     let listInstance,

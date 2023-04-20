@@ -1,8 +1,8 @@
+import { expectErrorToBeNull } from "../expectHelpers";
 import flushPromises from "flush-promises";
-import { keyBy } from "lodash";
+import keyBy from "lodash-es/keyBy";
 import { inspect } from "util";
 import { isReactive, nextTick, reactive } from "vue";
-import { expectErrorToBeNull } from "../expectHelpers";
 
 afterAll(() => {
     jest.restoreAllMocks();

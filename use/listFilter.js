@@ -1,6 +1,8 @@
-import { useSearch } from "./search";
 import { keyDiff } from "../utils/keyDiff";
-import { get, identity, isEmpty } from "lodash";
+import { useSearch } from "./search";
+import get from "lodash-es/get";
+import identity from "lodash-es/identity";
+import isEmpty from "lodash-es/isEmpty";
 import { computed, effectScope, onScopeDispose, reactive, toRef, watch, watchEffect } from "vue";
 
 export function useListFilters(listFilterArgs, parentInstances) {

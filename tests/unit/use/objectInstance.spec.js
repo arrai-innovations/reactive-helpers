@@ -1,8 +1,8 @@
-import flushPromises from "flush-promises";
-import { nextTick, reactive, ref } from "vue";
 import { assignReactiveObject } from "../../../utils";
 import { expectErrorToBeNull } from "../expectHelpers";
+import flushPromises from "flush-promises";
 import { inspect } from "util";
+import { nextTick, reactive, ref } from "vue";
 
 afterAll(() => {
     jest.restoreAllMocks();

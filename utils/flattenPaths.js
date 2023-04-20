@@ -1,4 +1,5 @@
-import { isArray, isObject } from "lodash";
+import isArray from "lodash-es/isArray";
+import isObject from "lodash-es/isObject";
 
 export function flattenPaths(arrayOrObject, currentPath = "") {
     // arrayOrObject keys or indexes values can be objects or arrays.

@@ -1,6 +1,14 @@
-import { effectScope, onScopeDispose, reactive, toRef, unref, watch } from "vue";
-import { cloneDeep, get, identity, isEmpty, isNull, isUndefined, partial, throttle, zip } from "lodash";
 import { assignReactiveObject, keyDiff } from "../utils";
+import cloneDeep from "lodash-es/cloneDeep";
+import get from "lodash-es/get";
+import identity from "lodash-es/identity";
+import isEmpty from "lodash-es/isEmpty";
+import isNull from "lodash-es/isNull";
+import isUndefined from "lodash-es/isUndefined";
+import partial from "lodash-es/partial";
+import throttle from "lodash-es/throttle";
+import zip from "lodash-es/zip";
+import { effectScope, onScopeDispose, reactive, toRef, unref, watch } from "vue";
 
 const collator = new Intl.Collator(undefined, { numeric: true });
 

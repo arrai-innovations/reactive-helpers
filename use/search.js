@@ -1,7 +1,8 @@
-import FlexSearch from "flexsearch";
-import { fromPairs, throttle } from "lodash";
-import { effectScope, reactive, toRef, watch } from "vue";
 import { assignReactiveObject } from "../utils/assignReactiveObject";
+import FlexSearch from "flexsearch";
+import fromPairs from "lodash-es/fromPairs";
+import throttle from "lodash-es/throttle";
+import { effectScope, reactive, toRef, watch } from "vue";
 
 const indexOptions = {
     tokenize: "forward",

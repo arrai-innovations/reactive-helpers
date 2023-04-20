@@ -1,7 +1,7 @@
-import { isEmpty } from "lodash";
-import { computed, effectScope, onScopeDispose, reactive, toRef, watch } from "vue";
 import { keyDiff, loadingCombine } from "../utils";
 import { useWatchesRunning } from "./watchesRunning";
+import isEmpty from "lodash-es/isEmpty";
+import { computed, effectScope, onScopeDispose, reactive, toRef, watch } from "vue";
 
 export function useListCalculateds(instances, args) {
     for (const [key, value] of Object.entries(args)) {

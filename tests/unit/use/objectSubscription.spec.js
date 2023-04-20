@@ -1,12 +1,12 @@
-import flushPromises from "flush-promises";
-import { inspect } from "util";
-import { nextTick } from "vue";
+import { doAwaitTimeout } from "../../../utils";
+import { assignReactiveObject } from "../../../utils/assignReactiveObject";
 import { expectErrorToBeNull } from "../expectHelpers";
 import { getMockOnUnmounted } from "../mockOnUnmounted";
-import { assignReactiveObject } from "../../../utils/assignReactiveObject";
-import { cloneDeep } from "lodash";
-import { doAwaitTimeout } from "../../../utils";
 import { poll } from "../poll";
+import flushPromises from "flush-promises";
+import cloneDeep from "lodash-es/cloneDeep";
+import { inspect } from "util";
+import { nextTick } from "vue";
 
 getMockOnUnmounted();
 

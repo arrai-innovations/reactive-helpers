@@ -56,7 +56,7 @@
         "vue-deepunref": "^1.0.1"
     },
     "peerDependencies": {
-        "lodash": "^4.17.21",
+        "lodash-es": "^4.17.21",
         "vue": "^3.2.47"
     }
 }

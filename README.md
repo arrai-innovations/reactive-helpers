@@ -57,6 +57,10 @@ The container for your list of objects, providing loading or error status.
 ```js
 // do this in your main.js
 import { setListInstanceCrud } from "@arrai-innovations/reactive-helpers";
+import { useListInstance } from "@arrai-innovations/reactive-helpers";
+// then use in your component
+import { reactive } from "vue";
+
 setListInstanceCrud({
     list: async function listCrudAdaptor({ crudArgs, retrieveArgs, listArgs, pageCallback }) {
         // todo: your implemenation here.
@@ -67,9 +71,6 @@ setListInstanceCrud({
     },
 });
 
-// then use in your component
-import { reactive } from "vue";
-import { useListInstance } from "@arrai-innovations/reactive-helpers";
 const listArgs = reactive({
     has_organization: true,
 });
@@ -111,6 +112,9 @@ Adds functionality to a list instance to receive updates from the server.
 ```js
 // do this in your main.js
 import { setListSubscriptionCrud } from "@arrai-innovations/reactive-helpers";
+// then use in your component
+import { useListInstance, useListSubscription } from "@arrai-innovations/reactive-helpers";
+
 setListSubscriptionCrud({
     subscribe: function subscribeCrudAdaptor({ crudArgs, retrieveArgs, listArgs, eventCallback }) {
         // todo: your implemenation here.
@@ -125,8 +129,6 @@ setListSubscriptionCrud({
     },
 });
 
-// then use in your component
-import { useListInstance, useListSubscription } from "@arrai-innovations/reactive-helpers";
 const contacts = useListInstance({
     crudArgs: {
         stream: "contacts",
@@ -166,12 +168,11 @@ Lookup foreign keys between list instances via watch, for using dot notation in 
 
 ```js
 // no main.js setup required.
-
 // used in example below.
-import { nextTick } from "vue";
-
 // use in your component
 import { useListInstance, useListRelated } from "@arrai-innovations/reactive-helpers";
+import { nextTick } from "vue";
+
 const organizations = useListInstance({});
 const contacts = useListInstance({
     retrieveArgs: {
@@ -234,12 +235,11 @@ console.log(contacts.objects["15"].myRelatedObjects);
 
 ```js
 // no main.js setup required.
-
 // used in example below.
-import { nextTick } from "vue";
-
 // use in your component
 import { useListInstance, useListSort } from "@arrai-innovations/reactive-helpers";
+import { nextTick } from "vue";
+
 const contacts = useListInstance({
     retrieveArgs: {
         fields: ["id", "has_name", "lexical_name", "organization"],
@@ -267,12 +267,11 @@ console.log(contactsSort.state.order);
 
 ```js
 // no main.js setup required.
-
 // used in example below.
-import { nextTick } from "vue";
-
 // use in your component
 import { useListInstance, useListFilter } from "@arrai-innovations/reactive-helpers";
+import { nextTick } from "vue";
+
 const contacts = useListInstance({
     retrieveArgs: {
         fields: ["id", "has_name", "lexical_name", "organization"],
@@ -308,6 +307,7 @@ import {
     useListFilter,
     useListSort,
 } from "@arrai-innovations/reactive-helpers";
+
 const organizationNameSearch = ref("");
 const organizations = useListInstance({
     crudArgs: {
@@ -376,6 +376,7 @@ const contact = useObjectSubscription({});
 ```js
 // no main.js setup required.
 import { useSearch } from "@arrai-innovations/reactive-helpers";
+
 const search = useSearch({});
 ```
 
@@ -389,8 +390,8 @@ target are reactive.
 `assignReactiveObject` - same as `addOrUpdateReactiveObject`, but deletes keys from target that are not in source.
 
 ```js
-import { reactive, toRef, computed } from "vue";
 import { assignReactiveObject, addOrUpdateReactiveObject } from "@arrai-innovations/reactive-helpers";
+import { reactive, toRef, computed } from "vue";
 
 const target = reactive({ a: 1 });
 const source = { a: 3, b: 4 };
@@ -421,6 +422,7 @@ console.log(mySum.value); // 10
 
 ```js
 import { keyDiff } from "@arrai-innovations/reactive-helpers";
+
 const newKeys = Object.keys({ a: 1, b: 2 });
 const oldKeys = Object.keys({ a: 1, c: 3 });
 const { addedKeys, removedKeys, sameKeys } = keyDiff(newKeys, oldKeys);
@@ -435,6 +437,7 @@ https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects
 
 ```js
 import { isSuperset, union, intersection, symmetricDifference, difference } from "@arrai-innovations/reactive-helpers";
+
 isSuperset(new Set([1, 2, 3, 4]), new Set([1, 2, 3])); // true
 union(new Set([1, 2, 3, 4]), new Set([1, 2, 3])); // Set { 1, 2, 3, 4 }
 intersection(new Set([1, 2, 3, 4]), new Set([1, 2, 3])); // Set { 1, 2, 3 }
@@ -449,6 +452,7 @@ difference(new Set([1, 2, 3, 5]), new Set([1, 2, 3, 4])); // Set { 5 }
 
 ```js
 import { ImmediateStopWatch } from "@arrai-innovations/reactive-helpers";
+
 const reactiveObject = reactive({ a: 1 });
 const watch = new ImmediateStopWatch();
 const watch2 = new ImmediateStopWatch();
@@ -490,6 +494,7 @@ await nextTick();
 
 ```js
 import { AwaitTimeout } from "@arrai-innovations/reactive-helpers";
+
 const awaitTimeout = new AwaitTimeout({ timeout: 1000 });
 awaitTimeout.start();
 await awaitTimeout.promise; // waits 1 second
@@ -503,6 +508,7 @@ await awaitTimeout2.promise; // waits 500 ms then rejects with new AwaitTimeoutE
 
 ```js
 import { doAwaitTimeout } from "@arrai-innovations/reactive-helpers";
+
 // non cancellable AwaitTimeout helper
 await doAwaitTimeout(1000); // waits 1 second
 ```
@@ -526,9 +532,11 @@ flowchart TD
 ```
 
 ```js
-import { reactive } from "vue";
-const reactiveObject = reactive({});
 import { AwaitNot } from "@arrai-innovations/reactive-helpers";
+import { reactive } from "vue";
+
+const reactiveObject = reactive({});
+
 const awaitNot = new AwaitNot({
     obj: reactiveObject,
     prop: "prop",

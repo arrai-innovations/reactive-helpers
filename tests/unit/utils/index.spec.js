@@ -1,5 +1,5 @@
-import fs from "fs/promises";
 import * as utils from "../../../utils";
+import fs from "fs/promises";
 
 describe("utils/index.js", function () {
     it("should export everything exported by individual files", async function () {

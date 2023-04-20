@@ -1,7 +1,8 @@
-import inspect from "browser-util-inspect";
-import { isArray, isObject } from "lodash";
-import { isReactive, isRef, toRef, unref } from "vue";
 import { keyDiff } from "./keyDiff.js";
+import inspect from "browser-util-inspect";
+import isArray from "lodash-es/isArray";
+import isObject from "lodash-es/isObject";
+import { isReactive, isRef, toRef, unref } from "vue";
 
 export class AssignReactiveObjectError extends Error {
     constructor(message) {

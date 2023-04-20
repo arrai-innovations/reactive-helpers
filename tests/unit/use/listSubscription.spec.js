@@ -1,9 +1,9 @@
-import flushPromises from "flush-promises";
-import { inspect } from "util";
-import { nextTick, reactive } from "vue";
 import { doAwaitNot, doAwaitTimeout } from "../../../utils";
 import { CancellableResolvable } from "../crudPromise";
 import { poll } from "../poll";
+import flushPromises from "flush-promises";
+import { inspect } from "util";
+import { nextTick, reactive } from "vue";
 
 describe("use/listSubscription.spec.js", function () {
     let useListSubscription,

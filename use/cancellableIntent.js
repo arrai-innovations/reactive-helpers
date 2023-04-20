@@ -1,4 +1,5 @@
-import { identity, isEqual } from "lodash";
+import identity from "lodash-es/identity";
+import isEqual from "lodash-es/isEqual";
 import { effectScope, nextTick, onScopeDispose, reactive, readonly, watch } from "vue";
 import { deepUnref } from "vue-deepunref";
 

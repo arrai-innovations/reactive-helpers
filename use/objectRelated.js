@@ -1,7 +1,10 @@
-import { get, isArray, isEmpty, isUndefined } from "lodash";
-import { computed, effectScope, onScopeDispose, reactive, toRef, unref, watch } from "vue";
 import { keyDiff, loadingCombine } from "../utils";
 import { useWatchesRunning } from "./watchesRunning";
+import get from "lodash-es/get";
+import isArray from "lodash-es/isArray";
+import isEmpty from "lodash-es/isEmpty";
+import isUndefined from "lodash-es/isUndefined";
+import { computed, effectScope, onScopeDispose, reactive, toRef, unref, watch } from "vue";
 
 export function useObjectRelateds(instances, args) {
     for (const [key, value] of Object.entries(args)) {

@@ -1,9 +1,9 @@
-import { effectScope, reactive, shallowReactive, shallowReadonly, toRef, watch } from "vue";
 import { useListCalculated } from "./listCalculated";
 import { useListInstance } from "./listInstance";
 import { useListRelated } from "./listRelated";
 import { useListSubscription } from "./listSubscription";
 import { usePagedListInstance } from "./paginatedListInstance";
+import { effectScope, reactive, shallowReactive, shallowReadonly, toRef, watch } from "vue";
 
 // the big brother of useObject, managing a chain of useList* instances.
 export const useList = ({ props, functions, paged = false, passThroughPropertyNames = [] }) => {

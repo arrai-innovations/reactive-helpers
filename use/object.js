@@ -1,8 +1,8 @@
-import { effectScope, reactive, shallowReactive, shallowReadonly, toRef, watch } from "vue";
 import { useObjectCalculated } from "./objectCalculated";
 import { useObjectInstance } from "./objectInstance";
 import { useObjectRelated } from "./objectRelated";
 import { useObjectSubscription } from "./objectSubscription";
+import { effectScope, reactive, shallowReactive, shallowReadonly, toRef, watch } from "vue";
 
 // Manages a chain of useObject functions, based on existence of keys in props: intendToRetrieve, relatedObjectRules, calculatedObjectRules
 export const useObject = ({ props, functions }) => {
