@@ -30,6 +30,7 @@
         "@arrai-innovations/commitlint-config": "^1.1.0",
         "@babel/preset-env": "^7.17.10",
         "@commitlint/cli": "^16.2.4",
+        "@trivago/prettier-plugin-sort-imports": "^4.1.1",
         "@types/jest": "^27.5.0",
         "@vue/compiler-sfc": "^3.2.33",
         "@vue/eslint-config-prettier": "^7.0.0",
@@ -51,10 +52,11 @@
         "husky": "^7.0.4",
         "is-ci": "^3.0.1",
         "jest": "^27.5.1",
-        "lodash": "^4.17.21",
         "pinst": "^3.0.0",
-        "vue": "^3.2.33",
-        "vue-deepunref": "^1.0.1",
-        "vue-router": "^4.0.15"
+        "vue-deepunref": "^1.0.1"
+    },
+    "peerDependencies": {
+        "lodash": "^4.17.21",
+        "vue": "^3.2.47"
     }
 }
