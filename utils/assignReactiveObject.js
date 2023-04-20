@@ -116,14 +116,7 @@ export function assignReactiveObject(target, source, exclude = []) {
     addOrUpdateReactiveObject(target, source, exclude, addedKeys, sameKeys);
 }
 
-function assignReactiveObjectRecursive(target, source, exclude = [], path = "") {
-    let addedKeys, sameKeys, removedKeys;
-    try {
-        ({ addedKeys, sameKeys, removedKeys } = keyDiff(Object.keys(source) || [], Object.keys(target) || []));
-    } catch (error) {
-        debugger;
-    }
-    trimReactiveObject(target, removedKeys, exclude);
+function recursiveInner(target, source, exclude, addedKeys, sameKeys, path, fn) {
     addReactiveObject(target, source, exclude, addedKeys);
     const keysForRecurse = [];
     const keysForReplace = [];
@@ -143,8 +136,14 @@ function assignReactiveObjectRecursive(target, source, exclude = [], path = "") 
             .filter((excludeKey) => !excludeKey.startsWith(path))
             .map((excludeKey) => excludeKey.replace(path, ""));
         const nextPath = isArray(source[key]) ? `${path}[${key}]` : `${path}.${key}`;
-        assignReactiveObjectRecursive(target[key], source[key], nextLevelExclude, nextPath);
+        fn(target[key], source[key], nextLevelExclude, nextPath);
     }
+}
+
+function assignReactiveObjectRecursive(target, source, exclude = [], path = "") {
+    let { addedKeys, sameKeys, removedKeys } = keyDiff(Object.keys(source) || [], Object.keys(target) || []);
+    trimReactiveObject(target, removedKeys, exclude);
+    recursiveInner(target, source, exclude, addedKeys, sameKeys, path, assignReactiveObjectRecursive);
 }
 
 export function assignReactiveObjectDeep(target, source, exclude = []) {
@@ -154,4 +153,19 @@ export function assignReactiveObjectDeep(target, source, exclude = []) {
     }
     ({ target, source } = validateTargetAndSource(target, source));
     assignReactiveObjectRecursive(target, source, exclude);
+}
+
+function addOrUpdateReactiveObjectRecursive(target, source, exclude = [], path = "") {
+    let addedKeys,
+        sameKeys = keyDiff(Object.keys(source) || [], Object.keys(target) || []);
+    recursiveInner(target, source, exclude, addedKeys, sameKeys, path, addOrUpdateReactiveObjectRecursive);
+}
+
+export function addOrUpdateReactiveObjectDeep(target, source, exclude = []) {
+    // exclude keys will need to be lodash get strings
+    if (target === source) {
+        return;
+    }
+    ({ target, source } = validateTargetAndSource(target, source));
+    addOrUpdateReactiveObjectRecursive(target, source, exclude);
 }
