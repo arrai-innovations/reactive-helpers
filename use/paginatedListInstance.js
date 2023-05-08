@@ -1,6 +1,6 @@
 import { useListInstance } from "./listInstance";
 
-export function usePagedListInstance({ keepOldPages = false, useListInstanceArgs }) {
+export function usePagedListInstance({ keepOldPages = false, ...useListInstanceArgs }) {
     const listInstance = useListInstance(useListInstanceArgs);
 
     listInstance.state.totalRecords = 0;
