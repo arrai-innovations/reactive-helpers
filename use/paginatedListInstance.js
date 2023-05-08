@@ -1,6 +1,6 @@
 import { useListInstance } from "./listInstance";
 
-export function usePagedListInstance(useListInstanceArgs) {
+export function usePagedListInstance({ keepOldPages = false, ...useListInstanceArgs }) {
     const listInstance = useListInstance(useListInstanceArgs);
 
     listInstance.state.totalRecords = 0;
@@ -8,8 +8,11 @@ export function usePagedListInstance(useListInstanceArgs) {
     listInstance.state.perPage = 0;
 
     listInstance.pageCallback = (newObjects, { totalRecords, totalPages, perPage }) => {
-        // display one page at a time, clear the list
-        listInstance.clearList();
+        // with keepOldPages, you are responsible for clearing the list as needed
+        if (!keepOldPages) {
+            // display one page at a time, clear the list
+            listInstance.clearList();
+        }
 
         listInstance.defaultPageCallback(newObjects);
         if (totalRecords !== undefined) {
