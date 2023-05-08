@@ -6,7 +6,7 @@ import { usePagedListInstance } from "./paginatedListInstance";
 import { effectScope, reactive, shallowReactive, shallowReadonly, toRef, watch } from "vue";
 
 // the big brother of useObject, managing a chain of useList* instances.
-export const useList = ({ props, functions, paged = false, passThroughPropertyNames = [] }) => {
+export const useList = ({ props, functions, paged = false, keepOldPages = false, passThroughPropertyNames = [] }) => {
     const managed = shallowReactive({
         listInstance: null,
         listSubscription: null,
@@ -20,6 +20,7 @@ export const useList = ({ props, functions, paged = false, passThroughPropertyNa
         functions,
         retrieveArgs: toRef(props, "retrieveArgs"),
         listArgs: toRef(props, "listArgs"),
+        keepOldPages,
     });
 
     const intentPropsWatch = () => {
