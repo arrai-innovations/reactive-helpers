@@ -5,7 +5,7 @@ import { deepUnref } from "vue-deepunref";
 
 export const debugWatch = (target, name) => {
     return watch(
-        target,
+        () => deepUnref(target),
         (newState, oldState) => {
             console.log(`Watch triggered ${name}`);
             const diff = keyDiff(Object.keys(newState || {}), Object.keys(oldState || {}));
