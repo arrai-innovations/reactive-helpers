@@ -48,7 +48,6 @@
         "browser-util-inspect": "^0.2.0",
         "flexsearch": "^0.7.21",
         "husky": "^7.0.4",
-        "is-ci": "^3.0.1",
         "jest": "^27.5.1",
         "pinst": "^3.0.0",
         "vue-deepunref": "^1.0.1"
