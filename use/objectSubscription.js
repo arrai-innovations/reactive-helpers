@@ -1,7 +1,7 @@
 import { assignReactiveObject, loadingCombine } from "../utils";
 import { useCancellableIntent } from "./cancellableIntent";
 import { useObjectInstance } from "./objectInstance";
-import { computed, effectScope, reactive, shallowReactive, toRef } from "vue";
+import { computed, effectScope, reactive, toRef } from "vue";
 
 export class ObjectSubscriptionError extends Error {
     constructor(message) {
@@ -191,7 +191,7 @@ export function useObjectSubscription({
         });
     });
 
-    return shallowReactive({
+    return reactive({
         state,
         objectInstance,
         subscribeIntent,

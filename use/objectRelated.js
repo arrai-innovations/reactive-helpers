@@ -119,10 +119,10 @@ export function useObjectRelated({
         });
     });
 
-    return {
+    return reactive({
         state,
         parentState,
         watchesRunning,
         effectScope: es,
-    };
+    });
 }

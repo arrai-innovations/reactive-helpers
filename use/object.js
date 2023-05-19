@@ -2,11 +2,11 @@ import { useObjectCalculated } from "./objectCalculated";
 import { useObjectInstance } from "./objectInstance";
 import { useObjectRelated } from "./objectRelated";
 import { useObjectSubscription } from "./objectSubscription";
-import { reactive, shallowReactive, shallowReadonly, toRef } from "vue";
+import { reactive, shallowReadonly, toRef } from "vue";
 
 // Manages a chain of useObject* functions
 export const useObject = ({ props, functions }) => {
-    const managed = shallowReactive({
+    const managed = reactive({
         objectInstance: null,
         objectSubscription: null,
         objectRelated: null,
@@ -32,8 +32,8 @@ export const useObject = ({ props, functions }) => {
         parentState: managed.objectRelated.state,
         calculatedObjectRules: toRef(props, "calculatedObjectRules"),
     });
-    return shallowReactive({
+    return reactive({
         managed: shallowReadonly(managed),
-        state: reactive(managed.objectCalculated.state),
+        state: managed.objectCalculated.state,
     });
 };

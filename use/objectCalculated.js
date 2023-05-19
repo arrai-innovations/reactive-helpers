@@ -121,10 +121,10 @@ export function useObjectCalculated({
             }
         });
     });
-    return {
+    return reactive({
         state,
         parentState,
         watchesRunning,
         effectScope: es,
-    };
+    });
 }
