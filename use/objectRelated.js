@@ -1,4 +1,4 @@
-import { keyDiff, loadingCombine } from "../utils";
+import { keyDiff } from "../utils";
 import { useWatchesRunning } from "./watchesRunning";
 import get from "lodash-es/get";
 import isArray from "lodash-es/isArray";
@@ -20,7 +20,24 @@ export function useObjectRelated({
     parentState,
     relatedObjectRules,
     relatedObjectPropertyName = "relatedObject", // NOT REACTIVE
-    passThroughPropertyNames = ["calculatedObject"], // NOT REACTIVE
+    passThroughPropertyNames = [
+        // instance
+        "crud",
+        "deleted",
+        "error",
+        "errored",
+        "id",
+        "loading",
+        "object",
+        "retrieveArgs",
+        // subscription
+        "intendToRetrieve",
+        "intendToSubscribe",
+        "subscribed",
+        "subscriptionError",
+        "subscriptionErrored",
+        "subscriptionLoading",
+    ], // NOT REACTIVE
 }) {
     const state = reactive({
         relatedObjectRules,
@@ -38,11 +55,6 @@ export function useObjectRelated({
     const es = effectScope();
 
     es.run(() => {
-        state.loading = toRef(parentState, "loading");
-        state.error = toRef(parentState, "error");
-        state.errored = toRef(parentState, "errored");
-        state.deleted = toRef(parentState, "deleted");
-        state.object = toRef(parentState, "object");
         state[ropn] = toRef(state, "relatedObjectObjects");
         for (let key of passThroughPropertyNames) {
             state[key] = toRef(parentState, key);
@@ -98,7 +110,7 @@ export function useObjectRelated({
             ],
         });
 
-        state.running = computed(() => loadingCombine(watchesRunning.state.running, parentState.running));
+        state.relatedRunning = toRef(watchesRunning.state, "running");
 
         onScopeDispose(() => {
             for (const key in relatedObjectEffectScopes) {
