@@ -1,6 +1,6 @@
 import { loadingCombine } from "../utils/loadingCombine";
 import { useCancellableIntent } from "./cancellableIntent";
-import { useListInstance } from "./listInstance";
+import { listInstanceStateKeys, useListInstance } from "./listInstance";
 import inspect from "browser-util-inspect";
 import cloneDeep from "lodash-es/cloneDeep";
 import isEmpty from "lodash-es/isEmpty";
@@ -18,6 +18,15 @@ const defaultCrud = {
     subscribe: undefined,
 };
 
+export const listSubscriptionStateKeys = [
+    "subscriptionLoading",
+    "subscriptionErrored",
+    "subscriptionError",
+    "intendToList",
+    "intendToSubscribe",
+    "subscribed",
+];
+
 export function setListSubscriptionCrud({ subscribe }) {
     defaultCrud.subscribe = subscribe;
 }
@@ -30,15 +39,17 @@ export function useListSubscriptions(args, listInstances = {}) {
     return subscriptions;
 }
 
-export function useListSubscription({
-    listInstance,
-    crudArgs,
-    listArgs,
-    retrieveArgs,
-    passThroughPropertyNames = ["totalRecords", "totalPages", "perPage"],
-}) {
+export function useListSubscription({ listInstance, props, functions }) {
+    if (!listInstance && !props) {
+        throw new ListSubscriptionError("useListSubscription should be passed listInstance or props and crudArgs.");
+    }
+    if (listInstance && props) {
+        throw new ListSubscriptionError(
+            "useListSubscription should be passed listInstance or props and crudArgs, not both."
+        );
+    }
     if (!listInstance) {
-        listInstance = useListInstance({ crudArgs, listArgs, retrieveArgs });
+        listInstance = useListInstance({ props, functions });
     }
     if (!listInstance.state.crud.subscribe) {
         listInstance.state.crud.subscribe = defaultCrud.subscribe;
@@ -152,12 +163,7 @@ export function useListSubscription({
         state.errored = computed(() => parentState.errored || state.subscriptionErrored);
         state.error = computed(() => parentState.error || state.subscriptionError);
 
-        state.retrieveArgs = computed(() => parentState.retrieveArgs);
-        state.listArgs = computed(() => parentState.listArgs);
-        state.objects = toRef(parentState, "objects");
-        state.order = toRef(parentState, "order");
-        state.objectsInOrder = toRef(parentState, "objectsInOrder");
-        for (let key of passThroughPropertyNames) {
+        for (const key of listInstanceStateKeys.filter((key) => !["loading", "errored", "error"].includes(key))) {
             state[key] = toRef(parentState, key);
         }
 

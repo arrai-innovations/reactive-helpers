@@ -3,7 +3,7 @@ import { getFakeId } from "../utils/getFakeId";
 import inspect from "browser-util-inspect";
 import cloneDeep from "lodash-es/cloneDeep";
 import isFunction from "lodash-es/isFunction";
-import { computed, effectScope, reactive } from "vue";
+import { computed, effectScope, reactive, toRef, watchEffect } from "vue";
 
 export class ListError extends Error {
     constructor(message, code) {
@@ -18,6 +18,22 @@ const defaultCrud = {
     list: undefined,
 };
 
+export const listInstanceStateKeys = [
+    "crud",
+    "retrieveArgs",
+    "listArgs",
+    "objects",
+    "loading",
+    "errored",
+    "error",
+    "objectsInOrder",
+    "order",
+    // when paged
+    "totalRecords",
+    "totalPages",
+    "perPage",
+];
+
 export function setListInstanceCrud({ list, args = {} } = {}) {
     defaultCrud.list = list;
     Object.assign(defaultCrud.args, args);
@@ -31,7 +47,10 @@ export function useListInstances(listInstanceArgs) {
     return instances;
 }
 
-export function useListInstance({ crudArgs, listArgs = {}, retrieveArgs = {}, functions = {} }) {
+export function useListInstance({ props, functions = {} }) {
+    if (!props) {
+        throw new ListError(`useListInstance requires props`);
+    }
     // ### touching the _objectsMap or _objectsProxy directly will not trigger reactivity ###
     const _objectsMap = new Map(); // maps are ordered, if you don't clear lists, you need to insert pages in order.
     // ### touching the _objectsMap or _objectsProxy directly will not trigger reactivity ###
@@ -71,25 +90,28 @@ export function useListInstance({ crudArgs, listArgs = {}, retrieveArgs = {}, fu
             args: {},
             list: undefined,
         },
-        retrieveArgs,
-        listArgs,
+        retrieveArgs: toRef(props, "retrieveArgs"),
+        listArgs: toRef(props, "listArgs"),
         objects: _objectsProxy,
         loading: undefined,
         errored: false,
         error: null,
     });
-    // prevent linking of all instances to the same default .args object
-    Object.assign(state.crud, cloneDeep(defaultCrud));
-    if (crudArgs) {
-        addOrUpdateReactiveObject(state.crud.args, crudArgs);
-    }
-    for (const [key, value] of Object.entries(functions)) {
-        if (isFunction(value) && key in state.crud) {
-            state.crud[key] = value;
-        } else {
-            throw ListError(`Invalid function "${key}" for useListInstance: invalid key or not a function.`);
+    const es = effectScope();
+    watchEffect(() => {
+        // prevent linking of all instances to the same default .args object
+        Object.assign(state.crud, cloneDeep(defaultCrud));
+        if (props.crudArgs) {
+            addOrUpdateReactiveObject(state.crud.args, props.crudArgs);
         }
-    }
+        for (const [key, value] of Object.entries(functions)) {
+            if (isFunction(value) && key in state.crud) {
+                state.crud[key] = value;
+            } else {
+                throw ListError(`Invalid function "${key}" for useListInstance: invalid key or not a function.`);
+            }
+        }
+    });
 
     const defaultPageCallback = (newObjects) => {
         newObjects.forEach((newObject) => {
@@ -191,12 +213,8 @@ export function useListInstance({ crudArgs, listArgs = {}, retrieveArgs = {}, fu
         state.error = null;
     }
 
-    const es = effectScope();
-
-    es.run(() => {
-        state.objectsInOrder = computed(() => Object.values(state.objects));
-        state.order = computed(() => Object.keys(state.objects));
-    });
+    state.objectsInOrder = computed(() => Object.values(state.objects));
+    state.order = computed(() => Object.keys(state.objects));
 
     const returnedObject = {
         state,
