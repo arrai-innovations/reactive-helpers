@@ -1,7 +1,7 @@
-import { addOrUpdateReactiveObject, assignReactiveObject } from "../utils/assignReactiveObject";
+import { addOrUpdateReactiveObject, assignReactiveObject } from "../utils";
 import cloneDeep from "lodash-es/cloneDeep";
 import isFunction from "lodash-es/isFunction";
-import { effectScope, reactive } from "vue";
+import { reactive, shallowReactive, toRef } from "vue";
 
 export class ObjectError extends Error {
     constructor(message) {
@@ -36,7 +36,7 @@ export function useObjectInstances(instanceArgs) {
     return instances;
 }
 
-export function useObjectInstance({ crudArgs, id, retrieveArgs, functions = {} }) {
+export function useObjectInstance({ props, functions = {} }) {
     const state = reactive({
         crud: {
             args: {},
@@ -47,8 +47,8 @@ export function useObjectInstance({ crudArgs, id, retrieveArgs, functions = {} }
             delete: undefined,
         },
         object: {},
-        id,
-        retrieveArgs,
+        id: toRef(props, "id"),
+        retrieveArgs: toRef(props, "retrieveArgs"),
         loading: undefined,
         errored: false,
         error: null,
@@ -56,8 +56,8 @@ export function useObjectInstance({ crudArgs, id, retrieveArgs, functions = {} }
     });
     // prevent linking of all instances to the same default .args object
     Object.assign(state.crud, cloneDeep(defaultCrud));
-    if (crudArgs) {
-        addOrUpdateReactiveObject(state.crud.args, crudArgs);
+    if (props.crudArgs) {
+        addOrUpdateReactiveObject(state.crud.args, props.crudArgs);
     }
     for (const [key, value] of Object.entries(functions)) {
         if (isFunction(value) && key in state.crud) {
@@ -222,12 +222,7 @@ export function useObjectInstance({ crudArgs, id, retrieveArgs, functions = {} }
         state.error = null;
     }
 
-    const es = effectScope();
-
-    // we could have effects? let's keep the interface to keep our options open to add without major changes.
-    es.run(() => {});
-
-    return {
+    return shallowReactive({
         state,
         retrieve,
         create,
@@ -235,6 +230,5 @@ export function useObjectInstance({ crudArgs, id, retrieveArgs, functions = {} }
         patch,
         delete: deleteFn,
         clearError,
-        effectScope: es,
-    };
+    });
 }

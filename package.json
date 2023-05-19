@@ -1,6 +1,6 @@
 {
     "name": "@arrai-innovations/reactive-helpers",
-    "version": "4.3.0",
+    "version": "5.0.0",
     "description": "VueJS 3 utility composition functions to help manipulate objects and lists.",
     "main": "index.js",
     "directories": {
@@ -12,9 +12,7 @@
         "test": "jest",
         "coverage": "npm run coverage:clean; npm test -- --coverage=true",
         "coverage:clean": "rm -rf coverage",
-        "postinstall": "if [ \"$NODE_ENV\" != \"production\" ] && [ ./node_modules/.bin/is-ci ]; then ./node_modules/.bin/husky install; fi",
-        "prepublishOnly": "pinst --disable",
-        "postpublish": "pinst --enable"
+        "prepare": "husky install"
     },
     "repository": {
         "type": "git",
@@ -50,7 +48,6 @@
         "browser-util-inspect": "^0.2.0",
         "flexsearch": "^0.7.21",
         "husky": "^7.0.4",
-        "is-ci": "^3.0.1",
         "jest": "^27.5.1",
         "pinst": "^3.0.0",
         "vue-deepunref": "^1.0.1"

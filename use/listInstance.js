@@ -33,7 +33,7 @@ export function useListInstances(listInstanceArgs) {
 
 export function useListInstance({ crudArgs, listArgs = {}, retrieveArgs = {}, functions = {} }) {
     // ### touching the _objectsMap or _objectsProxy directly will not trigger reactivity ###
-    const _objectsMap = new Map();
+    const _objectsMap = new Map(); // maps are ordered, if you don't clear lists, you need to insert pages in order.
     // ### touching the _objectsMap or _objectsProxy directly will not trigger reactivity ###
     const _objectsProxy = new Proxy(_objectsMap, {
         get(target, prop) {

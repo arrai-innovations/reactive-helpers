@@ -1,4 +1,5 @@
 export * from "./assignReactiveObject";
+export * from "./debugWatch";
 export * from "./flattenPaths";
 export * from "./getFakeId";
 export * from "./keyDiff";

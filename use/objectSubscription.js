@@ -1,7 +1,7 @@
 import { assignReactiveObject, loadingCombine } from "../utils";
 import { useCancellableIntent } from "./cancellableIntent";
 import { useObjectInstance } from "./objectInstance";
-import { computed, effectScope, reactive, toRef } from "vue";
+import { computed, effectScope, reactive, shallowReactive, toRef } from "vue";
 
 export class ObjectSubscriptionError extends Error {
     constructor(message) {
@@ -26,18 +26,33 @@ export function useObjectSubscriptions(subscriptionArgs) {
     return subscriptions;
 }
 
-export function useObjectSubscription({ objectInstance, crudArgs, id, retrieveArgs }) {
-    if (retrieveArgs && objectInstance) {
+export function useObjectSubscription({
+    objectInstance,
+    props,
+    passThroughPropertyNames = [
+        // instance
+        "crud",
+        "deleted",
+        // "error",
+        // "errored",
+        "id",
+        // "loading",
+        "object",
+        "retrieveArgs",
+    ],
+}) {
+    if (props?.retrieveArgs && objectInstance) {
         throw new ObjectSubscriptionError(
             "Cannot use retrieveArgs and objectInstance together, set retrieveArgs on objectInstance instead"
         );
     }
     if (!objectInstance) {
-        objectInstance = useObjectInstance({ crudArgs, id, retrieveArgs });
+        objectInstance = useObjectInstance({ props });
     }
     if (!objectInstance.state.crud.subscribe) {
         objectInstance.state.crud.subscribe = defaultCrud.subscribe;
     }
+    const parentState = objectInstance.state;
     const state = reactive({
         subscriptionLoading: undefined,
         subscriptionErrored: false,
@@ -46,16 +61,19 @@ export function useObjectSubscription({ objectInstance, crudArgs, id, retrieveAr
         intendToSubscribe: false,
         intendToRetrieve: false,
     });
+    if ("intendToRetrieve" in props) {
+        state.intendToRetrieve = toRef(props, "intendToRetrieve");
+    }
 
     let subscribeIntent, retrieveIntent;
 
     function updateFromSubscription(data) {
-        assignReactiveObject(state.object, data);
+        assignReactiveObject(parentState.object, data);
     }
 
     function deleteFromSubscription() {
         state.deleted = true;
-        assignReactiveObject(state.object, {});
+        assignReactiveObject(parentState.object, {});
     }
 
     function publicSubscribe({ retrieve = true } = {}) {
@@ -82,9 +100,9 @@ export function useObjectSubscription({ objectInstance, crudArgs, id, retrieveAr
         state.subscriptionErrored = false;
         state.subscriptionError = null;
         let subscribePromise;
-        subscribePromise = objectInstance.state.crud.subscribe({
-            crudArgs: objectInstance.state.crud.args,
-            id: objectInstance.state.id,
+        subscribePromise = parentState.crud.subscribe({
+            crudArgs: parentState.crud.args,
+            id: parentState.id,
             retrieveArgs: state.retrieveArgs,
             callback: (data, action) => {
                 if (action === "delete") {
@@ -145,20 +163,20 @@ export function useObjectSubscription({ objectInstance, crudArgs, id, retrieveAr
     const es = effectScope();
 
     es.run(() => {
-        state.loading = computed(() => loadingCombine(objectInstance.state.loading, state.subscriptionLoading));
-        state.errored = computed(() => objectInstance.state.errored || state.subscriptionErrored);
-        state.error = computed(() => objectInstance.state.error || state.subscriptionError);
+        state.loading = computed(() => loadingCombine(parentState.loading, state.subscriptionLoading));
+        state.errored = computed(() => parentState.errored || state.subscriptionErrored);
+        state.error = computed(() => parentState.error || state.subscriptionError);
 
-        state.retrieveArgs = computed(() => objectInstance.state.retrieveArgs);
-        state.object = toRef(objectInstance.state, "object");
-        state.deleted = toRef(objectInstance.state, "deleted");
+        for (const key of passThroughPropertyNames) {
+            state[key] = toRef(parentState, key);
+        }
 
         subscribeIntent = useCancellableIntent({
             awaitableWithCancel: subscribe,
             watchArguments: reactive({
                 intendToSubscribe: toRef(state, "intendToSubscribe"),
-                listArgs: toRef(objectInstance.state, "id"),
-                retrieveArgs: toRef(objectInstance.state, "retrieveArgs"),
+                listArgs: toRef(parentState, "id"),
+                retrieveArgs: toRef(parentState, "retrieveArgs"),
             }),
             clearActiveOnResolved: false,
         });
@@ -167,13 +185,13 @@ export function useObjectSubscription({ objectInstance, crudArgs, id, retrieveAr
             awaitableWithCancel: objectInstance.retrieve,
             watchArguments: reactive({
                 intendToSubscribe: toRef(state, "intendToRetrieve"),
-                listArgs: toRef(objectInstance.state, "id"),
-                retrieveArgs: toRef(objectInstance.state, "retrieveArgs"),
+                listArgs: toRef(parentState, "id"),
+                retrieveArgs: toRef(parentState, "retrieveArgs"),
             }),
         });
     });
 
-    return {
+    return shallowReactive({
         state,
         objectInstance,
         subscribeIntent,
@@ -184,5 +202,5 @@ export function useObjectSubscription({ objectInstance, crudArgs, id, retrieveAr
         deleteFromSubscription,
         clearError,
         effectScope: es,
-    };
+    });
 }

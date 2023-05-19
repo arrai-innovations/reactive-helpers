@@ -17,7 +17,30 @@ export function useObjectCalculated({
     parentState,
     calculatedObjectRules,
     calculatedObjectPropertyName = "calculatedObject", // NOT REACTIVE
-    passThroughPropertyNames = ["relatedObject"], // NOT REACTIVE
+    passThroughPropertyNames = [
+        // instance
+        "crud",
+        "deleted",
+        "error",
+        "errored",
+        "id",
+        "loading",
+        "object",
+        "retrieveArgs",
+        // subscription
+        "intendToRetrieve",
+        "intendToSubscribe",
+        "subscribed",
+        "subscriptionError",
+        "subscriptionErrored",
+        "subscriptionLoading",
+        // related
+        "relatedObject",
+        "relatedObjectObjects",
+        "relatedObjectRules",
+        "relatedObjectWatchRunning",
+        "relatedRunning",
+    ], // NOT REACTIVE
 }) {
     const state = reactive({
         calculatedObjectRules,
@@ -36,11 +59,6 @@ export function useObjectCalculated({
     const es = effectScope();
 
     es.run(() => {
-        state.loading = toRef(parentState, "loading");
-        state.error = toRef(parentState, "error");
-        state.errored = toRef(parentState, "errored");
-        state.deleted = toRef(parentState, "deleted");
-        state.object = toRef(parentState, "object");
         state[copn] = toRef(state, "calculatedObjectObjects");
         for (let key of passThroughPropertyNames) {
             state[key] = toRef(parentState, key);
@@ -91,7 +109,8 @@ export function useObjectCalculated({
             ],
         });
 
-        state.running = computed(() => loadingCombine(watchesRunning.state.running, parentState.running));
+        state.calculatedRunning = toRef(watchesRunning.state, "running");
+        state.running = computed(() => loadingCombine(watchesRunning.state.running, parentState.relatedRunning));
 
         onScopeDispose(() => {
             for (const key in calculatedObjectEffectScopes) {
