@@ -12,9 +12,7 @@
         "test": "jest",
         "coverage": "npm run coverage:clean; npm test -- --coverage=true",
         "coverage:clean": "rm -rf coverage",
-        "postinstall": "if [ \"$NODE_ENV\" != \"production\" ] && [ ./node_modules/.bin/is-ci ]; then ./node_modules/.bin/husky install; fi",
-        "prepublishOnly": "pinst --disable",
-        "postpublish": "pinst --enable"
+        "prepare": "husky install"
     },
     "repository": {
         "type": "git",
