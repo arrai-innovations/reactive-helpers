@@ -1,7 +1,7 @@
 import { addOrUpdateReactiveObject, assignReactiveObject } from "../utils";
 import cloneDeep from "lodash-es/cloneDeep";
 import isFunction from "lodash-es/isFunction";
-import { reactive, shallowReactive, toRef } from "vue";
+import { reactive, toRef } from "vue";
 
 export class ObjectError extends Error {
     constructor(message) {
@@ -222,7 +222,7 @@ export function useObjectInstance({ props, functions = {} }) {
         state.error = null;
     }
 
-    return shallowReactive({
+    return reactive({
         state,
         retrieve,
         create,
