@@ -1,7 +1,17 @@
 import { keyDiff, loadingCombine } from "../utils";
+import { listInstanceStateKeys } from "./listInstance";
+import { listRelatedStateKeys } from "./listRelated";
+import { listSubscriptionStateKeys } from "./listSubscription";
 import { useWatchesRunning } from "./watchesRunning";
 import isEmpty from "lodash-es/isEmpty";
 import { computed, effectScope, onScopeDispose, reactive, toRef, watch } from "vue";
+
+export const listCalculatedStateKeys = [
+    "calculatedObjects",
+    "calculatedObjectsParentStateObjectsWatchRunning",
+    "calculatedObjectsRules",
+    "calculatedObjectsWatchRunning",
+];
 
 export function useListCalculateds(instances, args) {
     for (const [key, value] of Object.entries(args)) {
@@ -15,52 +25,44 @@ export function useListCalculateds(instances, args) {
 // the simpler sibling of useListRelated
 // rules are just keys to functions that will be called with the object
 // and the result will be added as a computed property
-export function useListCalculated({
-    parentState,
-    calculatedObjectsRules,
-    calculatedObjectsPropertyName = "calculatedObjects", // NOT REACTIVE
-    passThroughPropertyNames = ["relatedObjects", "totalRecords", "totalPages", "perPage"], // NOT REACTIVE
-}) {
+export function useListCalculated({ parentState, calculatedObjectsRules }) {
     const state = reactive({
         calculatedObjectsRules,
-        calculatedObjectsObjects: {},
-        parentStateObjectsWatchRunning: false,
+        calculatedObjects: {},
+        calculatedObjectsParentStateObjectsWatchRunning: false,
         calculatedObjectsWatchRunning: false,
     });
     const calculatedObjectsEffectScopes = {};
 
-    // don't change calculatedObjectsPropertyName on us or it will break
-    const copn = calculatedObjectsPropertyName + "";
-
     function parentStateObjectsWatch() {
         const { addedKeys, removedKeys } = keyDiff(
             Object.keys(parentState.objects),
-            Object.keys(state.calculatedObjectsObjects)
+            Object.keys(state.calculatedObjects)
         );
         for (const removedKey of removedKeys) {
-            delete state.calculatedObjectsObjects[removedKey];
+            delete state.calculatedObjects[removedKey];
             if (calculatedObjectsEffectScopes[removedKey]) {
                 calculatedObjectsEffectScopes[removedKey].stop();
                 delete calculatedObjectsEffectScopes[removedKey];
             }
         }
         for (const addedKey of addedKeys) {
-            state.calculatedObjectsObjects[addedKey] = {};
+            state.calculatedObjects[addedKey] = {};
         }
-        state.parentStateObjectsWatchRunning = false;
+        state.calculatedObjectsParentStateObjectsWatchRunning = false;
     }
 
     function calculatedObjectsWatch() {
         const calculatedObjectsRulesIsEmpty = !state.calculatedObjectsRules || isEmpty(state.calculatedObjectsRules);
-        for (const objectKey of Object.keys(state.calculatedObjectsObjects)) {
+        for (const objectKey of Object.keys(state.calculatedObjects)) {
             if (!calculatedObjectsEffectScopes[objectKey]) {
                 calculatedObjectsEffectScopes[objectKey] = effectScope();
             }
             const originalObject = parentState.objects[objectKey];
-            if (!state.calculatedObjectsObjects[objectKey]) {
-                state.calculatedObjectsObjects[objectKey] = {};
+            if (!state.calculatedObjects[objectKey]) {
+                state.calculatedObjects[objectKey] = {};
             }
-            const calculatedObjectsObject = state.calculatedObjectsObjects[objectKey];
+            const calculatedObjectsObject = state.calculatedObjects[objectKey];
             let removedRuleKeys, addedRuleKeys;
             if (!calculatedObjectsRulesIsEmpty) {
                 ({ removedKeys: removedRuleKeys, addedKeys: addedRuleKeys } = keyDiff(
@@ -93,24 +95,20 @@ export function useListCalculated({
     const es = effectScope();
 
     es.run(() => {
-        state.loading = toRef(parentState, "loading");
-        state.errored = toRef(parentState, "errored");
-        state.error = toRef(parentState, "error");
-
-        state.retrieveArgs = toRef(parentState, "retrieveArgs");
-        state.listArgs = toRef(parentState, "listArgs");
-        state.order = toRef(parentState, "order");
-        state.objects = toRef(parentState, "objects");
-        state.objectsInOrder = toRef(parentState, "objectsInOrder");
-        state[copn] = toRef(state, "calculatedObjectsObjects");
-        for (let key of passThroughPropertyNames) {
+        for (const key of listInstanceStateKeys) {
+            state[key] = toRef(parentState, key);
+        }
+        for (const key of listSubscriptionStateKeys) {
+            state[key] = toRef(parentState, key);
+        }
+        for (const key of listRelatedStateKeys) {
             state[key] = toRef(parentState, key);
         }
 
         watch(() => Object.keys(parentState.objects), parentStateObjectsWatch, { immediate: true });
         watch(
             [
-                () => Object.keys(state.calculatedObjectsObjects),
+                () => Object.keys(state.calculatedObjects),
                 () =>
                     state.calculatedObjectsRules
                         ? Object.keys(state.calculatedObjectsRules)
@@ -127,7 +125,7 @@ export function useListCalculated({
                 ),
             ],
             watchSentinelRefs: [
-                toRef(state, "parentStateObjectsWatchRunning"),
+                toRef(state, "calculatedObjectsParentStateObjectsWatchRunning"),
                 toRef(state, "calculatedObjectsWatchRunning"),
             ],
         });

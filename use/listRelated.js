@@ -1,10 +1,19 @@
 import { keyDiff, loadingCombine } from "../utils";
+import { listInstanceStateKeys } from "./listInstance";
+import { listSubscriptionStateKeys } from "./listSubscription";
 import { useWatchesRunning } from "./watchesRunning";
 import get from "lodash-es/get";
 import isArray from "lodash-es/isArray";
 import isEmpty from "lodash-es/isEmpty";
 import isUndefined from "lodash-es/isUndefined";
 import { computed, effectScope, onScopeDispose, reactive, toRef, unref, watch } from "vue";
+
+export const listRelatedStateKeys = [
+    "relatedObjects",
+    "relatedObjectsRules",
+    "relatedObjectsWatchRunning",
+    "relatedObjectsParentStateObjectsWatchRunning",
+];
 
 export function useListRelateds(instances, args) {
     for (const [key, value] of Object.entries(args)) {
@@ -15,45 +24,34 @@ export function useListRelateds(instances, args) {
     }
 }
 
-export function useListRelated({
-    parentState,
-    relatedObjectsRules,
-    relatedObjectsPropertyName = "relatedObjects", // NOT REACTIVE
-    passThroughPropertyNames = ["calculatedObjects", "totalRecords", "totalPages", "perPage"], // NOT REACTIVE
-}) {
+export function useListRelated({ parentState, relatedObjectsRules }) {
     const state = reactive({
         relatedObjectsRules: relatedObjectsRules,
-        relatedObjectsObjects: {},
-        parentStateObjectsWatchRunning: false,
+        relatedObjects: {},
+        relatedObjectsParentStateObjectsWatchRunning: false,
         relatedObjectsWatchRunning: false,
     });
     const relatedObjectsEffectScopes = {};
 
-    // don't change relatedObjectsPropertyName on us or it will break
-    const ropn = relatedObjectsPropertyName + "";
-
     function parentStateObjectsWatch() {
-        const { addedKeys, removedKeys } = keyDiff(
-            Object.keys(parentState.objects),
-            Object.keys(state.relatedObjectsObjects)
-        );
+        const { addedKeys, removedKeys } = keyDiff(Object.keys(parentState.objects), Object.keys(state.relatedObjects));
         for (const removedKey of removedKeys) {
-            delete state.relatedObjectsObjects[removedKey];
+            delete state.relatedObjects[removedKey];
             if (relatedObjectsEffectScopes[removedKey]) {
                 relatedObjectsEffectScopes[removedKey].stop();
                 delete relatedObjectsEffectScopes[removedKey];
             }
         }
         for (const addedKey of addedKeys) {
-            state.relatedObjectsObjects[addedKey] = {};
+            state.relatedObjects[addedKey] = {};
         }
-        state.parentStateObjectsWatchRunning = false;
+        state.relatedObjectsParentStateObjectsWatchRunning = false;
     }
 
     function relatedObjectsWatch() {
         const relatedObjectsRulesIsEmpty = !state.relatedObjectsRules || isEmpty(state.relatedObjectsRules);
-        for (const objectKey of Object.keys(state.relatedObjectsObjects)) {
-            const relatedObjectsObject = state.relatedObjectsObjects[objectKey];
+        for (const objectKey of Object.keys(state.relatedObjects)) {
+            const relatedObjectsObject = state.relatedObjects[objectKey];
             const originalObject = parentState.objects[objectKey];
             let removedRuleKeys, addedRuleKeys;
             if (!relatedObjectsRulesIsEmpty) {
@@ -103,24 +101,17 @@ export function useListRelated({
     const es = effectScope();
 
     es.run(() => {
-        state.loading = toRef(parentState, "loading");
-        state.errored = toRef(parentState, "errored");
-        state.error = toRef(parentState, "error");
-
-        state.retrieveArgs = toRef(parentState, "retrieveArgs");
-        state.listArgs = toRef(parentState, "listArgs");
-        state.order = toRef(parentState, "order");
-        state.objects = toRef(parentState, "objects");
-        state.objectsInOrder = toRef(parentState, "objectsInOrder");
-        state[ropn] = toRef(state, "relatedObjectsObjects");
-        for (let key of passThroughPropertyNames) {
+        for (const key of listInstanceStateKeys) {
+            state[key] = toRef(parentState, key);
+        }
+        for (const key of listSubscriptionStateKeys) {
             state[key] = toRef(parentState, key);
         }
 
         watch(() => Object.keys(parentState.objects), parentStateObjectsWatch, { immediate: true });
         watch(
             [
-                () => Object.keys(state.relatedObjectsObjects),
+                () => Object.keys(state.relatedObjects),
                 () => (state.relatedObjectsRules ? Object.keys(state.relatedObjectsRules) : state.relatedObjectsRules),
             ],
             relatedObjectsWatch,
@@ -134,7 +125,7 @@ export function useListRelated({
                 ),
             ],
             watchSentinelRefs: [
-                toRef(state, "parentStateObjectsWatchRunning"),
+                toRef(state, "relatedObjectsParentStateObjectsWatchRunning"),
                 toRef(state, "relatedObjectsWatchRunning"),
             ],
         });
