@@ -10,6 +10,7 @@ export function useWatchesRunning({ triggerRefs, watchSentinelRefs }) {
         watch(
             triggerRefs,
             (values) => {
+                console.log("useWatchesRunning triggerRefs", values, watchSentinelRefs);
                 if (values.every((value) => unref(value))) {
                     watchSentinelRefs.forEach((ref) => {
                         ref.value = true;
@@ -21,7 +22,13 @@ export function useWatchesRunning({ triggerRefs, watchSentinelRefs }) {
                 deep: true,
             }
         );
-        state.running = computed(() => loadingCombine(watchSentinelRefs.map((ref) => ref.value)));
+        state.running = computed(() => {
+            console.log(
+                "useWatchesRunning running",
+                watchSentinelRefs.map((ref) => ref.value)
+            );
+            return loadingCombine(watchSentinelRefs.map((ref) => ref.value));
+        });
     });
 
     return {

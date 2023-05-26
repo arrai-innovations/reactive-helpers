@@ -2,6 +2,7 @@ import { keyDiff, loadingCombine } from "../utils";
 import { useWatchesRunning } from "./watchesRunning";
 import isEmpty from "lodash-es/isEmpty";
 import { computed, effectScope, onScopeDispose, reactive, toRef, watch } from "vue";
+import { deepUnref } from "vue-deepunref";
 
 export function useObjectCalculateds(instances, args) {
     for (const [key, value] of Object.entries(args)) {
@@ -65,6 +66,11 @@ export function useObjectCalculated({
         }
 
         watch([() => state.calculatedObjectRules && Object.keys(state.calculatedObjectRules)], () => {
+            console.log(
+                "objectCalculated watch state.calculatedObjectRules",
+                deepUnref(state.calculatedObjectRules),
+                deepUnref(state.calculatedObjectObjects)
+            );
             let addedKeys = [],
                 removedKeys = [],
                 sameKeys = [];

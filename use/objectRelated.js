@@ -5,6 +5,7 @@ import isArray from "lodash-es/isArray";
 import isEmpty from "lodash-es/isEmpty";
 import isUndefined from "lodash-es/isUndefined";
 import { computed, effectScope, onScopeDispose, reactive, toRef, unref, watch } from "vue";
+import { deepUnref } from "vue-deepunref";
 
 export function useObjectRelateds(instances, args) {
     for (const [key, value] of Object.entries(args)) {
@@ -61,6 +62,11 @@ export function useObjectRelated({
         }
 
         watch([() => state.relatedObjectRules && Object.keys(state.relatedObjectRules)], () => {
+            console.log(
+                "relatedObjectRules changed",
+                deepUnref(state.relatedObjectRules),
+                deepUnref(state.relatedObjectObjects)
+            );
             let addedRuleKeys = [],
                 removedRuleKeys = [];
             if (!state.relatedObjectRules) {
@@ -103,7 +109,15 @@ export function useObjectRelated({
         });
 
         watchesRunning = useWatchesRunning({
-            triggerRefs: [computed(() => (!isEmpty(state.relatedObjectRules) ? parentState.loading : false))],
+            triggerRefs: [
+                computed(() => {
+                    console.log(
+                        "parentStateObjectWatchRunning",
+                        !isEmpty(state.relatedObjectRules) ? parentState.loading : false
+                    );
+                    return !isEmpty(state.relatedObjectRules) ? parentState.loading : false;
+                }),
+            ],
             watchSentinelRefs: [
                 toRef(state, "parentStateObjectWatchRunning"),
                 toRef(state, "relatedObjectWatchRunning"),

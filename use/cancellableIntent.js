@@ -44,6 +44,7 @@ export function useCancellableIntent({ awaitableWithCancel, watchArguments = {},
     }
 
     const watchFn = () => {
+        console.log("cancelableIntent watchFn", watchArguments, previousWatchValues);
         let newWatchValues = deepUnref(Object.values(watchArguments));
         if (isEqual(newWatchValues, previousWatchValues)) {
             return;

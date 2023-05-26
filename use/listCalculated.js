@@ -5,6 +5,7 @@ import { listSubscriptionStateKeys } from "./listSubscription";
 import { useWatchesRunning } from "./watchesRunning";
 import isEmpty from "lodash-es/isEmpty";
 import { computed, effectScope, onScopeDispose, reactive, toRef, watch } from "vue";
+import { deepUnref } from "vue-deepunref";
 
 export const listCalculatedStateKeys = [
     "calculatedObjects",
@@ -35,6 +36,11 @@ export function useListCalculated({ parentState, calculatedObjectsRules }) {
     const calculatedObjectsEffectScopes = {};
 
     function parentStateObjectsWatch() {
+        console.log(
+            "listCalculated parentStateObjectsWatch",
+            deepUnref(toRef(parentState, "objects")),
+            deepUnref(toRef(state, "calculatedObjects"))
+        );
         const { addedKeys, removedKeys } = keyDiff(
             Object.keys(parentState.objects),
             Object.keys(state.calculatedObjects)
@@ -53,6 +59,11 @@ export function useListCalculated({ parentState, calculatedObjectsRules }) {
     }
 
     function calculatedObjectsWatch() {
+        console.log(
+            "listCalculated calculatedObjectsWatch",
+            deepUnref(state.calculatedObjectsRules),
+            deepUnref(state.calculatedObjects)
+        );
         const calculatedObjectsRulesIsEmpty = !state.calculatedObjectsRules || isEmpty(state.calculatedObjectsRules);
         for (const objectKey of Object.keys(state.calculatedObjects)) {
             if (!calculatedObjectsEffectScopes[objectKey]) {
@@ -120,9 +131,16 @@ export function useListCalculated({ parentState, calculatedObjectsRules }) {
 
         watchesRunning = useWatchesRunning({
             triggerRefs: [
-                computed(() =>
-                    state.calculatedObjectsRules && !isEmpty(state.calculatedObjectsRules) ? parentState.loading : false
-                ),
+                computed(() => {
+                    console.log(
+                        "listCalculated trigger",
+                        state.calculatedObjectsParentStateObjectsWatchRunning,
+                        parentState.loading
+                    );
+                    return state.calculatedObjectsRules && !isEmpty(state.calculatedObjectsRules)
+                        ? parentState.loading
+                        : false;
+                }),
             ],
             watchSentinelRefs: [
                 toRef(state, "calculatedObjectsParentStateObjectsWatchRunning"),
@@ -130,7 +148,10 @@ export function useListCalculated({ parentState, calculatedObjectsRules }) {
             ],
         });
 
-        state.running = computed(() => loadingCombine(watchesRunning.state.running, parentState.running));
+        state.running = computed(() => {
+            console.log("listCalculated running", watchesRunning.state.running, parentState.running);
+            return loadingCombine(watchesRunning.state.running, parentState.running);
+        });
 
         onScopeDispose(() => {
             for (const objectKey of Object.keys(calculatedObjectsEffectScopes)) {
