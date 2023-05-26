@@ -1,5 +1,8 @@
-import { loadingCombine } from "../utils";
+import { loadingCombine, useDebugMessage } from "../utils";
 import { computed, effectScope, reactive, unref, watch } from "vue";
+
+const computedDebugMessage = useDebugMessage(new Set(["watchesRunning", "computed"]));
+const watchDebugMessage = useDebugMessage(new Set(["watchesRunning", "watch"]));
 
 export function useWatchesRunning({ triggerRefs, watchSentinelRefs }) {
     const state = reactive({});
@@ -10,7 +13,7 @@ export function useWatchesRunning({ triggerRefs, watchSentinelRefs }) {
         watch(
             triggerRefs,
             (values) => {
-                console.log("useWatchesRunning triggerRefs", values, watchSentinelRefs);
+                watchDebugMessage("useWatchesRunning triggerRefs");
                 if (values.every((value) => unref(value))) {
                     watchSentinelRefs.forEach((ref) => {
                         ref.value = true;
@@ -23,11 +26,9 @@ export function useWatchesRunning({ triggerRefs, watchSentinelRefs }) {
             }
         );
         state.running = computed(() => {
-            console.log(
-                "useWatchesRunning running",
-                watchSentinelRefs.map((ref) => ref.value)
-            );
-            return loadingCombine(watchSentinelRefs.map((ref) => ref.value));
+            const values = watchSentinelRefs.map((ref) => ref.value);
+            computedDebugMessage("useWatchesRunning running");
+            return loadingCombine(values);
         });
     });
 
