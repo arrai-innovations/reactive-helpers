@@ -1,9 +1,9 @@
 import inspect from "browser-util-inspect";
 import { unref } from "vue";
 
-window.OFC_DEBUG = false;
-window.OFC_DEBUG_ENABLED_CATEGORIES = {};
-window.OFC_DEBUG_DISABLED_CATEGORIES = {};
+window.RH_DEBUG = false;
+window.RH_DEBUG_ENABLED_CATEGORIES = {};
+window.RH_DEBUG_DISABLED_CATEGORIES = {};
 
 const log = console.log;
 const messageHolder = [];
@@ -29,23 +29,23 @@ const doLog = (categoriesString, messages) => {
 export function useDebugMessage(categories) {
     const categoriesString = categories.size > 0 ? `[${Array.from(categories).join(", ")}]` : "";
     return (...messages) => {
-        if (!window.OFC_DEBUG) {
+        if (!window.RH_DEBUG) {
             return;
         }
         if (categories.size > 0) {
             for (const category of categories) {
-                if (window.OFC_DEBUG_DISABLED_CATEGORIES[category]) {
+                if (window.RH_DEBUG_DISABLED_CATEGORIES[category]) {
                     return;
                 }
             }
             for (const category of categories) {
-                if (window.OFC_DEBUG_ENABLED_CATEGORIES[category]) {
+                if (window.RH_DEBUG_ENABLED_CATEGORIES[category]) {
                     doLog(categoriesString, messages);
                     return;
                 }
             }
         }
-        if (categories.size === 0 || Object.keys(window.OFC_DEBUG_ENABLED_CATEGORIES).length === 0) {
+        if (categories.size === 0 || Object.keys(window.RH_DEBUG_ENABLED_CATEGORIES).length === 0) {
             doLog(categoriesString, messages);
         }
     };
