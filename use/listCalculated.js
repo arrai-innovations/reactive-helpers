@@ -6,8 +6,8 @@ import { useWatchesRunning } from "./watchesRunning";
 import isEmpty from "lodash-es/isEmpty";
 import { computed, effectScope, onScopeDispose, reactive, toRef, watch } from "vue";
 
-const computedDebugMessage = useDebugMessage(new Set(["listCalculated", "computed"]));
-const watchDebugMessage = useDebugMessage(new Set(["listCalculated", "watch"]));
+const computedDebugMessage = useDebugMessage(["listCalculated", "computed"]);
+const watchDebugMessage = useDebugMessage(["listCalculated", "watch"]);
 
 export const listCalculatedStateKeys = [
     "calculatedObjects",

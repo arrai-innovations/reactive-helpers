@@ -8,8 +8,8 @@ import isEmpty from "lodash-es/isEmpty";
 import isUndefined from "lodash-es/isUndefined";
 import { computed, effectScope, onScopeDispose, reactive, toRef, unref, watch } from "vue";
 
-const computedDebugMessage = useDebugMessage(new Set(["listRelated", "computed"]));
-const watchDebugMessage = useDebugMessage(new Set(["listRelated", "watch"]));
+const computedDebugMessage = useDebugMessage(["listRelated", "computed"]);
+const watchDebugMessage = useDebugMessage(["listRelated", "watch"]);
 
 export const listRelatedStateKeys = [
     "relatedObjects",

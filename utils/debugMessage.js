@@ -23,29 +23,31 @@ const doLog = (categoriesString, messages) => {
 };
 
 /**
- * @param {Set} categories
+ *
+ * @param {string[]} categories
  * @returns {function(...((string|Function)[]|string|Function)): void}
  */
 export function useDebugMessage(categories) {
-    const categoriesString = categories.size > 0 ? `[${Array.from(categories).join(", ")}]` : "";
+    const categoriesSet = new Set(categories);
+    const categoriesString = categoriesSet.size > 0 ? `[${Array.from(categoriesSet).join(", ")}]` : "";
     return (...messages) => {
         if (!window.RH_DEBUG) {
             return;
         }
-        if (categories.size > 0) {
-            for (const category of categories) {
+        if (categoriesSet.size > 0) {
+            for (const category of categoriesSet) {
                 if (window.RH_DEBUG_DISABLED_CATEGORIES[category]) {
                     return;
                 }
             }
-            for (const category of categories) {
+            for (const category of categoriesSet) {
                 if (window.RH_DEBUG_ENABLED_CATEGORIES[category]) {
                     doLog(categoriesString, messages);
                     return;
                 }
             }
         }
-        if (categories.size === 0 || Object.keys(window.RH_DEBUG_ENABLED_CATEGORIES).length === 0) {
+        if (categoriesSet.size === 0 || Object.keys(window.RH_DEBUG_ENABLED_CATEGORIES).length === 0) {
             doLog(categoriesString, messages);
         }
     };

@@ -1,8 +1,8 @@
 import { loadingCombine, useDebugMessage } from "../utils";
 import { computed, effectScope, reactive, unref, watch } from "vue";
 
-const computedDebugMessage = useDebugMessage(new Set(["watchesRunning", "computed"]));
-const watchDebugMessage = useDebugMessage(new Set(["watchesRunning", "watch"]));
+const computedDebugMessage = useDebugMessage(["watchesRunning", "computed"]);
+const watchDebugMessage = useDebugMessage(["watchesRunning", "watch"]);
 
 export function useWatchesRunning({ triggerRefs, watchSentinelRefs }) {
     const state = reactive({});

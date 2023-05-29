@@ -6,8 +6,8 @@ import isEmpty from "lodash-es/isEmpty";
 import isUndefined from "lodash-es/isUndefined";
 import { computed, effectScope, onScopeDispose, reactive, toRef, unref, watch } from "vue";
 
-const computedDebugMessage = useDebugMessage(new Set(["objectRelated", "computed"]));
-const watchDebugMessage = useDebugMessage(new Set(["objectRelated", "watch"]));
+const computedDebugMessage = useDebugMessage(["objectRelated", "computed"]);
+const watchDebugMessage = useDebugMessage(["objectRelated", "watch"]);
 
 export function useObjectRelateds(instances, args) {
     for (const [key, value] of Object.entries(args)) {

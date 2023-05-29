@@ -15,7 +15,7 @@ import {
 } from "vue";
 
 /**
- * @param {Set} categories
+ * @param {string[]} categories
  */
 export function useLifecycleDebug(categories, includes = [], excludes = []) {
     const lifeCycleFns = {

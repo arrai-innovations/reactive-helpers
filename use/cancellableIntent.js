@@ -4,7 +4,7 @@ import isEqual from "lodash-es/isEqual";
 import { effectScope, nextTick, onScopeDispose, reactive, readonly, watch } from "vue";
 import { deepUnref } from "vue-deepunref";
 
-const watchFnDebugMessage = useDebugMessage(new Set(["cancellableIntent", "watch"]));
+const watchFnDebugMessage = useDebugMessage(["cancellableIntent", "watch"]);
 
 /*
  * Calls your awaitable function with the arguments you pass in, when the watch arguments change and are all truthy.

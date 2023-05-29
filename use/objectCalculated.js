@@ -3,8 +3,8 @@ import { useWatchesRunning } from "./watchesRunning";
 import isEmpty from "lodash-es/isEmpty";
 import { computed, effectScope, onScopeDispose, reactive, toRef, watch } from "vue";
 
-const computedDebugMessage = useDebugMessage(new Set(["objectCalculated", "computed"]));
-const watchDebugMessage = useDebugMessage(new Set(["objectCalculated", "watch"]));
+const computedDebugMessage = useDebugMessage(["objectCalculated", "computed"]);
+const watchDebugMessage = useDebugMessage(["objectCalculated", "watch"]);
 
 export function useObjectCalculateds(instances, args) {
     for (const [key, value] of Object.entries(args)) {
