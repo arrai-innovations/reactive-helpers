@@ -1,7 +1,10 @@
+import { useDebugMessage } from "../utils";
 import identity from "lodash-es/identity";
 import isEqual from "lodash-es/isEqual";
 import { effectScope, nextTick, onScopeDispose, reactive, readonly, watch } from "vue";
 import { deepUnref } from "vue-deepunref";
+
+const watchFnDebugMessage = useDebugMessage(["cancellableIntent", "watch"]);
 
 /*
  * Calls your awaitable function with the arguments you pass in, when the watch arguments change and are all truthy.
@@ -44,6 +47,7 @@ export function useCancellableIntent({ awaitableWithCancel, watchArguments = {},
     }
 
     const watchFn = () => {
+        watchFnDebugMessage("watchFn called");
         let newWatchValues = deepUnref(Object.values(watchArguments));
         if (isEqual(newWatchValues, previousWatchValues)) {
             return;
