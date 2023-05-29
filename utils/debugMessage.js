@@ -1,7 +1,7 @@
 import inspect from "browser-util-inspect";
 import { unref } from "vue";
 
-window.OFC_DEBUG = import.meta.env.MODE === "development";
+window.OFC_DEBUG = false;
 window.OFC_DEBUG_ENABLED_CATEGORIES = {};
 window.OFC_DEBUG_DISABLED_CATEGORIES = {};
 
