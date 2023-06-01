@@ -3,7 +3,7 @@ import { useListInstance } from "./listInstance";
 import { useListRelated } from "./listRelated";
 import { useListSubscription } from "./listSubscription";
 import { usePagedListInstance } from "./paginatedListInstance";
-import { reactive, shallowReactive, shallowReadonly, toRef } from "vue";
+import { effectScope, reactive, shallowReactive, shallowReadonly, toRef } from "vue";
 
 export const useLists = (listArgs) => {
     const lists = {};
@@ -22,30 +22,48 @@ export const useList = ({ props, functions, paged = false, keepOldPages = false 
         listCalculated: null,
     });
 
-    managed.listInstance = (paged ? usePagedListInstance : useListInstance)({
-        props,
-        functions,
-        keepOldPages,
+    const es = effectScope();
+
+    es.run(() => {
+        managed.listInstance = (paged ? usePagedListInstance : useListInstance)({
+            props,
+            functions,
+            keepOldPages,
+        });
+
+        managed.listSubscription = useListSubscription({
+            listInstance: managed.listInstance,
+        });
+        managed.listSubscription.state.intendToList = toRef(props, "intendToList");
+
+        managed.listRelated = useListRelated({
+            parentState: managed.listSubscription.state,
+            relatedObjectsRules: toRef(props, "relatedObjectsRules"),
+        });
+
+        managed.listCalculated = useListCalculated({
+            parentState: managed.listRelated.state,
+            calculatedObjectsRules: toRef(props, "calculatedObjectsRules"),
+        });
     });
 
-    managed.listSubscription = useListSubscription({
-        listInstance: managed.listInstance,
-    });
-    managed.listSubscription.state.intendToList = toRef(props, "intendToList");
-
-    managed.listRelated = useListRelated({
-        parentState: managed.listSubscription.state,
-        relatedObjectsRules: toRef(props, "relatedObjectsRules"),
-    });
-
-    managed.listCalculated = useListCalculated({
-        parentState: managed.listRelated.state,
-        calculatedObjectsRules: toRef(props, "calculatedObjectsRules"),
-    });
+    const clearError = (error) => {
+        managed.listSubscription.clearError(error);
+        managed.listInstance.clearError(error);
+    };
 
     return reactive({
         // we manage the keys on both of these, so hands off the root.
         managed: shallowReadonly(managed),
         state: managed.listCalculated.state,
+        list: managed.listInstance.list,
+        addListObject: managed.listInstance.addListObject,
+        updateListObject: managed.listInstance.updateListObject,
+        deleteListObject: managed.listInstance.deleteListObject,
+        clearList: managed.listInstance.clearList,
+        clearError,
+        getFakeId: managed.listInstance.getFakeId,
+        defaultPageCallback: managed.listInstance.defaultPageCallback,
+        effectScope: es,
     });
 };
