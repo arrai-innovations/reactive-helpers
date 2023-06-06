@@ -42,6 +42,7 @@ export function useLifecycleDebug(categories, includes = [], excludes = []) {
             continue;
         }
         const myCategories = new Set(categories);
+        myCategories.add("lifecycle");
         myCategories.add(key);
         const eventString = `${key} called`;
         const debugMessage = useDebugMessage(myCategories);
