@@ -1,54 +1,199 @@
-import inspect from "browser-util-inspect";
+import { isSuperset } from "./set";
+import { transformWalk } from "./transformWalk";
+import { isSet, partial, union } from "lodash-es";
+import debounce from "lodash-es/debounce";
 import { unref } from "vue";
 
+/**
+ * Whether debug messages are enabled or not. For deploying to production with debugging but not
+ * spamming everyone with debug messages.
+ *
+ * @type {boolean}
+ */
 window.RH_DEBUG = false;
-window.RH_DEBUG_ENABLED_CATEGORIES = {};
-window.RH_DEBUG_DISABLED_CATEGORIES = {};
-
-const log = console.log;
-const messageHolder = [];
 
 /**
- * @param {String} categoriesString
- * @param {(string|Function)[]} messages
+ * Map of categories to whether they are enabled or not. The order of the entries are important.
+ * All categories in the key must be present for the entry to match.
+ * The first matching entry with a value opf true will show the message.
+ * The first matching entry with a value of false will hide the message.
+ * The special category "*" will match all messages.
+ * Strings passed as keys will be treated as a single category.
+ * Sets can also be passed as keys, which is what the arrays get converted to.
+ *
+ * @type {Map<string[]|string|Set, boolean>}
+ * @example
+ * window.RH_DEBUG = true; // turn it on
+ * window.RH_DEBUG_CATEGORIES.set(["ofc-form-component", "lifecycle"], true); // show messages matching both categories
+ * window.RH_DEBUG_CATEGORIES.set(["lifecycle"], false); // turn off lifecycle messages not matching the above
+ * window.RH_DEBUG_CATEGORIES.set(["dropDown"], true); // show dropDown messages except where disabled by the above
+ * window.RH_DEBUG_CATEGORIES.set(["*"], false); // turn off all messages not matching the above
  */
-const doLog = (categoriesString, messages) => {
+window.RH_DEBUG_CATEGORIES = new Map();
+
+/**
+ * Group identical messages together and show a count of how many times they were logged.
+ * Messages are only shown on the trailing edge, so logging is delayed and somewhat out of order.
+ *
+ * @type {boolean}
+ */
+window.RH_DEBOUNCE_DEBUG = false;
+
+/**
+ * Whether to process arguments to be more friendly for console.log, with regard to circular references
+ * and not recursing into vue components.
+ *
+ * @type {boolean}
+ */
+window.RH_TRANSFORM_MESSAGES = true;
+
+const DEBOUNCE_WAIT = 50;
+const log = console.log;
+const messageBounceFns = {};
+const counts = {};
+
+/**
+ * @param {Set} categoriesSet categories for the message log
+ * @param {string} categoriesKey key for debouncing
+ * @param {*[]} messages
+ */
+const doLog = (categoriesSet, categoriesKey, messages) => {
     if (messages.length > 0) {
-        for (const message of messages) {
-            messageHolder.push(inspect(unref(typeof message === "function" ? message() : message)));
+        const key = getKey(categoriesKey, messages);
+        const count = counts[key];
+        const logArgs = [Array.from(categoriesSet).join(","), ...messages];
+        if (count > 1) {
+            logArgs.push(`(${count})`);
         }
-        log(categoriesString, ...messageHolder);
-        messageHolder.length = 0;
+        log(...logArgs);
+        delete counts[key];
+        delete messageBounceFns[key];
     }
 };
 
 /**
+ * Process a value for logging, dealing with circular references and
+ * not recursing into vue components.
  *
- * @param {string[]} categories
- * @returns {function(...((string|Function)[]|string|Function)): void}
+ * @param {Map} seenObjects for circlular reference detection
+ * @param {string} key keys is an unused argument from walk
+ * @param {*} value value to process
+ * @param {string} path path to the value, used for display in circular references
+ * @returns {*} processed value
+ */
+export const inspectWalkFn = (seenObjects, key, value, path) => {
+    // return primatives as-is
+    if (typeof value !== "object" || value === null) {
+        return value;
+    }
+    if (seenObjects.has(value)) {
+        return `「Dupe:${seenObjects.get(value)}」`;
+    }
+    seenObjects.set(value, path);
+    if (value?.type?.__name) {
+        // vue component instance
+        return `⧼ Component:${value.type.__name} ⧽`;
+    }
+    return value;
+};
+
+/**
+ * @param {(string|function)[]} messages messages to resolve
+ * @returns {*[]} resolved messages
+ */
+const resolveMessages = (messages) => {
+    const resolvedMessages = [];
+    for (const message of messages) {
+        let toPush = unref(typeof message === "function" ? message() : message);
+        if (window.RH_TRANSFORM_MESSAGES) {
+            const seenObjects = new Map();
+            toPush = transformWalk(toPush, partial(inspectWalkFn, seenObjects));
+        }
+        resolvedMessages.push(toPush);
+    }
+    return resolvedMessages;
+};
+
+/**
+ * @param {Set} categoriesSet categories for the message log
+ * @param {string} categoriesKey key for debouncing
+ * @param {*[]} messages messages to log
+ */
+const doDebouncedLog = (categoriesSet, categoriesKey, messages) => {
+    if (!window.RH_DEBOUNCE_DEBUG) {
+        return doLog(categoriesSet, categoriesKey, messages);
+    }
+    const key = getKey(categoriesKey, messages);
+    let debouncedLog = messageBounceFns[key];
+    if (!debouncedLog) {
+        debouncedLog = debounce(doLog, DEBOUNCE_WAIT, { leading: false, trailing: true });
+        messageBounceFns[key] = debouncedLog;
+    }
+    debouncedLog(categoriesSet, categoriesKey, messages);
+    counts[key] = (counts[key] || 0) + 1;
+};
+
+/**
+ * @param {string} categoriesKey categories for the message log
+ * @param {(string|function)[]} messages messages to log
+ * @returns {string} key
+ **/
+const getKey = (categoriesKey, messages) => {
+    return `${categoriesKey}|${messages.join("-")}`;
+};
+
+/**
+ * @typedef {Object} DebugMessageFunction
+ * @property {function(...((string|function)[]|string|function)): void} log log a message
+ */
+
+/**
+ * @param {string[]} categories categories for the message log
+ * @returns {DebugMessageFunction} debug message function
  */
 export function useDebugMessage(categories) {
-    const categoriesSet = new Set(categories);
-    const categoriesString = categoriesSet.size > 0 ? `[${Array.from(categoriesSet).join(", ")}]` : "";
-    return (...messages) => {
+    const categoriesSet = isSet(categories) ? categories : new Set(categories);
+    const sortedCategories = Array.from(categoriesSet).sort();
+    const categoriesKey = categoriesSet.size > 0 ? `[${sortedCategories.join(", ")}]` : "";
+
+    const debugMessage = (...messages) => {
         if (!window.RH_DEBUG) {
             return;
         }
-        if (categoriesSet.size > 0) {
-            for (const category of categoriesSet) {
-                if (window.RH_DEBUG_DISABLED_CATEGORIES[category]) {
+        for (const [rule, enabledOrDisabled] of window.RH_DEBUG_CATEGORIES.entries()) {
+            let ruleSet;
+            if (Array.isArray(rule)) {
+                ruleSet = new Set(rule);
+            } else if (typeof rule === "string") {
+                ruleSet = new Set(rule.split(","));
+            } else if (rule.toString() === "[object Set]") {
+                ruleSet = rule;
+            } else if (rule === "*") {
+                ruleSet = new Set(["*"]);
+            } else {
+                throw new Error(`Unexpected rule type: ${typeof rule}, ${rule}`);
+            }
+            // if categoriesSet is a superset of ruleSet, then apply the rule
+            // first applicable rule wins
+            if (isSuperset(categoriesSet, ruleSet) || ruleSet.has("*")) {
+                if (enabledOrDisabled === true) {
+                    doDebouncedLog(categoriesSet, categoriesKey, resolveMessages(messages));
+                    return;
+                } else if (enabledOrDisabled === false) {
                     return;
                 }
-            }
-            for (const category of categoriesSet) {
-                if (window.RH_DEBUG_ENABLED_CATEGORIES[category]) {
-                    doLog(categoriesString, messages);
-                    return;
-                }
+                // ignore other values
             }
         }
-        if (categoriesSet.size === 0 || Object.keys(window.RH_DEBUG_ENABLED_CATEGORIES).length === 0) {
-            doLog(categoriesString, messages);
-        }
+        doDebouncedLog(categoriesSet, categoriesKey, resolveMessages(messages));
     };
+    /**
+     * @param {string[]} moreCategories categories to add
+     * @returns {DebugMessageFunction} new debug message function
+     */
+    debugMessage.more = (moreCategories) => {
+        // return a new debugMessage so the added categories are only applied to the new debugMessage
+        return useDebugMessage(union(categoriesSet, isSet(moreCategories) ? moreCategories : new Set(moreCategories)));
+    };
+    return debugMessage;
 }
