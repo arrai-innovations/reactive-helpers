@@ -103,11 +103,7 @@ export function useObjectRelated({
         });
 
         watchesRunning = useWatchesRunning({
-            triggerRefs: [
-                computed(() => {
-                    return !isEmpty(state.relatedObjectRules) ? parentState.loading : false;
-                }),
-            ],
+            triggerRefs: [computed(() => (!isEmpty(state.relatedObjectRules) ? parentState.loading : false))],
             watchSentinelRefs: [
                 toRef(state, "parentStateObjectWatchRunning"),
                 toRef(state, "relatedObjectWatchRunning"),

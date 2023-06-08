@@ -102,11 +102,7 @@ export function useObjectCalculated({
         });
 
         watchesRunning = useWatchesRunning({
-            triggerRefs: [
-                computed(() => {
-                    return !isEmpty(state.calculatedObjectRules) ? parentState.loading : false;
-                }),
-            ],
+            triggerRefs: [computed(() => (!isEmpty(state.calculatedObjectRules) ? parentState.loading : false))],
             watchSentinelRefs: [
                 toRef(state, "parentStateObjectWatchRunning"),
                 toRef(state, "calculatedObjectWatchRunning"),
@@ -114,9 +110,7 @@ export function useObjectCalculated({
         });
 
         state.calculatedRunning = toRef(watchesRunning.state, "running");
-        state.running = computed(() => {
-            return loadingCombine(watchesRunning.state.running, parentState.relatedRunning);
-        });
+        state.running = computed(() => loadingCombine(watchesRunning.state.running, parentState.relatedRunning));
 
         onScopeDispose(() => {
             for (const key in calculatedObjectEffectScopes) {

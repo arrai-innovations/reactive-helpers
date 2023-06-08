@@ -24,9 +24,7 @@ describe("use/listSubscription.spec.js", function () {
         const listInstanceModule = await import("../../../use/listInstance");
         crudList = jest
             .fn()
-            .mockImplementationOnce(() => {
-                return crudListResolvable[0].promise;
-            })
+            .mockImplementationOnce(() => crudListResolvable[0].promise)
             .mockImplementation(() => {
                 const newResolvable = new CancellableResolvable();
                 crudListResolvable.push(newResolvable);

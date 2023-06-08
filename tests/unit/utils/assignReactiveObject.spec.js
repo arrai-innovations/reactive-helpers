@@ -41,9 +41,7 @@ describe("utils/assignReactiveObject", function () {
                 const tes = effectScope();
                 let computedSum;
                 tes.run(() => {
-                    computedSum = computed(() => {
-                        return target.a + target.b + target.c;
-                    });
+                    computedSum = computed(() => target.a + target.b + target.c);
                 });
                 try {
                     expect(computedSum.value).toBe(6);

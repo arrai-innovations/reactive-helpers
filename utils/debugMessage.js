@@ -138,9 +138,7 @@ const doDebouncedLog = (categoriesSet, categoriesKey, messages) => {
  * @param {(string|function)[]} messages messages to log
  * @returns {string} key
  **/
-const getKey = (categoriesKey, messages) => {
-    return `${categoriesKey}|${messages.join("-")}`;
-};
+const getKey = (categoriesKey, messages) => `${categoriesKey}|${messages.join("-")}`;
 
 /**
  * @typedef {Object} DebugMessageFunction

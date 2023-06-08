@@ -81,9 +81,9 @@ export function useListCalculated({ parentState, calculatedObjectsRules }) {
             }
             calculatedObjectsEffectScopes[objectKey].run(() => {
                 for (const addedRuleKey of addedRuleKeys) {
-                    calculatedObjectsObject[addedRuleKey] = computed(() => {
-                        return state.calculatedObjectsRules?.[addedRuleKey]?.(originalObject);
-                    });
+                    calculatedObjectsObject[addedRuleKey] = computed(() =>
+                        state.calculatedObjectsRules?.[addedRuleKey]?.(originalObject)
+                    );
                 }
             });
         }
@@ -120,11 +120,9 @@ export function useListCalculated({ parentState, calculatedObjectsRules }) {
 
         watchesRunning = useWatchesRunning({
             triggerRefs: [
-                computed(() => {
-                    return state.calculatedObjectsRules && !isEmpty(state.calculatedObjectsRules)
-                        ? parentState.loading
-                        : false;
-                }),
+                computed(() =>
+                    state.calculatedObjectsRules && !isEmpty(state.calculatedObjectsRules) ? parentState.loading : false
+                ),
             ],
             watchSentinelRefs: [
                 toRef(state, "calculatedObjectsParentStateObjectsWatchRunning"),
@@ -132,9 +130,7 @@ export function useListCalculated({ parentState, calculatedObjectsRules }) {
             ],
         });
 
-        state.running = computed(() => {
-            return loadingCombine(watchesRunning.state.running, parentState.running);
-        });
+        state.running = computed(() => loadingCombine(watchesRunning.state.running, parentState.running));
 
         onScopeDispose(() => {
             for (const objectKey of Object.keys(calculatedObjectsEffectScopes)) {

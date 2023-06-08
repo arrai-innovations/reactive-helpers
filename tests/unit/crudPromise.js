@@ -13,9 +13,7 @@ export class CancellableResolvable {
         const cancelResolvable = new Resolvable();
         newResolvable.promise.cancel = jest
             .fn()
-            .mockImplementationOnce(async () => {
-                return cancelResolvable.promise;
-            })
+            .mockImplementationOnce(async () => cancelResolvable.promise)
             .mockRejectedValue(new Error("cancel already called"));
         Object.assign(this, newResolvable);
         this.cancel = cancelResolvable;
