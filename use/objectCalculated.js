@@ -1,10 +1,7 @@
-import { keyDiff, loadingCombine, useDebugMessage } from "../utils";
+import { keyDiff, loadingCombine } from "../utils";
 import { useWatchesRunning } from "./watchesRunning";
 import isEmpty from "lodash-es/isEmpty";
 import { computed, effectScope, onScopeDispose, reactive, toRef, watch } from "vue";
-
-const computedDebugMessage = useDebugMessage(["objectCalculated", "computed"]);
-const watchDebugMessage = useDebugMessage(["objectCalculated", "watch"]);
 
 export function useObjectCalculateds(instances, args) {
     for (const [key, value] of Object.entries(args)) {
@@ -68,7 +65,6 @@ export function useObjectCalculated({
         }
 
         watch([() => state.calculatedObjectRules && Object.keys(state.calculatedObjectRules)], () => {
-            watchDebugMessage("calculatedObjectRules watch called");
             let addedKeys = [],
                 removedKeys = [],
                 sameKeys = [];
@@ -106,12 +102,7 @@ export function useObjectCalculated({
         });
 
         watchesRunning = useWatchesRunning({
-            triggerRefs: [
-                computed(() => {
-                    computedDebugMessage("watchesRunningTriggerRefs computed");
-                    return !isEmpty(state.calculatedObjectRules) ? parentState.loading : false;
-                }),
-            ],
+            triggerRefs: [computed(() => (!isEmpty(state.calculatedObjectRules) ? parentState.loading : false))],
             watchSentinelRefs: [
                 toRef(state, "parentStateObjectWatchRunning"),
                 toRef(state, "calculatedObjectWatchRunning"),
@@ -119,10 +110,7 @@ export function useObjectCalculated({
         });
 
         state.calculatedRunning = toRef(watchesRunning.state, "running");
-        state.running = computed(() => {
-            computedDebugMessage("running computed");
-            return loadingCombine(watchesRunning.state.running, parentState.relatedRunning);
-        });
+        state.running = computed(() => loadingCombine(watchesRunning.state.running, parentState.relatedRunning));
 
         onScopeDispose(() => {
             for (const key in calculatedObjectEffectScopes) {

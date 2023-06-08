@@ -34,12 +34,8 @@ describe("use/objectSubscription.js", function () {
         });
         globalUnsubscribe = jest.fn();
         globalSubscribe = jest.fn();
-        globalSubscribe.mockImplementation(() => {
-            return Promise.resolve(globalUnsubscribe);
-        });
-        globalUnsubscribe.mockImplementation(() => {
-            return true;
-        });
+        globalSubscribe.mockImplementation(() => Promise.resolve(globalUnsubscribe));
+        globalUnsubscribe.mockImplementation(() => true);
         const imported = await import("../../../use/objectSubscription");
         imported.setObjectSubscriptionCrud({
             subscribe: globalSubscribe,

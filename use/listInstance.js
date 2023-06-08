@@ -129,9 +129,7 @@ export function useListInstance({ props, functions = {} }) {
             return Promise.reject(new ListError("already loading."));
         }
         let returnPromiseResolve;
-        const returnPromise = new Promise((resolve) => {
-            returnPromiseResolve = resolve;
-        });
+        const returnPromise = new Promise((resolve) => (returnPromiseResolve = resolve));
         state.loading = true;
         state.errored = false;
         state.error = null;

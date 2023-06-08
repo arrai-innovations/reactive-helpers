@@ -1,4 +1,7 @@
-import { useDebugMessage } from "./debugMessage";
+import { inspecttransformWalkFn, useDebugMessage } from "./debugMessage";
+import { keyDiffDeep } from "./keyDiff";
+import { transformWalk } from "./transformWalk";
+import { isEqual, partial } from "lodash-es";
 import {
     onActivated,
     onBeforeMount,
@@ -12,7 +15,70 @@ import {
     onServerPrefetch,
     onUnmounted,
     onUpdated,
+    unref,
 } from "vue";
+
+window.RH_DEBUG_SKIP_EMPTY_CHANGE_EFFECTS = true;
+
+export const customHandlers = {
+    onRenderTriggered: (debugMessage, e) => {
+        const newSeenObjects = new Map();
+        const newValue = transformWalk(e.newValue, partial(inspecttransformWalkFn, newSeenObjects));
+        const oldSeenObjects = new Map();
+        const oldValue = transformWalk(e.oldValue, partial(inspecttransformWalkFn, oldSeenObjects));
+        let keyDiffResults;
+        if (typeof newValue !== "object" || typeof oldValue !== "object") {
+            keyDiffResults = keyDiffDeep(newValue, oldValue);
+            keyDiffResults.changedKeys = new Set();
+            for (const key of keyDiffResults.sameKeys) {
+                // since it is a deep diff, object equality is fine to not trigger a change
+                if (newValue[key] !== oldValue[key]) {
+                    keyDiffResults.changedKeys.add(key);
+                }
+            }
+            delete keyDiffResults.sameKeys;
+            for (const key in keyDiffResults) {
+                if (keyDiffResults[key].size === 0) {
+                    delete keyDiffResults[key];
+                }
+            }
+            if (Object.keys(keyDiffResults).length === 0 && window.RH_DEBUG_SKIP_EMPTY_CHANGE_EFFECTS) {
+                return;
+            }
+        } else {
+            if (isEqual(newValue, oldValue)) {
+                return;
+            }
+        }
+        const debugArgs = [
+            {
+                effect: e.effect,
+                fn: e.effect.fn,
+                target: unref(e.target),
+                type: e.type,
+                key: e.key,
+                newValue,
+                oldValue,
+                oldTarget: unref(e.oldTarget),
+            },
+        ];
+        if (keyDiffResults) {
+            debugArgs.push(keyDiffResults);
+        }
+        debugMessage(...debugArgs);
+    },
+    onRenderTracked: (debugMessage, e) => {
+        debugMessage({
+            fn: e.effect.fn,
+            target: unref(e.target),
+            type: e.type,
+            key: e.key,
+        });
+    },
+};
+const defaultHandler = (debugMessage) => {
+    debugMessage();
+};
 
 /**
  * @param {string[]} categories
@@ -44,10 +110,7 @@ export function useLifecycleDebug(categories, includes = [], excludes = []) {
         const myCategories = new Set(categories);
         myCategories.add("lifecycle");
         myCategories.add(key);
-        const eventString = `${key} called`;
         const debugMessage = useDebugMessage(myCategories);
-        lifeCycleFns[key](() => {
-            debugMessage(eventString);
-        });
+        lifeCycleFns[key](partial(customHandlers[key] || defaultHandler, debugMessage));
     }
 }

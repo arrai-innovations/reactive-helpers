@@ -1,4 +1,4 @@
-import { keyDiff, loadingCombine, useDebugMessage } from "../utils";
+import { keyDiff, loadingCombine } from "../utils";
 import { listInstanceStateKeys } from "./listInstance";
 import { listSubscriptionStateKeys } from "./listSubscription";
 import { useWatchesRunning } from "./watchesRunning";
@@ -7,9 +7,6 @@ import isArray from "lodash-es/isArray";
 import isEmpty from "lodash-es/isEmpty";
 import isUndefined from "lodash-es/isUndefined";
 import { computed, effectScope, onScopeDispose, reactive, toRef, unref, watch } from "vue";
-
-const computedDebugMessage = useDebugMessage(["listRelated", "computed"]);
-const watchDebugMessage = useDebugMessage(["listRelated", "watch"]);
 
 export const listRelatedStateKeys = [
     "relatedObjects",
@@ -37,7 +34,6 @@ export function useListRelated({ parentState, relatedObjectsRules }) {
     const relatedObjectsEffectScopes = {};
 
     function parentStateObjectsWatch() {
-        watchDebugMessage("parentStateObjectsWatch called");
         const { addedKeys, removedKeys } = keyDiff(Object.keys(parentState.objects), Object.keys(state.relatedObjects));
         for (const removedKey of removedKeys) {
             delete state.relatedObjects[removedKey];
@@ -53,7 +49,6 @@ export function useListRelated({ parentState, relatedObjectsRules }) {
     }
 
     function relatedObjectsWatch() {
-        watchDebugMessage("relatedObjectsWatch called");
         const relatedObjectsRulesIsEmpty = !state.relatedObjectsRules || isEmpty(state.relatedObjectsRules);
         for (const objectKey of Object.keys(state.relatedObjects)) {
             const relatedObjectsObject = state.relatedObjects[objectKey];
@@ -125,12 +120,9 @@ export function useListRelated({ parentState, relatedObjectsRules }) {
 
         watchesRunning = useWatchesRunning({
             triggerRefs: [
-                computed(() => {
-                    computedDebugMessage("listRelated triggerRefs");
-                    return state.relatedObjectsRules && !isEmpty(state.relatedObjectsRules)
-                        ? parentState.loading
-                        : false;
-                }),
+                computed(() =>
+                    state.relatedObjectsRules && !isEmpty(state.relatedObjectsRules) ? parentState.loading : false
+                ),
             ],
             watchSentinelRefs: [
                 toRef(state, "relatedObjectsParentStateObjectsWatchRunning"),
@@ -138,10 +130,7 @@ export function useListRelated({ parentState, relatedObjectsRules }) {
             ],
         });
 
-        state.running = computed(() => {
-            computedDebugMessage("listRelated running");
-            return loadingCombine(watchesRunning.state.running, parentState.running);
-        });
+        state.running = computed(() => loadingCombine(watchesRunning.state.running, parentState.running));
 
         onScopeDispose(() => {
             for (const objectKey of Object.keys(relatedObjectsEffectScopes)) {
