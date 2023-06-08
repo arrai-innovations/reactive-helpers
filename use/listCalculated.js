@@ -1,13 +1,10 @@
-import { keyDiff, loadingCombine, useDebugMessage } from "../utils";
+import { keyDiff, loadingCombine } from "../utils";
 import { listInstanceStateKeys } from "./listInstance";
 import { listRelatedStateKeys } from "./listRelated";
 import { listSubscriptionStateKeys } from "./listSubscription";
 import { useWatchesRunning } from "./watchesRunning";
 import isEmpty from "lodash-es/isEmpty";
 import { computed, effectScope, onScopeDispose, reactive, toRef, watch } from "vue";
-
-const computedDebugMessage = useDebugMessage(["listCalculated", "computed"]);
-const watchDebugMessage = useDebugMessage(["listCalculated", "watch"]);
 
 export const listCalculatedStateKeys = [
     "calculatedObjects",
@@ -38,7 +35,6 @@ export function useListCalculated({ parentState, calculatedObjectsRules }) {
     const calculatedObjectsEffectScopes = {};
 
     function parentStateObjectsWatch() {
-        watchDebugMessage("parentStateObjectsWatch called");
         const { addedKeys, removedKeys } = keyDiff(
             Object.keys(parentState.objects),
             Object.keys(state.calculatedObjects)
@@ -57,7 +53,6 @@ export function useListCalculated({ parentState, calculatedObjectsRules }) {
     }
 
     function calculatedObjectsWatch() {
-        watchDebugMessage("calculatedObjectsWatch called");
         const calculatedObjectsRulesIsEmpty = !state.calculatedObjectsRules || isEmpty(state.calculatedObjectsRules);
         for (const objectKey of Object.keys(state.calculatedObjects)) {
             if (!calculatedObjectsEffectScopes[objectKey]) {
@@ -126,7 +121,6 @@ export function useListCalculated({ parentState, calculatedObjectsRules }) {
         watchesRunning = useWatchesRunning({
             triggerRefs: [
                 computed(() => {
-                    computedDebugMessage("listCalculated trigger");
                     return state.calculatedObjectsRules && !isEmpty(state.calculatedObjectsRules)
                         ? parentState.loading
                         : false;
@@ -139,7 +133,6 @@ export function useListCalculated({ parentState, calculatedObjectsRules }) {
         });
 
         state.running = computed(() => {
-            computedDebugMessage("listCalculated running");
             return loadingCombine(watchesRunning.state.running, parentState.running);
         });
 

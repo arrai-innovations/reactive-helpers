@@ -1,13 +1,10 @@
-import { keyDiff, useDebugMessage } from "../utils";
+import { keyDiff } from "../utils";
 import { useWatchesRunning } from "./watchesRunning";
 import get from "lodash-es/get";
 import isArray from "lodash-es/isArray";
 import isEmpty from "lodash-es/isEmpty";
 import isUndefined from "lodash-es/isUndefined";
 import { computed, effectScope, onScopeDispose, reactive, toRef, unref, watch } from "vue";
-
-const computedDebugMessage = useDebugMessage(["objectRelated", "computed"]);
-const watchDebugMessage = useDebugMessage(["objectRelated", "watch"]);
 
 export function useObjectRelateds(instances, args) {
     for (const [key, value] of Object.entries(args)) {
@@ -64,7 +61,6 @@ export function useObjectRelated({
         }
 
         watch([() => state.relatedObjectRules && Object.keys(state.relatedObjectRules)], () => {
-            watchDebugMessage("relatedObjectRules changed");
             let addedRuleKeys = [],
                 removedRuleKeys = [];
             if (!state.relatedObjectRules) {
@@ -87,7 +83,6 @@ export function useObjectRelated({
                 relatedObjectEffectScopes[addedRuleKey] = effectScope();
                 relatedObjectEffectScopes[addedRuleKey].run(() => {
                     state.relatedObjectObjects[addedRuleKey] = computed(() => {
-                        computedDebugMessage("relatedObjectObjects computed");
                         // deal with computed objects being passed.
                         const ruleObjects = unref(state.relatedObjectRules?.[addedRuleKey]?.objects);
                         const rulePkKey = state.relatedObjectRules?.[addedRuleKey]?.pkKey || addedRuleKey;
@@ -110,7 +105,6 @@ export function useObjectRelated({
         watchesRunning = useWatchesRunning({
             triggerRefs: [
                 computed(() => {
-                    watchDebugMessage("parentStateObjectWatchRunning");
                     return !isEmpty(state.relatedObjectRules) ? parentState.loading : false;
                 }),
             ],
