@@ -1,4 +1,4 @@
-import { inspecttransformWalkFn, useDebugMessage } from "./debugMessage";
+import { inspectWalkFn, useDebugMessage } from "./debugMessage";
 import { keyDiffDeep } from "./keyDiff";
 import { transformWalk } from "./transformWalk";
 import { isEqual, partial } from "lodash-es";
@@ -23,9 +23,9 @@ window.RH_DEBUG_SKIP_EMPTY_CHANGE_EFFECTS = true;
 export const customHandlers = {
     onRenderTriggered: (debugMessage, e) => {
         const newSeenObjects = new Map();
-        const newValue = transformWalk(e.newValue, partial(inspecttransformWalkFn, newSeenObjects));
+        const newValue = transformWalk(e.newValue, partial(inspectWalkFn, newSeenObjects));
         const oldSeenObjects = new Map();
-        const oldValue = transformWalk(e.oldValue, partial(inspecttransformWalkFn, oldSeenObjects));
+        const oldValue = transformWalk(e.oldValue, partial(inspectWalkFn, oldSeenObjects));
         let keyDiffResults;
         if (typeof newValue !== "object" || typeof oldValue !== "object") {
             keyDiffResults = keyDiffDeep(newValue, oldValue);
