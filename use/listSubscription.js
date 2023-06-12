@@ -196,10 +196,7 @@ export function useListSubscription({ listInstance, props, functions }) {
         state.subscribed = toRef(subscribeIntent.state, "active");
 
         listIntent = useCancellableIntent({
-            awaitableWithCancel: () => {
-                listInstance.clearList();
-                return listInstance.list();
-            },
+            awaitableWithCancel: listInstance.list,
             watchArguments: reactive({
                 intendToList: toRef(state, "intendToList"),
                 listArgs: toRef(parentState, "listArgs"),
