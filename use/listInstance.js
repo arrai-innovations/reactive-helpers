@@ -114,6 +114,7 @@ export function useListInstance({ props, functions = {} }) {
     });
 
     const defaultPageCallback = (newObjects) => {
+        clearList();
         newObjects.forEach((newObject) => {
             if (newObject.id in state.objects) {
                 updateListObject(newObject);
