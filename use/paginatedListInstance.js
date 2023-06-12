@@ -7,6 +7,14 @@ export function usePagedListInstance({ keepOldPages = false, ...useListInstanceA
     listInstance.state.totalPages = 0;
     listInstance.state.perPage = 0;
 
+    const superClearList = listInstance.clearList;
+    listInstance.clearList = () => {
+        superClearList();
+        listInstance.state.totalRecords = 0;
+        listInstance.state.totalPages = 0;
+        listInstance.state.perPage = 0;
+    };
+
     listInstance.pageCallback = (newObjects, { totalRecords, totalPages, perPage }) => {
         // with keepOldPages, you are responsible for clearing the list as needed
         if (!keepOldPages) {
