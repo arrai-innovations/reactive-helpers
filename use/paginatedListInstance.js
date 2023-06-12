@@ -13,8 +13,13 @@ export function usePagedListInstance({ keepOldPages = false, ...useListInstanceA
             // display one page at a time, clear the list
             listInstance.clearList();
         }
-
-        listInstance.defaultPageCallback(newObjects);
+        newObjects.forEach((newObject) => {
+            if (newObject.id in listInstance.state.objects) {
+                listInstance.updateListObject(newObject);
+            } else {
+                listInstance.addListObject(newObject);
+            }
+        });
         if (totalRecords !== undefined) {
             listInstance.state.totalRecords = totalRecords;
         }
