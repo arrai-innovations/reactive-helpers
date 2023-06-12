@@ -1,6 +1,7 @@
+import { isEmpty } from "lodash-es";
 import identity from "lodash-es/identity";
 import isEqual from "lodash-es/isEqual";
-import { effectScope, nextTick, onScopeDispose, reactive, readonly, watch } from "vue";
+import { computed, effectScope, nextTick, onScopeDispose, reactive, readonly, watch } from "vue";
 import { deepUnref } from "vue-deepunref";
 
 /*
@@ -8,7 +9,12 @@ import { deepUnref } from "vue-deepunref";
  * Watch arguments should be a reactive object.
  * If the promise is not resolved before the watch arguments change again, the previous promise is cancelled.
  */
-export function useCancellableIntent({ awaitableWithCancel, watchArguments = {}, clearActiveOnResolved = true }) {
+export function useCancellableIntent({
+    awaitableWithCancel,
+    watchArguments = {},
+    guardArguments = {},
+    clearActiveOnResolved = true,
+}) {
     if (!awaitableWithCancel) {
         throw new Error("awaitableWithCancel is required");
     }
@@ -16,7 +22,9 @@ export function useCancellableIntent({ awaitableWithCancel, watchArguments = {},
         throw new Error("awaitableWithCancel must be a function");
     }
     const state = reactive({
+        activeCount: undefined, // the active count doesn't mean much when not using clearActiveOnResolved
         active: undefined,
+        resolvingCount: undefined,
         resolving: undefined,
         errored: false,
         error: null,
@@ -34,8 +42,6 @@ export function useCancellableIntent({ awaitableWithCancel, watchArguments = {},
 
     async function cancel() {
         if (cancelFunction) {
-            state.active = false;
-            state.resolving = false;
             const cancelPromise = cancelFunction().catch(console.error);
             cancelFunction = null;
             return cancelPromise;
@@ -43,52 +49,95 @@ export function useCancellableIntent({ awaitableWithCancel, watchArguments = {},
         return false;
     }
 
-    const watchFn = () => {
+    const doIntentWatch = async () => {
+        state.errored = false;
+        state.error = null;
+        if (state.activeCount === undefined) {
+            state.activeCount = 0;
+        }
+        state.activeCount += 1;
+        if (state.resolvingCount === undefined) {
+            state.resolvingCount = 0;
+        }
+        state.resolvingCount += 1;
+        let awaitablePromise = awaitableWithCancel();
+
+        if (awaitablePromise.cancel) {
+            cancelFunction = awaitablePromise.cancel;
+        }
+        // we don't want to await this, because we want to be able to cancel it
+        awaitablePromise
+            .catch(async (err) => {
+                await cancel();
+                console.error(err);
+                state.errored = true;
+                state.error = err;
+                throw err;
+            })
+            .finally(() => {
+                state.resolvingCount--;
+                if (state.clearActiveOnResolved) {
+                    cancelFunction = null;
+                    state.activeCount--;
+                }
+            });
+    };
+
+    let delayedWatch = null;
+
+    const intentWatch = async () => {
         let newWatchValues = deepUnref(Object.values(watchArguments));
         if (isEqual(newWatchValues, previousWatchValues)) {
             return;
         }
         previousWatchValues = newWatchValues;
-        cancel().catch(console.error);
+        await cancel();
         if (Object.values(previousWatchValues).every(identity)) {
-            state.errored = false;
-            state.error = null;
-            let awaitablePromise = awaitableWithCancel();
-            state.active = true;
-            state.resolving = true;
-            if (awaitablePromise.cancel) {
-                cancelFunction = async () => {
-                    state.active = false;
-                    state.resolving = false;
-                    cancelFunction = null;
-                    return awaitablePromise.cancel();
-                };
+            // if any guards are true, delay the watch.
+            if (guardArguments && !isEmpty(guardArguments) && Object.values(guardArguments).some(identity)) {
+                delayedWatch = doIntentWatch;
+                return;
             }
-            awaitablePromise
-                .then(() => {
-                    state.resolving = false;
-                    if (state.clearActiveOnResolved) {
-                        cancelFunction = null;
-                        state.active = false;
-                    }
-                })
-                .catch(async (err) => {
-                    await cancel();
-                    console.error(err);
-                    state.errored = true;
-                    state.error = err;
-                    throw err;
-                });
+            doIntentWatch();
+        }
+    };
+
+    const guardWatch = async () => {
+        if (delayedWatch) {
+            // if all guards are false, run the watch
+            if (Object.values(guardArguments).every((x) => !x)) {
+                const myDelayedWatch = delayedWatch;
+                delayedWatch = null;
+                await myDelayedWatch();
+            }
         }
     };
 
     es.run(() => {
-        watch(() => Object.values(watchArguments), watchFn, {
+        state.active = computed(() => {
+            if (state.activeCount === undefined) {
+                return undefined;
+            }
+            return state.activeCount > 0;
+        });
+        state.resolving = computed(() => {
+            if (state.resolvingCount === undefined) {
+                return undefined;
+            }
+            return state.resolvingCount > 0;
+        });
+
+        watch(() => Object.values(watchArguments), intentWatch, {
             // this can't be immediate because subscribe wants to look at our state, which won't exist yet.
             deep: true,
         });
 
-        nextTick().then(watchFn);
+        watch(() => Object.values(guardArguments), guardWatch, {
+            // we can't possibly have a delayed watch immediately
+            deep: true,
+        });
+
+        nextTick().then(intentWatch);
 
         onScopeDispose(cancel);
     });
