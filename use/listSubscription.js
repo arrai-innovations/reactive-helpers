@@ -202,6 +202,11 @@ export function useListSubscription({ listInstance, props, functions }) {
                 listArgs: toRef(parentState, "listArgs"),
                 retrieveArgs: toRef(parentState, "retrieveArgs"),
             }),
+            // delay triggering a list until the last list has finished/cancelled
+            // cancel can still be triggered
+            guardArguments: reactive({
+                loading: toRef(parentState, "loading"),
+            }),
         });
     });
 

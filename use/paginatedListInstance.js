@@ -7,14 +7,27 @@ export function usePagedListInstance({ keepOldPages = false, ...useListInstanceA
     listInstance.state.totalPages = 0;
     listInstance.state.perPage = 0;
 
+    const superClearList = listInstance.clearList;
+    listInstance.clearList = () => {
+        superClearList();
+        listInstance.state.totalRecords = 0;
+        listInstance.state.totalPages = 0;
+        listInstance.state.perPage = 0;
+    };
+
     listInstance.pageCallback = (newObjects, { totalRecords, totalPages, perPage }) => {
         // with keepOldPages, you are responsible for clearing the list as needed
         if (!keepOldPages) {
             // display one page at a time, clear the list
             listInstance.clearList();
         }
-
-        listInstance.defaultPageCallback(newObjects);
+        newObjects.forEach((newObject) => {
+            if (newObject.id in listInstance.state.objects) {
+                listInstance.updateListObject(newObject);
+            } else {
+                listInstance.addListObject(newObject);
+            }
+        });
         if (totalRecords !== undefined) {
             listInstance.state.totalRecords = totalRecords;
         }

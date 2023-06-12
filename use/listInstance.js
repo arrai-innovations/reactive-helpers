@@ -140,11 +140,10 @@ export function useListInstance({ props, functions = {} }) {
             listArgs: state.listArgs,
             pageCallback: returnedObject.pageCallback,
         });
+        let resolveState = false;
         if (listPromise.cancel) {
             returnPromise.cancel = async () => {
                 let promise = listPromise.cancel();
-                state.loading = false;
-                returnPromiseResolve(false);
                 if (promise) {
                     await promise;
                 }
@@ -153,14 +152,15 @@ export function useListInstance({ props, functions = {} }) {
         // the indirection of promises here is to allow us to do additional work on listPromise's cancel
         listPromise
             .then(() => {
-                state.loading = false;
-                returnPromiseResolve(true);
+                resolveState = true;
             })
             .catch((error) => {
-                state.loading = false;
                 state.errored = true;
                 state.error = error;
-                returnPromiseResolve(false);
+            })
+            .finally(() => {
+                state.loading = false;
+                returnPromiseResolve(resolveState);
             });
         return returnPromise;
     }
