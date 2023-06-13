@@ -4,6 +4,11 @@ import isArray from "lodash-es/isArray";
 import isObject from "lodash-es/isObject";
 import { Ref, isReactive, isRef, toRef, unref } from "vue";
 
+/**
+ * Reactive object assignment utilities
+ * @module utils/assignReactiveObject
+ */
+
 export class AssignReactiveObjectError extends Error {
     constructor(message) {
         super(message);
@@ -92,6 +97,7 @@ function reactiveReplaceKeys(target, source, keys, exclude = []) {
 
 /**
  * Adds to a target the missing keys from a source. `addedKeys` can be precalculated to avoid recalculation.
+ * @function addReactiveObject
  * @param {ValidTargetOrSource} target The object receiving values.
  * @param {ValidTargetOrSource} source The object providing values.
  * @param {Array} [exclude] Keys to exclude from the addition.
@@ -113,6 +119,7 @@ export function addReactiveObject(target, source, exclude = [], addedKeys = null
 
 /**
  * Updates a target with mutually shared keys from a source. `sameKeys` can be precalculated to avoid recalculation.
+ * @function updateReactiveObject
  * @param {ValidTargetOrSource} target The object receiving values.
  * @param {ValidTargetOrSource} source The object providing values.
  * @param {Array} [exclude] Keys to exclude from the update.
@@ -134,6 +141,7 @@ export function updateReactiveObject(target, source, exclude = [], sameKeys = nu
 
 /**
  * Adds to a target the missing keys from a source, and updates a target with mutually shared keys from a source.
+ * @function addOrUpdateReactiveObject
  * @param {ValidTargetOrSource} target The object receiving values.
  * @param {ValidTargetOrSource} source The object providing values.
  * @param {Array} [exclude] Keys to exclude from the addition or update.
@@ -159,6 +167,7 @@ export function addOrUpdateReactiveObject(target, source, exclude = [], addedKey
 
 /**
  * Removes keys from a target that are not present in a source.
+ * @function trimReactiveObject
  * @param {ValidTargetOrSource} target The object receiving trimming.
  * @param {ValidTargetOrSource|null} source The object that provides the allowed set of keys for calculating `removedKeys`.
  * @param {Array} [exclude] Keys to exclude from removal.
@@ -198,6 +207,7 @@ export function trimReactiveObject(target, source, exclude = [], removedKeys = n
 /**
  * Change a target to match a source, where keys missing from the source are removed from the target,
  * keys present in the source are added to the target, and keys present in both are updated in the target.
+ * @function assignReactiveObject
  * @param {ValidTargetOrSource} target The target object or array.
  * @param {ValidTargetOrSource} source The reactive object to assign.
  * @param {Array} [exclude] Keys to exclude from the assignment.
@@ -283,6 +293,7 @@ function assignReactiveObjectRecursive(target, source, exclude = [], path = "") 
 /**
  * Recursively change a target to match a source, where keys missing from the source are removed from the target,
  * keys present in the source are added to the target, and keys present in both are updated in the target.
+ * @function assignReactiveObjectDeep
  * @param {ValidTargetOrSource} target The object receiving updates.
  * @param {ValidTargetOrSource} source The object providing updates.
  * @param {Array} [exclude] Keys to exclude from the assignment.
@@ -319,6 +330,7 @@ function addOrUpdateReactiveObjectRecursive(target, source, exclude = [], path =
 /**
  * Recursively change a target to match a source, where keys present in the source are added to the target, and
  * keys present in both are updated in the target. Missing keys are not removed.
+ * @function addOrUpdateReactiveObjectDeep
  * @param {ValidTargetOrSource} target The object receiving updates.
  * @param {ValidTargetOrSource} source The object providing updates.
  * @param {Array} [exclude] Keys to exclude from the update.

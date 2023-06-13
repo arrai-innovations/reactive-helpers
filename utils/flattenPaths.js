@@ -2,9 +2,15 @@ import isArray from "lodash-es/isArray";
 import isObject from "lodash-es/isObject";
 
 /**
+ * Get all paths from an array or object.
+ * @module utils/flattenPaths
+ */
+
+/**
  * Turn an array or object into an array of path strings. Recurses for any found arrays or objects.
  *
  * Array indexes are wrapped in square brackets and object keys are prefixed with a period.
+ * @function flattenPaths
  * @param {Array | object} arrayOrObject array or object to flatten
  * @param {string} currentPath current path, for recursion or as a starting point
  * @returns {string[]} paths
