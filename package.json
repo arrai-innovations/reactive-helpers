@@ -14,7 +14,7 @@
         "coverage": "npm run coverage:clean; npm test -- --coverage=true",
         "coverage:clean": "rm -rf coverage",
         "prepare": "husky install",
-        "docs": "npx jsdoc-to-markdown > docs.md; npx --no-install prettier --write docs.md"
+        "docs": "./jsdoc-to-markdown.sh"
     },
     "repository": {
         "type": "git",
