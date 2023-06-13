@@ -4,8 +4,8 @@ module.exports = {
     env: {
         node: true,
     },
-
-    extends: ["plugin:vue/vue3-essential", "eslint:recommended", "@vue/prettier"],
+    plugins: ["jsdoc"],
+    extends: ["plugin:vue/vue3-essential", "eslint:recommended", "@vue/prettier", "plugin:jsdoc/recommended-error"],
 
     parserOptions: {
         parser: "babel-eslint",
@@ -22,5 +22,6 @@ module.exports = {
                 asyncArrow: "always",
             },
         ],
+        "jsdoc/require-jsdoc": "off", // let's ease into this
     },
 };

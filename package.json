@@ -3,6 +3,7 @@
     "version": "8.0.3",
     "description": "VueJS 3 utility composition functions to help manipulate objects and lists.",
     "main": "index.js",
+    "type": "module",
     "directories": {
         "use": "use",
         "utils": "utils",
@@ -12,7 +13,8 @@
         "test": "jest",
         "coverage": "npm run coverage:clean; npm test -- --coverage=true",
         "coverage:clean": "rm -rf coverage",
-        "prepare": "husky install"
+        "prepare": "husky install",
+        "docs": "./jsdoc-to-markdown.sh"
     },
     "repository": {
         "type": "git",
@@ -28,6 +30,7 @@
         "@arrai-innovations/commitlint-config": "^1.1.0",
         "@babel/preset-env": "^7.17.10",
         "@commitlint/cli": "^16.2.4",
+        "@godaddy/dmd": "^1.0.4",
         "@trivago/prettier-plugin-sort-imports": "^4.1.1",
         "@types/jest": "^27.5.0",
         "@vue/compiler-sfc": "^3.3.4",
@@ -39,9 +42,11 @@
         "doctoc": "^2.1.0",
         "eslint": "^7.32.0",
         "eslint-plugin-jest": "^26.1.5",
+        "eslint-plugin-jsdoc": "^46.2.6",
         "eslint-plugin-vue": "^8.7.1",
         "flush-promises": "^1.0.2",
-        "lint-staged": "^11.1.2",
+        "jsdoc-to-markdown": "^8.0.0",
+        "lint-staged": "^13.2.2",
         "prettier": "2.6.2"
     },
     "dependencies": {

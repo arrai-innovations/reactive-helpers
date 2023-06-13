@@ -7,7 +7,6 @@ import { unref } from "vue";
 /**
  * Whether debug messages are enabled or not. For deploying to production with debugging but not
  * spamming everyone with debug messages.
- *
  * @type {boolean}
  */
 window.RH_DEBUG = false;
@@ -20,7 +19,6 @@ window.RH_DEBUG = false;
  * The special category "*" will match all messages.
  * Strings passed as keys will be treated as a single category.
  * Sets can also be passed as keys, which is what the arrays get converted to.
- *
  * @type {Map<string[]|string|Set, boolean>}
  * @example
  * window.RH_DEBUG = true; // turn it on
@@ -34,7 +32,6 @@ window.RH_DEBUG_CATEGORIES = new Map();
 /**
  * Group identical messages together and show a count of how many times they were logged.
  * Messages are only shown on the trailing edge, so logging is delayed and somewhat out of order.
- *
  * @type {boolean}
  */
 window.RH_DEBOUNCE_DEBUG = false;
@@ -42,7 +39,6 @@ window.RH_DEBOUNCE_DEBUG = false;
 /**
  * Whether to process arguments to be more friendly for console.log, with regard to circular references
  * and not recursing into vue components.
- *
  * @type {boolean}
  */
 window.RH_TRANSFORM_MESSAGES = true;
@@ -53,9 +49,10 @@ const messageBounceFns = {};
 const counts = {};
 
 /**
+ * @private
  * @param {Set} categoriesSet categories for the message log
  * @param {string} categoriesKey key for debouncing
- * @param {*[]} messages
+ * @param {Array.<*>} messages messages to log
  */
 const doLog = (categoriesSet, categoriesKey, messages) => {
     if (messages.length > 0) {
@@ -74,7 +71,7 @@ const doLog = (categoriesSet, categoriesKey, messages) => {
 /**
  * Process a value for logging, dealing with circular references and
  * not recursing into vue components.
- *
+ * @private
  * @param {Map} seenObjects for circlular reference detection
  * @param {string} key keys is an unused argument from walk
  * @param {*} value value to process
@@ -98,8 +95,9 @@ export const inspectWalkFn = (seenObjects, key, value, path) => {
 };
 
 /**
- * @param {(string|function)[]} messages messages to resolve
- * @returns {*[]} resolved messages
+ * @private
+ * @param {Array.<string | Function>} messages messages to resolve
+ * @returns {Array.<*>} resolved messages
  */
 const resolveMessages = (messages) => {
     const resolvedMessages = [];
@@ -115,9 +113,11 @@ const resolveMessages = (messages) => {
 };
 
 /**
+ * @private
  * @param {Set} categoriesSet categories for the message log
  * @param {string} categoriesKey key for debouncing
- * @param {*[]} messages messages to log
+ * @param {Array.<*>} messages messages to log
+ * @returns {void}
  */
 const doDebouncedLog = (categoriesSet, categoriesKey, messages) => {
     if (!window.RH_DEBOUNCE_DEBUG) {
@@ -134,15 +134,16 @@ const doDebouncedLog = (categoriesSet, categoriesKey, messages) => {
 };
 
 /**
+ * @private
  * @param {string} categoriesKey categories for the message log
- * @param {(string|function)[]} messages messages to log
+ * @param {Array.<string | Function>} messages messages to log
  * @returns {string} key
- **/
+ */
 const getKey = (categoriesKey, messages) => `${categoriesKey}|${messages.join("-")}`;
 
 /**
- * @typedef {Object} DebugMessageFunction
- * @property {function(...((string|function)[]|string|function)): void} log log a message
+ * @typedef {object} DebugMessageFunction
+ * @property {function(...(Array.<string | Function> | string | Function)): void} log log a message
  */
 
 /**
