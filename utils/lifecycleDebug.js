@@ -81,7 +81,9 @@ const defaultHandler = (debugMessage) => {
 };
 
 /**
- * @param {string[]} categories
+ * @param {string[]} categories - the categories to give messages this generates
+ * @param {string[]} [includes] - the lifecycle functions to include
+ * @param {string[]} [excludes] - the lifecycle functions to exclude
  */
 export function useLifecycleDebug(categories, includes = [], excludes = []) {
     const lifeCycleFns = {

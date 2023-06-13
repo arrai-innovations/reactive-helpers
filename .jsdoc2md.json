@@ -1,0 +1,4 @@
+{
+    "files": ["use/**/*.js", "utils/**/*.js"],
+    "plugin": "@godaddy/dmd"
+}
