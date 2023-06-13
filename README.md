@@ -47,7 +47,13 @@ $ npm install @arrai-innovations/reactive-helpers
 ```js
 // base import contains all exports
 import { useListInstance, useObjectInstance } from "@arrai-innovations/reactive-helpers";
+// you can also import individual modules
+import { useListInstance } from "@arrai-innovations/reactive-helpers/use/listInstance";
+// or the module categories
+import { useObjectInstance } from "@arrai-innovations/reactive-helpers/use";
 ```
+
+See the [JSDocs](./docs.md) for list of available modules and imports.
 
 ### JSDocs
 

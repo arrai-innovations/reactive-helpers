@@ -5,6 +5,11 @@ import debounce from "lodash-es/debounce";
 import { unref } from "vue";
 
 /**
+ * Configurable logging of debug messages at runtime.
+ * @module utils/debugMessage
+ */
+
+/**
  * Whether debug messages are enabled or not. For deploying to production with debugging but not
  * spamming everyone with debug messages.
  * @type {boolean}
@@ -72,6 +77,7 @@ const doLog = (categoriesSet, categoriesKey, messages) => {
  * Process a value for logging, dealing with circular references and
  * not recursing into vue components.
  * @private
+ * @function inspectWalkFn
  * @param {Map} seenObjects for circlular reference detection
  * @param {string} key keys is an unused argument from walk
  * @param {*} value value to process
@@ -142,11 +148,14 @@ const doDebouncedLog = (categoriesSet, categoriesKey, messages) => {
 const getKey = (categoriesKey, messages) => `${categoriesKey}|${messages.join("-")}`;
 
 /**
+ * Logs debug messages based on the specified categories and logging rules.
  * @typedef {object} DebugMessageFunction
- * @property {function(...(Array.<string | Function> | string | Function)): void} log log a message
+ * @property {function(...(Array.<string | Function> | string | Function)): void} messages log a message
  */
 
 /**
+ * Returns a function that logs debug messages based on enabled categories.
+ * @function useDebugMessage
  * @param {string[]} categories categories for the message log
  * @returns {DebugMessageFunction} debug message function
  */

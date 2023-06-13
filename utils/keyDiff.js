@@ -2,6 +2,13 @@ import { flattenPaths } from "./flattenPaths.js";
 import { difference, intersection } from "./set.js";
 
 /**
+ * Calculate the difference between objects in terms of what keys
+ * are the same, what keys are removed, and what keys are added.
+ * @module utils/keyDiff
+ */
+
+/**
+ * Options for keyDiff and keyDiffDeep
  * @typedef {object} KeyDiffOptions
  * @property {boolean} [sameKeys=true] - if true, return keys that are the same
  * @property {boolean} [removedKeys=true] - if true, return keys that are removed
@@ -9,6 +16,7 @@ import { difference, intersection } from "./set.js";
  */
 
 /**
+ * Result object of keyDiff and keyDiffDeep
  * @typedef {object} KeyDiffResult
  * @property {string[]} [sameKeys] - if sameKeys option is true, return keys that are the same
  * @property {string[]} [removedKeys] - if removedKeys option is true, return keys that are removed
@@ -18,6 +26,7 @@ import { difference, intersection } from "./set.js";
 /**
  * Calculate the difference between two arrays of keys, in terms of what keys
  * are the same, what keys are removed, and what keys are added.
+ * @function keyDiff
  * @param {string[]} newKeys - keys to consider as new
  * @param {string[]} oldKeys - keys to consider as old
  * @param {KeyDiffOptions} [options] - which differences are returned
@@ -42,6 +51,7 @@ export function keyDiff(newKeys, oldKeys, { sameKeys = true, removedKeys = true,
 /**
  * Calculate the difference between two objects, in terms of what keys are the same,
  * what keys are removed, and what keys are added. Keys are sourced deeply in the objects.
+ * @function keyDiffDeep
  * @param {object} newObj - the new version of the object
  * @param {object} oldObj - the old version of the object
  * @param {KeyDiffOptions} [options] - which differences are returned

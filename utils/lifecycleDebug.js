@@ -18,6 +18,11 @@ import {
     unref,
 } from "vue";
 
+/**
+ * Debug lifecycle hooks
+ * @module utils/lifecycleDebug
+ */
+
 window.RH_DEBUG_SKIP_EMPTY_CHANGE_EFFECTS = true;
 
 export const customHandlers = {
@@ -81,6 +86,8 @@ const defaultHandler = (debugMessage) => {
 };
 
 /**
+ * Using useDebugMessage, log lifecycle events for the current component, with the specified categories.
+ * @function useLifecycleDebug
  * @param {string[]} categories - the categories to give messages this generates
  * @param {string[]} [includes] - the lifecycle functions to include
  * @param {string[]} [excludes] - the lifecycle functions to exclude
