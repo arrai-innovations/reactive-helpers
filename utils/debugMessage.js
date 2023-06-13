@@ -49,6 +49,7 @@ const messageBounceFns = {};
 const counts = {};
 
 /**
+ * @private
  * @param {Set} categoriesSet categories for the message log
  * @param {string} categoriesKey key for debouncing
  * @param {Array.<*>} messages messages to log
@@ -70,6 +71,7 @@ const doLog = (categoriesSet, categoriesKey, messages) => {
 /**
  * Process a value for logging, dealing with circular references and
  * not recursing into vue components.
+ * @private
  * @param {Map} seenObjects for circlular reference detection
  * @param {string} key keys is an unused argument from walk
  * @param {*} value value to process
@@ -93,6 +95,7 @@ export const inspectWalkFn = (seenObjects, key, value, path) => {
 };
 
 /**
+ * @private
  * @param {Array.<string | Function>} messages messages to resolve
  * @returns {Array.<*>} resolved messages
  */
@@ -110,6 +113,7 @@ const resolveMessages = (messages) => {
 };
 
 /**
+ * @private
  * @param {Set} categoriesSet categories for the message log
  * @param {string} categoriesKey key for debouncing
  * @param {Array.<*>} messages messages to log
@@ -130,6 +134,7 @@ const doDebouncedLog = (categoriesSet, categoriesKey, messages) => {
 };
 
 /**
+ * @private
  * @param {string} categoriesKey categories for the message log
  * @param {Array.<string | Function>} messages messages to log
  * @returns {string} key

@@ -18,6 +18,7 @@ export class AssignReactiveObjectError extends Error {
 
 /**
  * Validates that a value is an array or an object, and throws an error if it is not.
+ * @private
  * @param {string} key The key being validated.
  * @param {*} value The value being validated.
  * @throws {AssignReactiveObjectError} If the value is not an array or an object.
@@ -30,6 +31,7 @@ function isArrayOrObject(key, value) {
 
 /**
  * @typedef validateTargetAndSourceResult
+ * @private
  * @property {ValidTargetOrSource} target The validated target value.
  * @property {ValidTargetOrSource} source The validated source value.
  */
@@ -37,6 +39,7 @@ function isArrayOrObject(key, value) {
 /**
  * Validates that the target and source values are arrays or objects, and returns them.
  * If either value is a ref, it is dereferenced before validation.
+ * @private
  * @param {ValidTargetOrSource} target The target value to validate.
  * @param {ValidTargetOrSource} source The source value to validate.
  * @returns {validateTargetAndSourceResult} An object containing the validated target and source values.
@@ -61,6 +64,7 @@ function validateTargetAndSource(target, source) {
 /**
  * Replaces keys in a target object or array with reactive refs to the corresponding keys in a
  * source object or array.
+ * @private
  * @param {ValidTargetOrSource} target The object receiving values.
  * @param {ValidTargetOrSource} source The object providing values.
  * @param {Array} keys The keys to replace.
@@ -217,6 +221,7 @@ export function assignReactiveObject(target, source, exclude = []) {
  * keys present in the source are added to the target, and keys present in both are updated in the target.
  *
  * As an internal function, this function does not validate its arguments and has no optional arguments.
+ * @private
  * @param {ValidTargetOrSource} target The object receiving updates.
  * @param {ValidTargetOrSource} source The object providing updates.
  * @param {Array} exclude Keys to exclude from the update.
@@ -259,6 +264,7 @@ function recursiveInner(target, source, exclude, addedKeys, sameKeys, path, fn) 
  * keys present in the source are added to the target, and keys present in both are updated in the target.
  *
  * An internal function to avoid validating arguments repeatedly.
+ * @private
  * @param {ValidTargetOrSource} target The object receiving updates.
  * @param {ValidTargetOrSource} source The object providing updates.
  * @param {Array} [exclude] Keys to exclude from the assignment.
@@ -297,6 +303,7 @@ export function assignReactiveObjectDeep(target, source, exclude = []) {
  * keys present in both are updated in the target. Missing keys are not removed.
  *
  * As an internal function, this function does not validate its argument.
+ * @private
  * @param {ValidTargetOrSource} target The object receiving updates.
  * @param {ValidTargetOrSource} source The object providing updates.
  * @param {Array} [exclude] Keys to exclude from the update.
