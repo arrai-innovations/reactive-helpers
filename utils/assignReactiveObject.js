@@ -2,7 +2,7 @@ import { keyDiff } from "./keyDiff.js";
 import inspect from "browser-util-inspect";
 import isArray from "lodash-es/isArray";
 import isObject from "lodash-es/isObject";
-import { Ref, isReactive, isRef, toRef, unref } from "vue";
+import { isReactive, isRef, toRef, unref } from "vue";
 
 /**
  * Reactive object assignment utilities
@@ -15,6 +15,11 @@ export class AssignReactiveObjectError extends Error {
         this.name = "AssignReactiveObjectError";
     }
 }
+
+/**
+ * @typedef {*} Ref A Vue ref
+ * @private
+ */
 
 /**
  * @typedef {Ref|object|Array} ValidTargetOrSource targets and sources must be refs, objects, or arrays
