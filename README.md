@@ -5,7 +5,7 @@
 ![ESLint](https://docs.arrai-dev.com/reactive-helpers/artifacts/main/eslint.svg)
 ![Prettier](https://docs.arrai-dev.com/reactive-helpers/artifacts/main/prettier.svg)
 
-VueJS 3 utility composition functions to help manipulate objects and lists.
+Vue.js 3 utility composition functions to help manipulate objects and lists.
 
 <!-- prettier-ignore-start -->
 <!-- START doctoc generated TOC please keep comment here to allow auto update -->
