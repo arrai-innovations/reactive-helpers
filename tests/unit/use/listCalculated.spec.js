@@ -10,8 +10,8 @@ describe("use/listCalculated", () => {
         useListCalculated = listCalculatedModule.useListCalculated;
     });
     it("should return a list of calculated items", async () => {
-        const mainListInstance = useListInstance({});
-        const calculatedListInstance = useListInstance({});
+        const mainListInstance = useListInstance({ props: {} });
+        const calculatedListInstance = useListInstance({ props: {} });
         mainListInstance.addListObject({
             id: "1",
             name: "main",
@@ -36,15 +36,13 @@ describe("use/listCalculated", () => {
                 calculatedItems: (obj) => obj.calculated_items.map((x) => calculatedListInstance.state.objects[x]),
                 calculatedItem: (obj) => calculatedListInstance.state.objects[obj.calculated_id],
             },
-            calculatedObjectsPropertyName: "myCalculatedObjects",
         });
         await nextTick();
         // listCalculated.state.objects is doing proxy shenanigans
         // in uses handler.has
-        expect("myCalculatedObjects" in listCalculated.state).toBe(true);
-        expect(!!listCalculated.state.myCalculatedObjects?.[1]).toBe(true);
-        expect("calculatedItems" in listCalculated.state.myCalculatedObjects[1]).toBe(true);
-        expect("calculatedItem" in listCalculated.state.myCalculatedObjects[1]).toBe(true);
+        expect(!!listCalculated.state.calculatedObjects?.[1]).toBe(true);
+        expect("calculatedItems" in listCalculated.state.calculatedObjects[1]).toBe(true);
+        expect("calculatedItem" in listCalculated.state.calculatedObjects[1]).toBe(true);
         // expect uses enumeration, which uses handler.ownKeys and handler.getOwnPropertyDescriptor
         expect(deepUnref(listCalculated.state.objects)).toEqual({
             1: {
@@ -54,7 +52,7 @@ describe("use/listCalculated", () => {
                 calculated_items: ["2", "3"],
             },
         });
-        expect(deepUnref(listCalculated.state.myCalculatedObjects)).toEqual({
+        expect(deepUnref(listCalculated.state.calculatedObjects)).toEqual({
             1: {
                 calculatedItems: [
                     {

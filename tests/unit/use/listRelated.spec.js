@@ -1,3 +1,4 @@
+// import { useListInstance, useListRelated } from "../../../use/listRelated";
 import { nextTick } from "vue";
 import { deepUnref } from "vue-deepunref";
 
@@ -10,8 +11,8 @@ describe("use/listRelated", () => {
         useListRelated = listRelatedModule.useListRelated;
     });
     it("should return a list of related items", async () => {
-        const mainListInstance = useListInstance({});
-        const relatedListInstance = useListInstance({});
+        const mainListInstance = useListInstance({ props: {} });
+        const relatedListInstance = useListInstance({ props: {} });
         mainListInstance.addListObject({
             id: "1",
             name: "main",
@@ -42,15 +43,13 @@ describe("use/listRelated", () => {
                     pkKey: "related_id",
                 },
             },
-            relatedObjectsPropertyName: "myRelatedObjects",
         });
         await nextTick();
         // listRelated.state.objects is doing proxy shenanigans
         // in uses handler.has
-        expect("myRelatedObjects" in listRelated.state).toBe(true);
-        expect(!!listRelated.state.myRelatedObjects?.[1]).toBe(true);
-        expect("relatedItems" in listRelated.state.myRelatedObjects[1]).toBe(true);
-        expect("relatedItem" in listRelated.state.myRelatedObjects[1]).toBe(true);
+        expect(!!listRelated.state.relatedObjects?.[1]).toBe(true);
+        expect("relatedItems" in listRelated.state.relatedObjects[1]).toBe(true);
+        expect("relatedItem" in listRelated.state.relatedObjects[1]).toBe(true);
         // expect uses enumeration, which uses handler.ownKeys and handler.getOwnPropertyDescriptor
         expect(deepUnref(listRelated.state.objects)).toEqual({
             1: {
@@ -60,7 +59,7 @@ describe("use/listRelated", () => {
                 related_items: ["2", "3"],
             },
         });
-        expect(deepUnref(listRelated.state.myRelatedObjects)).toEqual({
+        expect(deepUnref(listRelated.state.relatedObjects)).toEqual({
             1: {
                 relatedItems: [
                     {

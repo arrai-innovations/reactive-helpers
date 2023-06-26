@@ -11,7 +11,7 @@ export class CancellableResolvable {
     constructor() {
         const newResolvable = new Resolvable();
         const cancelResolvable = new Resolvable();
-        newResolvable.promise.cancel = jest
+        newResolvable.promise.cancel = vi
             .fn()
             .mockImplementationOnce(async () => cancelResolvable.promise)
             .mockRejectedValue(new Error("cancel already called"));

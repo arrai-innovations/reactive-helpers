@@ -5,7 +5,7 @@ import { inspect } from "util";
 import { nextTick, reactive, ref } from "vue";
 
 afterAll(() => {
-    jest.restoreAllMocks();
+    vi.restoreAllMocks();
 });
 
 describe("use/objectInstance.js", function () {
@@ -17,7 +17,7 @@ describe("use/objectInstance.js", function () {
         useObjectInstances = imported.useObjectInstances;
     });
     afterEach(function () {
-        jest.resetAllMocks();
+        vi.resetAllMocks();
     });
     const crudRetrieveResolved = {
         id: 1,
@@ -99,11 +99,13 @@ describe("use/objectInstance.js", function () {
             const id = ref(1);
             const retrieveArgs = reactive({ fields });
             const objectInstance = useObjectInstance({
-                crudArgs: { stream: "test_stream" },
-                id,
-                retrieveArgs,
+                props: {
+                    crudArgs: { stream: "test_stream" },
+                    id,
+                    retrieveArgs,
+                },
             });
-            objectInstance.state.crud.retrieve = jest.fn();
+            objectInstance.state.crud.retrieve = vi.fn();
             let crudRetrieveResolve;
             const crudRetrievePromise = new Promise((resolve) => {
                 crudRetrieveResolve = resolve;
@@ -139,11 +141,13 @@ describe("use/objectInstance.js", function () {
             const id = ref(1);
             const retrieveArgs = reactive({ fields });
             const objectInstance = useObjectInstance({
-                crudArgs: { stream: "test_stream" },
-                id,
-                retrieveArgs,
+                props: {
+                    crudArgs: { stream: "test_stream" },
+                    id,
+                    retrieveArgs,
+                },
             });
-            objectInstance.state.crud.retrieve = jest.fn();
+            objectInstance.state.crud.retrieve = vi.fn();
             let crudRetrieveResolve;
             const crudRetrievePromise = new Promise((resolve) => {
                 crudRetrieveResolve = resolve;
@@ -177,11 +181,13 @@ describe("use/objectInstance.js", function () {
             const id = ref(1);
             const retrieveArgs = reactive({ fields });
             const objectInstance = useObjectInstance({
-                crudArgs: { stream: "test_stream" },
-                id,
-                retrieveArgs,
+                props: {
+                    crudArgs: { stream: "test_stream" },
+                    id,
+                    retrieveArgs,
+                },
             });
-            objectInstance.state.crud.retrieve = jest.fn();
+            objectInstance.state.crud.retrieve = vi.fn();
             let crudRetrieveReject;
             const crudRetrievePromise = new Promise((resolve, reject) => {
                 crudRetrieveReject = reject;
@@ -215,13 +221,15 @@ describe("use/objectInstance.js", function () {
             const id = ref(1);
             const retrieveArgs = reactive({ fields });
             const objectInstance = useObjectInstance({
-                crudArgs: { stream: "test_stream" },
-                id,
-                retrieveArgs,
+                props: {
+                    crudArgs: { stream: "test_stream" },
+                    id,
+                    retrieveArgs,
+                },
             });
-            objectInstance.state.crud.create = jest.fn();
+            objectInstance.state.crud.create = vi.fn();
             objectInstance.state.crud.create.mockImplementation(() => new Promise(() => {}));
-            objectInstance.state.crud.retrieve = jest.fn();
+            objectInstance.state.crud.retrieve = vi.fn();
             objectInstance.state.crud.retrieve.mockImplementation(() => new Promise(() => {}));
             expectErrorToBeNull(objectInstance.state.error);
             expect(objectInstance.state.errored).toBe(false);
@@ -244,11 +252,13 @@ describe("use/objectInstance.js", function () {
             const id = ref(1);
             const retrieveArgs = reactive({ fields });
             const objectInstance = useObjectInstance({
-                crudArgs: { stream: "test_stream" },
-                id,
-                retrieveArgs,
+                props: {
+                    crudArgs: { stream: "test_stream" },
+                    id,
+                    retrieveArgs,
+                },
             });
-            objectInstance.state.crud.retrieve = jest.fn();
+            objectInstance.state.crud.retrieve = vi.fn();
             objectInstance.state.crud.retrieve.mockImplementation(() => new Promise(() => {}));
             expectErrorToBeNull(objectInstance.state.error);
             expect(objectInstance.state.errored).toBe(false);
@@ -275,11 +285,13 @@ describe("use/objectInstance.js", function () {
             const id = ref(1);
             const retrieveArgs = reactive({ fields });
             const objectInstance = useObjectInstance({
-                crudArgs: { stream: "test_stream" },
-                id,
-                retrieveArgs,
+                props: {
+                    crudArgs: { stream: "test_stream" },
+                    id,
+                    retrieveArgs,
+                },
             });
-            objectInstance.state.crud.create = jest.fn();
+            objectInstance.state.crud.create = vi.fn();
             let crudCreateResolve;
             const crudCreatePromise = new Promise((resolve) => {
                 crudCreateResolve = resolve;
@@ -323,11 +335,13 @@ describe("use/objectInstance.js", function () {
             const id = ref(undefined);
             const retrieveArgs = reactive({ fields });
             const objectInstance = useObjectInstance({
-                crudArgs: { stream: "test_stream" },
-                id,
-                retrieveArgs,
+                props: {
+                    crudArgs: { stream: "test_stream" },
+                    id,
+                    retrieveArgs,
+                },
             });
-            objectInstance.state.crud.create = jest.fn();
+            objectInstance.state.crud.create = vi.fn();
             let crudCreateResolve;
             const crudCreatePromise = new Promise((resolve) => {
                 crudCreateResolve = resolve;
@@ -369,11 +383,13 @@ describe("use/objectInstance.js", function () {
             const id = ref(undefined);
             const retrieveArgs = reactive({ fields });
             const objectInstance = useObjectInstance({
-                crudArgs: { stream: "test_stream" },
-                id,
-                retrieveArgs,
+                props: {
+                    crudArgs: { stream: "test_stream" },
+                    id,
+                    retrieveArgs,
+                },
             });
-            objectInstance.state.crud.create = jest.fn();
+            objectInstance.state.crud.create = vi.fn();
             let crudCreateReject;
             const crudCreatePromise = new Promise((resolve, reject) => {
                 crudCreateReject = reject;
@@ -416,11 +432,13 @@ describe("use/objectInstance.js", function () {
             const id = ref(1);
             const retrieveArgs = reactive({ fields });
             const objectInstance = useObjectInstance({
-                crudArgs: { stream: "test_stream" },
-                id,
-                retrieveArgs,
+                props: {
+                    crudArgs: { stream: "test_stream" },
+                    id,
+                    retrieveArgs,
+                },
             });
-            objectInstance.state.crud.create = jest.fn();
+            objectInstance.state.crud.create = vi.fn();
             const crudCreatePromise = new Promise(() => {});
             objectInstance.state.crud.create.mockReturnValueOnce(crudCreatePromise);
             expectErrorToBeNull(objectInstance.state.error);
@@ -460,15 +478,17 @@ describe("use/objectInstance.js", function () {
             const id = ref(1);
             const retrieveArgs = reactive({ fields });
             const objectInstance = useObjectInstance({
-                crudArgs: { stream: "test_stream" },
-                id,
-                retrieveArgs,
+                props: {
+                    crudArgs: { stream: "test_stream" },
+                    id,
+                    retrieveArgs,
+                },
             });
             let crudUpdateResolve;
             const crudUpdatePromise = new Promise((resolve) => {
                 crudUpdateResolve = resolve;
             });
-            objectInstance.state.crud.update = jest.fn();
+            objectInstance.state.crud.update = vi.fn();
             objectInstance.state.crud.update.mockReturnValueOnce(crudUpdatePromise);
             expectErrorToBeNull(objectInstance.state.error);
             expect(objectInstance.state.errored).toBe(false);
@@ -509,15 +529,17 @@ describe("use/objectInstance.js", function () {
             const id = ref(1);
             const retrieveArgs = reactive({ fields });
             const objectInstance = useObjectInstance({
-                crudArgs: { stream: "test_stream" },
-                id,
-                retrieveArgs,
+                props: {
+                    crudArgs: { stream: "test_stream" },
+                    id,
+                    retrieveArgs,
+                },
             });
             let crudUpdateResolve;
             const crudUpdatePromise = new Promise((resolve) => {
                 crudUpdateResolve = resolve;
             });
-            objectInstance.state.crud.update = jest.fn();
+            objectInstance.state.crud.update = vi.fn();
             objectInstance.state.crud.update.mockReturnValueOnce(crudUpdatePromise);
             expectErrorToBeNull(objectInstance.state.error);
             expect(objectInstance.state.errored).toBe(false);
@@ -556,15 +578,17 @@ describe("use/objectInstance.js", function () {
             const id = ref(1);
             const retrieveArgs = reactive({ fields });
             const objectInstance = useObjectInstance({
-                crudArgs: { stream: "test_stream" },
-                id,
-                retrieveArgs,
+                props: {
+                    crudArgs: { stream: "test_stream" },
+                    id,
+                    retrieveArgs,
+                },
             });
             let crudUpdateReject;
             const crudUpdatePromise = new Promise((resolve, reject) => {
                 crudUpdateReject = reject;
             });
-            objectInstance.state.crud.update = jest.fn();
+            objectInstance.state.crud.update = vi.fn();
             objectInstance.state.crud.update.mockReturnValueOnce(crudUpdatePromise);
             expectErrorToBeNull(objectInstance.state.error);
             expect(objectInstance.state.errored).toBe(false);
@@ -603,12 +627,14 @@ describe("use/objectInstance.js", function () {
             const id = ref(1);
             const retrieveArgs = reactive({ fields });
             const objectInstance = useObjectInstance({
-                crudArgs: { stream: "test_stream" },
-                id,
-                retrieveArgs,
+                props: {
+                    crudArgs: { stream: "test_stream" },
+                    id,
+                    retrieveArgs,
+                },
             });
             const crudUpdatePromise = new Promise(() => {});
-            objectInstance.state.crud.update = jest.fn();
+            objectInstance.state.crud.update = vi.fn();
             objectInstance.state.crud.update.mockReturnValueOnce(crudUpdatePromise);
             expectErrorToBeNull(objectInstance.state.error);
             expect(objectInstance.state.errored).toBe(false);
@@ -650,15 +676,17 @@ describe("use/objectInstance.js", function () {
             const id = ref(1);
             const retrieveArgs = reactive({ fields });
             const objectInstance = useObjectInstance({
-                crudArgs: { stream: "test_stream" },
-                id,
-                retrieveArgs,
+                props: {
+                    crudArgs: { stream: "test_stream" },
+                    id,
+                    retrieveArgs,
+                },
             });
             let crudPatchResolve;
             const crudPatchPromise = new Promise((resolve) => {
                 crudPatchResolve = resolve;
             });
-            objectInstance.state.crud.patch = jest.fn();
+            objectInstance.state.crud.patch = vi.fn();
             objectInstance.state.crud.patch.mockReturnValueOnce(crudPatchPromise);
             expectErrorToBeNull(objectInstance.state.error);
             expect(objectInstance.state.errored).toBe(false);
@@ -700,15 +728,17 @@ describe("use/objectInstance.js", function () {
             const id = ref(1);
             const retrieveArgs = reactive({ fields });
             const objectInstance = useObjectInstance({
-                crudArgs: { stream: "test_stream" },
-                id,
-                retrieveArgs,
+                props: {
+                    crudArgs: { stream: "test_stream" },
+                    id,
+                    retrieveArgs,
+                },
             });
             let crudPatchReject;
             const crudPatchPromise = new Promise((resolve, reject) => {
                 crudPatchReject = reject;
             });
-            objectInstance.state.crud.patch = jest.fn();
+            objectInstance.state.crud.patch = vi.fn();
             objectInstance.state.crud.patch.mockReturnValueOnce(crudPatchPromise);
             expectErrorToBeNull(objectInstance.state.error);
             expect(objectInstance.state.errored).toBe(false);
@@ -748,12 +778,14 @@ describe("use/objectInstance.js", function () {
             const id = ref(1);
             const retrieveArgs = reactive({ fields });
             const objectInstance = useObjectInstance({
-                crudArgs: { stream: "test_stream" },
-                id,
-                retrieveArgs,
+                props: {
+                    crudArgs: { stream: "test_stream" },
+                    id,
+                    retrieveArgs,
+                },
             });
             const crudPatchPromise = new Promise(() => {});
-            objectInstance.state.crud.patch = jest.fn();
+            objectInstance.state.crud.patch = vi.fn();
             objectInstance.state.crud.patch.mockReturnValueOnce(crudPatchPromise);
             objectInstance.patch({
                 partialObject: {
@@ -788,16 +820,18 @@ describe("use/objectInstance.js", function () {
             const id = ref(1);
             const retrieveArgs = reactive({ fields });
             const objectInstance = useObjectInstance({
-                crudArgs: { stream: "test_stream" },
-                id,
-                retrieveArgs,
+                props: {
+                    crudArgs: { stream: "test_stream" },
+                    id,
+                    retrieveArgs,
+                },
             });
             assignReactiveObject(objectInstance.state.object, crudRetrieveResolved);
             let deleteResolve;
             const deletePromise = new Promise((resolve) => {
                 deleteResolve = resolve;
             });
-            objectInstance.state.crud.delete = jest.fn();
+            objectInstance.state.crud.delete = vi.fn();
             objectInstance.state.crud.delete.mockReturnValueOnce(deletePromise);
 
             expectErrorToBeNull(objectInstance.state.error);
@@ -836,16 +870,18 @@ describe("use/objectInstance.js", function () {
             const id = ref(1);
             const retrieveArgs = reactive({ fields });
             const objectInstance = useObjectInstance({
-                crudArgs: { stream: "test_stream" },
-                id,
-                retrieveArgs,
+                props: {
+                    crudArgs: { stream: "test_stream" },
+                    id,
+                    retrieveArgs,
+                },
             });
             assignReactiveObject(objectInstance.state.object, crudRetrieveResolved);
             let deleteReject;
             const deletePromise = new Promise((resolve, reject) => {
                 deleteReject = reject;
             });
-            objectInstance.state.crud.delete = jest.fn();
+            objectInstance.state.crud.delete = vi.fn();
             objectInstance.state.crud.delete.mockReturnValueOnce(deletePromise);
 
             expectErrorToBeNull(objectInstance.state.error);
@@ -884,12 +920,14 @@ describe("use/objectInstance.js", function () {
             const id = ref(1);
             const retrieveArgs = reactive({ fields });
             const objectInstance = useObjectInstance({
-                crudArgs: { stream: "test_stream" },
-                id,
-                retrieveArgs,
+                props: {
+                    crudArgs: { stream: "test_stream" },
+                    id,
+                    retrieveArgs,
+                },
             });
             const deletePromise = new Promise(() => {});
-            objectInstance.state.crud.delete = jest.fn();
+            objectInstance.state.crud.delete = vi.fn();
             objectInstance.state.crud.delete.mockReturnValueOnce(deletePromise);
             objectInstance.delete(1);
             await expect(() => objectInstance.delete()).rejects.toThrow(ObjectError);
@@ -902,32 +940,40 @@ describe("use/objectInstance.js", function () {
     });
     it("useObjectSubscriptions", async function () {
         const objectInstanceA = useObjectInstance({
-            crudArgs: { stream: "test_streamA" },
-            id: 1,
-            retrieveArgs: {
-                fields,
-            },
-        });
-        const objectInstanceB = useObjectInstance({
-            crudArgs: { stream: "test_streamB" },
-            id: 2,
-            retrieveArgs: {
-                fields,
-            },
-        });
-        const objInstances = useObjectInstances({
-            A: {
+            props: {
                 crudArgs: { stream: "test_streamA" },
                 id: 1,
                 retrieveArgs: {
                     fields,
                 },
             },
-            B: {
+        });
+        const objectInstanceB = useObjectInstance({
+            props: {
                 crudArgs: { stream: "test_streamB" },
                 id: 2,
                 retrieveArgs: {
                     fields,
+                },
+            },
+        });
+        const objInstances = useObjectInstances({
+            A: {
+                props: {
+                    crudArgs: { stream: "test_streamA" },
+                    id: 1,
+                    retrieveArgs: {
+                        fields,
+                    },
+                },
+            },
+            B: {
+                props: {
+                    crudArgs: { stream: "test_streamB" },
+                    id: 2,
+                    retrieveArgs: {
+                        fields,
+                    },
                 },
             },
         });

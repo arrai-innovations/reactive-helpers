@@ -1,8 +1,8 @@
 export function getMockOnUnmounted() {
     const mockOnUnmounted = {};
-    jest.mock("vue", () => ({
+    vi.mock("vue", () => ({
         _esModule: true,
-        ...jest.requireActual("vue"),
+        ...vi.requireActual("vue"),
         onUnmounted: () => mockOnUnmounted,
     }));
     return mockOnUnmounted;
