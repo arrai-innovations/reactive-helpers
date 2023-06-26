@@ -1,10 +1,10 @@
 module.exports = {
-    plugins: ["jest"],
-    extends: ["plugin:jest/recommended"],
+    plugins: ["vitest"],
+    extends: ["eslint:recommended", "plugin:vitest/recommended", "plugin:vitest-globals/recommended"],
     env: {
-        "jest/globals": true,
+        "vitest-globals/env": true,
     },
     rules: {
-        "jest/no-conditional-expect": "off",
+        "vitest/no-conditional-expect": "off",
     },
 };

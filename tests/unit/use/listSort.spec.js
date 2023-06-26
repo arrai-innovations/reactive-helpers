@@ -46,8 +46,10 @@ describe("use/useListSort", () => {
             { key: "lexical_name", desc: false, localeCompare: true },
         ];
         listInstance = useListInstance({
-            retrieveArgs: {
-                fields: ["id", "lexical_name", "organization", "relatedObjects"],
+            props: {
+                retrieveArgs: {
+                    fields: ["id", "lexical_name", "organization", "relatedObjects"],
+                },
             },
         });
         useListSort = imported.useListSort;
@@ -58,7 +60,7 @@ describe("use/useListSort", () => {
         });
     });
 
-    afterEach(() => jest.resetAllMocks());
+    afterEach(() => vi.resetAllMocks());
 
     it("generates initial values from inputs", () => {
         const listSort = useListSort({ parentState: listInstance.state, orderByRules, sortThrottleWait });
@@ -131,17 +133,21 @@ describe("use/useListSort", () => {
         const fields = ["id", "__str__", "name"];
         const orderByRules = [{ key: "name", desc: true, localeCompare: true }];
         const listInstanceA = useListInstance({
-            crudArgs: { stream: "test_streamA" },
-            listArgs: { user: 1 },
-            retrieveArgs: {
-                fields,
+            props: {
+                crudArgs: { stream: "test_streamA" },
+                listArgs: { user: 1 },
+                retrieveArgs: {
+                    fields,
+                },
             },
         });
         const listInstanceB = useListInstance({
-            crudArgs: { stream: "test_streamB" },
-            listArgs: { user: 2 },
-            retrieveArgs: {
-                fields,
+            props: {
+                crudArgs: { stream: "test_streamB" },
+                listArgs: { user: 2 },
+                retrieveArgs: {
+                    fields,
+                },
             },
         });
         const listSortA = useListSort({
@@ -154,17 +160,21 @@ describe("use/useListSort", () => {
         });
         const listInstances = useListInstances({
             A: {
-                crudArgs: { stream: "test_streamA" },
-                listArgs: { user: 1 },
-                retrieveArgs: {
-                    fields,
+                props: {
+                    crudArgs: { stream: "test_streamA" },
+                    listArgs: { user: 1 },
+                    retrieveArgs: {
+                        fields,
+                    },
                 },
             },
             B: {
-                crudArgs: { stream: "test_streamB" },
-                listArgs: { user: 2 },
-                retrieveArgs: {
-                    fields,
+                props: {
+                    crudArgs: { stream: "test_streamB" },
+                    listArgs: { user: 2 },
+                    retrieveArgs: {
+                        fields,
+                    },
                 },
             },
         });

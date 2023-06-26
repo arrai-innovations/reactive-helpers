@@ -18,7 +18,7 @@ describe("use/listFilter", () => {
     });
 
     it("should match an allowed values list", async () => {
-        const list = useListInstance({});
+        const list = useListInstance({ props: {} });
         const filter = useListFilter({
             parentState: list.state,
             allowedValues: reactive({
@@ -52,7 +52,7 @@ describe("use/listFilter", () => {
         });
     });
     it("should match an allowed filter function", async () => {
-        const list = useListInstance({});
+        const list = useListInstance({ props: {} });
         const filter = useListFilter({
             parentState: list.state,
             allowedFilter: (object) => object.id == 1 || object.id == 3,
@@ -84,7 +84,7 @@ describe("use/listFilter", () => {
     });
     it("should match by search term", async () => {
         const textSearchValue = ref("one");
-        const list = useListInstance({});
+        const list = useListInstance({ props: {} });
         const filter = useListFilter({
             parentState: list.state,
             useTextSearch: true,
@@ -151,7 +151,7 @@ describe("use/listFilter", () => {
         });
     });
     it("should match an excluded filter function", async () => {
-        const list = useListInstance({});
+        const list = useListInstance({ props: {} });
         const filter = useListFilter({
             parentState: list.state,
             excludedFilter: (object) => object.id == 2 || object.id == 4,
@@ -182,7 +182,7 @@ describe("use/listFilter", () => {
         });
     });
     it("should exclude an excludedValues parameter", async () => {
-        const list = useListInstance({});
+        const list = useListInstance({ props: {} });
         const filter = useListFilter({
             parentState: list.state,
             excludedValues: reactive({
@@ -216,7 +216,7 @@ describe("use/listFilter", () => {
         });
     });
     it("no args: returns objects unfiltered", async () => {
-        const listInstance = useListInstance({});
+        const listInstance = useListInstance({ props: {} });
         const listItems = [
             { id: 4, name: "four", has_things: true },
             { id: 2, name: "two", has_things: true },
@@ -235,10 +235,10 @@ describe("use/listFilter", () => {
     });
     describe("useListFilter operates on parentState modified by useListSort", () => {
         it("computes state.order and state.objects in order", async () => {
-            jest.resetAllMocks();
+            vi.resetAllMocks();
             const orderByRules = [{ key: "name", desc: true, localeCompare: false }];
             const sortThrottleWait = 0;
-            const listInstance = useListInstance({});
+            const listInstance = useListInstance({ props: {} });
             const listItems = [
                 { id: 4, name: "four", has_things: true },
                 { id: 2, name: "two", has_things: true },
@@ -266,20 +266,24 @@ describe("use/listFilter", () => {
     });
     describe("useListFilters accepts args and parentInstances", () => {
         it("returns filtered objects", async () => {
-            jest.resetAllMocks();
+            vi.resetAllMocks();
             const fields = ["id", "__str__", "name"];
             const listInstanceA = useListInstance({
-                crudArgs: { stream: "test_streamA" },
-                listArgs: { user: 1 },
-                retrieveArgs: {
-                    fields,
+                props: {
+                    crudArgs: { stream: "test_streamA" },
+                    listArgs: { user: 1 },
+                    retrieveArgs: {
+                        fields,
+                    },
                 },
             });
             const listInstanceB = useListInstance({
-                crudArgs: { stream: "test_streamB" },
-                listArgs: { user: 2 },
-                retrieveArgs: {
-                    fields,
+                props: {
+                    crudArgs: { stream: "test_streamB" },
+                    listArgs: { user: 2 },
+                    retrieveArgs: {
+                        fields,
+                    },
                 },
             });
             const listFilterA = useListFilter({
