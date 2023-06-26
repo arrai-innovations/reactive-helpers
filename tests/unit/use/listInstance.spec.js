@@ -84,7 +84,6 @@ describe.skip("use/listInstance.spec.js", function () {
                 passedPageCallback = pageCallback;
                 return crudListPromise;
             });
-            console.log(crudListResolve);
 
             expectErrorToBeNull(listInstance.state.error);
             expect(listInstance.state.errored).toBe(false);
@@ -99,8 +98,6 @@ describe.skip("use/listInstance.spec.js", function () {
             expect({ ...listInstance.state.objects }).toEqual({});
 
             await nextTick();
-            console.log("crudListResolvedObjects1: ", crudListResolvedObjects1);
-            console.log("crudListResolvedObjects2: ", crudListResolvedObjects2);
 
             passedPageCallback(crudListResolvedPage1);
 
@@ -110,7 +107,6 @@ describe.skip("use/listInstance.spec.js", function () {
             expect({ ...listInstance.state.objects }).toEqual(crudListResolvedObjects1);
 
             passedPageCallback(crudListResolvedPage2);
-            console.log("{ ...listInstance.state.objects }:", { ...listInstance.state.objects });
             expectErrorToBeNull(listInstance.state.error);
             expect(listInstance.state.errored).toBe(false);
             expect(listInstance.state.loading).toBe(true);
