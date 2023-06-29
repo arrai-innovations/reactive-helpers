@@ -1,5 +1,5 @@
-import { flattenPaths } from "./flattenPaths.js";
-import { difference, intersection } from "./set.js";
+import { flattenPaths } from "./flattenPaths";
+import { difference, intersection } from "./set";
 
 /**
  * Calculate the difference between objects in terms of what keys

@@ -7,5 +7,5 @@ export * from "./keyDiff";
 export * from "./lifecycleDebug";
 export * from "./loadingCombine";
 export * from "./set";
-export * from "./transformWalk.js";
+export * from "./transformWalk";
 export * from "./watches";
