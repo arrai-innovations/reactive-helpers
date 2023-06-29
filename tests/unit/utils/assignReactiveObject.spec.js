@@ -6,7 +6,7 @@ import {
 import { computed, EffectScope, effectScope, reactive, toRef } from "vue";
 
 describe("utils/assignReactiveObject", function () {
-    describe("addOrUpdateReactiveObject", function () {});
+    describe.skip("addOrUpdateReactiveObject", function () {});
     describe("assignReactiveObject", function () {
         describe("should update the target", function () {
             it("when both target and source are not reactive", function () {
