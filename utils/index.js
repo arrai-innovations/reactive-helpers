@@ -1,4 +1,5 @@
 export * from "./assignReactiveObject";
+export * from "./classes";
 export * from "./debugMessage";
 export * from "./debugWatch";
 export * from "./flattenPaths";
