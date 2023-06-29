@@ -9,6 +9,35 @@
 | [utils/lifecycleDebug]       | Debug lifecycle hooks                                                                                                        |
 | [utils/transformWalk]        | Object walking utility.                                                                                                      |
 
+## Constants
+
+| Name               | Description |
+| ------------------ | ----------- |
+| [objectifyClasses] |
+| [combineClasses]   |
+| [stringifyClass]   |
+| [stringifyClasses] |
+
+## Functions
+
+| Name                         | Description |
+| ---------------------------- | ----------- |
+| [useCombineClasses(classes)] |
+
+## Typedefs
+
+| Name                 | Description                                                                                            |
+| -------------------- | ------------------------------------------------------------------------------------------------------ |
+| [CSSValue]           | A string representing a CSS class or a space-separated list of CSS classes.                            |
+| [CSSObject]          | A CSS object where keys are CSS classes and values are booleans indicating whether to apply the class. |
+| [CSSClasses]         | A mixed array containing multiple ways of specifying CSS classes.                                      |
+| [CSSStringOrObject]  | The amalgamated classes as returned by `objectifyClasses` & `combineClasses`.                          |
+| [CSSValue]           | A string representing a CSS class or a space-separated list of CSS classes.                            |
+| [CSSObject]          | A CSS object where keys are CSS classes and values are booleans indicating whether to apply the class. |
+| [CSSClasses]         | A mixed array containing multiple ways of specifying CSS classes.                                      |
+| [CSSClassesWithRefs] | A mixed array containing multiple ways of specifying CSS classes.                                      |
+| [CSSStringOrObject]  | A CSS object or a space-separated list of CSS classes.                                                 |
+
 ## utils/assignReactiveObject
 
 Reactive object assignment utilities
@@ -320,6 +349,105 @@ const transformed = transformWalk(obj, (key, value, path) => {
 // }
 ```
 
+## objectifyClasses
+
+**Kind**: global constant  
+**Returns**: [`CSSStringOrObject`][1] - A CSS object or a space-separated list of CSS classes.
+
+| Param      | Type           | Description                                                       |
+| ---------- | -------------- | ----------------------------------------------------------------- |
+| ...classes | [`CSSClasses`] | A mixed array containing multiple ways of specifying CSS classes. |
+
+## combineClasses
+
+**Kind**: global constant  
+**Returns**: [`CSSStringOrObject`] - A CSS object or a space-separated list of CSS classes.
+
+| Param      | Type                   | Description                                                                                                   |
+| ---------- | ---------------------- | ------------------------------------------------------------------------------------------------------------- |
+| ...classes | [`CSSClassesWithRefs`] | Handles as arguments the multiple ways of specifying CSS class related values, including refs to such values. |
+
+## stringifyClass
+
+**Kind**: global constant  
+**Returns**: `CSSString` - A space-separated list of CSS classes.
+
+| Param | Type           | Description                                                       |
+| ----- | -------------- | ----------------------------------------------------------------- |
+| cls   | [`CSSClasses`] | A mixed array containing multiple ways of specifying CSS classes. |
+
+## stringifyClasses
+
+**Kind**: global constant  
+**Returns**: `CSSString` - A space-separated list of CSS classes.
+
+| Param      | Type           | Description                                                                    |
+| ---------- | -------------- | ------------------------------------------------------------------------------ |
+| ...classes | [`CSSClasses`] | Handles as arguments the multiple ways of specifying CSS class related values. |
+
+## useCombineClasses(classes)
+
+**Kind**: global function  
+**Returns**: `Ref.<CSSStringOrObject>` - A Vue ref pointing to the amalgamated CSS string or object.
+
+| Param   | Type           | Description                                                                                  |
+| ------- | -------------- | -------------------------------------------------------------------------------------------- |
+| classes | [`CSSClasses`] | A mixed array containing multiple ways of specifying CSS classes. Non-ref values are cloned. |
+
+## CSSValue
+
+A string representing a CSS class or a space-separated list of CSS classes.
+
+**Kind**: global typedef
+
+## CSSObject
+
+A CSS object where keys are CSS classes and values are booleans indicating whether to apply the class.
+
+**Kind**: global typedef
+
+## CSSClasses
+
+A mixed array containing multiple ways of specifying CSS classes.
+
+**Kind**: global typedef
+
+## CSSStringOrObject
+
+The amalgamated classes as returned by `objectifyClasses` & `combineClasses`.
+
+**Kind**: global typedef
+
+## CSSValue
+
+A string representing a CSS class or a space-separated list of CSS classes.
+
+**Kind**: global typedef
+
+## CSSObject
+
+A CSS object where keys are CSS classes and values are booleans indicating whether to apply the class.
+
+**Kind**: global typedef
+
+## CSSClasses
+
+A mixed array containing multiple ways of specifying CSS classes.
+
+**Kind**: global typedef
+
+## CSSClassesWithRefs
+
+A mixed array containing multiple ways of specifying CSS classes.
+
+**Kind**: global typedef
+
+## CSSStringOrObject
+
+A CSS object or a space-separated list of CSS classes.
+
+**Kind**: global typedef
+
 <!-- LINKS -->
 
 [utils/assignreactiveobject]: #utilsassignreactiveobject
@@ -328,6 +456,15 @@ const transformed = transformWalk(obj, (key, value, path) => {
 [utils/keydiff]: #utilskeydiff
 [utils/lifecycledebug]: #utilslifecycledebug
 [utils/transformwalk]: #utilstransformwalk
+[objectifyclasses]: #objectifyclasses
+[combineclasses]: #combineclasses
+[stringifyclass]: #stringifyclass
+[stringifyclasses]: #stringifyclasses
+[cssvalue]: #cssvalue
+[cssobject]: #cssobject
+[cssclasses]: #cssclasses
+[cssstringorobject]: #cssstringorobject
+[cssclasseswithrefs]: #cssclasseswithrefs
 [~validtargetorsource]: #utilsassignreactiveobjectvalidtargetorsource
 [`utils/assignreactiveobject`]: #utilsassignreactiveobject
 [~debugmessagefunction]: #utilsdebugmessagedebugmessagefunction
@@ -338,6 +475,11 @@ const transformed = transformWalk(obj, (key, value, path) => {
 [`utils/keydiff`]: #utilskeydiff
 [`utils/lifecycledebug`]: #utilslifecycledebug
 [`utils/transformwalk`]: #utilstransformwalk
+[1]: #cssstringorobject
+[`cssclasses`]: #cssclasses
+[`cssstringorobject`]: #cssstringorobject
+[`cssclasseswithrefs`]: #cssclasseswithrefs
+[usecombineclasses(classes)]: #usecombineclassesclasses
 [~addreactiveobject(target, source, \[exclude\], \[addedkeys\])]: #utilsassignreactiveobjectaddreactiveobjecttarget-source-exclude-addedkeys
 [~updatereactiveobject(target, source, \[exclude\], \[samekeys\])]: #utilsassignreactiveobjectupdatereactiveobjecttarget-source-exclude-samekeys
 [~addorupdatereactiveobject(target, source, \[exclude\], \[addedkeys\], \[samekeys\])]: #utilsassignreactiveobjectaddorupdatereactiveobjecttarget-source-exclude-addedkeys-samekeys

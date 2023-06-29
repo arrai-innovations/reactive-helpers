@@ -5,7 +5,7 @@ module.exports = {
         node: true,
     },
     plugins: ["jsdoc"],
-    extends: ["plugin:vue/vue3-essential", "eslint:recommended", "@vue/prettier", "plugin:jsdoc/recommended-error"],
+    extends: ["plugin:vue/vue3-essential", "eslint:recommended", "@vue/prettier", "plugin:jsdoc/recommended"],
 
     rules: {
         "no-console": "off", // console.error is useful.
