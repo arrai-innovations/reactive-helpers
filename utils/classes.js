@@ -1,9 +1,9 @@
-import identity from "lodash-es/identity";
-import isArray from "lodash-es/isArray";
-import isEmpty from "lodash-es/isEmpty";
-import isObject from "lodash-es/isObject";
-import isSet from "lodash-es/isSet";
-import isString from "lodash-es/isString";
+import identity from "lodash-es/identity.js";
+import isArray from "lodash-es/isArray.js";
+import isEmpty from "lodash-es/isEmpty.js";
+import isObject from "lodash-es/isObject.js";
+import isSet from "lodash-es/isSet.js";
+import isString from "lodash-es/isString.js";
 import { isRef, unref } from "vue";
 
 /**

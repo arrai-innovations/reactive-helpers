@@ -1,6 +1,6 @@
 import { keyDiff, loadingCombine } from "../utils/index.js";
 import { useWatchesRunning } from "./watchesRunning.js";
-import isEmpty from "lodash-es/isEmpty";
+import isEmpty from "lodash-es/isEmpty.js";
 import { computed, effectScope, onScopeDispose, reactive, toRef, watch } from "vue";
 
 export function useObjectCalculateds(instances, args) {

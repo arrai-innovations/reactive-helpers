@@ -1,7 +1,9 @@
 import { isSuperset } from "./set.js";
 import { transformWalk } from "./transformWalk.js";
-import { isSet, partial, union } from "lodash-es";
 import debounce from "lodash-es/debounce";
+import isSet from "lodash-es/isSet.js";
+import partial from "lodash-es/partial.js";
+import union from "lodash-es/union.js";
 import { unref } from "vue";
 
 /**

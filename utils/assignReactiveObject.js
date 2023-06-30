@@ -1,7 +1,7 @@
 import { keyDiff } from "./keyDiff.js";
 import inspect from "browser-util-inspect";
-import isArray from "lodash-es/isArray";
-import isObject from "lodash-es/isObject";
+import isArray from "lodash-es/isArray.js";
+import isObject from "lodash-es/isObject.js";
 import { isReactive, isRef, toRef, unref } from "vue";
 
 /**

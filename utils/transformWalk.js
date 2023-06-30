@@ -1,4 +1,4 @@
-import { isSet } from "lodash-es";
+import isSet from "lodash-es/isSet.js";
 
 /**
  * Object walking utility.

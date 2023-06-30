@@ -1,6 +1,6 @@
 import { addOrUpdateReactiveObject, assignReactiveObject } from "../utils/index.js";
-import cloneDeep from "lodash-es/cloneDeep";
-import isFunction from "lodash-es/isFunction";
+import cloneDeep from "lodash-es/cloneDeep.js";
+import isFunction from "lodash-es/isFunction.js";
 import { reactive, toRef } from "vue";
 
 export class ObjectError extends Error {

@@ -2,9 +2,9 @@ import { loadingCombine } from "../utils/loadingCombine.js";
 import { useCancellableIntent } from "./cancellableIntent.js";
 import { listInstanceStateKeys, useListInstance } from "./listInstance.js";
 import inspect from "browser-util-inspect";
-import cloneDeep from "lodash-es/cloneDeep";
-import isEmpty from "lodash-es/isEmpty";
-import isObject from "lodash-es/isObject";
+import cloneDeep from "lodash-es/cloneDeep.js";
+import isEmpty from "lodash-es/isEmpty.js";
+import isObject from "lodash-es/isObject.js";
 import { computed, effectScope, reactive, toRef } from "vue";
 
 export class ListSubscriptionError extends Error {

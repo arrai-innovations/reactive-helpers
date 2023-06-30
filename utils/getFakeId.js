@@ -1,6 +1,6 @@
-import isArray from "lodash-es/isArray";
-import isMap from "lodash-es/isMap";
-import isSet from "lodash-es/isSet";
+import isArray from "lodash-es/isArray.js";
+import isMap from "lodash-es/isMap.js";
+import isSet from "lodash-es/isSet.js";
 
 export function getFakeId(arraySetMapOrObject, key = "id") {
     // sets are assumed to be of ids

@@ -1,6 +1,6 @@
 import { expectErrorToBeNull } from "../expectHelpers.js";
 import flushPromises from "flush-promises";
-import keyBy from "lodash-es/keyBy";
+import keyBy from "lodash-es/keyBy.js";
 import { inspect } from "util";
 import { isReactive, nextTick, reactive } from "vue";
 

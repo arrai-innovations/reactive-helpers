@@ -1,9 +1,9 @@
 import { keyDiff } from "../utils/index.js";
-import { useWatchesRunning } from "./watchesRunning";
-import get from "lodash-es/get";
-import isArray from "lodash-es/isArray";
-import isEmpty from "lodash-es/isEmpty";
-import isUndefined from "lodash-es/isUndefined";
+import { useWatchesRunning } from "./watchesRunning.js";
+import get from "lodash-es/get.js";
+import isArray from "lodash-es/isArray.js";
+import isEmpty from "lodash-es/isEmpty.js";
+import isUndefined from "lodash-es/isUndefined.js";
 import { computed, effectScope, onScopeDispose, reactive, toRef, unref, watch } from "vue";
 
 export function useObjectRelateds(instances, args) {

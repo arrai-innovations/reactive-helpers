@@ -3,7 +3,7 @@ import { listInstanceStateKeys } from "./listInstance.js";
 import { listRelatedStateKeys } from "./listRelated.js";
 import { listSubscriptionStateKeys } from "./listSubscription.js";
 import { useWatchesRunning } from "./watchesRunning.js";
-import isEmpty from "lodash-es/isEmpty";
+import isEmpty from "lodash-es/isEmpty.js";
 import { computed, effectScope, onScopeDispose, reactive, toRef, watch } from "vue";
 
 export const listCalculatedStateKeys = [

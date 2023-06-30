@@ -1,8 +1,8 @@
-import { addOrUpdateReactiveObject, assignReactiveObject } from "../utils/assignReactiveObject";
-import { getFakeId } from "../utils/getFakeId";
+import { addOrUpdateReactiveObject, assignReactiveObject } from "../utils/assignReactiveObject.js";
+import { getFakeId } from "../utils/getFakeId.js";
 import inspect from "browser-util-inspect";
-import cloneDeep from "lodash-es/cloneDeep";
-import isFunction from "lodash-es/isFunction";
+import cloneDeep from "lodash-es/cloneDeep.js";
+import isFunction from "lodash-es/isFunction.js";
 import { computed, effectScope, reactive, toRef, watchEffect } from "vue";
 
 export class ListError extends Error {

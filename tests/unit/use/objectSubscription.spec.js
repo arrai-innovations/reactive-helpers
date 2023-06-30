@@ -4,7 +4,7 @@ import { expectErrorToBeNull } from "../expectHelpers.js";
 // import { getMockOnUnmounted } from "../mockOnUnmounted.js";
 import { poll } from "../poll.js";
 import flushPromises from "flush-promises";
-import cloneDeep from "lodash-es/cloneDeep";
+import cloneDeep from "lodash-es/cloneDeep.js";
 import { inspect } from "util";
 import { nextTick } from "vue";
 
