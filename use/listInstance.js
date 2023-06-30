@@ -47,7 +47,7 @@ export function useListInstances(listInstanceArgs) {
     return instances;
 }
 
-export function useListInstance({ props, functions = {} }) {
+export function useListInstance({ props, functions = {}, keepOldPages = false }) {
     if (!props) {
         throw new ListError(`useListInstance requires props`);
     }
@@ -114,7 +114,11 @@ export function useListInstance({ props, functions = {} }) {
     });
 
     const defaultPageCallback = (newObjects) => {
-        clearList();
+        // with keepOldPages, you are responsible for clearing the list as needed
+        if (!keepOldPages) {
+            // display one page at a time, clear the list
+            clearList();
+        }
         newObjects.forEach((newObject) => {
             if (newObject.id in state.objects) {
                 updateListObject(newObject);
