@@ -1,4 +1,4 @@
-import { combineClasses } from "../utils/classes";
+import { combineClasses } from "../utils/classes.js";
 import { cloneDeep } from "lodash-es";
 import { isRef, ref, watch, isReactive } from "vue";
 

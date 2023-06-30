@@ -1,4 +1,4 @@
-import { doAwaitTimeout } from "../../../utils";
+import { doAwaitTimeout } from "../../../utils/index.js";
 import { nextTick } from "vue";
 import { deepUnref } from "vue-deepunref";
 

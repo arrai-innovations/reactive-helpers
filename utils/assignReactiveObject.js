@@ -1,4 +1,4 @@
-import { keyDiff } from "./keyDiff";
+import { keyDiff } from "./keyDiff.js";
 import inspect from "browser-util-inspect";
 import isArray from "lodash-es/isArray";
 import isObject from "lodash-es/isObject";

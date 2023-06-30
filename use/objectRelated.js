@@ -1,4 +1,4 @@
-import { keyDiff } from "../utils";
+import { keyDiff } from "../utils/index.js";
 import { useWatchesRunning } from "./watchesRunning";
 import get from "lodash-es/get";
 import isArray from "lodash-es/isArray";

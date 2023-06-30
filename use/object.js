@@ -1,7 +1,7 @@
-import { useObjectCalculated } from "./objectCalculated";
-import { useObjectInstance } from "./objectInstance";
-import { useObjectRelated } from "./objectRelated";
-import { useObjectSubscription } from "./objectSubscription";
+import { useObjectCalculated } from "./objectCalculated.js";
+import { useObjectInstance } from "./objectInstance.js";
+import { useObjectRelated } from "./objectRelated.js";
+import { useObjectSubscription } from "./objectSubscription.js";
 import { effectScope, reactive, shallowReadonly, toRef } from "vue";
 
 // Manages a chain of useObject* functions

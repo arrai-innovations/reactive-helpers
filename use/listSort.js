@@ -1,4 +1,4 @@
-import { assignReactiveObject, keyDiff } from "../utils";
+import { assignReactiveObject, keyDiff } from "../utils/index.js";
 import cloneDeep from "lodash-es/cloneDeep";
 import get from "lodash-es/get";
 import identity from "lodash-es/identity";

@@ -1,4 +1,4 @@
-import { loadingCombine } from "../utils";
+import { loadingCombine } from "../utils/index.js";
 import { computed, effectScope, reactive, unref, watch } from "vue";
 
 export function useWatchesRunning({ triggerRefs, watchSentinelRefs }) {

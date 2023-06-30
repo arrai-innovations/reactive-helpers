@@ -1,8 +1,8 @@
-import { keyDiff, loadingCombine } from "../utils";
-import { listInstanceStateKeys } from "./listInstance";
-import { listRelatedStateKeys } from "./listRelated";
-import { listSubscriptionStateKeys } from "./listSubscription";
-import { useWatchesRunning } from "./watchesRunning";
+import { keyDiff, loadingCombine } from "../utils/index.js";
+import { listInstanceStateKeys } from "./listInstance.js";
+import { listRelatedStateKeys } from "./listRelated.js";
+import { listSubscriptionStateKeys } from "./listSubscription.js";
+import { useWatchesRunning } from "./watchesRunning.js";
 import isEmpty from "lodash-es/isEmpty";
 import { computed, effectScope, onScopeDispose, reactive, toRef, watch } from "vue";
 

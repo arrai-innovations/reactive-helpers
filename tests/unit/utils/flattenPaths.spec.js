@@ -1,4 +1,4 @@
-import { flattenPaths } from "../../../utils/flattenPaths";
+import { flattenPaths } from "../../../utils/flattenPaths.js";
 
 describe("utils/flattenPaths", () => {
     describe("flattenPaths", () => {

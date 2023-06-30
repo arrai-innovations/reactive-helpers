@@ -1,4 +1,4 @@
-import * as utils from "../../../utils";
+import * as utils from "../../../utils/index.js";
 import fs from "fs/promises";
 
 describe("utils/index.js", function () {

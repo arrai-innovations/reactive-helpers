@@ -1,4 +1,4 @@
-import { Resolvable } from "./crudPromise";
+import { Resolvable } from "./crudPromise.js";
 
 export async function poll(condition, interval = 100, timeout = 1000) {
     let intervalId,

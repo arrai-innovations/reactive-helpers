@@ -1,4 +1,4 @@
-import { expectErrorToBeNull } from "../expectHelpers";
+import { expectErrorToBeNull } from "../expectHelpers.js";
 import flushPromises from "flush-promises";
 import keyBy from "lodash-es/keyBy";
 import { inspect } from "util";

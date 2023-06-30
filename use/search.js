@@ -1,4 +1,4 @@
-import { assignReactiveObject } from "../utils/assignReactiveObject";
+import { assignReactiveObject } from "../utils/assignReactiveObject.js";
 import FlexSearch from "flexsearch";
 import fromPairs from "lodash-es/fromPairs";
 import throttle from "lodash-es/throttle";

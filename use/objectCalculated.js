@@ -1,5 +1,5 @@
-import { keyDiff, loadingCombine } from "../utils";
-import { useWatchesRunning } from "./watchesRunning";
+import { keyDiff, loadingCombine } from "../utils/index.js";
+import { useWatchesRunning } from "./watchesRunning.js";
 import isEmpty from "lodash-es/isEmpty";
 import { computed, effectScope, onScopeDispose, reactive, toRef, watch } from "vue";
 

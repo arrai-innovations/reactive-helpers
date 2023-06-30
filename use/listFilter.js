@@ -1,5 +1,5 @@
-import { keyDiff } from "../utils/keyDiff";
-import { useSearch } from "./search";
+import { keyDiff } from "../utils/keyDiff.js";
+import { useSearch } from "./search.js";
 import get from "lodash-es/get";
 import identity from "lodash-es/identity";
 import isEmpty from "lodash-es/isEmpty";

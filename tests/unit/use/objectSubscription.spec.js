@@ -1,8 +1,8 @@
-import { doAwaitTimeout } from "../../../utils";
-import { assignReactiveObject } from "../../../utils/assignReactiveObject";
-import { expectErrorToBeNull } from "../expectHelpers";
-// import { getMockOnUnmounted } from "../mockOnUnmounted";
-import { poll } from "../poll";
+import { assignReactiveObject } from "../../../utils/assignReactiveObject.js";
+import { doAwaitTimeout } from "../../../utils/index.js";
+import { expectErrorToBeNull } from "../expectHelpers.js";
+// import { getMockOnUnmounted } from "../mockOnUnmounted.js";
+import { poll } from "../poll.js";
 import flushPromises from "flush-promises";
 import cloneDeep from "lodash-es/cloneDeep";
 import { inspect } from "util";

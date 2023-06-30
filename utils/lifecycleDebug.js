@@ -1,6 +1,6 @@
-import { inspectWalkFn, useDebugMessage } from "./debugMessage";
-import { keyDiffDeep } from "./keyDiff";
-import { transformWalk } from "./transformWalk";
+import { inspectWalkFn, useDebugMessage } from "./debugMessage.js";
+import { keyDiffDeep } from "./keyDiff.js";
+import { transformWalk } from "./transformWalk.js";
 import { isEqual, partial } from "lodash-es";
 import {
     onActivated,

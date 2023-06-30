@@ -1,8 +1,8 @@
-import { useListCalculated } from "./listCalculated";
-import { useListInstance } from "./listInstance";
-import { useListRelated } from "./listRelated";
-import { useListSubscription } from "./listSubscription";
-import { usePagedListInstance } from "./paginatedListInstance";
+import { useListCalculated } from "./listCalculated.js";
+import { useListInstance } from "./listInstance.js";
+import { useListRelated } from "./listRelated.js";
+import { useListSubscription } from "./listSubscription.js";
+import { usePagedListInstance } from "./paginatedListInstance.js";
 import { effectScope, reactive, shallowReactive, shallowReadonly, toRef } from "vue";
 
 export const useLists = (listArgs) => {

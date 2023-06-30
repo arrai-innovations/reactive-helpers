@@ -5,7 +5,7 @@ import {
     AwaitTimeoutError,
     doAwaitTimeout,
     ImmediateStopWatch,
-} from "../../../utils";
+} from "../../../utils/index.js";
 import { performance } from "perf_hooks";
 import { nextTick, reactive } from "vue";
 

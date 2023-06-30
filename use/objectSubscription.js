@@ -1,6 +1,6 @@
-import { assignReactiveObject, loadingCombine } from "../utils";
-import { useCancellableIntent } from "./cancellableIntent";
-import { useObjectInstance } from "./objectInstance";
+import { assignReactiveObject, loadingCombine } from "../utils/index.js";
+import { useCancellableIntent } from "./cancellableIntent.js";
+import { useObjectInstance } from "./objectInstance.js";
 import { computed, effectScope, reactive, toRef } from "vue";
 
 export class ObjectSubscriptionError extends Error {

@@ -1,6 +1,6 @@
-import { loadingCombine } from "../utils/loadingCombine";
-import { useCancellableIntent } from "./cancellableIntent";
-import { listInstanceStateKeys, useListInstance } from "./listInstance";
+import { loadingCombine } from "../utils/loadingCombine.js";
+import { useCancellableIntent } from "./cancellableIntent.js";
+import { listInstanceStateKeys, useListInstance } from "./listInstance.js";
 import inspect from "browser-util-inspect";
 import cloneDeep from "lodash-es/cloneDeep";
 import isEmpty from "lodash-es/isEmpty";

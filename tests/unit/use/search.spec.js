@@ -1,4 +1,4 @@
-import { doAwaitTimeout } from "../../../utils";
+import { doAwaitTimeout } from "../../../utils/index.js";
 
 describe("use/search", () => {
     let useSearch, setDefaultSearchOptions;

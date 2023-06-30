@@ -1,4 +1,4 @@
-import { useListInstance } from "./listInstance";
+import { useListInstance } from "./listInstance.js";
 
 export function usePagedListInstance({ keepOldPages = false, ...useListInstanceArgs }) {
     const listInstance = useListInstance(useListInstanceArgs);

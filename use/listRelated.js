@@ -1,7 +1,7 @@
-import { keyDiff, loadingCombine } from "../utils";
-import { listInstanceStateKeys } from "./listInstance";
-import { listSubscriptionStateKeys } from "./listSubscription";
-import { useWatchesRunning } from "./watchesRunning";
+import { keyDiff, loadingCombine } from "../utils/index.js";
+import { listInstanceStateKeys } from "./listInstance.js";
+import { listSubscriptionStateKeys } from "./listSubscription.js";
+import { useWatchesRunning } from "./watchesRunning.js";
 import get from "lodash-es/get";
 import isArray from "lodash-es/isArray";
 import isEmpty from "lodash-es/isEmpty";

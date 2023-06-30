@@ -1,4 +1,4 @@
-import { difference, intersection, isSuperset, symmetricDifference, union } from "../../../utils/set";
+import { difference, intersection, isSuperset, symmetricDifference, union } from "../../../utils/set.js";
 
 describe("utils/set", function () {
     describe("isSuperset", function () {

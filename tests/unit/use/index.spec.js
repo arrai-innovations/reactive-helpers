@@ -1,4 +1,4 @@
-import * as use from "../../../use";
+import * as use from "../../../use/index.js";
 import fs from "fs/promises";
 
 describe("use/index.js", function () {

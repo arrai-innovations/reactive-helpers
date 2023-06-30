@@ -1,4 +1,4 @@
-import { combineClasses, objectifyClasses, stringifyClass, stringifyClasses } from "../../../utils/classes";
+import { combineClasses, objectifyClasses, stringifyClass, stringifyClasses } from "../../../utils/classes.js";
 import { describe, expect, it } from "vitest";
 import { ref, shallowRef } from "vue";
 

@@ -1,4 +1,4 @@
-import { keyDiff } from "./keyDiff";
+import { keyDiff } from "./keyDiff.js";
 import isEqual from "lodash-es/isEqual";
 import { watch } from "vue";
 import { deepUnref } from "vue-deepunref";

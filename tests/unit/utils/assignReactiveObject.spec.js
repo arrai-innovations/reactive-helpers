@@ -2,7 +2,7 @@ import {
     addOrUpdateReactiveObject,
     assignReactiveObject,
     AssignReactiveObjectError,
-} from "../../../utils/assignReactiveObject";
+} from "../../../utils/assignReactiveObject.js";
 import { computed, EffectScope, effectScope, reactive, toRef } from "vue";
 
 describe("utils/assignReactiveObject", function () {

@@ -1,6 +1,6 @@
-import { doAwaitNot, doAwaitTimeout } from "../../../utils";
-import { CancellableResolvable } from "../crudPromise";
-import { poll } from "../poll";
+import { doAwaitNot, doAwaitTimeout } from "../../../utils/index.js";
+import { CancellableResolvable } from "../crudPromise.js";
+import { poll } from "../poll.js";
 import flushPromises from "flush-promises";
 import { inspect } from "util";
 import { nextTick, reactive } from "vue";

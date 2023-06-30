@@ -1,4 +1,4 @@
-// import { useListInstance, useListRelated } from "../../../use/listRelated";
+// import { useListInstance, useListRelated } from "../../../use/listRelated.js";
 import { nextTick } from "vue";
 import { deepUnref } from "vue-deepunref";
 

@@ -1,4 +1,4 @@
-import { keyDiff } from "../../../utils/keyDiff";
+import { keyDiff } from "../../../utils/keyDiff.js";
 
 describe("keyDiff", function () {
     describe("should return the difference between two arrays of object keys", function () {

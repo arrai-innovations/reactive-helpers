@@ -1,5 +1,5 @@
-import { useListFilters, useListSort } from "../../../use";
-import { doAwaitNot } from "../../../utils/watches";
+import { useListFilters, useListSort } from "../../../use/index.js";
+import { doAwaitNot } from "../../../utils/watches.js";
 import { nextTick, reactive, ref } from "vue";
 import { deepUnref } from "vue-deepunref";
 
