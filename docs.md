@@ -11,12 +11,15 @@
 
 ## Constants
 
-| Name               | Description |
-| ------------------ | ----------- |
-| [objectifyClasses] |
-| [combineClasses]   |
-| [stringifyClass]   |
-| [stringifyClasses] |
+| Name                                       | Description                                                                                             |
+| ------------------------------------------ | ------------------------------------------------------------------------------------------------------- |
+| [objectifyClasses]                         |
+| [combineClasses]                           |
+| [stringifyClass]                           |
+| [stringifyClasses]                         |
+| [removeEmptyObjects]                       | Remove empty objects from a mixed object array tree. Mutates the object.                                |
+| [compactSparseArrays]                      | Remove undefined values from arrays in a mixed object array tree. Mutates the object.                   |
+| [removeEmptyObjectsAndCompactSparseArrays] | Remove empty objects and undefined values from arrays in a mixed object array tree. Mutates the object. |
 
 ## Functions
 
@@ -385,6 +388,36 @@ const transformed = transformWalk(obj, (key, value, path) => {
 | ---------- | -------------- | ------------------------------------------------------------------------------ |
 | ...classes | [`CSSClasses`] | Handles as arguments the multiple ways of specifying CSS class related values. |
 
+## removeEmptyObjects
+
+Remove empty objects from a mixed object array tree. Mutates the object.
+
+**Kind**: global constant
+
+| Param | Type                | Description                                       |
+| ----- | ------------------- | ------------------------------------------------- |
+| obj   | `object` \| `Array` | The object or array to remove empty objects from. |
+
+## compactSparseArrays
+
+Remove undefined values from arrays in a mixed object array tree. Mutates the object.
+
+**Kind**: global constant
+
+| Param | Type                | Description                                      |
+| ----- | ------------------- | ------------------------------------------------ |
+| obj   | `object` \| `Array` | The object or array to compact sparse arrays in. |
+
+## removeEmptyObjectsAndCompactSparseArrays
+
+Remove empty objects and undefined values from arrays in a mixed object array tree. Mutates the object.
+
+**Kind**: global constant
+
+| Param | Type                | Description                                                                    |
+| ----- | ------------------- | ------------------------------------------------------------------------------ |
+| obj   | `object` \| `Array` | The object or array to remove empty objects from and compact sparse arrays in. |
+
 ## useCombineClasses(classes)
 
 **Kind**: global function  
@@ -460,6 +493,9 @@ A CSS object or a space-separated list of CSS classes.
 [combineclasses]: #combineclasses
 [stringifyclass]: #stringifyclass
 [stringifyclasses]: #stringifyclasses
+[removeemptyobjects]: #removeemptyobjects
+[compactsparsearrays]: #compactsparsearrays
+[removeemptyobjectsandcompactsparsearrays]: #removeemptyobjectsandcompactsparsearrays
 [cssvalue]: #cssvalue
 [cssobject]: #cssobject
 [cssclasses]: #cssclasses
