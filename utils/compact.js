@@ -1,3 +1,5 @@
+import isEmpty from "lodash-es/isEmpty.js";
+
 const removeEmptyObjectsRecursive = (obj) => {
     if (typeof obj !== "object" || obj === null) {
         return;
@@ -60,7 +62,7 @@ const removeEmptyObjectsAndCompactSparseArraysRecursive = (obj) => {
     }
     if (Array.isArray(obj)) {
         for (let i = 0; i < obj.length; i++) {
-            if (obj[i] === undefined) {
+            if (obj[i] === undefined || isEmpty(obj[i])) {
                 obj.splice(i, 1);
                 i--;
             }
