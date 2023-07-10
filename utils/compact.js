@@ -4,12 +4,7 @@ const removeEmptyObjectsRecursive = (obj) => {
     if (typeof obj !== "object" || obj === null) {
         return;
     }
-    if (Array.isArray(obj)) {
-        for (const item of obj) {
-            removeEmptyObjectsRecursive(item);
-        }
-        return;
-    }
+    // we need to go deep first, so we so empty nested objects are removed before we check if the object is empty
     for (const [key, value] of Object.entries(obj)) {
         if (typeof value === "object" && value !== null) {
             if (Object.keys(value).length === 0) {
@@ -18,6 +13,12 @@ const removeEmptyObjectsRecursive = (obj) => {
             }
             removeEmptyObjectsRecursive(value);
         }
+    }
+    if (Array.isArray(obj)) {
+        for (const item of obj) {
+            removeEmptyObjectsRecursive(item);
+        }
+        return;
     }
 };
 
@@ -33,17 +34,18 @@ const compactSparseArraysRecursive = (obj) => {
     if (typeof obj !== "object" || obj === null) {
         return;
     }
+    // we need to go deep first, so we so empty nested arrays are removed before we check if the array is empty
+    for (const value of Object.values(obj)) {
+        if (typeof value === "object" && value !== null) {
+            compactSparseArraysRecursive(value);
+        }
+    }
     if (Array.isArray(obj)) {
         for (let i = 0; i < obj.length; i++) {
             if (obj[i] === undefined) {
                 obj.splice(i, 1);
                 i--;
             }
-        }
-    }
-    for (const value of Object.values(obj)) {
-        if (typeof value === "object" && value !== null) {
-            compactSparseArraysRecursive(value);
         }
     }
 };
@@ -60,14 +62,8 @@ const removeEmptyObjectsAndCompactSparseArraysRecursive = (obj) => {
     if (typeof obj !== "object" || obj === null) {
         return;
     }
-    if (Array.isArray(obj)) {
-        for (let i = 0; i < obj.length; i++) {
-            if (obj[i] === undefined || isEmpty(obj[i])) {
-                obj.splice(i, 1);
-                i--;
-            }
-        }
-    }
+    // we need to go deep first, so we so empty properties of objects or items in arrays are removed
+    //  before we check if the object or array is empty
     for (const [key, value] of Object.entries(obj)) {
         if (typeof value === "object" && value !== null) {
             if (Object.keys(value).length === 0) {
@@ -75,6 +71,14 @@ const removeEmptyObjectsAndCompactSparseArraysRecursive = (obj) => {
                 continue;
             }
             removeEmptyObjectsAndCompactSparseArraysRecursive(value);
+        }
+    }
+    if (Array.isArray(obj)) {
+        for (let i = 0; i < obj.length; i++) {
+            if (obj[i] === undefined || isEmpty(obj[i])) {
+                obj.splice(i, 1);
+                i--;
+            }
         }
     }
 };
