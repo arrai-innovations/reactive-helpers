@@ -175,7 +175,7 @@ export function useObjectSubscription({
             awaitableWithCancel: subscribe,
             watchArguments: reactive({
                 intendToSubscribe: toRef(state, "intendToSubscribe"),
-                listArgs: toRef(parentState, "id"),
+                id: toRef(parentState, "id"),
                 retrieveArgs: toRef(parentState, "retrieveArgs"),
             }),
             clearActiveOnResolved: false,
@@ -184,9 +184,14 @@ export function useObjectSubscription({
         retrieveIntent = useCancellableIntent({
             awaitableWithCancel: objectInstance.retrieve,
             watchArguments: reactive({
-                intendToSubscribe: toRef(state, "intendToRetrieve"),
-                listArgs: toRef(parentState, "id"),
+                intendToRetrieve: toRef(state, "intendToRetrieve"),
+                id: toRef(parentState, "id"),
                 retrieveArgs: toRef(parentState, "retrieveArgs"),
+            }),
+            // delay triggering a retrieve until the last retrieve has finished/cancelled
+            // cancel can still be triggered
+            guardArguments: reactive({
+                loading: toRef(state, "loading"),
             }),
         });
     });
