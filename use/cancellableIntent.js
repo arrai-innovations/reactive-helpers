@@ -87,6 +87,7 @@ export function useCancellableIntent({
 
     const intentWatch = async () => {
         let newWatchValues = deepUnref(Object.values(watchArguments));
+        const guardValues = deepUnref(Object.values(guardArguments));
         if (isEqual(newWatchValues, previousWatchValues)) {
             return;
         }
@@ -94,7 +95,7 @@ export function useCancellableIntent({
         await cancel();
         if (Object.values(previousWatchValues).every(identity)) {
             // if any guards are true, delay the watch.
-            if (guardArguments && !isEmpty(guardArguments) && Object.values(guardArguments).some(identity)) {
+            if (guardValues && !isEmpty(guardValues) && guardValues.some(identity)) {
                 delayedWatch = doIntentWatch;
                 return;
             }
@@ -144,6 +145,7 @@ export function useCancellableIntent({
     return {
         state,
         watchArguments: readonly(watchArguments),
+        guardArguments: readonly(guardArguments),
         stop,
         cancel,
     };
