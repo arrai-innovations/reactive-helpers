@@ -46,3 +46,7 @@ export const difference = (setA, setB) => {
     }
     return _difference;
 };
+
+export const equals = (setA, setB) => {
+    return setA.size === setB.size && isSuperset(setA, setB);
+};

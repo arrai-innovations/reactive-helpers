@@ -1,4 +1,4 @@
-import { difference, intersection, isSuperset, symmetricDifference, union } from "../../../utils/set.js";
+import { difference, intersection, isSuperset, symmetricDifference, union, equals } from "../../../utils/set.js";
 
 describe("utils/set", function () {
     describe("isSuperset", function () {
@@ -57,6 +57,18 @@ describe("utils/set", function () {
             expect(difference(set2, set1)).toEqual(new Set([5, 6]));
         });
     });
+    describe("equals", function () {
+        it("should return true if the two sets are equal", function () {
+            const set1 = new Set([1, 2, 3, 4]);
+            const set2 = new Set([1, 2, 3, 4]);
+            expect(equals(set1, set2)).toBe(true);
+        });
+        it("should return false if the two sets are not equal", function () {
+            const set1 = new Set([1, 2, 3, 4]);
+            const set2 = new Set([1, 2, 3, 5]);
+            expect(equals(set1, set2)).toBe(false);
+        });
+    });
     it("should work as in the example for the readme", function () {
         expect(isSuperset(new Set([1, 2, 3, 4]), new Set([1, 2, 3]))).toBe(true);
         expect(union(new Set([1, 2, 3, 4]), new Set([1, 2, 3]))).toEqual(new Set([1, 2, 3, 4]));
@@ -64,5 +76,6 @@ describe("utils/set", function () {
         expect(symmetricDifference(new Set([1, 2, 3, 4]), new Set([1, 2, 3, 5]))).toEqual(new Set([4, 5]));
         expect(difference(new Set([1, 2, 3, 4]), new Set([1, 2, 3, 5]))).toEqual(new Set([4]));
         expect(difference(new Set([1, 2, 3, 5]), new Set([1, 2, 3, 4]))).toEqual(new Set([5]));
+        expect(equals(new Set([1, 2, 3, 4]), new Set([1, 2, 3, 5]))).toBe(false);
     });
 });

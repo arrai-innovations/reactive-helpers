@@ -447,7 +447,14 @@ We make use of the basic set operations provided as example on mdn:
 https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Set#implementing_basic_set_operations
 
 ```js
-import { isSuperset, union, intersection, symmetricDifference, difference } from "@arrai-innovations/reactive-helpers";
+import {
+    isSuperset,
+    union,
+    intersection,
+    symmetricDifference,
+    difference,
+    equals,
+} from "@arrai-innovations/reactive-helpers";
 
 isSuperset(new Set([1, 2, 3, 4]), new Set([1, 2, 3])); // true
 union(new Set([1, 2, 3, 4]), new Set([1, 2, 3])); // Set { 1, 2, 3, 4 }
@@ -455,6 +462,7 @@ intersection(new Set([1, 2, 3, 4]), new Set([1, 2, 3])); // Set { 1, 2, 3 }
 symmetricDifference(new Set([1, 2, 3, 4]), new Set([1, 2, 3, 5])); // Set { 4, 5 }
 difference(new Set([1, 2, 3, 4]), new Set([1, 2, 3, 5])); // Set { 4 }
 difference(new Set([1, 2, 3, 5]), new Set([1, 2, 3, 4])); // Set { 5 }
+equals(new Set([1, 2, 3, 4]), new Set([1, 2, 3, 5])); // false
 ```
 
 #### watches
