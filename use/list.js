@@ -22,6 +22,13 @@ export const useList = ({ props, functions, paged = false, keepOldPages = false 
         listCalculated: null,
     });
 
+    if (!("listArgs" in props)) {
+        console.error("listArgs not set, must be true for intendToList or intendToSubscribe to work.");
+    }
+    if (!("retrieveArgs" in props)) {
+        console.error("retrieveArgs not set, must be true for intendToList or intendToSubscribe to work.");
+    }
+
     const es = effectScope();
 
     es.run(() => {

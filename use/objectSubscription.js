@@ -48,12 +48,16 @@ export function useObjectSubscription({
     }
     if (!objectInstance) {
         objectInstance = useObjectInstance({ props });
+    } else {
+        if (!("id" in props)) {
+            console.error("id not set, must be true for intendToRetrieve or intendToSubscribe to work.");
+        }
+        if (!("retrieveArgs" in props)) {
+            console.error("retrieveArgs not set, must be true for intendToRetrieve or intendToSubscribe to work.");
+        }
     }
     if (!objectInstance.state.crud.subscribe) {
         objectInstance.state.crud.subscribe = defaultCrud.subscribe;
-    }
-    if (!("retrieveArgs" in props)) {
-        console.error("retrieveArgs not set, must be true for intendToRetrieve or intendToSubscribe to work.");
     }
     const parentState = objectInstance.state;
     const state = reactive({

@@ -13,6 +13,13 @@ export const useObject = ({ props, functions }) => {
         objectCalculated: null,
     });
 
+    if (!("id" in props)) {
+        console.error("id not set, must be true for intendToRetrieve or intendToSubscribe to work.");
+    }
+    if (!("retrieveArgs" in props)) {
+        console.error("retrieveArgs not set, must be true for intendToRetrieve or intendToSubscribe to work.");
+    }
+
     const es = effectScope();
 
     es.run(() => {
