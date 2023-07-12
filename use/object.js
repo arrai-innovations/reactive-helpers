@@ -29,10 +29,7 @@ export const useObject = ({ props, functions }) => {
         });
         managed.objectSubscription = useObjectSubscription({
             objectInstance: managed.objectInstance,
-            props: reactive({
-                intendToSubscribe: toRef(props, "intendToSubscribe"),
-                intendToRetrieve: toRef(props, "intendToRetrieve"),
-            }),
+            props,
         });
         managed.objectRelated = useObjectRelated({
             parentState: managed.objectSubscription.state,
