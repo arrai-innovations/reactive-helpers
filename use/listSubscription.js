@@ -49,14 +49,13 @@ export function useListSubscription({ listInstance, props, functions }) {
         );
     }
     if (!listInstance) {
-        listInstance = useListInstance({ props, functions });
-    } else {
         if (!("listArgs" in props)) {
             console.error("listArgs not set, must be true for intendToList or intendToSubscribe to work.");
         }
         if (!("retrieveArgs" in props)) {
             console.error("retrieveArgs not set, must be true for intendToList or intendToSubscribe to work.");
         }
+        listInstance = useListInstance({ props, functions });
     }
     if (!listInstance.state.crud.subscribe) {
         listInstance.state.crud.subscribe = defaultCrud.subscribe;
