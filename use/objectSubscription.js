@@ -41,11 +41,6 @@ export function useObjectSubscription({
         "retrieveArgs",
     ],
 }) {
-    if ("retrieveArgs" in props && objectInstance) {
-        throw new ObjectSubscriptionError(
-            "Cannot use retrieveArgs and objectInstance together, set retrieveArgs on objectInstance instead"
-        );
-    }
     if (!objectInstance) {
         objectInstance = useObjectInstance({ props });
     } else {
