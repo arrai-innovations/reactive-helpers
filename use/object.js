@@ -40,6 +40,11 @@ export const useObject = ({ props, functions }) => {
         managed.objectSubscription.clearError();
         managed.objectInstance.clearError();
     };
+    const clear = () => {
+        managed.objectSubscription.clearError();
+        // objectInstance.clear also does objectInstance.clearError
+        managed.objectInstance.clear();
+    };
     return reactive({
         managed: shallowReadonly(managed),
         state: managed.objectCalculated.state,
@@ -52,6 +57,7 @@ export const useObject = ({ props, functions }) => {
         updateFromSubscription: managed.objectSubscription.updateFromSubscription,
         deleteFromSubscription: managed.objectSubscription.deleteFromSubscription,
         clearError,
+        clear,
         effectScope: es,
     });
 };
