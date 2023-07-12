@@ -224,7 +224,7 @@ export function useObjectInstance({ props, functions = {} }) {
 
     function clear() {
         clearError();
-        state.object = {};
+        assignReactiveObject(state.object, {});
     }
 
     return reactive({
