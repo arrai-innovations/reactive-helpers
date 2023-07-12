@@ -222,6 +222,11 @@ export function useObjectInstance({ props, functions = {} }) {
         state.error = null;
     }
 
+    function clear() {
+        clearError();
+        state.object = {};
+    }
+
     return reactive({
         state,
         retrieve,
@@ -230,5 +235,6 @@ export function useObjectInstance({ props, functions = {} }) {
         patch,
         delete: deleteFn,
         clearError,
+        clear,
     });
 }
