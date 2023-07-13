@@ -156,10 +156,10 @@ export function useListSubscription({ listInstance, props, functions }) {
         }
     }
 
-    function clearErrors() {
+    function clearError() {
         state.subscriptionErrored = false;
         state.subscriptionError = null;
-        listInstance.clearErrors();
+        listInstance.clearError();
     }
 
     const es = effectScope();
@@ -223,7 +223,7 @@ export function useListSubscription({ listInstance, props, functions }) {
         subscribeIntent,
         subscribe: publicSubscribe,
         unsubscribe: publicUnsubscribe,
-        clearErrors,
+        clearError,
         effectScope: es,
     };
 }
