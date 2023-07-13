@@ -87,13 +87,14 @@ export function useCancellableIntent({
 
     const intentWatch = async () => {
         let newWatchValues = deepUnref(Object.values(watchArguments));
-        const guardValues = deepUnref(Object.values(guardArguments));
         if (isEqual(newWatchValues, previousWatchValues)) {
             return;
         }
         previousWatchValues = newWatchValues;
-        await cancel();
-        if (Object.values(previousWatchValues).every(identity)) {
+        await cancel(); // this can take time so guards and watches can change!
+        newWatchValues = deepUnref(Object.values(watchArguments));
+        const guardValues = deepUnref(Object.values(guardArguments));
+        if (Object.values(newWatchValues).every(identity)) {
             // if any guards are true, delay the watch.
             if (guardValues && !isEmpty(guardValues) && guardValues.some(identity)) {
                 delayedWatch = doIntentWatch;
