@@ -173,6 +173,7 @@ export function useListInstance({ props, functions = {}, keepOldPages = false })
             .finally(() => {
                 state.loading = false;
                 returnPromiseResolve(resolveState);
+                promises.list = null;
             });
         return promises.list;
     }
