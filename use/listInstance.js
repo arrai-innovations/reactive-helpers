@@ -128,13 +128,21 @@ export function useListInstance({ props, functions = {}, keepOldPages = false })
         });
     };
 
+    const promises = {
+        list: null,
+    };
+
     function list() {
         // this function cannot be async, or the resulting promise will lose its .cancel() method
+        if (promises.list) {
+            // if a retrieve is already in progress, return the existing promise
+            return promises.list;
+        }
         if (state.loading) {
             return Promise.reject(new ListError("already loading."));
         }
         let returnPromiseResolve;
-        const returnPromise = new Promise((resolve) => (returnPromiseResolve = resolve));
+        promises.list = new Promise((resolve) => (returnPromiseResolve = resolve));
         state.loading = true;
         state.errored = false;
         state.error = null;
@@ -146,7 +154,7 @@ export function useListInstance({ props, functions = {}, keepOldPages = false })
         });
         let resolveState = false;
         if (listPromise.cancel) {
-            returnPromise.cancel = async () => {
+            promises.list.cancel = async () => {
                 let promise = listPromise.cancel();
                 if (promise) {
                     await promise;
@@ -166,7 +174,7 @@ export function useListInstance({ props, functions = {}, keepOldPages = false })
                 state.loading = false;
                 returnPromiseResolve(resolveState);
             });
-        return returnPromise;
+        return promises.list;
     }
 
     function addListObject(object) {

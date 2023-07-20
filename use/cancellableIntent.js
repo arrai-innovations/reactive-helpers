@@ -84,23 +84,41 @@ export function useCancellableIntent({
     };
 
     let delayedWatch = null;
+    let runningIntentWatch = null;
 
     const intentWatch = async () => {
-        let newWatchValues = deepUnref(Object.values(watchArguments));
-        if (isEqual(newWatchValues, previousWatchValues)) {
+        if (runningIntentWatch) {
             return;
         }
-        previousWatchValues = newWatchValues;
-        await cancel(); // this can take time so guards and watches can change!
-        newWatchValues = deepUnref(Object.values(watchArguments));
-        const guardValues = deepUnref(Object.values(guardArguments));
-        if (Object.values(newWatchValues).every(identity)) {
-            // if any guards are true, delay the watch.
-            if (guardValues && !isEmpty(guardValues) && guardValues.some(identity)) {
-                delayedWatch = doIntentWatch;
+        runningIntentWatch = true;
+        // this locked section is to deal with multiple intentWatches running while waiting for cancel to resolve
+        try {
+            let newWatchValues = deepUnref(Object.values(watchArguments));
+            if (isEqual(newWatchValues, previousWatchValues)) {
                 return;
             }
-            doIntentWatch();
+            await cancel(); // this can take time so guards and watches can change!
+            newWatchValues = deepUnref(Object.values(watchArguments));
+            if (isEqual(newWatchValues, previousWatchValues)) {
+                return;
+            }
+            previousWatchValues = newWatchValues;
+            const guardValues = deepUnref(Object.values(guardArguments));
+            if (Object.values(newWatchValues).every(identity)) {
+                // if any guards are true, delay the watch.
+                if (guardValues && !isEmpty(guardValues) && guardValues.some(identity)) {
+                    delayedWatch = doIntentWatch;
+                    return;
+                }
+                doIntentWatch();
+            } else {
+                // if there already is a delayed watch, but the values have gone false, cancel it
+                if (delayedWatch) {
+                    delayedWatch = null;
+                }
+            }
+        } finally {
+            runningIntentWatch = false;
         }
     };
 
