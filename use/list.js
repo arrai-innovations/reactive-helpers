@@ -85,7 +85,9 @@ export const useList = ({ props, functions, paged = false, keepOldPages = false 
         state: managed.listSort.state,
         effectScope: es,
     });
-    const handledDuplicateFunctions = new Map([["clearError", clearError]]);
+    const handledDuplicateFunctions = {
+        clearError,
+    };
     for (const [source, fnNames] of [
         [managed.listInstance, listInstanceFunctions],
         [managed.listSubscription, listSubscriptionFunctions],
@@ -95,13 +97,13 @@ export const useList = ({ props, functions, paged = false, keepOldPages = false 
         [managed.listSort, listSortFunctions],
     ]) {
         for (const fnName of fnNames) {
-            if (handledDuplicateFunctions.has(fnName)) {
+            if (handledDuplicateFunctions[fnName]) {
                 continue;
             }
             returnObject[fnName] = source[fnName];
         }
     }
-    for (const [fnName, fn] of handledDuplicateFunctions) {
+    for (const [fnName, fn] of Object.entries(handledDuplicateFunctions)) {
         returnObject[fnName] = fn;
     }
     return returnObject;

@@ -132,6 +132,7 @@ export function useListCalculated({ parentState, calculatedObjectsRules }) {
             ],
         });
 
+        state.calculatedRunning = toRef(watchesRunning.state, "running");
         state.running = computed(() => loadingCombine(watchesRunning.state.running, parentState.running));
 
         onScopeDispose(() => {

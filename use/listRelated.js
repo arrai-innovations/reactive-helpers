@@ -133,6 +133,7 @@ export function useListRelated({ parentState, relatedObjectsRules }) {
             ],
         });
 
+        state.relatedRunning = toRef(watchesRunning.state, "running");
         state.running = computed(() => loadingCombine(watchesRunning.state.running, parentState.running));
 
         onScopeDispose(() => {
