@@ -1,9 +1,8 @@
-import { addOrUpdateReactiveObject, assignReactiveObject } from "../utils/assignReactiveObject.js";
+import { getListCrud } from "../config/listCrud.js";
+import { assignReactiveObject } from "../utils/assignReactiveObject.js";
 import { getFakeId } from "../utils/getFakeId.js";
 import inspect from "browser-util-inspect";
-import cloneDeep from "lodash-es/cloneDeep.js";
-import isFunction from "lodash-es/isFunction.js";
-import { computed, effectScope, reactive, toRef, watchEffect } from "vue";
+import { computed, effectScope, reactive, toRef } from "vue";
 
 export class ListError extends Error {
     constructor(message, code) {
@@ -12,11 +11,6 @@ export class ListError extends Error {
         this.code = code;
     }
 }
-
-const defaultCrud = {
-    args: {},
-    list: undefined,
-};
 
 export const listInstanceStateKeys = [
     "crud",
@@ -33,11 +27,6 @@ export const listInstanceStateKeys = [
     "totalPages",
     "perPage",
 ];
-
-export function setListInstanceCrud({ list, args = {} } = {}) {
-    defaultCrud.list = list;
-    Object.assign(defaultCrud.args, args);
-}
 
 export const listInstanceFunctions = [
     "retrieve",
@@ -111,20 +100,8 @@ export function useListInstance({ props, functions = {}, keepOldPages = false })
         error: null,
     });
     const es = effectScope();
-    watchEffect(() => {
-        // prevent linking of all instances to the same default .args object
-        Object.assign(state.crud, cloneDeep(defaultCrud));
-        if (props.crudArgs) {
-            addOrUpdateReactiveObject(state.crud.args, props.crudArgs);
-        }
-        for (const [key, value] of Object.entries(functions)) {
-            if (isFunction(value) && key in state.crud) {
-                state.crud[key] = value;
-            } else {
-                throw ListError(`Invalid function "${key}" for useListInstance: invalid key or not a function.`);
-            }
-        }
-    });
+
+    getListCrud(state.crud, { props, functions });
 
     const defaultPageCallback = (newObjects) => {
         // with keepOldPages, you are responsible for clearing the list as needed

@@ -9,12 +9,13 @@ afterAll(() => {
 });
 
 const fields = ["id", "__str__", "name"];
-describe.skip("use/listInstance.spec.js", function () {
+describe("use/listInstance.spec.js", function () {
     let useListInstance, ListError, useListInstances, globalList;
     beforeEach(async () => {
+        const listCrud = await import("../../../config/listCrud.js");
         const imported = await import("../../../use/listInstance");
         globalList = vi.fn();
-        imported.setListInstanceCrud({
+        listCrud.setListCrud({
             list: globalList,
             args: { stream: "test_stream" },
         });
@@ -143,8 +144,8 @@ describe.skip("use/listInstance.spec.js", function () {
             expect({ ...listInstance.state.objects }).toEqual({});
             globalList.mockImplementation(() => new Promise(() => {}));
 
-            listInstance.list();
-            await expect(listInstance.list()).rejects.toThrow(ListError);
+            const firstPromise = listInstance.list();
+            expect(listInstance.list()).toBe(firstPromise);
 
             expect(globalList).toHaveBeenCalledWith({
                 crudArgs: { stream: "test_stream" },

@@ -14,11 +14,6 @@ export class ListSubscriptionError extends Error {
     }
 }
 
-const defaultCrud = {
-    args: {},
-    subscribe: undefined,
-};
-
 export const listSubscriptionStateKeys = [
     "subscriptionLoading",
     "subscriptionErrored",
@@ -29,11 +24,6 @@ export const listSubscriptionStateKeys = [
 ];
 
 export const listSubscriptionFunctions = ["subscribe", "unsubscribe", "clearError"];
-
-export function setListSubscriptionCrud({ subscribe, args = {} }) {
-    defaultCrud.subscribe = subscribe;
-    Object.assign(defaultCrud.args, args);
-}
 
 export function useListSubscriptions(args, listInstances = {}) {
     const subscriptions = {};
@@ -60,9 +50,10 @@ export function useListSubscription({ listInstance, props, functions }) {
             console.error("retrieveArgs not set, must be true for intendToList or intendToSubscribe to work.");
         }
         listInstance = useListInstance({ props, functions });
-    }
-    if (!listInstance.state.crud.subscribe) {
-        listInstance.state.crud.subscribe = defaultCrud.subscribe;
+    } else {
+        if (functions) {
+            console.error("functions passed to useListSubscription, but listInstance was passed. functions ignored.");
+        }
     }
     const parentState = listInstance.state;
 

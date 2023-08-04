@@ -1,6 +1,5 @@
-import { addOrUpdateReactiveObject, assignReactiveObject } from "../utils/index.js";
-import cloneDeep from "lodash-es/cloneDeep.js";
-import isFunction from "lodash-es/isFunction.js";
+import { getObjectCrud } from "../config/objectCrud.js";
+import { assignReactiveObject } from "../utils/index.js";
 import { reactive, toRef } from "vue";
 
 export class ObjectError extends Error {
@@ -8,24 +7,6 @@ export class ObjectError extends Error {
         super(message);
         this.name = "ObjectError";
     }
-}
-
-const defaultCrud = {
-    args: {},
-    retrieve: undefined,
-    create: undefined,
-    update: undefined,
-    patch: undefined,
-    delete: undefined,
-};
-
-export function setObjectInstanceCrud({ retrieve, create, update, patch, delete: deleteFn, args = {} }) {
-    defaultCrud.retrieve = retrieve;
-    defaultCrud.create = create;
-    defaultCrud.update = update;
-    defaultCrud.patch = patch;
-    defaultCrud.delete = deleteFn;
-    Object.assign(defaultCrud.args, args);
 }
 
 export function useObjectInstances(instanceArgs) {
@@ -54,18 +35,8 @@ export function useObjectInstance({ props, functions = {} }) {
         error: null,
         deleted: false,
     });
-    // prevent linking of all instances to the same default .args object
-    Object.assign(state.crud, cloneDeep(defaultCrud));
-    if (props.crudArgs) {
-        addOrUpdateReactiveObject(state.crud.args, props.crudArgs);
-    }
-    for (const [key, value] of Object.entries(functions)) {
-        if (isFunction(value) && key in state.crud) {
-            state[key] = value;
-        } else {
-            throw ObjectError(`Invalid function "${key}" for useObjectInstance: invalid key or not a function.`);
-        }
-    }
+
+    getObjectCrud(state.crud, { props, functions });
 
     // due to retrieve being called by `useCancelleableIntent`, if called manually then by the watch,
     //  it will run into the loading check. Instead, return the current retrieve promise if it exists.

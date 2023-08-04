@@ -21,6 +21,7 @@ describe("use/listSubscription.spec.js", function () {
         crudSubscribeResolvable = [];
         crudListResolvable.push(new CancellableResolvable());
         crudSubscribeResolvable.push(new CancellableResolvable());
+        const listCrudModule = await import("../../../config/listCrud.js");
         const listInstanceModule = await import("../../../use/listInstance");
         crudList = vi
             .fn()
@@ -30,8 +31,9 @@ describe("use/listSubscription.spec.js", function () {
                 crudListResolvable.push(newResolvable);
                 return newResolvable.promise;
             });
-        listInstanceModule.setListInstanceCrud({
+        listCrudModule.setListCrud({
             list: crudList,
+            subscribe: crudSubscribe,
             args: { stream: "test_stream" },
         });
         const listSubscriptionModule = await import("../../../use/listSubscription");
@@ -49,10 +51,6 @@ describe("use/listSubscription.spec.js", function () {
                 passedSubscriptionEventCallback = subscriptionEventCallback;
                 return newResolvable.promise;
             });
-        listSubscriptionModule.setListSubscriptionCrud({
-            subscribe: crudSubscribe,
-            args: { stream: "test_stream" },
-        });
 
         useListInstance = listInstanceModule.useListInstance;
         useListInstances = listInstanceModule.useListInstances;
