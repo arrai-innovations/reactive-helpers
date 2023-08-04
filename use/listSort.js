@@ -1,4 +1,9 @@
 import { assignReactiveObject, keyDiff } from "../utils/index.js";
+import { listCalculatedStateKeys } from "./listCalculated.js";
+import { listFilterStateKeys } from "./listFilter.js";
+import { listInstanceStateKeys } from "./listInstance.js";
+import { listRelatedStateKeys } from "./listRelated.js";
+import { listSubscriptionStateKeys } from "./listSubscription.js";
 import cloneDeep from "lodash-es/cloneDeep.js";
 import get from "lodash-es/get.js";
 import identity from "lodash-es/identity.js";
@@ -9,6 +14,17 @@ import partial from "lodash-es/partial.js";
 import throttle from "lodash-es/throttle.js";
 import zip from "lodash-es/zip.js";
 import { effectScope, onScopeDispose, reactive, toRef, unref, watch } from "vue";
+
+export const listSortStateKeys = [
+    "orderByRules",
+    // "order",
+    // "objectsInOrder",
+    "sortCriteria",
+    "sortCriteriaWatches",
+    "orderByDesc",
+];
+
+export const listSortFunctions = [];
 
 const collator = new Intl.Collator(undefined, { numeric: true });
 
@@ -161,7 +177,24 @@ export function useListSort({ parentState, orderByRules, sortThrottleWait = defa
     const throttledSortWatch = throttle(sortWatch, sortThrottleWait);
 
     es.run(() => {
-        state.objects = toRef(parentState, "objects");
+        for (const key of listInstanceStateKeys) {
+            if (["order", "objectsInOrder"].includes(key)) {
+                continue;
+            }
+            state[key] = toRef(parentState, key);
+        }
+        for (const key of listSubscriptionStateKeys) {
+            state[key] = toRef(parentState, key);
+        }
+        for (const key of listRelatedStateKeys) {
+            state[key] = toRef(parentState, key);
+        }
+        for (const key of listCalculatedStateKeys) {
+            state[key] = toRef(parentState, key);
+        }
+        for (const key of listFilterStateKeys) {
+            state[key] = toRef(parentState, key);
+        }
         // we do not need two immediate watches to the same function.
         watch(() => Object.keys(parentState.objects), sortCriteriaWatch);
         watch(() => cloneDeep(state.orderByRules), sortCriteriaWatch, {

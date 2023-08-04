@@ -1,7 +1,9 @@
-import { useListCalculated } from "./listCalculated.js";
-import { useListInstance } from "./listInstance.js";
-import { useListRelated } from "./listRelated.js";
-import { useListSubscription } from "./listSubscription.js";
+import { useListCalculated, listCalculatedFunctions } from "./listCalculated.js";
+import { useListFilter, listFilterFunctions } from "./listFilter.js";
+import { useListInstance, listInstanceFunctions } from "./listInstance.js";
+import { useListRelated, listRelatedFunctions } from "./listRelated.js";
+import { useListSort, listSortFunctions } from "./listSort.js";
+import { useListSubscription, listSubscriptionFunctions } from "./listSubscription.js";
 import { usePagedListInstance } from "./paginatedListInstance.js";
 import { effectScope, reactive, shallowReactive, shallowReadonly, toRef } from "vue";
 
@@ -42,6 +44,7 @@ export const useList = ({ props, functions, paged = false, keepOldPages = false 
             listInstance: managed.listInstance,
         });
         managed.listSubscription.state.intendToList = toRef(props, "intendToList");
+        managed.listSubscription.state.intendToSubscribe = toRef(props, "intendToSubscribe");
 
         managed.listRelated = useListRelated({
             parentState: managed.listSubscription.state,
@@ -52,6 +55,23 @@ export const useList = ({ props, functions, paged = false, keepOldPages = false 
             parentState: managed.listRelated.state,
             calculatedObjectsRules: toRef(props, "calculatedObjectsRules"),
         });
+
+        managed.listFilter = useListFilter({
+            parentState: managed.listCalculated.state,
+            useTextSearch: toRef(props, "useTextSearch"),
+            textSearchRules: toRef(props, "textSearchRules"),
+            textSearchValue: toRef(props, "textSearchValue"),
+            allowedValues: toRef(props, "allowedValues"),
+            excludedValues: toRef(props, "excludedValues"),
+            allowedFilter: toRef(props, "allowedFilter"),
+            excludedFilter: toRef(props, "excludedFilter"),
+        });
+
+        managed.listSort = useListSort({
+            parentState: managed.listFilter.state,
+            orderByRules: toRef(props, "orderByRules"),
+            sortThrottleWait: functions.sortThrottleWait,
+        });
     });
 
     const clearError = (error) => {
@@ -59,18 +79,30 @@ export const useList = ({ props, functions, paged = false, keepOldPages = false 
         managed.listInstance.clearError(error);
     };
 
-    return reactive({
+    const returnObject = reactive({
         // we manage the keys on both of these, so hands off the root.
         managed: shallowReadonly(managed),
-        state: managed.listCalculated.state,
-        list: managed.listInstance.list,
-        addListObject: managed.listInstance.addListObject,
-        updateListObject: managed.listInstance.updateListObject,
-        deleteListObject: managed.listInstance.deleteListObject,
-        clearList: managed.listInstance.clearList,
-        clearError,
-        getFakeId: managed.listInstance.getFakeId,
-        defaultPageCallback: managed.listInstance.defaultPageCallback,
+        state: managed.listSort.state,
         effectScope: es,
     });
+    const handledDuplicateFunctions = new Map([["clearError", clearError]]);
+    for (const [source, fnNames] of [
+        [managed.listInstance, listInstanceFunctions],
+        [managed.listSubscription, listSubscriptionFunctions],
+        [managed.listRelated, listRelatedFunctions],
+        [managed.listCalculated, listCalculatedFunctions],
+        [managed.listFilter, listFilterFunctions],
+        [managed.listSort, listSortFunctions],
+    ]) {
+        for (const fnName of fnNames) {
+            if (handledDuplicateFunctions.has(fnName)) {
+                continue;
+            }
+            returnObject[fnName] = source[fnName];
+        }
+    }
+    for (const [fnName, fn] of handledDuplicateFunctions) {
+        returnObject[fnName] = fn;
+    }
+    return returnObject;
 };

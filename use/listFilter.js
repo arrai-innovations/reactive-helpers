@@ -1,9 +1,29 @@
 import { keyDiff } from "../utils/keyDiff.js";
+import { listCalculatedStateKeys } from "./listCalculated.js";
+import { listInstanceStateKeys } from "./listInstance.js";
+import { listRelatedStateKeys } from "./listRelated.js";
+import { listSubscriptionStateKeys } from "./listSubscription.js";
 import { useSearch } from "./search.js";
 import get from "lodash-es/get.js";
 import identity from "lodash-es/identity.js";
 import isEmpty from "lodash-es/isEmpty.js";
 import { computed, effectScope, onScopeDispose, reactive, toRef, watch, watchEffect } from "vue";
+
+export const listFilterStateKeys = [
+    "objectIndexes",
+    // override but not ours
+    // "objects",
+    "textSearchRules",
+    "textSearchValue",
+    "allowedValues",
+    "excludedValues",
+    "allowedFilter",
+    "excludedFilter",
+    "searched",
+    "searching",
+];
+
+export const listFilterFunctions = [];
 
 export function useListFilters(listFilterArgs, parentInstances) {
     const filters = {};
@@ -32,6 +52,8 @@ export function useListFilter({
         excludedValues,
         allowedFilter,
         excludedFilter,
+        searched: undefined,
+        searching: undefined,
     });
 
     const es = effectScope();
@@ -39,6 +61,21 @@ export function useListFilter({
     let textSearchIndex;
 
     es.run(() => {
+        for (const key of listInstanceStateKeys) {
+            if (key === "objects") {
+                continue;
+            }
+            state[key] = toRef(parentState, key);
+        }
+        for (const key of listSubscriptionStateKeys) {
+            state[key] = toRef(parentState, key);
+        }
+        for (const key of listRelatedStateKeys) {
+            state[key] = toRef(parentState, key);
+        }
+        for (const key of listCalculatedStateKeys) {
+            state[key] = toRef(parentState, key);
+        }
         if (useTextSearch) {
             textSearchIndex = useSearch();
             textSearchIndex.state.search = toRef(state, "textSearchValue");
@@ -46,9 +83,11 @@ export function useListFilter({
             state.searching = toRef(textSearchIndex.state, "searching");
         }
 
+        // todo: computed is not the solution here for deep reactions
         state.objectsInOrder = computed(() => parentState.order.map((id) => state.objects[id]).filter(identity));
         state.order = computed(() => state.objectsInOrder.map((object) => `${object.id}`));
 
+        // todo: this huge watchEffect is fairly gross, but also doesn't watch deep similarly to computed
         watchEffect(() => {
             const allowedValuesEmpty = !state.allowedValues || isEmpty(state.allowedValues);
             const excludedValuesEmpty = !state.excludedValues || isEmpty(state.excludedValues);
@@ -104,6 +143,7 @@ export function useListFilter({
         if (useTextSearch) {
             const stopIndexWatch = {};
 
+            // todo: this huge watchEffect is fairly gross, but also doesn't watch deep similarly to computed
             watchEffect(() => {
                 const { removedKeys, addedKeys } = keyDiff(
                     Object.keys(parentState.objects),

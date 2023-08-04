@@ -15,6 +15,8 @@ export const listRelatedStateKeys = [
     "relatedObjectsParentStateObjectsWatchRunning",
 ];
 
+export const listRelatedFunctions = [];
+
 export function useListRelateds(instances, args) {
     for (const [key, value] of Object.entries(args)) {
         useListRelated({

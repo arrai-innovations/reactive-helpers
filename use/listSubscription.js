@@ -15,6 +15,7 @@ export class ListSubscriptionError extends Error {
 }
 
 const defaultCrud = {
+    args: {},
     subscribe: undefined,
 };
 
@@ -27,8 +28,11 @@ export const listSubscriptionStateKeys = [
     "subscribed",
 ];
 
-export function setListSubscriptionCrud({ subscribe }) {
+export const listSubscriptionFunctions = ["subscribe", "unsubscribe", "clearError"];
+
+export function setListSubscriptionCrud({ subscribe, args = {} }) {
     defaultCrud.subscribe = subscribe;
+    Object.assign(defaultCrud.args, args);
 }
 
 export function useListSubscriptions(args, listInstances = {}) {

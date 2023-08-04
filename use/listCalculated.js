@@ -13,6 +13,8 @@ export const listCalculatedStateKeys = [
     "calculatedObjectsWatchRunning",
 ];
 
+export const listCalculatedFunctions = [];
+
 export function useListCalculateds(instances, args) {
     for (const [key, value] of Object.entries(args)) {
         useListCalculated({

@@ -39,6 +39,19 @@ export function setListInstanceCrud({ list, args = {} } = {}) {
     Object.assign(defaultCrud.args, args);
 }
 
+export const listInstanceFunctions = [
+    "retrieve",
+    "list",
+    "addListObject",
+    "updateListObject",
+    "deleteListObject",
+    "clearList",
+    "clearError",
+    "getFakeId",
+    "defaultPageCallback",
+    "pageCallback",
+];
+
 export function useListInstances(listInstanceArgs) {
     const instances = {};
     for (const [key, value] of Object.entries(listInstanceArgs)) {
