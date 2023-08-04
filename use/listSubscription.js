@@ -35,11 +35,11 @@ export function useListSubscriptions(args, listInstances = {}) {
 
 export function useListSubscription({ listInstance, props, functions }) {
     if (!listInstance && !props) {
-        throw new ListSubscriptionError("useListSubscription should be passed listInstance or props and crudArgs.");
+        throw new ListSubscriptionError("useListSubscription should be passed listInstance or props and functions.");
     }
     if (listInstance && props) {
         throw new ListSubscriptionError(
-            "useListSubscription should be passed listInstance or props and crudArgs, not both."
+            "useListSubscription should be passed listInstance or props and functions, not both."
         );
     }
     if (!listInstance) {

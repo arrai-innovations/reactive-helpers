@@ -29,6 +29,7 @@ export function useObjectSubscriptions(subscriptionArgs) {
 export function useObjectSubscription({
     objectInstance,
     props,
+    functions,
     passThroughPropertyNames = [
         // instance
         "crud",
@@ -42,7 +43,7 @@ export function useObjectSubscription({
     ],
 }) {
     if (!objectInstance) {
-        objectInstance = useObjectInstance({ props });
+        objectInstance = useObjectInstance({ props, functions });
     } else {
         if (!("id" in props)) {
             console.error("id not set, must be true for intendToRetrieve or intendToSubscribe to work.");
@@ -50,9 +51,11 @@ export function useObjectSubscription({
         if (!("retrieveArgs" in props)) {
             console.error("retrieveArgs not set, must be true for intendToRetrieve or intendToSubscribe to work.");
         }
-    }
-    if (!objectInstance.state.crud.subscribe) {
-        objectInstance.state.crud.subscribe = defaultCrud.subscribe;
+        if (functions) {
+            console.error(
+                "functions passed to useObjectSubscription, but objectInstance was passed. functions ignored."
+            );
+        }
     }
     const parentState = objectInstance.state;
     const state = reactive({

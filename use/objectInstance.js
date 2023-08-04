@@ -21,11 +21,11 @@ export function useObjectInstance({ props, functions = {} }) {
     const state = reactive({
         crud: {
             args: {},
-            retrieve: undefined,
             create: undefined,
+            retrieve: undefined,
             update: undefined,
-            patch: undefined,
             delete: undefined,
+            patch: undefined,
         },
         object: {},
         id: toRef(props, "id"),
