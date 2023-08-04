@@ -1,7 +1,7 @@
-import { useObjectCalculated } from "./objectCalculated.js";
-import { useObjectInstance } from "./objectInstance.js";
-import { useObjectRelated } from "./objectRelated.js";
-import { useObjectSubscription } from "./objectSubscription.js";
+import { useObjectCalculated, objectCalculatedFunctions } from "./objectCalculated.js";
+import { useObjectInstance, objectInstanceFunctions } from "./objectInstance.js";
+import { useObjectRelated, objectRelatedFunctions } from "./objectRelated.js";
+import { useObjectSubscription, objectSubscriptionFunctions } from "./objectSubscription.js";
 import { effectScope, reactive, shallowReadonly, toRef } from "vue";
 
 // Manages a chain of useObject* functions
@@ -49,7 +49,7 @@ export const useObject = ({ props, functions }) => {
         // objectInstance.clear also does objectInstance.clearError
         managed.objectInstance.clear();
     };
-    return reactive({
+    const returnObject = reactive({
         managed: shallowReadonly(managed),
         state: managed.objectCalculated.state,
         retrieve: managed.objectInstance.retrieve,
@@ -64,4 +64,25 @@ export const useObject = ({ props, functions }) => {
         clear,
         effectScope: es,
     });
+    const handledDuplicateFunctions = {
+        clearError,
+        clear,
+    };
+    for (const [source, fnNames] of [
+        [managed.objectInstance, objectInstanceFunctions],
+        [managed.objectSubscription, objectSubscriptionFunctions],
+        [managed.objectRelated, objectRelatedFunctions],
+        [managed.objectCalculated, objectCalculatedFunctions],
+    ]) {
+        for (const fnName of fnNames) {
+            if (handledDuplicateFunctions[fnName]) {
+                continue;
+            }
+            returnObject[fnName] = source[fnName];
+        }
+    }
+    for (const [fnName, fn] of Object.entries(handledDuplicateFunctions)) {
+        returnObject[fnName] = fn;
+    }
+    return returnObject;
 };

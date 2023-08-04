@@ -9,6 +9,19 @@ export class ObjectError extends Error {
     }
 }
 
+export const objectInstanceStateKeys = [
+    "crud",
+    "id",
+    "retrieveArgs",
+    "object",
+    "loading",
+    "errored",
+    "error",
+    "deleted",
+];
+
+export const objectInstanceFunctions = ["create", "retrieve", "update", "delete", "patch", "clearError", "clear"];
+
 export function useObjectInstances(instanceArgs) {
     const instances = {};
     for (const [key, value] of Object.entries(instanceArgs)) {
@@ -200,11 +213,11 @@ export function useObjectInstance({ props, functions = {} }) {
 
     return reactive({
         state,
-        retrieve,
         create,
+        retrieve,
         update,
-        patch,
         delete: deleteFn,
+        patch,
         clearError,
         clear,
     });

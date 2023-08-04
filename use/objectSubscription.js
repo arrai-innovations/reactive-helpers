@@ -1,6 +1,6 @@
 import { assignReactiveObject, loadingCombine } from "../utils/index.js";
 import { useCancellableIntent } from "./cancellableIntent.js";
-import { useObjectInstance } from "./objectInstance.js";
+import { useObjectInstance, objectInstanceStateKeys } from "./objectInstance.js";
 import { computed, effectScope, reactive, toRef } from "vue";
 
 export class ObjectSubscriptionError extends Error {
@@ -10,13 +10,22 @@ export class ObjectSubscriptionError extends Error {
     }
 }
 
-const defaultCrud = {
-    subscribe: undefined,
-};
+export const objectSubscriptionStateKeys = [
+    "subscriptionLoading",
+    "subscriptionErrored",
+    "subscriptionError",
+    "subscribed",
+    "intendToRetrieve",
+    "intendToSubscribe",
+];
 
-export function setObjectSubscriptionCrud({ subscribe }) {
-    defaultCrud.subscribe = subscribe;
-}
+export const objectSubscriptionFunctions = [
+    "subscribe",
+    "unsubscribe",
+    "updateFromSubscription",
+    "deleteFromSubscription",
+    "clearError",
+];
 
 export function useObjectSubscriptions(subscriptionArgs) {
     const subscriptions = {};
@@ -26,22 +35,7 @@ export function useObjectSubscriptions(subscriptionArgs) {
     return subscriptions;
 }
 
-export function useObjectSubscription({
-    objectInstance,
-    props,
-    functions,
-    passThroughPropertyNames = [
-        // instance
-        "crud",
-        "deleted",
-        // "error",
-        // "errored",
-        "id",
-        // "loading",
-        "object",
-        "retrieveArgs",
-    ],
-}) {
+export function useObjectSubscription({ objectInstance, props, functions }) {
     if (!objectInstance) {
         objectInstance = useObjectInstance({ props, functions });
     } else {
@@ -172,7 +166,7 @@ export function useObjectSubscription({
         state.errored = computed(() => parentState.errored || state.subscriptionErrored);
         state.error = computed(() => parentState.error || state.subscriptionError);
 
-        for (const key of passThroughPropertyNames) {
+        for (const key of objectInstanceStateKeys.filter((key) => !["loading", "errored", "error"].includes(key))) {
             state[key] = toRef(parentState, key);
         }
 

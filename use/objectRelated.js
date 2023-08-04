@@ -1,11 +1,22 @@
 import { loadingCombine } from "../utils/index.js";
 import { keyDiff } from "../utils/keyDiff.js";
+import { objectInstanceStateKeys } from "./objectInstance.js";
+import { objectSubscriptionStateKeys } from "./objectSubscription.js";
 import { useWatchesRunning } from "./watchesRunning.js";
 import get from "lodash-es/get.js";
 import isArray from "lodash-es/isArray.js";
 import isEmpty from "lodash-es/isEmpty.js";
 import isUndefined from "lodash-es/isUndefined.js";
 import { computed, effectScope, onScopeDispose, reactive, toRef, unref, watch } from "vue";
+
+export const objectRelatedStateKeys = [
+    "relatedObject",
+    "relatedObjectRules",
+    "relatedObjectWatchRunning",
+    "parentStateObjectWatchRunning",
+];
+
+export const objectRelatedFunctions = [];
 
 export function useObjectRelateds(instances, args) {
     for (const [key, value] of Object.entries(args)) {
@@ -17,47 +28,24 @@ export function useObjectRelateds(instances, args) {
 }
 
 // the single object version of useListRelated
-export function useObjectRelated({
-    parentState,
-    relatedObjectRules,
-    relatedObjectPropertyName = "relatedObject", // NOT REACTIVE
-    passThroughPropertyNames = [
-        // instance
-        "crud",
-        "deleted",
-        "error",
-        "errored",
-        "id",
-        "loading",
-        "object",
-        "retrieveArgs",
-        // subscription
-        "intendToRetrieve",
-        "intendToSubscribe",
-        "subscribed",
-        "subscriptionError",
-        "subscriptionErrored",
-        "subscriptionLoading",
-    ], // NOT REACTIVE
-}) {
+export function useObjectRelated({ parentState, relatedObjectRules }) {
     const state = reactive({
         relatedObjectRules,
-        relatedObjectObjects: {},
+        relatedObject: {},
         parentStateObjectWatchRunning: false,
         relatedObjectWatchRunning: false,
     });
     const relatedObjectEffectScopes = {};
-
-    // don't change relatedObjectPropertyName on us or it will break
-    const ropn = relatedObjectPropertyName + "";
 
     let watchesRunning = null;
 
     const es = effectScope();
 
     es.run(() => {
-        state[ropn] = toRef(state, "relatedObjectObjects");
-        for (let key of passThroughPropertyNames) {
+        for (const key of objectInstanceStateKeys) {
+            state[key] = toRef(parentState, key);
+        }
+        for (const key of objectSubscriptionStateKeys) {
             state[key] = toRef(parentState, key);
         }
 
@@ -65,16 +53,16 @@ export function useObjectRelated({
             let addedRuleKeys = [],
                 removedRuleKeys = [];
             if (!state.relatedObjectRules) {
-                removedRuleKeys = Object.keys(state.relatedObjectObjects);
+                removedRuleKeys = Object.keys(state.relatedObject);
             } else {
                 ({ addedKeys: addedRuleKeys, removedKeys: removedRuleKeys } = keyDiff(
                     Object.keys(state.relatedObjectRules),
-                    Object.keys(state.relatedObjectObjects)
+                    Object.keys(state.relatedObject)
                 ));
             }
 
             for (const removedRuleKey of removedRuleKeys) {
-                delete state.relatedObjectObjects[removedRuleKey];
+                delete state.relatedObject[removedRuleKey];
                 if (relatedObjectEffectScopes[removedRuleKey]) {
                     relatedObjectEffectScopes[removedRuleKey].stop();
                     delete relatedObjectEffectScopes[removedRuleKey];
@@ -83,7 +71,7 @@ export function useObjectRelated({
             for (const addedRuleKey of addedRuleKeys) {
                 relatedObjectEffectScopes[addedRuleKey] = effectScope();
                 relatedObjectEffectScopes[addedRuleKey].run(() => {
-                    state.relatedObjectObjects[addedRuleKey] = computed(() => {
+                    state.relatedObject[addedRuleKey] = computed(() => {
                         // deal with computed objects being passed.
                         const ruleObjects = unref(state.relatedObjectRules?.[addedRuleKey]?.objects);
                         const rulePkKey = state.relatedObjectRules?.[addedRuleKey]?.pkKey || addedRuleKey;
@@ -112,6 +100,7 @@ export function useObjectRelated({
         });
 
         state.relatedRunning = toRef(watchesRunning.state, "running");
+        state.running = computed(() => loadingCombine(watchesRunning.state.running, parentState.running));
 
         onScopeDispose(() => {
             for (const key in relatedObjectEffectScopes) {
