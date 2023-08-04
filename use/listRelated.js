@@ -1,4 +1,5 @@
-import { keyDiff, loadingCombine } from "../utils/index.js";
+import { keyDiff } from "../utils/keyDiff.js";
+import { loadingCombine } from "../utils/loadingCombine.js";
 import { listInstanceStateKeys } from "./listInstance.js";
 import { listSubscriptionStateKeys } from "./listSubscription.js";
 import { useWatchesRunning } from "./watchesRunning.js";

@@ -1,4 +1,4 @@
-import { addOrUpdateReactiveObject } from "../utils/index.js";
+import { addOrUpdateReactiveObject } from "../utils/assignReactiveObject.js";
 import cloneDeep from "lodash-es/cloneDeep.js";
 import isFunction from "lodash-es/isFunction.js";
 import { isReactive, toRef } from "vue";

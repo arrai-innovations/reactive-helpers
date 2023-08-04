@@ -1,5 +1,5 @@
 import { getObjectCrud } from "../config/objectCrud.js";
-import { assignReactiveObject } from "../utils/index.js";
+import { assignReactiveObject } from "../utils/assignReactiveObject.js";
 import { reactive, toRef } from "vue";
 
 export class ObjectError extends Error {

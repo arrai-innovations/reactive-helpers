@@ -1,4 +1,4 @@
-import { useCancellableIntent } from "../../../use/index.js";
+import { useCancellableIntent } from "../../../use/cancellableIntent.js";
 import { CancellableResolvable } from "../crudPromise.js";
 import flushPromises from "flush-promises";
 import { nextTick, reactive, ref } from "vue";
