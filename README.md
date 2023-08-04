@@ -19,9 +19,11 @@ Vue.js 3 utility composition functions to help manipulate objects and lists.
     - [Instance](#instance)
     - [Subscription](#subscription)
     - [Related](#related)
-    - [Sort](#sort)
+    - [Calculated](#calculated)
     - [Filter](#filter)
+    - [Sort](#sort)
     - [All](#all)
+    - [List](#list-1)
   - [Object](#object)
   - [Search](#search)
   - [Utils](#utils)
@@ -67,12 +69,9 @@ The container for your list of objects, providing loading or error status.
 
 ```js
 // do this in your main.js
-import { setListInstanceCrud } from "@arrai-innovations/reactive-helpers";
-import { useListInstance } from "@arrai-innovations/reactive-helpers";
-// then use in your component
-import { reactive } from "vue";
+import { setListCrud } from "@arrai-innovations/reactive-helpers";
 
-setListInstanceCrud({
+setListCrud({
     list: async function listCrudAdaptor({ crudArgs, retrieveArgs, listArgs, pageCallback }) {
         // todo: your implemenation here.
         const listOfObjects = await talkToServer(crudArgs, retrieveArgs, listArgs);
@@ -81,11 +80,15 @@ setListInstanceCrud({
         pageCallback(nextListOfObjects);
     },
 });
+```
 
-const listArgs = reactive({
-    has_organization: true,
-});
-const contacts = useListInstance({
+```js
+// then use in your component
+import { useListInstance } from "@arrai-innovations/reactive-helpers";
+import { reactive } from "vue";
+
+const listProps = reactive({
+    // crudArgs are implementation specific to your crud functions.
     crudArgs: {
         stream: "contacts",
     },
@@ -93,6 +96,9 @@ const contacts = useListInstance({
         fields: ["id", "has_name", "lexical_name", "organization", "phone"],
     },
     listArgs,
+});
+const contacts = useListInstance({
+    props: listProps,
 });
 
 await contacts.list();
@@ -110,7 +116,7 @@ await contacts.list();
 console.log(contacts.objects);
 // { contacts keyed by 'id' with message_count  }
 // change list or retrieve args indirectly
-listArgs.has_organization = false;
+listProps.listArgs.has_organization = false;
 await contacts.list();
 console.log(contacts.objects);
 // { contacts keyed by 'id' with organizationless contacts  }
@@ -122,11 +128,9 @@ Adds functionality to a list instance to receive updates from the server.
 
 ```js
 // do this in your main.js
-import { setListSubscriptionCrud } from "@arrai-innovations/reactive-helpers";
-// then use in your component
-import { useListInstance, useListSubscription } from "@arrai-innovations/reactive-helpers";
-
-setListSubscriptionCrud({
+import { setListCrud } from "@arrai-innovations/reactive-helpers";
+setListCrud({
+    ..., // in addition to the list crud adaptor above
     subscribe: function subscribeCrudAdaptor({ crudArgs, retrieveArgs, listArgs, eventCallback }) {
         // todo: your implemenation here.
         const subscription = talkToServer(function (data, action) {
@@ -139,10 +143,19 @@ setListSubscriptionCrud({
         return subscription;
     },
 });
+```
 
-const contacts = useListInstance({
+```js
+// then use in your component
+import { useListInstance, useListSubscription } from "@arrai-innovations/reactive-helpers";
+
+const listProps = reactive({
+    // crudArgs are implementation specific to your crud functions.
     crudArgs: {
         stream: "contacts",
+        includeCreateEvents: true,
+        subscribeAction: "subscribe_contacts",
+        unsubscribeAction: "unsubscribe_contacts",
     },
     retrieveArgs: {
         fields: ["id", "has_name", "lexical_name", "organization", "phone"],
@@ -151,14 +164,11 @@ const contacts = useListInstance({
         has_organization: true,
     },
 });
+const contacts = useListInstance({
+    props: listProps,
+});
 const contactsSubscription = useListSubscription({
     listInstance: contacts,
-    crudArgs: {
-        stream: "contacts",
-        includeCreateEvents: true,
-        subscribeAction: "subscribe_contacts",
-        unsubscribeAction: "unsubscribe_contacts",
-    },
 });
 
 // only get new or updated contacts, not existing.
@@ -173,6 +183,30 @@ contacts.retrieveArgs.fields.push("message_count");
 delete contacts.listArgs.has_organization;
 ```
 
+```js
+// or you can have listSubscription create the listInstance for you.
+import { useListSubscription } from "@arrai-innovations/reactive-helpers";
+
+const listProps = reactive({
+    // crudArgs are implementation specific to your crud functions.
+    crudArgs: {
+        stream: "contacts",
+        includeCreateEvents: true,
+        subscribeAction: "subscribe_contacts",
+        unsubscribeAction: "unsubscribe_contacts",
+    },
+    retrieveArgs: {
+        fields: ["id", "has_name", "lexical_name", "organization", "phone"],
+    },
+    listArgs: {
+        has_organization: true,
+    },
+});
+const contactsSubscription = useListSubscription({
+    props: listProps,
+});
+```
+
 #### Related
 
 Lookup foreign keys between list instances via watch, for using dot notation in templates to cross object relations.
@@ -184,14 +218,22 @@ Lookup foreign keys between list instances via watch, for using dot notation in 
 import { useListInstance, useListRelated } from "@arrai-innovations/reactive-helpers";
 import { nextTick } from "vue";
 
-const organizations = useListInstance({});
+const organizations = useListInstance({
+    props: {
+        retrieveArgs: {
+            fields: ["id", "name"],
+        },
+    },
+});
 const contacts = useListInstance({
-    retrieveArgs: {
-        fields: ["id", "lexical_name", "organization"],
+    props: {
+        retrieveArgs: {
+            fields: ["id", "lexical_name", "organization"],
+        },
     },
 });
 const contactsRelated = useListRelated({
-    listInstance: contacts,
+    parentState: contacts.state,
     relatedObjectsRules: {
         organization: {
             // desired key on relatedObjects
@@ -199,7 +241,6 @@ const contactsRelated = useListRelated({
             pkKey: "organization", // reference key on contact for org id.
         },
     },
-    relatedObjectsPropertyName: "myRelatedObjects",
 });
 await organizations.list();
 await contacts.list();
@@ -217,15 +258,20 @@ console.log(contacts.objects);
         "id": 15,
         "lexical_name": "one, contact",
         "organization": 42,
-        "relatedObjects": {
-            "organization": { "id": 42, "name": "org 42" }
-        }
     }
 }
 */
+console.log(contacts.relatedObjects);
+/*
+{
+    "15": {
+        "organization": { "id": 42, "name": "org 42" }
+    }
+}
+ */
 contacts.objects["15"].organization = 24;
 await nextTick();
-console.log(contacts.objects["15"].myRelatedObjects);
+console.log(contacts.relatedObjects["15"]);
 /*
 {
     "organization": { "id": 24, "name": "org 24" }
@@ -233,45 +279,62 @@ console.log(contacts.objects["15"].myRelatedObjects);
 */
 delete contactsRelated.relatedObjectRules.organization;
 await nextTick();
-console.log(contacts.objects["15"].myRelatedObjects);
+console.log(contacts.relatedObjects["15"]);
 /* {} */
-// manual stopage, inside a setup or another effect scope, there isnt a need to manually call this.
+// manual stopage. inside a setup or another effect scope, there isnt a need to manually call this.
 contactsRelated.effectScope.stop();
 await nextTick();
-console.log(contacts.objects["15"].myRelatedObjects);
-/* undefined */
 ```
 
-#### Sort
+#### Calculated
 
 ```js
 // no main.js setup required.
 // used in example below.
 // use in your component
-import { useListInstance, useListSort } from "@arrai-innovations/reactive-helpers";
+import { useListInstance, useListCalculated } from "@arrai-innovations/reactive-helpers";
 import { nextTick } from "vue";
 
 const contacts = useListInstance({
     retrieveArgs: {
-        fields: ["id", "has_name", "lexical_name", "organization"],
+        fields: ["id", "has_name", "has_billing", "lexical_name", "organization"],
     },
 });
-const contactsSort = useListSort({
-    listInstance: contacts,
-    orderByRules: [
-        { key: "has_name", desc: true, localeCompare: false },
-        { key: "lexical_name", desc: false, localeCompare: true },
-    ],
+const contactsCalculated = useListCalculated({
+    parentState: contacts.state,
+    calculatedObjectsRules: {
+        first_letter_of_name: (object) => {
+            return object.lexical_name[0];
+        },
+    },
 });
 await contacts.list();
-console.log(contactsSort.state.order);
-// array of ids in order, based on the specified rules.
-console.log(contactsSort.state.objectsInOrder);
-// computed array of the previous that also looks up the object ids in .objects
-contactsSort.state.orderByRules[0].desc = false;
-await nextTick();
-console.log(contactsSort.state.order);
-// array of ids in order, based on updated rules.
+console.log(contacts.objects);
+/*
+{
+    "15": {
+        "id": 15,
+        "lexical_name": "one, contact",
+        "organization": 42,
+    },
+    "16": {
+        "id": 16,
+        "lexical_name": "two, contact",
+        "organization": 42,
+    },
+}
+*/
+console.log(contacts.calculatedObjects);
+/*
+{
+    "15": {
+        "first_letter_of_name": "o"
+    },
+    "16": {
+        "first_letter_of_name": "t"
+    },
+}
+*/
 ```
 
 #### Filter
@@ -285,24 +348,67 @@ import { nextTick } from "vue";
 
 const contacts = useListInstance({
     retrieveArgs: {
-        fields: ["id", "has_name", "lexical_name", "organization"],
+        fields: ["id", "has_name", "has_billing", "lexical_name", "organization"],
     },
 });
-const myAllowedValues = reactive({ 1: true, 2: true, 3: true });
+
+const myAllowedValues = ref(["15", "16"]);
+const myExcludedValues = ref(["17"]);
+// conditions are all optional but anded together if present.
 const contactsFilter = useListFilter({
-    listInstance: contacts,
+    parentState: contacts.state,
     allowedValues: myAllowedValues,
     allowedFilter: function (object) {
         return object.has_name === true;
     },
+    excludedValues: myExcludedValues,
+    excludedFilter: function (object) {
+        return object.has_billing === true;
+    },
 });
 await contacts.list();
 console.log(contactsFilter.state.objects);
-// only contains the objects passing the filter
-delete myAllowedValues[3];
-myAllowedValues[4] = True;
+console.log(contactsFilter.state.objectsInOrder);
+console.log(contactsFilter.state.order);
+myExcludedValues.value.push("15");
 await nextTick();
 console.log(contactsFilter.state.objects);
+console.log(contactsFilter.state.objectsInOrder);
+console.log(contactsFilter.state.order);
+```
+
+#### Sort
+
+```js
+// no main.js setup required.
+// used in example below.
+// use in your component
+import { useListInstance, useListSort } from "@arrai-innovations/reactive-helpers";
+import { nextTick } from "vue";
+
+const contacts = useListInstance({
+    props: {
+        retrieveArgs: {
+            fields: ["id", "has_name", "lexical_name", "organization"],
+        },
+    },
+});
+const contactsSort = useListSort({
+    parentState: contacts.state,
+    orderByRules: [
+        { key: "has_name", desc: true, localeCompare: false },
+        { key: "lexical_name", desc: false, localeCompare: true },
+    ],
+    sortThrottleWait: 100, // default, ms to wait before sorting after a change.
+});
+await contacts.list();
+console.log(contactsSort.state.order);
+// array of ids in order, based on the specified rules.
+console.log(contactsSort.state.objectsInOrder);
+// computed array of the previous that also looks up the object ids in .objects
+contactsSort.state.orderByRules[0].desc = false;
+await nextTick();
+console.log(contactsSort.state.order);
 // array of ids in order, based on updated rules.
 ```
 
@@ -315,17 +421,20 @@ import {
     useListInstance,
     useListSubscription,
     useListRelated,
+    useListCalculated,
     useListFilter,
     useListSort,
 } from "@arrai-innovations/reactive-helpers";
 
 const organizationNameSearch = ref("");
 const organizations = useListInstance({
+    // crudArgs are implementation specific to your crud functions.
     crudArgs: {
         stream: "organizations",
     },
 });
 const contacts = useListInstance({
+    // crudArgs are implementation specific to your crud functions.
     crudArgs: {
         stream: "contacts",
     },
@@ -337,6 +446,7 @@ const contacts = useListInstance({
     },
 });
 const contactsSubscription = useListSubscription({
+    // crudArgs are implementation specific to your crud functions.
     crudArgs: {
         stream: "contacts",
         includeCreateEvents: true,
@@ -353,8 +463,16 @@ const contactsRelated = useListRelated({
         },
     },
 });
-const contactsFiltered = useListFilter({
+const contactsCalculated = useListCalculated({
     parentState: contactsRelated.state,
+    calculatedObjectsRules: {
+        first_letter_of_name: (object) => {
+            return object.lexical_name[0];
+        },
+    },
+});
+const contactsFiltered = useListFilter({
+    parentState: contactsCalculated.state,
     useTextSearch: true,
     textSearchRules: ["relatedObjects.organization.name"],
     textSearchValue: organizationNameSearch,
@@ -367,19 +485,241 @@ const contactsSorted = useListSort({
     ],
 });
 console.log(contactsSorted.state.value.objects);
+// object of contacts, updating as new ones are created, filtered by organziation name, sort organization name & lexical name.
 console.log(contactsSorted.state.value.order);
+// array of ids in order, based on the specified rules.
 console.log(contactsSorted.state.value.objectsInOrder);
-// array of contacts, updating as new ones are created, related to organization, filtered by organziation name, sort organization name & lexical name.
+// array of contacts, updating as new ones are created, filtered by organziation name, sort organization name & lexical name.
+console.log(contactsSorted.state.value.calculatedObjects);
+// object of calculated objects, updating as new ones are created, for objects above.
+console.log(contactsSorted.state.value.relatedObjects);
+// object of related objects, updating as new ones are created, for objects above.
+```
+
+#### List
+
+```js
+// you can also let the library manage a full stack for you.
+import { useList } from "@arrai-innovations/reactive-helpers";
+import { reactive } from "vue";
+
+const managedListProps = reactive({
+    // crudArgs are implementation specific to your crud functions.
+    crudArgs: {
+        stream: "contacts",
+        includeCreateEvents: true,
+        subscribeAction: "subscribe_contacts",
+        unsubscribeAction: "unsubscribe_contacts",
+    },
+    retrieveArgs: {
+        fields: ["id", "has_name", "lexical_name", "organization", "phone"],
+    },
+    listArgs: {
+        has_organization: true,
+    },
+    relatedObjectsRules: {
+        organization: {
+            // desired key on relatedObjects
+            objects: toRef(organizations.state, "objects"), // organizations by id
+            pkKey: "organization", // reference key on contact for org id.
+        },
+    },
+    calculatedObjectsRules: {
+        first_letter_of_name: (object) => {
+            return object.lexical_name[0];
+        },
+    },
+    orderByRules: [
+        { key: "relatedObjects.organization.name", desc: false, localeCompare: true },
+        { key: "lexical_name", desc: false, localeCompare: true },
+    ],
+    useTextSearch: true,
+    textSearchRules: ["relatedObjects.organization.name"],
+    textSearchValue: organizationNameSearch,
+    sortThrottleWait: 100, // default, ms to wait before sorting after a change.
+});
+const managedList = useList({
+    props: managedListProps,
+    functions: {
+        list: customListFunction,
+        subscribe: customSubscribeFunction,
+    },
+});
+// the state expected of each are all available on the same state.
+console.log(managedList.state.value.objects);
+// managed instances can also be accessed directly.
+console.log(managedList.managed);
+/*
+{
+    listInstance: {...},
+    listSubscription: {...},
+    listRelated: {...},
+    listCalculated: {...},
+    listFilter: {...},
+    listSort: {...},
+}
+*/
+// the stack is applied in the order of the keys as by managedList.managed.
 ```
 
 ### Object
 
 ```js
-import { useObjectInstance } from "@arrai-innovations/reactive-helpers";
-const contact = useObjectInstance({});
+// do this in your main.js
+import { setObjectCrud } from "@arrai-innovations/reactive-helpers";
+
+setObjectCrud({
+    create: async function createCrudAdaptor({ crudArgs, retrieveArgs, object }) {
+        // todo: your implemenation here.
+        const newObject = await talkToServer(object);
+        return newObject;
+    },
+    retrieve: async function retrieveCrudAdaptor({ crudArgs, retrieveArgs, id }) {
+        // todo: your implemenation here.
+        const retrievedObject = await talkToServer(id);
+        return retrievedObject;
+    },
+    update: async function updateCrudAdaptor({ crudArgs, retrieveArgs, object }) {
+        // todo: your implemenation here.
+        const updatedObject = await talkToServer(object);
+        return updatedObject;
+    },
+    delete: async function deleteCrudAdaptor({ crudArgs, id }) {
+        // todo: your implemenation here.
+        await talkToServer(id);
+    },
+    patch: async function patchCrudAdaptor({ crudArgs, retrieveArgs, id, partialObject }) {
+        // todo: your implemenation here.
+        const patchedObject = await talkToServer(object);
+        return patchedObject; // still return the full object.
+    },
+    subscribe: function subscribeCrudAdaptor({ crudArgs, retrieveArgs, listArgs, eventCallback }) {
+        // todo: your implemenation here.
+        const subscription = talkToServer(function (data, action) {
+            eventCallback(data, action);
+        });
+        // return a promise with a cancel action
+        subscription.cancel = async () => {
+            await cancelSubOnServer();
+        };
+        return subscription;
+    },
+});
+```
+
+```js
+// similar to list, but for a single object.
+import {
+    useObjectInstance, useObjectSubscription, useObjectRelated, useObjectCalculated
+} from "@arrai-innovations/reactive-helpers";
+
+const contactObject = useObjectInstance({
+    props: {
+        crudArgs: {
+            stream: "contacts",
+        },
+        retrieveArgs: {
+            fields: ["id", "has_name", "lexical_name", "organization", "phone"],
+        },
+        id: contactId,
+    }
+});
+console.log(contactObject.state.object);
+const contactSubscription = useObjectSubscription({
+    objectInstance: contactObject,
+})
 // or
-import { useObjectSubscription } from "@arrai-innovations/reactive-helpers";
-const contact = useObjectSubscription({});
+const contactSubscription = useObjectSubscription({
+    props: {
+        crudArgs: {
+            stream: "contacts",
+        },
+        retrieveArgs: {
+            fields: ["id", "has_name", "lexical_name", "organization", "phone"],
+        },
+        id: contactId,
+    }
+});
+console.log(contactSubscription.state.object);
+const organizations = useList({
+    props: {
+        crudArgs: {
+            stream: "organizations",
+        },
+        retrieveArgs: {
+            fields: ["id", "name"],
+        },
+    }
+});
+await organizations.list();
+const contactRelated = useObjectRelated({
+    parentState: contactSubscription.state,
+    relatedObjectRules: {
+        organization: {
+            // desired key on relatedObjects
+            objects: toRef(organizations.state, "objects"), // organizations by id
+            pkKey: "organization", // reference key on contact for org id.
+        },
+    },
+});
+console.log(contactRelated.state.object.relatedObject.organization.name);
+const contactCalculated = useObjectCalculated({
+    parentState: contactSubscription.state,
+    calculatedObjectRules: {
+        first_letter_of_name: (object) => {
+            return object.lexical_name[0];
+        },
+    },
+});
+console.log(contactCalculated.state.object.calculatedObject.first_letter_of_name);
+```
+
+```js
+// you can also let the library managed a full stack for you.
+import { useObject } from "@arrai-innovations/reactive-helpers";
+import { reactive } from "vue";
+
+const managedObjectProps = reactive({
+    crudArgs: {
+        stream: "contacts",
+    },
+    retrieveArgs: {
+        fields: ["id", "has_name", "lexical_name", "organization", "phone"],
+    },
+    id: contactId,
+    relatedObjectRules: {
+        organization: {
+            // desired key on relatedObjects
+            objects: toRef(organizations.state, "objects"), // organizations by id
+            pkKey: "organization", // reference key on contact for org id.
+        },
+    },
+    calculatedObjectRules: {
+        first_letter_of_name: (object) => {
+            return object.lexical_name[0];
+        },
+    },
+});
+const managedObject = useObject({
+    props: managedObjectProps,
+    functions: {
+        retrieve: customRetrieveFunction,
+        subscribe: customSubscribeFunction,
+    },
+});
+// the state expected of each are all available on the same state.
+console.log(managedObject.state.value.objects);
+// managed instances can also be accessed directly.
+console.log(managedObject.managed);
+/*
+{
+    objectInstance: {...},
+    objectSubscription: {...},
+    objectRelated: {...},
+    objectCalculated: {...},\
+}
+*/
+// the stack is applied in the order of the keys as by managedObject.managed.
 ```
 
 ### Search
