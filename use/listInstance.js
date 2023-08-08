@@ -29,7 +29,6 @@ export const listInstanceStateKeys = [
 ];
 
 export const listInstanceFunctions = [
-    "retrieve",
     "list",
     "addListObject",
     "updateListObject",
@@ -41,6 +40,27 @@ export const listInstanceFunctions = [
     "pageCallback",
 ];
 
+/**
+ * The configuration options used to create a list instance.
+ * @typedef {object} ListInstanceOptions
+ * @property {object} props - props passed to the component
+ * @property {object} props.retrieveArgs - the arguments passed to the server
+ * @property {object} props.listArgs - the arguments passed to the server
+ * @property {object} props.crudArgs - implementation specific arguments
+ * @property {object} functions - optional. default implementation are used as set by `setListCrud`.
+ * @property {Function} functions.list - provide the implementation for the list function
+ * @property {Function} functions.subscribe - provide the implementation for the subscribe function
+ * @property {boolean} keepOldPages - if true, pages will not be cleared when defaultPageCallback is called. default is false.
+ */
+
+/* eslint-disable jsdoc/check-types */
+// types valid for jsdoc-to-markdown, which uses the strict jsdoc.app. Object shorthand syntax doesn't work.
+/**
+ * A Vue composition function that creates multiple list instances, and returns them as an object.
+ * @param {Object.<string, ListInstanceOptions>} listInstanceArgs - each desired list instance options, keyed by an instance name.
+ * @returns {Object.<string, ListInstance>} - each list instance, keyed by the instance name.
+ */
+/* eslint-enable jsdoc/check-types */
 export function useListInstances(listInstanceArgs) {
     const instances = {};
     for (const [key, value] of Object.entries(listInstanceArgs)) {
@@ -49,6 +69,48 @@ export function useListInstances(listInstanceArgs) {
     return instances;
 }
 
+/**
+ * A reactive object that manages a list of objects, as returned by `useListInstance`.
+ * @typedef {object} ListInstanceState
+ * @property {object} crud - the crud functions
+ * @property {object} crud.args - the arguments passed to the crud functions
+ * @property {Function} crud.list - the list function
+ * @property {Function} crud.subscribe - the subscribe function
+ * @property {object} retrieveArgs - the arguments passed to the server
+ * @property {object} listArgs - the arguments passed to the server
+ * @property {Map} objects - the objects in the list
+ * @property {boolean} loading - true if the list is loading
+ * @property {boolean} errored - true if the list has errored
+ * @property {object} error - the error object
+ * @property {Array} objectsInOrder - the objects in the list in order
+ * @property {Array} order - the order of the objects in the list
+ * @property {number} totalRecords - the total number of records
+ * @property {number} totalPages - the total number of pages
+ * @property {number} perPage - the number of records per page
+ */
+
+/**
+ * @typedef {object} ListInstance
+ * @property {Function} list - subscribe to updates from the implementation
+ * @property {Function} addListObject - add an object to the list
+ * @property {Function} updateListObject - update an object in the list
+ * @property {Function} deleteListObject - delete an object from the list
+ * @property {Function} clearList - clear the list
+ * @property {Function} clearError - clear the error
+ * @property {Function} getFakeId - get a fake id
+ * @property {Function} defaultPageCallback - the default page callback
+ * @property {Function} pageCallback - the page callback
+ * @property {ListInstanceState} state - the list instance state
+ * @property {object} effectScope - a Vue effect scope
+ */
+
+/**
+ * `useListInstance` is a Vue composition function that manages a list of objects.
+ * It has the ability to retrieve the list from an implementation, or subscribe to updates from an implementation.
+ * It tracks the objects in the list, and their added order.
+ * @param {ListInstanceOptions} options - the options used to create the list instance
+ * @returns {ListInstance} - the list instance
+ */
 export function useListInstance({ props, functions = {}, keepOldPages = false }) {
     if (!props) {
         throw new ListError(`useListInstance requires props`);

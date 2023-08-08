@@ -25,6 +25,23 @@ export const listSubscriptionStateKeys = [
 
 export const listSubscriptionFunctions = ["subscribe", "unsubscribe", "clearError"];
 
+/**
+ * The configuration options used to create a list subscription.
+ * @typedef {object} ListSubscriptionOptions
+ * @property {object} props - passed on to a created list instance if one is not provided
+ * @property {object} functions - passed on to a created list instance if one is not provided
+ * @property {ListInstance} listInstance - a list instance to use instead of creating one
+ * @property {boolean} keepOldPages - if true, pages will not be cleared when defaultPageCallback is called. default is false.
+ */
+
+/* eslint-disable jsdoc/check-types */
+// types valid for jsdoc-to-markdown, which uses the strict jsdoc.app. Object shorthand syntax doesn't work.
+/**
+ * A Vue composition function that creates multiple list instances, and returns them as an object.
+ * @param {Object.<string, ListInstanceOptions>} listInstanceArgs - each desired list instance options, keyed by an instance name.
+ * @returns {Object.<string, ListInstance>} - each list instance, keyed by the instance name.
+ */
+/* eslint-enable jsdoc/check-types */
 export function useListSubscriptions(args, listInstances = {}) {
     const subscriptions = {};
     for (const [key, value] of Object.entries(args)) {
@@ -33,7 +50,37 @@ export function useListSubscriptions(args, listInstances = {}) {
     return subscriptions;
 }
 
-export function useListSubscription({ listInstance, props, functions }) {
+/**
+ * A reactive object that manages a list of objects, as returned by `useListInstance`.
+ * @typedef {object} ListSubscriptionState
+ * @augments ListInstanceState
+ * @property {boolean} subscriptionLoading - true if the subscription is loading
+ * @property {boolean} subscriptionErrored - true if the subscription errored
+ * @property {Error} subscriptionError - the error that caused the subscription to error
+ * @property {boolean} intendToList - true if the list should be fetched, or refetched when args change
+ * @property {boolean} intendToSubscribe - true if the list should subscribe for updates
+ * @property {boolean} subscribed - true if the subscription is active
+ */
+
+/**
+ * @typedef {object} ListSubscription
+ * @property {ListSubscriptionState} state - the reactive state of the list subscription
+ * @property {ListInstance} listInstance - the list instance used by the subscription
+ * @property {object} listIntent - the useCancelleableIntent object managing if the list should be (re)fetched
+ * @property {object} subscriptionIntent - the useCancelleableIntent object managing if the subscription should be (un)subscribed
+ * @property {Function} subscribe - subscribe to the list
+ * @property {Function} unsubscribe - unsubscribe from the list
+ * @property {Function} clearError - clear the subscription error
+ * @property {object} effectScope - a Vue effect scope
+ */
+
+/**
+ * `useListSubscription` creates a reactive object that manages a list of objects, as returned by `useListInstance`,
+ *  causing the list to be re-fetched as needed and listening for updates to the list.
+ * @param {ListSubscriptionOptions} options
+ * @returns ListSubscription
+ */
+export function useListSubscription({ listInstance, props, functions, keepOldPages = false }) {
     if (!listInstance && !props) {
         throw new ListSubscriptionError("useListSubscription should be passed listInstance or props and functions.");
     }
@@ -49,7 +96,7 @@ export function useListSubscription({ listInstance, props, functions }) {
         if (!("retrieveArgs" in props)) {
             console.error("retrieveArgs not set, must be true for intendToList or intendToSubscribe to work.");
         }
-        listInstance = useListInstance({ props, functions });
+        listInstance = useListInstance({ props, functions, keepOldPages });
     } else {
         if (functions) {
             console.error("functions passed to useListSubscription, but listInstance was passed. functions ignored.");

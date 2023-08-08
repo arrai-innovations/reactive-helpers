@@ -23,23 +23,31 @@
 
 ## Functions
 
-| Name                         | Description |
-| ---------------------------- | ----------- |
-| [useCombineClasses(classes)] |
+| Name                           | Description                                                                                                                                                                                                                                               |
+| ------------------------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| [useCombineClasses(classes)]   |
+| [useListInstance(options)]     | `useListInstance` is a Vue composition function that manages a list of objects. It has the ability to retrieve the list from an implementation, or subscribe to updates from an implementation. It tracks the objects in the list, and their added order. |
+| [useListSubscription(options)] | `useListSubscription` creates a reactive object that manages a list of objects, as returned by `useListInstance`, causing the list to be re-fetched as needed and listening for updates to the list.                                                      |
 
 ## Typedefs
 
-| Name                 | Description                                                                                            |
-| -------------------- | ------------------------------------------------------------------------------------------------------ |
-| [CSSValue]           | A string representing a CSS class or a space-separated list of CSS classes.                            |
-| [CSSObject]          | A CSS object where keys are CSS classes and values are booleans indicating whether to apply the class. |
-| [CSSClasses]         | A mixed array containing multiple ways of specifying CSS classes.                                      |
-| [CSSStringOrObject]  | The amalgamated classes as returned by `objectifyClasses` & `combineClasses`.                          |
-| [CSSValue]           | A string representing a CSS class or a space-separated list of CSS classes.                            |
-| [CSSObject]          | A CSS object where keys are CSS classes and values are booleans indicating whether to apply the class. |
-| [CSSClasses]         | A mixed array containing multiple ways of specifying CSS classes.                                      |
-| [CSSClassesWithRefs] | A mixed array containing multiple ways of specifying CSS classes.                                      |
-| [CSSStringOrObject]  | A CSS object or a space-separated list of CSS classes.                                                 |
+| Name                      | Description                                                                                            |
+| ------------------------- | ------------------------------------------------------------------------------------------------------ |
+| [CSSValue]                | A string representing a CSS class or a space-separated list of CSS classes.                            |
+| [CSSObject]               | A CSS object where keys are CSS classes and values are booleans indicating whether to apply the class. |
+| [CSSClasses]              | A mixed array containing multiple ways of specifying CSS classes.                                      |
+| [CSSStringOrObject]       | The amalgamated classes as returned by `objectifyClasses` & `combineClasses`.                          |
+| [ListInstanceOptions]     | The configuration options used to create a list instance.                                              |
+| [ListInstanceState]       | A reactive object that manages a list of objects, as returned by `useListInstance`.                    |
+| [ListInstance]            |
+| [ListSubscriptionOptions] | The configuration options used to create a list subscription.                                          |
+| [ListSubscriptionState]   | A reactive object that manages a list of objects, as returned by `useListInstance`.                    |
+| [ListSubscription]        |
+| [CSSValue]                | A string representing a CSS class or a space-separated list of CSS classes.                            |
+| [CSSObject]               | A CSS object where keys are CSS classes and values are booleans indicating whether to apply the class. |
+| [CSSClasses]              | A mixed array containing multiple ways of specifying CSS classes.                                      |
+| [CSSClassesWithRefs]      | A mixed array containing multiple ways of specifying CSS classes.                                      |
+| [CSSStringOrObject]       | A CSS object or a space-separated list of CSS classes.                                                 |
 
 ## utils/assignReactiveObject
 
@@ -427,6 +435,31 @@ Remove empty objects and undefined values from arrays in a mixed object array tr
 | ------- | -------------- | -------------------------------------------------------------------------------------------- |
 | classes | [`CSSClasses`] | A mixed array containing multiple ways of specifying CSS classes. Non-ref values are cloned. |
 
+## useListInstance(options)
+
+`useListInstance` is a Vue composition function that manages a list of objects.
+It has the ability to retrieve the list from an implementation, or subscribe to updates from an implementation.
+It tracks the objects in the list, and their added order.
+
+**Kind**: global function  
+**Returns**: [`ListInstance`] - - the list instance
+
+| Param   | Type                    | Description                                  |
+| ------- | ----------------------- | -------------------------------------------- |
+| options | [`ListInstanceOptions`] | the options used to create the list instance |
+
+## useListSubscription(options)
+
+`useListSubscription` creates a reactive object that manages a list of objects, as returned by `useListInstance`,
+causing the list to be re-fetched as needed and listening for updates to the list.
+
+**Kind**: global function  
+**Returns**: ListSubscription
+
+| Param   | Type                        |
+| ------- | --------------------------- |
+| options | [`ListSubscriptionOptions`] |
+
 ## CSSValue
 
 A string representing a CSS class or a space-separated list of CSS classes.
@@ -450,6 +483,115 @@ A mixed array containing multiple ways of specifying CSS classes.
 The amalgamated classes as returned by `objectifyClasses` & `combineClasses`.
 
 **Kind**: global typedef
+
+## ListInstanceOptions
+
+The configuration options used to create a list instance.
+
+**Kind**: global typedef  
+**Properties**
+
+| Name                | Type       | Description                                                                              |
+| ------------------- | ---------- | ---------------------------------------------------------------------------------------- |
+| props               | `object`   | props passed to the component                                                            |
+| props.retrieveArgs  | `object`   | the arguments passed to the server                                                       |
+| props.listArgs      | `object`   | the arguments passed to the server                                                       |
+| props.crudArgs      | `object`   | implementation specific arguments                                                        |
+| functions           | `object`   | optional. default implementation are used as set by `setListCrud`.                       |
+| functions.list      | `function` | provide the implementation for the list function                                         |
+| functions.subscribe | `function` | provide the implementation for the subscribe function                                    |
+| keepOldPages        | `boolean`  | if true, pages will not be cleared when defaultPageCallback is called. default is false. |
+
+## ListInstanceState
+
+A reactive object that manages a list of objects, as returned by `useListInstance`.
+
+**Kind**: global typedef  
+**Properties**
+
+| Name           | Type       | Description                                |
+| -------------- | ---------- | ------------------------------------------ |
+| crud           | `object`   | the crud functions                         |
+| crud.args      | `object`   | the arguments passed to the crud functions |
+| crud.list      | `function` | the list function                          |
+| crud.subscribe | `function` | the subscribe function                     |
+| retrieveArgs   | `object`   | the arguments passed to the server         |
+| listArgs       | `object`   | the arguments passed to the server         |
+| objects        | `Map`      | the objects in the list                    |
+| loading        | `boolean`  | true if the list is loading                |
+| errored        | `boolean`  | true if the list has errored               |
+| error          | `object`   | the error object                           |
+| objectsInOrder | `Array`    | the objects in the list in order           |
+| order          | `Array`    | the order of the objects in the list       |
+| totalRecords   | `number`   | the total number of records                |
+| totalPages     | `number`   | the total number of pages                  |
+| perPage        | `number`   | the number of records per page             |
+
+## ListInstance
+
+**Kind**: global typedef  
+**Properties**
+
+| Name                | Type                  | Description                                  |
+| ------------------- | --------------------- | -------------------------------------------- |
+| list                | `function`            | subscribe to updates from the implementation |
+| addListObject       | `function`            | add an object to the list                    |
+| updateListObject    | `function`            | update an object in the list                 |
+| deleteListObject    | `function`            | delete an object from the list               |
+| clearList           | `function`            | clear the list                               |
+| clearError          | `function`            | clear the error                              |
+| getFakeId           | `function`            | get a fake id                                |
+| defaultPageCallback | `function`            | the default page callback                    |
+| pageCallback        | `function`            | the page callback                            |
+| state               | [`ListInstanceState`] | the list instance state                      |
+| effectScope         | `object`              | a Vue effect scope                           |
+
+## ListSubscriptionOptions
+
+The configuration options used to create a list subscription.
+
+**Kind**: global typedef  
+**Properties**
+
+| Name         | Type             | Description                                                                              |
+| ------------ | ---------------- | ---------------------------------------------------------------------------------------- |
+| props        | `object`         | passed on to a created list instance if one is not provided                              |
+| functions    | `object`         | passed on to a created list instance if one is not provided                              |
+| listInstance | [`ListInstance`] | a list instance to use instead of creating one                                           |
+| keepOldPages | `boolean`        | if true, pages will not be cleared when defaultPageCallback is called. default is false. |
+
+## ListSubscriptionState
+
+A reactive object that manages a list of objects, as returned by `useListInstance`.
+
+**Kind**: global typedef  
+**Extends**: [`ListInstanceState`]  
+**Properties**
+
+| Name                | Type      | Description                                                       |
+| ------------------- | --------- | ----------------------------------------------------------------- |
+| subscriptionLoading | `boolean` | true if the subscription is loading                               |
+| subscriptionErrored | `boolean` | true if the subscription errored                                  |
+| subscriptionError   | `Error`   | the error that caused the subscription to error                   |
+| intendToList        | `boolean` | true if the list should be fetched, or refetched when args change |
+| intendToSubscribe   | `boolean` | true if the list should subscribe for updates                     |
+| subscribed          | `boolean` | true if the subscription is active                                |
+
+## ListSubscription
+
+**Kind**: global typedef  
+**Properties**
+
+| Name               | Type                      | Description                                                                            |
+| ------------------ | ------------------------- | -------------------------------------------------------------------------------------- |
+| state              | [`ListSubscriptionState`] | the reactive state of the list subscription                                            |
+| listInstance       | [`ListInstance`]          | the list instance used by the subscription                                             |
+| listIntent         | `object`                  | the useCancelleableIntent object managing if the list should be (re)fetched            |
+| subscriptionIntent | `object`                  | the useCancelleableIntent object managing if the subscription should be (un)subscribed |
+| subscribe          | `function`                | subscribe to the list                                                                  |
+| unsubscribe        | `function`                | unsubscribe from the list                                                              |
+| clearError         | `function`                | clear the subscription error                                                           |
+| effectScope        | `object`                  | a Vue effect scope                                                                     |
 
 ## CSSValue
 
@@ -500,6 +642,12 @@ A CSS object or a space-separated list of CSS classes.
 [cssobject]: #cssobject
 [cssclasses]: #cssclasses
 [cssstringorobject]: #cssstringorobject
+[listinstanceoptions]: #listinstanceoptions
+[listinstancestate]: #listinstancestate
+[listinstance]: #listinstance
+[listsubscriptionoptions]: #listsubscriptionoptions
+[listsubscriptionstate]: #listsubscriptionstate
+[listsubscription]: #listsubscription
 [cssclasseswithrefs]: #cssclasseswithrefs
 [~validtargetorsource]: #utilsassignreactiveobjectvalidtargetorsource
 [`utils/assignreactiveobject`]: #utilsassignreactiveobject
@@ -515,7 +663,14 @@ A CSS object or a space-separated list of CSS classes.
 [`cssclasses`]: #cssclasses
 [`cssstringorobject`]: #cssstringorobject
 [`cssclasseswithrefs`]: #cssclasseswithrefs
+[`listinstance`]: #listinstance
+[`listinstanceoptions`]: #listinstanceoptions
+[`listsubscriptionoptions`]: #listsubscriptionoptions
+[`listinstancestate`]: #listinstancestate
+[`listsubscriptionstate`]: #listsubscriptionstate
 [usecombineclasses(classes)]: #usecombineclassesclasses
+[uselistinstance(options)]: #uselistinstanceoptions
+[uselistsubscription(options)]: #uselistsubscriptionoptions
 [~addreactiveobject(target, source, \[exclude\], \[addedkeys\])]: #utilsassignreactiveobjectaddreactiveobjecttarget-source-exclude-addedkeys
 [~updatereactiveobject(target, source, \[exclude\], \[samekeys\])]: #utilsassignreactiveobjectupdatereactiveobjecttarget-source-exclude-samekeys
 [~addorupdatereactiveobject(target, source, \[exclude\], \[addedkeys\], \[samekeys\])]: #utilsassignreactiveobjectaddorupdatereactiveobjecttarget-source-exclude-addedkeys-samekeys
