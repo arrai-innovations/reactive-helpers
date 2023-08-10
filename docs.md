@@ -221,7 +221,7 @@ Logs debug messages based on the specified categories and logging rules.
 
 Get all paths from an array or object.
 
-### utils/flattenPaths~flattenPaths(arrayOrObject, currentPath)
+### utils/flattenPaths~flattenPaths(arrayOrObject, options)
 
 Turn an array or object into an array of path strings. Recurses for any found arrays or objects.
 
@@ -230,10 +230,13 @@ Array indexes are wrapped in square brackets and object keys are prefixed with a
 **Kind**: inner method of [`utils/flattenPaths`]  
 **Returns**: `Array.<string>` - paths
 
-| Param         | Type                | Description                                        |
-| ------------- | ------------------- | -------------------------------------------------- |
-| arrayOrObject | `Array` \| `object` | array or object to flatten                         |
-| currentPath   | `string`            | current path, for recursion or as a starting point |
+| Param               | Type                | Description                                        |
+| ------------------- | ------------------- | -------------------------------------------------- |
+| arrayOrObject       | `Array` \| `object` | array or object to flatten                         |
+| options             | `object`            | options                                            |
+| options.currentPath | `string`            | current path, for recursion or as a starting point |
+| options.depth       | `number`            | current depth, for recursion                       |
+| options.limit       | `number`            | limit the depth of recursion                       |
 
 ## utils/keyDiff
 
@@ -268,11 +271,15 @@ what keys are removed, and what keys are added. Keys are sourced deeply in the o
 **Kind**: inner method of [`utils/keyDiff`]  
 **Returns**: `KeyDiffResult` - - the differences
 
-| Param       | Type             | Description                    |
-| ----------- | ---------------- | ------------------------------ |
-| newObj      | `object`         | the new version of the object  |
-| oldObj      | `object`         | the old version of the object  |
-| \[options\] | `KeyDiffOptions` | which differences are returned |
+| Param                   | Type             | Description                            |
+| ----------------------- | ---------------- | -------------------------------------- |
+| newObj                  | `object`         | the new version of the object          |
+| oldObj                  | `object`         | the old version of the object          |
+| \[options\]             | `KeyDiffOptions` | which differences are returned         |
+| \[options.sameKeys\]    | `boolean`        | if true, return keys that are the same |
+| \[options.removedKeys\] | `boolean`        | if true, return keys that are removed  |
+| \[options.addedKeys\]   | `boolean`        | if true, return keys that are added    |
+| \[options.limit\]       | `number`         | limit the depth of recursion           |
 
 ### utils/keyDiff~KeyDiffOptions
 

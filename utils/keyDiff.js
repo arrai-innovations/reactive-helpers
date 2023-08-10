@@ -55,6 +55,10 @@ export function keyDiff(newKeys, oldKeys, { sameKeys = true, removedKeys = true,
  * @param {object} newObj - the new version of the object
  * @param {object} oldObj - the old version of the object
  * @param {KeyDiffOptions} [options] - which differences are returned
+ * @param {boolean} [options.sameKeys] - if true, return keys that are the same
+ * @param {boolean} [options.removedKeys] - if true, return keys that are removed
+ * @param {boolean} [options.addedKeys] - if true, return keys that are added
+ * @param {number} [options.limit] - limit the depth of recursion
  * @returns {KeyDiffResult} - the differences
  */
 export function keyDiffDeep(newObj, oldObj, options = {}) {
