@@ -58,8 +58,11 @@ export function keyDiff(newKeys, oldKeys, { sameKeys = true, removedKeys = true,
  * @returns {KeyDiffResult} - the differences
  */
 export function keyDiffDeep(newObj, oldObj, options = {}) {
-    const newPaths = flattenPaths(newObj);
-    const oldPaths = flattenPaths(oldObj);
-    const result = keyDiff(newPaths, oldPaths, options);
-    return result;
+    const additionalFlattenArgs = [];
+    if (options.limit) {
+        additionalFlattenArgs.push({ limit: options.limit });
+    }
+    const newPaths = flattenPaths(newObj, ...additionalFlattenArgs);
+    const oldPaths = flattenPaths(oldObj, ...additionalFlattenArgs);
+    return keyDiff(newPaths, oldPaths, options);
 }

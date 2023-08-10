@@ -1,4 +1,4 @@
-import { keyDiff } from "../../../utils/keyDiff.js";
+import { keyDiff, keyDiffDeep } from "../../../utils/keyDiff.js";
 
 describe("keyDiff", function () {
     describe("should return the difference between two arrays of object keys", function () {
@@ -63,5 +63,48 @@ describe("keyDiff", function () {
         expect(addedKeys).toEqual(new Set(["b"]));
         expect(removedKeys).toEqual(new Set(["c"]));
         expect(sameKeys).toEqual(new Set(["a"]));
+    });
+    describe("keyDiffDeep", function () {
+        it("should return the difference between two objects", function () {
+            const newObj = {
+                a: 1,
+                b: {
+                    c: 2,
+                },
+                c: 3,
+            };
+            const oldObj = {
+                a: 1,
+                b: 2,
+                c: 3,
+            };
+            // if using to patch, be sure to remove keys before adding them
+            expect(keyDiffDeep(newObj, oldObj)).toEqual({
+                addedKeys: new Set(["b.c"]),
+                removedKeys: new Set(["b"]),
+                sameKeys: new Set(["a", "c"]),
+            });
+        });
+        it("should be able to limit the depth", function () {
+            const newObj = {
+                a: 1,
+                b: {
+                    c: { d: 1, e: 2, f: 3 },
+                },
+                g: 3,
+            };
+            const oldObj = {
+                a: 1,
+                b: {
+                    c: {},
+                },
+                g: 3,
+            };
+            expect(keyDiffDeep(newObj, oldObj, { limit: 1 })).toEqual({
+                addedKeys: new Set(),
+                removedKeys: new Set(),
+                sameKeys: new Set(["a", "g"]),
+            });
+        });
     });
 });
