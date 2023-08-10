@@ -4,8 +4,10 @@ import { listInstanceStateKeys } from "./listInstance.js";
 import { listSubscriptionStateKeys } from "./listSubscription.js";
 import { useWatchesRunning } from "./watchesRunning.js";
 import get from "lodash-es/get.js";
+import identity from "lodash-es/identity.js";
 import isArray from "lodash-es/isArray.js";
 import isEmpty from "lodash-es/isEmpty.js";
+import isEqual from "lodash-es/isEqual.js";
 import isUndefined from "lodash-es/isUndefined.js";
 import { computed, effectScope, onScopeDispose, reactive, toRef, unref, watch } from "vue";
 
@@ -55,7 +57,7 @@ export function useListRelated({ parentState, relatedObjectsRules }) {
         const relatedObjectsRulesIsEmpty = !state.relatedObjectsRules || isEmpty(state.relatedObjectsRules);
         for (const objectKey of Object.keys(state.relatedObjects)) {
             const relatedObjectsObject = state.relatedObjects[objectKey];
-            const originalObject = parentState.objects[objectKey];
+            const originalObjectRef = toRef(parentState.objects, objectKey);
             let removedRuleKeys, addedRuleKeys;
             if (!relatedObjectsRulesIsEmpty) {
                 ({ removedKeys: removedRuleKeys, addedKeys: addedRuleKeys } = keyDiff(
@@ -77,22 +79,48 @@ export function useListRelated({ parentState, relatedObjectsRules }) {
             }
             relatedObjectsEffectScopes[objectKey].run(() => {
                 for (const addedRuleKey of addedRuleKeys) {
-                    relatedObjectsObject[addedRuleKey] = computed(() => {
+                    relatedObjectsObject[addedRuleKey] = undefined;
+                    const relatedObjectsObjectWatchFn = () => {
                         // deal with computed objects being passed.
                         const ruleObjects = unref(state.relatedObjectsRules?.[addedRuleKey]?.objects);
                         const rulePkKey = state.relatedObjectsRules?.[addedRuleKey]?.pkKey || addedRuleKey;
+                        const ruleOrder = unref(state.relatedObjectsRules?.[addedRuleKey]?.order);
                         if (!ruleObjects || !rulePkKey) {
-                            return undefined;
+                            relatedObjectsObject[addedRuleKey] = undefined;
+                            return;
                         }
-                        const value = get(originalObject, rulePkKey);
+                        let value = get(unref(originalObjectRef), rulePkKey);
                         if (isUndefined(value)) {
-                            return undefined;
+                            relatedObjectsObject[addedRuleKey] = undefined;
+                            return;
                         }
                         if (isArray(value)) {
-                            return value.map((e) => ruleObjects[e]);
+                            // the related list could be sorted differently than the original list.
+                            if (ruleOrder?.length) {
+                                value = value.filter(identity);
+                                const indexById = Object.fromEntries(ruleOrder.map((e, i) => [e, i]));
+                                value.sort((a, b) => {
+                                    const aIndex = indexById[a];
+                                    const bIndex = indexById[b];
+                                    return aIndex - bIndex;
+                                });
+                            }
+                            value = value.map((e) => ruleObjects[e]).filter(identity);
+                        } else {
+                            value = ruleObjects[value];
                         }
-                        return ruleObjects[value];
-                    });
+                        if (!isEqual(value, relatedObjectsObject[addedRuleKey])) {
+                            relatedObjectsObject[addedRuleKey] = value;
+                        }
+                    };
+                    watch(
+                        [toRef(state.relatedObjectsRules, addedRuleKey), originalObjectRef],
+                        relatedObjectsObjectWatchFn,
+                        {
+                            deep: true,
+                            immediate: true,
+                        }
+                    );
                 }
             });
         }
