@@ -110,6 +110,8 @@ export function useListSort({ parentState, orderByRules, sortThrottleWait = defa
                     removeSortCriteria(removedKey);
                 }
             }
+            assignReactiveObject(state.order, cloneDeep(parentState.order));
+            assignReactiveObject(state.objectsInOrder, cloneDeep(parentState.objectsInOrder));
             return;
         }
         const { removedKeys, addedKeys } = keyDiff(Object.keys(parentState.objects), Object.keys(state.sortCriteria));
@@ -131,7 +133,6 @@ export function useListSort({ parentState, orderByRules, sortThrottleWait = defa
 
     function sortWatch() {
         if (!state.orderByRules || !state.orderByRules.length) {
-            console.log("sortWatch no orderByRules");
             assignReactiveObject(state.order, cloneDeep(parentState.order));
             assignReactiveObject(state.objectsInOrder, cloneDeep(parentState.objectsInOrder));
             return;
