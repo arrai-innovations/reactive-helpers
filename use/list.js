@@ -16,7 +16,7 @@ export const useLists = (listArgs) => {
 };
 
 // the big brother of useObject, managing a chain of useList* instances.
-export const useList = ({ props, functions, paged = false, keepOldPages = false }) => {
+export const useList = ({ props, functions = {}, paged = false, keepOldPages = false, useTextSearch = false }) => {
     const managed = shallowReactive({
         listInstance: null,
         listSubscription: null,
@@ -58,7 +58,7 @@ export const useList = ({ props, functions, paged = false, keepOldPages = false 
 
         managed.listFilter = useListFilter({
             parentState: managed.listCalculated.state,
-            useTextSearch: toRef(props, "useTextSearch"),
+            useTextSearch,
             textSearchRules: toRef(props, "textSearchRules"),
             textSearchValue: toRef(props, "textSearchValue"),
             allowedValues: toRef(props, "allowedValues"),
