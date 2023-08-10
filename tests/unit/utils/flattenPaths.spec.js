@@ -15,6 +15,10 @@ describe("utils/flattenPaths", () => {
             it("with a single level and a nested object and array", () => {
                 expect(flattenPaths({ a: 1, b: { c: [2] } })).toEqual(["a", "b.c[0]"]);
             });
+            it("should limit to a specific depth", () => {
+                expect(flattenPaths({ a: 1, b: { c: [2] } }, { limit: 1 })).toEqual(["a"]);
+                expect(flattenPaths({ a: 1, b: { c: 1, d: [2], e: { f: 3 } } }, { limit: 2 })).toEqual(["a", "b.c"]);
+            });
         });
         describe("should work on arrays as the base", () => {
             it("with a single level", () => {
@@ -28,6 +32,10 @@ describe("utils/flattenPaths", () => {
             });
             it("with a single level and a nested object and array", () => {
                 expect(flattenPaths([1, { c: [2] }])).toEqual(["[0]", "[1].c[0]"]);
+            });
+            it("should limit to a specific depth", () => {
+                expect(flattenPaths([1, { c: [2] }], { limit: 1 })).toEqual(["[0]"]);
+                expect(flattenPaths([1, [1, [2, [3], 4], 5]], { limit: 2 })).toEqual(["[0]", "[1][0]", "[1][2]"]);
             });
         });
         it("should work on a real world example", () => {

@@ -12,10 +12,13 @@ import isObject from "lodash-es/isObject.js";
  * Array indexes are wrapped in square brackets and object keys are prefixed with a period.
  * @function flattenPaths
  * @param {Array | object} arrayOrObject array or object to flatten
- * @param {string} currentPath current path, for recursion or as a starting point
+ * @param {object} options options
+ * @param {string} options.currentPath current path, for recursion or as a starting point
+ * @param {number} options.depth current depth, for recursion
+ * @param {number} options.limit limit the depth of recursion
  * @returns {string[]} paths
  */
-export function flattenPaths(arrayOrObject, currentPath = "") {
+export function flattenPaths(arrayOrObject, { currentPath = "", depth = 0, limit = 0 } = {}) {
     // arrayOrObject keys or indexes values can be objects or arrays.
     // find all paths you could use lodash to "get()" to.
     // indexes use `[${index}]`, keys use `.${key}`
@@ -23,11 +26,16 @@ export function flattenPaths(arrayOrObject, currentPath = "") {
     const paths = [];
     const keysOrIndexes = isArray(arrayOrObject);
     const dotOrNot = currentPath ? "." : "";
+    if (limit && depth >= limit) {
+        return paths;
+    }
     if (isObject(arrayOrObject)) {
         for (const [key, value] of Object.entries(arrayOrObject)) {
             const keyPath = keysOrIndexes ? `[${key}]` : `${dotOrNot}${key}`;
             if (isObject(value) || isArray(value)) {
-                paths.push(...flattenPaths(value, `${currentPath}${keyPath}`));
+                paths.push(
+                    ...flattenPaths(value, { currentPath: `${currentPath}${keyPath}`, depth: depth + 1, limit })
+                );
             } else {
                 paths.push(`${currentPath}${keyPath}`);
             }
