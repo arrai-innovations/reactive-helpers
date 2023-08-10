@@ -230,7 +230,7 @@ export function useListSubscription({ listInstance, props, functions, keepOldPag
                     state.subscriptionErrored = true;
                     state.subscriptionError = err;
                 });
-                catchPromise.cancel = subscribePromise.cancel;
+                catchPromise.cancel = subscribePromise.cancel.bind(subscribePromise);
                 return catchPromise;
             },
             watchArguments: reactive({
