@@ -10,17 +10,16 @@ import identity from "lodash-es/identity.js";
 import isEmpty from "lodash-es/isEmpty.js";
 import isNull from "lodash-es/isNull.js";
 import isUndefined from "lodash-es/isUndefined.js";
-import partial from "lodash-es/partial.js";
 import throttle from "lodash-es/throttle.js";
 import zip from "lodash-es/zip.js";
-import { effectScope, onScopeDispose, reactive, toRef, unref, watch } from "vue";
+import { effectScope, reactive, toRef, unref, watch } from "vue";
 
 export const listSortStateKeys = [
     "orderByRules",
     // "order",
     // "objectsInOrder",
     "sortCriteria",
-    "sortCriteriaWatches",
+    "sortCriteriaEffectScopes",
     "orderByDesc",
 ];
 
@@ -55,42 +54,43 @@ export function useListSort({ parentState, orderByRules, sortThrottleWait = defa
         order: [],
         objectsInOrder: [],
         sortCriteria: {},
-        sortCriteriaWatches: {},
+        sortCriteriaEffectScopes: {},
         orderByDesc: [],
     });
     const es = effectScope();
 
     function removeSortCriteria(removedKey) {
-        const stopWatches = state.sortCriteriaWatches[removedKey] || [];
-        let stopWatch = stopWatches.pop();
-        while (stopWatch) {
-            stopWatch();
-            stopWatch = stopWatches.pop();
+        const oldScope = state.sortCriteriaEffectScopes[removedKey];
+        if (oldScope) {
+            oldScope.stop();
+            delete state.sortCriteriaEffectScopes[removedKey];
         }
-        delete state.sortCriteriaWatches[removedKey];
         delete state.sortCriteria[removedKey];
     }
 
     function addSortCriteria(object, key) {
-        const oldStopWatches = state.sortCriteriaWatches[key] || [];
-        let stopWatch = oldStopWatches.pop();
-        while (stopWatch) {
-            stopWatch();
-            stopWatch = oldStopWatches.pop();
+        const oldScope = state.sortCriteriaEffectScopes[key];
+        if (oldScope) {
+            oldScope.stop();
         }
-        const stopWatches = [];
-        if (!state.sortCriteria[key]) {
-            state.sortCriteria[key] = [];
-        }
-        stopWatches.push(
+        const newScope = effectScope();
+        newScope.run(() => {
+            if (!state.sortCriteria[key]) {
+                state.sortCriteria[key] = [];
+            }
             watch(
-                [object, state.orderByRules],
+                [object, toRef(state, "orderByRules")],
                 () => {
+                    const obj = unref(object);
                     const newSearchCriteria = [];
                     for (const orderByObj of state.orderByRules.filter(identity)) {
-                        const obo = unref(orderByObj);
-                        const getter = obo.keyFn ? obo.keyFn : partial(get, partial.placeholder, obo.key);
-                        newSearchCriteria.push(getter(object));
+                        let newItem;
+                        if (orderByObj.keyFn) {
+                            newItem = orderByObj.keyFn(obj, state);
+                        } else {
+                            newItem = get(obj, orderByObj.key);
+                        }
+                        newSearchCriteria.push(newItem);
                     }
                     assignReactiveObject(state.sortCriteria[key], newSearchCriteria);
                 },
@@ -98,9 +98,9 @@ export function useListSort({ parentState, orderByRules, sortThrottleWait = defa
                     deep: true,
                     immediate: true,
                 }
-            )
-        );
-        state.sortCriteriaWatches[key] = stopWatches;
+            );
+        });
+        state.sortCriteriaEffectScopes[key] = newScope;
     }
 
     function sortCriteriaWatch() {
@@ -117,10 +117,12 @@ export function useListSort({ parentState, orderByRules, sortThrottleWait = defa
             removeSortCriteria(removedKey);
         }
 
-        for (const addedKey of addedKeys) {
-            const object = parentState.objects[addedKey];
-            addSortCriteria(object, addedKey);
-        }
+        es.run(() => {
+            for (const addedKey of addedKeys) {
+                const object = toRef(() => parentState.objects[addedKey]);
+                addSortCriteria(object, addedKey);
+            }
+        });
         assignReactiveObject(
             state.orderByDesc,
             state.orderByRules.filter(identity).map((e) => e.desc || false)
@@ -129,8 +131,9 @@ export function useListSort({ parentState, orderByRules, sortThrottleWait = defa
 
     function sortWatch() {
         if (!state.orderByRules || !state.orderByRules.length) {
-            assignReactiveObject(state.order, Object.keys(parentState.objects));
-            assignReactiveObject(state.objectsInOrder, Object.values(parentState.objects));
+            console.log("sortWatch no orderByRules");
+            assignReactiveObject(state.order, cloneDeep(parentState.order));
+            assignReactiveObject(state.objectsInOrder, cloneDeep(parentState.objectsInOrder));
             return;
         }
 
@@ -197,19 +200,13 @@ export function useListSort({ parentState, orderByRules, sortThrottleWait = defa
         }
         // we do not need two immediate watches to the same function.
         watch(() => Object.keys(parentState.objects), sortCriteriaWatch);
-        watch(() => cloneDeep(state.orderByRules), sortCriteriaWatch, {
+        watch(toRef(state, "orderByRules"), sortCriteriaWatch, {
             deep: true,
             immediate: true,
         });
 
-        // watching parentState.order triggers some out of order `computed`s, now that listInstance.order is a computed.
-        watch([toRef(state, "orderByDesc"), () => state.sortCriteria], throttledSortWatch, {
+        watch([toRef(state, "orderByDesc"), toRef(state, "sortCriteria")], throttledSortWatch, {
             deep: true,
-        });
-        onScopeDispose(() => {
-            Object.keys(state.sortCriteriaWatches).forEach((key) => {
-                removeSortCriteria(key);
-            });
         });
     });
 
