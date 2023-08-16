@@ -19,5 +19,7 @@ module.exports = {
             },
         ],
         "jsdoc/require-jsdoc": "off", // let's ease into this
+        "jsdoc/check-types": "off", // this rule is overly broad and gives advice that doesn't work with jsdoc2md.
+        "jsdoc/no-undefined-types": "off", // jsdoc2md considers all types to be global and doesn't understand imports.
     },
 };
