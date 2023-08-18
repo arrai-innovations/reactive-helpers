@@ -4,7 +4,7 @@ import { listRelatedStateKeys } from "./listRelated.js";
 import { listSubscriptionStateKeys } from "./listSubscription.js";
 import { useWatchesRunning } from "./watchesRunning.js";
 import isEmpty from "lodash-es/isEmpty.js";
-import { computed, effectScope, onScopeDispose, reactive, toRef, watch } from "vue";
+import { computed, effectScope, onScopeDispose, reactive, ref, toRef, unref, watch } from "vue";
 
 export const listCalculatedStateKeys = [
     "calculatedObjects",
@@ -60,7 +60,10 @@ export function useListCalculated({ parentState, calculatedObjectsRules }) {
             if (!calculatedObjectsEffectScopes[objectKey]) {
                 calculatedObjectsEffectScopes[objectKey] = effectScope();
             }
-            const originalObject = parentState.objects[objectKey];
+            const originalObject = toRef(parentState.objects, objectKey);
+            const relatedObject = parentState.relatedObjects
+                ? toRef(parentState.relatedObjects, objectKey)
+                : ref(undefined);
             if (!state.calculatedObjects[objectKey]) {
                 state.calculatedObjects[objectKey] = {};
             }
@@ -84,7 +87,7 @@ export function useListCalculated({ parentState, calculatedObjectsRules }) {
             calculatedObjectsEffectScopes[objectKey].run(() => {
                 for (const addedRuleKey of addedRuleKeys) {
                     calculatedObjectsObject[addedRuleKey] = computed(() =>
-                        state.calculatedObjectsRules?.[addedRuleKey]?.(originalObject)
+                        state.calculatedObjectsRules?.[addedRuleKey]?.(unref(originalObject), unref(relatedObject))
                     );
                 }
             });
