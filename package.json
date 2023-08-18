@@ -49,7 +49,7 @@
     },
     "dependencies": {
         "browser-util-inspect": "^0.2.0",
-        "flexsearch": "^0.7.21",
+        "flexsearch": "0.7.21",
         "husky": "^7.0.4",
         "pinst": "^3.0.0",
         "vue-deepunref": "^1.0.1"
