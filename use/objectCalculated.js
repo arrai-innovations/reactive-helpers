@@ -82,7 +82,7 @@ export function useObjectCalculated({ parentState, calculatedObjectRules }) {
                 calculatedObjectEffectScopes[addedKey] = effectScope();
                 calculatedObjectEffectScopes[addedKey].run(() => {
                     state.calculatedObject[addedKey] = computed(() =>
-                        calculatedObjectOriginalFunctions[addedKey](state.object)
+                        calculatedObjectOriginalFunctions[addedKey](state.object, state.relatedObject)
                     );
                 });
             }

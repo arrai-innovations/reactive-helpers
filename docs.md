@@ -11,23 +11,27 @@
 
 ## Constants
 
-| Name                                       | Description                                                                                             |
-| ------------------------------------------ | ------------------------------------------------------------------------------------------------------- |
+| Name                                       | Description                                                                                                |
+| ------------------------------------------ | ---------------------------------------------------------------------------------------------------------- |
+| [useObjects]                               | Initializes multiple useObject instances, returning an object of them based on the keys of the objectArgs. |
+| [useObject]                                | Initializes a chain of useObject\* functions, returning an object of them.                                 |
 | [objectifyClasses]                         |
 | [combineClasses]                           |
 | [stringifyClass]                           |
 | [stringifyClasses]                         |
-| [removeEmptyObjects]                       | Remove empty objects from a mixed object array tree. Mutates the object.                                |
-| [compactSparseArrays]                      | Remove undefined values from arrays in a mixed object array tree. Mutates the object.                   |
-| [removeEmptyObjectsAndCompactSparseArrays] | Remove empty objects and undefined values from arrays in a mixed object array tree. Mutates the object. |
+| [removeEmptyObjects]                       | Remove empty objects from a mixed object array tree. Mutates the object.                                   |
+| [compactSparseArrays]                      | Remove undefined values from arrays in a mixed object array tree. Mutates the object.                      |
+| [removeEmptyObjectsAndCompactSparseArrays] | Remove empty objects and undefined values from arrays in a mixed object array tree. Mutates the object.    |
 
 ## Functions
 
-| Name                           | Description                                                                                                                                                                                                                                               |
-| ------------------------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| [useCombineClasses(classes)]   |
-| [useListInstance(options)]     | `useListInstance` is a Vue composition function that manages a list of objects. It has the ability to retrieve the list from an implementation, or subscribe to updates from an implementation. It tracks the objects in the list, and their added order. |
-| [useListSubscription(options)] | `useListSubscription` creates a reactive object that manages a list of objects, as returned by `useListInstance`, causing the list to be re-fetched as needed and listening for updates to the list.                                                      |
+| Name                               | Description                                                                                                                                                                                                                                               |
+| ---------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| [useCombineClasses(classes)]       |
+| [useListInstance(options)]         | `useListInstance` is a Vue composition function that manages a list of objects. It has the ability to retrieve the list from an implementation, or subscribe to updates from an implementation. It tracks the objects in the list, and their added order. |
+| [useListSubscription(options)]     | `useListSubscription` creates a reactive object that manages a list of objects, as returned by `useListInstance`, causing the list to be re-fetched as needed and listening for updates to the list.                                                      |
+| [useObjectInstances(instanceArgs)] | Initializes multiple useObjectInstance instances, returning an object of them based on the keys of the instanceArgs.                                                                                                                                      |
+| [useObjectInstance(options)]       | Initializes an object instance to manage create, retrieve, update, delete, and patch operations.                                                                                                                                                          |
 
 ## Typedefs
 
@@ -43,6 +47,13 @@
 | [ListSubscriptionOptions] | The configuration options used to create a list subscription.                                          |
 | [ListSubscriptionState]   | A reactive object that manages a list of objects, as returned by `useListInstance`.                    |
 | [ListSubscription]        |
+| [ObjectCrudFunctions]     |
+| [ObjectInstanceOptions]   |
+| [ObjectInstance]          |
+| [ObjectInstanceProps]     |
+| [ObjectInstanceOptions]   |
+| [ObjectInstanceState]     |
+| [ObjectInstanceInstance]  |
 | [CSSValue]                | A string representing a CSS class or a space-separated list of CSS classes.                            |
 | [CSSObject]               | A CSS object where keys are CSS classes and values are booleans indicating whether to apply the class. |
 | [CSSClasses]              | A mixed array containing multiple ways of specifying CSS classes.                                      |
@@ -367,10 +378,32 @@ const transformed = transformWalk(obj, (key, value, path) => {
 // }
 ```
 
+## useObjects
+
+Initializes multiple useObject instances, returning an object of them based on the keys of the objectArgs.
+
+**Kind**: global constant  
+**Returns**: `Object.<string, ObjectInstance>` - - An object of useObject instances.
+
+| Param      | Type                                     | Description                                     |
+| ---------- | ---------------------------------------- | ----------------------------------------------- |
+| objectArgs | `Object.<string, ObjectInstanceOptions>` | An object of objects to be passed to useObject. |
+
+## useObject
+
+Initializes a chain of useObject\* functions, returning an object of them.
+
+**Kind**: global constant  
+**Returns**: [`ObjectInstance`][1] - - An object managing a chain of useObject\* instances.
+
+| Param   | Type                      | Description                                                                                                      |
+| ------- | ------------------------- | ---------------------------------------------------------------------------------------------------------------- |
+| options | [`ObjectInstanceOptions`] | The options to be passed to useObjectInstance, useObjectSubscription, useObjectRelated, and useObjectCalculated. |
+
 ## objectifyClasses
 
 **Kind**: global constant  
-**Returns**: [`CSSStringOrObject`][1] - A CSS object or a space-separated list of CSS classes.
+**Returns**: [`CSSStringOrObject`] - A CSS object or a space-separated list of CSS classes.
 
 | Param      | Type           | Description                                                       |
 | ---------- | -------------- | ----------------------------------------------------------------- |
@@ -466,6 +499,28 @@ causing the list to be re-fetched as needed and listening for updates to the lis
 | Param   | Type                        |
 | ------- | --------------------------- |
 | options | [`ListSubscriptionOptions`] |
+
+## useObjectInstances(instanceArgs)
+
+Initializes multiple useObjectInstance instances, returning an object of them based on the keys of the instanceArgs.
+
+**Kind**: global function  
+**Returns**: `Object.<string, ObjectInstanceInstance>` - - An object of useObjectInstance instances.
+
+| Param        | Type                                     | Description                                             |
+| ------------ | ---------------------------------------- | ------------------------------------------------------- |
+| instanceArgs | `Object.<string, ObjectInstanceOptions>` | An object of objects to be passed to useObjectInstance. |
+
+## useObjectInstance(options)
+
+Initializes an object instance to manage create, retrieve, update, delete, and patch operations.
+
+**Kind**: global function  
+**Returns**: [`ObjectInstanceInstance`] - - An object used to manage create, retrieve, update, delete, and patch operations.
+
+| Param   | Type                      | Description                                    |
+| ------- | ------------------------- | ---------------------------------------------- |
+| options | [`ObjectInstanceOptions`] | The options to be passed to useObjectInstance. |
 
 ## CSSValue
 
@@ -600,6 +655,102 @@ A reactive object that manages a list of objects, as returned by `useListInstanc
 | clearError         | `function`                | clear the subscription error                                                           |
 | effectScope        | `object`                  | a Vue effect scope                                                                     |
 
+## ObjectCrudFunctions
+
+**Kind**: global typedef  
+**Properties**
+
+| Name      | Type       | Description                           |
+| --------- | ---------- | ------------------------------------- |
+| create    | `function` | A function to create an object.       |
+| retrieve  | `function` | A function to retrieve an object.     |
+| update    | `function` | A function to update an object.       |
+| delete    | `function` | A function to delete an object.       |
+| patch     | `function` | A function to patch an object.        |
+| subscribe | `function` | A function to subscribe to an object. |
+
+## ObjectInstanceOptions
+
+**Kind**: global typedef  
+**Properties**
+
+| Name      | Type                                                                                                    | Description                                                                                                    |
+| --------- | ------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------- |
+| props     | [`ObjectInstanceProps`] \| `ObjectSubscriptionProps` \| `ObjectRelatedProps` \| `ObjectCalculatedProps` | The props to be passed to useObjectInstance, useObjectSubscription, useObjectRelated, and useObjectCalculated. |
+| functions | [`ObjectCrudFunctions`]                                                                                 | An object of custom crud functions to use instead of the defaults.                                             |
+
+## ObjectInstance
+
+**Kind**: global typedef  
+**Properties**
+
+| Name        | Type                                                                                                    | Description                                                                                       |
+| ----------- | ------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------- |
+| state       | [`ObjectInstanceState`] \| `ObjectSubscriptionState` \| `ObjectRelatedState` \| `ObjectCalculatedState` | The state of the instance.                                                                        |
+| clearError  | `function`                                                                                              | A function to clear the error on both the instance and subscription.                              |
+| clear       | `function`                                                                                              | A function to clear the instance, which also clears errors on both the instance and subscription. |
+| effectScope | `effectScope`                                                                                           | The effectScope of the instance.                                                                  |
+
+## ObjectInstanceProps
+
+**Kind**: global typedef  
+**Properties**
+
+| Name         | Type     | Description                                          |
+| ------------ | -------- | ---------------------------------------------------- |
+| id           | `string` | The id of the object.                                |
+| retrieveArgs | `Object` | The arguments to be passed to the retrieve function. |
+| crudArgs     | `Object` | The arguments to be passed to the crud functions.    |
+
+## ObjectInstanceOptions
+
+**Kind**: global typedef  
+**Properties**
+
+| Name                | Type                    | Description                                                           |
+| ------------------- | ----------------------- | --------------------------------------------------------------------- |
+| props               | [`ObjectInstanceProps`] | The reactive configuration object.                                    |
+| functions           | `object`                | An object of custom crud functions to use instead of the defaults.    |
+| functions.create    | `function`              | A function to be used instead of the default crud create function.    |
+| functions.retrieve  | `function`              | A function to be used instead of the default crud retrieve function.  |
+| functions.update    | `function`              | A function to be used instead of the default crud update function.    |
+| functions.delete    | `function`              | A function to be used instead of the default crud delete function.    |
+| functions.patch     | `function`              | A function to be used instead of the default crud patch function.     |
+| functions.subscribe | `function`              | A function to be used instead of the default crud subscribe function. |
+
+## ObjectInstanceState
+
+**Kind**: global typedef  
+**Properties**
+
+| Name         | Type                    | Description                                          |
+| ------------ | ----------------------- | ---------------------------------------------------- |
+| crud         | [`ObjectCrudFunctions`] | The crud functions.                                  |
+| crud.args    | `object`                | The arguments to be passed to the crud functions.    |
+| id           | `string`                | The id of the object.                                |
+| retrieveArgs | `object`                | The arguments to be passed to the retrieve function. |
+| object       | `object`                | The object.                                          |
+| loading      | `boolean`               | Whether the object is loading.                       |
+| errored      | `boolean`               | Whether the object errored.                          |
+| error        | `Error`                 | The error.                                           |
+| deleted      | `boolean`               | Whether the object is deleted.                       |
+
+## ObjectInstanceInstance
+
+**Kind**: global typedef  
+**Properties**
+
+| Name       | Type                    | Description                                                      |
+| ---------- | ----------------------- | ---------------------------------------------------------------- |
+| state      | [`ObjectInstanceState`] | The reactive state object.                                       |
+| create     | `function`              | call to turn the current object into a new object on the server. |
+| retrieve   | `function`              | call to retrieve the current object by id from the server.       |
+| update     | `function`              | call to update the current object on the server.                 |
+| delete     | `function`              | call to delete the current object on the server.                 |
+| patch      | `function`              | call to patch the current object on the server.                  |
+| clearError | `function`              | call to clear the error state.                                   |
+| clear      | `function`              | call to clear the object state.                                  |
+
 ## CSSValue
 
 A string representing a CSS class or a space-separated list of CSS classes.
@@ -638,6 +789,8 @@ A CSS object or a space-separated list of CSS classes.
 [utils/keydiff]: #utilskeydiff
 [utils/lifecycledebug]: #utilslifecycledebug
 [utils/transformwalk]: #utilstransformwalk
+[useobjects]: #useobjects
+[useobject]: #useobject
 [objectifyclasses]: #objectifyclasses
 [combineclasses]: #combineclasses
 [stringifyclass]: #stringifyclass
@@ -655,6 +808,12 @@ A CSS object or a space-separated list of CSS classes.
 [listsubscriptionoptions]: #listsubscriptionoptions
 [listsubscriptionstate]: #listsubscriptionstate
 [listsubscription]: #listsubscription
+[objectcrudfunctions]: #objectcrudfunctions
+[objectinstanceoptions]: #objectinstanceoptions
+[objectinstance]: #objectinstance
+[objectinstanceprops]: #objectinstanceprops
+[objectinstancestate]: #objectinstancestate
+[objectinstanceinstance]: #objectinstanceinstance
 [cssclasseswithrefs]: #cssclasseswithrefs
 [~validtargetorsource]: #utilsassignreactiveobjectvalidtargetorsource
 [`utils/assignreactiveobject`]: #utilsassignreactiveobject
@@ -666,18 +825,25 @@ A CSS object or a space-separated list of CSS classes.
 [`utils/keydiff`]: #utilskeydiff
 [`utils/lifecycledebug`]: #utilslifecycledebug
 [`utils/transformwalk`]: #utilstransformwalk
-[1]: #cssstringorobject
-[`cssclasses`]: #cssclasses
+[1]: #objectinstance
+[`objectinstanceoptions`]: #objectinstanceoptions
 [`cssstringorobject`]: #cssstringorobject
+[`cssclasses`]: #cssclasses
 [`cssclasseswithrefs`]: #cssclasseswithrefs
 [`listinstance`]: #listinstance
 [`listinstanceoptions`]: #listinstanceoptions
 [`listsubscriptionoptions`]: #listsubscriptionoptions
+[`objectinstanceinstance`]: #objectinstanceinstance
 [`listinstancestate`]: #listinstancestate
 [`listsubscriptionstate`]: #listsubscriptionstate
+[`objectinstanceprops`]: #objectinstanceprops
+[`objectcrudfunctions`]: #objectcrudfunctions
+[`objectinstancestate`]: #objectinstancestate
 [usecombineclasses(classes)]: #usecombineclassesclasses
 [uselistinstance(options)]: #uselistinstanceoptions
 [uselistsubscription(options)]: #uselistsubscriptionoptions
+[useobjectinstances(instanceargs)]: #useobjectinstancesinstanceargs
+[useobjectinstance(options)]: #useobjectinstanceoptions
 [~addreactiveobject(target, source, \[exclude\], \[addedkeys\])]: #utilsassignreactiveobjectaddreactiveobjecttarget-source-exclude-addedkeys
 [~updatereactiveobject(target, source, \[exclude\], \[samekeys\])]: #utilsassignreactiveobjectupdatereactiveobjecttarget-source-exclude-samekeys
 [~addorupdatereactiveobject(target, source, \[exclude\], \[addedkeys\], \[samekeys\])]: #utilsassignreactiveobjectaddorupdatereactiveobjecttarget-source-exclude-addedkeys-samekeys

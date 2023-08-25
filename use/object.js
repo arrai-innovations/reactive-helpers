@@ -4,7 +4,48 @@ import { useObjectRelated, objectRelatedFunctions } from "./objectRelated.js";
 import { useObjectSubscription, objectSubscriptionFunctions } from "./objectSubscription.js";
 import { effectScope, reactive, shallowReadonly, toRef } from "vue";
 
-// Manages a chain of useObject* functions
+/**
+ * @typedef {Object} ObjectCrudFunctions
+ * @property {function} create - A function to create an object.
+ * @property {function} retrieve - A function to retrieve an object.
+ * @property {function} update - A function to update an object.
+ * @property {function} delete - A function to delete an object.
+ * @property {function} patch - A function to patch an object.
+ * @property {function} subscribe - A function to subscribe to an object.
+ */
+
+/**
+ * @typedef {Object} ObjectInstanceOptions
+ * @property {ObjectInstanceProps | ObjectSubscriptionProps | ObjectRelatedProps | ObjectCalculatedProps} props - The props to be passed to useObjectInstance, useObjectSubscription, useObjectRelated, and useObjectCalculated.
+ * @property {ObjectCrudFunctions} functions - An object of custom crud functions to use instead of the defaults.
+ */
+
+/**
+ * @typedef {ObjectInstanceInstance | ObjectSubscriptionInstance | ObjectRelatedInstance | ObjectCalculatedInstance} ObjectInstance
+ * @property {ObjectInstanceState | ObjectSubscriptionState | ObjectRelatedState | ObjectCalculatedState} state - The state of the instance.
+ * @property {function} clearError - A function to clear the error on both the instance and subscription.
+ * @property {function} clear - A function to clear the instance, which also clears errors on both the instance and subscription.
+ * @property {effectScope} effectScope - The effectScope of the instance.
+ */
+
+/**
+ * Initializes multiple useObject instances, returning an object of them based on the keys of the objectArgs.
+ * @param {Object.<string, ObjectInstanceOptions>} objectArgs - An object of objects to be passed to useObject.
+ * @returns {Object.<string, ObjectInstance>} - An object of useObject instances.
+ */
+export const useObjects = (objectArgs) => {
+    const objects = {};
+    for (const [key, value] of Object.entries(objectArgs)) {
+        objects[key] = useObject(value);
+    }
+    return objects;
+};
+
+/**
+ * Initializes a chain of useObject* functions, returning an object of them.
+ * @param {ObjectInstanceOptions} options - The options to be passed to useObjectInstance, useObjectSubscription, useObjectRelated, and useObjectCalculated.
+ * @returns {ObjectInstance} - An object managing a chain of useObject* instances.
+ */
 export const useObject = ({ props, functions }) => {
     const managed = reactive({
         objectInstance: null,

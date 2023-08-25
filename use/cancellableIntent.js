@@ -63,7 +63,7 @@ export function useCancellableIntent({
         let awaitablePromise = awaitableWithCancel();
 
         if (awaitablePromise.cancel) {
-            cancelFunction = awaitablePromise.cancel;
+            cancelFunction = awaitablePromise.cancel.bind(awaitablePromise);
         }
         // we don't want to await this, because we want to be able to cancel it
         awaitablePromise

@@ -199,15 +199,15 @@ export function useListSort({ parentState, orderByRules, sortThrottleWait = defa
         for (const key of listFilterStateKeys) {
             state[key] = toRef(parentState, key);
         }
+        // this watch must come first or be immediate.
+        watch([toRef(state, "orderByDesc"), toRef(state, "sortCriteria")], throttledSortWatch, {
+            deep: true,
+        });
         // we do not need two immediate watches to the same function.
         watch(() => Object.keys(parentState.objects), sortCriteriaWatch);
         watch(toRef(state, "orderByRules"), sortCriteriaWatch, {
             deep: true,
             immediate: true,
-        });
-
-        watch([toRef(state, "orderByDesc"), toRef(state, "sortCriteria")], throttledSortWatch, {
-            deep: true,
         });
     });
 

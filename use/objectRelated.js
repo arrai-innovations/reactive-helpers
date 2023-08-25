@@ -4,8 +4,10 @@ import { objectInstanceStateKeys } from "./objectInstance.js";
 import { objectSubscriptionStateKeys } from "./objectSubscription.js";
 import { useWatchesRunning } from "./watchesRunning.js";
 import get from "lodash-es/get.js";
+import identity from "lodash-es/identity.js";
 import isArray from "lodash-es/isArray.js";
 import isEmpty from "lodash-es/isEmpty.js";
+import isEqual from "lodash-es/isEqual.js";
 import isUndefined from "lodash-es/isUndefined.js";
 import { computed, effectScope, onScopeDispose, reactive, toRef, unref, watch } from "vue";
 
@@ -71,22 +73,47 @@ export function useObjectRelated({ parentState, relatedObjectRules }) {
             for (const addedRuleKey of addedRuleKeys) {
                 relatedObjectEffectScopes[addedRuleKey] = effectScope();
                 relatedObjectEffectScopes[addedRuleKey].run(() => {
-                    state.relatedObject[addedRuleKey] = computed(() => {
+                    const relatedObjectObjectWatchFn = () => {
                         // deal with computed objects being passed.
                         const ruleObjects = unref(state.relatedObjectRules?.[addedRuleKey]?.objects);
                         const rulePkKey = state.relatedObjectRules?.[addedRuleKey]?.pkKey || addedRuleKey;
+                        const ruleOrder = unref(state.relatedObjectRules?.[addedRuleKey]?.order);
                         if (!ruleObjects || !rulePkKey) {
-                            return undefined;
+                            state.relatedObject[addedRuleKey] = undefined;
+                            return;
                         }
-                        const value = get(parentState.object, rulePkKey);
+                        let value = get(parentState.object, rulePkKey);
                         if (isUndefined(value)) {
-                            return undefined;
+                            state.relatedObject[addedRuleKey] = undefined;
+                            return;
                         }
                         if (isArray(value)) {
-                            return value.map((e) => ruleObjects[e]);
+                            // the related list could be sorted differently than the original list.
+                            if (ruleOrder?.length) {
+                                value = value.filter(identity);
+                                const indexById = Object.fromEntries(ruleOrder.map((e, i) => [e, i]));
+                                value.sort((a, b) => {
+                                    const aIndex = indexById[a];
+                                    const bIndex = indexById[b];
+                                    return aIndex - bIndex;
+                                });
+                            }
+                            value = value.map((e) => ruleObjects[e]).filter(identity);
+                        } else {
+                            value = ruleObjects[value];
                         }
-                        return ruleObjects[value];
-                    });
+                        if (!isEqual(value, state.relatedObject[addedRuleKey])) {
+                            state.relatedObject[addedRuleKey] = value;
+                        }
+                    };
+                    watch(
+                        [toRef(state.relatedObjectsRules, addedRuleKey), toRef(parentState, "object")],
+                        relatedObjectObjectWatchFn,
+                        {
+                            deep: true,
+                            immediate: true,
+                        }
+                    );
                 });
             }
         });

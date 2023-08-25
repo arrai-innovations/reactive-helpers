@@ -163,7 +163,8 @@ export function useListSubscription({ listInstance, props, functions, keepOldPag
             listInstance.addListObject(data);
         } catch (err) {
             if (err.name === "ListError" && err.code === "duplicate-id") {
-                throw new ListSubscriptionError(`addFromSubscription: add for existing id in objects (${data.id}).`);
+                console.warn(`addFromSubscription: add for id already in objects (${data.id}).`);
+                return;
             }
             throw err;
         }
@@ -177,9 +178,8 @@ export function useListSubscription({ listInstance, props, functions, keepOldPag
             listInstance.updateListObject(data);
         } catch (err) {
             if (err.name === "ListError" && err.code === "missing-object") {
-                throw new ListSubscriptionError(
-                    `updateFromSubscription: update for id not in objects (${inspect(data.id)}).`
-                );
+                console.warn(`updateFromSubscription: update for id not in objects (${data.id}).`);
+                return;
             }
             throw err;
         }
@@ -190,9 +190,8 @@ export function useListSubscription({ listInstance, props, functions, keepOldPag
             listInstance.deleteListObject(id);
         } catch (err) {
             if (err.name === "ListError" && err.code === "missing-object") {
-                throw new ListSubscriptionError(
-                    `deleteFromSubscription: delete for id not in objects (${inspect(id)}).`
-                );
+                console.warn(`deleteFromSubscription: delete for id not in objects (${id}).`);
+                return;
             }
             throw err;
         }
