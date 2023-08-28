@@ -86,7 +86,9 @@ export function doAwaitTimeout(timeout) {
 
 export class AwaitNot {
     constructor({ obj, prop, couldAlreadyBeFalse = false, timeout = 1000 }) {
-        this.timeout = new AwaitTimeout({ timeout });
+        if (timeout > 0) {
+            this.timeout = new AwaitTimeout({ timeout });
+        }
         this.promise = new Promise((resolve, reject) => {
             this.resolve = resolve;
             this.reject = reject;
@@ -97,22 +99,32 @@ export class AwaitNot {
         this.trueISW = new ImmediateStopWatch();
         this.falseISW = new ImmediateStopWatch();
         // prebuild the exception for a more useful stack.
-        this.timeoutError = new AwaitNotError("Timeout", "timeout");
+        if (this.timeout) {
+            this.timeoutError = new AwaitTimeoutError("Timeout", "timeout");
+        }
     }
 
     start() {
-        this.timeout.promise
-            .then(() => {
-                this.stop();
-                this.reject(this.timeoutError);
-            })
-            .catch((err) => {
-                this.stop();
-                if (!(err instanceof AwaitTimeoutError)) {
-                    this.reject(err);
-                }
-            });
-        this.timeout.start();
+        if (this.timeout) {
+            this.timeout.promise
+                .then(() => {
+                    if (this.reject) {
+                        this.reject(this.timeoutError);
+                    }
+                    this.stop();
+                    this.cleanPromise();
+                })
+                .catch((err) => {
+                    if (!(err instanceof AwaitTimeoutError)) {
+                        if (this.reject) {
+                            this.reject(err);
+                        }
+                        this.cleanPromise();
+                    }
+                    this.stop();
+                });
+            this.timeout.start();
+        }
         if (this.obj[this.prop] === false && this.couldAlreadyBeFalse) {
             this.waitForTrue();
         } else {
@@ -146,7 +158,10 @@ export class AwaitNot {
             (newValue) => {
                 if (newValue === false) {
                     this.stop();
-                    this.resolve();
+                    if (this.resolve) {
+                        this.resolve();
+                    }
+                    this.cleanPromise();
                 }
             },
             [this.obj[this.prop]]
@@ -161,9 +176,20 @@ export class AwaitNot {
     }
 
     stop() {
-        this.timeout.stop();
+        if (this.timeout) {
+            this.timeout.stop();
+        }
         this.stopTrue();
         this.stopFalse();
+    }
+
+    cleanPromise() {
+        if (this.resolve) {
+            delete this.resolve;
+        }
+        if (this.reject) {
+            delete this.reject;
+        }
     }
 }
 
