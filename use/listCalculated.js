@@ -87,7 +87,11 @@ export function useListCalculated({ parentState, calculatedObjectsRules }) {
             calculatedObjectsEffectScopes[objectKey].run(() => {
                 for (const addedRuleKey of addedRuleKeys) {
                     calculatedObjectsObject[addedRuleKey] = computed(() =>
-                        state.calculatedObjectsRules?.[addedRuleKey]?.(unref(originalObject), unref(relatedObject))
+                        state.calculatedObjectsRules?.[addedRuleKey]?.(
+                            unref(originalObject),
+                            unref(relatedObject),
+                            calculatedObjectsObject
+                        )
                     );
                 }
             });
