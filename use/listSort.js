@@ -245,9 +245,9 @@ export function useListSort({ parentState, orderByRules, sortThrottleWait = defa
             watchSentinelRefs: [toRef(state, "sortCriteriaWatchRunning"), toRef(state, "sortWatchRunning")],
         });
 
-        state.sortRunning = toRef(watchesRunning.state, "running");
+        state.sortRunning = computed(() => loadingCombine(watchesRunning.state.running, state.outstandingEffects));
         state.running = computed(() =>
-            loadingCombine(watchesRunning.state.running, parentState.running, state.outstandingEffects)
+            loadingCombine(watchesRunning.state.running, state.outstandingEffects, parentState.running)
         );
     });
 
