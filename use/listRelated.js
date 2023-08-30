@@ -93,7 +93,7 @@ export function useListRelated({ parentState, relatedObjectsRules }) {
                             return;
                         }
                         let value;
-                        if (rulePkKey.startswith("relatedItem.")) {
+                        if (rulePkKey.startsWith("relatedItem.")) {
                             value = get(unref(relatedObjectRef), rulePkKey.slice(12));
                         } else {
                             value = get(unref(originalObjectRef), rulePkKey);
