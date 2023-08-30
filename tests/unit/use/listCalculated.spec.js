@@ -119,7 +119,7 @@ describe("use/listCalculated", () => {
             },
         });
         const anr = new AwaitNot({
-            obj: listCalculated.watchesRunning.state,
+            obj: listCalculated.state,
             prop: "running",
         });
         anr.start();

@@ -1,4 +1,3 @@
-import { AwaitTimeout } from "../../../utils/index.js";
 import { nextTick } from "vue";
 import { deepUnref } from "vue-deepunref";
 
@@ -141,12 +140,11 @@ describe("use/listRelated", () => {
             },
         });
         const anr = new AwaitNot({
-            obj: listRelated.watchesRunning.state,
+            obj: listRelated.state,
             prop: "running",
         });
         anr.start();
         await anr.promise;
-        await new AwaitTimeout({ timeout: 100 });
         expect(deepUnref(listRelated.state.relatedObjects)).toEqual({
             1: {
                 intermediateItems: [
