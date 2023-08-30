@@ -58,6 +58,7 @@ export function useListRelated({ parentState, relatedObjectsRules }) {
         for (const objectKey of Object.keys(state.relatedObjects)) {
             const relatedObjectsObject = state.relatedObjects[objectKey];
             const originalObjectRef = toRef(parentState.objects, objectKey);
+            const relatedObjectRef = toRef(state.relatedObjects, objectKey);
             let removedRuleKeys, addedRuleKeys;
             if (!relatedObjectsRulesIsEmpty) {
                 ({ removedKeys: removedRuleKeys, addedKeys: addedRuleKeys } = keyDiff(
@@ -89,7 +90,12 @@ export function useListRelated({ parentState, relatedObjectsRules }) {
                             relatedObjectsObject[addedRuleKey] = undefined;
                             return;
                         }
-                        let value = get(unref(originalObjectRef), rulePkKey);
+                        let value;
+                        if (rulePkKey.startswith("relatedItem.")) {
+                            value = get(unref(relatedObjectRef), rulePkKey.slice(12));
+                        } else {
+                            value = get(unref(originalObjectRef), rulePkKey);
+                        }
                         if (isUndefined(value)) {
                             relatedObjectsObject[addedRuleKey] = undefined;
                             return;
