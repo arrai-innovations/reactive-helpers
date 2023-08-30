@@ -58,6 +58,7 @@ export function useListRelated({ parentState, relatedObjectsRules }) {
         for (const objectKey of Object.keys(state.relatedObjects)) {
             const relatedObjectsObject = state.relatedObjects[objectKey];
             const originalObjectRef = toRef(parentState.objects, objectKey);
+            const relatedObjectRef = toRef(state.relatedObjects, objectKey);
             let removedRuleKeys, addedRuleKeys;
             if (!relatedObjectsRulesIsEmpty) {
                 ({ removedKeys: removedRuleKeys, addedKeys: addedRuleKeys } = keyDiff(
@@ -86,12 +87,30 @@ export function useListRelated({ parentState, relatedObjectsRules }) {
                         const rulePkKey = state.relatedObjectsRules?.[addedRuleKey]?.pkKey || addedRuleKey;
                         const ruleOrder = unref(state.relatedObjectsRules?.[addedRuleKey]?.order);
                         if (!ruleObjects || !rulePkKey) {
-                            relatedObjectsObject[addedRuleKey] = undefined;
+                            if (!isUndefined(relatedObjectsObject[addedRuleKey])) {
+                                relatedObjectsObject[addedRuleKey] = undefined;
+                            }
                             return;
                         }
-                        let value = get(unref(originalObjectRef), rulePkKey);
+                        let value;
+                        if (rulePkKey.startsWith("relatedItem.")) {
+                            value = get(unref(relatedObjectRef), rulePkKey.slice(12));
+                            if (isUndefined(value)) {
+                                // is the first level an array?
+                                const firstLevelKey = rulePkKey.slice(12).split(".")[0];
+                                const firstLevelItem = get(unref(relatedObjectRef), firstLevelKey);
+                                if (isArray(firstLevelItem)) {
+                                    const restOfKey = rulePkKey.slice(12 + firstLevelKey.length + 1);
+                                    value = firstLevelItem.map((e) => get(e, restOfKey)).flat();
+                                }
+                            }
+                        } else {
+                            value = get(unref(originalObjectRef), rulePkKey);
+                        }
                         if (isUndefined(value)) {
-                            relatedObjectsObject[addedRuleKey] = undefined;
+                            if (!isUndefined(relatedObjectsObject[addedRuleKey])) {
+                                relatedObjectsObject[addedRuleKey] = undefined;
+                            }
                             return;
                         }
                         if (isArray(value)) {
@@ -114,7 +133,7 @@ export function useListRelated({ parentState, relatedObjectsRules }) {
                         }
                     };
                     watch(
-                        [toRef(state.relatedObjectsRules, addedRuleKey), originalObjectRef],
+                        [toRef(state.relatedObjectsRules, addedRuleKey), originalObjectRef, relatedObjectRef],
                         relatedObjectsObjectWatchFn,
                         {
                             deep: true,

@@ -100,7 +100,7 @@ export class AwaitNot {
         this.falseISW = new ImmediateStopWatch();
         // prebuild the exception for a more useful stack.
         if (this.timeout) {
-            this.timeoutError = new AwaitTimeoutError("Timeout", "timeout");
+            this.timeoutError = new AwaitNotError("Timeout", "timeout");
         }
     }
 

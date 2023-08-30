@@ -2,12 +2,16 @@ import { nextTick } from "vue";
 import { deepUnref } from "vue-deepunref";
 
 describe("use/listCalculated", () => {
-    let useListInstance, useListCalculated;
+    let useListInstance, useListCalculated, useListRelated, AwaitNot;
     beforeEach(async () => {
         const listInstanceModule = await import("../../../use/listInstance");
         useListInstance = listInstanceModule.useListInstance;
         const listCalculatedModule = await import("../../../use/listCalculated");
         useListCalculated = listCalculatedModule.useListCalculated;
+        const listRelatedModule = await import("../../../use/listRelated");
+        useListRelated = listRelatedModule.useListRelated;
+        const watchesModule = await import("../../../utils/watches.js");
+        AwaitNot = watchesModule.AwaitNot;
     });
     it("should return a list of calculated items", async () => {
         const mainListInstance = useListInstance({ props: {} });
@@ -68,6 +72,62 @@ describe("use/listCalculated", () => {
                     id: "4",
                     name: "calculated3",
                 },
+            },
+        });
+    });
+    it("should allow calculated objects to return results based on related objects", async () => {
+        const mainListInstance = useListInstance({ props: {} });
+        const relatedListInstance = useListInstance({ props: {} });
+        mainListInstance.addListObject({
+            id: "1",
+            name: "main",
+            related_items: ["2", "3"],
+            related_id: "4",
+            calculated_items: ["2", "3"],
+            calculated_id: "4",
+        });
+        relatedListInstance.addListObject({
+            id: "2",
+            name: "related1",
+        });
+        relatedListInstance.addListObject({
+            id: "3",
+            name: "related2",
+        });
+        relatedListInstance.addListObject({
+            id: "4",
+            name: "related3",
+        });
+        const listRelated = useListRelated({
+            parentState: mainListInstance.state,
+            relatedObjectsRules: {
+                relatedItems: {
+                    objects: relatedListInstance.state.objects,
+                    pkKey: "related_items",
+                },
+                relatedItem: {
+                    objects: relatedListInstance.state.objects,
+                    pkKey: "related_id",
+                },
+            },
+        });
+        const listCalculated = useListCalculated({
+            parentState: listRelated.state,
+            calculatedObjectsRules: {
+                calculatedItems: (obj, relatedObj) => relatedObj.relatedItems?.map((x) => x.name + "-modified"),
+                calculatedItem: (obj, relatedObj) => relatedObj.relatedItem?.name + "-modified",
+            },
+        });
+        const anr = new AwaitNot({
+            obj: listCalculated.state,
+            prop: "running",
+        });
+        anr.start();
+        await anr.promise;
+        expect(deepUnref(listCalculated.state.calculatedObjects)).toEqual({
+            1: {
+                calculatedItems: ["related1-modified", "related2-modified"],
+                calculatedItem: "related3-modified",
             },
         });
     });
