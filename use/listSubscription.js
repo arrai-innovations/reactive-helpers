@@ -77,8 +77,8 @@ export function useListSubscriptions(args, listInstances = {}) {
 /**
  * `useListSubscription` creates a reactive object that manages a list of objects, as returned by `useListInstance`,
  *  causing the list to be re-fetched as needed and listening for updates to the list.
- * @param {ListSubscriptionOptions} options
- * @returns ListSubscription
+ * @param {ListSubscriptionOptions} options - the configuration options for the list subscription
+ * @returns {ListSubscription} - the list subscription
  */
 export function useListSubscription({ listInstance, props, functions, keepOldPages = false }) {
     if (!listInstance && !props) {

@@ -494,11 +494,11 @@ It tracks the objects in the list, and their added order.
 causing the list to be re-fetched as needed and listening for updates to the list.
 
 **Kind**: global function  
-**Returns**: ListSubscription
+**Returns**: [`ListSubscription`] - - the list subscription
 
-| Param   | Type                        |
-| ------- | --------------------------- |
-| options | [`ListSubscriptionOptions`] |
+| Param   | Type                        | Description                                         |
+| ------- | --------------------------- | --------------------------------------------------- |
+| options | [`ListSubscriptionOptions`] | the configuration options for the list subscription |
 
 ## useObjectInstances(instanceArgs)
 
@@ -832,6 +832,7 @@ A CSS object or a space-separated list of CSS classes.
 [`cssclasseswithrefs`]: #cssclasseswithrefs
 [`listinstance`]: #listinstance
 [`listinstanceoptions`]: #listinstanceoptions
+[`listsubscription`]: #listsubscription
 [`listsubscriptionoptions`]: #listsubscriptionoptions
 [`objectinstanceinstance`]: #objectinstanceinstance
 [`listinstancestate`]: #listinstancestate
