@@ -23,6 +23,10 @@ export const listSortStateKeys = [
     "sortCriteria",
     "sortCriteriaEffectScopes",
     "orderByDesc",
+    "sortCriteriaWatchRunning",
+    "sortWatchRunning",
+    "outstandingEffects",
+    // "running",
 ];
 
 export const listSortFunctions = [];
