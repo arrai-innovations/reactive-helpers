@@ -87,7 +87,9 @@ export function useListRelated({ parentState, relatedObjectsRules }) {
                         const rulePkKey = state.relatedObjectsRules?.[addedRuleKey]?.pkKey || addedRuleKey;
                         const ruleOrder = unref(state.relatedObjectsRules?.[addedRuleKey]?.order);
                         if (!ruleObjects || !rulePkKey) {
-                            relatedObjectsObject[addedRuleKey] = undefined;
+                            if (!isUndefined(relatedObjectsObject[addedRuleKey])) {
+                                relatedObjectsObject[addedRuleKey] = undefined;
+                            }
                             return;
                         }
                         let value;
@@ -97,7 +99,9 @@ export function useListRelated({ parentState, relatedObjectsRules }) {
                             value = get(unref(originalObjectRef), rulePkKey);
                         }
                         if (isUndefined(value)) {
-                            relatedObjectsObject[addedRuleKey] = undefined;
+                            if (!isUndefined(relatedObjectsObject[addedRuleKey])) {
+                                relatedObjectsObject[addedRuleKey] = undefined;
+                            }
                             return;
                         }
                         if (isArray(value)) {
@@ -120,7 +124,7 @@ export function useListRelated({ parentState, relatedObjectsRules }) {
                         }
                     };
                     watch(
-                        [toRef(state.relatedObjectsRules, addedRuleKey), originalObjectRef],
+                        [toRef(state.relatedObjectsRules, addedRuleKey), originalObjectRef, relatedObjectRef],
                         relatedObjectsObjectWatchFn,
                         {
                             deep: true,
