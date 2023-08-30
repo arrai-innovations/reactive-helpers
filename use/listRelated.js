@@ -95,6 +95,15 @@ export function useListRelated({ parentState, relatedObjectsRules }) {
                         let value;
                         if (rulePkKey.startsWith("relatedItem.")) {
                             value = get(unref(relatedObjectRef), rulePkKey.slice(12));
+                            if (isUndefined(value)) {
+                                // is the first level an array?
+                                const firstLevelKey = rulePkKey.slice(12).split(".")[0];
+                                const firstLevelItem = get(unref(relatedObjectRef), firstLevelKey);
+                                if (isArray(firstLevelItem)) {
+                                    const restOfKey = rulePkKey.slice(12 + firstLevelKey.length + 1);
+                                    value = firstLevelItem.map((e) => get(e, restOfKey)).flat();
+                                }
+                            }
                         } else {
                             value = get(unref(originalObjectRef), rulePkKey);
                         }
