@@ -1,18 +1,20 @@
-import { assignReactiveObject, keyDiff } from "../utils/index.js";
+import { assignReactiveObject, keyDiff, loadingCombine } from "../utils/index.js";
 import { listCalculatedStateKeys } from "./listCalculated.js";
 import { listFilterStateKeys } from "./listFilter.js";
 import { listInstanceStateKeys } from "./listInstance.js";
 import { listRelatedStateKeys } from "./listRelated.js";
 import { listSubscriptionStateKeys } from "./listSubscription.js";
+import { useWatchesRunning } from "./watchesRunning.js";
 import cloneDeep from "lodash-es/cloneDeep.js";
 import get from "lodash-es/get.js";
 import identity from "lodash-es/identity.js";
 import isEmpty from "lodash-es/isEmpty.js";
+import isEqual from "lodash-es/isEqual.js";
 import isNull from "lodash-es/isNull.js";
 import isUndefined from "lodash-es/isUndefined.js";
 import throttle from "lodash-es/throttle.js";
 import zip from "lodash-es/zip.js";
-import { effectScope, reactive, toRef, unref, watch } from "vue";
+import { effectScope, reactive, toRef, unref, watch, computed } from "vue";
 
 export const listSortStateKeys = [
     "orderByRules",
@@ -56,6 +58,9 @@ export function useListSort({ parentState, orderByRules, sortThrottleWait = defa
         sortCriteria: {},
         sortCriteriaEffectScopes: {},
         orderByDesc: [],
+        sortCriteriaWatchRunning: false,
+        sortWatchRunning: false,
+        outstandingEffects: false,
     });
     const es = effectScope();
 
@@ -92,7 +97,13 @@ export function useListSort({ parentState, orderByRules, sortThrottleWait = defa
                         }
                         newSearchCriteria.push(newItem);
                     }
+                    if (isEqual(newSearchCriteria, state.sortCriteria[key])) {
+                        return;
+                    }
                     assignReactiveObject(state.sortCriteria[key], newSearchCriteria);
+                    if (!state.outstandingEffects) {
+                        state.outstandingEffects = true;
+                    }
                 },
                 {
                     deep: true,
@@ -104,81 +115,95 @@ export function useListSort({ parentState, orderByRules, sortThrottleWait = defa
     }
 
     function sortCriteriaWatch() {
-        if (!state.orderByRules || !state.orderByRules.filter(identity).length) {
-            if (!isEmpty(state.sortCriteria)) {
-                for (const removedKey of Object.keys(state.sortCriteria)) {
-                    removeSortCriteria(removedKey);
+        try {
+            if (!state.orderByRules || !state.orderByRules.filter(identity).length) {
+                if (!isEmpty(state.sortCriteria)) {
+                    for (const removedKey of Object.keys(state.sortCriteria)) {
+                        removeSortCriteria(removedKey);
+                    }
                 }
+                assignReactiveObject(state.order, cloneDeep(parentState.order));
+                assignReactiveObject(state.objectsInOrder, cloneDeep(parentState.objectsInOrder));
+                return;
             }
-            assignReactiveObject(state.order, cloneDeep(parentState.order));
-            assignReactiveObject(state.objectsInOrder, cloneDeep(parentState.objectsInOrder));
-            return;
-        }
-        const { removedKeys, addedKeys } = keyDiff(Object.keys(parentState.objects), Object.keys(state.sortCriteria));
-        for (const removedKey of removedKeys) {
-            removeSortCriteria(removedKey);
-        }
+            const { removedKeys, addedKeys } = keyDiff(
+                Object.keys(parentState.objects),
+                Object.keys(state.sortCriteria)
+            );
+            for (const removedKey of removedKeys) {
+                removeSortCriteria(removedKey);
+            }
 
-        es.run(() => {
-            for (const addedKey of addedKeys) {
-                const object = toRef(() => parentState.objects[addedKey]);
-                addSortCriteria(object, addedKey);
-            }
-        });
-        assignReactiveObject(
-            state.orderByDesc,
-            state.orderByRules.filter(identity).map((e) => e.desc || false)
-        );
+            es.run(() => {
+                for (const addedKey of addedKeys) {
+                    const object = toRef(() => parentState.objects[addedKey]);
+                    addSortCriteria(object, addedKey);
+                }
+            });
+            assignReactiveObject(
+                state.orderByDesc,
+                state.orderByRules.filter(identity).map((e) => e.desc || false)
+            );
+        } finally {
+            state.sortCriteriaWatchRunning = false;
+        }
     }
 
     function sortWatch() {
-        if (!state.orderByRules || !state.orderByRules.length) {
-            assignReactiveObject(state.order, cloneDeep(parentState.order));
-            assignReactiveObject(state.objectsInOrder, cloneDeep(parentState.objectsInOrder));
-            return;
-        }
+        try {
+            if (!state.orderByRules || !state.orderByRules.length) {
+                assignReactiveObject(state.order, cloneDeep(parentState.order));
+                assignReactiveObject(state.objectsInOrder, cloneDeep(parentState.objectsInOrder));
+                return;
+            }
 
-        let idList = Object.keys(parentState.objects);
-        idList.sort((xKey, yKey) => {
-            const xCriteria = state.sortCriteria[xKey];
-            const yCriteria = state.sortCriteria[yKey];
-            for (let [x, y, orderByObj] of zip(xCriteria, yCriteria, state.orderByRules)) {
-                if (!orderByObj) {
-                    continue;
-                }
-                if (orderByObj.desc) {
-                    [x, y] = [y, x];
-                }
-                const isUndefinedX = isUndefined(x) || isNull(x);
-                const isUndefinedY = isUndefined(y) || isNull(y);
-                if (isUndefinedX && isUndefinedY) {
-                    continue;
-                } else if (isUndefinedX) {
-                    return -1;
-                } else if (isUndefinedY) {
-                    return 1;
-                }
-                if (orderByObj.localeCompare) {
-                    const strComp = collator.compare(x, y);
-                    if (strComp) {
-                        return strComp;
+            let idList = Object.keys(parentState.objects);
+            idList.sort((xKey, yKey) => {
+                const xCriteria = state.sortCriteria[xKey];
+                const yCriteria = state.sortCriteria[yKey];
+                for (let [x, y, orderByObj] of zip(xCriteria, yCriteria, state.orderByRules)) {
+                    if (!orderByObj) {
+                        continue;
                     }
-                } else {
-                    if (x < y) {
+                    if (orderByObj.desc) {
+                        [x, y] = [y, x];
+                    }
+                    const isUndefinedX = isUndefined(x) || isNull(x);
+                    const isUndefinedY = isUndefined(y) || isNull(y);
+                    if (isUndefinedX && isUndefinedY) {
+                        continue;
+                    } else if (isUndefinedX) {
                         return -1;
-                    }
-                    if (x > y) {
+                    } else if (isUndefinedY) {
                         return 1;
                     }
+                    if (orderByObj.localeCompare) {
+                        const strComp = collator.compare(x, y);
+                        if (strComp) {
+                            return strComp;
+                        }
+                    } else {
+                        if (x < y) {
+                            return -1;
+                        }
+                        if (x > y) {
+                            return 1;
+                        }
+                    }
                 }
-            }
-            return 0;
-        });
-        assignReactiveObject(state.order, idList);
-        assignReactiveObject(state.objectsInOrder, idList.map((e) => parentState.objects[e]).filter(identity));
+                return 0;
+            });
+            assignReactiveObject(state.order, idList);
+            assignReactiveObject(state.objectsInOrder, idList.map((e) => parentState.objects[e]).filter(identity));
+        } finally {
+            state.sortWatchRunning = false;
+            state.outstandingEffects = false;
+        }
     }
 
     const throttledSortWatch = throttle(sortWatch, sortThrottleWait);
+
+    let watchesRunning = null;
 
     es.run(() => {
         for (const key of listInstanceStateKeys) {
@@ -209,11 +234,23 @@ export function useListSort({ parentState, orderByRules, sortThrottleWait = defa
             deep: true,
             immediate: true,
         });
+        watchesRunning = useWatchesRunning({
+            triggerRefs: [
+                computed(() => (state.orderByRules && !isEmpty(state.orderByRules) ? parentState.loading : false)),
+            ],
+            watchSentinelRefs: [toRef(state, "sortCriteriaWatchRunning"), toRef(state, "sortWatchRunning")],
+        });
+
+        state.sortRunning = toRef(watchesRunning.state, "running");
+        state.running = computed(() =>
+            loadingCombine(watchesRunning.state.running, parentState.running, state.outstandingEffects)
+        );
     });
 
     return {
         state,
         parentState,
         effectScope: es,
+        watchesRunning,
     };
 }

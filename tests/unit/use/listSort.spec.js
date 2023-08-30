@@ -1,5 +1,4 @@
 import { doAwaitTimeout } from "../../../utils/index.js";
-import { nextTick } from "vue";
 import { deepUnref } from "vue-deepunref";
 
 describe("use/useListSort", () => {
@@ -10,7 +9,8 @@ describe("use/useListSort", () => {
         useListInstances,
         useListSort,
         useListSorts,
-        setListSortDefaultOptions;
+        setListSortDefaultOptions,
+        AwaitNot;
     const contactsResolved = [
         {
             id: 15,
@@ -58,9 +58,21 @@ describe("use/useListSort", () => {
         setListSortDefaultOptions({
             sortThrottleWait: 0,
         });
+        const importedUtils = await import("../../../utils");
+        AwaitNot = importedUtils.AwaitNot;
     });
 
     afterEach(() => vi.resetAllMocks());
+
+    const waitForListSort = async (listSort) => {
+        const anr = new AwaitNot({
+            obj: listSort.state,
+            prop: "running",
+            timeout: 2000,
+        });
+        anr.start();
+        await anr.promise;
+    };
 
     it("generates initial values from inputs", () => {
         const listSort = useListSort({ parentState: listInstance.state, orderByRules, sortThrottleWait });
@@ -89,13 +101,14 @@ describe("use/useListSort", () => {
                 listInstance.addListObject(contact);
             }
             const listSort = useListSort({ parentState: listInstance.state, orderByRules });
-            await nextTick();
+            // sorts immediately
             expect(listSort.state.order).toEqual(testOrder1);
+            await waitForListSort(listSort);
             listInstance.addListObject(addObject);
-            await nextTick();
+            await waitForListSort(listSort);
             expect(listSort.state.order).toEqual(testOrder2);
             listInstance.deleteListObject(12);
-            await nextTick();
+            await waitForListSort(listSort);
             expect(listSort.state.order).toEqual(testOrder3);
         });
     });
@@ -115,17 +128,17 @@ describe("use/useListSort", () => {
             listSort.state.orderByRules.pop();
             listSort.state.orderByRules.push({ key: "lexical_name", desc: false, localeCompare: true });
             expect(listSort.state.order).toEqual(testOrder1);
-            await nextTick();
+            await waitForListSort(listSort);
             expect(listSort.state.order).toEqual(testOrder2);
             listSort.state.orderByRules.pop();
             listSort.state.orderByRules.push({ key: "organization", desc: true, localeCompare: true });
-            await nextTick();
+            await waitForListSort(listSort);
             expect(listSort.state.order).toEqual(testOrder3);
             listSort.state.orderByRules.pop();
-            await nextTick();
+            await waitForListSort(listSort);
             expect(listSort.state.order).toEqual(testOrder4);
             listSort.state.orderByRules.push({ key: "organization", desc: false, localeCompare: false });
-            await nextTick();
+            await waitForListSort(listSort);
             expect(listSort.state.order).toEqual(testOrder2);
         });
     });
@@ -212,20 +225,31 @@ describe("use/useListSort", () => {
             }
 
             const testOrder1 = [];
-            const testOrder2 = ["35", "12", "15", "9"];
-            const testOrder3 = ["35", "15", "9"];
+            const testOrder2 = ["12", "15", "9"];
+            const testOrder3 = ["35", "12", "15", "9"];
+            const testOrder4 = ["35", "15", "9"];
 
             const listSort = useListSort({ parentState: listInstance.state, orderByRules, sortThrottleWait });
-            await nextTick();
             expect(listSort.state.order).toEqual(testOrder1);
+
+            // wait for the original throttle to finish
+            await doAwaitTimeout(250);
+
+            expect(listSort.state.order).toEqual(testOrder2);
             listInstance.addListObject(addObject);
-            await nextTick();
             expect(listSort.state.order).toEqual(testOrder2);
-            listInstance.deleteListObject(12);
-            await nextTick();
-            expect(listSort.state.order).toEqual(testOrder2);
-            await doAwaitTimeout(200);
+            // trigger the leading edge of the throttle
+            await doAwaitTimeout(10);
             expect(listSort.state.order).toEqual(testOrder3);
+            // trigger again before the 200ms throttle
+            listInstance.deleteListObject(12);
+            expect(listSort.state.order).toEqual(testOrder3);
+            // this should trigger before the 200ms throttle
+            await doAwaitTimeout(100);
+            expect(listSort.state.order).toEqual(testOrder3);
+            // this should trigger after the 200ms throttle
+            await doAwaitTimeout(200);
+            expect(listSort.state.order).toEqual(testOrder4);
         });
     });
 });
