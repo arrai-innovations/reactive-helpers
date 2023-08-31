@@ -2,6 +2,7 @@ import { keyDiff } from "./keyDiff.js";
 import inspect from "browser-util-inspect";
 import isArray from "lodash-es/isArray.js";
 import isObject from "lodash-es/isObject.js";
+import isObjectLike from "lodash-es/isObjectLike.js";
 import { isReactive, isRef, toRef, unref } from "vue";
 
 /**
@@ -89,6 +90,16 @@ function reactiveReplaceKeys(target, source, keys, exclude = []) {
     for (const key of keys) {
         if (!exclude.includes(key)) {
             if (targetIsReactive && sourceIsReactive) {
+                const targetPropRaw = unref(toRef(target, key));
+                // if they are object like  we can see if the values are the same
+                if (isObjectLike(targetPropRaw)) {
+                    const sourcePropRaw = unref(toRef(source, key));
+                    if (isObjectLike(sourcePropRaw)) {
+                        if (targetPropRaw === sourcePropRaw) {
+                            continue;
+                        }
+                    }
+                }
                 target[key] = toRef(source, key);
                 didAnything = true;
             } else if (target[key] !== source[key]) {

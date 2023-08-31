@@ -3,7 +3,7 @@ import {
     assignReactiveObject,
     AssignReactiveObjectError,
 } from "../../../utils/assignReactiveObject.js";
-import { computed, EffectScope, effectScope, reactive, toRef } from "vue";
+import { computed, EffectScope, effectScope, reactive, toRef, unref } from "vue";
 
 describe("utils/assignReactiveObject", function () {
     describe.skip("addOrUpdateReactiveObject", function () {});
@@ -56,6 +56,68 @@ describe("utils/assignReactiveObject", function () {
                     computedSum = null;
                     tes.stop();
                 }
+            });
+            it("when target is reactive and source are reactive, for non-primitive values", function () {
+                const target = reactive({
+                    a: { e: 8 },
+                    b: { f: 16 },
+                    c: null,
+                });
+                const source = reactive({
+                    a: { e: 1 },
+                    b: { f: 2 },
+                    c: { g: 4 },
+                });
+                target.c = toRef(source, "c");
+                const tes = effectScope();
+                let computedSum;
+                tes.run(() => {
+                    computedSum = computed(() => target.a.e + target.b.f + target.c.g);
+                });
+                try {
+                    expect(unref(target.a)).not.toBe(unref(source.a));
+                    expect(unref(target.b)).not.toBe(unref(source.b));
+                    expect(unref(target.c)).toBe(unref(source.c));
+                    expect(computedSum.value).toBe(28);
+                    assignReactiveObject(target, source);
+                    expect(target).toEqual({
+                        a: { e: 1 },
+                        b: { f: 2 },
+                        c: { g: 4 },
+                    });
+                    expect(unref(target.a)).toBe(unref(source.a));
+                    expect(unref(target.b)).toBe(unref(source.b));
+                    expect(unref(target.c)).toBe(unref(source.c));
+                    expect(computedSum.value).toBe(7);
+                } finally {
+                    computedSum = null;
+                    tes.stop();
+                }
+            });
+            it("does nothing when all targets are objectlike and already point to the source", function () {
+                const target = reactive({});
+                const source = reactive({
+                    a: { e: 1 },
+                    b: { f: 2 },
+                    c: { g: 4 },
+                });
+                target.a = toRef(source, "a");
+                target.b = toRef(source, "b");
+                target.c = toRef(source, "c");
+                expect(unref(toRef(target, "a"))).toBe(unref(source.a));
+                expect(unref(toRef(target, "b"))).toBe(unref(source.b));
+                expect(unref(toRef(target, "c"))).toBe(unref(source.c));
+                expect(target.a).toBe(source.a);
+                expect(target.b).toBe(source.b);
+                expect(target.c).toBe(source.c);
+                const didAnything = assignReactiveObject(target, source);
+                expect(didAnything).toBeFalsy();
+                expect(unref(toRef(target, "a"))).toBe(unref(source.a));
+                expect(unref(toRef(target, "b"))).toBe(unref(source.b));
+                expect(unref(toRef(target, "c"))).toBe(unref(source.c));
+                expect(target.a).toBe(source.a);
+                expect(target.b).toBe(source.b);
+                expect(target.c).toBe(source.c);
             });
         });
         describe("should throw an error", function () {
