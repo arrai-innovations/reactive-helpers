@@ -12,6 +12,8 @@ export const objectCalculatedStateKeys = [
     "calculatedObjectRules",
     "calculatedObjectWatchRunning",
     "parentStateObjectWatchRunning",
+    "calculatedRunning",
+    // "running",
 ];
 
 export const objectCalculatedFunctions = [];

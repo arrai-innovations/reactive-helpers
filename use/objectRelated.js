@@ -16,6 +16,8 @@ export const objectRelatedStateKeys = [
     "relatedObjectRules",
     "relatedObjectWatchRunning",
     "parentStateObjectWatchRunning",
+    "relatedRunning",
+    "running",
 ];
 
 export const objectRelatedFunctions = [];
