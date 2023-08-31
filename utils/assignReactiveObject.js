@@ -226,7 +226,7 @@ export function assignReactiveObject(target, source, exclude = []) {
     ({ target, source } = validateTargetAndSource(target, source));
     const { addedKeys, sameKeys, removedKeys } = keyDiff(Object.keys(source) || [], Object.keys(target) || []);
     let didAnything = false;
-    didAnything |= trimReactiveObject(target, removedKeys, exclude);
+    didAnything |= trimReactiveObject(target, source, exclude, removedKeys);
     didAnything |= addOrUpdateReactiveObject(target, source, exclude, addedKeys, sameKeys);
     return didAnything;
 }
@@ -290,7 +290,7 @@ function recursiveInner(target, source, exclude, addedKeys, sameKeys, path, fn) 
 function assignReactiveObjectRecursive(target, source, exclude = [], path = "") {
     let { addedKeys, sameKeys, removedKeys } = keyDiff(Object.keys(source) || [], Object.keys(target) || []);
     let didAnything = false;
-    didAnything |= trimReactiveObject(target, removedKeys, exclude);
+    didAnything |= trimReactiveObject(target, source, exclude, removedKeys);
     didAnything |= recursiveInner(target, source, exclude, addedKeys, sameKeys, path, assignReactiveObjectRecursive);
     return didAnything;
 }
