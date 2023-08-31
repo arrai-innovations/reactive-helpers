@@ -77,7 +77,7 @@ export function useListSort({ parentState, orderByRules, sortThrottleWait = defa
         delete state.sortCriteria[removedKey];
     }
 
-    function addSortCriteria(object, key) {
+    function addSortCriteria(object, relatedObject, calculatedObject, key) {
         const oldScope = state.sortCriteriaEffectScopes[key];
         if (oldScope) {
             oldScope.stop();
@@ -88,16 +88,24 @@ export function useListSort({ parentState, orderByRules, sortThrottleWait = defa
                 state.sortCriteria[key] = [];
             }
             watch(
-                [object, toRef(state, "orderByRules")],
+                [object, relatedObject, calculatedObject, toRef(state, "orderByRules")],
                 () => {
                     const obj = unref(object);
+                    const relatedObj = unref(relatedObject);
+                    const calculatedObj = unref(calculatedObject);
                     const newSearchCriteria = [];
                     for (const orderByObj of state.orderByRules.filter(identity)) {
                         let newItem;
                         if (orderByObj.keyFn) {
                             newItem = orderByObj.keyFn(obj, state);
                         } else {
-                            newItem = get(obj, orderByObj.key);
+                            if (orderByObj.key.startsWith("relatedItem.")) {
+                                newItem = get(relatedObj, orderByObj.key.slice(12));
+                            } else if (orderByObj.key.startsWith("calculatedItem.")) {
+                                newItem = get(calculatedObj, orderByObj.key.slice(15));
+                            } else {
+                                newItem = get(obj, orderByObj.key);
+                            }
                         }
                         newSearchCriteria.push(newItem);
                     }
@@ -141,7 +149,9 @@ export function useListSort({ parentState, orderByRules, sortThrottleWait = defa
             es.run(() => {
                 for (const addedKey of addedKeys) {
                     const object = toRef(() => parentState.objects[addedKey]);
-                    addSortCriteria(object, addedKey);
+                    const relatedObj = toRef(() => parentState.relatedObjects?.[addedKey]);
+                    const calculatedObj = toRef(() => parentState.calculatedObjects?.[addedKey]);
+                    addSortCriteria(object, relatedObj, calculatedObj, addedKey);
                 }
             });
             assignReactiveObject(

@@ -1,4 +1,5 @@
 import { doAwaitTimeout } from "../../../utils/index.js";
+import { reactive } from "vue";
 import { deepUnref } from "vue-deepunref";
 
 describe("use/useListSort", () => {
@@ -7,6 +8,8 @@ describe("use/useListSort", () => {
         sortThrottleWait,
         useListInstance,
         useListInstances,
+        useListRelated,
+        useListCalculated,
         useListSort,
         useListSorts,
         setListSortDefaultOptions,
@@ -41,6 +44,8 @@ describe("use/useListSort", () => {
         const imported = await import("../../../use");
         useListInstance = imported.useListInstance;
         useListInstances = imported.useListInstances;
+        useListRelated = imported.useListRelated;
+        useListCalculated = imported.useListCalculated;
         orderByRules = [
             { key: "organization", desc: true, localeCompare: false },
             { key: "lexical_name", desc: false, localeCompare: true },
@@ -206,6 +211,72 @@ describe("use/useListSort", () => {
         expect(deepUnref(listSorts.B.parentState)).toEqual(deepUnref(listInstanceB.state));
         expect(deepUnref(listSorts.A.state)).toEqual(deepUnref(listSortA.state));
         expect(deepUnref(listSorts.B.state)).toEqual(deepUnref(listSortB.state));
+    });
+    it("orderByRules can refer to relatedItem or calculatedItem", async () => {
+        const listInstance = useListInstance({
+            props: reactive({
+                crudArgs: { stream: "test_stream" },
+                listArgs: { user: 1 },
+                retrieveArgs: {
+                    fields: ["id", "__str__", "name", "relatedItem", "calculatedItem"],
+                },
+            }),
+        });
+        const relatedListInstance = useListInstance({
+            props: reactive({
+                crudArgs: { stream: "test_related_stream" },
+                listArgs: { user: 1 },
+                retrieveArgs: {
+                    fields: ["id", "__str__", "name"],
+                },
+            }),
+        });
+        const listRelated = useListRelated({
+            parentState: listInstance.state,
+            relatedObjectsRules: reactive({
+                relatedItemName: {
+                    objects: relatedListInstance.state.objects,
+                    pkKey: "relatedItem",
+                },
+            }),
+        });
+        const listCalculated = useListCalculated({
+            parentState: listRelated.state,
+            calculatedObjectsRules: reactive({
+                calculatedItemName: (obj, relatedObj) => {
+                    return obj.sameValue + ":" + relatedObj.relatedItemName?.oppositeOrder;
+                },
+            }),
+        });
+        const orderByRules = reactive([
+            { key: "calculatedItem.calculatedItemName", desc: false, localeCompare: false },
+        ]);
+        const listSort = useListSort({
+            parentState: listCalculated.state,
+            orderByRules,
+        });
+        for (let i = 1; i <= 4; i++) {
+            listInstance.addListObject({
+                id: i,
+                name: `item${i}`,
+                relatedItem: i,
+                sameValue: "sameValue",
+            });
+            relatedListInstance.addListObject({
+                id: i,
+                name: `relatedItem${i}`,
+                oppositeOrder: 5 - i,
+            });
+        }
+        await waitForListSort(listSort);
+        expect(listSort.state.order).toEqual(["4", "3", "2", "1"]);
+        orderByRules[0].key = "relatedItemName.name";
+        await waitForListSort(listSort);
+        expect(listSort.state.order).toEqual(["1", "2", "3", "4"]);
+        orderByRules[0].key = "relatedItemName.sameValue";
+        orderByRules[1] = { key: "calculatedItem.calculatedItemName", desc: false, localeCompare: false };
+        await waitForListSort(listSort);
+        expect(listSort.state.order).toEqual(["4", "3", "2", "1"]);
     });
     describe("useListSort/sortThrottleWait", () => {
         it("respects throttle time prior to triggering", async () => {
