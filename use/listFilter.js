@@ -42,6 +42,8 @@ export function useListFilter({
     excludedValues = {},
     allowedFilter,
     excludedFilter,
+    customIndexOptions = {},
+    customSearchOptions = {},
 }) {
     const state = reactive({
         objectIndexes: {},
@@ -77,7 +79,7 @@ export function useListFilter({
             state[key] = toRef(parentState, key);
         }
         if (useTextSearch) {
-            textSearchIndex = useSearch();
+            textSearchIndex = useSearch(customIndexOptions, customSearchOptions);
             textSearchIndex.state.search = toRef(state, "textSearchValue");
             state.searched = toRef(textSearchIndex.state, "searched");
             state.searching = toRef(textSearchIndex.state, "searching");
