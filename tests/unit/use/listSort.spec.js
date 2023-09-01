@@ -85,7 +85,6 @@ describe("use/useListSort", () => {
         expect(listSort.state.order).toEqual([]);
         expect(listSort.state.objectsInOrder).toEqual([]);
         expect(listSort.state.sortCriteria).toEqual({});
-        expect(listSort.state.sortCriteriaEffectScopes).toEqual({});
         expect(listSort.state.orderByDesc).toEqual([true, false]);
     });
     describe("addSortCriteria and removeSortCriteria", () => {

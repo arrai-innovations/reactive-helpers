@@ -21,7 +21,6 @@ export const listSortStateKeys = [
     // "order",
     // "objectsInOrder",
     "sortCriteria",
-    "sortCriteriaEffectScopes",
     "orderByDesc",
     "sortCriteriaWatchRunning",
     "sortWatchRunning",
@@ -55,12 +54,14 @@ export function useListSort({ parentState, orderByRules, sortThrottleWait = defa
     if (sortThrottleWait === defaultSortThrottleWait) {
         sortThrottleWait = defaultOptions.sortThrottleWait;
     }
+
+    const sortCriteriaEffectScopes = {};
+
     const state = reactive({
         orderByRules,
         order: [],
         objectsInOrder: [],
         sortCriteria: {},
-        sortCriteriaEffectScopes: {},
         orderByDesc: [],
         sortCriteriaWatchRunning: false,
         sortWatchRunning: false,
@@ -69,16 +70,16 @@ export function useListSort({ parentState, orderByRules, sortThrottleWait = defa
     const es = effectScope();
 
     function removeSortCriteria(removedKey) {
-        const oldScope = state.sortCriteriaEffectScopes[removedKey];
+        const oldScope = sortCriteriaEffectScopes[removedKey];
         if (oldScope) {
             oldScope.stop();
-            delete state.sortCriteriaEffectScopes[removedKey];
+            delete sortCriteriaEffectScopes[removedKey];
         }
         delete state.sortCriteria[removedKey];
     }
 
     function addSortCriteria(object, relatedObject, calculatedObject, key) {
-        const oldScope = state.sortCriteriaEffectScopes[key];
+        const oldScope = sortCriteriaEffectScopes[key];
         if (oldScope) {
             oldScope.stop();
         }
@@ -123,7 +124,7 @@ export function useListSort({ parentState, orderByRules, sortThrottleWait = defa
                 }
             );
         });
-        state.sortCriteriaEffectScopes[key] = newScope;
+        sortCriteriaEffectScopes[key] = newScope;
     }
 
     function sortCriteriaWatch() {
