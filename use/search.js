@@ -1,6 +1,5 @@
 import { assignReactiveObject } from "../utils/assignReactiveObject.js";
 import FlexSearch from "flexsearch";
-import fromPairs from "lodash-es/fromPairs.js";
 import throttle from "lodash-es/throttle.js";
 import { effectScope, reactive, toRef, watch } from "vue";
 
@@ -77,7 +76,7 @@ export function useSearch(
             limit: mySearchOptions.limit,
         });
         state.searched = true;
-        assignReactiveObject(state.results, fromPairs(results.map((e) => [e, true])) || {});
+        assignReactiveObject(state.results, Object.fromEntries(results.map((e) => [e, true])) || {});
         state.searching = false;
     }
 
