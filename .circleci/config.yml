@@ -1,8 +1,8 @@
 version: 2.1
 orbs:
-    eslint: arrai/eslint@7.4.0
-    prettier: arrai/prettier@5.4.0
-    npm: arrai/npm@2.4.1
+    eslint: arrai/eslint@7.6.0
+    prettier: arrai/prettier@5.5.0
+    npm: arrai/npm@2.9.0
     github: arrai/github@1.1.0
 workflows:
     test:
