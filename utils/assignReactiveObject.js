@@ -83,12 +83,12 @@ function validateTargetAndSource(target, source) {
  * @returns {boolean} True if any keys were replaced, false otherwise.
  * @throws {AssignReactiveObjectError} If either target or source are not ultimately objects or arrays.
  */
-function reactiveReplaceKeys(target, source, keys, exclude = []) {
+function reactiveReplaceKeys(target, source, keys, exclude) {
     const targetIsReactive = isReactive(target);
     const sourceIsReactive = isReactive(source);
     let didAnything = false;
     for (const key of keys) {
-        if (!exclude.includes(key)) {
+        if (!exclude?.includes(key)) {
             if (targetIsReactive && sourceIsReactive) {
                 const targetPropRaw = unref(toRef(target, key));
                 // if they are object like  we can see if the values are the same
@@ -122,7 +122,7 @@ function reactiveReplaceKeys(target, source, keys, exclude = []) {
  * @returns {boolean} True if any keys were added, false otherwise.
  * @throws {AssignReactiveObjectError} If either target or source are not ultimately objects or arrays.
  */
-export function addReactiveObject(target, source, exclude = [], addedKeys = null) {
+export function addReactiveObject(target, source, exclude, addedKeys = null) {
     if (!addedKeys) {
         if (target === source) {
             return false;
@@ -144,7 +144,7 @@ export function addReactiveObject(target, source, exclude = [], addedKeys = null
  * @returns {boolean} True if any keys were updated, false otherwise.
  * @throws {AssignReactiveObjectError} If either target or source are not ultimately objects or arrays.
  */
-export function updateReactiveObject(target, source, exclude = [], sameKeys = null) {
+export function updateReactiveObject(target, source, exclude, sameKeys = null) {
     if (!sameKeys) {
         if (target === source) {
             return false;
@@ -167,7 +167,7 @@ export function updateReactiveObject(target, source, exclude = [], sameKeys = nu
  * keys will be calculated.
  * @returns {boolean} True if any keys were added or updated, false otherwise.
  */
-export function addOrUpdateReactiveObject(target, source, exclude = [], addedKeys = null, sameKeys = null) {
+export function addOrUpdateReactiveObject(target, source, exclude, addedKeys = null, sameKeys = null) {
     if (!addedKeys && !sameKeys) {
         if (target === source) {
             return false;
@@ -191,7 +191,7 @@ export function addOrUpdateReactiveObject(target, source, exclude = [], addedKey
  * @returns {boolean} True if any keys were removed, false otherwise.
  * @throws {AssignReactiveObjectError} If either target or source are not ultimately objects or arrays.
  */
-export function trimReactiveObject(target, source, exclude = [], removedKeys = null) {
+export function trimReactiveObject(target, source, exclude, removedKeys = null) {
     if (!removedKeys) {
         if (target === source) {
             return false;
@@ -204,18 +204,56 @@ export function trimReactiveObject(target, source, exclude = [], removedKeys = n
     if (targetIsArray) {
         // Remove indices in reverse (descending) order to keep them stable
         for (const removedKey of [...removedKeys].map((key) => parseInt(key, 10)).sort((a, b) => b - a)) {
-            if (!exclude.includes(removedKey)) {
+            if (!exclude?.includes(removedKey)) {
                 target.splice(removedKey, 1);
                 didAnything = true;
             }
         }
     } else {
         for (const removedKey of removedKeys) {
-            if (!exclude.includes(removedKey)) {
+            if (!exclude?.includes(removedKey)) {
                 delete target[removedKey];
                 didAnything = true;
             }
         }
+    }
+    return didAnything;
+}
+
+function checkIfReversed(target, source) {
+    if (target.length !== source.length) {
+        return false;
+    }
+    let t = target.length - 1,
+        s = 0,
+        slen = source.length;
+    while (t >= 0 && s < slen) {
+        const targetValue = target[t];
+        const sourceValue = source[s];
+        if (targetValue === sourceValue) {
+            t--;
+            s++;
+            continue;
+        }
+        return false;
+    }
+    return true;
+}
+
+export function assignReactiveArray(target, source) {
+    if (target === source) {
+        return false;
+    }
+    ({ target, source } = validateTargetAndSource(target, source));
+    let didAnything = false;
+    if (checkIfReversed(target, source)) {
+        // reverse the target
+        target.reverse();
+        didAnything = true;
+    } else {
+        const { addedKeys, sameKeys, removedKeys } = keyDiff(Object.keys(source) || [], Object.keys(target) || []);
+        didAnything |= trimReactiveObject(target, source, null, removedKeys);
+        didAnything |= addOrUpdateReactiveObject(target, source, null, addedKeys, sameKeys);
     }
     return didAnything;
 }
@@ -230,7 +268,13 @@ export function trimReactiveObject(target, source, exclude = [], removedKeys = n
  * @throws {AssignReactiveObjectError} If either target or source are not ultimately objects or arrays.
  * @returns {boolean} True if any keys were added, updated, or removed, false otherwise.
  */
-export function assignReactiveObject(target, source, exclude = []) {
+export function assignReactiveObject(target, source, exclude) {
+    if (Array.isArray(target) && Array.isArray(source)) {
+        if (exclude?.length) {
+            console.warn(`assignReactiveObject: exclude doesn't make sense for array assignment`);
+        }
+        return assignReactiveArray(target, source);
+    }
     if (target === source) {
         return false;
     }
@@ -277,7 +321,7 @@ function recursiveInner(target, source, exclude, addedKeys, sameKeys, path, fn) 
     for (const key of keysForRecurse) {
         // scope exclude for this next level, remove keys that don't start with the current path, trim keys that do to remove the current path
         const nextLevelExclude = exclude
-            .filter((excludeKey) => !excludeKey.startsWith(path))
+            ?.filter((excludeKey) => !excludeKey.startsWith(path))
             .map((excludeKey) => excludeKey.replace(path, ""));
         const nextPath = isArray(source[key]) ? `${path}[${key}]` : `${path}.${key}`;
         fn(target[key], source[key], nextLevelExclude, nextPath);
@@ -298,7 +342,7 @@ function recursiveInner(target, source, exclude, addedKeys, sameKeys, path, fn) 
  * @returns {boolean} True if any keys were added, updated, or removed, false otherwise.
  * @throws {AssignReactiveObjectError} If either target or source are not ultimately objects or arrays.
  */
-function assignReactiveObjectRecursive(target, source, exclude = [], path = "") {
+function assignReactiveObjectRecursive(target, source, exclude, path = "") {
     let { addedKeys, sameKeys, removedKeys } = keyDiff(Object.keys(source) || [], Object.keys(target) || []);
     let didAnything = false;
     didAnything |= trimReactiveObject(target, source, exclude, removedKeys);
@@ -316,7 +360,7 @@ function assignReactiveObjectRecursive(target, source, exclude = [], path = "") 
  * @returns {boolean} True if any keys were added, updated, or removed, false otherwise.
  * @throws {AssignReactiveObjectError} If either target or source are not ultimately objects or arrays.
  */
-export function assignReactiveObjectDeep(target, source, exclude = []) {
+export function assignReactiveObjectDeep(target, source, exclude) {
     // exclude keys will need to be lodash get strings
     if (target === source) {
         return false;
@@ -337,7 +381,7 @@ export function assignReactiveObjectDeep(target, source, exclude = []) {
  * @param {string} [path] The current path, used to rescope exclude for the next level.
  * @returns {boolean} True if any keys were added or updated, false otherwise.
  */
-function addOrUpdateReactiveObjectRecursive(target, source, exclude = [], path = "") {
+function addOrUpdateReactiveObjectRecursive(target, source, exclude, path = "") {
     let addedKeys,
         sameKeys = keyDiff(Object.keys(source) || [], Object.keys(target) || []);
     return recursiveInner(target, source, exclude, addedKeys, sameKeys, path, addOrUpdateReactiveObjectRecursive);
@@ -353,7 +397,7 @@ function addOrUpdateReactiveObjectRecursive(target, source, exclude = [], path =
  * @returns {boolean} True if any keys were added or updated, false otherwise.
  * @throws {AssignReactiveObjectError} If either target or source are not ultimately objects or arrays.
  */
-export function addOrUpdateReactiveObjectDeep(target, source, exclude = []) {
+export function addOrUpdateReactiveObjectDeep(target, source, exclude) {
     // exclude keys will need to be lodash get strings
     if (target === source) {
         return false;
