@@ -1,10 +1,11 @@
 import { assignReactiveObject } from "../utils/assignReactiveObject.js";
+import throttle from "@jcoreio/async-throttle";
 import FlexSearch from "flexsearch";
-import throttle from "lodash-es/throttle.js";
 import { effectScope, reactive, toRef, watch } from "vue";
 
 const indexOptions = {
     tokenize: "forward",
+    worker: false,
 };
 
 const searchOptions = {
@@ -66,7 +67,7 @@ export function useSearch(
     };
 
     async function doSearch() {
-        if (!state.search) {
+        if (!state.search || (indexOptions.minlength && state.search.length < indexOptions.minlength)) {
             assignReactiveObject(state.results, {});
             state.searched = false;
             return;
@@ -85,20 +86,9 @@ export function useSearch(
     const es = effectScope();
 
     es.run(() => {
-        watch(
-            toRef(state, "search"),
-            function () {
-                if (!indexOptions.minlength || state.search.length >= indexOptions.minlength) {
-                    throttledDoSearch();
-                } else {
-                    assignReactiveObject(state.results, {});
-                    state.searched = false;
-                }
-            },
-            {
-                immediate: true,
-            }
-        );
+        watch(toRef(state, "search"), throttledDoSearch, {
+            immediate: true,
+        });
     });
     return { state, addIndex, updateIndex, removeIndex, clearIndex, effectScope: es };
 }

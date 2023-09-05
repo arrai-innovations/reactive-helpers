@@ -48,6 +48,7 @@
         "vitest": "^0.34.1"
     },
     "dependencies": {
+        "@jcoreio/async-throttle": "^1.6.0",
         "browser-util-inspect": "^0.2.0",
         "flexsearch": "0.7.21",
         "husky": "^7.0.4",
