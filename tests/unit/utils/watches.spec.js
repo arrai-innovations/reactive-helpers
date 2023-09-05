@@ -6,10 +6,10 @@ import {
     doAwaitTimeout,
     ImmediateStopWatch,
 } from "../../../utils/index.js";
-import { performance } from "perf_hooks";
-import { nextTick, reactive } from "vue";
+import { performance } from "perf_hooks.js";
+import { nextTick, reactive, toRef } from "vue";
 
-describe("use/watches", () => {
+describe("utils/watches", () => {
     let timeout, reactiveObject, awaitNot;
     beforeEach(async () => {
         reactiveObject = reactive({});
@@ -195,6 +195,31 @@ describe("use/watches", () => {
             awaitNot.couldAlreadyBeFalse = true;
             reactiveObject.prop = true;
             awaitNot.start();
+            await nextTick();
+            await expect(awaitNot.promise).rejects.toThrow(AwaitNotError);
+        });
+    });
+    describe("doAwaitNot takes a ref instead of an obj and prop", () => {
+        it("resolves", async () => {
+            awaitNot = new AwaitNot({
+                ref: toRef(reactiveObject, "prop"),
+                couldAlreadyBeFalse: false,
+                timeout: 500,
+            });
+            awaitNot.start();
+            reactiveObject.prop = true;
+            await nextTick();
+            reactiveObject.prop = false;
+            await expect(awaitNot.promise).resolves.toBeUndefined();
+        });
+        it("times out", async () => {
+            awaitNot = new AwaitNot({
+                ref: toRef(reactiveObject, "prop"),
+                couldAlreadyBeFalse: false,
+                timeout: 500,
+            });
+            awaitNot.start();
+            reactiveObject.prop = true;
             await nextTick();
             await expect(awaitNot.promise).rejects.toThrow(AwaitNotError);
         });

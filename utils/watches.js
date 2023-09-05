@@ -1,4 +1,4 @@
-import { watch } from "vue";
+import { watch, toRef } from "vue";
 
 // If you want an immediate watch, but you can't use immediate because you want to stop the watch in the function.
 export class ImmediateStopWatch {
@@ -85,7 +85,7 @@ export function doAwaitTimeout(timeout) {
 }
 
 export class AwaitNot {
-    constructor({ obj, prop, couldAlreadyBeFalse = false, timeout = 1000 }) {
+    constructor({ obj, prop, ref, couldAlreadyBeFalse = false, timeout = 1000 }) {
         if (timeout > 0) {
             this.timeout = new AwaitTimeout({ timeout });
         }
@@ -94,8 +94,11 @@ export class AwaitNot {
             this.reject = reject;
         });
         this.couldAlreadyBeFalse = couldAlreadyBeFalse;
-        this.obj = obj;
-        this.prop = prop;
+        if (ref) {
+            this.ref = ref;
+        } else {
+            this.ref = toRef(() => obj[prop]);
+        }
         this.trueISW = new ImmediateStopWatch();
         this.falseISW = new ImmediateStopWatch();
         // prebuild the exception for a more useful stack.
@@ -125,7 +128,7 @@ export class AwaitNot {
                 });
             this.timeout.start();
         }
-        if (this.obj[this.prop] === false && this.couldAlreadyBeFalse) {
+        if (this.ref.value === false && this.couldAlreadyBeFalse) {
             this.waitForTrue();
         } else {
             this.waitForFalse();
@@ -134,14 +137,14 @@ export class AwaitNot {
 
     waitForTrue() {
         this.trueISW.start(
-            () => this.obj[this.prop],
+            this.ref,
             (newValue) => {
                 if (newValue === true) {
                     this.stopTrue();
                     this.waitForFalse();
                 }
             },
-            [this.obj[this.prop]]
+            [this.ref.value]
         );
     }
 
@@ -154,7 +157,7 @@ export class AwaitNot {
 
     waitForFalse() {
         this.falseISW.start(
-            () => this.obj[this.prop],
+            this.ref,
             (newValue) => {
                 if (newValue === false) {
                     this.stop();
@@ -164,7 +167,7 @@ export class AwaitNot {
                     this.cleanPromise();
                 }
             },
-            [this.obj[this.prop]]
+            [this.ref.value]
         );
     }
 
@@ -193,8 +196,8 @@ export class AwaitNot {
     }
 }
 
-export function doAwaitNot({ obj, prop, couldAlreadyBeFalse = true, timeout = 1000 }) {
-    const awaitNot = new AwaitNot({ obj, prop, couldAlreadyBeFalse, timeout });
+export function doAwaitNot({ obj, prop, ref, couldAlreadyBeFalse = true, timeout = 1000 }) {
+    const awaitNot = new AwaitNot({ obj, prop, ref, couldAlreadyBeFalse, timeout });
     awaitNot.start();
     return awaitNot.promise;
 }
