@@ -472,4 +472,34 @@ describe("use/listSearch", () => {
             });
         });
     });
+    it("does not pass through when showAllWhenEmpty is false", async () => {
+        const list = useListInstance({ props: {} });
+        const textSearchValue = ref("");
+        const search = useListSearch({
+            parentState: list.state,
+            props: reactive({
+                textSearchRules: ["name"],
+                textSearchValue,
+            }),
+            throttle: 20,
+            showAllWhenEmpty: false,
+        });
+        await doAwaitNot({
+            obj: search.state,
+            prop: "running",
+        });
+        expect(search.state.objects).toEqual({});
+        list.addListObject({ id: 1, name: "one" });
+        list.addListObject({ id: 2, name: "two" });
+        await doAwaitNot({
+            obj: search.state,
+            prop: "running",
+        });
+        expect(search.state.objects).toEqual({});
+        textSearchValue.value = "one";
+        await doAwaitNot({
+            obj: search.state,
+            prop: "running",
+        });
+    });
 });

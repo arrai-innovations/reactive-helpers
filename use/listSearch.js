@@ -65,6 +65,7 @@ export function useListSearches(args, instances) {
  * @property {object} parentState - the list being filtered
  * @property {ListSearchProps} props - reactive properties
  * @property {number} [throttle=500] - throttle wait time
+ * @property {boolean} [showAllWhenEmpty=true] - whether to show all items when the search is empty
  */
 
 /**
@@ -73,7 +74,7 @@ export function useListSearches(args, instances) {
  * @param {ListSearchInstanceOptions} options - the arguments
  * @returns {ListSearchInstance} - the instance
  */
-export function useListSearch({ parentState, props, throttle = 500 }) {
+export function useListSearch({ parentState, props, throttle = 500, showAllWhenEmpty = true }) {
     if (!parentState) {
         throw new Error("parentState is required");
     }
@@ -128,17 +129,24 @@ export function useListSearch({ parentState, props, throttle = 500 }) {
     const previousTextSearchRules = [];
     const previousObjectIndexes = {};
 
+    const doPassthrough = (cleanComputed = false) => {
+        // pass through the objects if there are no rules.
+        assignReactiveObject(state.objects, showAllWhenEmpty ? parentState.objects : {});
+        if (!cleanComputed) {
+            return;
+        }
+        // if there were indexes or computeds, there is no point in keeping them.
+        for (const objectKey of Object.keys(objectEffectScopes)) {
+            objectEffectScopes[objectKey].stop();
+        }
+        assignReactiveObject(objectEffectScopes, {});
+        assignReactiveObject(objectComputeds, {});
+        assignReactiveObject(state.objectIndexes, {});
+    };
+
     const makeComputeds = () => {
         if (!state.textSearchRules?.length) {
-            // pass through the objects if there are no rules.
-            assignReactiveObject(state.objects, parentState.objects);
-            // if there were indexes or computeds, there is no point in keeping them.
-            for (const objectKey of Object.keys(objectEffectScopes)) {
-                objectEffectScopes[objectKey].stop();
-            }
-            assignReactiveObject(objectEffectScopes, {});
-            assignReactiveObject(objectComputeds, {});
-            assignReactiveObject(state.objectIndexes, {});
+            doPassthrough(true);
             return;
         }
         const {
@@ -248,7 +256,7 @@ export function useListSearch({ parentState, props, throttle = 500 }) {
 
     const updateObjectsForResults = () => {
         if (!state.textSearchRules?.length || !state.textSearchValue?.length) {
-            assignReactiveObject(state.objects, parentState.objects);
+            doPassthrough();
             return;
         }
         assignReactiveObject(

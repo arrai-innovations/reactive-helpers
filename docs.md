@@ -673,11 +673,12 @@ A reactive object that manages a list of objects, as returned by `useListInstanc
 **Kind**: global typedef  
 **Properties**
 
-| Name         | Type                | Default | Description             |
-| ------------ | ------------------- | ------- | ----------------------- |
-| parentState  | `object`            |         | the list being filtered |
-| props        | [`ListSearchProps`] |         | reactive properties     |
-| \[throttle\] | `number`            | `500`   | throttle wait time      |
+| Name                 | Type                | Default | Description                                        |
+| -------------------- | ------------------- | ------- | -------------------------------------------------- |
+| parentState          | `object`            |         | the list being filtered                            |
+| props                | [`ListSearchProps`] |         | reactive properties                                |
+| \[throttle\]         | `number`            | `500`   | throttle wait time                                 |
+| \[showAllWhenEmpty\] | `boolean`           | `true`  | whether to show all items when the search is empty |
 
 ## ListSubscriptionOptions
 

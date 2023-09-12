@@ -26,7 +26,15 @@ export const useLists = (listArgs) => {
 };
 
 // the big brother of useObject, managing a chain of useList* instances.
-export const useList = ({ props, functions = {}, paged = false, keepOldPages = false, searchThrottle = 500 }) => {
+export const useList = ({
+    props,
+    functions = {},
+    paged = false,
+    keepOldPages = false,
+    searchThrottle = 500,
+    sortThrottleWait,
+    searchShowAllWhenEmpty,
+}) => {
     const managed = shallowReactive({
         listInstance: null,
         listSubscription: null,
@@ -82,12 +90,13 @@ export const useList = ({ props, functions = {}, paged = false, keepOldPages = f
                 textSearchValue: toRef(props, "textSearchValue"),
             }),
             throttle: searchThrottle,
+            showAllWhenEmpty: searchShowAllWhenEmpty,
         });
 
         managed.listSort = useListSort({
             parentState: managed.listSearch.state,
             orderByRules: toRef(props, "orderByRules"),
-            sortThrottleWait: functions.sortThrottleWait,
+            sortThrottleWait,
         });
     });
 
