@@ -18,23 +18,29 @@ import { difference, intersection } from "./set.js";
 /**
  * Result object of keyDiff and keyDiffDeep
  * @typedef {object} KeyDiffResult
- * @property {string[]} [sameKeys] - if sameKeys option is true, return keys that are the same
- * @property {string[]} [removedKeys] - if removedKeys option is true, return keys that are removed
- * @property {string[]} [addedKeys] - if addedKeys option is true, return keys that are added
+ * @property {Set} [sameKeys] - if sameKeys option is true, return keys that are the same
+ * @property {Set} [removedKeys] - if removedKeys option is true, return keys that are removed
+ * @property {Set} [addedKeys] - if addedKeys option is true, return keys that are added
  */
 
 /**
  * Calculate the difference between two arrays of keys, in terms of what keys
  * are the same, what keys are removed, and what keys are added.
  * @function keyDiff
- * @param {string[]} newKeys - keys to consider as new
- * @param {string[]} oldKeys - keys to consider as old
+ * @param {string[]|Set} newKeys - keys to consider as new
+ * @param {string[]|Set} oldKeys - keys to consider as old
  * @param {KeyDiffOptions} [options] - which differences are returned
  * @returns {KeyDiffResult} - the differences
  */
 export function keyDiff(newKeys, oldKeys, { sameKeys = true, removedKeys = true, addedKeys = true } = {}) {
-    const newKeysSet = new Set(newKeys);
-    const oldKeysSet = new Set(oldKeys);
+    let newKeysSet = newKeys;
+    let oldKeysSet = oldKeys;
+    if (!(newKeys instanceof Set)) {
+        newKeysSet = new Set(newKeys);
+    }
+    if (!(oldKeys instanceof Set)) {
+        oldKeysSet = new Set(oldKeys);
+    }
     const returnValue = {};
     if (sameKeys) {
         returnValue.sameKeys = intersection(newKeysSet, oldKeysSet);
