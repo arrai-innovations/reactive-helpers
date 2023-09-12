@@ -53,8 +53,6 @@ export function useListFilter({ parentState, allowedFilter, excludedFilter }) {
         excludedFilter,
         objectsWatchRunning: undefined,
         resultsWatchRunning: undefined,
-        // delayedObjectsWatch: undefined,
-        // delayedResultsWatch: undefined,
         running: undefined,
     });
 
@@ -72,10 +70,8 @@ export function useListFilter({ parentState, allowedFilter, excludedFilter }) {
 
     const objectsWatch = () => {
         if (parentState.running) {
-            // state.delayedObjectsWatch = true;
             return;
         }
-        // state.delayedObjectsWatch = false;
         state.objectsWatchRunning = true;
         const allowedOrExcludedFilterChanged =
             allowedFilter !== previousAllowedFilter || excludedFilter !== previousExcludedFilter;
@@ -109,10 +105,8 @@ export function useListFilter({ parentState, allowedFilter, excludedFilter }) {
 
     const resultsWatch = async () => {
         if (parentState.running) {
-            // state.delayedResultsWatch = true;
             return;
         }
-        // state.delayedResultsWatch = false;
         state.resultsWatchRunning = true;
         await nextTick();
         if (state.allowedFilter || state.excludedFilter) {
@@ -160,15 +154,6 @@ export function useListFilter({ parentState, allowedFilter, excludedFilter }) {
             objectsWatch,
             { immediate: true }
         );
-
-        // watch(toRef(parentState, "running"), (value) => {
-        //     if (!value && state.delayedObjectsWatch) {
-        //         objectsWatch();
-        //     }
-        //     if (!value && state.delayedResultsWatch) {
-        //         resultsWatch();
-        //     }
-        // });
     });
     return {
         state,
