@@ -3,7 +3,7 @@ import { CancellableResolvable } from "../crudPromise.js";
 import { poll } from "../poll.js";
 import flushPromises from "flush-promises";
 import { inspect } from "util";
-import { nextTick, reactive } from "vue";
+import { nextTick, reactive, watch, toRef } from "vue";
 
 describe("use/listSubscription.spec.js", function () {
     let useListSubscription,
@@ -15,8 +15,10 @@ describe("use/listSubscription.spec.js", function () {
         crudListResolvable = [],
         crudSubscribe,
         crudSubscribeResolvable = [],
-        passedSubscriptionEventCallback;
+        passedSubscriptionEventCallback,
+        warnMock;
     beforeEach(async () => {
+        warnMock = vi.spyOn(console, "warn").mockImplementation(() => undefined);
         crudListResolvable = [];
         crudSubscribeResolvable = [];
         crudListResolvable.push(new CancellableResolvable());
@@ -31,11 +33,6 @@ describe("use/listSubscription.spec.js", function () {
                 crudListResolvable.push(newResolvable);
                 return newResolvable.promise;
             });
-        listCrudModule.setListCrud({
-            list: crudList,
-            subscribe: crudSubscribe,
-            args: { stream: "test_stream" },
-        });
         const listSubscriptionModule = await import("../../../use/listSubscription");
         crudSubscribe = vi
             .fn()
@@ -51,7 +48,11 @@ describe("use/listSubscription.spec.js", function () {
                 passedSubscriptionEventCallback = subscriptionEventCallback;
                 return newResolvable.promise;
             });
-
+        listCrudModule.setListCrud({
+            list: crudList,
+            subscribe: crudSubscribe,
+            args: { stream: "test_stream" },
+        });
         useListInstance = listInstanceModule.useListInstance;
         useListInstances = listInstanceModule.useListInstances;
 
@@ -63,7 +64,7 @@ describe("use/listSubscription.spec.js", function () {
         vi.resetAllMocks();
     });
     const fields = ["id", "__str__", "name"];
-    describe.skip("lifecycle", function () {
+    describe("lifecycle", function () {
         it("success", async function () {
             const listArgs = reactive({
                 user: 1,
@@ -135,14 +136,12 @@ describe("use/listSubscription.spec.js", function () {
             const returnValue = await listSubscription.unsubscribe();
             expect(listSubscription.state.intendToSubscribe).toBe(false);
             expect(listSubscription.state.intendToList).toBe(false);
-            await poll(() => !listSubscription.listIntent.state.active);
             expect(crudListResolvable[0].promise.cancel).toHaveBeenCalledTimes(0);
-
             crudSubscribeResolvable[0].cancel.resolve(true);
-            await nextTick();
-            await flushPromises();
-            // await poll(() => !listSubscription.subscribeIntent.state.active);
-            // expect(listSubscription.subscribeIntent.state.active).toBe(false);
+            await doAwaitNot({
+                obj: listSubscription.subscribeIntent.state,
+                prop: "active",
+            });
             expect(crudSubscribeResolvable[0].promise.cancel).toHaveBeenCalledWith();
             expect(crudSubscribeResolvable[0].promise.cancel).toHaveBeenCalledTimes(1);
             expect(returnValue).toBe(true);
@@ -160,8 +159,8 @@ describe("use/listSubscription.spec.js", function () {
                 props: { listArgs, retrieveArgs },
             });
             listSubscription.subscribe();
-            await nextTick();
-            await flushPromises();
+            crudSubscribeResolvable[0].resolve();
+            await poll(() => listSubscription.state.subscribed);
             expect(crudSubscribe).toHaveBeenCalledWith({
                 crudArgs: { stream: "test_stream" },
                 listArgs: { user: 1 },
@@ -223,27 +222,15 @@ describe("use/listSubscription.spec.js", function () {
                 },
                 "create"
             );
-
-            expect(() =>
-                passedSubscriptionEventCallback(
-                    {
-                        id: 1,
-                        __str__: "qwer",
-                        name: "qwer",
-                    },
-                    "create"
-                )
-            ).toThrow(ListSubscriptionError);
-            expect(() =>
-                passedSubscriptionEventCallback(
-                    {
-                        id: 1,
-                        __str__: "qwer",
-                        name: "qwer",
-                    },
-                    "create"
-                )
-            ).toThrow("addFromSubscription: add for existing id in objects (1).");
+            passedSubscriptionEventCallback(
+                {
+                    id: 1,
+                    __str__: "qwer",
+                    name: "qwer",
+                },
+                "create"
+            );
+            expect(warnMock).toHaveBeenCalledWith("addFromSubscription: add for id already in objects (1).");
 
             expect(listSubscription.listInstance.state.objects).toEqual({
                 1: {
@@ -253,26 +240,15 @@ describe("use/listSubscription.spec.js", function () {
                 },
             });
 
-            expect(() =>
-                passedSubscriptionEventCallback(
-                    {
-                        id: 2,
-                        __str__: "qwer",
-                        name: "qwer",
-                    },
-                    "update"
-                )
-            ).toThrow(ListSubscriptionError);
-            expect(() =>
-                passedSubscriptionEventCallback(
-                    {
-                        id: 2,
-                        __str__: "qwer",
-                        name: "qwer",
-                    },
-                    "update"
-                )
-            ).toThrow("updateFromSubscription: update for id not in objects (2).");
+            passedSubscriptionEventCallback(
+                {
+                    id: 2,
+                    __str__: "qwer",
+                    name: "qwer",
+                },
+                "update"
+            );
+            expect(warnMock).toHaveBeenCalledWith("updateFromSubscription: update for id not in objects (2).");
 
             expect(() =>
                 passedSubscriptionEventCallback(
@@ -293,31 +269,25 @@ describe("use/listSubscription.spec.js", function () {
                 )
             ).toThrow("updateFromSubscription: data missing id.\n{ __str__: 'qwer', name: 'qwer' }");
 
-            expect(() =>
-                passedSubscriptionEventCallback(
-                    {
-                        __str__: "qwer",
-                        name: "qwer",
-                    },
-                    "delete"
-                )
-            ).toThrow(ListSubscriptionError);
-            expect(() =>
-                passedSubscriptionEventCallback(
-                    {
-                        __str__: "qwer",
-                        name: "qwer",
-                    },
-                    "delete"
-                )
-            ).toThrow("deleteFromSubscription: delete for id not in objects ({ __str__: 'qwer', name: 'qwer' }).");
-
-            expect(() => passedSubscriptionEventCallback(2, "delete")).toThrow(ListSubscriptionError);
-            expect(() => passedSubscriptionEventCallback(2, "delete")).toThrow(
-                "deleteFromSubscription: delete for id not in objects (2)."
+            passedSubscriptionEventCallback(
+                {
+                    __str__: "qwer",
+                    name: "qwer",
+                },
+                "delete"
+            );
+            expect(warnMock).toHaveBeenCalledWith(
+                "deleteFromSubscription: delete for id not in objects ({ __str__: 'qwer', name: 'qwer' })."
             );
 
-            const returnValue = await listSubscription.unsubscribe();
+            passedSubscriptionEventCallback(2, "delete");
+            expect(warnMock).toHaveBeenCalledWith("deleteFromSubscription: delete for id not in objects (2).");
+
+            await poll(() => listSubscription.state.subscribed);
+            const unsubscribe = listSubscription.unsubscribe();
+            crudSubscribeResolvable[0].cancel.resolve(true);
+            const returnValue = await unsubscribe;
+            await poll(() => !listSubscription.state.subscribed);
             expect(crudSubscribeResolvable[0].promise.cancel).toHaveBeenCalledWith();
             expect(crudSubscribeResolvable[0].promise.cancel).toHaveBeenCalledTimes(1);
             expect(returnValue).toBe(true);
@@ -338,8 +308,8 @@ describe("use/listSubscription.spec.js", function () {
             });
             expect(listSubscription.unsubscribe()).toBe(false);
             listSubscription.subscribe();
-            await nextTick();
-            await flushPromises();
+            crudSubscribeResolvable[0].resolve();
+            await poll(() => listSubscription.state.subscribed);
             expect(crudSubscribe).toHaveBeenCalledWith({
                 crudArgs: { stream: "test_stream" },
                 listArgs: { user: 1 },
@@ -348,9 +318,10 @@ describe("use/listSubscription.spec.js", function () {
             });
             expect(crudSubscribe).toHaveBeenCalledTimes(1);
 
-            const returnValue = listSubscription.unsubscribe();
-            await nextTick();
-            await flushPromises();
+            const unsubscribePromise = listSubscription.unsubscribe();
+            crudSubscribeResolvable[0].cancel.resolve(true);
+            const returnValue = await unsubscribePromise;
+            await poll(() => !listSubscription.state.subscribed);
             expect(crudSubscribeResolvable[0].promise.cancel).toHaveBeenCalledWith();
             expect(crudSubscribeResolvable[0].promise.cancel).toHaveBeenCalledTimes(1);
             expect(returnValue).toBe(true);
@@ -365,9 +336,12 @@ describe("use/listSubscription.spec.js", function () {
             const retrieveArgs = reactive({
                 fields: fields,
             });
-            const listSubscription = useListSubscription({
+            const listSubscriptionProps = reactive({
                 listArgs,
                 retrieveArgs,
+            });
+            const listSubscription = useListSubscription({
+                props: listSubscriptionProps,
             });
 
             const returnValue = await listSubscription.unsubscribe();
@@ -404,7 +378,10 @@ describe("use/listSubscription.spec.js", function () {
             expect(firstReturnValue).toBe(true);
             expect(secondReturnValue).toBe(false);
 
-            const returnValue = await listSubscription.unsubscribe();
+            const unsubscribePromise = listSubscription.unsubscribe();
+            crudSubscribeResolvable[0].cancel.resolve(true);
+            const returnValue = await unsubscribePromise;
+            await poll(() => !listSubscription.state.subscribed);
             expect(crudSubscribeResolvable[0].promise.cancel).toHaveBeenCalledWith();
             expect(crudSubscribeResolvable[0].promise.cancel).toHaveBeenCalledTimes(1);
             expect(returnValue).toBe(true);
@@ -474,7 +451,10 @@ describe("use/listSubscription.spec.js", function () {
 
             expect(listInstance.state.objects).toEqual({});
 
-            const returnValue = await listSubscription.unsubscribe();
+            const unsubscribePromise = listSubscription.unsubscribe();
+            crudSubscribeResolvable[0].cancel.resolve(true);
+            const returnValue = await unsubscribePromise;
+            await poll(() => !listSubscription.state.subscribed);
             expect(crudSubscribeResolvable[0].promise.cancel).toHaveBeenCalledWith();
             expect(crudSubscribeResolvable[0].promise.cancel).toHaveBeenCalledTimes(1);
             expect(returnValue).toBe(true);
@@ -489,14 +469,13 @@ describe("use/listSubscription.spec.js", function () {
                 fields: fields,
             });
             const listSubscription = useListSubscription({
-                props: {
+                props: reactive({
                     listArgs,
                     retrieveArgs,
-                },
+                }),
             });
             listSubscription.subscribe();
-            await nextTick();
-            await flushPromises();
+            await poll(() => listSubscription.state.subscribed);
             expect(crudSubscribe).toHaveBeenCalledWith({
                 crudArgs: { stream: "test_stream" },
                 listArgs: { user: 1 },
@@ -505,36 +484,40 @@ describe("use/listSubscription.spec.js", function () {
             });
             expect(crudSubscribe).toHaveBeenCalledTimes(1);
             expect(listSubscription.state.subscribed).toBe(true);
-            await nextTick();
-            await flushPromises();
+            expect(listSubscription.state.intendToSubscribe).toBe(true);
+            expect(listSubscription.state.intendToList).toBe(true);
             await crudSubscribeResolvable[0].resolve();
             await crudListResolvable[0].resolve();
-            await nextTick();
-            await flushPromises();
+            await poll(() => listSubscription.state.subscribed);
             listArgs.user = 2;
             retrieveArgs.fields = ["name"];
             await nextTick();
-            await crudSubscribeResolvable[1].resolve();
+            await poll(() => crudSubscribeResolvable[0].promise.cancel.mock.calls.length === 1);
+            await crudSubscribeResolvable[0].cancel.resolve(true);
+            await poll(() => crudListResolvable.length === 2);
             await crudListResolvable[1].resolve();
-            await doAwaitNot({
-                obj: listSubscription.listIntent.state,
-                prop: "resolving",
-            });
-            expect(crudSubscribeResolvable[0].promise.cancel).toHaveBeenCalledWith();
-            expect(crudSubscribeResolvable[0].promise.cancel).toHaveBeenCalledTimes(1);
+            await poll(() => crudSubscribeResolvable.length === 2);
+            await crudSubscribeResolvable[1].resolve();
             expect(crudSubscribe).toHaveBeenCalledWith({
                 crudArgs: { stream: "test_stream" },
                 listArgs: { user: 2 },
                 retrieveArgs: { fields: ["name"] },
                 subscriptionEventCallback: expect.any(Function),
             });
+            expect(crudSubscribeResolvable.length).toBe(2);
+            await crudSubscribeResolvable[1].resolve();
+            await crudListResolvable[1].resolve();
+            await poll(() => listSubscription.state.subscribed);
+            expect(crudSubscribeResolvable[0].promise.cancel).toHaveBeenCalledWith();
+            expect(crudSubscribeResolvable[0].promise.cancel).toHaveBeenCalledTimes(1);
+
             expect(crudSubscribe).toHaveBeenCalledTimes(2);
 
-            const returnValue = listSubscription.unsubscribe();
+            const unsubscribePromise = listSubscription.unsubscribe();
+            crudSubscribeResolvable[1].cancel.resolve(true);
+            const returnValue = await unsubscribePromise;
             expect(returnValue).toBe(true);
-            await nextTick();
-            await flushPromises();
-            await doAwaitTimeout(1500);
+            await poll(() => !listSubscription.state.subscribed);
             expect(crudSubscribeResolvable[1].promise.cancel).toHaveBeenCalledWith();
             expect(crudSubscribeResolvable[1].promise.cancel).toHaveBeenCalledTimes(1);
             expect(listSubscription.state.subscribed).toBe(false);

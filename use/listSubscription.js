@@ -190,7 +190,7 @@ export function useListSubscription({ listInstance, props, functions, keepOldPag
             listInstance.deleteListObject(id);
         } catch (err) {
             if (err.name === "ListError" && err.code === "missing-object") {
-                console.warn(`deleteFromSubscription: delete for id not in objects (${id}).`);
+                console.warn(`deleteFromSubscription: delete for id not in objects (${inspect(id)}).`);
                 return;
             }
             throw err;
