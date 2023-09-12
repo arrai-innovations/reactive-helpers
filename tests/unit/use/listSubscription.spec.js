@@ -1,9 +1,9 @@
-import { doAwaitNot, doAwaitTimeout } from "../../../utils/index.js";
+import { doAwaitNot } from "../../../utils/index.js";
 import { CancellableResolvable } from "../crudPromise.js";
 import { poll } from "../poll.js";
 import flushPromises from "flush-promises";
 import { inspect } from "util";
-import { nextTick, reactive, watch, toRef } from "vue";
+import { nextTick, reactive } from "vue";
 
 describe("use/listSubscription.spec.js", function () {
     let useListSubscription,

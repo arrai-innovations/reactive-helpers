@@ -63,6 +63,7 @@
 | [DocumentOptions]           | FlexSearch.Document options                                                                            |
 | [SearchState]               |
 | [SearchInstance]            |
+| [SearchProps]               | A reactive object for passing document options or search options to useSearch                          |
 | [CSSValue]                  | A string representing a CSS class or a space-separated list of CSS classes.                            |
 | [CSSObject]                 | A CSS object where keys are CSS classes and values are booleans indicating whether to apply the class. |
 | [CSSClasses]                | A mixed array containing multiple ways of specifying CSS classes.                                      |
@@ -550,13 +551,11 @@ A reactive wrapper around FlexSearch.Index
 **Kind**: global function  
 **Returns**: [`SearchInstance`] - - the instance
 
-| Param                               | Type                | Description              |
-| ----------------------------------- | ------------------- | ------------------------ |
-| options                             | `object`            | options                  |
-| options.props                       | `object`            | props                    |
-| options.props.customDocumentOptions | [`DocumentOptions`] | FlexSearch.Index options |
-| options.props.customSearchOptions   | [`SearchOptions`]   | search options           |
-| \[options.throttle\]                | `number`            | throttle wait time       |
+| Param                | Type            | Description        |
+| -------------------- | --------------- | ------------------ |
+| options              | `object`        | options            |
+| options.props        | [`SearchProps`] | props              |
+| \[options.throttle\] | `number`        | throttle wait time |
 
 ## CSSValue
 
@@ -866,6 +865,18 @@ FlexSearch.Document options
 | clearIndex  | `function`      | clear the index    |
 | effectScope | `object`        | a Vue effect scope |
 
+## SearchProps
+
+A reactive object for passing document options or search options to useSearch
+
+**Kind**: global typedef  
+**Properties**
+
+| Name                  | Type                | Description                 |
+| --------------------- | ------------------- | --------------------------- |
+| customDocumentOptions | [`DocumentOptions`] | FlexSearch.Document options |
+| customSearchOptions   | [`SearchOptions`]   | search options              |
+
 ## CSSValue
 
 A string representing a CSS class or a space-separated list of CSS classes.
@@ -936,6 +947,7 @@ A CSS object or a space-separated list of CSS classes.
 [documentoptions]: #documentoptions
 [searchstate]: #searchstate
 [searchinstance]: #searchinstance
+[searchprops]: #searchprops
 [cssclasseswithrefs]: #cssclasseswithrefs
 [~validtargetorsource]: #utilsassignreactiveobjectvalidtargetorsource
 [`utils/assignreactiveobject`]: #utilsassignreactiveobject
@@ -960,8 +972,7 @@ A CSS object or a space-separated list of CSS classes.
 [`listsubscriptionoptions`]: #listsubscriptionoptions
 [`objectinstanceinstance`]: #objectinstanceinstance
 [`searchinstance`]: #searchinstance
-[`documentoptions`]: #documentoptions
-[`searchoptions`]: #searchoptions
+[`searchprops`]: #searchprops
 [`listinstancestate`]: #listinstancestate
 [`listsearchprops`]: #listsearchprops
 [`listsubscriptionstate`]: #listsubscriptionstate
@@ -969,6 +980,8 @@ A CSS object or a space-separated list of CSS classes.
 [`objectcrudfunctions`]: #objectcrudfunctions
 [`objectinstancestate`]: #objectinstancestate
 [`searchstate`]: #searchstate
+[`documentoptions`]: #documentoptions
+[`searchoptions`]: #searchoptions
 [usecombineclasses(classes)]: #usecombineclassesclasses
 [uselistinstance(options)]: #uselistinstanceoptions
 [uselistsearch(options)]: #uselistsearchoptions

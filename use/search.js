@@ -53,11 +53,16 @@ const defaultDocumentOptions = {
 };
 
 /**
+ * A reactive object for passing document options or search options to useSearch
+ * @typedef {object} SearchProps
+ * @property {DocumentOptions} customDocumentOptions - FlexSearch.Document options
+ * @property {SearchOptions} customSearchOptions - search options
+ */
+
+/**
  * A reactive wrapper around FlexSearch.Index
  * @param {object} options - options
- * @param {object} options.props - props
- * @param {DocumentOptions} options.props.customDocumentOptions - FlexSearch.Index options
- * @param {SearchOptions} options.props.customSearchOptions - search options
+ * @param {SearchProps} options.props - props
  * @param {number} [options.throttle] - throttle wait time
  * @returns {SearchInstance} - the instance
  */
