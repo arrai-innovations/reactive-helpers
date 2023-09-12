@@ -1,152 +1,64 @@
 import { useListFilters, useListSort } from "../../../use/index.js";
 import { doAwaitNot } from "../../../utils/watches.js";
-import { nextTick, reactive, ref } from "vue";
+import { ref, unref, reactive } from "vue";
 import { deepUnref } from "vue-deepunref";
 
 describe("use/listFilter", () => {
-    let useListInstance, useListFilter, setDefaultSearchOptions;
+    let useListInstance, useListFilter, useListCalculated, useListRelated;
     beforeEach(async () => {
         const listInstanceModule = await import("../../../use/listInstance");
         useListInstance = listInstanceModule.useListInstance;
         const listFilterModule = await import("../../../use/listFilter");
         useListFilter = listFilterModule.useListFilter;
-        const searchModule = await import("../../../use/search");
-        setDefaultSearchOptions = searchModule.setDefaultSearchOptions;
-        setDefaultSearchOptions({
-            throttle: 0,
-        });
+        const listRelatedModule = await import("../../../use/listRelated");
+        useListRelated = listRelatedModule.useListRelated;
+        const listCalculatedModule = await import("../../../use/listCalculated");
+        useListCalculated = listCalculatedModule.useListCalculated;
     });
 
-    it("should match an allowed values list", async () => {
-        const list = useListInstance({ props: {} });
-        const filter = useListFilter({
-            parentState: list.state,
-            allowedValues: reactive({
-                1: true,
-                3: true,
-            }),
-        });
-        await nextTick();
-        expect(filter.state.objects).toEqual({});
-        list.addListObject({ id: 1, name: "one", has_things: true });
-        await nextTick();
-        expect(filter.state.objects).toEqual({
-            1: { id: 1, name: "one", has_things: true },
-        });
-        list.addListObject({ id: 2, name: "two", has_things: true });
-        await nextTick();
-        expect(filter.state.objects).toEqual({
-            1: { id: 1, name: "one", has_things: true },
-        });
-        list.addListObject({ id: 3, name: "three", has_things: true });
-        await nextTick();
-        expect(filter.state.objects).toEqual({
-            1: { id: 1, name: "one", has_things: true },
-            3: { id: 3, name: "three", has_things: true },
-        });
-        list.addListObject({ id: 4, name: "four", has_things: true });
-        await nextTick();
-        expect(filter.state.objects).toEqual({
-            1: { id: 1, name: "one", has_things: true },
-            3: { id: 3, name: "three", has_things: true },
-        });
-    });
     it("should match an allowed filter function", async () => {
         const list = useListInstance({ props: {} });
         const filter = useListFilter({
             parentState: list.state,
-            allowedFilter: (object) => object.id == 1 || object.id == 3,
+            allowedFilter: (object) => object.id === 1 || object.id === 3,
         });
-        await nextTick();
         expect(filter.state.objects).toEqual({});
         list.addListObject({ id: 1, name: "one", has_things: true });
-        await nextTick();
+        await doAwaitNot({
+            obj: filter.state,
+            prop: "running",
+            timeout: 100,
+        });
         expect(filter.state.objects).toEqual({
             1: { id: 1, name: "one", has_things: true },
         });
         list.addListObject({ id: 2, name: "two", has_things: true });
-        await nextTick();
+        await doAwaitNot({
+            obj: filter.state,
+            prop: "running",
+            timeout: 100,
+        });
         expect(filter.state.objects).toEqual({
             1: { id: 1, name: "one", has_things: true },
         });
         list.addListObject({ id: 3, name: "three", has_things: true });
-        await nextTick();
+        await doAwaitNot({
+            obj: filter.state,
+            prop: "running",
+            timeout: 100,
+        });
         expect(filter.state.objects).toEqual({
             1: { id: 1, name: "one", has_things: true },
             3: { id: 3, name: "three", has_things: true },
         });
         list.addListObject({ id: 4, name: "four", has_things: true });
-        await nextTick();
+        await doAwaitNot({
+            obj: filter.state,
+            prop: "running",
+            timeout: 100,
+        });
         expect(filter.state.objects).toEqual({
             1: { id: 1, name: "one", has_things: true },
-            3: { id: 3, name: "three", has_things: true },
-        });
-    });
-    it("should match by search term", async () => {
-        const textSearchValue = ref("one");
-        const list = useListInstance({ props: {} });
-        const filter = useListFilter({
-            parentState: list.state,
-            useTextSearch: true,
-            textSearchRules: ["name"],
-            textSearchValue,
-        });
-        await nextTick();
-        // todo: it would be nice to wait for all searches to finish, instead of awaiting the first one back.
-        await doAwaitNot({
-            obj: filter.state,
-            prop: "searching",
-        });
-        await nextTick();
-        expect(filter.state.objects).toEqual({});
-        list.addListObject({ id: 1, name: "one", has_things: true });
-        await nextTick();
-        await doAwaitNot({
-            obj: filter.state,
-            prop: "searching",
-        });
-        await nextTick();
-        expect(filter.state.objects).toEqual({
-            1: { id: 1, name: "one", has_things: true },
-        });
-        list.addListObject({ id: 2, name: "two", has_things: true });
-        await nextTick();
-        await doAwaitNot({
-            obj: filter.state,
-            prop: "searching",
-        });
-        await nextTick();
-        expect(filter.state.objects).toEqual({
-            1: { id: 1, name: "one", has_things: true },
-        });
-        list.addListObject({ id: 3, name: "three", has_things: true });
-        await nextTick();
-        await doAwaitNot({
-            obj: filter.state,
-            prop: "searching",
-        });
-        await nextTick();
-        expect(filter.state.objects).toEqual({
-            1: { id: 1, name: "one", has_things: true },
-        });
-        textSearchValue.value = "three";
-        await nextTick();
-        await doAwaitNot({
-            obj: filter.state,
-            prop: "searching",
-        });
-        await nextTick();
-        expect(filter.state.objects).toEqual({
-            3: { id: 3, name: "three", has_things: true },
-        });
-        list.addListObject({ id: 4, name: "four", has_things: true });
-        await nextTick();
-        await doAwaitNot({
-            obj: filter.state,
-            prop: "searching",
-        });
-        await nextTick();
-        expect(filter.state.objects).toEqual({
             3: { id: 3, name: "three", has_things: true },
         });
     });
@@ -156,60 +68,41 @@ describe("use/listFilter", () => {
             parentState: list.state,
             excludedFilter: (object) => object.id == 2 || object.id == 4,
         });
-        await nextTick();
         expect(filter.state.objects).toEqual({});
         list.addListObject({ id: 1, name: "one", has_things: true });
-        await nextTick();
+        await doAwaitNot({
+            obj: filter.state,
+            prop: "running",
+            timeout: 100,
+        });
         expect(filter.state.objects).toEqual({
             1: { id: 1, name: "one", has_things: true },
         });
         list.addListObject({ id: 2, name: "two", has_things: true });
-        await nextTick();
+        await doAwaitNot({
+            obj: filter.state,
+            prop: "running",
+            timeout: 100,
+        });
         expect(filter.state.objects).toEqual({
             1: { id: 1, name: "one", has_things: true },
         });
         list.addListObject({ id: 3, name: "three", has_things: true });
-        await nextTick();
+        await doAwaitNot({
+            obj: filter.state,
+            prop: "running",
+            timeout: 100,
+        });
         expect(filter.state.objects).toEqual({
             1: { id: 1, name: "one", has_things: true },
             3: { id: 3, name: "three", has_things: true },
         });
         list.addListObject({ id: 4, name: "four", has_things: true });
-        await nextTick();
-        expect(filter.state.objects).toEqual({
-            1: { id: 1, name: "one", has_things: true },
-            3: { id: 3, name: "three", has_things: true },
+        await doAwaitNot({
+            obj: filter.state,
+            prop: "running",
+            timeout: 100,
         });
-    });
-    it("should exclude an excludedValues parameter", async () => {
-        const list = useListInstance({ props: {} });
-        const filter = useListFilter({
-            parentState: list.state,
-            excludedValues: reactive({
-                2: true,
-                4: true,
-            }),
-        });
-        await nextTick();
-        expect(filter.state.objects).toEqual({});
-        list.addListObject({ id: 1, name: "one", has_things: true });
-        await nextTick();
-        expect(filter.state.objects).toEqual({
-            1: { id: 1, name: "one", has_things: true },
-        });
-        list.addListObject({ id: 2, name: "two", has_things: true });
-        await nextTick();
-        expect(filter.state.objects).toEqual({
-            1: { id: 1, name: "one", has_things: true },
-        });
-        list.addListObject({ id: 3, name: "three", has_things: true });
-        await nextTick();
-        expect(filter.state.objects).toEqual({
-            1: { id: 1, name: "one", has_things: true },
-            3: { id: 3, name: "three", has_things: true },
-        });
-        list.addListObject({ id: 4, name: "four", has_things: true });
-        await nextTick();
         expect(filter.state.objects).toEqual({
             1: { id: 1, name: "one", has_things: true },
             3: { id: 3, name: "three", has_things: true },
@@ -228,9 +121,7 @@ describe("use/listFilter", () => {
         }
         const filter = useListFilter({
             parentState: listInstance.state,
-            useTextSearch: true,
         });
-        await nextTick();
         expect(filter.state.objects).toEqual(listInstance.state.objects);
     });
     describe("useListFilter operates on parentState modified by useListSort", () => {
@@ -259,9 +150,14 @@ describe("use/listFilter", () => {
             const filter = useListFilter({
                 parentState: listSort.state,
             });
-            await nextTick();
-            expect(filter.state.order).toEqual(expectedOrder);
-            expect(filter.state.objectsInOrder).toEqual(orderedObjects);
+            await doAwaitNot({
+                obj: filter.state,
+                prop: "running",
+            });
+            const unrefOrder = deepUnref(filter.state.order);
+            const unrefObjectsInOrder = deepUnref(filter.state.objectsInOrder);
+            expect(unrefOrder).toEqual(expectedOrder);
+            expect(unrefObjectsInOrder).toEqual(orderedObjects);
         });
     });
     describe("useListFilters accepts args and parentInstances", () => {
@@ -286,32 +182,22 @@ describe("use/listFilter", () => {
                     },
                 },
             });
+            const excludedFilter = (object) => object.id === 1 || object.name === "three";
+            const allowedFilter = (object) => object.id === 2 || object.name === "four";
             const listFilterA = useListFilter({
                 parentState: listInstanceA.state,
-                excludedValues: {
-                    id: 1,
-                    name: "three",
-                },
+                excludedFilter,
             });
             const listFilterB = useListFilter({
                 parentState: listInstanceB.state,
-                allowedValues: {
-                    id: 2,
-                    name: "four",
-                },
+                allowedFilter,
             });
             const listFilterArgs = {
                 A: {
-                    excludedValues: {
-                        id: 1,
-                        name: "three",
-                    },
+                    excludedFilter,
                 },
                 B: {
-                    allowedValues: {
-                        id: 2,
-                        name: "four",
-                    },
+                    allowedFilter,
                 },
             };
             const listInstances = {
@@ -320,12 +206,154 @@ describe("use/listFilter", () => {
             };
             const listFilters = useListFilters(listFilterArgs, listInstances);
 
-            expect(listFilters.A.state.excludedValues).toEqual({ id: 1, name: "three" });
-            expect(listFilters.B.state.allowedValues).toEqual({ id: 2, name: "four" });
-            expect(deepUnref(listFilters.A.parentState)).toEqual(deepUnref(listFilterA.parentState));
-            expect(deepUnref(listFilters.B.parentState)).toEqual(deepUnref(listFilterB.parentState));
+            expect(listFilters.A.state.excludedFilter).toEqual(listFilterArgs.A.excludedFilter);
+            expect(listFilters.B.state.allowedFilter).toEqual(listFilterArgs.B.allowedFilter);
+            expect(unref(listFilters.A.parentState)).toEqual(unref(listFilterA.parentState));
+            expect(unref(listFilters.B.parentState)).toEqual(unref(listFilterB.parentState));
             expect(deepUnref(listFilters.A.state)).toEqual(deepUnref(listFilterA.state));
             expect(deepUnref(listFilters.B.state)).toEqual(deepUnref(listFilterB.state));
+        });
+    });
+    describe("useListFilters updates index when", () => {
+        it("parentInstance.objects is updated", async () => {
+            const list = useListInstance({ props: {} });
+            const filter = useListFilter({
+                parentState: list.state,
+                allowedFilter: (object) => !!object.allowed?.every((e) => e),
+            });
+            await doAwaitNot({
+                obj: filter.state,
+                prop: "running",
+                timeout: 100,
+            });
+            expect(filter.state.objects).toEqual({});
+            list.addListObject({ id: 1, name: "one", has_things: true, allowed: [true, true] });
+            await doAwaitNot({
+                obj: filter.state,
+                prop: "running",
+                timeout: 100,
+            });
+            expect(filter.state.objects).toEqual({
+                1: { id: 1, name: "one", has_things: true, allowed: [true, true] },
+            });
+            list.addListObject({ id: 2, name: "two", has_things: true, allowed: [true, false] });
+            await doAwaitNot({
+                obj: filter.state,
+                prop: "running",
+                timeout: 100,
+            });
+            expect(filter.state.objects).toEqual({
+                1: { id: 1, name: "one", has_things: true, allowed: [true, true] },
+            });
+            list.state.objects[1].allowed[0] = false;
+            list.state.objects[2].allowed[1] = true;
+            await doAwaitNot({
+                obj: filter.state,
+                prop: "running",
+                timeout: 100,
+            });
+            expect(filter.state.objects).toEqual({
+                2: { id: 2, name: "two", has_things: true, allowed: [true, true] },
+            });
+        });
+        it("parentInstance.relatedObjects is updated", async () => {
+            const list = useListInstance({ props: {} });
+            const relatedList = useListInstance({ props: {} });
+            const related = useListRelated({
+                parentState: list.state,
+                relatedObjectsRules: {
+                    relatedRuleName: {
+                        objects: relatedList.state.objects,
+                        pkKey: "related_id",
+                    },
+                },
+            });
+            const allowedFilter = ref();
+            allowedFilter.value = (object, relatedObject) =>
+                relatedObject.relatedRuleName.allowed && relatedObject.relatedRuleName.has_things && object.has_things;
+            const filter = useListFilter({
+                parentState: related.state,
+                allowedFilter,
+            });
+            await doAwaitNot({
+                obj: filter.state,
+                prop: "running",
+                timeout: 100,
+            });
+            expect(filter.state.objects).toEqual({});
+            relatedList.addListObject({ id: 2, name: "two", has_things: true, allowed: true });
+            list.addListObject({ id: 1, name: "one", has_things: true, related_id: 2 });
+            await doAwaitNot({
+                obj: filter.state,
+                prop: "running",
+                timeout: 100,
+            });
+            expect(filter.state.objects).toEqual({
+                1: { id: 1, name: "one", has_things: true, related_id: 2 },
+            });
+            relatedList.addListObject({ id: 4, name: "four", has_things: true, allowed: false });
+            list.addListObject({ id: 3, name: "three", has_things: true, related_id: 4 });
+            await doAwaitNot({
+                obj: filter.state,
+                prop: "running",
+                timeout: 100,
+            });
+            expect(filter.state.objects).toEqual({
+                1: { id: 1, name: "one", has_things: true, related_id: 2 },
+            });
+            relatedList.state.objects[2].allowed = false;
+            relatedList.state.objects[4].allowed = true;
+            await doAwaitNot({
+                obj: filter.state,
+                prop: "running",
+                timeout: 100,
+            });
+            expect(filter.state.objects).toEqual({
+                3: { id: 3, name: "three", has_things: true, related_id: 4 },
+            });
+        });
+        it("parentInstance.calculatedObjects is updated", async () => {
+            const list = useListInstance({ props: {} });
+            const calculated = useListCalculated({
+                parentState: list.state,
+                calculatedObjectsRules: reactive({
+                    calculatedRuleName: (object) => object.things_count + object.other_things_count,
+                }),
+            });
+            const allowedFilter = ref();
+            allowedFilter.value = (object, relatedObject, calculatedObject) => calculatedObject.calculatedRuleName > 5;
+            const filter = useListFilter({
+                parentState: calculated.state,
+                allowedFilter,
+            });
+            await doAwaitNot({
+                obj: filter.state,
+                prop: "running",
+            });
+            expect(filter.state.objects).toEqual({});
+            list.addListObject({ id: 1, name: "one", has_things: true, things_count: 2, other_things_count: 3 });
+            await doAwaitNot({
+                obj: filter.state,
+                prop: "running",
+            });
+            expect(filter.state.objects).toEqual({});
+            list.addListObject({ id: 2, name: "two", has_things: true, things_count: 2, other_things_count: 4 });
+            await doAwaitNot({
+                obj: filter.state,
+                prop: "running",
+            });
+            expect(filter.state.objects).toEqual({
+                2: { id: 2, name: "two", has_things: true, things_count: 2, other_things_count: 4 },
+            });
+            list.state.objects[1].things_count = 4;
+            list.state.objects[2].other_things_count = 0;
+            await doAwaitNot({
+                obj: filter.state,
+                prop: "running",
+            });
+            expect(filter.state.objects).toEqual({
+                1: { id: 1, name: "one", has_things: true, things_count: 4, other_things_count: 3 },
+            });
         });
     });
 });

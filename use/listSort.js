@@ -1,9 +1,13 @@
-import { assignReactiveObject, keyDiff, loadingCombine } from "../utils/index.js";
-import { listCalculatedStateKeys } from "./listCalculated.js";
-import { listFilterStateKeys } from "./listFilter.js";
-import { listInstanceStateKeys } from "./listInstance.js";
-import { listRelatedStateKeys } from "./listRelated.js";
-import { listSubscriptionStateKeys } from "./listSubscription.js";
+import { assignReactiveObject, keyDiff, loadingCombine, difference } from "../utils/index.js";
+import {
+    listSortStateKeys,
+    listFilterStateKeys,
+    listRelatedStateKeys,
+    listCalculatedStateKeys,
+    listSubscriptionStateKeys,
+    listInstanceStateKeys,
+    listSearchStateKeys,
+} from "./listKeys.js";
 import { useWatchesRunning } from "./watchesRunning.js";
 import cloneDeep from "lodash-es/cloneDeep.js";
 import get from "lodash-es/get.js";
@@ -16,20 +20,6 @@ import throttle from "lodash-es/throttle.js";
 import zip from "lodash-es/zip.js";
 import { effectScope, reactive, toRef, unref, watch, computed } from "vue";
 
-export const listSortStateKeys = [
-    "orderByRules",
-    // "order",
-    // "objectsInOrder",
-    "sortCriteria",
-    "orderByDesc",
-    "sortCriteriaWatchRunning",
-    "sortWatchRunning",
-    "outstandingEffects",
-    // "running",
-];
-
-export const listSortFunctions = [];
-
 const collator = new Intl.Collator(undefined, { numeric: true });
 
 const defaultSortThrottleWait = Symbol("defaultSortThrottleWait");
@@ -37,6 +27,18 @@ const defaultSortThrottleWait = Symbol("defaultSortThrottleWait");
 const defaultOptions = {
     sortThrottleWait: 100,
 };
+
+const parentStateKeys = difference(
+    new Set([
+        ...listInstanceStateKeys,
+        ...listSubscriptionStateKeys,
+        ...listRelatedStateKeys,
+        ...listCalculatedStateKeys,
+        ...listFilterStateKeys,
+        ...listSearchStateKeys,
+    ]),
+    new Set(listSortStateKeys)
+);
 
 export function setListSortDefaultOptions({ sortThrottleWait }) {
     defaultOptions.sortThrottleWait = sortThrottleWait;
@@ -221,22 +223,7 @@ export function useListSort({ parentState, orderByRules, sortThrottleWait = defa
     let watchesRunning = null;
 
     es.run(() => {
-        for (const key of listInstanceStateKeys) {
-            if (["order", "objectsInOrder"].includes(key)) {
-                continue;
-            }
-            state[key] = toRef(parentState, key);
-        }
-        for (const key of listSubscriptionStateKeys) {
-            state[key] = toRef(parentState, key);
-        }
-        for (const key of listRelatedStateKeys) {
-            state[key] = toRef(parentState, key);
-        }
-        for (const key of listCalculatedStateKeys) {
-            state[key] = toRef(parentState, key);
-        }
-        for (const key of listFilterStateKeys) {
+        for (const key of parentStateKeys) {
             state[key] = toRef(parentState, key);
         }
         // this watch must come first or be immediate.

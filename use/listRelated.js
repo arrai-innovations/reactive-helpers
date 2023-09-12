@@ -1,7 +1,15 @@
+import { difference } from "../utils/index.js";
 import { keyDiff } from "../utils/keyDiff.js";
 import { loadingCombine } from "../utils/loadingCombine.js";
-import { listInstanceStateKeys } from "./listInstance.js";
-import { listSubscriptionStateKeys } from "./listSubscription.js";
+import {
+    listSubscriptionStateKeys,
+    listInstanceStateKeys,
+    listRelatedStateKeys,
+    listCalculatedStateKeys,
+    listSortStateKeys,
+    listFilterStateKeys,
+    listSearchStateKeys,
+} from "./listKeys.js";
 import { useWatchesRunning } from "./watchesRunning.js";
 import get from "lodash-es/get.js";
 import identity from "lodash-es/identity.js";
@@ -11,14 +19,17 @@ import isEqual from "lodash-es/isEqual.js";
 import isUndefined from "lodash-es/isUndefined.js";
 import { computed, effectScope, onScopeDispose, reactive, toRef, unref, watch } from "vue";
 
-export const listRelatedStateKeys = [
-    "relatedObjects",
-    "relatedObjectsRules",
-    "relatedObjectsWatchRunning",
-    "relatedObjectsParentStateObjectsWatchRunning",
-];
-
-export const listRelatedFunctions = [];
+const parentStateKeys = difference(
+    new Set([
+        ...listInstanceStateKeys,
+        ...listSubscriptionStateKeys,
+        ...listCalculatedStateKeys,
+        ...listFilterStateKeys,
+        ...listSortStateKeys,
+        ...listSearchStateKeys,
+    ]),
+    new Set(listRelatedStateKeys)
+);
 
 export function useListRelateds(instances, args) {
     for (const [key, value] of Object.entries(args)) {
@@ -151,10 +162,7 @@ export function useListRelated({ parentState, relatedObjectsRules }) {
     const es = effectScope();
 
     es.run(() => {
-        for (const key of listInstanceStateKeys) {
-            state[key] = toRef(parentState, key);
-        }
-        for (const key of listSubscriptionStateKeys) {
+        for (const key of parentStateKeys) {
             state[key] = toRef(parentState, key);
         }
 

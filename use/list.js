@@ -1,9 +1,19 @@
-import { useListCalculated, listCalculatedFunctions } from "./listCalculated.js";
-import { useListFilter, listFilterFunctions } from "./listFilter.js";
-import { useListInstance, listInstanceFunctions } from "./listInstance.js";
-import { useListRelated, listRelatedFunctions } from "./listRelated.js";
-import { useListSort, listSortFunctions } from "./listSort.js";
-import { useListSubscription, listSubscriptionFunctions } from "./listSubscription.js";
+import { useListCalculated } from "./listCalculated.js";
+import { useListFilter } from "./listFilter.js";
+import { useListInstance } from "./listInstance.js";
+import {
+    listSortFunctions,
+    listFilterFunctions,
+    listRelatedFunctions,
+    listCalculatedFunctions,
+    listSubscriptionFunctions,
+    listInstanceFunctions,
+    listSearchFunctions,
+} from "./listKeys.js";
+import { useListRelated } from "./listRelated.js";
+import { useListSearch } from "./listSearch.js";
+import { useListSort } from "./listSort.js";
+import { useListSubscription } from "./listSubscription.js";
 import { usePagedListInstance } from "./paginatedListInstance.js";
 import { effectScope, reactive, shallowReactive, shallowReadonly, toRef } from "vue";
 
@@ -16,12 +26,15 @@ export const useLists = (listArgs) => {
 };
 
 // the big brother of useObject, managing a chain of useList* instances.
-export const useList = ({ props, functions = {}, paged = false, keepOldPages = false, useTextSearch = false }) => {
+export const useList = ({ props, functions = {}, paged = false, keepOldPages = false, searchThrottle = 500 }) => {
     const managed = shallowReactive({
         listInstance: null,
         listSubscription: null,
         listRelated: null,
         listCalculated: null,
+        listFilter: null,
+        listSearch: null,
+        listSort: null,
     });
 
     if (!("listArgs" in props)) {
@@ -58,17 +71,21 @@ export const useList = ({ props, functions = {}, paged = false, keepOldPages = f
 
         managed.listFilter = useListFilter({
             parentState: managed.listCalculated.state,
-            useTextSearch,
-            textSearchRules: toRef(props, "textSearchRules"),
-            textSearchValue: toRef(props, "textSearchValue"),
-            allowedValues: toRef(props, "allowedValues"),
-            excludedValues: toRef(props, "excludedValues"),
             allowedFilter: toRef(props, "allowedFilter"),
             excludedFilter: toRef(props, "excludedFilter"),
         });
 
-        managed.listSort = useListSort({
+        managed.listSearch = useListSearch({
             parentState: managed.listFilter.state,
+            props: reactive({
+                textSearchRules: toRef(props, "textSearchRules"),
+                textSearchValue: toRef(props, "textSearchValue"),
+            }),
+            throttle: searchThrottle,
+        });
+
+        managed.listSort = useListSort({
+            parentState: managed.listSearch.state,
             orderByRules: toRef(props, "orderByRules"),
             sortThrottleWait: functions.sortThrottleWait,
         });
@@ -94,6 +111,7 @@ export const useList = ({ props, functions = {}, paged = false, keepOldPages = f
         [managed.listRelated, listRelatedFunctions],
         [managed.listCalculated, listCalculatedFunctions],
         [managed.listFilter, listFilterFunctions],
+        [managed.listSearch, listSearchFunctions],
         [managed.listSort, listSortFunctions],
     ]) {
         for (const fnName of fnNames) {

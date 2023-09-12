@@ -1,19 +1,28 @@
-import { keyDiff, loadingCombine } from "../utils/index.js";
-import { listInstanceStateKeys } from "./listInstance.js";
-import { listRelatedStateKeys } from "./listRelated.js";
-import { listSubscriptionStateKeys } from "./listSubscription.js";
+import { keyDiff, loadingCombine, difference } from "../utils/index.js";
+import {
+    listRelatedStateKeys,
+    listSubscriptionStateKeys,
+    listInstanceStateKeys,
+    listFilterStateKeys,
+    listCalculatedStateKeys,
+    listSortStateKeys,
+    listSearchStateKeys,
+} from "./listKeys.js";
 import { useWatchesRunning } from "./watchesRunning.js";
 import isEmpty from "lodash-es/isEmpty.js";
 import { computed, effectScope, onScopeDispose, reactive, ref, toRef, unref, watch } from "vue";
 
-export const listCalculatedStateKeys = [
-    "calculatedObjects",
-    "calculatedObjectsParentStateObjectsWatchRunning",
-    "calculatedObjectsRules",
-    "calculatedObjectsWatchRunning",
-];
-
-export const listCalculatedFunctions = [];
+const parentStateKeys = difference(
+    new Set([
+        ...listInstanceStateKeys,
+        ...listSubscriptionStateKeys,
+        ...listRelatedStateKeys,
+        ...listFilterStateKeys,
+        ...listSortStateKeys,
+        ...listSearchStateKeys,
+    ]),
+    new Set(listCalculatedStateKeys)
+);
 
 export function useListCalculateds(instances, args) {
     for (const [key, value] of Object.entries(args)) {
@@ -104,13 +113,7 @@ export function useListCalculated({ parentState, calculatedObjectsRules }) {
     const es = effectScope();
 
     es.run(() => {
-        for (const key of listInstanceStateKeys) {
-            state[key] = toRef(parentState, key);
-        }
-        for (const key of listSubscriptionStateKeys) {
-            state[key] = toRef(parentState, key);
-        }
-        for (const key of listRelatedStateKeys) {
+        for (const key of parentStateKeys) {
             state[key] = toRef(parentState, key);
         }
 

@@ -352,16 +352,12 @@ const contacts = useListInstance({
     },
 });
 
-const myAllowedValues = ref(["15", "16"]);
-const myExcludedValues = ref(["17"]);
 // conditions are all optional but anded together if present.
 const contactsFilter = useListFilter({
     parentState: contacts.state,
-    allowedValues: myAllowedValues,
     allowedFilter: function (object) {
         return object.has_name === true;
     },
-    excludedValues: myExcludedValues,
     excludedFilter: function (object) {
         return object.has_billing === true;
     },
@@ -370,7 +366,7 @@ await contacts.list();
 console.log(contactsFilter.state.objects);
 console.log(contactsFilter.state.objectsInOrder);
 console.log(contactsFilter.state.order);
-myExcludedValues.value.push("15");
+contacts.objects["15"].has_name = false;
 await nextTick();
 console.log(contactsFilter.state.objects);
 console.log(contactsFilter.state.objectsInOrder);
