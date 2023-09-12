@@ -12,7 +12,6 @@ const defaultCrud = {
 export const setListCrud = ({ list, subscribe, args = {}, ...rest }) => {
     defaultCrud.list = list;
     defaultCrud.subscribe = subscribe;
-    // defensive cloning
     Object.assign(defaultCrud.args, cloneDeep(args));
     if (Object.keys(rest).length) {
         throw new Error(`Unknown key(s) passed to setListCrud: ${Object.keys(rest).join(", ")}`);

@@ -12,34 +12,6 @@ export class ListError extends Error {
     }
 }
 
-export const listInstanceStateKeys = [
-    "crud",
-    "retrieveArgs",
-    "listArgs",
-    "objects",
-    "loading",
-    "errored",
-    "error",
-    "objectsInOrder",
-    "order",
-    // when paged
-    "totalRecords",
-    "totalPages",
-    "perPage",
-];
-
-export const listInstanceFunctions = [
-    "list",
-    "addListObject",
-    "updateListObject",
-    "deleteListObject",
-    "clearList",
-    "clearError",
-    "getFakeId",
-    "defaultPageCallback",
-    "pageCallback",
-];
-
 /**
  * The configuration options used to create a list instance.
  * @typedef {object} ListInstanceOptions

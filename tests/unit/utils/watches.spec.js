@@ -6,7 +6,6 @@ import {
     doAwaitTimeout,
     ImmediateStopWatch,
 } from "../../../utils/index.js";
-import { performance } from "perf_hooks.js";
 import { nextTick, reactive, toRef } from "vue";
 
 describe("utils/watches", () => {

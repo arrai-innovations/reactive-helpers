@@ -1,29 +1,29 @@
+import { assignReactiveObject, difference, loadingCombine } from "../utils/index.js";
 import { keyDiff } from "../utils/keyDiff.js";
-import { listCalculatedStateKeys } from "./listCalculated.js";
-import { listInstanceStateKeys } from "./listInstance.js";
-import { listRelatedStateKeys } from "./listRelated.js";
-import { listSubscriptionStateKeys } from "./listSubscription.js";
-import { useSearch } from "./search.js";
-import get from "lodash-es/get.js";
-import identity from "lodash-es/identity.js";
-import isEmpty from "lodash-es/isEmpty.js";
-import { computed, effectScope, onScopeDispose, reactive, toRef, watch, watchEffect } from "vue";
+import {
+    listSortStateKeys,
+    listFilterStateKeys,
+    listRelatedStateKeys,
+    listCalculatedStateKeys,
+    listSubscriptionStateKeys,
+    listInstanceStateKeys,
+    listSearchStateKeys,
+} from "./listKeys.js";
+import { effectScope, reactive, toRef, watch, unref, computed, nextTick } from "vue";
 
-export const listFilterStateKeys = [
-    "objectIndexes",
-    // override but not ours
-    // "objects",
-    "textSearchRules",
-    "textSearchValue",
-    "allowedValues",
-    "excludedValues",
-    "allowedFilter",
-    "excludedFilter",
-    "searched",
-    "searching",
-];
+3;
 
-export const listFilterFunctions = [];
+const parentStateKeys = difference(
+    new Set([
+        ...listInstanceStateKeys,
+        ...listSubscriptionStateKeys,
+        ...listRelatedStateKeys,
+        ...listCalculatedStateKeys,
+        ...listSortStateKeys,
+        ...listSearchStateKeys,
+    ]),
+    new Set(listFilterStateKeys)
+);
 
 export function useListFilters(listFilterArgs, parentInstances) {
     const filters = {};
@@ -33,157 +33,131 @@ export function useListFilters(listFilterArgs, parentInstances) {
     return filters;
 }
 
-export function useListFilter({
-    parentState,
-    useTextSearch = false,
-    textSearchRules = [],
-    textSearchValue = "",
-    allowedValues = {},
-    excludedValues = {},
-    allowedFilter,
-    excludedFilter,
-    customIndexOptions = {},
-    customSearchOptions = {},
-}) {
+const inResults = (state, object, relatedObject, calculatedObject) => {
+    const unrefObject = unref(object);
+    const unrefRelatedObject = unref(relatedObject);
+    const unrefCalculatedObject = unref(calculatedObject);
+    return !(
+        (state.allowedFilter && !state.allowedFilter(unrefObject, unrefRelatedObject, unrefCalculatedObject)) ||
+        (state.excludedFilter && state.excludedFilter(unrefObject, unrefRelatedObject, unrefCalculatedObject))
+    );
+};
+
+export function useListFilter({ parentState, allowedFilter, excludedFilter }) {
     const state = reactive({
-        objectIndexes: {},
+        inResults: {},
         objects: {},
-        textSearchRules,
-        textSearchValue,
-        allowedValues,
-        excludedValues,
+        objectsInOrder: [],
+        order: [],
         allowedFilter,
         excludedFilter,
-        searched: undefined,
-        searching: undefined,
+        objectsWatchRunning: undefined,
+        resultsWatchRunning: undefined,
+        running: undefined,
     });
 
     const es = effectScope();
 
-    let textSearchIndex;
+    const makeComputed = (key) => {
+        const object = toRef(parentState.objects, key);
+        const relatedObject = toRef(parentState.relatedObjects, key);
+        const calculatedObject = toRef(parentState.calculatedObjects, key);
+        return computed(() => inResults(state, object, relatedObject, calculatedObject));
+    };
+
+    let previousAllowedFilter = null,
+        previousExcludedFilter = null;
+
+    const objectsWatch = () => {
+        if (parentState.running) {
+            return;
+        }
+        state.objectsWatchRunning = true;
+        const allowedOrExcludedFilterChanged =
+            allowedFilter !== previousAllowedFilter || excludedFilter !== previousExcludedFilter;
+        if (!state.allowedFilter && !state.excludedFilter) {
+            assignReactiveObject(state.inResults, {});
+            assignReactiveObject(state.objects, parentState.objects);
+        } else if (allowedOrExcludedFilterChanged) {
+            // recreate all the computeds
+            assignReactiveObject(state.inResults, {});
+            for (const key of Object.keys(parentState.objects)) {
+                state.inResults[key] = makeComputed(key);
+            }
+        } else {
+            // we just need to make sure all the computeds exist that should exist
+            const { addedKeys, removedKeys } = keyDiff(Object.keys(parentState.objects), Object.keys(state.inResults), {
+                sameKeys: false,
+            });
+            for (const addedKey of addedKeys) {
+                state.inResults[addedKey] = makeComputed(addedKey);
+            }
+            for (const removedKey of removedKeys) {
+                delete state.inResults[removedKey];
+            }
+        }
+        previousAllowedFilter = allowedFilter;
+        previousExcludedFilter = excludedFilter;
+        nextTick().then(() => {
+            state.objectsWatchRunning = false;
+        });
+    };
+
+    const resultsWatch = async () => {
+        if (parentState.running) {
+            return;
+        }
+        state.resultsWatchRunning = true;
+        await nextTick();
+        if (state.allowedFilter || state.excludedFilter) {
+            assignReactiveObject(
+                state.objects,
+                Object.fromEntries(
+                    Object.entries(state.inResults)
+                        .filter(([, value]) => !!value)
+                        .map(([id]) => [id, toRef(parentState.objects, id)])
+                )
+            );
+        }
+
+        nextTick().then(() => {
+            state.resultsWatchRunning = false;
+        });
+    };
+
+    const orderWatch = () => {
+        let desiredOrder = parentState.order.filter((id) => !!state.objects[id]),
+            desiredObjectsInOrder = desiredOrder.map((id) => toRef(state.objects, id));
+        if (!state.allowedFilter && !state.excludedFilter) {
+            desiredOrder = parentState.order;
+            desiredObjectsInOrder = parentState.objectsInOrder;
+        }
+        assignReactiveObject(state.objectsInOrder, desiredObjectsInOrder);
+        assignReactiveObject(state.order, desiredOrder);
+    };
 
     es.run(() => {
-        for (const key of listInstanceStateKeys) {
-            if (key === "objects") {
-                continue;
-            }
+        for (const key of parentStateKeys) {
             state[key] = toRef(parentState, key);
-        }
-        for (const key of listSubscriptionStateKeys) {
-            state[key] = toRef(parentState, key);
-        }
-        for (const key of listRelatedStateKeys) {
-            state[key] = toRef(parentState, key);
-        }
-        for (const key of listCalculatedStateKeys) {
-            state[key] = toRef(parentState, key);
-        }
-        if (useTextSearch) {
-            textSearchIndex = useSearch(customIndexOptions, customSearchOptions);
-            textSearchIndex.state.search = toRef(state, "textSearchValue");
-            state.searched = toRef(textSearchIndex.state, "searched");
-            state.searching = toRef(textSearchIndex.state, "searching");
         }
 
-        // todo: computed is not the solution here for deep reactions
-        state.objectsInOrder = computed(() => parentState.order.map((id) => state.objects[id]).filter(identity));
-        state.order = computed(() => state.objectsInOrder.map((object) => `${object.id}`));
-
-        // todo: this huge watchEffect is fairly gross, but also doesn't watch deep similarly to computed
-        watchEffect(() => {
-            const allowedValuesEmpty = !state.allowedValues || isEmpty(state.allowedValues);
-            const excludedValuesEmpty = !state.excludedValues || isEmpty(state.excludedValues);
-            const resultsEmpty = useTextSearch
-                ? !textSearchIndex.state.results || isEmpty(textSearchIndex.state.results)
-                : undefined;
-            const searched = useTextSearch ? textSearchIndex.state.searched : undefined;
-
-            const inResults = (object) => {
-                if (!allowedValuesEmpty && !state.allowedValues[object.id]) {
-                    return false;
-                }
-                if (!excludedValuesEmpty && state.excludedValues[object.id]) {
-                    return false;
-                }
-                if (state.allowedFilter && !state.allowedFilter(object)) {
-                    return false;
-                }
-                if (state.excludedFilter && state.excludedFilter(object)) {
-                    return false;
-                }
-                if (!useTextSearch) {
-                    return true;
-                }
-                if (!searched && resultsEmpty) {
-                    return true;
-                }
-                return !!textSearchIndex.state.results[object.id];
-            };
-            const { removedKeys, sameKeys, addedKeys } = keyDiff(
-                Object.keys(parentState.objects),
-                Object.keys(state.objects)
-            );
-            for (const removedKey of removedKeys) {
-                delete state.objects[removedKey];
-            }
-            for (const addedKey of addedKeys) {
-                if (inResults(parentState.objects[addedKey])) {
-                    state.objects[addedKey] = toRef(parentState.objects, addedKey);
-                }
-            }
-            for (const sameKey of sameKeys) {
-                if (inResults(parentState.objects[sameKey])) {
-                    if (state.objects[sameKey] !== parentState.objects[sameKey]) {
-                        state.objects[sameKey] = toRef(parentState.objects, sameKey);
-                    }
-                } else {
-                    delete state.objects[sameKey];
-                }
-            }
+        state.running = computed(() => {
+            return loadingCombine(parentState.running, state.objectsWatchRunning, state.resultsWatchRunning);
         });
 
-        if (useTextSearch) {
-            const stopIndexWatch = {};
+        watch(toRef(state, "inResults"), resultsWatch, { deep: true });
 
-            // todo: this huge watchEffect is fairly gross, but also doesn't watch deep similarly to computed
-            watchEffect(() => {
-                const { removedKeys, addedKeys } = keyDiff(
-                    Object.keys(parentState.objects),
-                    Object.keys(state.objectIndexes)
-                );
-                for (const removedKey of removedKeys) {
-                    delete state.objectIndexes[removedKey];
-                    textSearchIndex.removeIndex(removedKey);
-                    if (stopIndexWatch[removedKey]) {
-                        stopIndexWatch[removedKey]();
-                        delete stopIndexWatch[removedKey];
-                    }
-                }
-                for (const addedKey of addedKeys) {
-                    state.objectIndexes[addedKey] = true;
-                    textSearchIndex.addIndex(
-                        addedKey,
-                        state.textSearchRules.map((o) => get(parentState.objects[addedKey], o)).join(" ")
-                    );
-                    stopIndexWatch[addedKey] = watch(
-                        [toRef(state, "textSearchRules"), toRef(parentState.objects, "addedKey")],
-                        (textSearchRules, object) => {
-                            textSearchIndex.updateIndex(addedKey, textSearchRules.map((o) => get(object, o)).join(" "));
-                        }
-                    );
-                }
-            });
-            onScopeDispose(() => {
-                for (const key in stopIndexWatch) {
-                    stopIndexWatch[key]();
-                }
-            });
-        }
+        watch(toRef(parentState, "order"), orderWatch, { deep: true, immediate: true });
+
+        watch(
+            [() => Object.keys(parentState.objects), toRef(state, "allowedFilter"), toRef(state, "excludedFilter")],
+            objectsWatch,
+            { immediate: true }
+        );
     });
     return {
         state,
         parentState,
-        textSearchIndex,
         effectScope: es,
     };
 }

@@ -42,9 +42,14 @@ export function useCancellableIntent({
 
     async function cancel() {
         if (cancelFunction) {
-            const cancelPromise = cancelFunction().catch(console.error);
-            cancelFunction = null;
-            return cancelPromise;
+            return cancelFunction()
+                .catch(console.error)
+                .finally(() => {
+                    if (!state.clearActiveOnResolved) {
+                        cancelFunction = null;
+                        state.activeCount--;
+                    }
+                });
         }
         return false;
     }

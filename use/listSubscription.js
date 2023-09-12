@@ -1,6 +1,7 @@
 import { loadingCombine } from "../utils/loadingCombine.js";
 import { useCancellableIntent } from "./cancellableIntent.js";
-import { listInstanceStateKeys, useListInstance } from "./listInstance.js";
+import { useListInstance } from "./listInstance.js";
+import { listInstanceStateKeys } from "./listKeys.js";
 import inspect from "browser-util-inspect";
 import cloneDeep from "lodash-es/cloneDeep.js";
 import isEmpty from "lodash-es/isEmpty.js";
@@ -13,17 +14,6 @@ export class ListSubscriptionError extends Error {
         this.name = "ListSubscriptionError";
     }
 }
-
-export const listSubscriptionStateKeys = [
-    "subscriptionLoading",
-    "subscriptionErrored",
-    "subscriptionError",
-    "intendToList",
-    "intendToSubscribe",
-    "subscribed",
-];
-
-export const listSubscriptionFunctions = ["subscribe", "unsubscribe", "clearError"];
 
 /**
  * The configuration options used to create a list subscription.
@@ -190,7 +180,7 @@ export function useListSubscription({ listInstance, props, functions, keepOldPag
             listInstance.deleteListObject(id);
         } catch (err) {
             if (err.name === "ListError" && err.code === "missing-object") {
-                console.warn(`deleteFromSubscription: delete for id not in objects (${id}).`);
+                console.warn(`deleteFromSubscription: delete for id not in objects (${inspect(id)}).`);
                 return;
             }
             throw err;
