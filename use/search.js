@@ -37,10 +37,10 @@ const unionReduce = (accumulator, currentValue) => {
 /**
  * @typedef {object} SearchInstance
  * @property {SearchState} state - the state
- * @property {(id: string, indexValue: object) => void} addIndex - add an index
- * @property {(id: string, indexValue: object) => void} updateIndex - update an index
- * @property {(id: string) => void} removeIndex - remove an index
- * @property {() => void} clearIndex - clear the index
+ * @property {function} addIndex - add an index
+ * @property {function} updateIndex - update an index
+ * @property {function} removeIndex - remove an index
+ * @property {function} clearIndex - clear the index
  * @property {object} effectScope - a Vue effect scope
  */
 

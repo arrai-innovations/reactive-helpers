@@ -29,36 +29,45 @@
 | ---------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | [useCombineClasses(classes)]       |
 | [useListInstance(options)]         | `useListInstance` is a Vue composition function that manages a list of objects. It has the ability to retrieve the list from an implementation, or subscribe to updates from an implementation. It tracks the objects in the list, and their added order. |
+| [useListSearch(options)]           | Text filter for list items. This will not be performant for large lists, as each item will be watched. However, the results will reactively update.                                                                                                       |
 | [useListSubscription(options)]     | `useListSubscription` creates a reactive object that manages a list of objects, as returned by `useListInstance`, causing the list to be re-fetched as needed and listening for updates to the list.                                                      |
 | [useObjectInstances(instanceArgs)] | Initializes multiple useObjectInstance instances, returning an object of them based on the keys of the instanceArgs.                                                                                                                                      |
 | [useObjectInstance(options)]       | Initializes an object instance to manage create, retrieve, update, delete, and patch operations.                                                                                                                                                          |
+| [useSearch(options)]               | A reactive wrapper around FlexSearch.Index                                                                                                                                                                                                                |
 
 ## Typedefs
 
-| Name                      | Description                                                                                            |
-| ------------------------- | ------------------------------------------------------------------------------------------------------ |
-| [CSSValue]                | A string representing a CSS class or a space-separated list of CSS classes.                            |
-| [CSSObject]               | A CSS object where keys are CSS classes and values are booleans indicating whether to apply the class. |
-| [CSSClasses]              | A mixed array containing multiple ways of specifying CSS classes.                                      |
-| [CSSStringOrObject]       | The amalgamated classes as returned by `objectifyClasses` & `combineClasses`.                          |
-| [ListInstanceOptions]     | The configuration options used to create a list instance.                                              |
-| [ListInstanceState]       | A reactive object that manages a list of objects, as returned by `useListInstance`.                    |
-| [ListInstance]            |
-| [ListSubscriptionOptions] | The configuration options used to create a list subscription.                                          |
-| [ListSubscriptionState]   | A reactive object that manages a list of objects, as returned by `useListInstance`.                    |
-| [ListSubscription]        |
-| [ObjectCrudFunctions]     |
-| [ObjectInstanceOptions]   |
-| [ObjectInstance]          |
-| [ObjectInstanceProps]     |
-| [ObjectInstanceOptions]   |
-| [ObjectInstanceState]     |
-| [ObjectInstanceInstance]  |
-| [CSSValue]                | A string representing a CSS class or a space-separated list of CSS classes.                            |
-| [CSSObject]               | A CSS object where keys are CSS classes and values are booleans indicating whether to apply the class. |
-| [CSSClasses]              | A mixed array containing multiple ways of specifying CSS classes.                                      |
-| [CSSClassesWithRefs]      | A mixed array containing multiple ways of specifying CSS classes.                                      |
-| [CSSStringOrObject]       | A CSS object or a space-separated list of CSS classes.                                                 |
+| Name                        | Description                                                                                            |
+| --------------------------- | ------------------------------------------------------------------------------------------------------ |
+| [CSSValue]                  | A string representing a CSS class or a space-separated list of CSS classes.                            |
+| [CSSObject]                 | A CSS object where keys are CSS classes and values are booleans indicating whether to apply the class. |
+| [CSSClasses]                | A mixed array containing multiple ways of specifying CSS classes.                                      |
+| [CSSStringOrObject]         | The amalgamated classes as returned by `objectifyClasses` & `combineClasses`.                          |
+| [ListInstanceOptions]       | The configuration options used to create a list instance.                                              |
+| [ListInstanceState]         | A reactive object that manages a list of objects, as returned by `useListInstance`.                    |
+| [ListInstance]              |
+| [ListSearchProps]           |
+| [ListSearchInstance]        |
+| [ListSearchInstanceOptions] |
+| [ListSubscriptionOptions]   | The configuration options used to create a list subscription.                                          |
+| [ListSubscriptionState]     | A reactive object that manages a list of objects, as returned by `useListInstance`.                    |
+| [ListSubscription]          |
+| [ObjectCrudFunctions]       |
+| [ObjectInstanceOptions]     |
+| [ObjectInstance]            |
+| [ObjectInstanceProps]       |
+| [ObjectInstanceOptions]     |
+| [ObjectInstanceState]       |
+| [ObjectInstanceInstance]    |
+| [SearchOptions]             | FlexSearch.Document search options                                                                     |
+| [DocumentOptions]           | FlexSearch.Document options                                                                            |
+| [SearchState]               |
+| [SearchInstance]            |
+| [CSSValue]                  | A string representing a CSS class or a space-separated list of CSS classes.                            |
+| [CSSObject]                 | A CSS object where keys are CSS classes and values are booleans indicating whether to apply the class. |
+| [CSSClasses]                | A mixed array containing multiple ways of specifying CSS classes.                                      |
+| [CSSClassesWithRefs]        | A mixed array containing multiple ways of specifying CSS classes.                                      |
+| [CSSStringOrObject]         | A CSS object or a space-separated list of CSS classes.                                                 |
 
 ## utils/assignReactiveObject
 
@@ -268,11 +277,11 @@ are the same, what keys are removed, and what keys are added.
 **Kind**: inner method of [`utils/keyDiff`]  
 **Returns**: `KeyDiffResult` - - the differences
 
-| Param       | Type             | Description                    |
-| ----------- | ---------------- | ------------------------------ |
-| newKeys     | `Array.<string>` | keys to consider as new        |
-| oldKeys     | `Array.<string>` | keys to consider as old        |
-| \[options\] | `KeyDiffOptions` | which differences are returned |
+| Param       | Type                      | Description                    |
+| ----------- | ------------------------- | ------------------------------ |
+| newKeys     | `Array.<string>` \| `Set` | keys to consider as new        |
+| oldKeys     | `Array.<string>` \| `Set` | keys to consider as old        |
+| \[options\] | `KeyDiffOptions`          | which differences are returned |
 
 ### utils/keyDiff~keyDiffDeep(newObj, oldObj, \[options\])
 
@@ -312,11 +321,11 @@ Result object of keyDiff and keyDiffDeep
 **Kind**: inner typedef of [`utils/keyDiff`]  
 **Properties**
 
-| Name            | Type             | Description                                                 |
-| --------------- | ---------------- | ----------------------------------------------------------- |
-| \[sameKeys\]    | `Array.<string>` | if sameKeys option is true, return keys that are the same   |
-| \[removedKeys\] | `Array.<string>` | if removedKeys option is true, return keys that are removed |
-| \[addedKeys\]   | `Array.<string>` | if addedKeys option is true, return keys that are added     |
+| Name            | Type  | Description                                                 |
+| --------------- | ----- | ----------------------------------------------------------- |
+| \[sameKeys\]    | `Set` | if sameKeys option is true, return keys that are the same   |
+| \[removedKeys\] | `Set` | if removedKeys option is true, return keys that are removed |
+| \[addedKeys\]   | `Set` | if addedKeys option is true, return keys that are added     |
 
 ## utils/lifecycleDebug
 
@@ -488,6 +497,18 @@ It tracks the objects in the list, and their added order.
 | ------- | ----------------------- | -------------------------------------------- |
 | options | [`ListInstanceOptions`] | the options used to create the list instance |
 
+## useListSearch(options)
+
+Text filter for list items. This will not be performant for large lists, as each item will be watched.
+However, the results will reactively update.
+
+**Kind**: global function  
+**Returns**: [`ListSearchInstance`] - - the instance
+
+| Param   | Type                          | Description   |
+| ------- | ----------------------------- | ------------- |
+| options | [`ListSearchInstanceOptions`] | the arguments |
+
 ## useListSubscription(options)
 
 `useListSubscription` creates a reactive object that manages a list of objects, as returned by `useListInstance`,
@@ -521,6 +542,21 @@ Initializes an object instance to manage create, retrieve, update, delete, and p
 | Param   | Type                      | Description                                    |
 | ------- | ------------------------- | ---------------------------------------------- |
 | options | [`ObjectInstanceOptions`] | The options to be passed to useObjectInstance. |
+
+## useSearch(options)
+
+A reactive wrapper around FlexSearch.Index
+
+**Kind**: global function  
+**Returns**: [`SearchInstance`] - - the instance
+
+| Param                               | Type                | Description              |
+| ----------------------------------- | ------------------- | ------------------------ |
+| options                             | `object`            | options                  |
+| options.props                       | `object`            | props                    |
+| options.props.customDocumentOptions | [`DocumentOptions`] | FlexSearch.Index options |
+| options.props.customSearchOptions   | [`SearchOptions`]   | search options           |
+| \[options.throttle\]                | `number`            | throttle wait time       |
 
 ## CSSValue
 
@@ -607,6 +643,41 @@ A reactive object that manages a list of objects, as returned by `useListInstanc
 | pageCallback        | `function`            | the page callback                            |
 | state               | [`ListInstanceState`] | the list instance state                      |
 | effectScope         | `object`              | a Vue effect scope                           |
+
+## ListSearchProps
+
+**Kind**: global typedef  
+**Properties**
+
+| Name                          | Type     | Default | Description                                                                                                                                  |
+| ----------------------------- | -------- | ------- | -------------------------------------------------------------------------------------------------------------------------------------------- |
+| textSearchRules               | `array`  |         | rules for what to search for. Keys are the keys to search for, values are functions that take the object and return the value to search for. |
+| textSearchValue               | `string` |         | the value to search for.                                                                                                                     |
+| customDocumentOptions         | `object` |         | FlexSearch.Document options                                                                                                                  |
+| customSearchOptions           | `object` |         | FlexSearch.Search options                                                                                                                    |
+| \[customSearchOptions.limit\] | `object` | `1000`  | FlexSearch.Search options                                                                                                                    |
+
+## ListSearchInstance
+
+**Kind**: global typedef  
+**Properties**
+
+| Name            | Type               | Description           |
+| --------------- | ------------------ | --------------------- |
+| state           | `object`           | the state             |
+| textSearchIndex | [`SearchInstance`] | the text search index |
+| effectScope     | `object`           | a Vue effect scope    |
+
+## ListSearchInstanceOptions
+
+**Kind**: global typedef  
+**Properties**
+
+| Name         | Type                | Default | Description             |
+| ------------ | ------------------- | ------- | ----------------------- |
+| parentState  | `object`            |         | the list being filtered |
+| props        | [`ListSearchProps`] |         | reactive properties     |
+| \[throttle\] | `number`            | `500`   | throttle wait time      |
 
 ## ListSubscriptionOptions
 
@@ -751,6 +822,49 @@ A reactive object that manages a list of objects, as returned by `useListInstanc
 | clearError | `function`              | call to clear the error state.                                   |
 | clear      | `function`              | call to clear the object state.                                  |
 
+## SearchOptions
+
+FlexSearch.Document search options
+
+**Kind**: global typedef  
+**Properties**
+
+| Name  | Type     | Description      |
+| ----- | -------- | ---------------- |
+| limit | `number` | limit of results |
+
+## DocumentOptions
+
+FlexSearch.Document options
+
+**Kind**: global typedef
+
+## SearchState
+
+**Kind**: global typedef  
+**Properties**
+
+| Name      | Type      | Description                                                                                |
+| --------- | --------- | ------------------------------------------------------------------------------------------ |
+| search    | `string`  | the search string                                                                          |
+| results   | `object`  | the results, where the keys are the ids of the objects that match, and the values are true |
+| searched  | `boolean` | whether the search has been performed                                                      |
+| searching | `boolean` | whether the search is currently running                                                    |
+
+## SearchInstance
+
+**Kind**: global typedef  
+**Properties**
+
+| Name        | Type            | Description        |
+| ----------- | --------------- | ------------------ |
+| state       | [`SearchState`] | the state          |
+| addIndex    | `function`      | add an index       |
+| updateIndex | `function`      | update an index    |
+| removeIndex | `function`      | remove an index    |
+| clearIndex  | `function`      | clear the index    |
+| effectScope | `object`        | a Vue effect scope |
+
 ## CSSValue
 
 A string representing a CSS class or a space-separated list of CSS classes.
@@ -805,6 +919,9 @@ A CSS object or a space-separated list of CSS classes.
 [listinstanceoptions]: #listinstanceoptions
 [listinstancestate]: #listinstancestate
 [listinstance]: #listinstance
+[listsearchprops]: #listsearchprops
+[listsearchinstance]: #listsearchinstance
+[listsearchinstanceoptions]: #listsearchinstanceoptions
 [listsubscriptionoptions]: #listsubscriptionoptions
 [listsubscriptionstate]: #listsubscriptionstate
 [listsubscription]: #listsubscription
@@ -814,6 +931,10 @@ A CSS object or a space-separated list of CSS classes.
 [objectinstanceprops]: #objectinstanceprops
 [objectinstancestate]: #objectinstancestate
 [objectinstanceinstance]: #objectinstanceinstance
+[searchoptions]: #searchoptions
+[documentoptions]: #documentoptions
+[searchstate]: #searchstate
+[searchinstance]: #searchinstance
 [cssclasseswithrefs]: #cssclasseswithrefs
 [~validtargetorsource]: #utilsassignreactiveobjectvalidtargetorsource
 [`utils/assignreactiveobject`]: #utilsassignreactiveobject
@@ -832,19 +953,28 @@ A CSS object or a space-separated list of CSS classes.
 [`cssclasseswithrefs`]: #cssclasseswithrefs
 [`listinstance`]: #listinstance
 [`listinstanceoptions`]: #listinstanceoptions
+[`listsearchinstance`]: #listsearchinstance
+[`listsearchinstanceoptions`]: #listsearchinstanceoptions
 [`listsubscription`]: #listsubscription
 [`listsubscriptionoptions`]: #listsubscriptionoptions
 [`objectinstanceinstance`]: #objectinstanceinstance
+[`searchinstance`]: #searchinstance
+[`documentoptions`]: #documentoptions
+[`searchoptions`]: #searchoptions
 [`listinstancestate`]: #listinstancestate
+[`listsearchprops`]: #listsearchprops
 [`listsubscriptionstate`]: #listsubscriptionstate
 [`objectinstanceprops`]: #objectinstanceprops
 [`objectcrudfunctions`]: #objectcrudfunctions
 [`objectinstancestate`]: #objectinstancestate
+[`searchstate`]: #searchstate
 [usecombineclasses(classes)]: #usecombineclassesclasses
 [uselistinstance(options)]: #uselistinstanceoptions
+[uselistsearch(options)]: #uselistsearchoptions
 [uselistsubscription(options)]: #uselistsubscriptionoptions
 [useobjectinstances(instanceargs)]: #useobjectinstancesinstanceargs
 [useobjectinstance(options)]: #useobjectinstanceoptions
+[usesearch(options)]: #usesearchoptions
 [~addreactiveobject(target, source, \[exclude\], \[addedkeys\])]: #utilsassignreactiveobjectaddreactiveobjecttarget-source-exclude-addedkeys
 [~updatereactiveobject(target, source, \[exclude\], \[samekeys\])]: #utilsassignreactiveobjectupdatereactiveobjecttarget-source-exclude-samekeys
 [~addorupdatereactiveobject(target, source, \[exclude\], \[addedkeys\], \[samekeys\])]: #utilsassignreactiveobjectaddorupdatereactiveobjecttarget-source-exclude-addedkeys-samekeys
