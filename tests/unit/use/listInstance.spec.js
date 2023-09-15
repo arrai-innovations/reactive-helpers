@@ -1,3 +1,4 @@
+import { doAwaitNot } from "../../../utils/index.js";
 import { expectErrorToBeNull } from "../expectHelpers.js";
 import flushPromises from "flush-promises";
 import keyBy from "lodash-es/keyBy.js";
@@ -308,6 +309,7 @@ describe("use/listInstance.spec.js", function () {
             expect(listInstance.state.errored).toBe(false);
             expect(listInstance.state.loading).toBe(false);
             expect({ ...listInstance.state.objects }).toEqual(crudListResolvedObjects2);
+            await nextTick();
             await flushPromises();
             expect(listInstance.state.order).toEqual(Object.keys(crudListResolvedObjects2));
             expect(listInstance.state.objectsInOrder).toEqual(Object.values(crudListResolvedObjects2));
@@ -429,7 +431,7 @@ describe("use/listInstance.spec.js", function () {
             expect(fakeId).toBeTruthy();
         });
     });
-    it("computes objectsInOrder and maintains state", () => {
+    it("computes objectsInOrder and maintains state", async () => {
         const crudListResolvedPage3 = [
             {
                 id: 3,
@@ -447,6 +449,7 @@ describe("use/listInstance.spec.js", function () {
                 name: "zxcv",
             },
         ];
+        const crudListResolvedObjects3 = keyBy(crudListResolvedPage3, "id");
         const addObject = {
             id: 4,
             __str__: "yuio",
@@ -467,12 +470,19 @@ describe("use/listInstance.spec.js", function () {
 
         passedPageCallback(crudListResolvedPage3);
         crudListResolve();
+        await doAwaitNot({
+            obj: listInstance.state,
+            prop: "loading",
+        });
+        expect(listInstance.state.objects).toEqual(crudListResolvedObjects3);
         expect(listInstance.state.objectsInOrder).toEqual(crudListResolvedPage3);
         listInstance.addListObject(addObject);
         crudListResolvedPage3.push(addObject);
+        await nextTick();
         expect(listInstance.state.objectsInOrder).toEqual(crudListResolvedPage3);
         listInstance.deleteListObject(8);
         crudListResolvedPage3.splice(1, 1);
+        await nextTick();
         expect(listInstance.state.objectsInOrder).toEqual(crudListResolvedPage3);
     });
 });

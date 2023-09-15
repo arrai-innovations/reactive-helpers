@@ -2,7 +2,7 @@ import { getListCrud } from "../config/listCrud.js";
 import { assignReactiveObject } from "../utils/assignReactiveObject.js";
 import { getFakeId } from "../utils/getFakeId.js";
 import inspect from "browser-util-inspect";
-import { computed, effectScope, reactive, toRef } from "vue";
+import { effectScope, reactive, toRef, watch } from "vue";
 
 export class ListError extends Error {
     constructor(message, code) {
@@ -32,6 +32,7 @@ export class ListError extends Error {
  * @param {Object.<string, ListInstanceOptions>} listInstanceArgs - each desired list instance options, keyed by an instance name.
  * @returns {Object.<string, ListInstance>} - each list instance, keyed by the instance name.
  */
+
 /* eslint-enable jsdoc/check-types */
 export function useListInstances(listInstanceArgs) {
     const instances = {};
@@ -132,6 +133,8 @@ export function useListInstance({ props, functions = {}, keepOldPages = false })
         loading: undefined,
         errored: false,
         error: null,
+        order: [],
+        objectsInOrder: [],
     });
     const es = effectScope();
 
@@ -249,8 +252,19 @@ export function useListInstance({ props, functions = {}, keepOldPages = false })
         state.error = null;
     }
 
-    state.objectsInOrder = computed(() => Object.values(state.objects));
-    state.order = computed(() => Object.keys(state.objects));
+    es.run(() => {
+        // these do not work as computed properties, may be related to the proxy
+        watch(
+            () => Object.keys(state.objects),
+            () => {
+                assignReactiveObject(state.objectsInOrder, Object.values(state.objects));
+                assignReactiveObject(state.order, Object.keys(state.objects));
+            },
+            {
+                immediate: true,
+            }
+        );
+    });
 
     const returnedObject = {
         state,
