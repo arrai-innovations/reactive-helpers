@@ -221,7 +221,7 @@ export function trimReactiveObject(target, source, exclude, removedKeys = null) 
 }
 
 function checkIfReversed(target, source) {
-    if (target.length !== source.length) {
+    if (target.length !== source.length || target.length === 0) {
         return false;
     }
     let t = target.length - 1,
