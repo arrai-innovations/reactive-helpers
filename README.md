@@ -523,7 +523,7 @@ const managedList = useList({
     },
 });
 // the state expected of each are all available on the same state.
-console.log(managedList.state.value.objects);
+console.log(managedList.state.objects);
 // managed instances can also be accessed directly.
 console.log(managedList.managed);
 /*
@@ -685,7 +685,7 @@ const managedObject = useObject({
     },
 });
 // the state expected of each are all available on the same state.
-console.log(managedObject.state.value.objects);
+console.log(managedObject.state.objects);
 // managed instances can also be accessed directly.
 console.log(managedObject.managed);
 /*
@@ -727,7 +727,7 @@ const source2 = reactive({ b: 5 });
 
 const a = toRef(target, "a");
 const b = toRef(target, "b");
-const mySum = computed(() => (a.value || 0) + (b.value || 0));
+const mySum = computed(() => (unref(a) || 0) + (unref(b) || 0));
 
 console.log(mySum.value); // 1
 assignReactiveObject(target, source);

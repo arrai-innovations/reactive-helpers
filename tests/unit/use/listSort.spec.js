@@ -107,13 +107,16 @@ describe("use/useListSort", () => {
             const listSort = useListSort({ parentState: listInstance.state, orderByRules });
             // sorts immediately
             expect(listSort.state.order).toEqual(testOrder1);
+            expect(listSort.state.objectsInOrder).toEqual(testOrder1.map((id) => listInstance.state.objects[id]));
             await waitForListSort(listSort);
             listInstance.addListObject(addObject);
             await waitForListSort(listSort);
             expect(listSort.state.order).toEqual(testOrder2);
+            expect(listSort.state.objectsInOrder).toEqual(testOrder2.map((id) => listInstance.state.objects[id]));
             listInstance.deleteListObject(12);
             await waitForListSort(listSort);
             expect(listSort.state.order).toEqual(testOrder3);
+            expect(listSort.state.objectsInOrder).toEqual(testOrder3.map((id) => listInstance.state.objects[id]));
         });
     });
     describe("sortWatch sifts various criteria", () => {
@@ -132,18 +135,22 @@ describe("use/useListSort", () => {
             listSort.state.orderByRules.pop();
             listSort.state.orderByRules.push({ key: "lexical_name", desc: false, localeCompare: true });
             expect(listSort.state.order).toEqual(testOrder1);
+            expect(listSort.state.objectsInOrder).toEqual(testOrder1.map((id) => listInstance.state.objects[id]));
             await waitForListSort(listSort);
             expect(listSort.state.order).toEqual(testOrder2);
             listSort.state.orderByRules.pop();
             listSort.state.orderByRules.push({ key: "organization", desc: true, localeCompare: true });
             await waitForListSort(listSort);
             expect(listSort.state.order).toEqual(testOrder3);
+            expect(listSort.state.objectsInOrder).toEqual(testOrder3.map((id) => listInstance.state.objects[id]));
             listSort.state.orderByRules.pop();
             await waitForListSort(listSort);
             expect(listSort.state.order).toEqual(testOrder4);
+            expect(listSort.state.objectsInOrder).toEqual(testOrder4.map((id) => listInstance.state.objects[id]));
             listSort.state.orderByRules.push({ key: "organization", desc: false, localeCompare: false });
             await waitForListSort(listSort);
             expect(listSort.state.order).toEqual(testOrder2);
+            expect(listSort.state.objectsInOrder).toEqual(testOrder2.map((id) => listInstance.state.objects[id]));
         });
     });
     it("useListSorts & useListInstances", async function () {
@@ -269,13 +276,16 @@ describe("use/useListSort", () => {
         }
         await waitForListSort(listSort);
         expect(listSort.state.order).toEqual(["4", "3", "2", "1"]);
+        expect(listSort.state.objectsInOrder.map((obj) => obj.id)).toEqual([4, 3, 2, 1]);
         orderByRules[0].key = "relatedItemName.name";
         await waitForListSort(listSort);
         expect(listSort.state.order).toEqual(["1", "2", "3", "4"]);
+        expect(listSort.state.objectsInOrder.map((obj) => obj.id)).toEqual([1, 2, 3, 4]);
         orderByRules[0].key = "relatedItemName.sameValue";
         orderByRules[1] = { key: "calculatedItem.calculatedItemName", desc: false, localeCompare: false };
         await waitForListSort(listSort);
         expect(listSort.state.order).toEqual(["4", "3", "2", "1"]);
+        expect(listSort.state.objectsInOrder.map((obj) => obj.id)).toEqual([4, 3, 2, 1]);
     });
     describe("useListSort/sortThrottleWait", () => {
         it("respects throttle time prior to triggering", async () => {
@@ -301,25 +311,32 @@ describe("use/useListSort", () => {
 
             const listSort = useListSort({ parentState: listInstance.state, orderByRules, sortThrottleWait });
             expect(listSort.state.order).toEqual(testOrder1);
+            expect(listSort.state.objectsInOrder).toEqual(testOrder1.map((id) => listInstance.state.objects[id]));
 
             // wait for the original throttle to finish
             await doAwaitTimeout(250);
 
             expect(listSort.state.order).toEqual(testOrder2);
+            expect(listSort.state.objectsInOrder).toEqual(testOrder2.map((id) => listInstance.state.objects[id]));
             listInstance.addListObject(addObject);
             expect(listSort.state.order).toEqual(testOrder2);
+            expect(listSort.state.objectsInOrder).toEqual(testOrder2.map((id) => listInstance.state.objects[id]));
             // trigger the leading edge of the throttle
             await doAwaitTimeout(10);
             expect(listSort.state.order).toEqual(testOrder3);
+            expect(listSort.state.objectsInOrder).toEqual(testOrder3.map((id) => listInstance.state.objects[id]));
             // trigger again before the 200ms throttle
             listInstance.deleteListObject(12);
             expect(listSort.state.order).toEqual(testOrder3);
+            expect(listSort.state.objectsInOrder).toEqual(testOrder3.map((id) => listInstance.state.objects[id]));
             // this should trigger before the 200ms throttle
             await doAwaitTimeout(100);
             expect(listSort.state.order).toEqual(testOrder3);
+            expect(listSort.state.objectsInOrder).toEqual(testOrder3.map((id) => listInstance.state.objects[id]));
             // this should trigger after the 200ms throttle
             await doAwaitTimeout(200);
             expect(listSort.state.order).toEqual(testOrder4);
+            expect(listSort.state.objectsInOrder).toEqual(testOrder4.map((id) => listInstance.state.objects[id]));
         });
     });
 });

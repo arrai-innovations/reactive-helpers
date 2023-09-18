@@ -7,6 +7,7 @@ export const listInstanceStateKeys = [
     "errored",
     "error",
     "objectsInOrder",
+    "objectsInOrderRefs",
     "order",
     // when paged
     "totalRecords",
@@ -54,14 +55,16 @@ export const listCalculatedStateKeys = [
 export const listCalculatedFunctions = [];
 
 export const listFilterStateKeys = [
-    "objects",
-    "order",
-    "objectsInOrder",
     "allowedFilter",
     "excludedFilter",
-    "running",
+    "inResults",
+    "objects",
+    "objectsInOrder",
+    "objectsInOrderRefs",
     "objectsWatchRunning",
+    "order",
     "resultsWatchRunning",
+    "running",
 ];
 export const listFilterFunctions = [];
 
@@ -70,6 +73,7 @@ export const listSearchStateKeys = [
     "objects",
     "order",
     "objectsInOrder",
+    "objectsInOrderRefs",
     "textSearchRules",
     "textSearchValue",
     "searched",
@@ -84,6 +88,7 @@ export const listSortStateKeys = [
     "orderByRules",
     "order",
     "objectsInOrder",
+    "objectsInOrderRefs",
     "sortCriteria",
     "orderByDesc",
     "sortCriteriaWatchRunning",

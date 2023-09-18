@@ -9,7 +9,6 @@ import {
     listSearchStateKeys,
 } from "./listKeys.js";
 import { useWatchesRunning } from "./watchesRunning.js";
-import cloneDeep from "lodash-es/cloneDeep.js";
 import get from "lodash-es/get.js";
 import identity from "lodash-es/identity.js";
 import isEmpty from "lodash-es/isEmpty.js";
@@ -19,6 +18,7 @@ import isUndefined from "lodash-es/isUndefined.js";
 import throttle from "lodash-es/throttle.js";
 import zip from "lodash-es/zip.js";
 import { effectScope, reactive, toRef, unref, watch, computed } from "vue";
+import { deepUnref } from "vue-deepunref";
 
 const collator = new Intl.Collator(undefined, { numeric: true });
 
@@ -62,6 +62,7 @@ export function useListSort({ parentState, orderByRules, sortThrottleWait = defa
     const state = reactive({
         orderByRules,
         order: [],
+        objectsInOrderRefs: [],
         objectsInOrder: [],
         sortCriteria: {},
         orderByDesc: [],
@@ -137,8 +138,8 @@ export function useListSort({ parentState, orderByRules, sortThrottleWait = defa
                         removeSortCriteria(removedKey);
                     }
                 }
-                assignReactiveObject(state.order, cloneDeep(parentState.order));
-                assignReactiveObject(state.objectsInOrder, cloneDeep(parentState.objectsInOrder));
+                assignReactiveObject(state.order, deepUnref(parentState.order));
+                assignReactiveObject(state.objectsInOrder, deepUnref(parentState.objectsInOrder));
                 return;
             }
             const { removedKeys, addedKeys } = keyDiff(
@@ -169,8 +170,12 @@ export function useListSort({ parentState, orderByRules, sortThrottleWait = defa
     function sortWatch() {
         try {
             if (!state.orderByRules || !state.orderByRules.length) {
-                assignReactiveObject(state.order, cloneDeep(parentState.order));
-                assignReactiveObject(state.objectsInOrder, cloneDeep(parentState.objectsInOrder));
+                state.order = [...parentState.order];
+                assignReactiveObject(
+                    state.objectsInOrderRefs,
+                    state.order.map((e) => toRef(parentState.objects, e))
+                );
+                3;
                 return;
             }
 
@@ -210,8 +215,11 @@ export function useListSort({ parentState, orderByRules, sortThrottleWait = defa
                 }
                 return 0;
             });
-            assignReactiveObject(state.order, idList);
-            assignReactiveObject(state.objectsInOrder, idList.map((e) => parentState.objects[e]).filter(identity));
+            state.order = idList;
+            assignReactiveObject(
+                state.objectsInOrderRefs,
+                idList.map((e) => toRef(parentState.objects, e))
+            );
         } finally {
             state.sortWatchRunning = false;
             state.outstandingEffects = false;
@@ -243,6 +251,7 @@ export function useListSort({ parentState, orderByRules, sortThrottleWait = defa
             watchSentinelRefs: [toRef(state, "sortCriteriaWatchRunning"), toRef(state, "sortWatchRunning")],
         });
 
+        state.objectsInOrder = computed(() => state.objectsInOrderRefs.map((e) => unref(e)));
         state.sortRunning = computed(() => loadingCombine(watchesRunning.state.running, state.outstandingEffects));
         state.running = computed(() =>
             loadingCombine(watchesRunning.state.running, state.outstandingEffects, parentState.running)

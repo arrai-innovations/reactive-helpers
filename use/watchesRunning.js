@@ -22,7 +22,7 @@ export function useWatchesRunning({ triggerRefs, watchSentinelRefs }) {
             }
         );
         state.running = computed(() => {
-            const values = watchSentinelRefs.map((ref) => ref.value);
+            const values = watchSentinelRefs.map((ref) => unref(ref));
             return loadingCombine(values);
         });
     });

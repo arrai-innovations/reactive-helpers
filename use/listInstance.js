@@ -2,7 +2,7 @@ import { getListCrud } from "../config/listCrud.js";
 import { assignReactiveObject } from "../utils/assignReactiveObject.js";
 import { getFakeId } from "../utils/getFakeId.js";
 import inspect from "browser-util-inspect";
-import { effectScope, reactive, toRef, watch } from "vue";
+import { effectScope, reactive, toRef, watch, computed, unref } from "vue";
 
 export class ListError extends Error {
     constructor(message, code) {
@@ -120,6 +120,10 @@ export function useListInstance({ props, functions = {}, keepOldPages = false })
                   }
                 : Reflect.getOwnPropertyDescriptor(target, p); // we can't report target properties as non-existent re: proxy invariants
         },
+        // things introspect us thing we are a map, we need to pretend to be a object
+        getPrototypeOf() {
+            return Object.prototype;
+        },
     });
     // ### touching the _objectsMap or _objectsProxy directly will not trigger reactivity ###
     const state = reactive({
@@ -135,6 +139,7 @@ export function useListInstance({ props, functions = {}, keepOldPages = false })
         error: null,
         order: [],
         objectsInOrder: [],
+        objectsInOrderRefs: [],
     });
     const es = effectScope();
 
@@ -253,17 +258,21 @@ export function useListInstance({ props, functions = {}, keepOldPages = false })
     }
 
     es.run(() => {
-        // these do not work as computed properties, may be related to the proxy
         watch(
-            () => Object.keys(state.objects),
+            toRef(state, "objects"),
             () => {
-                assignReactiveObject(state.objectsInOrder, Object.values(state.objects));
-                assignReactiveObject(state.order, Object.keys(state.objects));
+                assignReactiveObject(
+                    state.objectsInOrderRefs,
+                    Object.keys(state.objects).map((id) => toRef(state.objects, id))
+                );
             },
             {
                 immediate: true,
+                deep: true,
             }
         );
+        state.objectsInOrder = computed(() => state.objectsInOrderRefs.map((ref) => unref(ref)));
+        state.order = computed(() => Object.keys(state.objects));
     });
 
     const returnedObject = {

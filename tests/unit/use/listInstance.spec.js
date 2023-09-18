@@ -475,14 +475,17 @@ describe("use/listInstance.spec.js", function () {
             prop: "loading",
         });
         expect(listInstance.state.objects).toEqual(crudListResolvedObjects3);
+        expect(listInstance.state.order).toEqual(crudListResolvedPage3.map((e) => e.id.toString()));
         expect(listInstance.state.objectsInOrder).toEqual(crudListResolvedPage3);
         listInstance.addListObject(addObject);
         crudListResolvedPage3.push(addObject);
         await nextTick();
+        expect(listInstance.state.order).toEqual(crudListResolvedPage3.map((e) => e.id.toString()));
         expect(listInstance.state.objectsInOrder).toEqual(crudListResolvedPage3);
         listInstance.deleteListObject(8);
         crudListResolvedPage3.splice(1, 1);
         await nextTick();
+        expect(listInstance.state.order).toEqual(crudListResolvedPage3.map((e) => e.id.toString()));
         expect(listInstance.state.objectsInOrder).toEqual(crudListResolvedPage3);
     });
 });

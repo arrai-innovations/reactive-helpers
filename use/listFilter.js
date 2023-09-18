@@ -11,8 +11,6 @@ import {
 } from "./listKeys.js";
 import { effectScope, reactive, toRef, watch, unref, computed, nextTick } from "vue";
 
-3;
-
 const parentStateKeys = difference(
     new Set([
         ...listInstanceStateKeys,
@@ -37,6 +35,9 @@ const inResults = (state, object, relatedObject, calculatedObject) => {
     const unrefObject = unref(object);
     const unrefRelatedObject = unref(relatedObject);
     const unrefCalculatedObject = unref(calculatedObject);
+    if (!unrefObject) {
+        return false;
+    }
     return !(
         (state.allowedFilter && !state.allowedFilter(unrefObject, unrefRelatedObject, unrefCalculatedObject)) ||
         (state.excludedFilter && state.excludedFilter(unrefObject, unrefRelatedObject, unrefCalculatedObject))
@@ -45,13 +46,14 @@ const inResults = (state, object, relatedObject, calculatedObject) => {
 
 export function useListFilter({ parentState, allowedFilter, excludedFilter }) {
     const state = reactive({
+        allowedFilter,
+        excludedFilter,
         inResults: {},
         objects: {},
         objectsInOrder: [],
-        order: [],
-        allowedFilter,
-        excludedFilter,
+        objectsInOrderRefs: [],
         objectsWatchRunning: undefined,
+        order: [],
         resultsWatchRunning: undefined,
         running: undefined,
     });
@@ -104,11 +106,7 @@ export function useListFilter({ parentState, allowedFilter, excludedFilter }) {
     };
 
     const resultsWatch = async () => {
-        if (parentState.running) {
-            return;
-        }
         state.resultsWatchRunning = true;
-        await nextTick();
         if (state.allowedFilter || state.excludedFilter) {
             assignReactiveObject(
                 state.objects,
@@ -119,21 +117,37 @@ export function useListFilter({ parentState, allowedFilter, excludedFilter }) {
                 )
             );
         }
-
-        nextTick().then(() => {
-            state.resultsWatchRunning = false;
-        });
+        await nextTick();
+        // the watches don't necessarily run in the order we expect, or at all
+        orderWatch();
+        await nextTick();
+        state.resultsWatchRunning = false;
     };
 
     const orderWatch = () => {
-        let desiredOrder = parentState.order.filter((id) => !!state.objects[id]),
-            desiredObjectsInOrder = desiredOrder.map((id) => toRef(state.objects, id));
+        let desiredOrder = parentState.order.filter((id) => !!state.objects[id]);
         if (!state.allowedFilter && !state.excludedFilter) {
             desiredOrder = parentState.order;
-            desiredObjectsInOrder = parentState.objectsInOrder;
         }
-        assignReactiveObject(state.objectsInOrder, desiredObjectsInOrder);
-        assignReactiveObject(state.order, desiredOrder);
+        // order is primitives, references to the parent state order doesn't make sense
+        const entries = Object.entries(desiredOrder);
+        entries.reverse();
+        if (entries.length !== state.order.length) {
+            state.order.length = entries.length;
+            state.objectsInOrderRefs.length = entries.length;
+        }
+        for (const [index, id] of entries) {
+            if (state.order[index] !== id) {
+                state.order[index] = id;
+            }
+            if (unref(toRef(state.objectsInOrderRefs, index)) !== unref(toRef(state.objects, id))) {
+                state.objectsInOrderRefs[index] = toRef(state.objects, id);
+            }
+        }
+        assignReactiveObject(
+            state.objectsInOrderRefs,
+            desiredOrder.map((id) => toRef(state.objects, id))
+        );
     };
 
     es.run(() => {
@@ -148,11 +162,17 @@ export function useListFilter({ parentState, allowedFilter, excludedFilter }) {
         watch(toRef(state, "inResults"), resultsWatch, { deep: true });
 
         watch(toRef(parentState, "order"), orderWatch, { deep: true, immediate: true });
+        state.objectsInOrder = computed(() => state.objectsInOrderRefs.map((e) => unref(e)));
 
         watch(
-            [() => Object.keys(parentState.objects), toRef(state, "allowedFilter"), toRef(state, "excludedFilter")],
+            [
+                toRef(parentState, "objects"),
+                toRef(state, "allowedFilter"),
+                toRef(state, "excludedFilter"),
+                toRef(parentState, "running"),
+            ],
             objectsWatch,
-            { immediate: true }
+            { immediate: true, deep: true }
         );
     });
     return {

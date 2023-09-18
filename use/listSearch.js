@@ -81,6 +81,7 @@ export function useListSearch({ parentState, props, throttle = 500, showAllWhenE
     const state = reactive({
         objects: {},
         objectsInOrder: [],
+        objectsInOrderRefs: [],
         order: [],
         textSearchRules: toRef(props, "textSearchRules"),
         textSearchValue: toRef(props, "textSearchValue"),
@@ -270,13 +271,10 @@ export function useListSearch({ parentState, props, throttle = 500, showAllWhenE
     };
 
     const updateOrder = () => {
+        state.order = parentState.order.filter((id) => !!state.objects[id]);
         assignReactiveObject(
-            state.objectsInOrder,
+            state.objectsInOrderRefs,
             parentState.order.filter((id) => !!state.objects[id]).map((id) => toRef(state.objects, id))
-        );
-        assignReactiveObject(
-            state.order,
-            parentState.order.filter((id) => !!state.objects[id])
         );
     };
 
@@ -309,6 +307,7 @@ export function useListSearch({ parentState, props, throttle = 500, showAllWhenE
         state.running = computed(() => {
             return loadingCombine(parentState.running, state.newSearchComputeds, textSearchIndex.state.running);
         });
+        state.objectsInOrder = computed(() => state.objectsInOrderRefs.map((ref) => unref(ref)));
 
         watch([() => Object.keys(parentState.objects), toRef(state.textSearchRules)], makeComputeds, {
             immediate: true,

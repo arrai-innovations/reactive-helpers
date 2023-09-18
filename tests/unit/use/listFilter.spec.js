@@ -154,10 +154,8 @@ describe("use/listFilter", () => {
                 obj: filter.state,
                 prop: "running",
             });
-            const unrefOrder = deepUnref(filter.state.order);
-            const unrefObjectsInOrder = deepUnref(filter.state.objectsInOrder);
-            expect(unrefOrder).toEqual(expectedOrder);
-            expect(unrefObjectsInOrder).toEqual(orderedObjects);
+            expect(filter.state.order).toEqual(expectedOrder);
+            expect(filter.state.objectsInOrder).toEqual(orderedObjects);
         });
     });
     describe("useListFilters accepts args and parentInstances", () => {
@@ -355,5 +353,149 @@ describe("use/listFilter", () => {
                 1: { id: 1, name: "one", has_things: true, things_count: 4, other_things_count: 3 },
             });
         });
+    });
+    it("you can use nested useListFilters", async () => {
+        const list = useListInstance({ props: {} });
+
+        function filter1AllowedFilter(object) {
+            return object.has_things && object.has_stuff;
+        }
+
+        function filter2AllowedFilter(object) {
+            return object.has_things && object.has_other_stuff;
+        }
+
+        const filter1 = useListFilter({
+            parentState: list.state,
+            allowedFilter: filter1AllowedFilter,
+        });
+        const filter2 = useListFilter({
+            parentState: filter1.state,
+            allowedFilter: filter2AllowedFilter,
+        });
+        await doAwaitNot({
+            obj: filter1.state,
+            prop: "running",
+        });
+        await doAwaitNot({
+            obj: filter2.state,
+            prop: "running",
+        });
+        expect(filter1.state.objects).toEqual({});
+        expect(filter1.state.order).toEqual([]);
+        expect(filter2.state.objects).toEqual({});
+        expect(filter2.state.order).toEqual([]);
+        list.addListObject({ id: 1, name: "one", has_things: true, has_stuff: true, has_other_stuff: true });
+        await doAwaitNot({
+            obj: filter1.state,
+            prop: "running",
+        });
+        await doAwaitNot({
+            obj: filter2.state,
+            prop: "running",
+        });
+        expect(filter1.state.objects).toEqual({
+            1: { id: 1, name: "one", has_things: true, has_stuff: true, has_other_stuff: true },
+        });
+        expect(filter1.state.order).toEqual(["1"]);
+        expect(filter2.state.objects).toEqual({
+            1: { id: 1, name: "one", has_things: true, has_stuff: true, has_other_stuff: true },
+        });
+        expect(filter2.state.order).toEqual(["1"]);
+        list.addListObject({ id: 2, name: "two", has_things: true, has_stuff: true, has_other_stuff: false });
+        await doAwaitNot({
+            obj: filter1.state,
+            prop: "running",
+        });
+        await doAwaitNot({
+            obj: filter2.state,
+            prop: "running",
+        });
+        expect(filter1.state.objects).toEqual({
+            1: { id: 1, name: "one", has_things: true, has_stuff: true, has_other_stuff: true },
+            2: { id: 2, name: "two", has_things: true, has_stuff: true, has_other_stuff: false },
+        });
+        expect(filter1.state.order).toEqual(["1", "2"]);
+        expect(filter2.state.objects).toEqual({
+            1: { id: 1, name: "one", has_things: true, has_stuff: true, has_other_stuff: true },
+        });
+        expect(filter2.state.order).toEqual(["1"]);
+        list.addListObject({ id: 3, name: "three", has_things: true, has_stuff: false, has_other_stuff: true });
+        await doAwaitNot({
+            obj: filter1.state,
+            prop: "running",
+        });
+        await doAwaitNot({
+            obj: filter2.state,
+            prop: "running",
+        });
+        expect(filter1.state.objects).toEqual({
+            1: { id: 1, name: "one", has_things: true, has_stuff: true, has_other_stuff: true },
+            2: { id: 2, name: "two", has_things: true, has_stuff: true, has_other_stuff: false },
+        });
+        expect(filter1.state.order).toEqual(["1", "2"]);
+        expect(filter2.state.objects).toEqual({
+            1: { id: 1, name: "one", has_things: true, has_stuff: true, has_other_stuff: true },
+        });
+        expect(filter2.state.order).toEqual(["1"]);
+        list.addListObject({ id: 4, name: "four", has_things: true, has_stuff: false, has_other_stuff: false });
+        await doAwaitNot({
+            obj: filter1.state,
+            prop: "running",
+        });
+        await doAwaitNot({
+            obj: filter2.state,
+            prop: "running",
+        });
+        expect(filter1.state.objects).toEqual({
+            1: { id: 1, name: "one", has_things: true, has_stuff: true, has_other_stuff: true },
+            2: { id: 2, name: "two", has_things: true, has_stuff: true, has_other_stuff: false },
+        });
+        expect(filter1.state.order).toEqual(["1", "2"]);
+        expect(filter2.state.objects).toEqual({
+            1: { id: 1, name: "one", has_things: true, has_stuff: true, has_other_stuff: true },
+        });
+        expect(filter2.state.order).toEqual(["1"]);
+        list.state.objects[1].has_stuff = false;
+        list.state.objects[2].has_other_stuff = true;
+        await doAwaitNot({
+            obj: filter1.state,
+            prop: "running",
+        });
+        await doAwaitNot({
+            obj: filter2.state,
+            prop: "running",
+        });
+        expect(filter1.state.objects).toEqual({
+            2: { id: 2, name: "two", has_things: true, has_stuff: true, has_other_stuff: true },
+        });
+        expect(filter1.state.order).toEqual(["2"]);
+        expect(filter2.state.objects).toEqual({
+            2: { id: 2, name: "two", has_things: true, has_stuff: true, has_other_stuff: true },
+        });
+        expect(filter2.state.order).toEqual(["2"]);
+        list.addListObject({ id: 5, name: "five", has_things: true, has_stuff: false, has_other_stuff: true });
+        list.addListObject({ id: 6, name: "six", has_things: true, has_stuff: true, has_other_stuff: false });
+        list.addListObject({ id: 7, name: "seven", has_things: false, has_stuff: true, has_other_stuff: true });
+        list.addListObject({ id: 8, name: "eight", has_things: true, has_stuff: true, has_other_stuff: true });
+        await doAwaitNot({
+            obj: filter1.state,
+            prop: "running",
+        });
+        await doAwaitNot({
+            obj: filter2.state,
+            prop: "running",
+        });
+        expect(filter1.state.objects).toEqual({
+            2: { id: 2, name: "two", has_things: true, has_stuff: true, has_other_stuff: true },
+            6: { id: 6, name: "six", has_things: true, has_stuff: true, has_other_stuff: false },
+            8: { id: 8, name: "eight", has_things: true, has_stuff: true, has_other_stuff: true },
+        });
+        expect(filter1.state.order).toEqual(["2", "6", "8"]);
+        expect(filter2.state.objects).toEqual({
+            2: { id: 2, name: "two", has_things: true, has_stuff: true, has_other_stuff: true },
+            8: { id: 8, name: "eight", has_things: true, has_stuff: true, has_other_stuff: true },
+        });
+        expect(filter2.state.order).toEqual(["2", "8"]);
     });
 });
