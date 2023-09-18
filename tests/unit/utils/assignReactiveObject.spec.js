@@ -4,6 +4,7 @@ import {
     AssignReactiveObjectError,
 } from "../../../utils/assignReactiveObject.js";
 import { computed, EffectScope, effectScope, reactive, toRef, unref } from "vue";
+import { deepUnref } from "vue-deepunref";
 
 describe("utils/assignReactiveObject", function () {
     describe("assignReactiveObject", function () {
@@ -182,5 +183,47 @@ describe("utils/assignReactiveObject", function () {
             expect(mySum.value).toBe(10);
         });
         es.stop();
+    });
+    describe("should propagate changes when used to chain multiple levels of reactivity", function () {
+        it("array", function () {
+            // assign reactive object will make lists of refs for each layer, causing refs to refs to refs
+            // this isn't great but consumers should use other methods to avoid this
+            const target = reactive({
+                a: [1, 2, 3],
+            });
+            const source = reactive({
+                a: [4, 5, 6],
+            });
+            const source2 = reactive({
+                a: [7, 8, 9],
+            });
+            expect(source.a).toEqual([4, 5, 6]);
+            assignReactiveObject(target.a, source.a);
+            expect(source.a).toEqual([4, 5, 6]);
+            expect(deepUnref(target.a)).toEqual([4, 5, 6]);
+            assignReactiveObject(source.a, source2.a);
+            expect(source2.a).toEqual([7, 8, 9]);
+            expect(deepUnref(source.a)).toEqual([7, 8, 9]);
+            expect(deepUnref(deepUnref(target.a))).toEqual([7, 8, 9]);
+        });
+        it("object", function () {
+            const target = reactive({
+                a: { b: 1, c: 2, d: 3 },
+            });
+            const source = reactive({
+                a: { b: 4, c: 5, d: 6 },
+            });
+            const source2 = reactive({
+                a: { b: 7, c: 8, d: 9 },
+            });
+            expect(source.a).toEqual({ b: 4, c: 5, d: 6 });
+            assignReactiveObject(target.a, source.a);
+            expect(target.a).toEqual({ b: 4, c: 5, d: 6 });
+            expect(source.a).toEqual({ b: 4, c: 5, d: 6 });
+            assignReactiveObject(source.a, source2.a);
+            expect(source2.a).toEqual({ b: 7, c: 8, d: 9 });
+            expect(source.a).toEqual({ b: 7, c: 8, d: 9 });
+            expect(target.a).toEqual({ b: 7, c: 8, d: 9 });
+        });
     });
 });
