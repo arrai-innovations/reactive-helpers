@@ -42,6 +42,8 @@ export const listRelatedStateKeys = [
     "relatedObjectsWatchRunning",
     "relatedObjectsParentStateObjectsWatchRunning",
     "running",
+    "objAndKeyForIdAndRule",
+    "fkForIdAndRule",
 ];
 export const listRelatedFunctions = [];
 

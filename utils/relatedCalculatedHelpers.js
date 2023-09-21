@@ -15,3 +15,12 @@ export const getObjectRelatedCalculatedByKey = (obj, relatedObj, calculatedObj, 
     }
     return [getObj, getKey];
 };
+
+export const getObjectRelatedByKey = (obj, relatedObj, key) => {
+    let getObj = obj,
+        getKey = key.replace(relatedItemRegex, () => {
+            getObj = relatedObj;
+            return "";
+        });
+    return [getObj, getKey];
+};

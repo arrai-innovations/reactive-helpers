@@ -66,9 +66,6 @@ export function useListCalculated({ parentState, calculatedObjectsRules }) {
     function calculatedObjectsWatch() {
         const calculatedObjectsRulesIsEmpty = !state.calculatedObjectsRules || isEmpty(state.calculatedObjectsRules);
         for (const objectKey of Object.keys(state.calculatedObjects)) {
-            if (!calculatedObjectsEffectScopes[objectKey]) {
-                calculatedObjectsEffectScopes[objectKey] = effectScope();
-            }
             const originalObject = toRef(parentState.objects, objectKey);
             const relatedObject = parentState.relatedObjects
                 ? toRef(parentState.relatedObjects, objectKey)
@@ -91,7 +88,12 @@ export function useListCalculated({ parentState, calculatedObjectsRules }) {
                 addedRuleKeys = [];
             }
             for (const removedRuleKey of removedRuleKeys) {
+                // this is an unofficial api
+                calculatedObjectsObject[removedRuleKey].effect.stop();
                 delete calculatedObjectsObject[removedRuleKey];
+            }
+            if (!calculatedObjectsEffectScopes[objectKey]) {
+                calculatedObjectsEffectScopes[objectKey] = effectScope();
             }
             calculatedObjectsEffectScopes[objectKey].run(() => {
                 for (const addedRuleKey of addedRuleKeys) {

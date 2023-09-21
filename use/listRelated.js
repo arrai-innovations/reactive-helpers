@@ -1,6 +1,7 @@
-import { difference } from "../utils/index.js";
 import { keyDiff } from "../utils/keyDiff.js";
 import { loadingCombine } from "../utils/loadingCombine.js";
+import { getObjectRelatedByKey } from "../utils/relatedCalculatedHelpers.js";
+import { difference } from "../utils/set.js";
 import {
     listSubscriptionStateKeys,
     listInstanceStateKeys,
@@ -15,7 +16,6 @@ import get from "lodash-es/get.js";
 import identity from "lodash-es/identity.js";
 import isArray from "lodash-es/isArray.js";
 import isEmpty from "lodash-es/isEmpty.js";
-import isEqual from "lodash-es/isEqual.js";
 import isUndefined from "lodash-es/isUndefined.js";
 import { computed, effectScope, onScopeDispose, reactive, toRef, unref, watch } from "vue";
 
@@ -43,23 +43,47 @@ export function useListRelateds(instances, args) {
 export function useListRelated({ parentState, relatedObjectsRules }) {
     const state = reactive({
         relatedObjectsRules: relatedObjectsRules,
-        relatedObjects: {},
+        relatedObjects: {
+            // id: {
+            //     rule: list of objects or single object,
+            // },
+        },
+        objAndKeyForIdAndRule: {
+            // id: {
+            //     rule: {
+            //         obj: object,
+            //         key: string,
+            //     },
+            // },
+        },
+        fkForIdAndRule: {
+            // id: {
+            //     rule: list of ids or single id,
+            // },
+        },
         relatedObjectsParentStateObjectsWatchRunning: false,
         relatedObjectsWatchRunning: false,
     });
     const relatedObjectsEffectScopes = {};
 
     function parentStateObjectsWatch() {
-        const { addedKeys, removedKeys } = keyDiff(Object.keys(parentState.objects), Object.keys(state.relatedObjects));
-        for (const removedKey of removedKeys) {
-            delete state.relatedObjects[removedKey];
-            if (relatedObjectsEffectScopes[removedKey]) {
-                relatedObjectsEffectScopes[removedKey].stop();
-                delete relatedObjectsEffectScopes[removedKey];
+        const { addedKeys: addedIds, removedKeys: removedIds } = keyDiff(
+            Object.keys(parentState.objects),
+            Object.keys(state.relatedObjects)
+        );
+        for (const removedId of removedIds) {
+            delete state.relatedObjects[removedId];
+            delete state.objAndKeyForIdAndRule[removedId];
+            delete state.fkForIdAndRule[removedId];
+            if (relatedObjectsEffectScopes[removedId]) {
+                relatedObjectsEffectScopes[removedId].stop();
+                delete relatedObjectsEffectScopes[removedId];
             }
         }
-        for (const addedKey of addedKeys) {
-            state.relatedObjects[addedKey] = {};
+        for (const addedId of addedIds) {
+            state.relatedObjects[addedId] = {};
+            state.objAndKeyForIdAndRule[addedId] = {};
+            state.fkForIdAndRule[addedId] = {};
         }
         state.relatedObjectsParentStateObjectsWatchRunning = false;
     }
@@ -67,66 +91,58 @@ export function useListRelated({ parentState, relatedObjectsRules }) {
     function relatedObjectsWatch() {
         const relatedObjectsRulesIsEmpty = !state.relatedObjectsRules || isEmpty(state.relatedObjectsRules);
         for (const objectKey of Object.keys(state.relatedObjects)) {
-            const relatedObjectsObject = state.relatedObjects[objectKey];
             const originalObjectRef = toRef(parentState.objects, objectKey);
             const relatedObjectRef = toRef(state.relatedObjects, objectKey);
             let removedRuleKeys, addedRuleKeys;
             if (!relatedObjectsRulesIsEmpty) {
                 ({ removedKeys: removedRuleKeys, addedKeys: addedRuleKeys } = keyDiff(
                     Object.keys(state.relatedObjectsRules),
-                    Object.keys(relatedObjectsObject)
+                    Object.keys(state.relatedObjects[objectKey])
                 ));
             } else {
-                if (isEmpty(relatedObjectsObject)) {
+                if (isEmpty(state.relatedObjects[objectKey])) {
                     return;
                 }
-                removedRuleKeys = Object.keys(relatedObjectsObject);
-                addedRuleKeys = [];
+                removedRuleKeys = new Set(Object.keys(state.relatedObjects[objectKey]));
+                addedRuleKeys = new Set();
             }
             for (const removedRuleKey of removedRuleKeys) {
-                delete relatedObjectsObject[removedRuleKey];
+                state.relatedObjects[objectKey][removedRuleKey]?.effect?.stop();
+                delete state.relatedObjects[objectKey][removedRuleKey];
+                state.objAndKeyForIdAndRule[objectKey][removedRuleKey]?.effect?.stop();
+                delete state.objAndKeyForIdAndRule[objectKey][removedRuleKey];
+                state.fkForIdAndRule[objectKey][removedRuleKey]?.effect?.stop();
+                delete state.fkForIdAndRule[objectKey][removedRuleKey];
             }
-            if (!relatedObjectsEffectScopes[objectKey]) {
-                relatedObjectsEffectScopes[objectKey] = effectScope();
-            }
-            relatedObjectsEffectScopes[objectKey].run(() => {
-                for (const addedRuleKey of addedRuleKeys) {
-                    relatedObjectsObject[addedRuleKey] = undefined;
-                    const relatedObjectsObjectWatchFn = () => {
-                        // deal with computed objects being passed.
-                        const ruleObjects = unref(state.relatedObjectsRules?.[addedRuleKey]?.objects);
-                        const rulePkKey = state.relatedObjectsRules?.[addedRuleKey]?.pkKey || addedRuleKey;
-                        const ruleOrder = unref(state.relatedObjectsRules?.[addedRuleKey]?.order);
-                        if (!ruleObjects || !rulePkKey) {
-                            if (!isUndefined(relatedObjectsObject[addedRuleKey])) {
-                                relatedObjectsObject[addedRuleKey] = undefined;
-                            }
-                            return;
-                        }
-                        let value;
-                        if (rulePkKey.startsWith("relatedItem.")) {
-                            value = get(unref(relatedObjectRef), rulePkKey.slice(12));
-                            if (isUndefined(value)) {
+            if (addedRuleKeys.size) {
+                if (!relatedObjectsEffectScopes[objectKey]) {
+                    relatedObjectsEffectScopes[objectKey] = effectScope();
+                }
+                relatedObjectsEffectScopes[objectKey].run(() => {
+                    for (const addedRuleKey of addedRuleKeys) {
+                        const rules = toRef(state.relatedObjectsRules, addedRuleKey);
+                        state.objAndKeyForIdAndRule[objectKey][addedRuleKey] = computed(() => {
+                            const rulePkKey = unref(rules).pkKey || addedRuleKey;
+                            const object = unref(originalObjectRef);
+                            const relatedObject = unref(relatedObjectRef);
+                            return getObjectRelatedByKey(object, relatedObject, rulePkKey);
+                        });
+
+                        state.fkForIdAndRule[objectKey][addedRuleKey] = computed(() => {
+                            const ruleOrder = unref(rules).order;
+                            const relatedObject = unref(relatedObjectRef);
+                            const [objectForGet, key] = unref(state.objAndKeyForIdAndRule[objectKey][addedRuleKey]);
+                            let value = get(objectForGet, key);
+                            if (objectForGet === relatedObject && isUndefined(value)) {
                                 // is the first level an array?
-                                const firstLevelKey = rulePkKey.slice(12).split(".")[0];
-                                const firstLevelItem = get(unref(relatedObjectRef), firstLevelKey);
+                                const firstLevelKey = key.split(".")[0];
+                                const firstLevelItem = get(relatedObject, firstLevelKey);
                                 if (isArray(firstLevelItem)) {
-                                    const restOfKey = rulePkKey.slice(12 + firstLevelKey.length + 1);
+                                    const restOfKey = key.slice(firstLevelKey.length + 1);
                                     value = firstLevelItem.map((e) => get(e, restOfKey)).flat();
                                 }
                             }
-                        } else {
-                            value = get(unref(originalObjectRef), rulePkKey);
-                        }
-                        if (isUndefined(value)) {
-                            if (!isUndefined(relatedObjectsObject[addedRuleKey])) {
-                                relatedObjectsObject[addedRuleKey] = undefined;
-                            }
-                            return;
-                        }
-                        if (isArray(value)) {
-                            // the related list could be sorted differently than the original list.
-                            if (ruleOrder?.length) {
+                            if (isArray(value) && ruleOrder?.length) {
                                 value = value.filter(identity);
                                 const indexById = Object.fromEntries(ruleOrder.map((e, i) => [e, i]));
                                 value.sort((a, b) => {
@@ -135,24 +151,20 @@ export function useListRelated({ parentState, relatedObjectsRules }) {
                                     return aIndex - bIndex;
                                 });
                             }
-                            value = value.map((e) => ruleObjects[e]).filter(identity);
-                        } else {
-                            value = ruleObjects[value];
-                        }
-                        if (!isEqual(value, relatedObjectsObject[addedRuleKey])) {
-                            relatedObjectsObject[addedRuleKey] = value;
-                        }
-                    };
-                    watch(
-                        [toRef(state.relatedObjectsRules, addedRuleKey), originalObjectRef, relatedObjectRef],
-                        relatedObjectsObjectWatchFn,
-                        {
-                            deep: true,
-                            immediate: true,
-                        }
-                    );
-                }
-            });
+                            return value;
+                        });
+
+                        state.relatedObjects[objectKey][addedRuleKey] = computed(() => {
+                            const value = unref(state.fkForIdAndRule[objectKey][addedRuleKey]);
+                            const objects = unref(rules).objects;
+                            if (isArray(value)) {
+                                return value.map((e) => objects[e]).filter(identity);
+                            }
+                            return objects[value];
+                        });
+                    }
+                });
+            }
         }
         state.relatedObjectsWatchRunning = false;
     }
@@ -168,10 +180,7 @@ export function useListRelated({ parentState, relatedObjectsRules }) {
 
         watch(() => Object.keys(parentState.objects), parentStateObjectsWatch, { immediate: true });
         watch(
-            [
-                () => Object.keys(state.relatedObjects),
-                () => (state.relatedObjectsRules ? Object.keys(state.relatedObjectsRules) : state.relatedObjectsRules),
-            ],
+            [() => Object.keys(state.relatedObjects), () => Object.keys(state.relatedObjectsRules || {})],
             relatedObjectsWatch,
             { immediate: true }
         );
