@@ -18,7 +18,6 @@ import isUndefined from "lodash-es/isUndefined.js";
 import throttle from "lodash-es/throttle.js";
 import zip from "lodash-es/zip.js";
 import { effectScope, reactive, toRef, unref, watch, computed } from "vue";
-import { deepUnref } from "vue-deepunref";
 
 const collator = new Intl.Collator(undefined, { numeric: true });
 
@@ -132,14 +131,17 @@ export function useListSort({ parentState, orderByRules, sortThrottleWait = defa
 
     function sortCriteriaWatch() {
         try {
-            if (!state.orderByRules || !state.orderByRules.filter(identity).length) {
+            if (!state.orderByRules?.length || !state.orderByRules.filter(identity).length) {
                 if (!isEmpty(state.sortCriteria)) {
                     for (const removedKey of Object.keys(state.sortCriteria)) {
                         removeSortCriteria(removedKey);
                     }
                 }
-                assignReactiveObject(state.order, deepUnref(parentState.order));
-                assignReactiveObject(state.objectsInOrder, deepUnref(parentState.objectsInOrder));
+                state.order = [...parentState.order];
+                assignReactiveObject(
+                    state.objectsInOrderRefs,
+                    state.order.map((e) => toRef(parentState.objects, e))
+                );
                 return;
             }
             const { removedKeys, addedKeys } = keyDiff(
@@ -152,9 +154,9 @@ export function useListSort({ parentState, orderByRules, sortThrottleWait = defa
 
             es.run(() => {
                 for (const addedKey of addedKeys) {
-                    const object = toRef(() => parentState.objects[addedKey]);
-                    const relatedObj = toRef(() => parentState.relatedObjects?.[addedKey]);
-                    const calculatedObj = toRef(() => parentState.calculatedObjects?.[addedKey]);
+                    const object = toRef(parentState.objects, addedKey);
+                    const relatedObj = toRef(parentState.relatedObjects, addedKey);
+                    const calculatedObj = toRef(parentState.calculatedObjects, addedKey);
                     addSortCriteria(object, relatedObj, calculatedObj, addedKey);
                 }
             });
@@ -169,17 +171,15 @@ export function useListSort({ parentState, orderByRules, sortThrottleWait = defa
 
     function sortWatch() {
         try {
-            if (!state.orderByRules || !state.orderByRules.length) {
+            if (!state.orderByRules?.length) {
                 state.order = [...parentState.order];
                 assignReactiveObject(
                     state.objectsInOrderRefs,
                     state.order.map((e) => toRef(parentState.objects, e))
                 );
-                3;
                 return;
             }
-
-            let idList = Object.keys(parentState.objects);
+            let idList = [...parentState.order];
             idList.sort((xKey, yKey) => {
                 const xCriteria = state.sortCriteria[xKey];
                 const yCriteria = state.sortCriteria[yKey];
@@ -238,9 +238,7 @@ export function useListSort({ parentState, orderByRules, sortThrottleWait = defa
         watch([toRef(state, "orderByDesc"), toRef(state, "sortCriteria")], throttledSortWatch, {
             deep: true,
         });
-        // we do not need two immediate watches to the same function.
-        watch(() => Object.keys(parentState.objects), sortCriteriaWatch);
-        watch(toRef(state, "orderByRules"), sortCriteriaWatch, {
+        watch([toRef(state, "orderByRules"), toRef(parentState, "order")], sortCriteriaWatch, {
             deep: true,
             immediate: true,
         });

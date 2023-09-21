@@ -1,5 +1,5 @@
-import { doAwaitTimeout } from "../../../utils/index.js";
-import { reactive } from "vue";
+import { doAwaitTimeout, doAwaitNot } from "../../../utils/index.js";
+import { reactive, ref } from "vue";
 import { deepUnref } from "vue-deepunref";
 
 describe("use/useListSort", () => {
@@ -10,6 +10,7 @@ describe("use/useListSort", () => {
         useListInstances,
         useListRelated,
         useListCalculated,
+        useListFilter,
         useListSort,
         useListSorts,
         setListSortDefaultOptions,
@@ -46,6 +47,7 @@ describe("use/useListSort", () => {
         useListInstances = imported.useListInstances;
         useListRelated = imported.useListRelated;
         useListCalculated = imported.useListCalculated;
+        useListFilter = imported.useListFilter;
         orderByRules = [
             { key: "organization", desc: true, localeCompare: false },
             { key: "lexical_name", desc: false, localeCompare: true },
@@ -338,5 +340,57 @@ describe("use/useListSort", () => {
             expect(listSort.state.order).toEqual(testOrder4);
             expect(listSort.state.objectsInOrder).toEqual(testOrder4.map((id) => listInstance.state.objects[id]));
         });
+    });
+    it("pass through correctly when parentState changes their order", async () => {
+        const listInstance = useListInstance({
+            props: reactive({}),
+        });
+        const allowedFilter = ref((obj) => obj.name !== "two");
+        const listFilter = useListFilter({
+            parentState: listInstance.state,
+            allowedFilter,
+        });
+        const orderByRules = ref([]);
+        const listSort = useListSort({
+            parentState: listFilter.state,
+            orderByRules,
+        });
+        await doAwaitNot({
+            obj: listFilter.state,
+            prop: "running",
+        });
+        await waitForListSort(listSort);
+        expect(listFilter.state.order).toEqual([]);
+        expect(listFilter.state.objectsInOrder.map((obj) => obj.id)).toEqual([]);
+        expect(listSort.state.order).toEqual([]);
+        expect(listSort.state.objectsInOrder.map((obj) => obj.id)).toEqual([]);
+        listInstance.addListObject({ id: 1, name: "one" });
+        listInstance.addListObject({ id: 2, name: "two" });
+        listInstance.addListObject({ id: 3, name: "three" });
+        await doAwaitNot({
+            obj: listFilter.state,
+            prop: "running",
+        });
+        await waitForListSort(listSort);
+        expect(listFilter.state.order).toEqual(["1", "3"]);
+        expect(listFilter.state.objectsInOrder.map((obj) => obj.id)).toEqual([1, 3]);
+        expect(listSort.state.order).toEqual(["1", "3"]);
+        expect(listSort.state.objectsInOrder.map((obj) => obj.id)).toEqual([1, 3]);
+        listInstance.updateListObject({ id: 2, name: "twotwo" });
+        await doAwaitNot({
+            obj: listFilter.state,
+            prop: "running",
+        });
+        await waitForListSort(listSort);
+        expect(listSort.state.order).toEqual(["1", "2", "3"]);
+        expect(listSort.state.objectsInOrder.map((obj) => obj.id)).toEqual([1, 2, 3]);
+        listInstance.updateListObject({ id: 2, name: "two" });
+        await doAwaitNot({
+            obj: listFilter.state,
+            prop: "running",
+        });
+        await waitForListSort(listSort);
+        expect(listSort.state.order).toEqual(["1", "3"]);
+        expect(listSort.state.objectsInOrder.map((obj) => obj.id)).toEqual([1, 3]);
     });
 });
