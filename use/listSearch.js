@@ -274,7 +274,7 @@ export function useListSearch({ parentState, props, throttle = 500, showAllWhenE
         state.order = parentState.order.filter((id) => !!state.objects[id]);
         assignReactiveObject(
             state.objectsInOrderRefs,
-            parentState.order.filter((id) => !!state.objects[id]).map((id) => toRef(state.objects, id))
+            state.order.map((id) => toRef(state.objects, id))
         );
     };
 
@@ -336,7 +336,7 @@ export function useListSearch({ parentState, props, throttle = 500, showAllWhenE
             }
         );
 
-        watch(toRef(parentState, "order"), updateOrder, {
+        watch([() => Object.keys(state.objects), toRef(parentState, "order")], updateOrder, {
             immediate: true,
             deep: true,
         });

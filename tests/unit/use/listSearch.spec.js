@@ -3,7 +3,7 @@ import { nextTick, reactive, ref, unref } from "vue";
 import { deepUnref } from "vue-deepunref";
 
 describe("use/listSearch", () => {
-    let useListInstance, useListSearch, useListSearches, useListSort, useListRelated, useListCalculated;
+    let useListInstance, useListSearch, useListSearches, useListSort, useListRelated, useListCalculated, useListFilter;
     beforeEach(async () => {
         const listInstanceModule = await import("../../../use/listInstance");
         useListInstance = listInstanceModule.useListInstance;
@@ -16,6 +16,8 @@ describe("use/listSearch", () => {
         useListRelated = listRelatedModule.useListRelated;
         const listCalculatedModule = await import("../../../use/listCalculated");
         useListCalculated = listCalculatedModule.useListCalculated;
+        const listFilterModule = await import("../../../use/listFilter");
+        useListFilter = listFilterModule.useListFilter;
     });
     it("should match by search term", async () => {
         const textSearchValue = ref("one");
@@ -501,5 +503,77 @@ describe("use/listSearch", () => {
             obj: search.state,
             prop: "running",
         });
+    });
+    it("should update when parentState is filtered in pass through mode.", async () => {
+        const listInstance = useListInstance({
+            props: {},
+        });
+        const allowedFilter = ref((obj) => !obj.filtered);
+        const listFilter = useListFilter({
+            parentState: listInstance.state,
+            allowedFilter,
+        });
+        const textSearchValue = ref("");
+        const listSearch = useListSearch({
+            parentState: listFilter.state,
+            props: reactive({
+                textSearchRules: ["name"],
+                textSearchValue,
+            }),
+            throttle: 20,
+        });
+        await doAwaitNot({
+            obj: listSearch.state,
+            prop: "running",
+        });
+        expect(listSearch.state.objects).toEqual({});
+        expect(listSearch.state.order).toEqual([]);
+        expect(listSearch.state.objectsInOrder).toEqual([]);
+        listInstance.addListObject({
+            id: 1,
+            filtered: false,
+        });
+        listInstance.addListObject({
+            id: 2,
+            filtered: true,
+        });
+        listInstance.addListObject({
+            id: 3,
+            filtered: false,
+        });
+        await doAwaitNot({
+            obj: listSearch.state,
+            prop: "running",
+        });
+        expect(listSearch.state.objects).toEqual({
+            1: {
+                id: 1,
+                filtered: false,
+            },
+            3: {
+                id: 3,
+                filtered: false,
+            },
+        });
+        expect(listSearch.state.order).toEqual(["1", "3"]);
+        expect(listSearch.state.objectsInOrder.map((e) => e.id)).toEqual([1, 3]);
+        listInstance.state.objects[2].filtered = false;
+        listInstance.state.objects[1].filtered = true;
+        await doAwaitNot({
+            obj: listSearch.state,
+            prop: "running",
+        });
+        expect(listSearch.state.objects).toEqual({
+            2: {
+                id: 2,
+                filtered: false,
+            },
+            3: {
+                id: 3,
+                filtered: false,
+            },
+        });
+        expect(listSearch.state.order).toEqual(["2", "3"]);
+        expect(listSearch.state.objectsInOrder.map((e) => e.id)).toEqual([2, 3]);
     });
 });
