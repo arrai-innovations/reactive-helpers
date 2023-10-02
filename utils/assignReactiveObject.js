@@ -309,7 +309,7 @@ function recursiveInner(target, source, exclude, addedKeys, sameKeys, path, fn) 
     const keysForRecurse = [];
     const keysForReplace = [];
     for (const key of sameKeys) {
-        if (!exclude.includes(key)) {
+        if (!exclude?.includes(key)) {
             if (isObject(source[key]) && isObject(target[key])) {
                 keysForRecurse.push(key);
             } else if (target[key] !== source[key]) {
