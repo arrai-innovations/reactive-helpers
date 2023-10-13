@@ -5,8 +5,11 @@ export class ImmediateStopWatch {
     constructor() {}
 
     // watchFuncArgs are for immediate call only.
-    start(watchSources, watchFunc, watchFuncArgs = []) {
-        this.stopWatch = watch(watchSources, watchFunc);
+    start(watchSources, watchFunc, watchFuncArgs = [], watchOptions = {}) {
+        if (watchOptions.immediate) {
+            throw new Error("ImmediateStopWatch is always immediate.");
+        }
+        this.stopWatch = watch(watchSources, watchFunc, watchOptions);
         watchFunc(...watchFuncArgs);
     }
 
