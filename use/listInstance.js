@@ -100,6 +100,9 @@ export function useListInstance({ props, functions = {}, keepOldPages = false })
         },
         set(target, prop, value) {
             target.set(prop, value); // map.set() returns the map, we don't need that
+            if (!state.running) {
+                state.running = true;
+            }
             return true;
         },
         ownKeys(target) {
@@ -135,6 +138,7 @@ export function useListInstance({ props, functions = {}, keepOldPages = false })
         listArgs: toRef(props, "listArgs"),
         objects: _objectsProxy,
         loading: undefined,
+        running: false,
         errored: false,
         error: null,
         order: [],
@@ -218,6 +222,9 @@ export function useListInstance({ props, functions = {}, keepOldPages = false })
             throw new ListError(`addListObject: list already has object for id: ${inspect(object.id)}`, "duplicate-id");
         }
         state.objects[object.id] = object;
+        if (!state.running) {
+            state.running = true;
+        }
     }
 
     function updateListObject(object) {
@@ -231,6 +238,9 @@ export function useListInstance({ props, functions = {}, keepOldPages = false })
             );
         }
         assignReactiveObject(state.objects[object.id], object);
+        if (!state.running) {
+            state.running = true;
+        }
     }
 
     function deleteListObject(objectId) {
@@ -241,6 +251,9 @@ export function useListInstance({ props, functions = {}, keepOldPages = false })
             );
         }
         delete state.objects[objectId];
+        if (!state.running) {
+            state.running = true;
+        }
     }
 
     function clearList() {
@@ -265,6 +278,9 @@ export function useListInstance({ props, functions = {}, keepOldPages = false })
                     state.objectsInOrderRefs,
                     Object.keys(state.objects).map((id) => toRef(state.objects, id))
                 );
+                if (state.running) {
+                    state.running = false;
+                }
             },
             {
                 immediate: true,

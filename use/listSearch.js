@@ -1,18 +1,19 @@
-import { difference, loadingCombine, assignReactiveObject, keyDiff } from "../utils/index.js";
+import { assignReactiveObject, difference, keyDiff, loadingCombine } from "../utils/index.js";
+import { proxyRunning } from "../utils/proxyRunning.js";
 import { getObjectRelatedCalculatedByKey } from "../utils/relatedCalculatedHelpers.js";
 import {
-    listInstanceStateKeys,
-    listSubscriptionStateKeys,
-    listRelatedStateKeys,
     listCalculatedStateKeys,
-    listSortStateKeys,
     listFilterStateKeys,
+    listInstanceStateKeys,
+    listRelatedStateKeys,
     listSearchStateKeys,
+    listSortStateKeys,
+    listSubscriptionStateKeys,
 } from "./listKeys.js";
 import { useSearch } from "./search.js";
 import get from "lodash-es/get.js";
 import isEqual from "lodash-es/isEqual.js";
-import { reactive, effectScope, toRef, computed, watch, unref, onScopeDispose } from "vue";
+import { computed, effectScope, onScopeDispose, reactive, ref, toRef, unref, watch } from "vue";
 import { deepUnref } from "vue-deepunref";
 
 const parentStateKeys = difference(
@@ -304,8 +305,10 @@ export function useListSearch({ parentState, props, throttle = 500, showAllWhenE
         textSearchIndex.state.search = toRef(state, "textSearchValue");
         textSearchIndex.events.addEventListener("newIndex", indexWasCleared);
         state.searched = toRef(() => textSearchIndex.state.searched);
+        const parentRunning = ref(undefined);
+        proxyRunning(parentState, "running", parentRunning);
         state.running = computed(() => {
-            return loadingCombine(parentState.running, state.newSearchComputeds, textSearchIndex.state.running);
+            return loadingCombine(parentRunning.value, state.newSearchComputeds, textSearchIndex.state.running);
         });
         state.objectsInOrder = computed(() => state.objectsInOrderRefs.map((ref) => unref(ref)));
 

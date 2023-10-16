@@ -1,6 +1,6 @@
 import { useListFilters, useListSort } from "../../../use/index.js";
 import { doAwaitNot } from "../../../utils/watches.js";
-import { ref, unref, reactive } from "vue";
+import { reactive, ref, unref } from "vue";
 import { deepUnref } from "vue-deepunref";
 
 describe("use/listFilter", () => {
@@ -121,6 +121,10 @@ describe("use/listFilter", () => {
         }
         const filter = useListFilter({
             parentState: listInstance.state,
+        });
+        await doAwaitNot({
+            obj: filter.state,
+            prop: "running",
         });
         expect(filter.state.objects).toEqual(listInstance.state.objects);
     });
@@ -374,10 +378,6 @@ describe("use/listFilter", () => {
             allowedFilter: filter2AllowedFilter,
         });
         await doAwaitNot({
-            obj: filter1.state,
-            prop: "running",
-        });
-        await doAwaitNot({
             obj: filter2.state,
             prop: "running",
         });
@@ -386,10 +386,6 @@ describe("use/listFilter", () => {
         expect(filter2.state.objects).toEqual({});
         expect(filter2.state.order).toEqual([]);
         list.addListObject({ id: 1, name: "one", has_things: true, has_stuff: true, has_other_stuff: true });
-        await doAwaitNot({
-            obj: filter1.state,
-            prop: "running",
-        });
         await doAwaitNot({
             obj: filter2.state,
             prop: "running",
@@ -403,10 +399,6 @@ describe("use/listFilter", () => {
         });
         expect(filter2.state.order).toEqual(["1"]);
         list.addListObject({ id: 2, name: "two", has_things: true, has_stuff: true, has_other_stuff: false });
-        await doAwaitNot({
-            obj: filter1.state,
-            prop: "running",
-        });
         await doAwaitNot({
             obj: filter2.state,
             prop: "running",
@@ -422,10 +414,6 @@ describe("use/listFilter", () => {
         expect(filter2.state.order).toEqual(["1"]);
         list.addListObject({ id: 3, name: "three", has_things: true, has_stuff: false, has_other_stuff: true });
         await doAwaitNot({
-            obj: filter1.state,
-            prop: "running",
-        });
-        await doAwaitNot({
             obj: filter2.state,
             prop: "running",
         });
@@ -439,10 +427,6 @@ describe("use/listFilter", () => {
         });
         expect(filter2.state.order).toEqual(["1"]);
         list.addListObject({ id: 4, name: "four", has_things: true, has_stuff: false, has_other_stuff: false });
-        await doAwaitNot({
-            obj: filter1.state,
-            prop: "running",
-        });
         await doAwaitNot({
             obj: filter2.state,
             prop: "running",
@@ -459,10 +443,6 @@ describe("use/listFilter", () => {
         list.state.objects[1].has_stuff = false;
         list.state.objects[2].has_other_stuff = true;
         await doAwaitNot({
-            obj: filter1.state,
-            prop: "running",
-        });
-        await doAwaitNot({
             obj: filter2.state,
             prop: "running",
         });
@@ -478,10 +458,6 @@ describe("use/listFilter", () => {
         list.addListObject({ id: 6, name: "six", has_things: true, has_stuff: true, has_other_stuff: false });
         list.addListObject({ id: 7, name: "seven", has_things: false, has_stuff: true, has_other_stuff: true });
         list.addListObject({ id: 8, name: "eight", has_things: true, has_stuff: true, has_other_stuff: true });
-        await doAwaitNot({
-            obj: filter1.state,
-            prop: "running",
-        });
         await doAwaitNot({
             obj: filter2.state,
             prop: "running",

@@ -1,12 +1,13 @@
-import { assignReactiveObject, keyDiff, loadingCombine, difference } from "../utils/index.js";
+import { assignReactiveObject, difference, keyDiff, loadingCombine } from "../utils/index.js";
+import { proxyRunning } from "../utils/proxyRunning.js";
 import {
-    listSortStateKeys,
-    listFilterStateKeys,
-    listRelatedStateKeys,
     listCalculatedStateKeys,
-    listSubscriptionStateKeys,
+    listFilterStateKeys,
     listInstanceStateKeys,
+    listRelatedStateKeys,
     listSearchStateKeys,
+    listSortStateKeys,
+    listSubscriptionStateKeys,
 } from "./listKeys.js";
 import { useWatchesRunning } from "./watchesRunning.js";
 import get from "lodash-es/get.js";
@@ -17,7 +18,7 @@ import isNull from "lodash-es/isNull.js";
 import isUndefined from "lodash-es/isUndefined.js";
 import throttle from "lodash-es/throttle.js";
 import zip from "lodash-es/zip.js";
-import { effectScope, reactive, toRef, unref, watch, computed } from "vue";
+import { computed, effectScope, reactive, ref, toRef, unref, watch } from "vue";
 
 const collator = new Intl.Collator(undefined, { numeric: true });
 
@@ -251,8 +252,10 @@ export function useListSort({ parentState, orderByRules, sortThrottleWait = defa
 
         state.objectsInOrder = computed(() => state.objectsInOrderRefs.map((e) => unref(e)));
         state.sortRunning = computed(() => loadingCombine(watchesRunning.state.running, state.outstandingEffects));
+        const parentRunning = ref(undefined);
+        proxyRunning(parentState, "running", parentRunning);
         state.running = computed(() =>
-            loadingCombine(watchesRunning.state.running, state.outstandingEffects, parentState.running)
+            loadingCombine(watchesRunning.state.running, state.outstandingEffects, parentRunning.value)
         );
     });
 

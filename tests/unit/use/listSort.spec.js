@@ -1,4 +1,4 @@
-import { doAwaitTimeout, doAwaitNot } from "../../../utils/index.js";
+import { doAwaitNot, doAwaitTimeout } from "../../../utils/index.js";
 import { reactive, ref } from "vue";
 import { deepUnref } from "vue-deepunref";
 
@@ -13,8 +13,7 @@ describe("use/useListSort", () => {
         useListFilter,
         useListSort,
         useListSorts,
-        setListSortDefaultOptions,
-        AwaitNot;
+        setListSortDefaultOptions;
     const contactsResolved = [
         {
             id: 15,
@@ -65,20 +64,17 @@ describe("use/useListSort", () => {
         setListSortDefaultOptions({
             sortThrottleWait: 0,
         });
-        const importedUtils = await import("../../../utils");
-        AwaitNot = importedUtils.AwaitNot;
     });
 
     afterEach(() => vi.resetAllMocks());
 
     const waitForListSort = async (listSort) => {
-        const anr = new AwaitNot({
+        await doAwaitNot({
             obj: listSort.state,
             prop: "running",
             timeout: 2000,
+            couldAlreadyBeFalse: false,
         });
-        anr.start();
-        await anr.promise;
     };
 
     it("generates initial values from inputs", () => {
@@ -106,6 +102,10 @@ describe("use/useListSort", () => {
             for (const contact of contactsResolved) {
                 listInstance.addListObject(contact);
             }
+            await doAwaitNot({
+                obj: listInstance.state,
+                prop: "running",
+            });
             const listSort = useListSort({ parentState: listInstance.state, orderByRules });
             // sorts immediately
             expect(listSort.state.order).toEqual(testOrder1);

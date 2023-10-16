@@ -4,6 +4,7 @@ export const listInstanceStateKeys = [
     "listArgs",
     "objects",
     "loading",
+    "running",
     "errored",
     "error",
     "objectsInOrder",

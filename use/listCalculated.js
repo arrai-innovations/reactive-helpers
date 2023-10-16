@@ -1,12 +1,13 @@
-import { keyDiff, loadingCombine, difference } from "../utils/index.js";
+import { difference, keyDiff, loadingCombine } from "../utils/index.js";
+import { proxyRunning } from "../utils/proxyRunning.js";
 import {
-    listRelatedStateKeys,
-    listSubscriptionStateKeys,
-    listInstanceStateKeys,
-    listFilterStateKeys,
     listCalculatedStateKeys,
-    listSortStateKeys,
+    listFilterStateKeys,
+    listInstanceStateKeys,
+    listRelatedStateKeys,
     listSearchStateKeys,
+    listSortStateKeys,
+    listSubscriptionStateKeys,
 } from "./listKeys.js";
 import { useWatchesRunning } from "./watchesRunning.js";
 import isEmpty from "lodash-es/isEmpty.js";
@@ -145,7 +146,9 @@ export function useListCalculated({ parentState, calculatedObjectsRules }) {
         });
 
         state.calculatedRunning = toRef(watchesRunning.state, "running");
-        state.running = computed(() => loadingCombine(watchesRunning.state.running, parentState.running));
+        const parentRunning = ref(undefined);
+        proxyRunning(parentState, "running", parentRunning);
+        state.running = computed(() => loadingCombine(watchesRunning.state.running, parentRunning.value));
 
         onScopeDispose(() => {
             for (const objectKey of Object.keys(calculatedObjectsEffectScopes)) {

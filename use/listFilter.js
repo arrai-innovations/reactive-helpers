@@ -1,15 +1,16 @@
 import { assignReactiveObject, difference, loadingCombine } from "../utils/index.js";
 import { keyDiff } from "../utils/keyDiff.js";
+import { proxyRunning } from "../utils/proxyRunning.js";
 import {
-    listSortStateKeys,
-    listFilterStateKeys,
-    listRelatedStateKeys,
     listCalculatedStateKeys,
-    listSubscriptionStateKeys,
+    listFilterStateKeys,
     listInstanceStateKeys,
+    listRelatedStateKeys,
     listSearchStateKeys,
+    listSortStateKeys,
+    listSubscriptionStateKeys,
 } from "./listKeys.js";
-import { effectScope, reactive, toRef, watch, unref, computed, nextTick } from "vue";
+import { computed, effectScope, nextTick, reactive, ref, toRef, unref, watch } from "vue";
 
 const parentStateKeys = difference(
     new Set([
@@ -71,9 +72,6 @@ export function useListFilter({ parentState, allowedFilter, excludedFilter }) {
         previousExcludedFilter = null;
 
     const objectsWatch = () => {
-        if (parentState.running) {
-            return;
-        }
         state.objectsWatchRunning = true;
         const allowedOrExcludedFilterChanged =
             allowedFilter !== previousAllowedFilter || excludedFilter !== previousExcludedFilter;
@@ -155,8 +153,10 @@ export function useListFilter({ parentState, allowedFilter, excludedFilter }) {
             state[key] = toRef(parentState, key);
         }
 
+        const parentRunning = ref(undefined);
+        proxyRunning(parentState, "running", parentRunning);
         state.running = computed(() => {
-            return loadingCombine(parentState.running, state.objectsWatchRunning, state.resultsWatchRunning);
+            return loadingCombine(parentRunning.value, state.objectsWatchRunning, state.resultsWatchRunning);
         });
 
         watch(toRef(state, "inResults"), resultsWatch, { deep: true });

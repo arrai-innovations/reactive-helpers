@@ -1,3 +1,4 @@
+import { proxyRunning } from "../utils/index.js";
 import { keyDiff } from "../utils/keyDiff.js";
 import { loadingCombine } from "../utils/loadingCombine.js";
 import { objectInstanceStateKeys } from "./objectInstance.js";
@@ -5,7 +6,7 @@ import { objectRelatedStateKeys } from "./objectRelated.js";
 import { objectSubscriptionStateKeys } from "./objectSubscription.js";
 import { useWatchesRunning } from "./watchesRunning.js";
 import isEmpty from "lodash-es/isEmpty.js";
-import { computed, effectScope, onScopeDispose, reactive, toRef, watch } from "vue";
+import { computed, effectScope, onScopeDispose, reactive, ref, toRef, watch } from "vue";
 
 export const objectCalculatedStateKeys = [
     "calculatedObject",
@@ -99,7 +100,9 @@ export function useObjectCalculated({ parentState, calculatedObjectRules }) {
         });
 
         state.calculatedRunning = toRef(watchesRunning.state, "running");
-        state.running = computed(() => loadingCombine(watchesRunning.state.running, parentState.running));
+        const parentRunning = ref(undefined);
+        proxyRunning(parentState, "running", parentRunning);
+        state.running = computed(() => loadingCombine(watchesRunning.state.running, parentRunning));
 
         onScopeDispose(() => {
             for (const key in calculatedObjectEffectScopes) {

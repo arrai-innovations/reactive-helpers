@@ -8,6 +8,7 @@ export * from "./getFakeId.js";
 export * from "./keyDiff.js";
 export * from "./lifecycleDebug.js";
 export * from "./loadingCombine.js";
+export * from "./proxyRunning.js";
 export * from "./relatedCalculatedHelpers.js";
 export * from "./set.js";
 export * from "./transformWalk.js";

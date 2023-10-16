@@ -381,7 +381,7 @@ describe("use/listInstance.spec.js", function () {
             listInstance.addListObject(listObject);
             expect(() => listInstance.addListObject({ listObject })).toThrowError(ListError);
         });
-        it("succeeded", function () {
+        it("succeeded", async function () {
             const listInstance = useListInstance({ props: {} });
             const newId = listInstance.getFakeId();
             listObject.id = newId;
@@ -389,6 +389,18 @@ describe("use/listInstance.spec.js", function () {
             expect(listInstance.state.objects[newId]).toEqual(listObject);
             const reactiveProxy = listInstance.state.objects[newId];
             expect(isReactive(reactiveProxy)).toBe(true);
+            expect(reactiveProxy.id).toBe(newId);
+            expect(reactiveProxy.__str__).toBe("nvm");
+            expect(reactiveProxy.name).toBe("nvm");
+            expect(listInstance.state.objectsInOrder).toEqual([]);
+            // order updates immediately due to not being proxied through objectsInOrderRefs
+            expect(listInstance.state.order).toStrictEqual([newId.toString()]);
+            await doAwaitNot({
+                obj: listInstance.state,
+                prop: "running",
+            });
+            expect(listInstance.state.objectsInOrder).toEqual([reactiveProxy]);
+            expect(listInstance.state.order).toEqual([newId.toString()]);
         });
     });
     describe("updateListObject", function () {
@@ -401,7 +413,7 @@ describe("use/listInstance.spec.js", function () {
         });
         it("succeeds", async function () {
             const listInstance = useListInstance({
-                props: { listArgs: { user: 1 }, retrieveArgs: { fields: fields } },
+                props: {},
             });
             let crudListResolve;
             const crudListPromise = new Promise((resolve) => {
@@ -418,10 +430,70 @@ describe("use/listInstance.spec.js", function () {
             passedPageCallback(crudListResolvedPage1);
             crudListResolve();
 
+            await doAwaitNot({
+                obj: listInstance.state,
+                prop: "running",
+            });
+
             let updateObject = listInstance.state.objects["1"];
             updateObject.name = "updated";
             listInstance.updateListObject(updateObject);
             expect(listInstance.state.objects["1"]).toEqual(updateObject);
+            expect(listInstance.state.objectsInOrder[0].name).toBe("updated");
+            await doAwaitNot({
+                obj: listInstance.state,
+                prop: "running",
+            });
+            expect(listInstance.state.objectsInOrder[0].name).toBe("updated");
+        });
+    });
+    describe("deleteListObject", function () {
+        it("errors", function () {
+            const listInstance = useListInstance({ props: {} });
+            expect(() => listInstance.deleteListObject(-50002000)).toThrowError(ListError);
+        });
+        it("succeeds", async function () {
+            const listInstance = useListInstance({
+                props: {},
+            });
+            let crudListResolve;
+            const crudListPromise = new Promise((resolve) => {
+                crudListResolve = resolve;
+            });
+            let passedPageCallback;
+            globalList.mockImplementation(({ pageCallback }) => {
+                passedPageCallback = pageCallback;
+                return crudListPromise;
+            });
+
+            listInstance.list();
+
+            passedPageCallback(crudListResolvedPage1);
+            crudListResolve();
+
+            await doAwaitNot({
+                obj: listInstance.state,
+                prop: "running",
+            });
+
+            listInstance.deleteListObject(1);
+            expect(listInstance.state.objects["1"]).toBeUndefined();
+            expect(listInstance.state.objectsInOrder).toStrictEqual([
+                undefined,
+                crudListResolvedObjects1["2"],
+                crudListResolvedObjects1["3"],
+            ]);
+            // order updates immediately due to not being proxied through objectsInOrderRefs
+            expect(listInstance.state.order).toStrictEqual(["2", "3"]);
+            await doAwaitNot({
+                obj: listInstance.state,
+                prop: "running",
+            });
+            expect(listInstance.state.objectsInOrder).toEqual([
+                crudListResolvedObjects1["2"],
+                crudListResolvedObjects1["3"],
+            ]);
+            expect(listInstance.state.order).toEqual(["2", "3"]);
         });
     });
     describe("getFakeId", function () {

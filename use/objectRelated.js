@@ -1,4 +1,4 @@
-import { loadingCombine } from "../utils/index.js";
+import { loadingCombine, proxyRunning } from "../utils/index.js";
 import { keyDiff } from "../utils/keyDiff.js";
 import { objectInstanceStateKeys } from "./objectInstance.js";
 import { objectSubscriptionStateKeys } from "./objectSubscription.js";
@@ -9,7 +9,7 @@ import isArray from "lodash-es/isArray.js";
 import isEmpty from "lodash-es/isEmpty.js";
 import isEqual from "lodash-es/isEqual.js";
 import isUndefined from "lodash-es/isUndefined.js";
-import { computed, effectScope, onScopeDispose, reactive, toRef, unref, watch } from "vue";
+import { computed, effectScope, onScopeDispose, reactive, ref, toRef, unref, watch } from "vue";
 
 export const objectRelatedStateKeys = [
     "relatedObject",
@@ -129,7 +129,9 @@ export function useObjectRelated({ parentState, relatedObjectRules }) {
         });
 
         state.relatedRunning = toRef(watchesRunning.state, "running");
-        state.running = computed(() => loadingCombine(watchesRunning.state.running, parentState.running));
+        const parentRunning = ref(undefined);
+        proxyRunning(parentState, "running", parentRunning);
+        state.running = computed(() => loadingCombine(watchesRunning.state.running, parentRunning));
 
         onScopeDispose(() => {
             for (const key in relatedObjectEffectScopes) {

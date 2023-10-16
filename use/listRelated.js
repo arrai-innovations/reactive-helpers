@@ -1,15 +1,16 @@
 import { keyDiff } from "../utils/keyDiff.js";
 import { loadingCombine } from "../utils/loadingCombine.js";
+import { proxyRunning } from "../utils/proxyRunning.js";
 import { getObjectRelatedByKey } from "../utils/relatedCalculatedHelpers.js";
 import { difference } from "../utils/set.js";
 import {
-    listSubscriptionStateKeys,
+    listCalculatedStateKeys,
+    listFilterStateKeys,
     listInstanceStateKeys,
     listRelatedStateKeys,
-    listCalculatedStateKeys,
-    listSortStateKeys,
-    listFilterStateKeys,
     listSearchStateKeys,
+    listSortStateKeys,
+    listSubscriptionStateKeys,
 } from "./listKeys.js";
 import { useWatchesRunning } from "./watchesRunning.js";
 import get from "lodash-es/get.js";
@@ -17,7 +18,7 @@ import identity from "lodash-es/identity.js";
 import isArray from "lodash-es/isArray.js";
 import isEmpty from "lodash-es/isEmpty.js";
 import isUndefined from "lodash-es/isUndefined.js";
-import { computed, effectScope, onScopeDispose, reactive, toRef, unref, watch } from "vue";
+import { computed, effectScope, onScopeDispose, reactive, ref, toRef, unref, watch } from "vue";
 
 const parentStateKeys = difference(
     new Set([
@@ -198,7 +199,9 @@ export function useListRelated({ parentState, relatedObjectsRules }) {
         });
 
         state.relatedRunning = toRef(watchesRunning.state, "running");
-        state.running = computed(() => loadingCombine(watchesRunning.state.running, parentState.running));
+        const parentRunning = ref(undefined);
+        proxyRunning(parentState, "running", parentRunning);
+        state.running = computed(() => loadingCombine(watchesRunning.state.running, parentRunning.value));
 
         onScopeDispose(() => {
             for (const objectKey of Object.keys(relatedObjectsEffectScopes)) {
