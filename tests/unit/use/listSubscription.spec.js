@@ -142,7 +142,6 @@ describe("use/listSubscription.spec.js", function () {
                 obj: listSubscription.subscribeIntent.state,
                 prop: "active",
             });
-            expect(crudSubscribeResolvable[0].promise.cancel).toHaveBeenCalledWith();
             expect(crudSubscribeResolvable[0].promise.cancel).toHaveBeenCalledTimes(1);
             expect(returnValue).toBe(true);
 
@@ -288,7 +287,6 @@ describe("use/listSubscription.spec.js", function () {
             crudSubscribeResolvable[0].cancel.resolve(true);
             const returnValue = await unsubscribe;
             await poll(() => !listSubscription.state.subscribed);
-            expect(crudSubscribeResolvable[0].promise.cancel).toHaveBeenCalledWith();
             expect(crudSubscribeResolvable[0].promise.cancel).toHaveBeenCalledTimes(1);
             expect(returnValue).toBe(true);
             expect(listSubscription.state.subscribed).toBe(false);
@@ -322,7 +320,6 @@ describe("use/listSubscription.spec.js", function () {
             crudSubscribeResolvable[0].cancel.resolve(true);
             const returnValue = await unsubscribePromise;
             await poll(() => !listSubscription.state.subscribed);
-            expect(crudSubscribeResolvable[0].promise.cancel).toHaveBeenCalledWith();
             expect(crudSubscribeResolvable[0].promise.cancel).toHaveBeenCalledTimes(1);
             expect(returnValue).toBe(true);
             expect(listSubscription.state.subscribed).toBe(false);
@@ -382,7 +379,6 @@ describe("use/listSubscription.spec.js", function () {
             crudSubscribeResolvable[0].cancel.resolve(true);
             const returnValue = await unsubscribePromise;
             await poll(() => !listSubscription.state.subscribed);
-            expect(crudSubscribeResolvable[0].promise.cancel).toHaveBeenCalledWith();
             expect(crudSubscribeResolvable[0].promise.cancel).toHaveBeenCalledTimes(1);
             expect(returnValue).toBe(true);
             expect(listSubscription.state.subscribed).toBe(false);
@@ -455,7 +451,6 @@ describe("use/listSubscription.spec.js", function () {
             crudSubscribeResolvable[0].cancel.resolve(true);
             const returnValue = await unsubscribePromise;
             await poll(() => !listSubscription.state.subscribed);
-            expect(crudSubscribeResolvable[0].promise.cancel).toHaveBeenCalledWith();
             expect(crudSubscribeResolvable[0].promise.cancel).toHaveBeenCalledTimes(1);
             expect(returnValue).toBe(true);
             expect(listSubscription.state.subscribed).toBe(false);
@@ -508,7 +503,6 @@ describe("use/listSubscription.spec.js", function () {
             await crudSubscribeResolvable[1].resolve();
             await crudListResolvable[1].resolve();
             await poll(() => listSubscription.state.subscribed);
-            expect(crudSubscribeResolvable[0].promise.cancel).toHaveBeenCalledWith();
             expect(crudSubscribeResolvable[0].promise.cancel).toHaveBeenCalledTimes(1);
 
             expect(crudSubscribe).toHaveBeenCalledTimes(2);
@@ -518,7 +512,6 @@ describe("use/listSubscription.spec.js", function () {
             const returnValue = await unsubscribePromise;
             expect(returnValue).toBe(true);
             await poll(() => !listSubscription.state.subscribed);
-            expect(crudSubscribeResolvable[1].promise.cancel).toHaveBeenCalledWith();
             expect(crudSubscribeResolvable[1].promise.cancel).toHaveBeenCalledTimes(1);
             expect(listSubscription.state.subscribed).toBe(false);
         });

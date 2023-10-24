@@ -3,7 +3,7 @@ import { expectErrorToBeNull } from "../expectHelpers.js";
 import flushPromises from "flush-promises";
 import keyBy from "lodash-es/keyBy.js";
 import { inspect } from "util";
-import { isReactive, nextTick, reactive } from "vue";
+import { isReactive, nextTick, reactive, isRef, isReadonly } from "vue";
 
 afterAll(() => {
     vi.restoreAllMocks();
@@ -16,6 +16,7 @@ describe("use/listInstance.spec.js", function () {
         const listCrud = await import("../../../config/listCrud.js");
         const imported = await import("../../../use/listInstance");
         globalList = vi.fn();
+        globalList.cancel = vi.fn();
         listCrud.setListCrud({
             list: globalList,
             args: { stream: "test_stream" },
@@ -128,6 +129,7 @@ describe("use/listInstance.spec.js", function () {
                 listArgs: { user: 1 },
                 retrieveArgs: { fields: fields },
                 pageCallback: passedPageCallback,
+                isCancelled: expect.any(Object), // ref
             });
             expect(globalList).toHaveBeenCalledTimes(1);
         });
@@ -153,6 +155,7 @@ describe("use/listInstance.spec.js", function () {
                 listArgs: { user: 1 },
                 retrieveArgs: { fields: fields },
                 pageCallback: expect.any(Function),
+                isCancelled: expect.any(Object), // ref
             });
             expect(globalList).toHaveBeenCalledTimes(1);
             expectErrorToBeNull(listInstance.state.error);
@@ -207,6 +210,7 @@ describe("use/listInstance.spec.js", function () {
                 listArgs: { user: 1 },
                 retrieveArgs: { fields: fields },
                 pageCallback: passedPageCallback,
+                isCancelled: expect.any(Object), // ref
             });
             expect(globalList).toHaveBeenCalledTimes(1);
         });
@@ -272,6 +276,7 @@ describe("use/listInstance.spec.js", function () {
                 listArgs: { user: 1 },
                 retrieveArgs: { fields: fields },
                 pageCallback: passedPageCallback,
+                isCancelled: expect.any(Object), // ref
             });
             expect(globalList).toHaveBeenCalledTimes(1);
         });
@@ -318,6 +323,7 @@ describe("use/listInstance.spec.js", function () {
                 listArgs: { user: 1 },
                 retrieveArgs: { fields: fields },
                 pageCallback: passedPageCallback,
+                isCancelled: expect.any(Object), // ref
             });
             expect(globalList).toHaveBeenCalledTimes(1);
 
@@ -559,5 +565,40 @@ describe("use/listInstance.spec.js", function () {
         await nextTick();
         expect(listInstance.state.order).toEqual(crudListResolvedPage3.map((e) => e.id.toString()));
         expect(listInstance.state.objectsInOrder).toEqual(crudListResolvedPage3);
+    });
+    describe("list promise cancellation", function () {
+        it("cancels and sets isCancelled", async function () {
+            let myListFnCancelResolve, passedIsCancelled;
+            const myListFn = vi.fn().mockImplementation(({ isCancelled }) => {
+                passedIsCancelled = isCancelled;
+                const promise = new Promise(() => {});
+                promise.cancel = async () => {
+                    await new Promise((resolve) => {
+                        myListFnCancelResolve = resolve;
+                    });
+                };
+                return promise;
+            });
+            const listInstance = useListInstance({
+                props: {},
+                functions: {
+                    list: myListFn,
+                },
+            });
+
+            const cancelablePromise = listInstance.list();
+
+            expect(passedIsCancelled).toBeTruthy();
+            expect(isRef(passedIsCancelled)).toBe(true);
+            expect(isReadonly(passedIsCancelled)).toBe(true);
+            expect(passedIsCancelled.value).toBe(false);
+            expect(cancelablePromise.cancel).toBeTruthy();
+
+            const cancelPromise = cancelablePromise.cancel();
+            myListFnCancelResolve();
+            await cancelPromise;
+
+            expect(passedIsCancelled.value).toBe(true);
+        });
     });
 });

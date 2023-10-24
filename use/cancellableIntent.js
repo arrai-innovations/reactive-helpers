@@ -54,7 +54,7 @@ export function useCancellableIntent({
         return false;
     }
 
-    const doIntentWatch = async () => {
+    const doIntentWatch = () => {
         state.errored = false;
         state.error = null;
         if (state.activeCount === undefined) {
@@ -127,13 +127,13 @@ export function useCancellableIntent({
         }
     };
 
-    const guardWatch = async () => {
+    const guardWatch = () => {
         if (delayedWatch) {
             // if all guards are false, run the watch
             if (Object.values(guardArguments).every((x) => !x)) {
                 const myDelayedWatch = delayedWatch;
                 delayedWatch = null;
-                await myDelayedWatch();
+                myDelayedWatch();
             }
         }
     };

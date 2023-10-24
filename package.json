@@ -1,6 +1,6 @@
 {
     "name": "@arrai-innovations/reactive-helpers",
-    "version": "11.1.0",
+    "version": "11.2.0",
     "description": "VueJS 3 utility composition functions to help manipulate objects and lists.",
     "main": "index.js",
     "type": "module",

@@ -2,7 +2,7 @@ import { getListCrud } from "../config/listCrud.js";
 import { assignReactiveObject } from "../utils/assignReactiveObject.js";
 import { getFakeId } from "../utils/getFakeId.js";
 import inspect from "browser-util-inspect";
-import { effectScope, reactive, toRef, watch, computed, unref } from "vue";
+import { effectScope, reactive, toRef, watch, computed, unref, ref, readonly } from "vue";
 
 export class ListError extends Error {
     constructor(message, code) {
@@ -182,16 +182,19 @@ export function useListInstance({ props, functions = {}, keepOldPages = false })
         state.loading = true;
         state.errored = false;
         state.error = null;
+        const isCancelled = ref(false);
         const listPromise = state.crud.list({
             crudArgs: state.crud.args,
             retrieveArgs: state.retrieveArgs,
             listArgs: state.listArgs,
             pageCallback: returnedObject.pageCallback,
+            isCancelled: readonly(isCancelled),
         });
         let resolveState = false;
         if (listPromise.cancel) {
             promises.list.cancel = async () => {
                 let promise = listPromise.cancel();
+                isCancelled.value = true;
                 if (promise) {
                     await promise;
                 }
