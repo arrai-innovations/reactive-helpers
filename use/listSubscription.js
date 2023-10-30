@@ -22,6 +22,7 @@ export class ListSubscriptionError extends Error {
  * @property {object} functions - passed on to a created list instance if one is not provided
  * @property {ListInstance} listInstance - a list instance to use instead of creating one
  * @property {boolean} keepOldPages - if true, pages will not be cleared when defaultPageCallback is called. default is false.
+ * @property {boolean} clearListOnListIntentTriggered - if true, the list will be cleared when the list intent is triggered. default is false.
  */
 
 /* eslint-disable jsdoc/check-types */
@@ -70,7 +71,13 @@ export function useListSubscriptions(args, listInstances = {}) {
  * @param {ListSubscriptionOptions} options - the configuration options for the list subscription
  * @returns {ListSubscription} - the list subscription
  */
-export function useListSubscription({ listInstance, props, functions, keepOldPages = false }) {
+export function useListSubscription({
+    listInstance,
+    props,
+    functions,
+    keepOldPages = false,
+    clearListOnListIntentTriggered = false,
+}) {
     if (!listInstance && !props) {
         throw new ListSubscriptionError("useListSubscription should be passed listInstance or props and functions.");
     }
@@ -233,7 +240,12 @@ export function useListSubscription({ listInstance, props, functions, keepOldPag
         state.subscribed = toRef(subscribeIntent.state, "active");
 
         listIntent = useCancellableIntent({
-            awaitableWithCancel: listInstance.list,
+            awaitableWithCancel: () => {
+                if (clearListOnListIntentTriggered) {
+                    listInstance.clearList();
+                }
+                return listInstance.list();
+            },
             watchArguments: reactive({
                 intendToList: toRef(state, "intendToList"),
                 listArgs: toRef(parentState, "listArgs"),

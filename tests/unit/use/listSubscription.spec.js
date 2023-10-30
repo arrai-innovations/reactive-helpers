@@ -615,4 +615,7 @@ describe("use/listSubscription.spec.js", function () {
         expect(inspect(listSubscription.A)).toEqual(inspect(listSubscriptionA));
         expect(inspect(listSubscription.B)).toEqual(inspect(listSubscriptionB));
     });
+    describe("clearListOnListIntentTriggered", function () {
+        it("on true", async function () {});
+    });
 });
