@@ -615,7 +615,52 @@ describe("use/listSubscription.spec.js", function () {
         expect(inspect(listSubscription.A)).toEqual(inspect(listSubscriptionA));
         expect(inspect(listSubscription.B)).toEqual(inspect(listSubscriptionB));
     });
-    describe("clearListOnListIntentTriggered", function () {
-        it("on true", async function () {});
+    describe("clearListOnListIntentTriggered true", function () {
+        it("on true", async function () {
+            crudSubscribeResolvable[0].promise.cancel.mockImplementation(() => Promise.resolve(true));
+            const listArgs = reactive({
+                user: 1,
+            });
+            const retrieveArgs = reactive({
+                fields: fields,
+            });
+            const listInstance = useListInstance({
+                props: { listArgs, retrieveArgs },
+            });
+            listInstance.clearList = vi.fn().mockImplementationOnce(() => undefined);
+            const listSubscription = useListSubscription({
+                listInstance,
+                clearListOnListIntentTriggered: true,
+            });
+            listSubscription.subscribe();
+            await nextTick();
+            await flushPromises();
+            listArgs.user = 2;
+            expect(listInstance.clearList).toHaveBeenCalledTimes(1);
+        });
+    });
+    describe("clearListOnListIntentTriggered false", function () {
+        it("on true", async function () {
+            crudSubscribeResolvable[0].promise.cancel.mockImplementation(() => Promise.resolve(true));
+            const listArgs = reactive({
+                user: 1,
+            });
+            const retrieveArgs = reactive({
+                fields: fields,
+            });
+            const listInstance = useListInstance({
+                props: { listArgs, retrieveArgs },
+            });
+            listInstance.clearList = vi.fn().mockImplementationOnce(() => undefined);
+            const listSubscription = useListSubscription({
+                listInstance,
+                clearListOnListIntentTriggered: false,
+            });
+            listSubscription.subscribe();
+            await nextTick();
+            await flushPromises();
+            listArgs.user = 2;
+            expect(listInstance.clearList).toHaveBeenCalledTimes(0);
+        });
     });
 });
