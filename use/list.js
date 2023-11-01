@@ -31,6 +31,7 @@ export const useList = ({
     functions = {},
     paged = false,
     keepOldPages = false,
+    clearListOnListIntentTriggered = false,
     searchThrottle = 500,
     sortThrottleWait,
     searchShowAllWhenEmpty,
@@ -63,6 +64,7 @@ export const useList = ({
 
         managed.listSubscription = useListSubscription({
             listInstance: managed.listInstance,
+            clearListOnListIntentTriggered,
         });
         managed.listSubscription.state.intendToList = toRef(props, "intendToList");
         managed.listSubscription.state.intendToSubscribe = toRef(props, "intendToSubscribe");

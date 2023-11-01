@@ -686,12 +686,13 @@ The configuration options used to create a list subscription.
 **Kind**: global typedef  
 **Properties**
 
-| Name         | Type             | Description                                                                              |
-| ------------ | ---------------- | ---------------------------------------------------------------------------------------- |
-| props        | `object`         | passed on to a created list instance if one is not provided                              |
-| functions    | `object`         | passed on to a created list instance if one is not provided                              |
-| listInstance | [`ListInstance`] | a list instance to use instead of creating one                                           |
-| keepOldPages | `boolean`        | if true, pages will not be cleared when defaultPageCallback is called. default is false. |
+| Name                           | Type             | Description                                                                              |
+| ------------------------------ | ---------------- | ---------------------------------------------------------------------------------------- |
+| props                          | `object`         | passed on to a created list instance if one is not provided                              |
+| functions                      | `object`         | passed on to a created list instance if one is not provided                              |
+| listInstance                   | [`ListInstance`] | a list instance to use instead of creating one                                           |
+| keepOldPages                   | `boolean`        | if true, pages will not be cleared when defaultPageCallback is called. default is false. |
+| clearListOnListIntentTriggered | `boolean`        | if true, the list will be cleared when the list intent is triggered. default is false.   |
 
 ## ListSubscriptionState
 
