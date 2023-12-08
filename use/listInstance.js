@@ -198,6 +198,7 @@ export function useListInstance({ props, functions = {}, keepOldPages = false })
                 if (promise) {
                     await promise;
                 }
+                state.loading = false;
             };
         }
         // the indirection of promises here is to allow us to do additional work on listPromise's cancel
