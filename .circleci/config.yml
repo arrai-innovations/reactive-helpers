@@ -1,8 +1,8 @@
 version: 2.1
 orbs:
-    eslint: arrai/eslint@7.6.0
-    prettier: arrai/prettier@5.5.0
-    npm: arrai/npm@2.9.0
+    eslint: arrai/eslint@7.8.0
+    prettier: arrai/prettier@5.7.0
+    npm: arrai/npm@2.11.0
     github: arrai/github@1.1.0
 workflows:
     test:
@@ -46,7 +46,7 @@ workflows:
                           ignore: /.*/
     lint:
         jobs:
-            - eslint/eslint:
+            - eslint/eslint_fixed_ip:
                   name: eslint
                   context: arrai-global
                   files: "."
@@ -72,7 +72,7 @@ workflows:
                       branches:
                           ignore:
                               - main
-            - prettier/code_style:
+            - prettier/code_style_fixed_ip:
                   name: prettier
                   context: arrai-global
                   filters:

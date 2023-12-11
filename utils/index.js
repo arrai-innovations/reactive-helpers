@@ -3,6 +3,7 @@ export * from "./classes.js";
 export * from "./compact.js";
 export * from "./debugMessage.js";
 export * from "./debugWatch.js";
+export * from "./deleteKey.js";
 export * from "./flattenPaths.js";
 export * from "./getFakeId.js";
 export * from "./keyDiff.js";
