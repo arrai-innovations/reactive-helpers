@@ -593,12 +593,14 @@ describe("use/listInstance.spec.js", function () {
             expect(isReadonly(passedIsCancelled)).toBe(true);
             expect(passedIsCancelled.value).toBe(false);
             expect(cancelablePromise.cancel).toBeTruthy();
+            expect(listInstance.state.loading).toBe(true);
 
             const cancelPromise = cancelablePromise.cancel();
             myListFnCancelResolve();
             await cancelPromise;
 
             expect(passedIsCancelled.value).toBe(true);
+            expect(listInstance.state.loading).toBe(false);
         });
     });
 });

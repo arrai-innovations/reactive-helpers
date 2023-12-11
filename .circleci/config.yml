@@ -7,28 +7,28 @@ orbs:
 workflows:
     test:
         jobs:
-            #            - npm/coverage:
-            #                  name: tests
-            #                  context: arrai-global
-            #                  filters:
-            #                      branches:
-            #                          only:
-            #                              - main
-            #            - npm/coverage:
-            #                  name: tests-no-badge
-            #                  context: arrai-global
-            #                  create_badges: false
-            #                  filters:
-            #                      tags:
-            #                          only: /.*/
-            #                      branches:
-            #                          ignore:
-            #                              - main
+            - npm/coverage:
+                  name: tests
+                  context: arrai-global
+                  filters:
+                      branches:
+                          only:
+                              - main
+            - npm/coverage:
+                  name: tests-no-badge
+                  context: arrai-global
+                  create_badges: false
+                  filters:
+                      tags:
+                          only: /.*/
+                      branches:
+                          ignore:
+                              - main
             - npm/publish:
                   name: publish
                   context: arrai-private-package-publishing
-                  #                  requires:
-                  #                      - tests-no-badge
+                  requires:
+                      - tests-no-badge
                   filters:
                       tags:
                           only: /.*/
@@ -37,8 +37,8 @@ workflows:
             - github/create_release:
                   name: release_on_github
                   context: arrai-global
-                  #                  requires:
-                  #                      - tests-no-badge
+                  requires:
+                      - tests-no-badge
                   filters:
                       tags:
                           only: /.*/
