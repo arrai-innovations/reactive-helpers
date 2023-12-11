@@ -79,7 +79,6 @@ export function useObjectRelated({ parentState, relatedObjectRules }) {
                         // deal with computed objects being passed.
                         const ruleObjects = unref(state.relatedObjectRules?.[addedRuleKey]?.objects);
                         const rulePkKey = state.relatedObjectRules?.[addedRuleKey]?.pkKey || addedRuleKey;
-                        const ruleOrder = unref(state.relatedObjectRules?.[addedRuleKey]?.order);
                         if (!ruleObjects || !rulePkKey) {
                             state.relatedObject[addedRuleKey] = undefined;
                             return;
@@ -90,6 +89,7 @@ export function useObjectRelated({ parentState, relatedObjectRules }) {
                             return;
                         }
                         if (isArray(value)) {
+                            const ruleOrder = unref(state.relatedObjectRules?.[addedRuleKey]?.order);
                             // the related list could be sorted differently than the original list.
                             if (ruleOrder?.length) {
                                 value = value.filter(identity);

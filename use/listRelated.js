@@ -92,8 +92,6 @@ export function useListRelated({ parentState, relatedObjectsRules }) {
     function relatedObjectsWatch() {
         const relatedObjectsRulesIsEmpty = !state.relatedObjectsRules || isEmpty(state.relatedObjectsRules);
         for (const objectKey of Object.keys(state.relatedObjects)) {
-            const originalObjectRef = toRef(parentState.objects, objectKey);
-            const relatedObjectRef = toRef(state.relatedObjects, objectKey);
             let removedRuleKeys, addedRuleKeys;
             if (!relatedObjectsRulesIsEmpty) {
                 ({ removedKeys: removedRuleKeys, addedKeys: addedRuleKeys } = keyDiff(
@@ -119,6 +117,8 @@ export function useListRelated({ parentState, relatedObjectsRules }) {
                 if (!relatedObjectsEffectScopes[objectKey]) {
                     relatedObjectsEffectScopes[objectKey] = effectScope();
                 }
+                const originalObjectRef = toRef(parentState.objects, objectKey);
+                const relatedObjectRef = toRef(state.relatedObjects, objectKey);
                 relatedObjectsEffectScopes[objectKey].run(() => {
                     for (const addedRuleKey of addedRuleKeys) {
                         const rules = toRef(state.relatedObjectsRules, addedRuleKey);
