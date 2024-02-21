@@ -1,6 +1,6 @@
 {
     "name": "@arrai-innovations/reactive-helpers",
-    "version": "11.4.2",
+    "version": "12.0.0",
     "description": "VueJS 3 utility composition functions to help manipulate objects and lists.",
     "main": "index.js",
     "type": "module",
@@ -58,6 +58,6 @@
     },
     "peerDependencies": {
         "lodash-es": "^4.17.21",
-        "vue": "^3.3.4"
+        "vue": "^3.4.0"
     }
 }
