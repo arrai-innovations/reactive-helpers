@@ -2,6 +2,7 @@ import { loadingCombine } from "../utils/loadingCombine.js";
 import { useCancellableIntent } from "./cancellableIntent.js";
 import { useListInstance } from "./listInstance.js";
 import { listInstanceStateKeys } from "./listKeys.js";
+import useLoadingError from "./loadingError.js";
 import inspect from "browser-util-inspect";
 import cloneDeep from "lodash-es/cloneDeep.js";
 import isEmpty from "lodash-es/isEmpty.js";
@@ -102,10 +103,11 @@ export function useListSubscription({
     const parentState = listInstance.state;
 
     let subscribeIntent, listIntent;
+    const loadingError = useLoadingError();
     const state = reactive({
-        subscriptionLoading: undefined,
-        subscriptionErrored: false,
-        subscriptionError: null,
+        subscriptionLoading: loadingError.loading,
+        subscriptionErrored: loadingError.errored,
+        subscriptionError: loadingError.error,
         intendToList: false,
         intendToSubscribe: false,
     });
@@ -195,8 +197,7 @@ export function useListSubscription({
     }
 
     function clearError() {
-        state.subscriptionErrored = false;
-        state.subscriptionError = null;
+        loadingError.clearError();
         listInstance.clearError();
     }
 
@@ -223,8 +224,7 @@ export function useListSubscription({
                 // catching makes a new promise, we need to make sure the cancel method lives on.
                 const catchPromise = subscribePromise.catch((err) => {
                     console.error(err);
-                    state.subscriptionErrored = true;
-                    state.subscriptionError = err;
+                    loadingError.setError(err);
                 });
                 catchPromise.cancel = subscribePromise.cancel.bind(subscribePromise);
                 return catchPromise;

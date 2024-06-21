@@ -1,5 +1,6 @@
 import { assignReactiveObject, loadingCombine } from "../utils/index.js";
 import { useCancellableIntent } from "./cancellableIntent.js";
+import useLoadingError from "./loadingError.js";
 import { useObjectInstance, objectInstanceStateKeys } from "./objectInstance.js";
 import { computed, effectScope, reactive, toRef } from "vue";
 
@@ -52,10 +53,11 @@ export function useObjectSubscription({ objectInstance, props, functions }) {
         }
     }
     const parentState = objectInstance.state;
+    const loadingError = useLoadingError();
     const state = reactive({
-        subscriptionLoading: undefined,
-        subscriptionErrored: false,
-        subscriptionError: null,
+        subscriptionLoading: loadingError.loading,
+        subscriptionErrored: loadingError.errored,
+        subscriptionError: loadingError.error,
         subscribed: undefined,
         intendToSubscribe: false,
         intendToRetrieve: false,
@@ -95,9 +97,8 @@ export function useObjectSubscription({ objectInstance, props, functions }) {
         if (subscribeIntent.state.active || state.subscribed) {
             return Promise.reject(new ObjectSubscriptionError("already subscribed or subscribing."));
         }
-        state.subscriptionLoading = true;
-        state.subscriptionErrored = false;
-        state.subscriptionError = null;
+        loadingError.clearError();
+        loadingError.setLoading();
         let subscribePromise;
         subscribePromise = parentState.crud.subscribe({
             crudArgs: parentState.crud.args,
@@ -124,8 +125,7 @@ export function useObjectSubscription({ objectInstance, props, functions }) {
                 return Promise.resolve(true);
             })
             .catch((error) => {
-                state.subscriptionErrored = true;
-                state.subscriptionError = error;
+                loadingError.setError(error);
                 if (cancelSubscription) {
                     cancelSubscription();
                     cancelSubscription = null;
@@ -134,7 +134,8 @@ export function useObjectSubscription({ objectInstance, props, functions }) {
                 return Promise.resolve(false);
             })
             .finally(() => {
-                state.subscriptionLoading = false;
+                loadingError.clearLoading();
+                subscribePromise = null;
             });
         catchPromise.cancel = cancelSubscription;
         return catchPromise;
@@ -154,8 +155,7 @@ export function useObjectSubscription({ objectInstance, props, functions }) {
     }
 
     function clearError() {
-        state.subscriptionErrored = false;
-        state.subscriptionError = null;
+        loadingError.clearLoading();
         objectInstance.clearError();
     }
 

@@ -1,6 +1,7 @@
 import { getListCrud } from "../config/listCrud.js";
 import { assignReactiveObject } from "../utils/assignReactiveObject.js";
 import { getFakeId } from "../utils/getFakeId.js";
+import useLoadingError from "./loadingError.js";
 import inspect from "browser-util-inspect";
 import { effectScope, reactive, toRef, watch, computed, unref, ref, readonly } from "vue";
 
@@ -128,6 +129,7 @@ export function useListInstance({ props, functions = {}, keepOldPages = false })
             return Object.prototype;
         },
     });
+    const loadingError = useLoadingError();
     // ### touching the _objectsMap or _objectsProxy directly will not trigger reactivity ###
     const state = reactive({
         crud: {
@@ -137,10 +139,10 @@ export function useListInstance({ props, functions = {}, keepOldPages = false })
         retrieveArgs: toRef(props, "retrieveArgs"),
         listArgs: toRef(props, "listArgs"),
         objects: _objectsProxy,
-        loading: undefined,
+        loading: loadingError.loading,
         running: false,
-        errored: false,
-        error: null,
+        errored: loadingError.errored,
+        error: loadingError.error,
         order: [],
         objectsInOrder: [],
         objectsInOrderRefs: [],
@@ -179,9 +181,8 @@ export function useListInstance({ props, functions = {}, keepOldPages = false })
         }
         let returnPromiseResolve;
         promises.list = new Promise((resolve) => (returnPromiseResolve = resolve));
-        state.loading = true;
-        state.errored = false;
-        state.error = null;
+        loadingError.clearError();
+        loadingError.setLoading();
         const isCancelled = ref(false);
         const listPromise = state.crud.list({
             crudArgs: state.crud.args,
@@ -198,7 +199,7 @@ export function useListInstance({ props, functions = {}, keepOldPages = false })
                 if (promise) {
                     await promise;
                 }
-                state.loading = false;
+                loadingError.clearLoading();
             };
         }
         // the indirection of promises here is to allow us to do additional work on listPromise's cancel
@@ -207,11 +208,10 @@ export function useListInstance({ props, functions = {}, keepOldPages = false })
                 resolveState = true;
             })
             .catch((error) => {
-                state.errored = true;
-                state.error = error;
+                loadingError.setError(error);
             })
             .finally(() => {
-                state.loading = false;
+                loadingError.clearLoading();
                 returnPromiseResolve(resolveState);
                 promises.list = null;
             });
@@ -262,16 +262,11 @@ export function useListInstance({ props, functions = {}, keepOldPages = false })
 
     function clearList() {
         assignReactiveObject(state.objects, {});
-        clearError();
+        loadingError.clearError();
     }
 
     function ourGetFakeId() {
         return getFakeId(state.objects);
-    }
-
-    function clearError() {
-        state.errored = false;
-        state.error = null;
     }
 
     es.run(() => {
@@ -302,7 +297,7 @@ export function useListInstance({ props, functions = {}, keepOldPages = false })
         updateListObject,
         deleteListObject,
         clearList,
-        clearError,
+        clearError: loadingError.clearError,
         getFakeId: ourGetFakeId,
         defaultPageCallback,
         pageCallback: defaultPageCallback,

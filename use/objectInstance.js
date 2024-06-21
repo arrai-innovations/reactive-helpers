@@ -1,5 +1,6 @@
 import { getObjectCrud } from "../config/objectCrud.js";
 import { assignReactiveObject } from "../utils/assignReactiveObject.js";
+import useLoadingError from "./loadingError.js";
 import { reactive, toRef } from "vue";
 
 /**
@@ -85,6 +86,7 @@ export function useObjectInstances(instanceArgs) {
  * @returns {ObjectInstanceInstance} - An object used to manage create, retrieve, update, delete, and patch operations.
  */
 export function useObjectInstance({ props, functions = {} }) {
+    const loadingError = useLoadingError();
     const state = reactive({
         crud: {
             args: {},
@@ -98,9 +100,9 @@ export function useObjectInstance({ props, functions = {} }) {
         object: {},
         id: toRef(props, "id"),
         retrieveArgs: toRef(props, "retrieveArgs"),
-        loading: undefined,
-        errored: false,
-        error: null,
+        loading: loadingError.loading,
+        errored: loadingError.errored,
+        error: loadingError.error,
         deleted: false,
     });
 
@@ -122,9 +124,8 @@ export function useObjectInstance({ props, functions = {} }) {
             // if another operation is already in progress, return a rejected promise
             return Promise.reject(new ObjectError("already loading."));
         }
-        state.loading = true;
-        state.errored = false;
-        state.error = null;
+        loadingError.setLoading();
+        loadingError.clearError();
         promises.retrieve = state.crud
             .retrieve({
                 crudArgs: state.crud.args,
@@ -136,12 +137,11 @@ export function useObjectInstance({ props, functions = {} }) {
                 return Promise.resolve(true);
             })
             .catch((error) => {
-                state.errored = true;
-                state.error = error;
+                loadingError.setError(error);
                 return Promise.resolve(false);
             })
             .finally(() => {
-                state.loading = false;
+                loadingError.clearLoading();
                 promises.retrieve = null;
             });
         return promises.retrieve;
@@ -151,9 +151,8 @@ export function useObjectInstance({ props, functions = {} }) {
         if (state.loading) {
             throw new ObjectError("already loading.");
         }
-        state.loading = true;
-        state.errored = false;
-        state.error = null;
+        loadingError.setLoading();
+        loadingError.clearError();
         return state.crud
             .create({
                 crudArgs: state.crud.args,
@@ -165,12 +164,11 @@ export function useObjectInstance({ props, functions = {} }) {
                 return Promise.resolve(true);
             })
             .catch((error) => {
-                state.errored = true;
-                state.error = error;
+                loadingError.setError(error);
                 return Promise.resolve(false);
             })
             .finally(() => {
-                state.loading = false;
+                loadingError.clearLoading();
             });
     }
 
@@ -178,9 +176,8 @@ export function useObjectInstance({ props, functions = {} }) {
         if (state.loading) {
             throw new ObjectError("already loading.");
         }
-        state.loading = true;
-        state.errored = false;
-        state.error = null;
+        loadingError.setLoading();
+        loadingError.clearError();
         return state.crud
             .update({
                 crudArgs: state.crud.args,
@@ -192,12 +189,11 @@ export function useObjectInstance({ props, functions = {} }) {
                 return Promise.resolve(true);
             })
             .catch((error) => {
-                state.errored = true;
-                state.error = error;
+                loadingError.setError(error);
                 return Promise.resolve(false);
             })
             .finally(() => {
-                state.loading = false;
+                loadingError.clearLoading();
             });
     }
 
@@ -205,9 +201,8 @@ export function useObjectInstance({ props, functions = {} }) {
         if (state.loading) {
             throw new ObjectError("already loading.");
         }
-        state.loading = true;
-        state.errored = false;
-        state.error = null;
+        loadingError.setLoading();
+        loadingError.clearError();
         return state.crud
             .patch({
                 crudArgs: state.crud.args,
@@ -220,12 +215,11 @@ export function useObjectInstance({ props, functions = {} }) {
                 return Promise.resolve(true);
             })
             .catch((error) => {
-                state.errored = true;
-                state.error = error;
+                loadingError.setError(error);
                 return Promise.resolve(false);
             })
             .finally(() => {
-                state.loading = false;
+                loadingError.clearLoading();
             });
     }
 
@@ -233,9 +227,8 @@ export function useObjectInstance({ props, functions = {} }) {
         if (state.loading) {
             throw new ObjectError("already loading.");
         }
-        state.loading = true;
-        state.errored = false;
-        state.error = null;
+        loadingError.setLoading();
+        loadingError.clearError();
         return state.crud
             .delete({
                 crudArgs: state.crud.args,
@@ -247,22 +240,16 @@ export function useObjectInstance({ props, functions = {} }) {
                 return Promise.resolve(true);
             })
             .catch((error) => {
-                state.errored = true;
-                state.error = error;
+                loadingError.setError(error);
                 return Promise.resolve(false);
             })
             .finally(() => {
-                state.loading = false;
+                loadingError.clearLoading();
             });
     }
 
-    function clearError() {
-        state.errored = false;
-        state.error = null;
-    }
-
     function clear() {
-        clearError();
+        loadingError.clearError();
         assignReactiveObject(state.object, {});
     }
 
@@ -273,7 +260,7 @@ export function useObjectInstance({ props, functions = {} }) {
         update,
         delete: deleteFn,
         patch,
-        clearError,
+        clearError: loadingError.clearError,
         clear,
     });
 }
