@@ -176,8 +176,8 @@ export function addOrUpdateReactiveObject(target, source, exclude, addedKeys = n
         ({ addedKeys, sameKeys } = keyDiff(Object.keys(source) || [], Object.keys(target) || []));
     }
     let didAnything = false;
-    didAnything |= addReactiveObject(target, source, exclude, addedKeys);
-    didAnything |= updateReactiveObject(target, source, exclude, sameKeys);
+    didAnything ||= addReactiveObject(target, source, exclude, addedKeys);
+    didAnything ||= updateReactiveObject(target, source, exclude, sameKeys);
     return didAnything;
 }
 
@@ -252,8 +252,8 @@ export function assignReactiveArray(target, source) {
         didAnything = true;
     } else {
         const { addedKeys, sameKeys, removedKeys } = keyDiff(Object.keys(source) || [], Object.keys(target) || []);
-        didAnything |= trimReactiveObject(target, source, null, removedKeys);
-        didAnything |= addOrUpdateReactiveObject(target, source, null, addedKeys, sameKeys);
+        didAnything ||= trimReactiveObject(target, source, null, removedKeys);
+        didAnything ||= addOrUpdateReactiveObject(target, source, null, addedKeys, sameKeys);
     }
     return didAnything;
 }
@@ -281,8 +281,8 @@ export function assignReactiveObject(target, source, exclude) {
     ({ target, source } = validateTargetAndSource(target, source));
     const { addedKeys, sameKeys, removedKeys } = keyDiff(Object.keys(source) || [], Object.keys(target) || []);
     let didAnything = false;
-    didAnything |= trimReactiveObject(target, source, exclude, removedKeys);
-    didAnything |= addOrUpdateReactiveObject(target, source, exclude, addedKeys, sameKeys);
+    didAnything ||= trimReactiveObject(target, source, exclude, removedKeys);
+    didAnything ||= addOrUpdateReactiveObject(target, source, exclude, addedKeys, sameKeys);
     return didAnything;
 }
 
@@ -305,7 +305,7 @@ export function assignReactiveObject(target, source, exclude) {
  */
 function recursiveInner(target, source, exclude, addedKeys, sameKeys, path, fn) {
     let didAnything = false;
-    didAnything |= addReactiveObject(target, source, exclude, addedKeys);
+    didAnything ||= addReactiveObject(target, source, exclude, addedKeys);
     const keysForRecurse = [];
     const keysForReplace = [];
     for (const key of sameKeys) {
@@ -317,7 +317,7 @@ function recursiveInner(target, source, exclude, addedKeys, sameKeys, path, fn) 
             }
         }
     }
-    didAnything |= reactiveReplaceKeys(target, source, keysForReplace, exclude);
+    didAnything ||= reactiveReplaceKeys(target, source, keysForReplace, exclude);
     for (const key of keysForRecurse) {
         // scope exclude for this next level, remove keys that don't start with the current path, trim keys that do to remove the current path
         const nextLevelExclude = exclude
@@ -345,8 +345,8 @@ function recursiveInner(target, source, exclude, addedKeys, sameKeys, path, fn) 
 function assignReactiveObjectRecursive(target, source, exclude, path = "") {
     let { addedKeys, sameKeys, removedKeys } = keyDiff(Object.keys(source) || [], Object.keys(target) || []);
     let didAnything = false;
-    didAnything |= trimReactiveObject(target, source, exclude, removedKeys);
-    didAnything |= recursiveInner(target, source, exclude, addedKeys, sameKeys, path, assignReactiveObjectRecursive);
+    didAnything ||= trimReactiveObject(target, source, exclude, removedKeys);
+    didAnything ||= recursiveInner(target, source, exclude, addedKeys, sameKeys, path, assignReactiveObjectRecursive);
     return didAnything;
 }
 
