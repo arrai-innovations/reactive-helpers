@@ -1,0 +1,311 @@
+[**@arrai-innovations/reactive-helpers**](../README.md) • **Docs**
+
+***
+
+[@arrai-innovations/reactive-helpers](../README.md) / use/search
+
+# use/search
+
+## Interfaces
+
+### DocumentOptions
+
+#### Properties
+
+##### id
+
+> **id**: `string`
+
+The document field to use as an identifier. Default is "id".
+
+##### index
+
+> **index**: `string` \| `any`[] \| `string`[]
+
+Fields to index. Can be a single string, an array of strings, or an array of objects specifying custom index options.
+
+##### minLength
+
+> **minLength**: `number`
+
+Minimum length of a token to be indexed.
+
+##### store
+
+> **store**: `string` \| `boolean` \| `string`[]
+
+Specifies if and what document fields to store. Can be false, a string, or an array of strings. Default is false.
+
+##### tag
+
+> **tag**: `string` \| `boolean`
+
+The document field to use as a tag. Default is false, can be set to a string.
+
+##### tokenizer
+
+> **tokenizer**: `string`
+
+Specifies the tokenizer to use.
+
+***
+
+### SearchInstance
+
+#### Properties
+
+##### addIndex
+
+> **addIndex**: `Function`
+
+Add an index.
+
+##### clearIndex
+
+> **clearIndex**: `Function`
+
+Clear the index.
+
+##### effectScope
+
+> **effectScope**: `any`
+
+A Vue effect scope.
+
+##### events
+
+> **events**: `EventTarget`
+
+An event target.
+
+##### removeIndex
+
+> **removeIndex**: `Function`
+
+Remove an index.
+
+##### state
+
+> **state**: `object`
+
+The state.
+
+###### called
+
+> **called**: `number`
+
+The number of times the search has been called.
+
+###### customDocumentOptions
+
+> **customDocumentOptions**: `object`
+
+FlexSearch.Document options.
+
+###### customDocumentOptions.id
+
+> **id**: `string`
+
+The document field to use as an identifier. Default is "id".
+
+###### customDocumentOptions.index
+
+> **index**: `string` \| `any`[] \| `string`[]
+
+Fields to index. Can be a single string, an array of strings, or an array of objects specifying custom index options.
+
+###### customDocumentOptions.minLength
+
+> **minLength**: `number`
+
+Minimum length of a token to be indexed.
+
+###### customDocumentOptions.store
+
+> **store**: `string` \| `boolean` \| `string`[]
+
+Specifies if and what document fields to store. Can be false, a string, or an array of strings. Default is false.
+
+###### customDocumentOptions.tag
+
+> **tag**: `string` \| `boolean`
+
+The document field to use as a tag. Default is false, can be set to a string.
+
+###### customDocumentOptions.tokenizer
+
+> **tokenizer**: `string`
+
+Specifies the tokenizer to use.
+
+###### customSearchOptions
+
+> **customSearchOptions**: `object`
+
+Search options.
+
+###### customSearchOptions.limit
+
+> **limit**: `number`
+
+Limit of results.
+
+###### pending
+
+> **pending**: `number`
+
+The number of times the search has been called, but has not yet returned.
+
+###### results
+
+> **results**: `any`
+
+The results, where the keys are the ids of the objects that match, and the values are true.
+
+###### running
+
+> **running**: `boolean`
+
+Whether the search is currently running or has pending calls.
+
+###### search
+
+> **search**: `string`
+
+The search string.
+
+###### searched
+
+> **searched**: `boolean`
+
+Whether the search has been performed.
+
+###### searching
+
+> **searching**: `boolean`
+
+Whether the search is currently running.
+
+##### updateIndex
+
+> **updateIndex**: `Function`
+
+Update an index.
+
+***
+
+### SearchOptions
+
+#### Properties
+
+##### limit
+
+> **limit**: `number`
+
+Limit of results.
+
+***
+
+### SearchProps
+
+#### Properties
+
+##### customDocumentOptions
+
+> **customDocumentOptions**: [`DocumentOptions`](search.md#documentoptions)
+
+FlexSearch.Document options.
+
+##### customSearchOptions
+
+> **customSearchOptions**: [`SearchOptions`](search.md#searchoptions)
+
+Search options.
+
+***
+
+### SearchRawState
+
+#### Properties
+
+##### called
+
+> **called**: `number`
+
+The number of times the search has been called.
+
+##### customDocumentOptions
+
+> **customDocumentOptions**: [`DocumentOptions`](search.md#documentoptions)
+
+FlexSearch.Document options.
+
+##### customSearchOptions
+
+> **customSearchOptions**: [`SearchOptions`](search.md#searchoptions)
+
+Search options.
+
+##### pending
+
+> **pending**: `number`
+
+The number of times the search has been called, but has not yet returned.
+
+##### results
+
+> **results**: `any`
+
+The results, where the keys are the ids of the objects that match, and the values are true.
+
+##### running
+
+> **running**: `boolean`
+
+Whether the search is currently running or has pending calls.
+
+##### search
+
+> **search**: `string`
+
+The search string.
+
+##### searched
+
+> **searched**: `boolean`
+
+Whether the search has been performed.
+
+##### searching
+
+> **searching**: `boolean`
+
+Whether the search is currently running.
+
+## Functions
+
+### useSearch()
+
+> **useSearch**(`options`): [`SearchInstance`](search.md#searchinstance)
+
+A reactive wrapper around FlexSearch.Index.
+
+#### Parameters
+
+• **options**
+
+Options.
+
+• **options.props**: [`SearchProps`](search.md#searchprops)
+
+Props.
+
+• **options.throttle**: `number` = `500`
+
+Throttle wait time.
+
+#### Returns
+
+[`SearchInstance`](search.md#searchinstance)
+
+- The instance.

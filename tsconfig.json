@@ -1,0 +1,17 @@
+{
+    "compilerOptions": {
+        "checkJs": true,
+        "noEmit": true,
+        "allowJs": true,
+        "lib": ["es6", "dom"],
+        "strict": false,
+        "noImplicitAny": false,
+        "strictNullChecks": false,
+        "strictFunctionTypes": false,
+        "moduleResolution": "node",
+        "esModuleInterop": true,
+        "target": "es2023"
+    },
+    // match with ./makeTypeDoc.sh
+    "include": ["config/**/*.js", "use/**/*.js", "utils/**/*.js"]
+}

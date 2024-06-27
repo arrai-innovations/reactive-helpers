@@ -4,33 +4,30 @@ import { difference, intersection } from "./set.js";
 /**
  * Calculate the difference between objects in terms of what keys
  * are the same, what keys are removed, and what keys are added.
- * @module utils/keyDiff
+ *
+ * @module utils/keyDiff.js
  */
 
 /**
- * Options for keyDiff and keyDiffDeep
- * @typedef {object} KeyDiffOptions
- * @property {boolean} [sameKeys=true] - if true, return keys that are the same
- * @property {boolean} [removedKeys=true] - if true, return keys that are removed
- * @property {boolean} [addedKeys=true] - if true, return keys that are added
- */
-
-/**
- * Result object of keyDiff and keyDiffDeep
+ * Result object of keyDiff and keyDiffDeep.
+ *
  * @typedef {object} KeyDiffResult
- * @property {Set} [sameKeys] - if sameKeys option is true, return keys that are the same
- * @property {Set} [removedKeys] - if removedKeys option is true, return keys that are removed
- * @property {Set} [addedKeys] - if addedKeys option is true, return keys that are added
+ * @property {Set} [sameKeys] - If sameKeys option is true, return keys that are the same.
+ * @property {Set} [removedKeys] - If removedKeys option is true, return keys that are removed.
+ * @property {Set} [addedKeys] - If addedKeys option is true, return keys that are added.
  */
 
 /**
  * Calculate the difference between two arrays of keys, in terms of what keys
  * are the same, what keys are removed, and what keys are added.
- * @function keyDiff
- * @param {string[]|Set} newKeys - keys to consider as new
- * @param {string[]|Set} oldKeys - keys to consider as old
- * @param {KeyDiffOptions} [options] - which differences are returned
- * @returns {KeyDiffResult} - the differences
+ *
+ * @param {string[]|Set} newKeys - Keys to consider as new.
+ * @param {string[]|Set} oldKeys - Keys to consider as old.
+ * @param {object} [options] - Which differences are returned.
+ * @param {boolean} [options.sameKeys=true] - If true, return keys that are the same.
+ * @param {boolean} [options.removedKeys=true] - If true, return keys that are removed.
+ * @param {boolean} [options.addedKeys=true] - If true, return keys that are added.
+ * @returns {KeyDiffResult} - The differences.
  */
 export function keyDiff(newKeys, oldKeys, { sameKeys = true, removedKeys = true, addedKeys = true } = {}) {
     let newKeysSet = newKeys instanceof Set ? newKeys : new Set(newKeys);
@@ -51,15 +48,15 @@ export function keyDiff(newKeys, oldKeys, { sameKeys = true, removedKeys = true,
 /**
  * Calculate the difference between two objects, in terms of what keys are the same,
  * what keys are removed, and what keys are added. Keys are sourced deeply in the objects.
- * @function keyDiffDeep
- * @param {object} newObj - the new version of the object
- * @param {object} oldObj - the old version of the object
- * @param {KeyDiffOptions} [options] - which differences are returned
- * @param {boolean} [options.sameKeys] - if true, return keys that are the same
- * @param {boolean} [options.removedKeys] - if true, return keys that are removed
- * @param {boolean} [options.addedKeys] - if true, return keys that are added
- * @param {number} [options.limit] - limit the depth of recursion
- * @returns {KeyDiffResult} - the differences
+ *
+ * @param {object} newObj - The new version of the object.
+ * @param {object} oldObj - The old version of the object.
+ * @param {object} [options] - Which differences are returned.
+ * @property {boolean} [sameKeys=true] - If true, return keys that are the same.
+ * @property {boolean} [removedKeys=true] - If true, return keys that are removed.
+ * @property {boolean} [addedKeys=true] - If true, return keys that are added.
+ * @property {number} [limit] - Limit the depth of recursion.
+ * @returns {KeyDiffResult} - The differences.
  */
 export function keyDiffDeep(newObj, oldObj, options = {}) {
     const additionalFlattenArgs = [];

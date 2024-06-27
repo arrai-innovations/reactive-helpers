@@ -1,7 +1,36 @@
 import { useListInstance } from "./listInstance.js";
 
+/**
+ * @module use/paginatedListInstance.js
+ *
+ */
+
+/**
+ * @typedef {object} PagedListListanceOptions
+ * @property {boolean} [keepOldPages=false] - Whether to keep old pages.
+ */
+
+/**
+ * @typedef {object} PagedListInstanceState
+ * @property {number} totalRecords - The total records.
+ * @property {number} totalPages - The total pages.
+ * @property {number} perPage - The per page.
+ */
+
+/**
+ * @typedef {object} PagedListInstance
+ * @property {import('./listInstance.js').ListInstanceState & PagedListInstanceState} state - The state.
+ */
+
+/**
+ *
+ * @param {PagedListListanceOptions & import('./listInstance.js').ListInstanceOptions} options - The options.
+ * @returns {PagedListInstance} - The paged list instance.
+ */
 export function usePagedListInstance({ keepOldPages = false, ...useListInstanceArgs }) {
-    const listInstance = useListInstance(useListInstanceArgs);
+    const listInstance = /** @type {PagedListInstance & import('./listInstance.js').ListInstance} */ (
+        /** @type {unknown} */ (useListInstance(useListInstanceArgs))
+    );
 
     listInstance.state.totalRecords = 0;
     listInstance.state.totalPages = 0;

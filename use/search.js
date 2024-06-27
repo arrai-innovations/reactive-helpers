@@ -15,33 +15,46 @@ const unionReduce = (accumulator, currentValue) => {
 };
 
 /**
- * FlexSearch.Document search options
+ * FlexSearch.Document search options.
+ *
  * @typedef {object} SearchOptions
- * @property {number} limit - limit of results
+ * @property {number} limit - Limit of results.
  */
 
-// eslint-disable-next-line jsdoc/require-property
 /**
- * FlexSearch.Document options
+ * Configuration options for creating a document in FlexSearch.
+ *
  * @typedef {object} DocumentOptions
+ * @property {string} id - The document field to use as an identifier. Default is "id".
+ * @property {boolean|string} tag - The document field to use as a tag. Default is false, can be set to a string.
+ * @property {string | string[] | object[]} index - Fields to index. Can be a single string, an array of strings, or an array of objects specifying custom index options.
+ * @property {boolean|string|string[]} store - Specifies if and what document fields to store. Can be false, a string, or an array of strings. Default is false.
+ * @property {string} [tokenizer] - Specifies the tokenizer to use.
+ * @property {number} [minLength] - Minimum length of a token to be indexed.
  */
 
 /**
- * @typedef {object} SearchState
- * @property {string} search - the search string
- * @property {object} results - the results, where the keys are the ids of the objects that match, and the values are true
- * @property {boolean} searched - whether the search has been performed
- * @property {boolean} searching - whether the search is currently running
+ * @typedef {object} SearchRawState
+ * @property {string} search - The search string.
+ * @property {object} results - The results, where the keys are the ids of the objects that match, and the values are true.
+ * @property {boolean} searched - Whether the search has been performed.
+ * @property {boolean} searching - Whether the search is currently running.
+ * @property {DocumentOptions} customDocumentOptions - FlexSearch.Document options.
+ * @property {SearchOptions} customSearchOptions - Search options.
+ * @property {number} called - The number of times the search has been called.
+ * @property {number} pending - The number of times the search has been called, but has not yet returned.
+ * @property {boolean} running - Whether the search is currently running or has pending calls.
  */
 
 /**
  * @typedef {object} SearchInstance
- * @property {SearchState} state - the state
- * @property {function} addIndex - add an index
- * @property {function} updateIndex - update an index
- * @property {function} removeIndex - remove an index
- * @property {function} clearIndex - clear the index
- * @property {object} effectScope - a Vue effect scope
+ * @property {import('vue').UnwrapNestedRefs<SearchRawState>} state - The state.
+ * @property {Function} addIndex - Add an index.
+ * @property {Function} updateIndex - Update an index.
+ * @property {Function} removeIndex - Remove an index.
+ * @property {Function} clearIndex - Clear the index.
+ * @property {EventTarget} events - An event target.
+ * @property {object} effectScope - A Vue effect scope.
  */
 
 const defaultDocumentOptions = {
@@ -53,18 +66,20 @@ const defaultDocumentOptions = {
 };
 
 /**
- * A reactive object for passing document options or search options to useSearch
+ * A reactive object for passing document options or search options to useSearch.
+ *
  * @typedef {object} SearchProps
- * @property {DocumentOptions} customDocumentOptions - FlexSearch.Document options
- * @property {SearchOptions} customSearchOptions - search options
+ * @property {DocumentOptions} customDocumentOptions - FlexSearch.Document options.
+ * @property {SearchOptions} customSearchOptions - Search options.
  */
 
 /**
- * A reactive wrapper around FlexSearch.Index
- * @param {object} options - options
- * @param {SearchProps} options.props - props
- * @param {number} [options.throttle] - throttle wait time
- * @returns {SearchInstance} - the instance
+ * A reactive wrapper around FlexSearch.Index.
+ *
+ * @param {object} options - Options.
+ * @param {SearchProps} options.props - Props.
+ * @param {number} [options.throttle] - Throttle wait time.
+ * @returns {SearchInstance} - The instance.
  */
 export function useSearch({ props, throttle = 500 }) {
     let searchIndex;

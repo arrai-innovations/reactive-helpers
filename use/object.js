@@ -2,38 +2,110 @@ import { useObjectCalculated, objectCalculatedFunctions } from "./objectCalculat
 import { useObjectInstance, objectInstanceFunctions } from "./objectInstance.js";
 import { useObjectRelated, objectRelatedFunctions } from "./objectRelated.js";
 import { useObjectSubscription, objectSubscriptionFunctions } from "./objectSubscription.js";
-import { effectScope, reactive, shallowReadonly, toRef } from "vue";
+import { effectScope, reactive, shallowReactive, shallowReadonly, toRef } from "vue";
 
 /**
- * @typedef {Object} ObjectCrudFunctions
- * @property {function} create - A function to create an object.
- * @property {function} retrieve - A function to retrieve an object.
- * @property {function} update - A function to update an object.
- * @property {function} delete - A function to delete an object.
- * @property {function} patch - A function to patch an object.
- * @property {function} subscribe - A function to subscribe to an object.
+ * Provides a Vue 3 composable function for object management. This module orchestrates the useObjectInstance,
+ *  useObjectSubscription, useObjectRelated, and useObjectCalculated composable functions. In trading off the
+ *  overhead of always having each composable function, this function provides a single point of entry for
+ *  managing an object's state, subscriptions, related objects, and calculated objects.
+ *
+ * @module use/object.js
  */
 
 /**
- * @typedef {Object} ObjectInstanceOptions
- * @property {ObjectInstanceProps | ObjectSubscriptionProps | ObjectRelatedProps | ObjectCalculatedProps} props - The props to be passed to useObjectInstance, useObjectSubscription, useObjectRelated, and useObjectCalculated.
- * @property {ObjectCrudFunctions} functions - An object of custom crud functions to use instead of the defaults.
+ * Defines the raw reactive properties that can be passed to an object instance.
+ *
+ * @typedef {(
+ *     import('./objectInstance.js').ObjectInstanceRawProps &
+ *     import('./objectSubscription.js').ObjectSubscriptionRawProps &
+ *     import('./objectRelated.js').ObjectRelatedRawProps &
+ *     import('./objectCalculated.js').ObjectCalculatedRawProps
+ * )} ObjectManagerRawProps
  */
 
 /**
- * @typedef {ObjectInstanceInstance | ObjectSubscriptionInstance | ObjectRelatedInstance | ObjectCalculatedInstance} ObjectInstance
- * @property {ObjectInstanceState | ObjectSubscriptionState | ObjectRelatedState | ObjectCalculatedState} state - The state of the instance.
- * @property {function} clearError - A function to clear the error on both the instance and subscription.
- * @property {function} clear - A function to clear the instance, which also clears errors on both the instance and subscription.
- * @property {effectScope} effectScope - The effectScope of the instance.
+ * Defines the reactive properties that can be passed to an object instance.
+ *
+ * @typedef {import('vue').UnwrapNestedRefs<ObjectManagerRawProps>} ObjectManagerProps
+ */
+
+/**
+ * Defines the non-reactive functions that can be passed to an object instance.
+ *
+ * @typedef {object} ObjectManagerOptions
+ * @property {ObjectManagerProps} props - The reactive properties to be passed to the object instance.
+ * @property {import('../config/objectCrud.js').ObjectCrudFunctions} functions - The non-reactive functions to be passed to the object instance.
+ */
+
+/**
+ * Defines the raw state of the object manager.
+ *
+ * @typedef {(
+ *     import('./objectInstance.js').ObjectInstanceRawState &
+ *     import('./objectSubscription.js').ObjectSubscriptionRawState &
+ *     import('./objectRelated.js').ObjectRelatedRawState &
+ *     import('./objectCalculated.js').ObjectCalculatedRawState
+ * )} ObjectManagerRawState
+ */
+
+/**
+ * Defines the state of the object manager.
+ *
+ * @typedef {import('vue').UnwrapNestedRefs<ObjectManagerRawState>} ObjectManagerState
+ */
+
+/**
+ * Defines the managed object, containing the managed object instance, subscription, related objects, and calculated objects.
+ *
+ * @typedef {{
+ *     objectInstance: import('./objectInstance.js').ObjectInstance,
+ *     objectSubscription: import('./objectSubscription.js').ObjectSubscription,
+ *     objectRelated: import('./objectRelated.js').ObjectRelated,
+ *     objectCalculated: import('./objectCalculated.js').ObjectCalculated,
+ * }} ObjectManaged
+ */
+
+/**
+ * Defines the functions provided by the object manager.
+ *
+ * @typedef {(
+ *     import('./objectInstance.js').ObjectInstanceFunctions
+ *     & import('./objectSubscription.js').ObjectSubscriptionFunctions
+ * )} ObjectManagerFunctions
+ * @property {Function} clearError - Clears the error state of the managed subscription and instance.
+ * @property {Function} clear - Clears the managed instance & any error state.
+ */
+
+// & import('./objectRelated.js').ObjectRelatedFunctions
+// & import('./objectCalculated.js').ObjectCalculatedFunctions
+
+/**
+ * Defines the properties available on an object manager.
+ *
+ * @typedef {object} ObjectManagerProperties
+ * @property {ObjectManaged} managed - The managed object.
+ * @property {ObjectManagerState} state - The state of the managed object.
+ * @property {import('vue').EffectScope} effectScope - The effect scope of the managed object.
+ */
+
+/**
+ *
+ * @typedef {ObjectManagerProperties & ObjectManagerFunctions} ObjectManager
  */
 
 /**
  * Initializes multiple useObject instances, returning an object of them based on the keys of the objectArgs.
- * @param {Object.<string, ObjectInstanceOptions>} objectArgs - An object of objects to be passed to useObject.
- * @returns {Object.<string, ObjectInstance>} - An object of useObject instances.
+ *
+ * @param {{
+ *     [key: string]: ObjectManagerOptions,
+ * }} objectArgs - An object of objects to be passed to useObject.
+ * @returns {{
+ *     [key: string]: ObjectManager,
+ * }} - An object of useObject instances.
  */
 export const useObjects = (objectArgs) => {
+    /** @type {{ [key: string]: ObjectManager }} */
     const objects = {};
     for (const [key, value] of Object.entries(objectArgs)) {
         objects[key] = useObject(value);
@@ -43,8 +115,99 @@ export const useObjects = (objectArgs) => {
 
 /**
  * Initializes a chain of useObject* functions, returning an object of them.
- * @param {ObjectInstanceOptions} options - The options to be passed to useObjectInstance, useObjectSubscription, useObjectRelated, and useObjectCalculated.
- * @returns {ObjectInstance} - An object managing a chain of useObject* instances.
+ *
+ * @example
+ * ```
+ * <script setup>
+ * import { useObject } from "@arrai-innovations/reactive-helpers";
+ * import { reactive, ref, toRef } from "vue";
+ *
+ * const someObjectsSource = reactive({
+ *     objects: {
+ *         '1': { id: 1, name: 'one', secondOrderId: 15 },
+ *         '2': { id: 2, name: 'two', secondOrderId: 10 },
+ *         '3': { id: 3, name: 'three', secondOrderId: 5 },
+ *     },
+ * });
+ * const someOtherObjectsSource = reactive({
+ *     objects: {
+ *         '5': { id: 5, name: 'five' },
+ *         '10': { id: 10, name: 'ten' },
+ *         '15': { id: 15, name: 'fifteen' },
+ *     },
+ * });
+ * const props = defineProps({
+ *     app: { type: String, required: true },
+ *     model: { type: String, required: true },
+ *     id: { type: String, default: "" },
+ * });
+ *
+ * const objectProps = reactive({
+ *     crudArgs: {
+ *         app: toRef(props, "app"),
+ *         model: toRef(props, "model"),
+ *     },
+ *     retrieveArgs: {
+ *         fields: ['foo', 'bar'],
+ *     },
+ *     relatedObjectRules: {
+ *         firstOrder: {
+ *             pkKey: 'some_objects_id',
+ *             objects: someObjectsSource.objects,
+ *         },
+ *         some_objects_list_ids: {
+ *             // pkKey defaults to match rule name
+ *             objects: someObjectsSource.objects,
+ *             order: ['3','1','2'],
+ *         },
+ *         secondOrder: {
+ *             pkKey: 'relatedObject.secondOrderId',
+ *             objects: someOtherObjectsSource.objects,
+ *         },
+ *     },
+ *     calculatedObjectRules: {
+ *         someRule: (object, relatedObject, calculatedObjects) => {
+ *             // some complex calculation, relatedObjects would be assuming there was a listRelated between the two
+ *             // calculatedObjects would be the other calculated objects in the list
+ *             // including yourself, so try not to create circular dependencies
+ *             // this is used as a computed body.
+ *             return object.foo + object.name;
+ *         },
+ *         ...
+ *     },
+ *     intendToRetrieve: false,
+ *     intendToSubscribe: false,
+ * });
+ * objectProps.intendToRetrieve = objectProps.intendToSubscribe = computed(()=> !!props.id);
+ * const objectManager = useObject(objectProps);
+ * // objectManager.state.object comes back from the server (via configured crud retrieve function)
+ * // { id: 2, name: 'two', foo: 'bar', some_objects_id: 2, some_objects_list_ids: ['1','2','3'] }
+ * </script>
+ * <template>
+ * <div v-if="objectManager.state.loading">Loading...</div>
+ * <div v-else-if="objectManager.state.errored">Error: {{ objectManager.state.error.message }}</div>
+ * <div v-else-if="objectManager.state.object.id">
+ *     <p>Foo: {{ objectManager.state.object.foo }}</p>
+ *     <!-- 'bar' -->
+ *
+ *     <p>{{ objectManager.state.relatedObject.firstOrder }}</p>
+ *      <!-- { id: 2, name: 'two', secondOrderId: 10 } -->
+ *
+ *      <p>{{ objectManager.state.relatedObject.some_objects_list_ids }}</p>
+ *      <!-- [{ id: 3, name: 'three', secondOrderId: 5 }, { id: 1, name: 'one', secondOrderId: 15 }, { id: 2, name: 'two', secondOrderId: 10 }] -->
+ *
+ *      <p>{{ objectManager.state.relatedObject.secondOrder }}</p>
+ *      <!-- { id: 10, name: 'ten' } -->
+ *
+ *      <p>{{ objectManager.state.calculatedObject.someRule }}</p>
+ *      <!-- 'bartwo' -->
+ * </div>
+ * <div v-else>Object not found.</div>
+ * </template>
+ * ```
+ *
+ * @param {ObjectManagerOptions} options - The options to be passed to useObjectInstance, useObjectSubscription, useObjectRelated, and useObjectCalculated.
+ * @returns {ObjectManager} - An object managing a chain of useObject* instances.
  */
 export const useObject = ({ props, functions }) => {
     const managed = shallowReactive({
@@ -89,6 +252,8 @@ export const useObject = ({ props, functions }) => {
         managed.objectSubscription.clearError();
         managed.objectInstance.clear();
     };
+    /** @type {ObjectManager} */
+    // @ts-ignore - the remaining properties are added below
     const returnObject = reactive({
         managed: shallowReadonly(managed),
         state: managed.objectCalculated.state,

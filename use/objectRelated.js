@@ -1,9 +1,8 @@
 // noinspection ES6PreferShortImport
-
+import { keyDiff } from "../utils/keyDiff.js";
 import { loadingCombine } from "../utils/loadingCombine.js";
 import { proxyRunning } from "../utils/proxyRunning.js";
 import { getObjectRelatedByKey } from "../utils/relatedCalculatedHelpers.js";
-import { keyDiff } from "../utils/keyDiff.js";
 import { objectInstanceStateKeys } from "./objectInstance.js";
 import { objectSubscriptionStateKeys } from "./objectSubscription.js";
 import { useWatchesRunning } from "./watchesRunning.js";
@@ -11,9 +10,70 @@ import get from "lodash-es/get.js";
 import identity from "lodash-es/identity.js";
 import isArray from "lodash-es/isArray.js";
 import isEmpty from "lodash-es/isEmpty.js";
-import isEqual from "lodash-es/isEqual.js";
 import isUndefined from "lodash-es/isUndefined.js";
-import { computed, effectScope, onScopeDispose, reactive, ref, toRef, unref, watch } from "vue";
+import { computed, effectScope, reactive, ref, toRef, unref, watch } from "vue";
+
+/**
+ * Vue Composition API composable function for handling reactive relations to other objects.
+ *
+ * @module use/objectRelated.js
+ */
+
+// todo: pkKey is misnamed, it should be fkKey... this will be a major breaking change.
+/**
+ * The rule for defining relationships for the managed object to other collections of objects.
+ *
+ * @typedef {object} ObjectRelatedRule
+ * @property {string} pkKey - The key in the managed object that corresponds to the key in the related object.
+ * @property {import('./listInstance.js').ObjectsById} objects - The related objects, indexed by the key in the related object.
+ * @property {string[]} order - The order of the related objects, if the related objects are an array.
+ */
+
+/**
+ * The rules for defining relationships for the managed object to other collections of objects.
+ *
+ * @typedef {{
+ *     [rule: string]: ObjectRelatedRule,
+ * }} ObjectRelatedRawRules
+ */
+
+/**
+ *
+ *
+ * @typedef {object} ObjectRelatedRawState
+ * @property {ObjectRelatedRawRules} relatedObjectRules - The rules for defining relationships for the managed object to other collections of objects.
+ * @property {{
+ *     [rule: string]: import('vue').ComputedRef<any>,
+ * }} relatedObject - The related objects, indexed by the key in the related object.
+ * @property {boolean} relatedObjectWatchRunning - Whether the related object watch is running.
+ * @property {boolean} parentStateObjectWatchRunning - Whether the parent state object watch is running.
+ * @property {boolean} relatedRunning - Whether the related objects are loading.
+ * @property {boolean} running - Whether the related objects are loading or the parent state is loading.
+ */
+
+/**
+ *
+ *
+ * @typedef {(
+ *    import('./objectInstance.js').ObjectInstanceRawState &
+ *    Partial<import('./objectSubscription.js').ObjectSubscriptionRawState>
+ * )} ObjectRelatedParentRawState
+ */
+
+/**
+ *
+ *
+ * @typedef {import('vue').UnwrapNestedRefs<ObjectRelatedParentRawState>} ObjectRelatedParentState
+ */
+
+/**
+ *
+ *
+ * @typedef {import('vue').UnwrapNestedRefs<(
+ *     ObjectRelatedParentRawState &
+ *     ObjectRelatedRawState
+ * )>} ObjectRelatedState
+ */
 
 export const objectRelatedStateKeys = [
     "relatedObject",
@@ -26,19 +86,143 @@ export const objectRelatedStateKeys = [
 
 export const objectRelatedFunctions = [];
 
+/**
+ * @typedef {object} ObjectRelatedProperties
+ * @property {ObjectRelatedState} state - The state of the object related instance.
+ * @property {ObjectRelatedParentState} parentState - The parent state.
+ * @property {import('./watchesRunning.js').WatchesRunning} watchesRunning - The watches running instance.
+ * @property {import('vue').EffectScope} effectScope - The effect scope.
+ *
+ */
+
+// if we provided functions, we would add a typedef and mix them into ObjectRelated
+
+/**
+ * An instance of an object related reactive object.
+ *
+ * @typedef {ObjectRelatedProperties} ObjectRelated
+ */
+
+/**
+ * Non-parent state options for useObjectRelated.
+ *
+ * @typedef {object} ObjectRelatedRawProps
+ * @property {import('vue').Ref<ObjectRelatedRawRules>} relatedObjectRules - The rules for defining relationships for the managed object to other collections of objects.
+ */
+
+/**
+ * Options for useObjectRelated.
+ *
+ * @typedef {{
+ *     parentState: ObjectRelatedParentState,
+ * } & ObjectRelatedRawProps} ObjectRelatedOptions
+ */
+
+/**
+ *
+ * @param {{
+ *     [key: string]: {
+ *         state: ObjectRelatedParentState,
+ *     }
+ * }} instances - Objects containing the desired parent state, indexed by key, typically from an object instance/subscription.
+ * @param {{
+ *     [key: string]: import('vue').UnwrapNestedRefs<{
+ *         relatedObjectRules: ObjectRelatedRawRules,
+ *     }>
+ * }} args - The related object rules, indexed by key.
+ * @returns {{
+ *     [key: string]: ObjectRelated
+ * }} - The object related instances, indexed by key.
+ */
 export function useObjectRelateds(instances, args) {
+    /** @type {{[key: string]: ObjectRelated}} */
     const relateds = {};
     for (const [key, value] of Object.entries(args)) {
         relateds[key] = useObjectRelated({
             parentState: instances[key].state,
-            relatedObjectRules: toRef(value, 'relatedObjectRules'),
+            relatedObjectRules: toRef(value, "relatedObjectRules"),
         });
     }
     return relateds;
 }
 
-// the single object version of useListRelated
+/**
+ * Creates an object related reactive object.
+ *
+ * @example
+ * ```vue
+ * <script setup>
+ * import { useObjectRelated, useObjectSubscription } from "@arrai-innovations/reactive-helpers";
+ * import { ref, reactive } from "vue";
+ *
+ * const someObjectsSource = reactive({
+ *     objects: {
+ *         '1': { id: 1, name: 'one', secondOrderId: 15 },
+ *         '2': { id: 2, name: 'two', secondOrderId: 10 },
+ *         '3': { id: 3, name: 'three', secondOrderId: 5 },
+ *     },
+ * });
+ * const someOtherObjectsSource = reactive({
+ *     objects: {
+ *         '5': { id: 5, name: 'five' },
+ *         '10': { id: 10, name: 'ten' },
+ *         '15': { id: 15, name: 'fifteen' },
+ *     },
+ * });
+ * const objectSubscriptionProps = reactive({
+ *     crudArgs: { app: 'foo', model: 'bar'},
+ *     retrieveArgs: {},
+ *     id: '99',
+ *     intendToSubscribe: true,
+ *     intendToRetreive: true,
+ * });
+ * const objectSubscription = useObjectSubscription(objectSubscriptionProps);
+ * // objectSubscription.state.object like:
+ * // {
+ * //     id: '99',
+ * //     some_objects_id: '2',
+ * //     some_objects_list_ids: ['1','2','3'],
+ * // }
+ * const objectRelatedProps = reactive({
+ *     parentState: objectSubscription.state,
+ *     relatedObjectRules: {
+ *         firstOrder: {
+ *             pkKey: 'some_objects_id',
+ *             objects: someObjectsSource.objects,
+ *         },
+ *         some_objects_list_ids: {
+ *             // pkKey defaults to match rule name
+ *             objects: someObjectsSource.objects,
+ *             order: ['3','1','2'],
+ *         },
+ *         secondOrder: {
+ *             pkKey: 'relatedObject.secondOrderId',
+ *             objects: someOtherObjectsSource.objects,
+ *         },
+ *     },
+ * });
+ * const objectRelated = useObjectRelated(objectRelatedProps);
+ * </script>
+ * <template>
+ * <div>
+ *     <p>{{ objectRelated.state.relatedObject.firstOrder }}</p>
+ *     <!-- { id: 2, name: 'two', secondOrderId: 10 } -->
+ *
+ *     <p>{{ objectRelated.state.relatedObject.some_objects_list_ids }}</p>
+ *     <!-- [{ id: 3, name: 'three', secondOrderId: 5 }, { id: 1, name: 'one', secondOrderId: 15 }, { id: 2, name: 'two', secondOrderId: 10 }] -->
+ *
+ *     <p>{{ objectRelated.state.relatedObject.secondOrder }}</p>
+ *     <!-- { id: 10, name: 'ten' } -->
+ * </div>
+ * </template>
+ * ```
+ *
+ * @param {ObjectRelatedOptions} options - The options for the object related reactive object.
+ * @returns {ObjectRelated} - The object related reactive object.
+ */
 export function useObjectRelated({ parentState, relatedObjectRules }) {
+    /** @type {ObjectRelatedState} */
+    // @ts-ignore - other keys are added in effectScope or as refs from elsewhere
     const state = reactive({
         relatedObjectRules,
         relatedObject: {},
@@ -51,7 +235,9 @@ export function useObjectRelated({ parentState, relatedObjectRules }) {
     const es = effectScope();
 
     const internalState = reactive({
+        /** @type {{[rule: string]: import('vue').ComputedRef<[obj:any, key:string]>}} */
         objAndKeyForRule: {},
+        /** @type {{[rule: string]: import('vue').ComputedRef<string|string[]|undefined>}} */
         fkForRule: {},
     });
 
@@ -101,12 +287,12 @@ export function useObjectRelated({ parentState, relatedObjectRules }) {
     function watchRules() {
         // sameKeys are handled by the computeds,
         //  we just need to setup or stop the computeds for the new or removed keys.
-        let addedRuleKeys,
-            removedRuleKeys;
+        /** @type {Set<string>|undefined} */
+        let addedRuleKeys, removedRuleKeys;
         if (state.relatedObjectRules && !isEmpty(state.relatedObjectRules)) {
             ({ addedKeys: addedRuleKeys, removedKeys: removedRuleKeys } = keyDiff(
                 Object.keys(state.relatedObjectRules),
-                Object.keys(state.relatedObject),
+                Object.keys(state.relatedObject)
             ));
         } else {
             removedRuleKeys = new Set(Object.keys(state.relatedObjectRules));
@@ -128,9 +314,11 @@ export function useObjectRelated({ parentState, relatedObjectRules }) {
 
     es.run(() => {
         for (const key of objectInstanceStateKeys) {
+            // @ts-ignore - assignment of remaining expected keys
             state[key] = toRef(parentState, key);
         }
         for (const key of objectSubscriptionStateKeys) {
+            // @ts-ignore - assignment of remaining expected keys
             state[key] = toRef(parentState, key);
         }
 
@@ -146,16 +334,18 @@ export function useObjectRelated({ parentState, relatedObjectRules }) {
             ],
         });
 
+        // @ts-ignore - assignment to UnwrapNestedRefs triggers tsc to mismatch on Ref vs non-Ref
         state.relatedRunning = toRef(watchesRunning.state, "running");
         const parentRunning = ref(undefined);
         proxyRunning(parentState, "running", parentRunning);
+        // @ts-ignore - assignment to UnwrapNestedRefs triggers tsc to mismatch on Ref vs non-Ref
         state.running = computed(() => loadingCombine(watchesRunning.state.running, parentRunning));
     });
 
-    return reactive({
+    return {
         state,
         parentState,
         watchesRunning,
         effectScope: es,
-    });
+    };
 }

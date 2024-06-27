@@ -14,7 +14,7 @@ Vue.js 3 utility composition functions to help manipulate objects and lists.
 - [Install](#install)
 - [Usage](#usage)
   - [Import](#import)
-  - [JSDocs](#jsdocs)
+  - [Documentation](#documentation)
   - [List](#list)
     - [Instance](#instance)
     - [Subscription](#subscription)
@@ -55,11 +55,9 @@ import { useListInstance } from "@arrai-innovations/reactive-helpers/use/listIns
 import { useObjectInstance } from "@arrai-innovations/reactive-helpers/use";
 ```
 
-See the [JSDocs](./docs.md) for list of available modules and imports.
+### Documentation
 
-### JSDocs
-
-[View the JSDocs](./docs.md)
+See the [generated documentation](./docs/README.md) for list of available modules and imports.
 
 ### List
 
