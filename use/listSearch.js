@@ -79,20 +79,21 @@ export function useListSearch({ parentState, props, throttle = 500, showAllWhenE
     if (!parentState) {
         throw new Error("parentState is required");
     }
+    const internalState = reactive({
+        objectsInOrderRefs: [],
+        newSearchComputeds: undefined,
+    });
     const state = reactive({
         objects: {},
         objectsInOrder: [],
-        objectsInOrderRefs: [],
         order: [],
         textSearchRules: toRef(props, "textSearchRules"),
         textSearchValue: toRef(props, "textSearchValue"),
         objectIndexes: {},
-        updateSearchIndexesRunning: undefined,
         customDocumentOptions: toRef(props, "customDocumentOptions"),
         customSearchOptions: toRef(props, "customSearchOptions"),
         searched: undefined,
         running: undefined,
-        newSearchComputeds: undefined,
     });
     if (!state.customDocumentOptions) {
         state.customDocumentOptions = {};
@@ -184,7 +185,7 @@ export function useListSearch({ parentState, props, throttle = 500, showAllWhenE
             objectEffectScope.run(() => {
                 for (const rule of state.textSearchRules || []) {
                     const [obj, key] = getObjectRelatedCalculatedByKey(objectRef, relatedRef, calculatedRef, rule);
-                    state.newSearchComputeds = true;
+                    internalState.newSearchComputeds = true;
                     state.objectIndexes[addedObjectId][rule] = objectComputeds[addedObjectId][rule] = computed(() => {
                         return get(unref(obj), key);
                     });
@@ -207,7 +208,7 @@ export function useListSearch({ parentState, props, throttle = 500, showAllWhenE
             objectEffectScope.run(() => {
                 for (const rule of addedTextSearchRules) {
                     const [obj, key] = getObjectRelatedCalculatedByKey(objectRef, relatedRef, calculatedRef, rule);
-                    state.newSearchComputeds = true;
+                    internalState.newSearchComputeds = true;
                     state.objectIndexes[sameObjectId][rule] = objectComputeds[sameObjectId][rule] = computed(() => {
                         return get(unref(obj), key);
                     });
@@ -221,10 +222,6 @@ export function useListSearch({ parentState, props, throttle = 500, showAllWhenE
     };
 
     const updateSearchIndexes = async () => {
-        if (state.updateSearchIndexesRunning === undefined) {
-            state.updateSearchIndexesRunning = 0;
-        }
-        state.updateSearchIndexesRunning++;
         try {
             const { addedKeys, removedKeys, sameKeys } = keyDiff(
                 Object.keys(state.objectIndexes),
@@ -249,10 +246,9 @@ export function useListSearch({ parentState, props, throttle = 500, showAllWhenE
                 await Promise.all(promises);
             }
         } finally {
-            if (state.newSearchComputeds) {
-                state.newSearchComputeds = false;
+            if (internalState.newSearchComputeds) {
+                internalState.newSearchComputeds = false;
             }
-            state.updateSearchIndexesRunning--;
         }
     };
 
@@ -274,7 +270,7 @@ export function useListSearch({ parentState, props, throttle = 500, showAllWhenE
     const updateOrder = () => {
         state.order = parentState.order.filter((id) => !!state.objects[id]);
         assignReactiveObject(
-            state.objectsInOrderRefs,
+            internalState.objectsInOrderRefs,
             state.order.map((id) => toRef(state.objects, id))
         );
     };
@@ -291,8 +287,6 @@ export function useListSearch({ parentState, props, throttle = 500, showAllWhenE
         await makeComputeds();
     };
 
-    let watchesRunning;
-
     es.run(() => {
         for (const key of parentStateKeys) {
             state[key] = toRef(parentState, key);
@@ -304,13 +298,13 @@ export function useListSearch({ parentState, props, throttle = 500, showAllWhenE
         });
         textSearchIndex.state.search = toRef(state, "textSearchValue");
         textSearchIndex.events.addEventListener("newIndex", indexWasCleared);
-        state.searched = toRef(() => textSearchIndex.state.searched);
+        state.searched = readonly(toRef(textSearchIndex.state, 'searched'));
         const parentRunning = ref(undefined);
         proxyRunning(parentState, "running", parentRunning);
         state.running = computed(() => {
-            return loadingCombine(parentRunning.value, state.newSearchComputeds, textSearchIndex.state.running);
+            return loadingCombine(parentRunning.value, internalState.newSearchComputeds, textSearchIndex.state.running);
         });
-        state.objectsInOrder = computed(() => state.objectsInOrderRefs.map((ref) => unref(ref)));
+        state.objectsInOrder = computed(() => internalState.objectsInOrderRefs.map((ref) => unref(ref)));
 
         watch([() => Object.keys(parentState.objects), toRef(state.textSearchRules)], makeComputeds, {
             immediate: true,
@@ -355,6 +349,5 @@ export function useListSearch({ parentState, props, throttle = 500, showAllWhenE
         state,
         effectScope: es,
         textSearchIndex,
-        watchesRunning,
     };
 }

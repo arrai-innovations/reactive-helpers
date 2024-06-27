@@ -80,11 +80,15 @@ export function useListSubscription({
     clearListOnListIntentTriggered = false,
 }) {
     if (!listInstance && !props) {
-        throw new ListSubscriptionError("useListSubscription should be passed listInstance or props and functions.");
+        throw new ListSubscriptionError(
+            "useListSubscription should be passed listInstance or props and functions.",
+            "missing-arguments"
+        );
     }
     if (listInstance && props) {
         throw new ListSubscriptionError(
-            "useListSubscription should be passed listInstance or props and functions, not both."
+            "useListSubscription should be passed listInstance or props and functions, not both.",
+            "too-many-arguments"
         );
     }
     if (!listInstance) {
@@ -129,7 +133,8 @@ export function useListSubscription({
 
     function subscriptionEventCallback(data, action) {
         if (!data || (isObject(data) && isEmpty(data))) {
-            throw new ListSubscriptionError(`got update with no data (${inspect(data)}), action: ${action}`);
+            throw new ListSubscriptionError(`got update with no data (${inspect(data)}), action: ${action}`,
+                "empty-data");
         } else if (action === "delete") {
             deleteFromSubscription(data);
         } else if (action === "create") {
@@ -137,7 +142,8 @@ export function useListSubscription({
         } else if (action === "update") {
             updateFromSubscription(data);
         } else {
-            throw new ListSubscriptionError(`got update for unknown action: ${action}\n${inspect(data)}`);
+            throw new ListSubscriptionError(`got update for unknown action: ${action}\n${inspect(data)}`,
+                "unknown-action");
         }
     }
 
@@ -154,14 +160,24 @@ export function useListSubscription({
         return didUnsubscribe;
     }
 
+    /**
+     * Add an object to the list from a subscription event.
+     *
+     * @memberof ListSubscription
+     * @param {object} data - The object to add.
+     * @throws {ListSubscriptionError} - If data is missing an id.
+     * @throws {ListInstanceError} - If the object is already in the list.
+     * @returns {void}
+     */
     function addFromSubscription(data) {
         if (!data.id) {
-            throw new ListSubscriptionError(`addFromSubscription: data missing id.\n${inspect(data)}`);
+            throw new ListSubscriptionError(`addFromSubscription: data missing id.\n${inspect(data)}`,
+                "missing-id");
         }
         try {
             listInstance.addListObject(data);
         } catch (err) {
-            if (err.name === "ListError" && err.code === "duplicate-id") {
+            if (err.name === "ListInstanceError" && err.code === "duplicate-id") {
                 console.warn(`addFromSubscription: add for id already in objects (${data.id}).`);
                 return;
             }
@@ -171,12 +187,13 @@ export function useListSubscription({
 
     function updateFromSubscription(data) {
         if (!data.id) {
-            throw new ListSubscriptionError(`updateFromSubscription: data missing id.\n${inspect(data)}`);
+            throw new ListSubscriptionError(`updateFromSubscription: data missing id.\n${inspect(data)}`,
+                "missing-id");
         }
         try {
             listInstance.updateListObject(data);
         } catch (err) {
-            if (err.name === "ListError" && err.code === "missing-object") {
+            if (err.name === "ListInstanceError" && err.code === "missing-object") {
                 console.warn(`updateFromSubscription: update for id not in objects (${data.id}).`);
                 return;
             }
@@ -188,7 +205,7 @@ export function useListSubscription({
         try {
             listInstance.deleteListObject(id);
         } catch (err) {
-            if (err.name === "ListError" && err.code === "missing-object") {
+            if (err.name === "ListInstanceError" && err.code === "missing-object") {
                 console.warn(`deleteFromSubscription: delete for id not in objects (${inspect(id)}).`);
                 return;
             }

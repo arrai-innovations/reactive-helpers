@@ -90,6 +90,8 @@ export const useList = ({
             props: reactive({
                 textSearchRules: toRef(props, "textSearchRules"),
                 textSearchValue: toRef(props, "textSearchValue"),
+                customDocumentOptions: toRef(props, "customDocumentOptions"),
+                customSearchOptions: toRef(props, "customSearchOptions"),
             }),
             throttle: searchThrottle,
             showAllWhenEmpty: searchShowAllWhenEmpty,

@@ -46,13 +46,15 @@ const inResults = (state, object, relatedObject, calculatedObject) => {
 };
 
 export function useListFilter({ parentState, allowedFilter, excludedFilter }) {
+    const internalState = reactive({
+        objectsInOrderRefs: [],
+    });
     const state = reactive({
         allowedFilter,
         excludedFilter,
         inResults: {},
         objects: {},
         objectsInOrder: [],
-        objectsInOrderRefs: [],
         objectsWatchRunning: undefined,
         order: [],
         resultsWatchRunning: undefined,
@@ -132,18 +134,18 @@ export function useListFilter({ parentState, allowedFilter, excludedFilter }) {
         entries.reverse();
         if (entries.length !== state.order.length) {
             state.order.length = entries.length;
-            state.objectsInOrderRefs.length = entries.length;
+            internalState.objectsInOrderRefs.length = entries.length;
         }
         for (const [index, id] of entries) {
             if (state.order[index] !== id) {
                 state.order[index] = id;
             }
-            if (unref(toRef(state.objectsInOrderRefs, index)) !== unref(toRef(state.objects, id))) {
-                state.objectsInOrderRefs[index] = toRef(state.objects, id);
+            if (unref(toRef(internalState.objectsInOrderRefs, index)) !== unref(toRef(state.objects, id))) {
+                internalState.objectsInOrderRefs[index] = toRef(state.objects, id);
             }
         }
         assignReactiveObject(
-            state.objectsInOrderRefs,
+            internalState.objectsInOrderRefs,
             desiredOrder.map((id) => toRef(state.objects, id))
         );
     };
@@ -162,7 +164,7 @@ export function useListFilter({ parentState, allowedFilter, excludedFilter }) {
         watch(toRef(state, "inResults"), resultsWatch, { deep: true });
 
         watch(toRef(parentState, "order"), orderWatch, { deep: true, immediate: true });
-        state.objectsInOrder = computed(() => state.objectsInOrderRefs.map((e) => unref(e)));
+        state.objectsInOrder = computed(() => internalState.objectsInOrderRefs.map((e) => unref(e)));
 
         watch(
             [

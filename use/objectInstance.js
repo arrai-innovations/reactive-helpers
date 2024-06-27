@@ -23,9 +23,10 @@ import { reactive, toRef } from "vue";
  */
 
 export class ObjectError extends Error {
-    constructor(message) {
+    constructor(message, code) {
         super(message);
         this.name = "ObjectError";
+        this.code = code;
     }
 }
 
@@ -122,7 +123,7 @@ export function useObjectInstance({ props, functions = {} }) {
         }
         if (state.loading) {
             // if another operation is already in progress, return a rejected promise
-            return Promise.reject(new ObjectError("already loading."));
+            return Promise.reject(new ObjectError("already loading.", "already-loading"));
         }
         loadingError.setLoading();
         loadingError.clearError();
@@ -149,7 +150,7 @@ export function useObjectInstance({ props, functions = {} }) {
 
     async function create({ object }) {
         if (state.loading) {
-            throw new ObjectError("already loading.");
+            throw new ObjectError("already loading.", "already-loading");
         }
         loadingError.setLoading();
         loadingError.clearError();
@@ -174,7 +175,7 @@ export function useObjectInstance({ props, functions = {} }) {
 
     async function update({ object }) {
         if (state.loading) {
-            throw new ObjectError("already loading.");
+            throw new ObjectError("already loading.", "already-loading");
         }
         loadingError.setLoading();
         loadingError.clearError();
@@ -199,7 +200,7 @@ export function useObjectInstance({ props, functions = {} }) {
 
     async function patch({ partialObject }) {
         if (state.loading) {
-            throw new ObjectError("already loading.");
+            throw new ObjectError("already loading.", "already-loading");
         }
         loadingError.setLoading();
         loadingError.clearError();
@@ -225,7 +226,7 @@ export function useObjectInstance({ props, functions = {} }) {
 
     async function deleteFn() {
         if (state.loading) {
-            throw new ObjectError("already loading.");
+            throw new ObjectError("already loading.", "already-loading");
         }
         loadingError.setLoading();
         loadingError.clearError();

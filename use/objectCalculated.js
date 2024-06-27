@@ -1,3 +1,5 @@
+// noinspection ES6PreferShortImport
+
 import { proxyRunning } from "../utils/index.js";
 import { keyDiff } from "../utils/keyDiff.js";
 import { loadingCombine } from "../utils/loadingCombine.js";
@@ -55,11 +57,13 @@ export function useObjectCalculated({ parentState, calculatedObjectRules }) {
         }
 
         watch([() => state.calculatedObjectRules && Object.keys(state.calculatedObjectRules)], () => {
-            let addedKeys = [],
-                removedKeys = [],
-                sameKeys = [];
+            let addedKeys = undefined,
+                removedKeys = undefined,
+                sameKeys = undefined;
             if (!state.calculatedObjectRules) {
-                removedKeys = Object.keys(calculatedObjectOriginalFunctions);
+                removedKeys = new Set(Object.keys(calculatedObjectOriginalFunctions));
+                addedKeys = new Set();
+                sameKeys = new Set();
             } else {
                 ({ addedKeys, removedKeys, sameKeys } = keyDiff(
                     Object.keys(state.calculatedObjectRules),
@@ -68,8 +72,8 @@ export function useObjectCalculated({ parentState, calculatedObjectRules }) {
             }
             for (const sameKey of sameKeys) {
                 if (calculatedObjectOriginalFunctions[sameKey] !== state.calculatedObjectRules[sameKey]) {
-                    removedKeys.push(sameKey);
-                    addedKeys.push(sameKey);
+                    removedKeys.add(sameKey);
+                    addedKeys.add(sameKey);
                 }
             }
             for (const removedKey of removedKeys) {
@@ -113,10 +117,10 @@ export function useObjectCalculated({ parentState, calculatedObjectRules }) {
             }
         });
     });
-    return reactive({
+    return {
         state,
         parentState,
         watchesRunning,
         effectScope: es,
-    });
+    };
 }

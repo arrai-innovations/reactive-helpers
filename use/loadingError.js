@@ -12,7 +12,7 @@ import { readonly, ref } from "vue";
  * @property {Function} clearError - a function to clear error state
  */
 export default function useLoadingError() {
-    const loading = ref(false);
+    const loading = ref(undefined);
     const error = ref(null);
     const errored = ref(false);
     return {

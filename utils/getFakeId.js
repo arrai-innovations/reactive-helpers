@@ -18,5 +18,5 @@ export function getFakeId(arraySetMapOrObject, key = "id") {
     do {
         fakeId = Math.floor(Math.random() * Number.MIN_SAFE_INTEGER);
     } while (test());
-    return fakeId;
+    return fakeId.toString();
 }

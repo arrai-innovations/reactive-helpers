@@ -89,6 +89,54 @@ export function useListRelated({ parentState, relatedObjectsRules }) {
         state.relatedObjectsParentStateObjectsWatchRunning = false;
     }
 
+    function applyRuleToObject(objectKey, ruleKey, originalObjectRef, relatedObjectRef) {
+        const rule = toRef(state.relatedObjectsRules, ruleKey);
+        state.objAndKeyForIdAndRule[objectKey][ruleKey] = computed(() => {
+            const rulePkKey = unref(rule).pkKey || ruleKey;
+            const object = unref(originalObjectRef);
+            const relatedObject = unref(relatedObjectRef);
+            return getObjectRelatedByKey(object, relatedObject, rulePkKey);
+        });
+
+        state.fkForIdAndRule[objectKey][ruleKey] = computed(() => computeForeignKey(ruleKey, objectKey, rule, relatedObjectRef));
+
+        state.relatedObjects[objectKey][ruleKey] = computed(() => {
+            const value = unref(state.fkForIdAndRule[objectKey][ruleKey]);
+            const objects = unref(rule).objects;
+            if (isArray(value)) {
+                return value.map(e => objects[e]).filter(identity);
+            }
+            return objects[value];
+        });
+    }
+
+    function computeForeignKey(ruleKey, objectKey, rule, relatedObjectRef) {
+        const ruleOrder = unref(rule).order;
+        const relatedObject = unref(relatedObjectRef);
+        const [objectForGet, key] = unref(state.objAndKeyForIdAndRule[objectKey][ruleKey]);
+        let value = get(objectForGet, key);
+        if (objectForGet === relatedObject && isUndefined(value)) {
+            // Handle nested arrays
+            const firstLevelKey = key.split(".")[0];
+            const firstLevelItem = get(relatedObject, firstLevelKey);
+            if (isArray(firstLevelItem)) {
+                const restOfKey = key.slice(firstLevelKey.length + 1);
+                value = firstLevelItem.map(e => get(e, restOfKey)).flat();
+            }
+        }
+        if (isArray(value) && ruleOrder?.length) {
+            value = value.filter(identity);
+            const indexById = Object.fromEntries(ruleOrder.map((e, i) => [e, i]));
+            value.sort((a, b) => {
+                const aIndex = indexById[a];
+                const bIndex = indexById[b];
+                return aIndex - bIndex;
+            });
+        }
+        return value;
+    }
+
+
     function relatedObjectsWatch() {
         const relatedObjectsRulesIsEmpty = !state.relatedObjectsRules || isEmpty(state.relatedObjectsRules);
         for (const objectKey of Object.keys(state.relatedObjects)) {
@@ -100,7 +148,7 @@ export function useListRelated({ parentState, relatedObjectsRules }) {
                 ));
             } else {
                 if (isEmpty(state.relatedObjects[objectKey])) {
-                    return;
+                    continue;
                 }
                 removedRuleKeys = new Set(Object.keys(state.relatedObjects[objectKey]));
                 addedRuleKeys = new Set();
@@ -121,48 +169,7 @@ export function useListRelated({ parentState, relatedObjectsRules }) {
                 const relatedObjectRef = toRef(state.relatedObjects, objectKey);
                 relatedObjectsEffectScopes[objectKey].run(() => {
                     for (const addedRuleKey of addedRuleKeys) {
-                        const rules = toRef(state.relatedObjectsRules, addedRuleKey);
-                        state.objAndKeyForIdAndRule[objectKey][addedRuleKey] = computed(() => {
-                            const rulePkKey = unref(rules).pkKey || addedRuleKey;
-                            const object = unref(originalObjectRef);
-                            const relatedObject = unref(relatedObjectRef);
-                            return getObjectRelatedByKey(object, relatedObject, rulePkKey);
-                        });
-
-                        state.fkForIdAndRule[objectKey][addedRuleKey] = computed(() => {
-                            const ruleOrder = unref(rules).order;
-                            const relatedObject = unref(relatedObjectRef);
-                            const [objectForGet, key] = unref(state.objAndKeyForIdAndRule[objectKey][addedRuleKey]);
-                            let value = get(objectForGet, key);
-                            if (objectForGet === relatedObject && isUndefined(value)) {
-                                // is the first level an array?
-                                const firstLevelKey = key.split(".")[0];
-                                const firstLevelItem = get(relatedObject, firstLevelKey);
-                                if (isArray(firstLevelItem)) {
-                                    const restOfKey = key.slice(firstLevelKey.length + 1);
-                                    value = firstLevelItem.map((e) => get(e, restOfKey)).flat();
-                                }
-                            }
-                            if (isArray(value) && ruleOrder?.length) {
-                                value = value.filter(identity);
-                                const indexById = Object.fromEntries(ruleOrder.map((e, i) => [e, i]));
-                                value.sort((a, b) => {
-                                    const aIndex = indexById[a];
-                                    const bIndex = indexById[b];
-                                    return aIndex - bIndex;
-                                });
-                            }
-                            return value;
-                        });
-
-                        state.relatedObjects[objectKey][addedRuleKey] = computed(() => {
-                            const value = unref(state.fkForIdAndRule[objectKey][addedRuleKey]);
-                            const objects = unref(rules).objects;
-                            if (isArray(value)) {
-                                return value.map((e) => objects[e]).filter(identity);
-                            }
-                            return objects[value];
-                        });
+                        applyRuleToObject(objectKey, addedRuleKey, originalObjectRef, relatedObjectRef);
                     }
                 });
             }

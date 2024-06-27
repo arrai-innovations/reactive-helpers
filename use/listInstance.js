@@ -87,7 +87,7 @@ export function useListInstances(listInstanceArgs) {
  */
 export function useListInstance({ props, functions = {}, keepOldPages = false }) {
     if (!props) {
-        throw new ListError(`useListInstance requires props`);
+        throw new ListInstanceError(`useListInstance requires props`, "missing-props");
     }
     // ### touching the _objectsMap or _objectsProxy directly will not trigger reactivity ###
     const _objectsMap = new Map(); // maps are ordered, if you don't clear lists, you need to insert pages in order.
@@ -129,7 +129,12 @@ export function useListInstance({ props, functions = {}, keepOldPages = false })
             return Object.prototype;
         },
     });
+
     const loadingError = useLoadingError();
+    const internalState = reactive({
+        objectsInOrderRefs: [],
+    });
+
     // ### touching the _objectsMap or _objectsProxy directly will not trigger reactivity ###
     const state = reactive({
         crud: {
@@ -177,7 +182,7 @@ export function useListInstance({ props, functions = {}, keepOldPages = false })
             return promises.list;
         }
         if (state.loading) {
-            return Promise.reject(new ListError("already loading."));
+            return Promise.reject(new ListInstanceError("already loading.", "already-loading"));
         }
         let returnPromiseResolve;
         promises.list = new Promise((resolve) => (returnPromiseResolve = resolve));
@@ -220,10 +225,10 @@ export function useListInstance({ props, functions = {}, keepOldPages = false })
 
     function addListObject(object) {
         if (!object.id) {
-            throw new ListError(`addListObject: object missing id.\n${inspect(object)}`, "missing-id");
+            throw new ListInstanceError(`addListObject: object missing id.\n${inspect(object)}`, "missing-id");
         }
         if (object.id in state.objects) {
-            throw new ListError(`addListObject: list already has object for id: ${inspect(object.id)}`, "duplicate-id");
+            throw new ListInstanceError(`addListObject: list already has object for id: ${inspect(object.id)}`, "duplicate-id");
         }
         state.objects[object.id] = object;
         if (!state.running) {
@@ -233,10 +238,10 @@ export function useListInstance({ props, functions = {}, keepOldPages = false })
 
     function updateListObject(object) {
         if (!object.id) {
-            throw new ListError(`updateListObject: object missing id.\n${inspect(object)}`, "missing-id");
+            throw new ListInstanceError(`updateListObject: object missing id.\n${inspect(object)}`, "missing-id");
         }
         if (!(object.id in state.objects)) {
-            throw new ListError(
+            throw new ListInstanceError(
                 `updateListObject: list missing object for update by id: ${inspect(object.id)}`,
                 "missing-object"
             );
@@ -249,7 +254,7 @@ export function useListInstance({ props, functions = {}, keepOldPages = false })
 
     function deleteListObject(objectId) {
         if (!(objectId in state.objects)) {
-            throw new ListError(
+            throw new ListInstanceError(
                 `deleteListObject: list missing object for removal by id: ${inspect(objectId)}`,
                 "missing-object"
             );
@@ -274,7 +279,7 @@ export function useListInstance({ props, functions = {}, keepOldPages = false })
             toRef(state, "objects"),
             () => {
                 assignReactiveObject(
-                    state.objectsInOrderRefs,
+                    internalState.objectsInOrderRefs,
                     Object.keys(state.objects).map((id) => toRef(state.objects, id))
                 );
                 if (state.running) {
@@ -286,7 +291,7 @@ export function useListInstance({ props, functions = {}, keepOldPages = false })
                 deep: true,
             }
         );
-        state.objectsInOrder = computed(() => state.objectsInOrderRefs.map((ref) => unref(ref)));
+        state.objectsInOrder = computed(() => internalState.objectsInOrderRefs.map((ref) => unref(ref)));
         state.order = computed(() => Object.keys(state.objects));
     });
 

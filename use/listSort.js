@@ -53,16 +53,21 @@ export function useListSorts(args, parentInstances) {
 }
 
 export function useListSort({ parentState, orderByRules, sortThrottleWait = defaultSortThrottleWait }) {
-    if (sortThrottleWait === defaultSortThrottleWait) {
-        sortThrottleWait = defaultOptions.sortThrottleWait;
-    }
+    const sortThrottleWaitNumber = (() => {
+        if (sortThrottleWait === defaultSortThrottleWait) {
+            return defaultOptions.sortThrottleWait;
+        }
+        return Number(sortThrottleWait);
+    })();
 
     const sortCriteriaEffectScopes = {};
 
+    const internalState = reactive({
+        objectsInOrderRefs: [],
+    })
     const state = reactive({
         orderByRules,
         order: [],
-        objectsInOrderRefs: [],
         objectsInOrder: [],
         sortCriteria: {},
         orderByDesc: [],
@@ -140,7 +145,7 @@ export function useListSort({ parentState, orderByRules, sortThrottleWait = defa
                 }
                 state.order = [...parentState.order];
                 assignReactiveObject(
-                    state.objectsInOrderRefs,
+                    internalState.objectsInOrderRefs,
                     state.order.map((e) => toRef(parentState.objects, e))
                 );
                 return;
@@ -175,7 +180,7 @@ export function useListSort({ parentState, orderByRules, sortThrottleWait = defa
             if (!state.orderByRules?.length) {
                 state.order = [...parentState.order];
                 assignReactiveObject(
-                    state.objectsInOrderRefs,
+                    internalState.objectsInOrderRefs,
                     state.order.map((e) => toRef(parentState.objects, e))
                 );
                 return;
@@ -218,7 +223,7 @@ export function useListSort({ parentState, orderByRules, sortThrottleWait = defa
             });
             state.order = idList;
             assignReactiveObject(
-                state.objectsInOrderRefs,
+                internalState.objectsInOrderRefs,
                 idList.map((e) => toRef(parentState.objects, e))
             );
         } finally {
@@ -227,7 +232,7 @@ export function useListSort({ parentState, orderByRules, sortThrottleWait = defa
         }
     }
 
-    const throttledSortWatch = throttle(sortWatch, sortThrottleWait);
+    const throttledSortWatch = throttle(sortWatch, sortThrottleWaitNumber);
 
     let watchesRunning = null;
 
@@ -250,7 +255,7 @@ export function useListSort({ parentState, orderByRules, sortThrottleWait = defa
             watchSentinelRefs: [toRef(state, "sortCriteriaWatchRunning"), toRef(state, "sortWatchRunning")],
         });
 
-        state.objectsInOrder = computed(() => state.objectsInOrderRefs.map((e) => unref(e)));
+        state.objectsInOrder = computed(() => internalState.objectsInOrderRefs.map((e) => unref(e)));
         state.sortRunning = computed(() => loadingCombine(watchesRunning.state.running, state.outstandingEffects));
         const parentRunning = ref(undefined);
         proxyRunning(parentState, "running", parentRunning);

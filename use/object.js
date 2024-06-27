@@ -47,7 +47,7 @@ export const useObjects = (objectArgs) => {
  * @returns {ObjectInstance} - An object managing a chain of useObject* instances.
  */
 export const useObject = ({ props, functions }) => {
-    const managed = reactive({
+    const managed = shallowReactive({
         objectInstance: null,
         objectSubscription: null,
         objectRelated: null,
@@ -82,12 +82,11 @@ export const useObject = ({ props, functions }) => {
         });
     });
     const clearError = () => {
+        // subscription clearError also clears the instance error
         managed.objectSubscription.clearError();
-        managed.objectInstance.clearError();
     };
     const clear = () => {
         managed.objectSubscription.clearError();
-        // objectInstance.clear also does objectInstance.clearError
         managed.objectInstance.clear();
     };
     const returnObject = reactive({

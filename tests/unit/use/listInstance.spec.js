@@ -11,7 +11,7 @@ afterAll(() => {
 
 const fields = ["id", "__str__", "name"];
 describe("use/listInstance.spec.js", function () {
-    let useListInstance, ListError, useListInstances, globalList;
+    let useListInstance, ListInstanceError, useListInstances, globalList;
     beforeEach(async () => {
         const listCrud = await import("../../../config/listCrud.js");
         const imported = await import("../../../use/listInstance");
@@ -22,7 +22,7 @@ describe("use/listInstance.spec.js", function () {
             args: { stream: "test_stream" },
         });
         useListInstance = imported.useListInstance;
-        ListError = imported.ListError;
+        ListInstanceError = imported.ListInstanceError;
         useListInstances = imported.useListInstances;
     });
     afterEach(function () {
@@ -382,10 +382,10 @@ describe("use/listInstance.spec.js", function () {
     describe("addListObject", function () {
         it("errored", function () {
             const listInstance = useListInstance({ props: {} });
-            expect(() => listInstance.addListObject({ listObject })).toThrowError(ListError);
+            expect(() => listInstance.addListObject({ listObject })).toThrowError(ListInstanceError);
             listObject.id = listInstance.getFakeId();
             listInstance.addListObject(listObject);
-            expect(() => listInstance.addListObject({ listObject })).toThrowError(ListError);
+            expect(() => listInstance.addListObject({ listObject })).toThrowError(ListInstanceError);
         });
         it("succeeded", async function () {
             const listInstance = useListInstance({ props: {} });
@@ -412,10 +412,10 @@ describe("use/listInstance.spec.js", function () {
     describe("updateListObject", function () {
         it("errors", function () {
             const listInstance = useListInstance({ props: {} });
-            expect(() => listInstance.updateListObject({ listObject })).toThrowError(ListError);
+            expect(() => listInstance.updateListObject({ listObject })).toThrowError(ListInstanceError);
             listObject.id = -50002000;
             listInstance.addListObject(listObject);
-            expect(() => listInstance.updateListObject({ listObject })).toThrowError(ListError);
+            expect(() => listInstance.updateListObject({ listObject })).toThrowError(ListInstanceError);
         });
         it("succeeds", async function () {
             const listInstance = useListInstance({
@@ -456,7 +456,7 @@ describe("use/listInstance.spec.js", function () {
     describe("deleteListObject", function () {
         it("errors", function () {
             const listInstance = useListInstance({ props: {} });
-            expect(() => listInstance.deleteListObject(-50002000)).toThrowError(ListError);
+            expect(() => listInstance.deleteListObject(-50002000)).toThrowError(ListInstanceError);
         });
         it("succeeds", async function () {
             const listInstance = useListInstance({

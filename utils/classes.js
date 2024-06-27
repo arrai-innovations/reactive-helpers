@@ -50,8 +50,8 @@ export const objectifyClasses = (...classes) => {
     const flatClasses = classes.flat(Infinity).filter(identity);
     const objects = flatClasses.map((c) => {
         if (isString(c)) {
-            c = c.split(/\s+/);
-            c = c.reduce((acc, c) => {
+            const cSplit = c.split(/\s+/);
+            c = cSplit.reduce((acc, c) => {
                 acc[c] = true;
                 return acc;
             }, {});

@@ -5,9 +5,10 @@ import { useObjectInstance, objectInstanceStateKeys } from "./objectInstance.js"
 import { computed, effectScope, reactive, toRef } from "vue";
 
 export class ObjectSubscriptionError extends Error {
-    constructor(message) {
+    constructor(message, code) {
         super(message);
         this.name = "ObjectSubscriptionError";
+        this.code = code;
     }
 }
 
@@ -65,6 +66,9 @@ export function useObjectSubscription({ objectInstance, props, functions }) {
     if ("intendToRetrieve" in props) {
         state.intendToRetrieve = toRef(props, "intendToRetrieve");
     }
+    if ("intendToSubscribe" in props) {
+        state.intendToSubscribe = toRef(props, "intendToSubscribe");
+    }
 
     let subscribeIntent, retrieveIntent;
 
@@ -95,7 +99,7 @@ export function useObjectSubscription({ objectInstance, props, functions }) {
     function subscribe() {
         // this function cannot be async, or the resulting promise will lose its .cancel() method
         if (subscribeIntent.state.active || state.subscribed) {
-            return Promise.reject(new ObjectSubscriptionError("already subscribed or subscribing."));
+            return Promise.reject(new ObjectSubscriptionError("already subscribed or subscribing.", "already-subscribed"));
         }
         loadingError.clearError();
         loadingError.setLoading();
@@ -195,7 +199,7 @@ export function useObjectSubscription({ objectInstance, props, functions }) {
         });
     });
 
-    return reactive({
+    return {
         state,
         objectInstance,
         subscribeIntent,
@@ -206,5 +210,5 @@ export function useObjectSubscription({ objectInstance, props, functions }) {
         deleteFromSubscription,
         clearError,
         effectScope: es,
-    });
+    };
 }

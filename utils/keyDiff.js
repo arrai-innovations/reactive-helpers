@@ -33,14 +33,8 @@ import { difference, intersection } from "./set.js";
  * @returns {KeyDiffResult} - the differences
  */
 export function keyDiff(newKeys, oldKeys, { sameKeys = true, removedKeys = true, addedKeys = true } = {}) {
-    let newKeysSet = newKeys;
-    let oldKeysSet = oldKeys;
-    if (!(newKeys instanceof Set)) {
-        newKeysSet = new Set(newKeys);
-    }
-    if (!(oldKeys instanceof Set)) {
-        oldKeysSet = new Set(oldKeys);
-    }
+    let newKeysSet = newKeys instanceof Set ? newKeys : new Set(newKeys);
+    let oldKeysSet = oldKeys instanceof Set ? oldKeys : new Set(oldKeys);
     const returnValue = {};
     if (sameKeys) {
         returnValue.sameKeys = intersection(newKeysSet, oldKeysSet);
