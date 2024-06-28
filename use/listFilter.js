@@ -56,6 +56,7 @@ const parentStateKeys = difference(
  * @property {boolean} objectsWatchRunning - Flag indicating if the object watch is active.
  * @property {boolean} resultsWatchRunning - Flag indicating if the results watch is active.
  * @property {boolean} running - Flag indicating if any part of the filter logic is currently processing.
+ * @property {boolean} orderWatchRunning - Flag indicating if the order watch is active.
  */
 
 /**
@@ -192,6 +193,7 @@ export function useListFilter({ parentState, allowedFilter, excludedFilter }) {
             order: [],
             resultsWatchRunning: undefined,
             running: undefined,
+            orderWatchRunning: undefined,
         }
     );
 
@@ -261,6 +263,7 @@ export function useListFilter({ parentState, allowedFilter, excludedFilter }) {
     };
 
     const orderWatch = () => {
+        state.orderWatchRunning = true;
         let desiredOrder = parentState.order.filter((id) => !!state.objects[id]);
         if (!state.allowedFilter && !state.excludedFilter) {
             desiredOrder = parentState.order;
@@ -285,6 +288,9 @@ export function useListFilter({ parentState, allowedFilter, excludedFilter }) {
             internalState.objectsInOrderRefs,
             desiredOrder.map((id) => toRef(state.objects, id))
         );
+        nextTick().then(() => {
+            state.orderWatchRunning = false;
+        });
     };
 
     es.run(() => {
@@ -295,9 +301,14 @@ export function useListFilter({ parentState, allowedFilter, excludedFilter }) {
         const parentRunning = ref(undefined);
         proxyRunning(parentState, "running", parentRunning);
         // @ts-ignore - assignment here so the computed is in the effect scope
-        state.running = computed(() => {
-            return loadingCombine(parentRunning.value, state.objectsWatchRunning, state.resultsWatchRunning);
-        });
+        state.running = computed(() =>
+            loadingCombine(
+                parentRunning.value,
+                state.objectsWatchRunning,
+                state.resultsWatchRunning,
+                state.orderWatchRunning
+            )
+        );
 
         watch(toRef(state, "inResults"), resultsWatch, { deep: true });
 
