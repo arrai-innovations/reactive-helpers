@@ -124,13 +124,6 @@ export class ListInstanceError extends Error {
  */
 
 /**
- * A Promise that can be cancelled.
- *
- * @typedef {object & Promise} CancellablePromise
- * @property {Function} cancel - Cancels the promise.
- */
-
-/**
  * Creates and manages multiple list instances.
  *
  * @param {{[key: string]: ListInstanceOptions}} listInstanceArgs - The arguments for each list instance.
@@ -294,7 +287,7 @@ export function useListInstance({ props, functions = {}, keepOldPages = false })
         });
     };
 
-    /** @type {{[key: string]: CancellablePromise|null}} */
+    /** @type {{[key: string]: import('./cancellableIntent.js').CancellablePromise|null}} */
     const promises = {
         list: null,
     };
@@ -309,7 +302,10 @@ export function useListInstance({ props, functions = {}, keepOldPages = false })
             return Promise.reject(new ListInstanceError("already loading.", "already-loading"));
         }
         let returnPromiseResolve;
-        promises.list = new Promise((resolve) => (returnPromiseResolve = resolve));
+        // @ts-ignore - we are setting this in the promise
+        promises.list = /** @type {import('./cancellableIntent.js').CancellablePromise} */ new Promise(
+            (resolve) => (returnPromiseResolve = resolve)
+        );
         loadingError.clearError();
         loadingError.setLoading();
         const isCancelled = ref(false);
@@ -322,7 +318,6 @@ export function useListInstance({ props, functions = {}, keepOldPages = false })
         });
         let resolveState = false;
         if (listPromise.cancel) {
-            // @ts-ignore - tsc isn't really understanding CancelablePromise
             promises.list.cancel = async () => {
                 let promise = listPromise.cancel();
                 isCancelled.value = true;

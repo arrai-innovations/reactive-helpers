@@ -12,8 +12,9 @@ import { isRef, unref } from "vue";
  * @param {...(
  *     string |
  *     string[] |
+ *     string[][] |
  *     {[key: string]: boolean | import("vue").Ref<boolean> } |
- *     import("vue").Ref<string | string[]>
+ *     import("vue").Ref<string | string[] | string[][]>
  * )} classes - A mixed array containing multiple ways of specifying CSS classes.
  * @returns {(
  *   {[key: string]: boolean | import("vue").Ref<boolean> }|
@@ -101,19 +102,25 @@ const deepUnrefArrays = (val) => {
  */
 
 /**
+ * @typedef {(
+ *     (string | string[] | string[][]) |
+ *     { [classnames: string]: boolean | import("vue").Ref<boolean> } |
+ *     import("vue").Ref<string | string[] | string[][]> |
+ *     import("vue").Ref<{ [classnames: string]: (boolean | import("vue").Ref<boolean>) }> |
+ *     import("vue").UnwrapNestedRefs<{ [classnames: string]: (boolean | import("vue").Ref<boolean>) }>
+ * )} CombinedClassesArgument
+ */
+
+/**
  * Combines and normalizes different formats of CSS class specifications into a single format suitable for Vue.js
  *  components. If objects are in the mix, objects are returned. Otherwise, a string is returned.
  *
  * We unref your refs, so probably want a computed around this.
  *
- * @param {...(
- *     string |
- *     string[] |
- *     { [classnames: string]: boolean | import("vue").Ref<boolean> } |
- *     import("vue").Ref<string | string[]>
- * )} classes - A variable list of class specifications in different formats.
- * @returns {CombinedClasses} - The normalized form of the CSS classes, either as a string of space-separated class names or an object map
- *  of class names to boolean values indicating their presence.
+ * @param {...(CombinedClassesArgument|CombinedClassesArgument[])} classes - A variable list of class specifications in
+ *  different formats.
+ * @returns {CombinedClasses} - The normalized form of the CSS classes, either as a string of space-separated class
+ *  names or an object map of class names to boolean values indicating their presence.
  */
 export const combineClasses = (...classes) => {
     // ultimately, strings and objects are classes, arrays are organization and containers

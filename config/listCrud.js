@@ -39,7 +39,7 @@ export const setListCrud = ({ list, subscribe, args = {}, ...rest }) => {
 /**
  * Get the previously set list and subscribe functions for the default crud.
  *
- * @param {import("vue").UnwrapNestedRefs<ListCrudFunctions & ListCrudArgs>} reactiveCrud - The reactive crud object.
+ * @param {import("vue").UnwrapNestedRefs<ListCrudFunctions & ListCrudArgs>} reactiveCrud - The reactive crud object, which will be mutated.
  * @param {object} options - The options for the default crud.
  * @param {import("vue").UnwrapNestedRefs<{
  *     crudArgs: object|undefined,

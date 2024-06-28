@@ -246,8 +246,8 @@ export class AwaitNot {
      * Initializes the AwaitNot with specified options for reactive property watching and timeout settings.
      *
      * @param {object} options - Configuration options for AwaitNot.
-     * @param {object} options.obj - The object containing the property to watch.
-     * @param {string} options.prop - The property name to watch within the object.
+     * @param {object} [options.obj] - The object containing the property to watch.
+     * @param {string} [options.prop] - The property name to watch within the object.
      * @param {import("vue").Ref} [options.ref] - A Vue ref to directly watch if provided.
      * @param {boolean} [options.couldAlreadyBeFalse=false] - Indicates if the property could already be in the false state at initialization.
      * @param {number} [options.timeout=1000] - The timeout in milliseconds before the promise is rejected.

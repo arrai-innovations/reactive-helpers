@@ -132,7 +132,7 @@ export function setListSortDefaultOptions({ sortThrottleWait }) {
  * @property {ListSortState} state - The reactive state for the list sort.
  * @property {ListSortParentState} parentState - The parent state.
  * @property {import('vue').EffectScope} effectScope - The effect scope for the list sort.
- * @property {import('./watchesRunning').WatchesRunning} watchesRunning - The watches running instance.
+ * @property {import('./watchesRunning.js').WatchesRunning} watchesRunning - The watches running instance.
  */
 
 // if we provided functions, we would add a typedef and mix them into ListSort
@@ -214,7 +214,7 @@ export function useListSort({ parentState, orderByRules, sortThrottleWait = defa
     const sortCriteriaEffectScopes = {};
 
     const internalState = reactive({
-        /** @type {import('./listFilter').ObjectsInOrderRefs} */
+        /** @type {import('./listFilter.js').ObjectsInOrderRefs} */
         objectsInOrderRefs: [],
     });
     /** @type {ListSortState} */
@@ -390,7 +390,7 @@ export function useListSort({ parentState, orderByRules, sortThrottleWait = defa
 
     const throttledSortWatch = throttle(sortWatch, sortThrottleWaitNumber);
 
-    /** @type {import('./watchesRunning').WatchesRunning} */
+    /** @type {import('./watchesRunning.js').WatchesRunning} */
     let watchesRunning = null;
 
     es.run(() => {

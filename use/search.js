@@ -173,6 +173,7 @@ export function useSearch({ props, throttle = 500 }) {
         }
     }
 
+    // @ts-ignore - this is a valid function, not sure why their types don't work for us.
     const _throttledDoSearch = asyncThrottle(doSearch, throttle);
     const throttledDoSearch = () => {
         ++state.called;

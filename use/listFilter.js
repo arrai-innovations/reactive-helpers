@@ -91,8 +91,8 @@ const parentStateKeys = difference(
  *
  * @typedef {object} ListFilterOptions
  * @property {ListFilterParentState} parentState - The parent state.
- * @property {import('vue').Ref<Function>} allowedFilter - A function that returns true if an item should be included.
- * @property {import('vue').Ref<Function>} excludedFilter - A function that returns true if an item should be excluded.
+ * @property {import('vue').Ref<Function>|Function} [allowedFilter] - A function that returns true if an item should be included, which can be reactive.
+ * @property {import('vue').Ref<Function>|Function} [excludedFilter] - A function that returns true if an item should be excluded, which can be reactive.
  */
 
 /**
@@ -188,7 +188,7 @@ export function useListFilter({ parentState, allowedFilter, excludedFilter }) {
             allowedFilter,
             excludedFilter,
             inResults: {},
-            /** @type {import('./listInstance').ObjectsById} */
+            /** @type {import('./listInstance.js').ObjectsById} */
             objects: {},
             // @ts-ignore - objectsInOrder will become a computed in the effect scope
             objectsInOrder: [],
