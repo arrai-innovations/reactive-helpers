@@ -117,7 +117,7 @@ export class AwaitTimeout {
      */
     start() {
         if (this.timeout) {
-            this.timeoutId = setTimeout(doTimeout.bind(this), this.timeout);
+            this.timeoutId = setTimeout(doTimeout.bind(null, this), this.timeout);
         } else {
             doTimeout(this);
         }
