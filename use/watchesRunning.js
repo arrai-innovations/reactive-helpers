@@ -59,10 +59,7 @@ export function useWatchesRunning({ triggerRefs, watchSentinelRefs }) {
                 deep: true,
             }
         );
-        state.running = computed(() => {
-            const values = watchSentinelRefs.map((ref) => unref(ref));
-            return loadingCombine(...values);
-        });
+        state.running = computed(() => loadingCombine(...watchSentinelRefs.map((ref) => unref(ref))));
     });
 
     return {
