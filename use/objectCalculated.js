@@ -109,28 +109,20 @@ export const objectCalculatedFunctions = [];
  * Helper function to create multiple object calculateds instances.
  *
  * @param {{
- *     [key: string]: {
- *         state: ObjectCalculatedParentState,
- *     }
- * }} instances - Objects with the parent state, typically from object instances/relateds/subscriptions.
- * @param {{
- *    [key: string]: ObjectCalculatedOptions
- * }} args - Options for each object calculated to create.
+ *     [key: string]: ObjectCalculatedOptions
+ * }} objectCalculatedArgs - Options for each object calculated to create.
  * @returns {{
  *    [key: string]: ObjectCalculated
  * }} - The created object calculated instances by key.
  */
-export function useObjectCalculateds(instances, args) {
+export function useObjectCalculateds(objectCalculatedArgs) {
     /**
      * @type {{
      *     [key: string]: ObjectCalculated
       }} */
     const calculateds = {};
-    for (const [key, value] of Object.entries(args)) {
-        calculateds[key] = useObjectCalculated({
-            parentState: instances[key].state,
-            ...value,
-        });
+    for (const [key, value] of Object.entries(objectCalculatedArgs)) {
+        calculateds[key] = useObjectCalculated(value);
     }
     return calculateds;
 }

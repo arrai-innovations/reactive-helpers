@@ -616,12 +616,6 @@ Flag indicating if the object watch is active.
 
 The order of objects in the list.
 
-###### orderWatchRunning
-
-> **orderWatchRunning**: `boolean`
-
-Flag indicating if the order watch is active.
-
 ###### relatedObjects
 
 > **relatedObjects**: `object`
@@ -731,12 +725,6 @@ A map of items to boolean values indicating filter results.
 > **objectsWatchRunning**: `boolean`
 
 Flag indicating if the object watch is active.
-
-##### orderWatchRunning
-
-> **orderWatchRunning**: `boolean`
-
-Flag indicating if the order watch is active.
 
 ##### resultsWatchRunning
 

@@ -121,22 +121,17 @@ const parentStateKeys = difference(
  * when multiple list components require individual search capabilities.
  *
  * @param {{
- *     [key: string]: {
- *         state: ListSearchParentState,
- *     }
- * }} instances - Instances of lists that need searching.
- * @param {{
- *    [key: string]: ListSearchOptions
- * }} args - Configuration arguments for each search instance, including state and props.
+ *     [key: string]: ListSearchOptions
+ * }} listSearchArgs - Configuration arguments for each search instance, including state and props.
  * @returns {{
  *    [key: string]: ListSearch
  * }} - A collection of initialized list search instances.
  */
-export function useListSearches(instances, args) {
+export function useListSearches(listSearchArgs) {
     /** @type {{ [key: string]: ListSearch }} */
     const searches = {};
-    for (const [key, value] of Object.entries(args)) {
-        searches[key] = useListSearch({ parentState: instances[key].state, ...value });
+    for (const [key, value] of Object.entries(listSearchArgs)) {
+        searches[key] = useListSearch(value);
     }
     return searches;
 }

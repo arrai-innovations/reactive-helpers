@@ -128,25 +128,15 @@ const parentStateKeys = difference(
  * A composable function to create multiple list calculated objects.
  *
  * @param {{
- *     [key: string]: {
- *         state: ListCalculatedParentState,
- *     }
- * }} instances - The instances to create list calculated objects for.
- * @param {{
- *     [key: string]: {
- *         calculatedObjectsRules: ListCalculatedRules
- *     }
- * }} calculatedsObjectsRules - The arguments for the list calculated objects.
+ *     [key: string]: ListCalculatedOptions
+ * }} listCalculatedArgs - The arguments for the list calculated objects.
  * @returns {{[key: string]: ListCalculated}} - The list calculated objects.
  */
-export function useListCalculateds(instances, calculatedsObjectsRules) {
+export function useListCalculateds(listCalculatedArgs) {
     /** @type {{[key: string]: ListCalculated}} */
     const calculateds = {};
-    for (const [key, value] of Object.entries(calculatedsObjectsRules)) {
-        calculateds[key] = useListCalculated({
-            parentState: instances[key].state,
-            calculatedObjectsRules: value.calculatedObjectsRules,
-        });
+    for (const [key, value] of Object.entries(listCalculatedArgs)) {
+        calculateds[key] = useListCalculated(value);
     }
     return calculateds;
 }

@@ -146,19 +146,18 @@ export function setListSortDefaultOptions({ sortThrottleWait }) {
 /**
  * Creates multiple list sort instances.
  *
- * @param {object} instances - The parent instances.
  * @param {{
- *     [keys: string]: ListSortOptions
- * }} args - The options for the list sort.
+ *     [keys: string]: ListSortOptions,
+ * }} listSortArgs - The options for the list sort.
  * @returns {{
  *     [keys: string]: ListSort
  * }} The list sort instance.
  */
-export function useListSorts(instances, args) {
+export function useListSorts(listSortArgs) {
     /** @type {{[key: string]: ListSort}} */
     const sorts = {};
-    for (const [key, value] of Object.entries(args)) {
-        sorts[key] = useListSort({ parentState: instances[key].state || instances[key], ...value });
+    for (const [key, value] of Object.entries(listSortArgs)) {
+        sorts[key] = useListSort(value);
     }
     return sorts;
 }

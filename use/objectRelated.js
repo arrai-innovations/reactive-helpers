@@ -121,27 +121,17 @@ export const objectRelatedFunctions = [];
 /**
  *
  * @param {{
- *     [key: string]: {
- *         state: ObjectRelatedParentState,
- *     }
- * }} instances - Objects containing the desired parent state, indexed by key, typically from an object instance/subscription.
- * @param {{
- *     [key: string]: import('vue').UnwrapNestedRefs<{
- *         relatedObjectRules: ObjectRelatedRawRules,
- *     }>
- * }} args - The related object rules, indexed by key.
+ *     [key: string]: ObjectRelatedOptions
+ * }} objectRelatedArgs - The options for the desired object related reactive objects.
  * @returns {{
  *     [key: string]: ObjectRelated
  * }} - The object related instances, indexed by key.
  */
-export function useObjectRelateds(instances, args) {
+export function useObjectRelateds(objectRelatedArgs) {
     /** @type {{[key: string]: ObjectRelated}} */
     const relateds = {};
-    for (const [key, value] of Object.entries(args)) {
-        relateds[key] = useObjectRelated({
-            parentState: instances[key].state,
-            relatedObjectRules: toRef(value, "relatedObjectRules"),
-        });
+    for (const [key, value] of Object.entries(objectRelatedArgs)) {
+        relateds[key] = useObjectRelated(value);
     }
     return relateds;
 }

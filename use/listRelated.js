@@ -140,22 +140,15 @@ const parentStateKeys = difference(
  * based on provided configuration.
  *
  * @param {{
- *     [key: string]: import('./listInstance.js').ListInstance |
- *         import('./listSubscription.js').ListSubscription
- * }} instances - The parent instances to relate to.
- * @param {{
  *     [key: string]: ListRelatedOptions
- * }} args - The options for the list related properties.
+ * }} listRelatedArgs - The options for the list related properties.
  * @returns {{[key: string]: ListRelated}} - The instances of the list related properties.
  */
-export function useListRelateds(instances, args) {
+export function useListRelateds(listRelatedArgs) {
     /** @type {{[key: string]: ListRelated}} */
     const relateds = {};
-    for (const [key, value] of Object.entries(args)) {
-        relateds[key] = useListRelated({
-            parentState: instances[key].state,
-            ...value,
-        });
+    for (const [key, value] of Object.entries(listRelatedArgs)) {
+        relateds[key] = useListRelated(value);
     }
     return relateds;
 }

@@ -92,14 +92,13 @@ export class ListSubscriptionError extends Error {
  * A Vue composition function that creates multiple list subscriptions, and returns them as an object.
  *
  * @param {{[key: string]: ListSubscriptionOptions}} listSubscriptionArgs - Each desired list instance options, keyed by an instance name.
- * @param {{[key: string]: import("./listInstance.js").ListInstance}} [listInstances={}] - The list instances to use instead of creating new ones.
  * @returns {{[key: string]: ListSubscription}} - Each list instance, keyed by the instance name.
  */
-export function useListSubscriptions(listSubscriptionArgs, listInstances = {}) {
+export function useListSubscriptions(listSubscriptionArgs) {
     /** @type {{[key: string]: ListSubscription}} */
     const subscriptions = {};
     for (const [key, value] of Object.entries(listSubscriptionArgs)) {
-        subscriptions[key] = useListSubscription({ listInstance: listInstances[key], ...value });
+        subscriptions[key] = useListSubscription(value);
     }
     return subscriptions;
 }

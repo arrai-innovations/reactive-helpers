@@ -117,17 +117,13 @@ const parentStateKeys = difference(
  * Helper function to create multiple instances of list filters based on provided configurations.
  *
  * @param {{[key: string]: ListFilterOptions}} listFilterArgs - Configuration for each filter instance.
- * @param {{[key: string]: {state: ListFilterParentState}}} parentInstances - States of the lists that filters will be applied to.
  * @returns {{[key: string]: ListFilter}} An object containing instances of list filters.
  */
-export function useListFilters(listFilterArgs, parentInstances) {
+export function useListFilters(listFilterArgs) {
     /** @type {{[key: string]: ListFilter}} */
     const filters = {};
     for (const [key, value] of Object.entries(listFilterArgs)) {
-        filters[key] = useListFilter({
-            parentState: parentInstances[key].state || parentInstances[key],
-            ...value,
-        });
+        filters[key] = useListFilter(value);
     }
     return filters;
 }

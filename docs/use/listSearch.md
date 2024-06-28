@@ -204,12 +204,6 @@ Flag indicating if the object watch is active.
 
 The order of objects in the list.
 
-###### orderWatchRunning
-
-> **orderWatchRunning**: `boolean`
-
-Flag indicating if the order watch is active.
-
 ###### relatedObjects
 
 > **relatedObjects**: `object`
@@ -527,12 +521,6 @@ Flag indicating if the object watch is active.
 > **order**: `string`[]
 
 The current sort order of object IDs after search have been applied.
-
-###### orderWatchRunning
-
-> **orderWatchRunning**: `boolean`
-
-Flag indicating if the order watch is active.
 
 ###### relatedObjects
 
