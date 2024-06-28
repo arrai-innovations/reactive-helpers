@@ -4,6 +4,7 @@ import isArray from "lodash-es/isArray.js";
 import isObject from "lodash-es/isObject.js";
 import isObjectLike from "lodash-es/isObjectLike.js";
 import { isReactive, isRef, toRef, unref } from "vue";
+import isSet from "lodash-es/isSet.js";
 
 /**
  * Reactive object assignment utilities.
@@ -175,9 +176,17 @@ export function updateReactiveObject(target, source, exclude, sameKeys = null) {
  * keys will be calculated.
  * @param {Array|Set} [sameKeys] - Precaulcated array of keys to update, if available. Otherwise, the
  * keys will be calculated.
+ * @param {boolean} [doNotSetUndefinedKeys=true] - If true, do not update keys in the target that are undefined in the source.
  * @returns {boolean} True if any keys were added or updated, false otherwise.
  */
-export function addOrUpdateReactiveObject(target, source, exclude, addedKeys = null, sameKeys = null) {
+export function addOrUpdateReactiveObject(
+    target,
+    source,
+    exclude,
+    addedKeys = null,
+    sameKeys = null,
+    doNotSetUndefinedKeys = true
+) {
     if (!addedKeys && !sameKeys) {
         if (target === source) {
             return false;
@@ -185,10 +194,25 @@ export function addOrUpdateReactiveObject(target, source, exclude, addedKeys = n
         ({ target, source } = validateTargetAndSource(target, source));
         ({ addedKeys, sameKeys } = keyDiff(Object.keys(source) || [], Object.keys(target) || []));
     }
-    let didAnything = false;
-    didAnything ||= addReactiveObject(target, source, exclude, addedKeys);
-    didAnything ||= updateReactiveObject(target, source, exclude, sameKeys);
-    return didAnything;
+    // if the source update value is undefined, we should not update the target
+    if (sameKeys && doNotSetUndefinedKeys) {
+        for (const key of sameKeys) {
+            if (source[key] === undefined) {
+                if (isSet(sameKeys)) {
+                    sameKeys.delete(key);
+                } else {
+                    const index = sameKeys.indexOf(key);
+                    if (index !== -1) {
+                        sameKeys.splice(index, 1);
+                    }
+                }
+            }
+        }
+    }
+
+    const wasAdded = addReactiveObject(target, source, exclude, addedKeys);
+    const wasUpdated = updateReactiveObject(target, source, exclude, sameKeys);
+    return wasAdded || wasUpdated;
 }
 
 /**
@@ -271,8 +295,9 @@ export function assignReactiveArray(target, source) {
         didAnything = true;
     } else {
         const { addedKeys, sameKeys, removedKeys } = keyDiff(Object.keys(source) || [], Object.keys(target) || []);
-        didAnything ||= trimReactiveObject(target, source, null, removedKeys);
-        didAnything ||= addOrUpdateReactiveObject(target, source, null, addedKeys, sameKeys);
+        const wasTrimmed = trimReactiveObject(target, source, null, removedKeys);
+        const wasChanged = addOrUpdateReactiveObject(target, source, null, addedKeys, sameKeys, false);
+        didAnything = wasTrimmed || wasChanged;
     }
     return didAnything;
 }
@@ -299,10 +324,9 @@ export function assignReactiveObject(target, source, exclude) {
     }
     ({ target, source } = validateTargetAndSource(target, source));
     const { addedKeys, sameKeys, removedKeys } = keyDiff(Object.keys(source) || [], Object.keys(target) || []);
-    let didAnything = false;
-    didAnything ||= trimReactiveObject(target, source, exclude, removedKeys);
-    didAnything ||= addOrUpdateReactiveObject(target, source, exclude, addedKeys, sameKeys);
-    return didAnything;
+    const wasTrimmed = trimReactiveObject(target, source, exclude, removedKeys);
+    const wasChanged = addOrUpdateReactiveObject(target, source, exclude, addedKeys, sameKeys, false);
+    return wasTrimmed || wasChanged;
 }
 
 /**
@@ -324,8 +348,7 @@ export function assignReactiveObject(target, source, exclude) {
  * @returns {boolean} True if any keys were added, updated, or removed, false otherwise.
  */
 function recursiveInner(target, source, exclude, addedKeys, sameKeys, path, fn) {
-    let didAnything = false;
-    didAnything ||= addReactiveObject(target, source, exclude, addedKeys);
+    const wasAdded = addReactiveObject(target, source, exclude, addedKeys);
     const keysForRecurse = [];
     const keysForReplace = [];
     for (const key of sameKeys) {
@@ -337,7 +360,7 @@ function recursiveInner(target, source, exclude, addedKeys, sameKeys, path, fn) 
             }
         }
     }
-    didAnything ||= reactiveReplaceKeys(target, source, keysForReplace, exclude);
+    const wasReplaced = reactiveReplaceKeys(target, source, keysForReplace, exclude);
     for (const key of keysForRecurse) {
         // scope exclude for this next level, remove keys that don't start with the current path, trim keys that do to remove the current path
         const nextLevelExclude = exclude
@@ -346,7 +369,7 @@ function recursiveInner(target, source, exclude, addedKeys, sameKeys, path, fn) 
         const nextPath = isArray(source[key]) ? `${path}[${key}]` : `${path}.${key}`;
         fn(target[key], source[key], nextLevelExclude, nextPath);
     }
-    return didAnything;
+    return wasAdded || wasReplaced;
 }
 
 /**
@@ -365,10 +388,17 @@ function recursiveInner(target, source, exclude, addedKeys, sameKeys, path, fn) 
  */
 function assignReactiveObjectRecursive(target, source, exclude, path = "") {
     let { addedKeys, sameKeys, removedKeys } = keyDiff(Object.keys(source) || [], Object.keys(target) || []);
-    let didAnything = false;
-    didAnything ||= trimReactiveObject(target, source, exclude, removedKeys);
-    didAnything ||= recursiveInner(target, source, exclude, addedKeys, sameKeys, path, assignReactiveObjectRecursive);
-    return didAnything;
+    const wasTrimmed = trimReactiveObject(target, source, exclude, removedKeys);
+    const recursiveDidAnything = recursiveInner(
+        target,
+        source,
+        exclude,
+        addedKeys,
+        sameKeys,
+        path,
+        assignReactiveObjectRecursive
+    );
+    return wasTrimmed || recursiveDidAnything;
 }
 
 /**
