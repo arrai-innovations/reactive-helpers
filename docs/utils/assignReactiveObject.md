@@ -77,7 +77,7 @@ and refs must ultimately resolve to objects or arrays
 
 ### addOrUpdateReactiveObject()
 
-> **addOrUpdateReactiveObject**(`target`, `source`, `exclude`?, `addedKeys`?, `sameKeys`?): `boolean`
+> **addOrUpdateReactiveObject**(`target`, `source`, `exclude`?, `addedKeys`?, `sameKeys`?, `doNotSetUndefinedKeys`?): `boolean`
 
 Adds to a target the missing keys from a source, and updates a target with mutually shared keys from a source.
 
@@ -104,6 +104,10 @@ keys will be calculated.
 
 Precaulcated array of keys to update, if available. Otherwise, the
 keys will be calculated.
+
+• **doNotSetUndefinedKeys?**: `boolean` = `true`
+
+If true, do not update keys in the target that are undefined in the source.
 
 #### Returns
 

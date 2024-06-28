@@ -27,6 +27,11 @@ describe("config/objectCrud.js", () => {
             };
             expect(() => setObjectCrud(crud)).not.toThrow();
 
+            /** @type {import("vue").UnwrapNestedRefs<
+             *      import('../../../config/objectCrud.js').ObjectCrudFunctions &
+             *      import('../../../config/objectCrud.js').ObjectCrudArgs
+             *  >}
+             */
             const retrievedCrud = reactive({});
             expect(() => getObjectCrud(retrievedCrud)).not.toThrow();
             expect(new Set(Object.keys(retrievedCrud))).toEqual(

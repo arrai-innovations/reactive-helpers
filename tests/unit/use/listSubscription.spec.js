@@ -24,7 +24,7 @@ describe("use/listSubscription.spec.js", function () {
         crudListResolvable.push(new CancellableResolvable());
         crudSubscribeResolvable.push(new CancellableResolvable());
         const listCrudModule = await import("../../../config/listCrud.js");
-        const listInstanceModule = await import("../../../use/listInstance");
+        const listInstanceModule = await import("../../../use/listInstance.js");
         crudList = vi
             .fn()
             .mockImplementationOnce(() => crudListResolvable[0].promise)
@@ -33,7 +33,7 @@ describe("use/listSubscription.spec.js", function () {
                 crudListResolvable.push(newResolvable);
                 return newResolvable.promise;
             });
-        const listSubscriptionModule = await import("../../../use/listSubscription");
+        const listSubscriptionModule = await import("../../../use/listSubscription.js");
         crudSubscribe = vi
             .fn()
             .mockImplementationOnce(({ subscriptionEventCallback }) => {
@@ -585,6 +585,7 @@ describe("use/listSubscription.spec.js", function () {
         });
         const listInstances = useListInstances({
             A: {
+                listInstance: listInstanceA,
                 props: {
                     crudArgs: { stream: "test_streamA" },
                     listArgs: { user: 1 },
@@ -594,6 +595,7 @@ describe("use/listSubscription.spec.js", function () {
                 },
             },
             B: {
+                listInstance: listInstanceB,
                 props: {
                     crudArgs: { stream: "test_streamB" },
                     listArgs: { user: 2 },
@@ -605,8 +607,12 @@ describe("use/listSubscription.spec.js", function () {
         });
         const listSubscription = useListSubscriptions(
             {
-                A: {},
-                B: {},
+                A: {
+                    listInstance: listInstanceA,
+                },
+                B: {
+                    listInstance: listInstanceB,
+                },
             },
             listInstances
         );

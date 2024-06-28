@@ -14,15 +14,15 @@
 
 ##### allowedFilter
 
-> **allowedFilter**: `Ref`\<`Function`\>
+> **allowedFilter**: `Function` \| `Ref`\<`Function`\>
 
-A function that returns true if an item should be included.
+A function that returns true if an item should be included, which can be reactive.
 
 ##### excludedFilter
 
-> **excludedFilter**: `Ref`\<`Function`\>
+> **excludedFilter**: `Function` \| `Ref`\<`Function`\>
 
-A function that returns true if an item should be excluded.
+A function that returns true if an item should be excluded, which can be reactive.
 
 ##### parentState
 
@@ -616,6 +616,12 @@ Flag indicating if the object watch is active.
 
 The order of objects in the list.
 
+###### orderWatchRunning
+
+> **orderWatchRunning**: `boolean`
+
+Flag indicating if the order watch is active.
+
 ###### relatedObjects
 
 > **relatedObjects**: `object`
@@ -725,6 +731,12 @@ A map of items to boolean values indicating filter results.
 > **objectsWatchRunning**: `boolean`
 
 Flag indicating if the object watch is active.
+
+##### orderWatchRunning
+
+> **orderWatchRunning**: `boolean`
+
+Flag indicating if the order watch is active.
 
 ##### resultsWatchRunning
 
@@ -848,7 +860,7 @@ const listFilter = useListFilter({
 
 ### useListFilters()
 
-> **useListFilters**(`listFilterArgs`, `parentInstances`): `object`
+> **useListFilters**(`listFilterArgs`): `object`
 
 Helper function to create multiple instances of list filters based on provided configurations.
 
@@ -857,10 +869,6 @@ Helper function to create multiple instances of list filters based on provided c
 • **listFilterArgs**
 
 Configuration for each filter instance.
-
-• **parentInstances**
-
-States of the lists that filters will be applied to.
 
 #### Returns
 

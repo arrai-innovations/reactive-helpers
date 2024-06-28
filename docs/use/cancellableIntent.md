@@ -52,11 +52,15 @@ The options for the cancellable intent.
 
 #### Properties
 
-##### awaitableWithCancel
+##### awaitableWithCancel()
 
-> **awaitableWithCancel**: `Function`
+> **awaitableWithCancel**: () => [`CancellablePromise`](cancellableIntent.md#cancellablepromise)
 
 The function that returns a promise that can be cancelled.
+
+###### Returns
+
+[`CancellablePromise`](cancellableIntent.md#cancellablepromise)
 
 ##### clearActiveOnResolved
 
@@ -83,6 +87,24 @@ The reactive object to watch for changes.
 > **CancellableIntentState**\<\>: `UnwrapNestedRefs`
 
 The state of the cancellable intent.
+
+#### Type Parameters
+
+***
+
+### CancellablePromise
+
+> **CancellablePromise**\<\>: `Promise`\<`any`\> & `object`
+
+#### Type declaration
+
+##### cancel()
+
+> **cancel**: () => `Promise`\<`void`\> \| `void`
+
+###### Returns
+
+`Promise`\<`void`\> \| `void`
 
 #### Type Parameters
 

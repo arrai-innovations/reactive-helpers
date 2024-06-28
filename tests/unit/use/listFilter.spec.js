@@ -6,13 +6,13 @@ import { deepUnref } from "vue-deepunref";
 describe("use/listFilter", () => {
     let useListInstance, useListFilter, useListCalculated, useListRelated;
     beforeEach(async () => {
-        const listInstanceModule = await import("../../../use/listInstance");
+        const listInstanceModule = await import("../../../use/listInstance.js");
         useListInstance = listInstanceModule.useListInstance;
-        const listFilterModule = await import("../../../use/listFilter");
+        const listFilterModule = await import("../../../use/listFilter.js");
         useListFilter = listFilterModule.useListFilter;
-        const listRelatedModule = await import("../../../use/listRelated");
+        const listRelatedModule = await import("../../../use/listRelated.js");
         useListRelated = listRelatedModule.useListRelated;
-        const listCalculatedModule = await import("../../../use/listCalculated");
+        const listCalculatedModule = await import("../../../use/listCalculated.js");
         useListCalculated = listCalculatedModule.useListCalculated;
     });
 
@@ -196,9 +196,11 @@ describe("use/listFilter", () => {
             });
             const listFilterArgs = {
                 A: {
+                    parentState: listInstanceA.state,
                     excludedFilter,
                 },
                 B: {
+                    parentState: listInstanceB.state,
                     allowedFilter,
                 },
             };
@@ -206,7 +208,7 @@ describe("use/listFilter", () => {
                 A: listInstanceA,
                 B: listInstanceB,
             };
-            const listFilters = useListFilters(listFilterArgs, listInstances);
+            const listFilters = useListFilters(listFilterArgs);
 
             expect(listFilters.A.state.excludedFilter).toEqual(listFilterArgs.A.excludedFilter);
             expect(listFilters.B.state.allowedFilter).toEqual(listFilterArgs.B.allowedFilter);

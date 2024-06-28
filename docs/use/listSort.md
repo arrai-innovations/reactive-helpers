@@ -196,6 +196,12 @@ Flag indicating if the object watch is active.
 
 The order of objects in the list.
 
+###### orderWatchRunning
+
+> **orderWatchRunning**: `boolean`
+
+Flag indicating if the order watch is active.
+
 ###### relatedObjects
 
 > **relatedObjects**: `object`
@@ -491,6 +497,12 @@ Flag indicating if the object watch is active.
 
 The order of objects in the list.
 
+###### orderWatchRunning
+
+> **orderWatchRunning**: `boolean`
+
+Flag indicating if the order watch is active.
+
 ###### relatedObjects
 
 > **relatedObjects**: `object`
@@ -779,6 +791,12 @@ Flags indicating whether each sort criterion is in descending order.
 > **orderByRules**: `object`[]
 
 Current sorting rules applied to the list.
+
+###### orderWatchRunning
+
+> **orderWatchRunning**: `boolean`
+
+Flag indicating if the order watch is active.
 
 ###### outstandingEffects
 
@@ -1109,17 +1127,13 @@ const listSort = useListSort(listSortProps);
 
 ### useListSorts()
 
-> **useListSorts**(`instances`, `args`): `object`
+> **useListSorts**(`listSortArgs`): `object`
 
 Creates multiple list sort instances.
 
 #### Parameters
 
-• **instances**: `any`
-
-The parent instances.
-
-• **args**
+• **listSortArgs**
 
 The options for the list sort.
 

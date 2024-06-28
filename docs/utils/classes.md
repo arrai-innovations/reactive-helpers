@@ -16,6 +16,14 @@ The normalized form of the CSS classes, either as a string of space-separated cl
 
 #### Type Parameters
 
+***
+
+### CombinedClassesArgument
+
+> **CombinedClassesArgument**\<\>: `string` \| `string`[] \| `string`[][] \| `object` \| `Ref` \| `Ref` \| `UnwrapNestedRefs`
+
+#### Type Parameters
+
 ## Functions
 
 ### combineClasses()
@@ -24,16 +32,17 @@ The normalized form of the CSS classes, either as a string of space-separated cl
 
 #### Parameters
 
-• ...**classes**: (`string` \| `string`[] \| `Ref`\<`string` \| `string`[]\> \| `object`)[]
+• ...**classes**: ([`CombinedClassesArgument`](classes.md#combinedclassesargument) \| [`CombinedClassesArgument`](classes.md#combinedclassesargument)[])[]
 
-A variable list of class specifications in different formats.
+A variable list of class specifications in
+ different formats.
 
 #### Returns
 
 [`CombinedClasses`](classes.md#combinedclasses)
 
-- The normalized form of the CSS classes, either as a string of space-separated class names or an object map
- of class names to boolean values indicating their presence.
+- The normalized form of the CSS classes, either as a string of space-separated class
+ names or an object map of class names to boolean values indicating their presence.
 
 ***
 
@@ -43,7 +52,7 @@ A variable list of class specifications in different formats.
 
 #### Parameters
 
-• ...**classes**: (`string` \| `string`[] \| `object` \| `Ref`\<`string` \| `string`[]\>)[]
+• ...**classes**: (`string` \| `string`[] \| `string`[][] \| `object` \| `Ref`\<`string` \| `string`[] \| `string`[][]\>)[]
 
 A mixed array containing multiple ways of specifying CSS classes.
 

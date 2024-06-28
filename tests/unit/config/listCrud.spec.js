@@ -23,6 +23,11 @@ describe("config/listCrud.js", () => {
             };
             expect(() => setListCrud(crud)).not.toThrow();
 
+            /** @type {import("vue").UnwrapNestedRefs<
+             *      import('../../../config/listCrud.js').ListCrudFunctions &
+             *      import('../../../config/listCrud.js').ListCrudArgs
+             *  >}
+             */
             const retrievedCrud = reactive({});
             expect(() => getListCrud(retrievedCrud)).not.toThrow();
             expect(new Set(Object.keys(retrievedCrud))).toEqual(new Set(["list", "subscribe", "args"]));

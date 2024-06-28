@@ -32,6 +32,10 @@ Re-exports [AwaitTimeoutError](utils/watches.md#awaittimeouterror)
 
 Re-exports [CombinedClasses](utils/classes.md#combinedclasses)
 
+### CombinedClassesArgument
+
+Re-exports [CombinedClassesArgument](utils/classes.md#combinedclassesargument)
+
 ### ImmediateStopWatch
 
 Re-exports [ImmediateStopWatch](utils/watches.md#immediatestopwatch)

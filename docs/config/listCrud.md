@@ -48,7 +48,7 @@ Get the previously set list and subscribe functions for the default crud.
 
 • **reactiveCrud**
 
-The reactive crud object.
+The reactive crud object, which will be mutated.
 
 • **reactiveCrud.args**: `any`
 

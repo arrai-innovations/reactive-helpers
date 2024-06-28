@@ -573,17 +573,13 @@ const objectRelated = useObjectRelated(objectRelatedProps);
 
 ### useObjectRelateds()
 
-> **useObjectRelateds**(`instances`, `args`): `object`
+> **useObjectRelateds**(`objectRelatedArgs`): `object`
 
 #### Parameters
 
-• **instances**
+• **objectRelatedArgs**
 
-Objects containing the desired parent state, indexed by key, typically from an object instance/subscription.
-
-• **args**
-
-The related object rules, indexed by key.
+The options for the desired object related reactive objects.
 
 #### Returns
 

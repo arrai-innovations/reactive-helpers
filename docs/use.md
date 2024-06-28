@@ -22,7 +22,7 @@ Re-exports [CancellableIntentState](use/cancellableIntent.md#cancellableintentst
 
 ### CancellablePromise
 
-Re-exports [CancellablePromise](use/listInstance.md#cancellablepromise)
+Re-exports [CancellablePromise](use/cancellableIntent.md#cancellablepromise)
 
 ### CrudObject
 

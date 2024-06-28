@@ -315,14 +315,6 @@ Indicates if there are ongoing reactive updates.
 
 ## Type Aliases
 
-### CancellablePromise
-
-> **CancellablePromise**\<\>: `object` & `Promise`
-
-#### Type Parameters
-
-***
-
 ### ListInstance
 
 > **ListInstance**\<\>: [`ListInstanceStateMixIn`](listInstance.md#listinstancestatemixin) & [`ListInstanceFunctions`](listInstance.md#listinstancefunctions)

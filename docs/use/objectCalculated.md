@@ -589,17 +589,13 @@ const objectCalculatedProps = reactive({
 
 ### useObjectCalculateds()
 
-> **useObjectCalculateds**(`instances`, `args`): `object`
+> **useObjectCalculateds**(`objectCalculatedArgs`): `object`
 
 Helper function to create multiple object calculateds instances.
 
 #### Parameters
 
-• **instances**
-
-Objects with the parent state, typically from object instances/relateds/subscriptions.
-
-• **args**
+• **objectCalculatedArgs**
 
 Options for each object calculated to create.
 

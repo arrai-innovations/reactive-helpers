@@ -1,6 +1,6 @@
 import { combineClasses, objectifyClasses, stringifyClass, stringifyClasses } from "../../../utils/classes.js";
 import { describe, expect, it } from "vitest";
-import { ref, shallowRef } from "vue";
+import { computed, ref, shallowRef } from "vue";
 
 describe("utils/classes.js", () => {
     describe("objectifyClasses", () => {
@@ -18,8 +18,9 @@ describe("utils/classes.js", () => {
         it("should return an array instead if refs are yet in the end result", () => {
             const trueRef1 = ref(true);
             const trueRef2 = ref(true);
-            const actual = objectifyClasses("test", { test3: true }, trueRef1, { test4: trueRef2 });
-            const expected = [{ test: true, test3: true }, trueRef1, { test4: trueRef2 }];
+            const trueRef1Computed = computed(() => (trueRef1.value ? "test5" : "test6"));
+            const actual = objectifyClasses("test", { test3: true }, trueRef1Computed, { test4: trueRef2 });
+            const expected = [{ test: true, test3: true }, trueRef1Computed, { test4: trueRef2 }];
             expect(actual).toStrictEqual(expected);
         });
     });
@@ -83,7 +84,7 @@ describe("utils/classes.js", () => {
             const arrayRef = ref(["test2", "test3"]);
             // refs to objects are turned reactive by Vue before becoming the value of the ref
             // so nested refs are unref'd as if passed to reactive()
-            const objectRef = shallowRef({ test4: trueRef, test5: falseRef });
+            const objectRef = ref({ test4: trueRef, test5: falseRef });
             const actual = combineClasses("test test4 test5", undefined, arrayRef, objectRef, [
                 ["test6", "test7"],
                 { test8: trueRef, test9: falseRef },

@@ -756,17 +756,13 @@ const listComputed = useListComputed(listComputedProps);
 
 ### useListCalculateds()
 
-> **useListCalculateds**(`instances`, `calculatedsObjectsRules`): `object`
+> **useListCalculateds**(`listCalculatedArgs`): `object`
 
 A composable function to create multiple list calculated objects.
 
 #### Parameters
 
-• **instances**
-
-The instances to create list calculated objects for.
-
-• **calculatedsObjectsRules**
+• **listCalculatedArgs**
 
 The arguments for the list calculated objects.
 

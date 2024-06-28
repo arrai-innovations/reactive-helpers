@@ -41,7 +41,7 @@ describe("use/useListSort", () => {
         },
     ];
     beforeEach(async () => {
-        const imported = await import("../../../use");
+        const imported = await import("../../../use/index.js");
         useListInstance = imported.useListInstance;
         useListInstances = imported.useListInstances;
         useListRelated = imported.useListRelated;
@@ -53,9 +53,11 @@ describe("use/useListSort", () => {
         ];
         listInstance = useListInstance({
             props: {
+                crudArgs: {},
                 retrieveArgs: {
                     fields: ["id", "lexical_name", "organization", "relatedObjects"],
                 },
+                listArgs: {},
             },
         });
         useListSort = imported.useListSort;
@@ -66,7 +68,9 @@ describe("use/useListSort", () => {
         });
     });
 
-    afterEach(() => vi.resetAllMocks());
+    afterEach(() => {
+        vi.resetAllMocks();
+    });
 
     const waitForListSort = async (listSort) => {
         await doAwaitNot({
@@ -204,17 +208,16 @@ describe("use/useListSort", () => {
                 },
             },
         });
-        const listSorts = useListSorts(
-            {
-                A: {
-                    orderByRules,
-                },
-                B: {
-                    orderByRules,
-                },
+        const listSorts = useListSorts({
+            A: {
+                parentState: listInstances.A.state,
+                orderByRules,
             },
-            listInstances
-        );
+            B: {
+                parentState: listInstances.B.state,
+                orderByRules,
+            },
+        });
         expect(deepUnref(listSorts.A.parentState)).toEqual(deepUnref(listInstanceA.state));
         expect(deepUnref(listSorts.B.parentState)).toEqual(deepUnref(listInstanceB.state));
         expect(deepUnref(listSorts.A.state)).toEqual(deepUnref(listSortA.state));

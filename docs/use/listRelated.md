@@ -667,18 +667,14 @@ const listRelated = useListRelated(listRelatedProps);
 
 ### useListRelateds()
 
-> **useListRelateds**(`instances`, `args`): `object`
+> **useListRelateds**(`listRelatedArgs`): `object`
 
 Creates and manages multiple instances of list-related properties, linking each to corresponding parent instances
 based on provided configuration.
 
 #### Parameters
 
-• **instances**
-
-The parent instances to relate to.
-
-• **args**
+• **listRelatedArgs**
 
 The options for the list related properties.
 

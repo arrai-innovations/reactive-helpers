@@ -2,7 +2,7 @@ export function getMockOnUnmounted() {
     const mockOnUnmounted = {};
     vi.mock("vue", () => ({
         _esModule: true,
-        ...vi.requireActual("vue"),
+        ...vi.importActual("vue"),
         onUnmounted: () => mockOnUnmounted,
     }));
     return mockOnUnmounted;

@@ -22,26 +22,22 @@ describe.skip("use/objectSubscription.js", function () {
         globalRetrieve,
         objectSubscription;
     beforeEach(async () => {
-        const objectInstanceModule = await import("../../../use/objectInstance");
+        const objectCrudModule = await import("../../../config/objectCrud.js");
         globalRetrieve = vi.fn();
-        objectInstanceModule.setObjectInstanceCrud({
+        globalUnsubscribe = vi.fn();
+        globalSubscribe = vi.fn();
+        globalSubscribe.mockImplementation(() => Promise.resolve(globalUnsubscribe));
+        objectCrudModule.setObjectCrud({
             retrieve: globalRetrieve,
             create: vi.fn(),
             update: vi.fn(),
             patch: vi.fn(),
             delete: vi.fn(),
-            args: { stream: "test_stream" },
-        });
-        globalUnsubscribe = vi.fn();
-        globalSubscribe = vi.fn();
-        globalSubscribe.mockImplementation(() => Promise.resolve(globalUnsubscribe));
-        globalUnsubscribe.mockImplementation(() => true);
-        const imported = await import("../../../use/objectSubscription");
-        imported.setObjectSubscriptionCrud({
             subscribe: globalSubscribe,
             args: { stream: "test_stream" },
         });
-
+        globalUnsubscribe.mockImplementation(() => true);
+        const imported = await import("../../../use/objectSubscription.js");
         useObjectSubscription = imported.useObjectSubscription;
         useObjectSubscriptions = imported.useObjectSubscriptions;
 
@@ -84,11 +80,17 @@ describe.skip("use/objectSubscription.js", function () {
                 crudRetrieveReject = reject;
             });
             globalRetrieve.mockReturnValueOnce(crudRetrievePromise);
-            crudSubscribePromise = new Promise((resolve, reject) => {
-                crudSubscribeResolve = resolve;
-                crudSubscribeReject = reject;
-            });
+            /** @type {import('../../../use/cancellableIntent.js').CancellablePromise} */
+            crudSubscribePromise =
+                /** @type {import('../../../use/cancellableIntent.js').CancellablePromise} */ new Promise(
+                    (resolve, reject) => {
+                        crudSubscribeResolve = resolve;
+                        crudSubscribeReject = reject;
+                    }
+                );
+            // @ts-ignore - mocking cancel
             crudSubscribePromise.cancel = vi.fn();
+            // @ts-ignore - mocking cancel
             crudSubscribePromise.cancel.mockReturnValueOnce(true).mockReturnValue(false);
             globalSubscribe.mockReturnValueOnce(crudSubscribePromise);
         });
@@ -169,8 +171,11 @@ describe.skip("use/objectSubscription.js", function () {
 
             await poll(() => subscribeCallback);
 
+            // @ts-ignore - subscribeCallback is set as a result of the subscribe call
             subscribeCallback({ id: 1, __str__: "!asdf", name: "!zxcv" }, "update");
+            // @ts-ignore - subscribeCallback is set as a result of the subscribe call
             subscribeCallback({ id: 1, __str__: "asdf!", name: "zxcv!" }, "create");
+            // @ts-ignore - subscribeCallback is set as a result of the subscribe call
             subscribeCallback({ pk: 1 }, "delete");
             expect(objectSubscription.objectInstance.updateFromSubscription).toHaveBeenNthCalledWith(1, {
                 id: 1,
@@ -428,7 +433,9 @@ describe.skip("use/objectSubscription.js", function () {
             const crudCancelPromise = new Promise((resolve) => {
                 crudCancelResolve = resolve;
             });
+            // @ts-ignore - mocking cancel
             crudSubscribePromise.cancel = vi.fn();
+            // @ts-ignore - mocking cancel
             crudSubscribePromise.cancel.mockReturnValueOnce(crudCancelPromise).mockResolvedValue(false);
             globalSubscribe.mockReturnValueOnce(crudSubscribePromise);
         });
@@ -539,7 +546,9 @@ describe.skip("use/objectSubscription.js", function () {
             const crudSubscribePromise = new Promise((resolve) => {
                 crudSubscribeResolve = resolve;
             });
+            // @ts-ignore - mocking cancel
             crudSubscribePromise.cancel = vi.fn();
+            // @ts-ignore - mocking cancel
             crudSubscribePromise.cancel.mockReturnValueOnce(true).mockReturnValue(false);
             globalSubscribe.mockReturnValueOnce(crudSubscribePromise);
 
@@ -554,7 +563,9 @@ describe.skip("use/objectSubscription.js", function () {
             });
 
             expect(objectSubscription.subscribe()).toBe(true);
+            // @ts-ignore - crudRetrieveResolve is set as a result of the subscribe call
             crudRetrieveResolve(crudRetrieveResolved);
+            // @ts-ignore - crudSubscribeResolve is set as a result of the subscribe call
             crudSubscribeResolve(crudSubscribeResolved);
             await flushPromises();
 
@@ -589,7 +600,9 @@ describe.skip("use/objectSubscription.js", function () {
             const crudSubscribePromise = new Promise((resolve) => {
                 crudSubscribeResolve = resolve;
             });
+            // @ts-ignore - mocking cancel
             crudSubscribePromise.cancel = vi.fn();
+            // @ts-ignore - mocking cancel
             crudSubscribePromise.cancel.mockReturnValueOnce(true).mockReturnValue(false);
             customCrudSubscribe.mockReturnValueOnce(crudSubscribePromise);
 
@@ -605,7 +618,9 @@ describe.skip("use/objectSubscription.js", function () {
             objectSubscription.objectInstance.state.crud.subscribe = customCrudSubscribe;
 
             const subscribePromise = objectSubscription.subscribe();
+            // @ts-ignore - crudRetrieveResolve is set as a result of the subscribe call
             crudRetrieveResolve(crudRetrieveResolved);
+            // @ts-ignore - crudSubscribeResolve is set as a result of the subscribe call
             crudSubscribeResolve(crudSubscribeResolved);
             await flushPromises();
             expect(subscribePromise).toBe(true);

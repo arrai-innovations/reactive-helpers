@@ -44,6 +44,7 @@ describe("utils/assignReactiveObject", function () {
                     computedSum = computed(() => target.a + target.b + target.c);
                 });
                 try {
+                    // @ts-ignore - effectScope.run is immediate
                     expect(computedSum.value).toBe(6);
                     assignReactiveObject(target, source);
                     expect(target).toEqual({
@@ -51,6 +52,7 @@ describe("utils/assignReactiveObject", function () {
                         b: 5,
                         c: 6,
                     });
+                    // @ts-ignore - effectScope.run is immediate
                     expect(computedSum.value).toBe(15);
                 } finally {
                     computedSum = null;
@@ -78,6 +80,7 @@ describe("utils/assignReactiveObject", function () {
                     expect(unref(target.a)).not.toBe(unref(source.a));
                     expect(unref(target.b)).not.toBe(unref(source.b));
                     expect(unref(target.c)).toBe(unref(source.c));
+                    // @ts-ignore - effectScope.run is immediate
                     expect(computedSum.value).toBe(28);
                     assignReactiveObject(target, source);
                     expect(target).toEqual({
@@ -88,6 +91,7 @@ describe("utils/assignReactiveObject", function () {
                     expect(unref(target.a)).toBe(unref(source.a));
                     expect(unref(target.b)).toBe(unref(source.b));
                     expect(unref(target.c)).toBe(unref(source.c));
+                    // @ts-ignore - effectScope.run is immediate
                     expect(computedSum.value).toBe(7);
                 } finally {
                     computedSum = null;
@@ -95,7 +99,11 @@ describe("utils/assignReactiveObject", function () {
                 }
             });
             it("does nothing when all targets are objectlike and already point to the source", function () {
-                const target = reactive({});
+                const target = reactive({
+                    a: undefined,
+                    b: undefined,
+                    c: undefined,
+                });
                 const source = reactive({
                     a: { e: 1 },
                     b: { f: 2 },
@@ -123,36 +131,36 @@ describe("utils/assignReactiveObject", function () {
         describe("should throw an error", function () {
             it("when target is not an array or object", function () {
                 expect(() => assignReactiveObject(null, {})).toThrowError(
-                    new AssignReactiveObjectError("target must be an object or an array, not null")
+                    new AssignReactiveObjectError("target must be an object or an array, not null", "invalid-type")
                 );
                 expect(() => assignReactiveObject(undefined, {})).toThrowError(
-                    new AssignReactiveObjectError("target must be an object or an array, not undefined")
+                    new AssignReactiveObjectError("target must be an object or an array, not undefined", "invalid-type")
                 );
                 expect(() => assignReactiveObject(1, {})).toThrowError(
-                    new AssignReactiveObjectError("target must be an object or an array, not 1")
+                    new AssignReactiveObjectError("target must be an object or an array, not 1", "invalid-type")
                 );
                 expect(() => assignReactiveObject(NaN, {})).toThrowError(
-                    new AssignReactiveObjectError("target must be an object or an array, not NaN")
+                    new AssignReactiveObjectError("target must be an object or an array, not NaN", "invalid-type")
                 );
                 expect(() => assignReactiveObject(Infinity, {})).toThrowError(
-                    new AssignReactiveObjectError("target must be an object or an array, not Infinity")
+                    new AssignReactiveObjectError("target must be an object or an array, not Infinity", "invalid-type")
                 );
             });
             it("when source is not an array or object", function () {
                 expect(() => assignReactiveObject({}, null)).toThrowError(
-                    new AssignReactiveObjectError("source must be an object or an array, not null")
+                    new AssignReactiveObjectError("source must be an object or an array, not null", "invalid-type")
                 );
                 expect(() => assignReactiveObject({}, undefined)).toThrowError(
-                    new AssignReactiveObjectError("source must be an object or an array, not undefined")
+                    new AssignReactiveObjectError("source must be an object or an array, not undefined", "invalid-type")
                 );
                 expect(() => assignReactiveObject({}, 1)).toThrowError(
-                    new AssignReactiveObjectError("source must be an object or an array, not 1")
+                    new AssignReactiveObjectError("source must be an object or an array, not 1", "invalid-type")
                 );
                 expect(() => assignReactiveObject({}, NaN)).toThrowError(
-                    new AssignReactiveObjectError("source must be an object or an array, not NaN")
+                    new AssignReactiveObjectError("source must be an object or an array, not NaN", "invalid-type")
                 );
                 expect(() => assignReactiveObject({}, Infinity)).toThrowError(
-                    new AssignReactiveObjectError("source must be an object or an array, not Infinity")
+                    new AssignReactiveObjectError("source must be an object or an array, not Infinity", "invalid-type")
                 );
             });
         });
@@ -160,9 +168,9 @@ describe("utils/assignReactiveObject", function () {
     it("should work as in the example for the readme", function () {
         const es = new EffectScope();
         es.run(() => {
-            const target = reactive({ a: 1 });
+            const target = reactive({ a: 1, b: undefined });
             const source = { a: 3, b: 4 };
-            const source2 = reactive({ b: 5 });
+            const source2 = reactive({ a: undefined, b: 5 });
 
             const a = toRef(target, "a");
             const b = toRef(target, "b");

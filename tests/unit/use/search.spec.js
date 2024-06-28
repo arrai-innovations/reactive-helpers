@@ -4,7 +4,7 @@ import { reactive } from "vue";
 describe("use/search", () => {
     let useSearch;
     beforeEach(async () => {
-        const searchModule = await import("../../../use/search");
+        const searchModule = await import("../../../use/search.js");
         useSearch = searchModule.useSearch;
     });
     it("should allow adding items to the index", async () => {

@@ -11,7 +11,7 @@ afterAll(() => {
 describe("use/objectInstance.js", function () {
     let useObjectInstance, ObjectError, useObjectInstances;
     beforeAll(async () => {
-        const imported = await import("../../../use/objectInstance");
+        const imported = await import("../../../use/objectInstance.js");
         useObjectInstance = imported.useObjectInstance;
         ObjectError = imported.ObjectError;
         useObjectInstances = imported.useObjectInstances;
@@ -122,6 +122,7 @@ describe("use/objectInstance.js", function () {
             expect(objectInstance.state.loading).toBe(true);
             expect({ ...objectInstance.state.object }).toEqual({});
             await nextTick();
+            // @ts-ignore - crudRetrieveResolve is set in the promise, so it will be defined
             crudRetrieveResolve(crudRetrieveResolved);
             await flushPromises();
             expectErrorToBeNull(objectInstance.state.error);
@@ -162,6 +163,7 @@ describe("use/objectInstance.js", function () {
             expect(objectInstance.state.errored).toBe(false);
             expect(objectInstance.state.loading).toBe(true);
             expect({ ...objectInstance.state.object }).toEqual({});
+            // @ts-ignore - crudRetrieveResolve is set in the promise, so it will be defined
             crudRetrieveResolve(crudRetrieveResolved);
             await flushPromises();
             expectErrorToBeNull(objectInstance.state.error);
@@ -202,6 +204,7 @@ describe("use/objectInstance.js", function () {
             expect(objectInstance.state.errored).toBe(false);
             expect(objectInstance.state.loading).toBe(true);
             expect({ ...objectInstance.state.object }).toEqual({});
+            // @ts-ignore - crudRetrieveReject is set in the promise, so it will be defined
             crudRetrieveReject(crudRetrieveRejected);
             await flushPromises();
             expect(objectInstance.state.error).toEqual(crudRetrieveRejected);
@@ -312,6 +315,7 @@ describe("use/objectInstance.js", function () {
             expect(objectInstance.state.loading).toBe(true);
             expect({ ...objectInstance.state.object }).toEqual({});
             await nextTick();
+            // @ts-ignore - crudCreateResolve is set in the promise, so it will be defined
             crudCreateResolve(crudCreateResolved);
             await flushPromises();
             expectErrorToBeNull(objectInstance.state.error);
@@ -360,6 +364,7 @@ describe("use/objectInstance.js", function () {
             expect(objectInstance.state.errored).toBe(false);
             expect(objectInstance.state.loading).toBe(true);
             expect({ ...objectInstance.state.object }).toEqual({});
+            // @ts-ignore - crudCreateResolve is set in the promise, so it will be defined
             crudCreateResolve(crudCreateResolved);
             await flushPromises();
             expectErrorToBeNull(objectInstance.state.error);
@@ -409,6 +414,7 @@ describe("use/objectInstance.js", function () {
             expect(objectInstance.state.errored).toBe(false);
             expect(objectInstance.state.loading).toBe(true);
             expect({ ...objectInstance.state.object }).toEqual({});
+            // @ts-ignore - crudCreateReject is set in the promise, so it will be defined
             crudCreateReject(crudCreateRejected);
             await flushPromises();
             expect(objectInstance.state.error).toEqual(crudCreateRejected);
@@ -505,6 +511,7 @@ describe("use/objectInstance.js", function () {
             expect(objectInstance.state.loading).toBe(true);
             expect({ ...objectInstance.state.object }).toEqual({});
             await nextTick();
+            // @ts-ignore - crudUpdateResolve is set in the promise, so it will be defined
             crudUpdateResolve(crudUpdateResolved);
             await flushPromises();
             expectErrorToBeNull(objectInstance.state.error);
@@ -555,6 +562,7 @@ describe("use/objectInstance.js", function () {
             expect(objectInstance.state.errored).toBe(false);
             expect(objectInstance.state.loading).toBe(true);
             expect({ ...objectInstance.state.object }).toEqual({});
+            // @ts-ignore - crudUpdateResolve is set in the promise, so it will be defined
             crudUpdateResolve(crudUpdateResolved);
             await flushPromises();
             expectErrorToBeNull(objectInstance.state.error);
@@ -604,6 +612,7 @@ describe("use/objectInstance.js", function () {
             expect(objectInstance.state.errored).toBe(false);
             expect(objectInstance.state.loading).toBe(true);
             expect({ ...objectInstance.state.object }).toEqual({});
+            // @ts-ignore - crudUpdateReject is set in the promise, so it will be defined
             crudUpdateReject(crudUpdateRejected);
             await flushPromises();
             expect(objectInstance.state.error).toEqual(crudUpdateRejected);
@@ -703,6 +712,7 @@ describe("use/objectInstance.js", function () {
             expect(objectInstance.state.loading).toBe(true);
             expect({ ...objectInstance.state.object }).toEqual({});
             await nextTick();
+            // @ts-ignore - crudPatchResolve is set in the promise, so it will be defined
             crudPatchResolve(crudPatchResolved);
             await flushPromises();
             expectErrorToBeNull(objectInstance.state.error);
@@ -754,6 +764,7 @@ describe("use/objectInstance.js", function () {
             expect(objectInstance.state.errored).toBe(false);
             expect(objectInstance.state.loading).toBe(true);
             expect({ ...objectInstance.state.object }).toEqual({});
+            // @ts-ignore - crudPatchReject is set in the promise, so it will be defined
             crudPatchReject(crudPatchRejected);
             await flushPromises();
             expect(objectInstance.state.error).toEqual(crudPatchRejected);
@@ -849,6 +860,7 @@ describe("use/objectInstance.js", function () {
             expect({ ...objectInstance.state.object }).toEqual(crudRetrieveResolved);
             await nextTick();
 
+            // @ts-ignore - deleteResolve is set in the promise, so it will be defined
             deleteResolve(crudDeleteResolved);
             await flushPromises();
 
@@ -899,6 +911,7 @@ describe("use/objectInstance.js", function () {
             expect({ ...objectInstance.state.object }).toEqual(crudRetrieveResolved);
             await nextTick();
 
+            // @ts-ignore - deleteReject is set in the promise, so it will be defined
             deleteReject(crudDeleteRejected);
             await flushPromises();
 

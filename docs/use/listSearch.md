@@ -204,6 +204,12 @@ Flag indicating if the object watch is active.
 
 The order of objects in the list.
 
+###### orderWatchRunning
+
+> **orderWatchRunning**: `boolean`
+
+Flag indicating if the order watch is active.
+
 ###### relatedObjects
 
 > **relatedObjects**: `object`
@@ -521,6 +527,12 @@ Flag indicating if the object watch is active.
 > **order**: `string`[]
 
 The current sort order of object IDs after search have been applied.
+
+###### orderWatchRunning
+
+> **orderWatchRunning**: `boolean`
+
+Flag indicating if the order watch is active.
 
 ###### relatedObjects
 
@@ -859,18 +871,14 @@ const listSearch = useListSearch({
 
 ### useListSearches()
 
-> **useListSearches**(`instances`, `args`): `object`
+> **useListSearches**(`listSearchArgs`): `object`
 
 Helper function that initializes multiple list search instances from given configurations. This is typically used
 when multiple list components require individual search capabilities.
 
 #### Parameters
 
-• **instances**
-
-Instances of lists that need searching.
-
-• **args**
+• **listSearchArgs**
 
 Configuration arguments for each search instance, including state and props.
 

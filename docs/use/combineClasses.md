@@ -18,7 +18,7 @@ Normalize various ways of specifying CSS classes into an object for use in Vue.j
 
 #### Parameters
 
-• ...**classes**: (`string` \| `string`[] \| `Ref`\<`string` \| `string`[]\> \| `object`)[]
+• ...**classes**: (`string` \| `string`[] \| `object` \| `Ref`\<`string` \| `string`[]\>)[]
 
 A mixed array containing multiple ways of specifying CSS classes.
 

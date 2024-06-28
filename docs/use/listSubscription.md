@@ -362,7 +362,7 @@ const listSubscription = useListSubscription({ props: listSubscriptionProps });
 
 ### useListSubscriptions()
 
-> **useListSubscriptions**(`listSubscriptionArgs`, `listInstances`?): `object`
+> **useListSubscriptions**(`listSubscriptionArgs`): `object`
 
 A Vue composition function that creates multiple list subscriptions, and returns them as an object.
 
@@ -371,10 +371,6 @@ A Vue composition function that creates multiple list subscriptions, and returns
 • **listSubscriptionArgs**
 
 Each desired list instance options, keyed by an instance name.
-
-• **listInstances?** = `{}`
-
-The list instances to use instead of creating new ones.
 
 #### Returns
 
