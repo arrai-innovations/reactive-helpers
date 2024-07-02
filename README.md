@@ -585,7 +585,10 @@ setObjectCrud({
 ```js
 // similar to list, but for a single object.
 import {
-    useObjectInstance, useObjectSubscription, useObjectRelated, useObjectCalculated
+    useObjectInstance,
+    useObjectSubscription,
+    useObjectRelated,
+    useObjectCalculated,
 } from "@arrai-innovations/reactive-helpers";
 
 const contactObject = useObjectInstance({
@@ -597,12 +600,12 @@ const contactObject = useObjectInstance({
             fields: ["id", "has_name", "lexical_name", "organization", "phone"],
         },
         id: contactId,
-    }
+    },
 });
 console.log(contactObject.state.object);
 const contactSubscription = useObjectSubscription({
     objectInstance: contactObject,
-})
+});
 // or
 const contactSubscription = useObjectSubscription({
     props: {
@@ -613,7 +616,7 @@ const contactSubscription = useObjectSubscription({
             fields: ["id", "has_name", "lexical_name", "organization", "phone"],
         },
         id: contactId,
-    }
+    },
 });
 console.log(contactSubscription.state.object);
 const organizations = useList({
@@ -624,7 +627,7 @@ const organizations = useList({
         retrieveArgs: {
             fields: ["id", "name"],
         },
-    }
+    },
 });
 await organizations.list();
 const contactRelated = useObjectRelated({

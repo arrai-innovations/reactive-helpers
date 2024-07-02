@@ -3,7 +3,7 @@ import { assignReactiveObject } from "../utils/assignReactiveObject.js";
 import { getFakeId } from "../utils/getFakeId.js";
 import useLoadingError from "./loadingError.js";
 import inspect from "browser-util-inspect";
-import { effectScope, reactive, toRef, watch, computed, unref, ref, readonly } from "vue";
+import { computed, effectScope, nextTick, reactive, readonly, ref, toRef, unref, watch } from "vue";
 
 /**
  * A composable function for managing a list of objects.
@@ -243,10 +243,8 @@ export function useListInstance({ props, functions = {}, keepOldPages = false })
     });
 
     const loadingError = useLoadingError();
-    const internalState = reactive({
-        /** @type {import('vue').Ref<ListObject>[]} */
-        objectsInOrderRefs: [],
-    });
+    /** @type {import('vue').Ref<import('vue').Ref<ListObject>[]>} */
+    const objectsInOrderRefs = ref([]);
 
     // ### touching the _objectsMap or _objectsProxy directly will not trigger reactivity ###
     const state = reactive({
@@ -266,7 +264,6 @@ export function useListInstance({ props, functions = {}, keepOldPages = false })
         order: undefined,
         /** @type {import('vue').ComputedRef<ListObject[]>|undefined} */
         objectsInOrder: undefined,
-        objectsInOrderRefs: [],
     });
     const es = effectScope();
 
@@ -401,13 +398,12 @@ export function useListInstance({ props, functions = {}, keepOldPages = false })
         watch(
             toRef(state, "objects"),
             () => {
-                assignReactiveObject(
-                    internalState.objectsInOrderRefs,
-                    Object.keys(state.objects).map((id) => toRef(state.objects, id))
-                );
-                if (state.running) {
-                    state.running = false;
-                }
+                objectsInOrderRefs.value = Object.values(state.objects).map((object) => ref(object));
+                nextTick(() => {
+                    if (state.running) {
+                        state.running = false;
+                    }
+                });
             },
             {
                 immediate: true,
@@ -415,7 +411,7 @@ export function useListInstance({ props, functions = {}, keepOldPages = false })
             }
         );
         // @ts-ignore - we want the computed in the explicit effect scope, tsc is mad that we are 'changing' the type
-        state.objectsInOrder = computed(() => internalState.objectsInOrderRefs.map((ref) => unref(ref)));
+        state.objectsInOrder = computed(() => objectsInOrderRefs.value.map((ref) => unref(ref)));
         // @ts-ignore - we want the computed in the explicit effect scope, tsc is mad that we are 'changing' the type
         state.order = computed(() => Object.keys(state.objects));
     });

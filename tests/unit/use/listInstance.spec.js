@@ -499,11 +499,7 @@ describe("use/listInstance.spec.js", function () {
 
             listInstance.deleteListObject(1);
             expect(listInstance.state.objects["1"]).toBeUndefined();
-            expect(listInstance.state.objectsInOrder).toStrictEqual([
-                undefined,
-                crudListResolvedObjects1["2"],
-                crudListResolvedObjects1["3"],
-            ]);
+            // objectsInOrderRefs is not updated until the next tick
             // order updates immediately due to not being proxied through objectsInOrderRefs
             expect(listInstance.state.order).toStrictEqual(["2", "3"]);
             await doAwaitNot({
