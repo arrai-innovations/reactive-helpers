@@ -1,5 +1,5 @@
-import { doAwaitNot, doAwaitTimeout } from "../../../utils/index.js";
-import { reactive, ref } from "vue";
+import { doAwaitNot, doAwaitTimeout } from "../../../utils/watches.js";
+import { isReactive, isRef, nextTick, reactive, ref, toRef, watch } from "vue";
 import { deepUnref } from "vue-deepunref";
 
 describe("use/useListSort", () => {
@@ -41,12 +41,16 @@ describe("use/useListSort", () => {
         },
     ];
     beforeEach(async () => {
-        const imported = await import("../../../use/index.js");
-        useListInstance = imported.useListInstance;
-        useListInstances = imported.useListInstances;
-        useListRelated = imported.useListRelated;
-        useListCalculated = imported.useListCalculated;
-        useListFilter = imported.useListFilter;
+        const importedInstanceModule = await import("../../../use/listInstance.js");
+        const importedRelatedModule = await import("../../../use/listRelated.js");
+        const importedCalculatedModule = await import("../../../use/listCalculated.js");
+        const importedFilterModule = await import("../../../use/listFilter.js");
+        const importedSortModule = await import("../../../use/listSort.js");
+        useListInstance = importedInstanceModule.useListInstance;
+        useListInstances = importedInstanceModule.useListInstances;
+        useListRelated = importedRelatedModule.useListRelated;
+        useListCalculated = importedCalculatedModule.useListCalculated;
+        useListFilter = importedFilterModule.useListFilter;
         orderByRules = [
             { key: "organization", desc: true, localeCompare: false },
             { key: "lexical_name", desc: false, localeCompare: true },
@@ -60,9 +64,9 @@ describe("use/useListSort", () => {
                 listArgs: {},
             },
         });
-        useListSort = imported.useListSort;
-        useListSorts = imported.useListSorts;
-        setListSortDefaultOptions = imported.setListSortDefaultOptions;
+        useListSort = importedSortModule.useListSort;
+        useListSorts = importedSortModule.useListSorts;
+        setListSortDefaultOptions = importedSortModule.setListSortDefaultOptions;
         setListSortDefaultOptions({
             sortThrottleWait: 0,
         });

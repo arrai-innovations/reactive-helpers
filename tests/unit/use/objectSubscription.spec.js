@@ -1,5 +1,5 @@
 import { assignReactiveObject } from "../../../utils/assignReactiveObject.js";
-import { doAwaitTimeout } from "../../../utils/index.js";
+import { doAwaitTimeout } from "../../../utils/watches.js";
 import { expectErrorToBeNull } from "../expectHelpers.js";
 // import { getMockOnUnmounted } from "../mockOnUnmounted.js";
 import { poll } from "../poll.js";

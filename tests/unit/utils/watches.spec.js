@@ -5,7 +5,7 @@ import {
     AwaitTimeoutError,
     doAwaitTimeout,
     ImmediateStopWatch,
-} from "../../../utils/index.js";
+} from "../../../utils/watches.js";
 import { nextTick, reactive, toRef } from "vue";
 
 describe("utils/watches", () => {

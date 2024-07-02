@@ -1,5 +1,5 @@
 // noinspection ES6PreferShortImport
-import { proxyRunning } from "../utils/index.js";
+import { proxyRunning } from "../utils/proxyRunning.js";
 import { keyDiff } from "../utils/keyDiff.js";
 import { loadingCombine } from "../utils/loadingCombine.js";
 import { objectInstanceStateKeys } from "./objectInstance.js";

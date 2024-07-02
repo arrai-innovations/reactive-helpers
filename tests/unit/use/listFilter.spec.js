@@ -1,19 +1,21 @@
-import { useListFilters, useListSort } from "../../../use/index.js";
 import { doAwaitNot } from "../../../utils/watches.js";
 import { reactive, ref, unref } from "vue";
 import { deepUnref } from "vue-deepunref";
 
 describe("use/listFilter", () => {
-    let useListInstance, useListFilter, useListCalculated, useListRelated;
+    let useListInstance, useListFilter, useListCalculated, useListRelated, useListFilters, useListSort;
     beforeEach(async () => {
         const listInstanceModule = await import("../../../use/listInstance.js");
         useListInstance = listInstanceModule.useListInstance;
         const listFilterModule = await import("../../../use/listFilter.js");
         useListFilter = listFilterModule.useListFilter;
+        useListFilters = listFilterModule.useListFilters;
         const listRelatedModule = await import("../../../use/listRelated.js");
         useListRelated = listRelatedModule.useListRelated;
         const listCalculatedModule = await import("../../../use/listCalculated.js");
         useListCalculated = listCalculatedModule.useListCalculated;
+        const listSortModule = await import("../../../use/listSort.js");
+        useListSort = listSortModule.useListSort;
     });
 
     it("should match an allowed filter function", async () => {

@@ -1,4 +1,4 @@
-import { doAwaitNot } from "../../../utils/index.js";
+import { doAwaitNot } from "../../../utils/watches.js";
 import { reactive } from "vue";
 
 describe("use/search", () => {

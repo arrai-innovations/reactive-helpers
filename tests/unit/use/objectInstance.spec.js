@@ -1,4 +1,4 @@
-import { assignReactiveObject } from "../../../utils/index.js";
+import { assignReactiveObject } from "../../../utils/assignReactiveObject.js";
 import { expectErrorToBeNull } from "../expectHelpers.js";
 import flushPromises from "flush-promises";
 import { inspect } from "util";

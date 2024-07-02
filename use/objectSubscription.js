@@ -1,4 +1,5 @@
-import { assignReactiveObject, loadingCombine } from "../utils/index.js";
+import { assignReactiveObject } from "../utils/assignReactiveObject.js";
+import { loadingCombine } from "../utils/loadingCombine.js";
 import { useCancellableIntent } from "./cancellableIntent.js";
 import useLoadingError from "./loadingError.js";
 import { useObjectInstance, objectInstanceStateKeys } from "./objectInstance.js";

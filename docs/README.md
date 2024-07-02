@@ -6,10 +6,8 @@
 
 ## Modules
 
-- [config](config.md)
 - [config/listCrud](config/listCrud.md)
 - [config/objectCrud](config/objectCrud.md)
-- [use](use.md)
 - [use/cancellableIntent](use/cancellableIntent.md)
 - [use/combineClasses](use/combineClasses.md)
 - [use/list](use/list.md)
@@ -28,10 +26,8 @@
 - [use/objectRelated](use/objectRelated.md)
 - [use/objectSubscription](use/objectSubscription.md)
 - [use/paginatedListInstance](use/paginatedListInstance.md)
-- [use/running](use/running.md)
 - [use/search](use/search.md)
 - [use/watchesRunning](use/watchesRunning.md)
-- [utils](utils.md)
 - [utils/assignReactiveObject](utils/assignReactiveObject.md)
 - [utils/classes](utils/classes.md)
 - [utils/compact](utils/compact.md)

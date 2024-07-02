@@ -1,4 +1,4 @@
-import { doAwaitNot } from "../../../utils/index.js";
+import { doAwaitNot } from "../../../utils/watches.js";
 import { expectErrorToBeNull } from "../expectHelpers.js";
 import flushPromises from "flush-promises";
 import keyBy from "lodash-es/keyBy.js";

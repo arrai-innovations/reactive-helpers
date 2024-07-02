@@ -1,4 +1,5 @@
-import { assignReactiveObject, difference, keyDiff, loadingCombine } from "../utils/index.js";
+import { difference } from "../utils/set.js";
+import { keyDiff } from "../utils/keyDiff.js";
 import { proxyRunning } from "../utils/proxyRunning.js";
 import { getObjectRelatedCalculatedByKey } from "../utils/relatedCalculatedHelpers.js";
 import {
@@ -15,6 +16,8 @@ import get from "lodash-es/get.js";
 import isEqual from "lodash-es/isEqual.js";
 import { computed, effectScope, onScopeDispose, reactive, readonly, ref, toRef, unref, watch } from "vue";
 import { deepUnref } from "vue-deepunref";
+import { assignReactiveObject } from "../utils/assignReactiveObject.js";
+import { loadingCombine } from "../utils/loadingCombine.js";
 
 /**
  * Provides a Vue 3 composable for adding text search functionality to lists. It allows for

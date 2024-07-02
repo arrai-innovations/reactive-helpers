@@ -1,4 +1,5 @@
-import { assignReactiveObject, difference, loadingCombine } from "../utils/index.js";
+import { difference } from "../utils/set.js";
+import { loadingCombine } from "../utils/loadingCombine.js";
 import { keyDiff } from "../utils/keyDiff.js";
 import { proxyRunning } from "../utils/proxyRunning.js";
 import {
@@ -11,6 +12,7 @@ import {
     listSubscriptionStateKeys,
 } from "./listKeys.js";
 import { computed, effectScope, nextTick, reactive, ref, toRef, unref, watch } from "vue";
+import { assignReactiveObject } from "../utils/assignReactiveObject.js";
 
 /**
  * Provides reactive filtering functionality for lists within a Vue application. This composable

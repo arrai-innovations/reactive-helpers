@@ -1,4 +1,7 @@
-import { assignReactiveObject, difference, keyDiff, loadingCombine } from "../utils/index.js";
+import { assignReactiveObject } from "../utils/assignReactiveObject.js";
+import { difference } from "../utils/set.js";
+import { keyDiff } from "../utils/keyDiff.js";
+import { loadingCombine } from "../utils/loadingCombine.js";
 import { proxyRunning } from "../utils/proxyRunning.js";
 import {
     listCalculatedStateKeys,

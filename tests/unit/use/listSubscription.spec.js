@@ -1,4 +1,4 @@
-import { doAwaitNot } from "../../../utils/index.js";
+import { doAwaitNot } from "../../../utils/watches.js";
 import { CancellableResolvable } from "../crudPromise.js";
 import { poll } from "../poll.js";
 import flushPromises from "flush-promises";
