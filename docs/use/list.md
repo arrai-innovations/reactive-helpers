@@ -1,0 +1,285 @@
+[**@arrai-innovations/reactive-helpers**](../README.md) • **Docs**
+
+***
+
+[@arrai-innovations/reactive-helpers](../README.md) / use/list
+
+# use/list
+
+## Interfaces
+
+### ListManagerProperties
+
+#### Properties
+
+##### effectScope
+
+> **effectScope**: `EffectScope`
+
+Encapsulates all reactive effects related to the list hooks.
+
+##### managed
+
+> **managed**: [`ListManaged`](list.md#listmanaged)
+
+A readonly reference to the managed list hooks.
+
+##### state
+
+> **state**: [`ListState`](list.md#liststate)
+
+Represents the final reactive state in the list processing chain.
+
+***
+
+### ListOptions
+
+#### Properties
+
+##### clearListOnListIntentTriggered
+
+> **clearListOnListIntentTriggered**: `boolean`
+
+Indicates whether the list should be cleared when the list intent is triggered.
+
+##### functions
+
+> **functions**: [`ListCrudFunctions`](../config/listCrud.md#listcrudfunctions)
+
+Additional functions to be included in the list manager.
+
+##### keepOldPages
+
+> **keepOldPages**: `boolean`
+
+Indicates whether old pages should be kept when paginating.
+
+##### paged
+
+> **paged**: `boolean`
+
+Indicates whether the list should be paginated.
+
+##### props
+
+> **props**: [`ListRawProps`](list.md#listrawprops)
+
+The properties for configuring the list.
+
+##### searchShowAllWhenEmpty
+
+> **searchShowAllWhenEmpty**: `boolean`
+
+Indicates whether all items should be shown when the search query is empty.
+
+##### searchThrottle
+
+> **searchThrottle**: `number`
+
+The throttle time for text search.
+
+##### sortThrottleWait
+
+> **sortThrottleWait**: `number`
+
+The throttle time for sorting.
+
+***
+
+### ListRawProps
+
+#### Properties
+
+##### allowedFilter
+
+> **allowedFilter**: `Function`
+
+Function or rule to determine if an item should be included based on inclusion criteria.
+
+##### calculatedObjectsRules
+
+> **calculatedObjectsRules**: `Ref`\<`object`\>
+
+Defines rules for dynamically calculating properties of list items.
+
+##### crudArgs
+
+> **crudArgs**: `boolean`
+
+General arguments to pass to the registered list crud functions, often related to endpoints.
+
+##### customDocumentOptions
+
+> **customDocumentOptions**: `any`
+
+FlexSearch document configuration options for advanced searching capabilities.
+
+##### customSearchOptions
+
+> **customSearchOptions**: `any`
+
+Additional search options for FlexSearch.
+
+##### excludedFilter
+
+> **excludedFilter**: `Function`
+
+Function or rule to determine if an item should be excluded based on exclusion criteria.
+
+##### intendToList
+
+> **intendToList**: `boolean`
+
+Indicates whether the list should be fetched immediately.
+
+##### intendToSubscribe
+
+> **intendToSubscribe**: `boolean`
+
+Indicates whether changes to the list should be subscribed to.
+
+##### listArgs
+
+> **listArgs**: `boolean`
+
+The arguments to pass to the registered list crud functions, related to the list itself.
+
+##### orderByRules
+
+> **orderByRules**: [`OrderByRule`](listSort.md#orderbyrule)[]
+
+Sorting rules that define the order of list items.
+
+##### relatedObjectsRules
+
+> **relatedObjectsRules**: `object`
+
+Defines rules for associating related objects with list items.
+
+###### Index Signature
+
+ \[`rule`: `string`\]: [`ListRelatedRule`](listRelated.md#listrelatedrule)
+
+##### retrieveArgs
+
+> **retrieveArgs**: `boolean`
+
+The arguments to pass to the registered list crud functions, related to the items.
+
+##### textSearchRules
+
+> **textSearchRules**: [`TextSearchRules`](listSearch.md#textsearchrules-5)
+
+Defines the properties and conditions used to filter the list via text search.
+
+##### textSearchValue
+
+> **textSearchValue**: `string`
+
+Current text query used for filtering the list.
+
+## Type Aliases
+
+### ListFunctions
+
+> **ListFunctions**\<\>: [`use/listInstance`](listInstance.md) & [`use/listSubscription`](listSubscription.md)
+
+#### Type Parameters
+
+***
+
+### ListManaged
+
+> **ListManaged**\<\>: `object`
+
+#### Type Parameters
+
+#### Type declaration
+
+##### listCalculated
+
+> **listCalculated**: [`use/listCalculated`](listCalculated.md)
+
+##### listFilter
+
+> **listFilter**: [`use/listFilter`](listFilter.md)
+
+##### listInstance
+
+> **listInstance**: [`use/listInstance`](listInstance.md)
+
+##### listRelated
+
+> **listRelated**: [`use/listRelated`](listRelated.md)
+
+##### listSearch
+
+> **listSearch**: [`use/listSearch`](listSearch.md)
+
+##### listSort
+
+> **listSort**: [`use/listSort`](listSort.md)
+
+##### listSubscription
+
+> **listSubscription**: [`use/listSubscription`](listSubscription.md)
+
+***
+
+### ListManager
+
+> **ListManager**\<\>: [`ListFunctions`](list.md#listfunctions) & [`ListManagerProperties`](list.md#listmanagerproperties)
+
+#### Type Parameters
+
+***
+
+### ListRawState
+
+> **ListRawState**\<\>: [`use/listInstance`](listInstance.md) \| [`use/listSubscription`](listSubscription.md) \| [`use/listRelated`](listRelated.md) \| [`use/listCalculated`](listCalculated.md) \| [`use/listFilter`](listFilter.md) \| [`use/listSearch`](listSearch.md) \| [`use/listSort`](listSort.md)
+
+#### Type Parameters
+
+***
+
+### ListState
+
+> **ListState**\<\>: `UnwrapNestedRefs`
+
+#### Type Parameters
+
+## Functions
+
+### useList()
+
+> **useList**(`options`): [`ListManager`](list.md#listmanager)
+
+#### Parameters
+
+• **options**: [`ListOptions`](list.md#listoptions)
+
+The options for the list./.
+
+#### Returns
+
+[`ListManager`](list.md#listmanager)
+
+- The managed stack of list-related composable functions.
+
+***
+
+### useLists()
+
+> **useLists**(`listOptions`): `object`
+
+#### Parameters
+
+• **listOptions**
+
+The options for initializing multiple list instances.
+
+#### Returns
+
+`object`
+
+- The managed list instances.

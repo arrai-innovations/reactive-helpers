@@ -1,40 +1,136 @@
 import { getListCrud } from "../config/listCrud.js";
 import { assignReactiveObject } from "../utils/assignReactiveObject.js";
 import { getFakeId } from "../utils/getFakeId.js";
+import useLoadingError from "./loadingError.js";
 import inspect from "browser-util-inspect";
-import { effectScope, reactive, toRef, watch, computed, unref, ref, readonly } from "vue";
+import { computed, effectScope, nextTick, reactive, readonly, ref, toRef, unref, watch } from "vue";
 
-export class ListError extends Error {
+/**
+ * A composable function for managing a list of objects.
+ *
+ * @module use/listInstance.js
+ */
+
+/**
+ * Defines the structure for the objects stored within the list, each identified by a unique ID and capable of
+ *  holding various key-value pairs.
+ *
+ * @typedef {{id: string, [key: string]: any}} ListObject
+ */
+
+/**
+ * Defines a custom error class specific to list instance operations, encapsulating details about errors that occur
+ *  during list manipulation and processing.
+ */
+export class ListInstanceError extends Error {
+    /**
+     * Creates an instance of ListInstanceError.
+     *
+     * @param {string} message - The error message.
+     * @param {string} code - The error code.
+     */
     constructor(message, code) {
         super(message);
-        this.name = "ListError";
+        this.name = "ListInstanceError";
         this.code = code;
     }
 }
 
 /**
- * The configuration options used to create a list instance.
- * @typedef {object} ListInstanceOptions
- * @property {object} props - props passed to the component
- * @property {object} props.retrieveArgs - the arguments passed to the server
- * @property {object} props.listArgs - the arguments passed to the server
- * @property {object} props.crudArgs - implementation specific arguments
- * @property {object} functions - optional. default implementation are used as set by `setListCrud`.
- * @property {Function} functions.list - provide the implementation for the list function
- * @property {Function} functions.subscribe - provide the implementation for the subscribe function
- * @property {boolean} keepOldPages - if true, pages will not be cleared when defaultPageCallback is called. default is false.
+ * The reactive arguments for the list instance.
+ *
+ * @typedef {object} ListInstanceProps
+ * @property {object} retrieveArgs - The arguments passed to the server.
+ * @property {object} listArgs - The arguments passed to the server.
+ * @property {object} crudArgs - Implementation specific arguments.
  */
 
-/* eslint-disable jsdoc/check-types */
-// types valid for jsdoc-to-markdown, which uses the strict jsdoc.app. Object shorthand syntax doesn't work.
 /**
- * A Vue composition function that creates multiple list instances, and returns them as an object.
- * @param {Object.<string, ListInstanceOptions>} listInstanceArgs - each desired list instance options, keyed by an instance name.
- * @returns {Object.<string, ListInstance>} - each list instance, keyed by the instance name.
+ * The configuration options used to create a list instance.
+ *
+ * @typedef {object} ListInstanceOptions
+ * @property {import('vue').UnwrapNestedRefs<ListInstanceProps>} props - The props for the list instance.
+ * @property {object} [functions] - Default implementation are used as set by `setListCrud`.
+ * @property {Function} [functions.list] - Provide the implementation for the list function.
+ * @property {boolean} [keepOldPages=false] - If true, pages will not be cleared when defaultPageCallback is called.
  */
 
-/* eslint-enable jsdoc/check-types */
+/**
+ * The objects by id.
+ *
+ * @typedef {{[key: string]: ListObject}} ObjectsById
+ */
+
+/**
+ * The objects in order, based on .order & .objects.
+ *
+ * @typedef {import('vue').ComputedRef<ListObject[]>} ObjectsInOrder
+ */
+
+/**
+ * The order of the objects in the list.
+ *
+ * @typedef {import('vue').ComputedRef<string[]>} ListOrder
+ */
+
+/**
+ * The raw state object for the list instance, defining the reactive properties and their types.
+ *
+ * @typedef {object} ListInstanceRawState
+ * @property {object} crud - CRUD functions and their configurations for the list.
+ * @property {object} crud.args - Arguments for the CRUD functions.
+ * @property {Function} [crud.list] - Function to list objects.
+ * @property {object} retrieveArgs - Arguments passed to the server for retrieval operations.
+ * @property {object} listArgs - Arguments passed to the server for listing operations.
+ * @property {ObjectsById} objects - The list objects stored by their IDs.
+ * @property {boolean} running - Indicates if there are ongoing reactive updates.
+ * @property {Readonly<import('vue').Ref<boolean>>} [loading] - Indicates if the list is currently loading.
+ * @property {Readonly<import('vue').Ref<boolean>>} errored - Indicates if an error occurred during the last operation.
+ * @property {Readonly<import('vue').Ref<Error|null>>} error - The last error encountered.
+ * @property {ListOrder} order - The order of objects in the list.
+ * @property {ObjectsInOrder} objectsInOrder - The objects in the order specified by the list.
+ */
+
+/**
+ * Defines the reactive state used by the list instance.
+ *
+ * @typedef {import('vue').UnwrapNestedRefs<ListInstanceRawState>} ListInstanceState
+ */
+
+/**
+ * Defines the methods provided by the list instance for managing objects in the list.
+ *
+ * @typedef {object} ListInstanceFunctions
+ * @property {(newObjects: ListObject[]) => void} defaultPageCallback - Handles new or updated objects, respecting the keepOldPages setting.
+ * @property {(newObjects: ListObject[]) => void} pageCallback - Customizable callback for handling new objects per page.
+ * @property {(object: ListObject) => void} addListObject - Adds an object to the list.
+ * @property {(object: ListObject) => void} updateListObject - Updates an object in the list.
+ * @property {(objectId: string) => void} deleteListObject - Deletes an object from the list by ID.
+ * @property {() => void} clearList - Clears all objects and errors from the list.
+ * @property {() => string} getFakeId - Generates a unique fake ID for use within the list.
+ * @property {() => Promise<void>} list - Initiates a fetch to retrieve objects according to the CRUD configuration.
+ */
+
+/**
+ * Helper type to facilitate the combination of state and functions into a single type.
+ *
+ * @typedef {{state: ListInstanceState}} ListInstanceStateMixIn
+ */
+
+/**
+ * The list instance, combining state management and functional operations for managing a list of objects.
+ *
+ * @typedef {ListInstanceStateMixIn & ListInstanceFunctions} ListInstance
+ */
+
+/**
+ * Creates and manages multiple list instances.
+ *
+ * @param {{[key: string]: ListInstanceOptions}} listInstanceArgs - The arguments for each list instance.
+ * @returns {{[key: string]: ListInstance}} An object of list instances.
+ */
 export function useListInstances(listInstanceArgs) {
+    /** @type {{[key: string]: ListInstance}} */
     const instances = {};
     for (const [key, value] of Object.entries(listInstanceArgs)) {
         instances[key] = useListInstance(value);
@@ -43,54 +139,71 @@ export function useListInstances(listInstanceArgs) {
 }
 
 /**
- * A reactive object that manages a list of objects, as returned by `useListInstance`.
- * @typedef {object} ListInstanceState
- * @property {object} crud - the crud functions
- * @property {object} crud.args - the arguments passed to the crud functions
- * @property {Function} crud.list - the list function
- * @property {Function} crud.subscribe - the subscribe function
- * @property {object} retrieveArgs - the arguments passed to the server
- * @property {object} listArgs - the arguments passed to the server
- * @property {Map} objects - the objects in the list
- * @property {boolean} loading - true if the list is loading
- * @property {boolean} errored - true if the list has errored
- * @property {object} error - the error object
- * @property {Array} objectsInOrder - the objects in the list in order
- * @property {Array} order - the order of the objects in the list
- * @property {number} totalRecords - the total number of records
- * @property {number} totalPages - the total number of pages
- * @property {number} perPage - the number of records per page
- */
-
-/**
- * @typedef {object} ListInstance
- * @property {Function} list - subscribe to updates from the implementation
- * @property {Function} addListObject - add an object to the list
- * @property {Function} updateListObject - update an object in the list
- * @property {Function} deleteListObject - delete an object from the list
- * @property {Function} clearList - clear the list
- * @property {Function} clearError - clear the error
- * @property {Function} getFakeId - get a fake id
- * @property {Function} defaultPageCallback - the default page callback
- * @property {Function} pageCallback - the page callback
- * @property {ListInstanceState} state - the list instance state
- * @property {object} effectScope - a Vue effect scope
- */
-
-/**
- * `useListInstance` is a Vue composition function that manages a list of objects.
- * It has the ability to retrieve the list from an implementation, or subscribe to updates from an implementation.
- * It tracks the objects in the list, and their added order.
- * @param {ListInstanceOptions} options - the options used to create the list instance
- * @returns {ListInstance} - the list instance
+ * Creates and manages a reactive list of objects, providing utilities to add, update, delete, and fetch objects
+ *  according to the specified CRUD operations.
+ *
+ * @example
+ * ```vue
+ * <script setup>
+ * import { useListInstance } from "@arrai-innovations/reactive-helpers";
+ * import { reactive, toRef } from "vue";
+ *
+ * const props = defineProps({
+ *     // whatever props are required for your configured list instance
+ *     someListFilter: {
+ *         type: string,
+ *         default: "",
+ *     },
+ * });
+ *
+ * const listInstanceProps = reactive({
+ *     crudArgs: {
+ *         // whatever arguments are required for your configured list crud function to get the right endpoint
+ *     },
+ *     listArgs: {
+ *         // whatever arguments are required for your configured list function to get the right list
+ *         someListFilter: toRef(props, "someListFilter"),
+ *     },
+ *     retrieveArgs: {
+ *         // whatever arguments are required for your configured list function to get items back looking as expected
+ *     },
+ * });
+ * const listInstance = useListInstance({ props: listInstanceProps });
+ * watch(toRef(props, "someListFilter"), (newValue, oldValue) => {
+ *     if (newValue !== oldValue && !isEmpty(newValue)) {
+ *         listInstance.list();
+ *     }
+ * }, {
+ *    immediate: true,
+ *    deep: true,
+ * });
+ * </script>
+ * <template>
+ *     <ul>
+ *         <!-- reactive list of objects, re-retrieving the list as someListFilter changes. -->
+ *         <li v-for="obj in listInstance.state.objectsInOrder">
+ *             {{ obj }}
+ *         </li>
+ *     </ul>
+ * </template>
+ * ```
+ *
+ * @param {ListInstanceOptions} options - Specifies the configuration options for creating a list instance, including
+ *  properties for CRUD operations and UI behaviors like page persistence.
+ * @returns {ListInstance} The list instance.
+ * @throws {ListInstanceError} If the props are missing.
  */
 export function useListInstance({ props, functions = {}, keepOldPages = false }) {
     if (!props) {
-        throw new ListError(`useListInstance requires props`);
+        throw new ListInstanceError(`useListInstance requires props`, "missing-props");
     }
+
     // ### touching the _objectsMap or _objectsProxy directly will not trigger reactivity ###
     const _objectsMap = new Map(); // maps are ordered, if you don't clear lists, you need to insert pages in order.
+
     // ### touching the _objectsMap or _objectsProxy directly will not trigger reactivity ###
+    /** @type {{[key: string]: ListObject}} */
+    // @ts-ignore - we are using a proxy to make this map behave like an object for reactivity
     const _objectsProxy = new Proxy(_objectsMap, {
         get(target, prop) {
             return target.get(prop); // map's get not Reflect.get
@@ -128,6 +241,11 @@ export function useListInstance({ props, functions = {}, keepOldPages = false })
             return Object.prototype;
         },
     });
+
+    const loadingError = useLoadingError();
+    /** @type {import('vue').Ref<import('vue').Ref<ListObject>[]>} */
+    const objectsInOrderRefs = ref([]);
+
     // ### touching the _objectsMap or _objectsProxy directly will not trigger reactivity ###
     const state = reactive({
         crud: {
@@ -136,14 +254,16 @@ export function useListInstance({ props, functions = {}, keepOldPages = false })
         },
         retrieveArgs: toRef(props, "retrieveArgs"),
         listArgs: toRef(props, "listArgs"),
-        objects: _objectsProxy,
-        loading: undefined,
+        /** @type {{[key: string]: ListObject}} */
+        objects: /** @type {{[key: string]: ListObject}} */ _objectsProxy,
         running: false,
-        errored: false,
-        error: null,
-        order: [],
-        objectsInOrder: [],
-        objectsInOrderRefs: [],
+        loading: loadingError.loading,
+        errored: loadingError.errored,
+        error: loadingError.error,
+        /** @type {import('vue').ComputedRef<string[]>|undefined} */
+        order: undefined,
+        /** @type {import('vue').ComputedRef<ListObject[]>|undefined} */
+        objectsInOrder: undefined,
     });
     const es = effectScope();
 
@@ -164,6 +284,7 @@ export function useListInstance({ props, functions = {}, keepOldPages = false })
         });
     };
 
+    /** @type {{[key: string]: import('./cancellableIntent.js').CancellablePromise|null}} */
     const promises = {
         list: null,
     };
@@ -175,13 +296,15 @@ export function useListInstance({ props, functions = {}, keepOldPages = false })
             return promises.list;
         }
         if (state.loading) {
-            return Promise.reject(new ListError("already loading."));
+            return Promise.reject(new ListInstanceError("already loading.", "already-loading"));
         }
         let returnPromiseResolve;
-        promises.list = new Promise((resolve) => (returnPromiseResolve = resolve));
-        state.loading = true;
-        state.errored = false;
-        state.error = null;
+        // @ts-ignore - we are setting this in the promise
+        promises.list = /** @type {import('./cancellableIntent.js').CancellablePromise} */ new Promise(
+            (resolve) => (returnPromiseResolve = resolve)
+        );
+        loadingError.clearError();
+        loadingError.setLoading();
         const isCancelled = ref(false);
         const listPromise = state.crud.list({
             crudArgs: state.crud.args,
@@ -198,7 +321,7 @@ export function useListInstance({ props, functions = {}, keepOldPages = false })
                 if (promise) {
                     await promise;
                 }
-                state.loading = false;
+                loadingError.clearLoading();
             };
         }
         // the indirection of promises here is to allow us to do additional work on listPromise's cancel
@@ -207,11 +330,10 @@ export function useListInstance({ props, functions = {}, keepOldPages = false })
                 resolveState = true;
             })
             .catch((error) => {
-                state.errored = true;
-                state.error = error;
+                loadingError.setError(error);
             })
             .finally(() => {
-                state.loading = false;
+                loadingError.clearLoading();
                 returnPromiseResolve(resolveState);
                 promises.list = null;
             });
@@ -220,10 +342,13 @@ export function useListInstance({ props, functions = {}, keepOldPages = false })
 
     function addListObject(object) {
         if (!object.id) {
-            throw new ListError(`addListObject: object missing id.\n${inspect(object)}`, "missing-id");
+            throw new ListInstanceError(`addListObject: object missing id.\n${inspect(object)}`, "missing-id");
         }
         if (object.id in state.objects) {
-            throw new ListError(`addListObject: list already has object for id: ${inspect(object.id)}`, "duplicate-id");
+            throw new ListInstanceError(
+                `addListObject: list already has object for id: ${inspect(object.id)}`,
+                "duplicate-id"
+            );
         }
         state.objects[object.id] = object;
         if (!state.running) {
@@ -233,10 +358,10 @@ export function useListInstance({ props, functions = {}, keepOldPages = false })
 
     function updateListObject(object) {
         if (!object.id) {
-            throw new ListError(`updateListObject: object missing id.\n${inspect(object)}`, "missing-id");
+            throw new ListInstanceError(`updateListObject: object missing id.\n${inspect(object)}`, "missing-id");
         }
         if (!(object.id in state.objects)) {
-            throw new ListError(
+            throw new ListInstanceError(
                 `updateListObject: list missing object for update by id: ${inspect(object.id)}`,
                 "missing-object"
             );
@@ -249,7 +374,7 @@ export function useListInstance({ props, functions = {}, keepOldPages = false })
 
     function deleteListObject(objectId) {
         if (!(objectId in state.objects)) {
-            throw new ListError(
+            throw new ListInstanceError(
                 `deleteListObject: list missing object for removal by id: ${inspect(objectId)}`,
                 "missing-object"
             );
@@ -262,36 +387,32 @@ export function useListInstance({ props, functions = {}, keepOldPages = false })
 
     function clearList() {
         assignReactiveObject(state.objects, {});
-        clearError();
+        loadingError.clearError();
     }
 
     function ourGetFakeId() {
         return getFakeId(state.objects);
     }
 
-    function clearError() {
-        state.errored = false;
-        state.error = null;
-    }
-
     es.run(() => {
         watch(
             toRef(state, "objects"),
             () => {
-                assignReactiveObject(
-                    state.objectsInOrderRefs,
-                    Object.keys(state.objects).map((id) => toRef(state.objects, id))
-                );
-                if (state.running) {
-                    state.running = false;
-                }
+                objectsInOrderRefs.value = Object.values(state.objects).map((object) => ref(object));
+                nextTick(() => {
+                    if (state.running) {
+                        state.running = false;
+                    }
+                });
             },
             {
                 immediate: true,
                 deep: true,
             }
         );
-        state.objectsInOrder = computed(() => state.objectsInOrderRefs.map((ref) => unref(ref)));
+        // @ts-ignore - we want the computed in the explicit effect scope, tsc is mad that we are 'changing' the type
+        state.objectsInOrder = computed(() => objectsInOrderRefs.value.map((ref) => unref(ref)));
+        // @ts-ignore - we want the computed in the explicit effect scope, tsc is mad that we are 'changing' the type
         state.order = computed(() => Object.keys(state.objects));
     });
 
@@ -302,7 +423,7 @@ export function useListInstance({ props, functions = {}, keepOldPages = false })
         updateListObject,
         deleteListObject,
         clearList,
-        clearError,
+        clearError: loadingError.clearError,
         getFakeId: ourGetFakeId,
         defaultPageCallback,
         pageCallback: defaultPageCallback,

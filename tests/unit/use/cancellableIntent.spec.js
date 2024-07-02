@@ -15,6 +15,7 @@ describe("use/cancellableIntent", () => {
     });
     it("should throw an error if awaitableWithCancel is not provided", () => {
         expect(() => {
+            // @ts-ignore - we're testing the error case
             useCancellableIntent({});
         }).toThrow("awaitableWithCancel is required");
     });
@@ -22,6 +23,7 @@ describe("use/cancellableIntent", () => {
     it("should throw an error if awaitableWithCancel is not a function", () => {
         expect(() => {
             useCancellableIntent({
+                // @ts-ignore - we're testing the error case
                 awaitableWithCancel: "not a function",
             });
         }).toThrow("awaitableWithCancel must be a function");

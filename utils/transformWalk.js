@@ -2,12 +2,18 @@ import isSet from "lodash-es/isSet.js";
 
 /**
  * Object walking utility.
- * @module utils/transformWalk
+ *
+ * @module utils/transformWalk.js
  */
 
 /**
  * Recursively walks through an object's values and applies a transformation function to each value.
  * The value recursed into is the transformed value, not the original value.
+ *
+ * @param {object} obj - The object to start walking from.
+ * @param {Function} transformFn - The function to transform each value.
+ * @param {string} path - The path to the current value.
+ * @returns {object} The transformed object.
  * @example
  *
  * const obj = {
@@ -31,11 +37,6 @@ import isSet from "lodash-es/isSet.js";
  * //     d: [3, 4, { e: 10 }]
  * //   }
  * // }
- * @function transformWalk
- * @param {*} obj The object to start walking from.
- * @param {Function} transformFn The function to transform each value.
- * @param {string} path The path to the current value.
- * @returns {*} The transformed initial value.
  */
 export const transformWalk = (obj, transformFn, path = "") => {
     if (typeof obj !== "object" || obj === null || isSet(obj)) {

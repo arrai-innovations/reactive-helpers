@@ -5,18 +5,18 @@ import { deepUnref } from "vue-deepunref";
 describe("use/listSearch", () => {
     let useListInstance, useListSearch, useListSearches, useListSort, useListRelated, useListCalculated, useListFilter;
     beforeEach(async () => {
-        const listInstanceModule = await import("../../../use/listInstance");
+        const listInstanceModule = await import("../../../use/listInstance.js");
         useListInstance = listInstanceModule.useListInstance;
-        const listSearchModule = await import("../../../use/listSearch");
+        const listSearchModule = await import("../../../use/listSearch.js");
         useListSearch = listSearchModule.useListSearch;
         useListSearches = listSearchModule.useListSearches;
-        const listSortModule = await import("../../../use/listSort");
+        const listSortModule = await import("../../../use/listSort.js");
         useListSort = listSortModule.useListSort;
-        const listRelatedModule = await import("../../../use/listRelated");
+        const listRelatedModule = await import("../../../use/listRelated.js");
         useListRelated = listRelatedModule.useListRelated;
-        const listCalculatedModule = await import("../../../use/listCalculated");
+        const listCalculatedModule = await import("../../../use/listCalculated.js");
         useListCalculated = listCalculatedModule.useListCalculated;
-        const listFilterModule = await import("../../../use/listFilter");
+        const listFilterModule = await import("../../../use/listFilter.js");
         useListFilter = listFilterModule.useListFilter;
     });
     it("should match by search term", async () => {
@@ -191,6 +191,7 @@ describe("use/listSearch", () => {
             });
             const listSearchArgs = {
                 A: {
+                    parentState: listInstanceA.state,
                     props: reactive({
                         textSearchRules: ["name"],
                         textSearchValue: textSearchValueA,
@@ -204,6 +205,7 @@ describe("use/listSearch", () => {
                     throttle: 20,
                 },
                 B: {
+                    parentState: listInstanceB.state,
                     props: reactive({
                         textSearchRules: ["code"],
                         textSearchValue: textSearchValueB,
@@ -221,7 +223,7 @@ describe("use/listSearch", () => {
                 A: listInstanceA,
                 B: listInstanceB,
             };
-            const listSearches = useListSearches(listSearchArgs, listInstances);
+            const listSearches = useListSearches(listSearchArgs);
 
             expect(unref(listSearches.A.state.textSearchRules)).toEqual(unref(listSearchA.state.textSearchRules));
             expect(unref(listSearches.B.state.textSearchRules)).toEqual(unref(listSearchB.state.textSearchRules));

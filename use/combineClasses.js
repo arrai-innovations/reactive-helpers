@@ -3,46 +3,56 @@ import cloneDeep from "lodash-es/cloneDeep.js";
 import { isRef, ref, watch, isReactive } from "vue";
 
 /**
- * @typedef {*} Ref A Vue ref
+ * Vue Composition API composable function for combining CSS classes.
+ *
+ * @module use/combineClasses.js
+ */
+
+/**
  * @private
+ * @param {any} v - The value to check.
+ * @returns {boolean} - Whether the value is a ref or reactive.
  */
-
-/**
- * @typedef {string} CSSString A string representing a CSS class or a space-separated list of CSS classes.
- * @typedef {CSSString|CSSString[]} CSSClassNames An array of CSS string(s) or a single CSS string.
- * @typedef {boolean|Ref<boolean>} CSSValue A truthy value or a reference to a truthy value, indicating whether to apply a CSS class, or unapply it if already applied.
- */
-/* eslint-disable jsdoc/check-types */
-// types valid for jsdoc-to-markdown, which uses the strict jsdoc.app. Object shorthand syntax doesn't work.
-/**
- * @typedef {Object.<CSSString, CSSValue>} CSSObject A CSS object where keys are CSS classes and values are booleans indicating whether to apply the class.
- */
-/* eslint-enable jsdoc/check-types */
-/**
- * A mixed array containing multiple ways of specifying CSS classes.
- * @typedef {Array<
- *   CSSClassNames,
- *   CSSString[],
- *   CSSString,
- *   CSSObject,
- *   Ref<CSSClassNames>,
- *   Ref<CSSString[]>,
- *   Ref<CSSString>,
- *   Ref<CSSClassNames>
- * >} CSSClasses
- */
-/**
- * @typedef {CSSString|CSSObject} CSSStringOrObject The amalgamated classes as returned by `objectifyClasses` & `combineClasses`.
- */
-
 const isRefOrReactive = (v) => isRef(v) || isReactive(v);
 
 /**
- * @param {CSSClasses} classes A mixed array containing multiple ways of specifying CSS classes. Non-ref values are cloned.
- * @returns {Ref<CSSStringOrObject>} A Vue ref pointing to the amalgamated CSS string or object.
+ * Normalize various ways of specifying CSS classes into an object for use in Vue.js with reactivity. If refs are
+ *  present, the resulting object will be a ref containing an array of objects to preserve order of operations in
+ *  reactive contexts.
+ *
+ * @example
+ * ```vue
+ * <script setup>
+ * import { useCombineClasses } from "@vueda/use/combineClasses.js";
+ * import { ref } from "vue";
+ * const myClasses = useCombineClasses(
+ *     "class1",
+ *     ["class2", "class3"],
+ *     { class4: true, class5: false },
+ *     ref("class6"),
+ *     ref(["class7", "class8"]),
+ *     ref({ class9: true, class10: false }),
+ * );
+ * // myClasses.value = [
+ * //     { class1: true, class2: true, class3: true, class4: true, class5: false },
+ * //     { class6: true, class7: true, class8: true, class9: true, class10: false }
+ * // ]
+ * </script>
+ * ```
+ *
+ * @param {...(
+ *     string |
+ *     string[] |
+ *     { [key: string]: boolean | import("vue").Ref<boolean> } |
+ *     import("vue").Ref<string | string[]>
+ * )} classes - A mixed array containing multiple ways of specifying CSS classes.
+ * @returns {import("vue").Ref<import('../utils/classes.js').CombinedClasses>} - A ref
+ *  containing an object or array of objects containing CSS classes. Arrays are used if refs are present, to
+ *  preserve order of operations in reactive contexts.
  */
 export function useCombineClasses(...classes) {
-    const classesComputed = ref();
+    /** @type {import("vue").Ref<import('../utils/classes.js').CombinedClasses>} */
+    const classesComputed = ref(null);
     const reactiveValues = classes.filter((c) => isRefOrReactive(c));
     // cloneDeep any non-reactive values, but maintain order
     const myClasses = classes.map((c) => (isRefOrReactive(c) ? c : cloneDeep(c)));

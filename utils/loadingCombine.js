@@ -1,8 +1,11 @@
+/**
+ * Combine multiple loading states into a single loading state. If any are loading, the combined state is loading.
+ * If all are undefined, the combined state is undefined. Otherwise, the combined state is not loading.
+ *
+ * @param  {...(boolean | undefined)} loadingStates -  The loading states to combine.
+ * @returns {boolean | undefined} The combined loading state.
+ */
 export function loadingCombine(...loadingStates) {
-    // loadingStates is an array of booleans or undefined
-    // if any true, return true
-    // if all undefined, return undefined
-    // otherwise return false (all false)
     if (loadingStates.some((loadingState) => loadingState === true)) {
         return true;
     }

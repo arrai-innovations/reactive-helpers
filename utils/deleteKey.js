@@ -14,6 +14,13 @@ function toKey(value) {
     return result == "0" && 1 / value == -(1 / 0) ? "-0" : result;
 }
 
+/**
+ * Split a string into an array of keys.
+ *
+ * @param {string} string - The string to split.
+ * @param {object} object - The object to split keys for.
+ * @returns {string[]} Returns the new array of split keys.
+ */
 export function lodashLikePathSplit(string, object) {
     if (isArray(string)) {
         return string;
@@ -25,14 +32,20 @@ export function lodashLikePathSplit(string, object) {
     if (string.charCodeAt(0) === 46 /* . */) {
         result.push("");
     }
+    // @ts-ignore - based on lodash-es/_stringToPath
     string.replace(rePropName, function (match, number, quote, subString) {
         result.push(quote ? subString.replace(reEscapeChar, "$1") : number || match);
     });
     return result;
 }
 
+/**
+ * Delete a key from an object. Lodash-like delete function, as companion for get/set.
+ *
+ * @param {object} obj - The object to modify.
+ * @param {string} path - The key to delete.
+ */
 export function del(obj, path) {
-    // lodash-like delete function, as companion for get/set
     if (!obj) {
         return;
     }

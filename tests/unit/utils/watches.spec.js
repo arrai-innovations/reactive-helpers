@@ -5,7 +5,7 @@ import {
     AwaitTimeoutError,
     doAwaitTimeout,
     ImmediateStopWatch,
-} from "../../../utils/index.js";
+} from "../../../utils/watches.js";
 import { nextTick, reactive, toRef } from "vue";
 
 describe("utils/watches", () => {
@@ -32,7 +32,7 @@ describe("utils/watches", () => {
         });
         it("rejects the promise when stopped manually", async () => {
             timeout = 1000;
-            const awaitTimeout = new AwaitTimeout(timeout);
+            const awaitTimeout = new AwaitTimeout({ timeout });
             awaitTimeout.start();
             setTimeout(() => awaitTimeout.stop(), timeout / 2);
             await expect(awaitTimeout.promise).rejects.toThrow(AwaitTimeoutError);
@@ -225,7 +225,7 @@ describe("utils/watches", () => {
     });
     describe("ImmediateStopWatch", () => {
         it("responds to multiple calls", async () => {
-            const immediateStopWatch = new ImmediateStopWatch({});
+            const immediateStopWatch = new ImmediateStopWatch();
             reactiveObject.prop = true;
             const watchSources = () => reactiveObject.prop;
             const watchFunc = vi.fn();
@@ -247,7 +247,7 @@ describe("utils/watches", () => {
             expect(watchFunc).toHaveBeenCalledTimes(6);
         });
         it("stops when expected", async () => {
-            const immediateStopWatch = new ImmediateStopWatch({});
+            const immediateStopWatch = new ImmediateStopWatch();
             reactiveObject.prop = true;
             const watchSources = () => reactiveObject.prop;
             const watchFunc = vi.fn((newValue) => {

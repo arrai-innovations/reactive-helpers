@@ -1,0 +1,75 @@
+[**@arrai-innovations/reactive-helpers**](../README.md) • **Docs**
+
+***
+
+[@arrai-innovations/reactive-helpers](../README.md) / utils/relatedCalculatedHelpers
+
+# utils/relatedCalculatedHelpers
+
+## Variables
+
+### calculatedItemRegex
+
+> `const` **calculatedItemRegex**: `RegExp`
+
+***
+
+### relatedItemRegex
+
+> `const` **relatedItemRegex**: `RegExp`
+
+## Functions
+
+### getObjectRelatedByKey()
+
+> **getObjectRelatedByKey**(`obj`, `relatedObj`, `key`): [`any`, `string`]
+
+#### Parameters
+
+• **obj**: `any`
+
+The object to get the related item from.
+
+• **relatedObj**: `any`
+
+The object to get the related item from.
+
+• **key**: `string`
+
+The key to get the related item from.
+
+#### Returns
+
+[`any`, `string`]
+
+The object and key of the related item.
+
+***
+
+### getObjectRelatedCalculatedByKey()
+
+> **getObjectRelatedCalculatedByKey**(`obj`, `relatedObj`, `calculatedObj`, `key`): [`any`, `string`]
+
+#### Parameters
+
+• **obj**: `any`
+
+The object to get the calculated item from.
+
+• **relatedObj**: `any`
+
+The object to get the related item from.
+
+• **calculatedObj**: `any`
+
+The object to get the calculated item from.
+
+• **key**: `string`
+
+The key to get the calculated item from.
+
+#### Returns
+
+[`any`, `string`]
+
+The object and key of the calculated item.

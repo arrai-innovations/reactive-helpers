@@ -1,5 +1,5 @@
-import { doAwaitNot, doAwaitTimeout } from "../../../utils/index.js";
-import { reactive, ref } from "vue";
+import { doAwaitNot, doAwaitTimeout } from "../../../utils/watches.js";
+import { isReactive, isRef, nextTick, reactive, ref, toRef, watch } from "vue";
 import { deepUnref } from "vue-deepunref";
 
 describe("use/useListSort", () => {
@@ -41,32 +41,40 @@ describe("use/useListSort", () => {
         },
     ];
     beforeEach(async () => {
-        const imported = await import("../../../use");
-        useListInstance = imported.useListInstance;
-        useListInstances = imported.useListInstances;
-        useListRelated = imported.useListRelated;
-        useListCalculated = imported.useListCalculated;
-        useListFilter = imported.useListFilter;
+        const importedInstanceModule = await import("../../../use/listInstance.js");
+        const importedRelatedModule = await import("../../../use/listRelated.js");
+        const importedCalculatedModule = await import("../../../use/listCalculated.js");
+        const importedFilterModule = await import("../../../use/listFilter.js");
+        const importedSortModule = await import("../../../use/listSort.js");
+        useListInstance = importedInstanceModule.useListInstance;
+        useListInstances = importedInstanceModule.useListInstances;
+        useListRelated = importedRelatedModule.useListRelated;
+        useListCalculated = importedCalculatedModule.useListCalculated;
+        useListFilter = importedFilterModule.useListFilter;
         orderByRules = [
             { key: "organization", desc: true, localeCompare: false },
             { key: "lexical_name", desc: false, localeCompare: true },
         ];
         listInstance = useListInstance({
             props: {
+                crudArgs: {},
                 retrieveArgs: {
                     fields: ["id", "lexical_name", "organization", "relatedObjects"],
                 },
+                listArgs: {},
             },
         });
-        useListSort = imported.useListSort;
-        useListSorts = imported.useListSorts;
-        setListSortDefaultOptions = imported.setListSortDefaultOptions;
+        useListSort = importedSortModule.useListSort;
+        useListSorts = importedSortModule.useListSorts;
+        setListSortDefaultOptions = importedSortModule.setListSortDefaultOptions;
         setListSortDefaultOptions({
             sortThrottleWait: 0,
         });
     });
 
-    afterEach(() => vi.resetAllMocks());
+    afterEach(() => {
+        vi.resetAllMocks();
+    });
 
     const waitForListSort = async (listSort) => {
         await doAwaitNot({
@@ -204,17 +212,16 @@ describe("use/useListSort", () => {
                 },
             },
         });
-        const listSorts = useListSorts(
-            {
-                A: {
-                    orderByRules,
-                },
-                B: {
-                    orderByRules,
-                },
+        const listSorts = useListSorts({
+            A: {
+                parentState: listInstances.A.state,
+                orderByRules,
             },
-            listInstances
-        );
+            B: {
+                parentState: listInstances.B.state,
+                orderByRules,
+            },
+        });
         expect(deepUnref(listSorts.A.parentState)).toEqual(deepUnref(listInstanceA.state));
         expect(deepUnref(listSorts.B.parentState)).toEqual(deepUnref(listInstanceB.state));
         expect(deepUnref(listSorts.A.state)).toEqual(deepUnref(listSortA.state));

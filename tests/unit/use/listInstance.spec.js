@@ -1,4 +1,4 @@
-import { doAwaitNot } from "../../../utils/index.js";
+import { doAwaitNot } from "../../../utils/watches.js";
 import { expectErrorToBeNull } from "../expectHelpers.js";
 import flushPromises from "flush-promises";
 import keyBy from "lodash-es/keyBy.js";
@@ -11,18 +11,19 @@ afterAll(() => {
 
 const fields = ["id", "__str__", "name"];
 describe("use/listInstance.spec.js", function () {
-    let useListInstance, ListError, useListInstances, globalList;
+    let useListInstance, ListInstanceError, useListInstances, globalList;
     beforeEach(async () => {
         const listCrud = await import("../../../config/listCrud.js");
-        const imported = await import("../../../use/listInstance");
+        const imported = await import("../../../use/listInstance.js");
         globalList = vi.fn();
+        // @ts-ignore
         globalList.cancel = vi.fn();
         listCrud.setListCrud({
             list: globalList,
             args: { stream: "test_stream" },
         });
         useListInstance = imported.useListInstance;
-        ListError = imported.ListError;
+        ListInstanceError = imported.ListInstanceError;
         useListInstances = imported.useListInstances;
     });
     afterEach(function () {
@@ -102,6 +103,7 @@ describe("use/listInstance.spec.js", function () {
 
             await nextTick();
 
+            // @ts-ignore - pageCallback is set in the mock, if not it will throw which is what we want
             passedPageCallback(crudListResolvedPage1);
 
             expectErrorToBeNull(listInstance.state.error);
@@ -109,12 +111,14 @@ describe("use/listInstance.spec.js", function () {
             expect(listInstance.state.loading).toBe(true);
             expect({ ...listInstance.state.objects }).toEqual(crudListResolvedObjects1);
 
+            // @ts-ignore - pageCallback is set in the mock, if not it will throw which is what we want
             passedPageCallback(crudListResolvedPage2);
             expectErrorToBeNull(listInstance.state.error);
             expect(listInstance.state.errored).toBe(false);
             expect(listInstance.state.loading).toBe(true);
             expect({ ...listInstance.state.objects }).toEqual(crudListResolvedObjects2);
 
+            // @ts-ignore - crudListResolve is set in a promise, since we await this will be set
             crudListResolve();
             await flushPromises();
 
@@ -196,6 +200,7 @@ describe("use/listInstance.spec.js", function () {
             await nextTick();
 
             const rejected = new Error("Test Error");
+            // @ts-ignore - crudListReject is set in a promise, since we await this will be set
             crudListReject(rejected);
             await flushPromises();
 
@@ -248,6 +253,7 @@ describe("use/listInstance.spec.js", function () {
 
             await nextTick();
 
+            // @ts-ignore - pageCallback is set in the mock, if not it will throw which is what we want
             passedPageCallback(crudListResolvedPage1);
 
             expectErrorToBeNull(listInstance.state.error);
@@ -255,6 +261,7 @@ describe("use/listInstance.spec.js", function () {
             expect(listInstance.state.loading).toBe(true);
             expect({ ...listInstance.state.objects }).toEqual(crudListResolvedObjects1);
 
+            // @ts-ignore - pageCallback is set in the mock, if not it will throw which is what we want
             passedPageCallback(crudListResolvedPage2);
 
             expectErrorToBeNull(listInstance.state.error);
@@ -262,6 +269,7 @@ describe("use/listInstance.spec.js", function () {
             expect(listInstance.state.loading).toBe(true);
             expect({ ...listInstance.state.objects }).toEqual(crudListResolvedObjects2);
 
+            // @ts-ignore - crudListResolve is set in a promise, since we await this will be set
             crudListResolve();
             await flushPromises();
 
@@ -303,8 +311,11 @@ describe("use/listInstance.spec.js", function () {
                 return crudListPromise;
             });
             const liListResolve = listInstance.list();
+            // @ts-ignore - pageCallback is set in the mock, if not it will throw which is what we want
             passedPageCallback(crudListResolvedPage1);
+            // @ts-ignore - crudListResolve is set in a promise, since we await this will be set
             passedPageCallback(crudListResolvedPage2);
+            // @ts-ignore - crudListResolve is set in a promise, since we await this will be set
             crudListResolve();
             await flushPromises();
 
@@ -382,10 +393,10 @@ describe("use/listInstance.spec.js", function () {
     describe("addListObject", function () {
         it("errored", function () {
             const listInstance = useListInstance({ props: {} });
-            expect(() => listInstance.addListObject({ listObject })).toThrowError(ListError);
+            expect(() => listInstance.addListObject({ listObject })).toThrowError(ListInstanceError);
             listObject.id = listInstance.getFakeId();
             listInstance.addListObject(listObject);
-            expect(() => listInstance.addListObject({ listObject })).toThrowError(ListError);
+            expect(() => listInstance.addListObject({ listObject })).toThrowError(ListInstanceError);
         });
         it("succeeded", async function () {
             const listInstance = useListInstance({ props: {} });
@@ -412,10 +423,10 @@ describe("use/listInstance.spec.js", function () {
     describe("updateListObject", function () {
         it("errors", function () {
             const listInstance = useListInstance({ props: {} });
-            expect(() => listInstance.updateListObject({ listObject })).toThrowError(ListError);
+            expect(() => listInstance.updateListObject({ listObject })).toThrowError(ListInstanceError);
             listObject.id = -50002000;
             listInstance.addListObject(listObject);
-            expect(() => listInstance.updateListObject({ listObject })).toThrowError(ListError);
+            expect(() => listInstance.updateListObject({ listObject })).toThrowError(ListInstanceError);
         });
         it("succeeds", async function () {
             const listInstance = useListInstance({
@@ -433,7 +444,9 @@ describe("use/listInstance.spec.js", function () {
 
             listInstance.list();
 
+            // @ts-ignore: pageCallback is set in the mock, if not it will throw which is what we want
             passedPageCallback(crudListResolvedPage1);
+            // @ts-ignore: crudListResolve is set in a promise, since we await this will be set
             crudListResolve();
 
             await doAwaitNot({
@@ -456,7 +469,7 @@ describe("use/listInstance.spec.js", function () {
     describe("deleteListObject", function () {
         it("errors", function () {
             const listInstance = useListInstance({ props: {} });
-            expect(() => listInstance.deleteListObject(-50002000)).toThrowError(ListError);
+            expect(() => listInstance.deleteListObject(-50002000)).toThrowError(ListInstanceError);
         });
         it("succeeds", async function () {
             const listInstance = useListInstance({
@@ -474,7 +487,9 @@ describe("use/listInstance.spec.js", function () {
 
             listInstance.list();
 
+            // @ts-ignore: pageCallback is set in the mock, if not it will throw which is what we want
             passedPageCallback(crudListResolvedPage1);
+            // @ts-ignore: crudListResolve is set in a promise, since we await this will be set
             crudListResolve();
 
             await doAwaitNot({
@@ -484,11 +499,7 @@ describe("use/listInstance.spec.js", function () {
 
             listInstance.deleteListObject(1);
             expect(listInstance.state.objects["1"]).toBeUndefined();
-            expect(listInstance.state.objectsInOrder).toStrictEqual([
-                undefined,
-                crudListResolvedObjects1["2"],
-                crudListResolvedObjects1["3"],
-            ]);
+            // objectsInOrderRefs is not updated until the next tick
             // order updates immediately due to not being proxied through objectsInOrderRefs
             expect(listInstance.state.order).toStrictEqual(["2", "3"]);
             await doAwaitNot({
@@ -546,7 +557,9 @@ describe("use/listInstance.spec.js", function () {
 
         listInstance.list();
 
+        // @ts-ignore: pageCallback is set in the mock, if not it will throw which is what we want
         passedPageCallback(crudListResolvedPage3);
+        // @ts-ignore: crudListResolve is set in a promise, since we await this will be set
         crudListResolve();
         await doAwaitNot({
             obj: listInstance.state,
@@ -571,6 +584,8 @@ describe("use/listInstance.spec.js", function () {
             let myListFnCancelResolve, passedIsCancelled;
             const myListFn = vi.fn().mockImplementation(({ isCancelled }) => {
                 passedIsCancelled = isCancelled;
+                /** @type {import('../../../use/cancellableIntent.js').CancellablePromise} */
+                // @ts-ignore - we will set cancel on the next line
                 const promise = new Promise(() => {});
                 promise.cancel = async () => {
                     await new Promise((resolve) => {
@@ -591,14 +606,17 @@ describe("use/listInstance.spec.js", function () {
             expect(passedIsCancelled).toBeTruthy();
             expect(isRef(passedIsCancelled)).toBe(true);
             expect(isReadonly(passedIsCancelled)).toBe(true);
+            // @ts-ignore: we already asserted that passedIsCancelled is truthy and a ref, so it won't be undefined
             expect(passedIsCancelled.value).toBe(false);
             expect(cancelablePromise.cancel).toBeTruthy();
             expect(listInstance.state.loading).toBe(true);
 
             const cancelPromise = cancelablePromise.cancel();
+            // @ts-ignore - this should be set this in the promise
             myListFnCancelResolve();
             await cancelPromise;
 
+            // @ts-ignore: we already asserted that passedIsCancelled is truthy and a ref, so it won't be undefined
             expect(passedIsCancelled.value).toBe(true);
             expect(listInstance.state.loading).toBe(false);
         });

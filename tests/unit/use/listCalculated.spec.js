@@ -4,11 +4,12 @@ import { deepUnref } from "vue-deepunref";
 describe("use/listCalculated", () => {
     let useListInstance, useListCalculated, useListRelated, AwaitNot;
     beforeEach(async () => {
-        const listInstanceModule = await import("../../../use/listInstance");
+        const listInstanceModule = await import("../../../use/listInstance.js");
         useListInstance = listInstanceModule.useListInstance;
-        const listCalculatedModule = await import("../../../use/listCalculated");
+        const listCalculatedModule = await import("../../../use/listCalculated.js");
         useListCalculated = listCalculatedModule.useListCalculated;
-        const listRelatedModule = await import("../../../use/listRelated");
+        // todo: no useListCalculateds test yet
+        const listRelatedModule = await import("../../../use/listRelated.js");
         useListRelated = listRelatedModule.useListRelated;
         const watchesModule = await import("../../../utils/watches.js");
         AwaitNot = watchesModule.AwaitNot;

@@ -14,7 +14,7 @@ Vue.js 3 utility composition functions to help manipulate objects and lists.
 - [Install](#install)
 - [Usage](#usage)
   - [Import](#import)
-  - [JSDocs](#jsdocs)
+  - [Documentation](#documentation)
   - [List](#list)
     - [Instance](#instance)
     - [Subscription](#subscription)
@@ -55,11 +55,9 @@ import { useListInstance } from "@arrai-innovations/reactive-helpers/use/listIns
 import { useObjectInstance } from "@arrai-innovations/reactive-helpers/use";
 ```
 
-See the [JSDocs](./docs.md) for list of available modules and imports.
+### Documentation
 
-### JSDocs
-
-[View the JSDocs](./docs.md)
+See the [generated documentation](./docs/README.md) for list of available modules and imports.
 
 ### List
 
@@ -587,7 +585,10 @@ setObjectCrud({
 ```js
 // similar to list, but for a single object.
 import {
-    useObjectInstance, useObjectSubscription, useObjectRelated, useObjectCalculated
+    useObjectInstance,
+    useObjectSubscription,
+    useObjectRelated,
+    useObjectCalculated,
 } from "@arrai-innovations/reactive-helpers";
 
 const contactObject = useObjectInstance({
@@ -599,12 +600,12 @@ const contactObject = useObjectInstance({
             fields: ["id", "has_name", "lexical_name", "organization", "phone"],
         },
         id: contactId,
-    }
+    },
 });
 console.log(contactObject.state.object);
 const contactSubscription = useObjectSubscription({
     objectInstance: contactObject,
-})
+});
 // or
 const contactSubscription = useObjectSubscription({
     props: {
@@ -615,7 +616,7 @@ const contactSubscription = useObjectSubscription({
             fields: ["id", "has_name", "lexical_name", "organization", "phone"],
         },
         id: contactId,
-    }
+    },
 });
 console.log(contactSubscription.state.object);
 const organizations = useList({
@@ -626,7 +627,7 @@ const organizations = useList({
         retrieveArgs: {
             fields: ["id", "name"],
         },
-    }
+    },
 });
 await organizations.list();
 const contactRelated = useObjectRelated({

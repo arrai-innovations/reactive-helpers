@@ -4,44 +4,53 @@ import isArray from "lodash-es/isArray.js";
 import isObject from "lodash-es/isObject.js";
 import isObjectLike from "lodash-es/isObjectLike.js";
 import { isReactive, isRef, toRef, unref } from "vue";
+import isSet from "lodash-es/isSet.js";
 
 /**
- * Reactive object assignment utilities
- * @module utils/assignReactiveObject
+ * Reactive object assignment utilities.
+ *
+ * @module utils/assignReactiveObject.js
  */
 
+/**
+ * Error thrown when an invalid value is passed to a function.
+ */
 export class AssignReactiveObjectError extends Error {
-    constructor(message) {
+    /**
+     * @param {string} message - The error message.
+     * @param {string} code - The error code.
+     */
+    constructor(message, code) {
         super(message);
         this.name = "AssignReactiveObjectError";
+        this.code = code;
     }
 }
 
 /**
- * @typedef {*} Ref A Vue ref
- * @private
- */
-
-/**
- * @typedef {Ref|object|Array} ValidTargetOrSource targets and sources must be refs, objects, or arrays
+ * @typedef {import("vue").Ref<object | any[]> | object | any[]} ValidTargetOrSource targets and sources must be refs, objects, or arrays
  * and refs must ultimately resolve to objects or arrays
  */
 
 /**
  * Validates that a value is an array or an object, and throws an error if it is not.
+ *
  * @private
- * @param {string} key The key being validated.
- * @param {*} value The value being validated.
+ * @param {string} key - The key being validated.
+ * @param {*} value - The value being validated.
  * @throws {AssignReactiveObjectError} If the value is not an array or an object.
  */
 function isArrayOrObject(key, value) {
     if (!(isArray(value) || isObject(value))) {
-        throw new AssignReactiveObjectError(`${key} must be an object or an array, not ${inspect(value)}`);
+        throw new AssignReactiveObjectError(
+            `${key} must be an object or an array, not ${inspect(value)}`,
+            "invalid-type"
+        );
     }
 }
 
 /**
- * @typedef validateTargetAndSourceResult
+ * @typedef {object} validateTargetAndSourceResult
  * @private
  * @property {ValidTargetOrSource} target The validated target value.
  * @property {ValidTargetOrSource} source The validated source value.
@@ -50,9 +59,10 @@ function isArrayOrObject(key, value) {
 /**
  * Validates that the target and source values are arrays or objects, and returns them.
  * If either value is a ref, it is dereferenced before validation.
+ *
  * @private
- * @param {ValidTargetOrSource} target The target value to validate.
- * @param {ValidTargetOrSource} source The source value to validate.
+ * @param {ValidTargetOrSource} target - The target value to validate.
+ * @param {ValidTargetOrSource} source - The source value to validate.
  * @returns {validateTargetAndSourceResult} An object containing the validated target and source values.
  * @throws {AssignReactiveObjectError} If either value is not an array or an object.
  */
@@ -75,11 +85,12 @@ function validateTargetAndSource(target, source) {
 /**
  * Replaces keys in a target object or array with reactive refs to the corresponding keys in a
  * source object or array.
+ *
  * @private
- * @param {ValidTargetOrSource} target The object receiving values.
- * @param {ValidTargetOrSource} source The object providing values.
- * @param {Array} keys The keys to replace.
- * @param {Array} [exclude] Keys to exclude from replacement.
+ * @param {ValidTargetOrSource} target - The object receiving values.
+ * @param {ValidTargetOrSource} source - The object providing values.
+ * @param {Array|Set} keys - The keys to replace.
+ * @param {Array} [exclude] - Keys to exclude from replacement.
  * @returns {boolean} True if any keys were replaced, false otherwise.
  * @throws {AssignReactiveObjectError} If either target or source are not ultimately objects or arrays.
  */
@@ -113,11 +124,11 @@ function reactiveReplaceKeys(target, source, keys, exclude) {
 
 /**
  * Adds to a target the missing keys from a source. `addedKeys` can be precalculated to avoid recalculation.
- * @function addReactiveObject
- * @param {ValidTargetOrSource} target The object receiving values.
- * @param {ValidTargetOrSource} source The object providing values.
- * @param {Array} [exclude] Keys to exclude from the addition.
- * @param {Array} [addedKeys] Precaulcated array of keys to add, if available. Otherwise, the
+ *
+ * @param {ValidTargetOrSource} target - The object receiving values.
+ * @param {ValidTargetOrSource} source - The object providing values.
+ * @param {Array} [exclude] - Keys to exclude from the addition.
+ * @param {Array|Set} [addedKeys] - Precaulcated array of keys to add, if available. Otherwise, the
  * keys will be calculated.
  * @returns {boolean} True if any keys were added, false otherwise.
  * @throws {AssignReactiveObjectError} If either target or source are not ultimately objects or arrays.
@@ -135,11 +146,11 @@ export function addReactiveObject(target, source, exclude, addedKeys = null) {
 
 /**
  * Updates a target with mutually shared keys from a source. `sameKeys` can be precalculated to avoid recalculation.
- * @function updateReactiveObject
- * @param {ValidTargetOrSource} target The object receiving values.
- * @param {ValidTargetOrSource} source The object providing values.
- * @param {Array} [exclude] Keys to exclude from the update.
- * @param {Array} [sameKeys] Precaulcated array of keys to update, if available. Otherwise, the
+ *
+ * @param {ValidTargetOrSource} target - The object receiving values.
+ * @param {ValidTargetOrSource} source - The object providing values.
+ * @param {Array} [exclude] - Keys to exclude from the update.
+ * @param {Array|Set} [sameKeys] - Precaulcated array of keys to update, if available. Otherwise, the
  * keys will be calculated.
  * @returns {boolean} True if any keys were updated, false otherwise.
  * @throws {AssignReactiveObjectError} If either target or source are not ultimately objects or arrays.
@@ -157,17 +168,25 @@ export function updateReactiveObject(target, source, exclude, sameKeys = null) {
 
 /**
  * Adds to a target the missing keys from a source, and updates a target with mutually shared keys from a source.
- * @function addOrUpdateReactiveObject
- * @param {ValidTargetOrSource} target The object receiving values.
- * @param {ValidTargetOrSource} source The object providing values.
- * @param {Array} [exclude] Keys to exclude from the addition or update.
- * @param {Array} [addedKeys] Precaulcated array of keys to add, if available. Otherwise, the
+ *
+ * @param {ValidTargetOrSource} target - The object receiving values.
+ * @param {ValidTargetOrSource} source - The object providing values.
+ * @param {Array} [exclude] - Keys to exclude from the addition or update.
+ * @param {Array|Set} [addedKeys] - Precaulcated array of keys to add, if available. Otherwise, the
  * keys will be calculated.
- * @param {Array} [sameKeys] Precaulcated array of keys to update, if available. Otherwise, the
+ * @param {Array|Set} [sameKeys] - Precaulcated array of keys to update, if available. Otherwise, the
  * keys will be calculated.
+ * @param {boolean} [doNotSetUndefinedKeys=true] - If true, do not update keys in the target that are undefined in the source.
  * @returns {boolean} True if any keys were added or updated, false otherwise.
  */
-export function addOrUpdateReactiveObject(target, source, exclude, addedKeys = null, sameKeys = null) {
+export function addOrUpdateReactiveObject(
+    target,
+    source,
+    exclude,
+    addedKeys = null,
+    sameKeys = null,
+    doNotSetUndefinedKeys = true
+) {
     if (!addedKeys && !sameKeys) {
         if (target === source) {
             return false;
@@ -175,19 +194,34 @@ export function addOrUpdateReactiveObject(target, source, exclude, addedKeys = n
         ({ target, source } = validateTargetAndSource(target, source));
         ({ addedKeys, sameKeys } = keyDiff(Object.keys(source) || [], Object.keys(target) || []));
     }
-    let didAnything = false;
-    didAnything |= addReactiveObject(target, source, exclude, addedKeys);
-    didAnything |= updateReactiveObject(target, source, exclude, sameKeys);
-    return didAnything;
+    // if the source update value is undefined, we should not update the target
+    if (sameKeys && doNotSetUndefinedKeys) {
+        for (const key of sameKeys) {
+            if (source[key] === undefined) {
+                if (isSet(sameKeys)) {
+                    sameKeys.delete(key);
+                } else {
+                    const index = sameKeys.indexOf(key);
+                    if (index !== -1) {
+                        sameKeys.splice(index, 1);
+                    }
+                }
+            }
+        }
+    }
+
+    const wasAdded = addReactiveObject(target, source, exclude, addedKeys);
+    const wasUpdated = updateReactiveObject(target, source, exclude, sameKeys);
+    return wasAdded || wasUpdated;
 }
 
 /**
  * Removes keys from a target that are not present in a source.
- * @function trimReactiveObject
- * @param {ValidTargetOrSource} target The object receiving trimming.
- * @param {ValidTargetOrSource|null} source The object that provides the allowed set of keys for calculating `removedKeys`.
- * @param {Array} [exclude] Keys to exclude from removal.
- * @param {Array} [removedKeys] An array to store removed keys.
+ *
+ * @param {ValidTargetOrSource} target - The object receiving trimming.
+ * @param {ValidTargetOrSource|null} source - The object that provides the allowed set of keys for calculating `removedKeys`.
+ * @param {Array} [exclude] - Keys to exclude from removal.
+ * @param {Array|Set} [removedKeys] - An array to store removed keys.
  * @returns {boolean} True if any keys were removed, false otherwise.
  * @throws {AssignReactiveObjectError} If either target or source are not ultimately objects or arrays.
  */
@@ -240,6 +274,15 @@ function checkIfReversed(target, source) {
     return true;
 }
 
+/**
+ * Change a target to match a source, where keys missing from the source are removed from the target,
+ * keys present in the source are added to the target, and keys present in both are updated in the target.
+ * This function is optimized for arrays.
+ *
+ * @param {ValidTargetOrSource} target - The array receiving updates.
+ * @param {ValidTargetOrSource} source - The reactive array to assign.
+ * @returns {boolean} True if any keys were added, updated, or removed, false otherwise.
+ */
 export function assignReactiveArray(target, source) {
     if (target === source) {
         return false;
@@ -252,8 +295,9 @@ export function assignReactiveArray(target, source) {
         didAnything = true;
     } else {
         const { addedKeys, sameKeys, removedKeys } = keyDiff(Object.keys(source) || [], Object.keys(target) || []);
-        didAnything |= trimReactiveObject(target, source, null, removedKeys);
-        didAnything |= addOrUpdateReactiveObject(target, source, null, addedKeys, sameKeys);
+        const wasTrimmed = trimReactiveObject(target, source, null, removedKeys);
+        const wasChanged = addOrUpdateReactiveObject(target, source, null, addedKeys, sameKeys, false);
+        didAnything = wasTrimmed || wasChanged;
     }
     return didAnything;
 }
@@ -261,10 +305,10 @@ export function assignReactiveArray(target, source) {
 /**
  * Change a target to match a source, where keys missing from the source are removed from the target,
  * keys present in the source are added to the target, and keys present in both are updated in the target.
- * @function assignReactiveObject
- * @param {ValidTargetOrSource} target The target object or array.
- * @param {ValidTargetOrSource} source The reactive object to assign.
- * @param {Array} [exclude] Keys to exclude from the assignment.
+ *
+ * @param {ValidTargetOrSource} target - The target object or array.
+ * @param {ValidTargetOrSource} source - The reactive object to assign.
+ * @param {Array} [exclude] - Keys to exclude from the assignment.
  * @throws {AssignReactiveObjectError} If either target or source are not ultimately objects or arrays.
  * @returns {boolean} True if any keys were added, updated, or removed, false otherwise.
  */
@@ -280,10 +324,9 @@ export function assignReactiveObject(target, source, exclude) {
     }
     ({ target, source } = validateTargetAndSource(target, source));
     const { addedKeys, sameKeys, removedKeys } = keyDiff(Object.keys(source) || [], Object.keys(target) || []);
-    let didAnything = false;
-    didAnything |= trimReactiveObject(target, source, exclude, removedKeys);
-    didAnything |= addOrUpdateReactiveObject(target, source, exclude, addedKeys, sameKeys);
-    return didAnything;
+    const wasTrimmed = trimReactiveObject(target, source, exclude, removedKeys);
+    const wasChanged = addOrUpdateReactiveObject(target, source, exclude, addedKeys, sameKeys, false);
+    return wasTrimmed || wasChanged;
 }
 
 /**
@@ -291,21 +334,21 @@ export function assignReactiveObject(target, source, exclude) {
  * keys present in the source are added to the target, and keys present in both are updated in the target.
  *
  * As an internal function, this function does not validate its arguments and has no optional arguments.
+ *
  * @private
- * @param {ValidTargetOrSource} target The object receiving updates.
- * @param {ValidTargetOrSource} source The object providing updates.
- * @param {Array} exclude Keys to exclude from the update.
- * @param {Array} addedKeys Precaulcated array of keys to add, if available. Otherwise, the
+ * @param {ValidTargetOrSource} target - The object receiving updates.
+ * @param {ValidTargetOrSource} source - The object providing updates.
+ * @param {Array} exclude - Keys to exclude from the update.
+ * @param {Array|Set} addedKeys - Precaulcated array of keys to add, if available. Otherwise, the
  * keys will be calculated.
- * @param {Array} sameKeys Precaulcated array of keys to update, if available. Otherwise, the
+ * @param {Array|Set} sameKeys - Precaulcated array of keys to update, if available. Otherwise, the
  * keys will be calculated.
- * @param {string} path The current path, used to rescope exclude for the next level.
- * @param {Function} fn The recursive function to call, likely the calling function itself.
+ * @param {string} path - The current path, used to rescope exclude for the next level.
+ * @param {Function} fn - The recursive function to call, likely the calling function itself.
  * @returns {boolean} True if any keys were added, updated, or removed, false otherwise.
  */
 function recursiveInner(target, source, exclude, addedKeys, sameKeys, path, fn) {
-    let didAnything = false;
-    didAnything |= addReactiveObject(target, source, exclude, addedKeys);
+    const wasAdded = addReactiveObject(target, source, exclude, addedKeys);
     const keysForRecurse = [];
     const keysForReplace = [];
     for (const key of sameKeys) {
@@ -317,7 +360,7 @@ function recursiveInner(target, source, exclude, addedKeys, sameKeys, path, fn) 
             }
         }
     }
-    didAnything |= reactiveReplaceKeys(target, source, keysForReplace, exclude);
+    const wasReplaced = reactiveReplaceKeys(target, source, keysForReplace, exclude);
     for (const key of keysForRecurse) {
         // scope exclude for this next level, remove keys that don't start with the current path, trim keys that do to remove the current path
         const nextLevelExclude = exclude
@@ -326,7 +369,7 @@ function recursiveInner(target, source, exclude, addedKeys, sameKeys, path, fn) 
         const nextPath = isArray(source[key]) ? `${path}[${key}]` : `${path}.${key}`;
         fn(target[key], source[key], nextLevelExclude, nextPath);
     }
-    return didAnything;
+    return wasAdded || wasReplaced;
 }
 
 /**
@@ -334,29 +377,37 @@ function recursiveInner(target, source, exclude, addedKeys, sameKeys, path, fn) 
  * keys present in the source are added to the target, and keys present in both are updated in the target.
  *
  * An internal function to avoid validating arguments repeatedly.
+ *
  * @private
- * @param {ValidTargetOrSource} target The object receiving updates.
- * @param {ValidTargetOrSource} source The object providing updates.
- * @param {Array} [exclude] Keys to exclude from the assignment.
- * @param {string} [path] The current path, used to rescope exclude for the next level.
+ * @param {ValidTargetOrSource} target - The object receiving updates.
+ * @param {ValidTargetOrSource} source - The object providing updates.
+ * @param {Array} [exclude] - Keys to exclude from the assignment.
+ * @param {string} [path] - The current path, used to rescope exclude for the next level.
  * @returns {boolean} True if any keys were added, updated, or removed, false otherwise.
  * @throws {AssignReactiveObjectError} If either target or source are not ultimately objects or arrays.
  */
 function assignReactiveObjectRecursive(target, source, exclude, path = "") {
     let { addedKeys, sameKeys, removedKeys } = keyDiff(Object.keys(source) || [], Object.keys(target) || []);
-    let didAnything = false;
-    didAnything |= trimReactiveObject(target, source, exclude, removedKeys);
-    didAnything |= recursiveInner(target, source, exclude, addedKeys, sameKeys, path, assignReactiveObjectRecursive);
-    return didAnything;
+    const wasTrimmed = trimReactiveObject(target, source, exclude, removedKeys);
+    const recursiveDidAnything = recursiveInner(
+        target,
+        source,
+        exclude,
+        addedKeys,
+        sameKeys,
+        path,
+        assignReactiveObjectRecursive
+    );
+    return wasTrimmed || recursiveDidAnything;
 }
 
 /**
  * Recursively change a target to match a source, where keys missing from the source are removed from the target,
  * keys present in the source are added to the target, and keys present in both are updated in the target.
- * @function assignReactiveObjectDeep
- * @param {ValidTargetOrSource} target The object receiving updates.
- * @param {ValidTargetOrSource} source The object providing updates.
- * @param {Array} [exclude] Keys to exclude from the assignment.
+ *
+ * @param {ValidTargetOrSource} target - The object receiving updates.
+ * @param {ValidTargetOrSource} source - The object providing updates.
+ * @param {Array} [exclude] - Keys to exclude from the assignment.
  * @returns {boolean} True if any keys were added, updated, or removed, false otherwise.
  * @throws {AssignReactiveObjectError} If either target or source are not ultimately objects or arrays.
  */
@@ -374,26 +425,26 @@ export function assignReactiveObjectDeep(target, source, exclude) {
  * keys present in both are updated in the target. Missing keys are not removed.
  *
  * As an internal function, this function does not validate its argument.
+ *
  * @private
- * @param {ValidTargetOrSource} target The object receiving updates.
- * @param {ValidTargetOrSource} source The object providing updates.
- * @param {Array} [exclude] Keys to exclude from the update.
- * @param {string} [path] The current path, used to rescope exclude for the next level.
+ * @param {ValidTargetOrSource} target - The object receiving updates.
+ * @param {ValidTargetOrSource} source - The object providing updates.
+ * @param {Array} [exclude] - Keys to exclude from the update.
+ * @param {string} [path] - The current path, used to rescope exclude for the next level.
  * @returns {boolean} True if any keys were added or updated, false otherwise.
  */
 function addOrUpdateReactiveObjectRecursive(target, source, exclude, path = "") {
-    let addedKeys,
-        sameKeys = keyDiff(Object.keys(source) || [], Object.keys(target) || []);
+    let { addedKeys, sameKeys } = keyDiff(Object.keys(source) || [], Object.keys(target) || []);
     return recursiveInner(target, source, exclude, addedKeys, sameKeys, path, addOrUpdateReactiveObjectRecursive);
 }
 
 /**
  * Recursively change a target to match a source, where keys present in the source are added to the target, and
  * keys present in both are updated in the target. Missing keys are not removed.
- * @function addOrUpdateReactiveObjectDeep
- * @param {ValidTargetOrSource} target The object receiving updates.
- * @param {ValidTargetOrSource} source The object providing updates.
- * @param {Array} [exclude] Keys to exclude from the update.
+ *
+ * @param {ValidTargetOrSource} target - The object receiving updates.
+ * @param {ValidTargetOrSource} source - The object providing updates.
+ * @param {Array} [exclude] - Keys to exclude from the update.
  * @returns {boolean} True if any keys were added or updated, false otherwise.
  * @throws {AssignReactiveObjectError} If either target or source are not ultimately objects or arrays.
  */

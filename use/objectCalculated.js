@@ -1,4 +1,5 @@
-import { proxyRunning } from "../utils/index.js";
+// noinspection ES6PreferShortImport
+import { proxyRunning } from "../utils/proxyRunning.js";
 import { keyDiff } from "../utils/keyDiff.js";
 import { loadingCombine } from "../utils/loadingCombine.js";
 import { objectInstanceStateKeys } from "./objectInstance.js";
@@ -7,6 +8,91 @@ import { objectSubscriptionStateKeys } from "./objectSubscription.js";
 import { useWatchesRunning } from "./watchesRunning.js";
 import isEmpty from "lodash-es/isEmpty.js";
 import { computed, effectScope, onScopeDispose, reactive, ref, toRef, watch } from "vue";
+
+/**
+ * Vue Composition API composable function for object calculated.
+ *
+ * @module use/objectCalculated.js
+ */
+
+/**
+ * The object calculated state keys.
+ *
+ * @typedef {{
+ *     [ruleKey: string]: (object: any, relatedObject: any) => any
+ * }} ObjectCalculatedRules
+ */
+
+/**
+ * @typedef {object} ObjectCalculatedRawState - The raw state for object calculated.
+ * @property {ObjectCalculatedRules} calculatedObjectRules - The calculated object rules.
+ * @property {{
+ *     [ruleKey: string]: import('vue').ComputedRef<any>
+ * }} calculatedObject - The calculated object.
+ * @property {boolean} calculatedObjectWatchRunning - Whether the calculated object watch is running.
+ * @property {boolean} parentStateObjectWatchRunning - Whether the parent state object watch is running.
+ * @property {boolean} calculatedRunning - Whether the calculated is running.
+ * @property {import('vue').Ref<boolean>} running - Whether the object calculated is running.
+ */
+
+/**
+ *
+ *
+ * @typedef {(
+ *     import('./objectInstance.js').ObjectInstanceRawState &
+ *     Partial<import('./objectSubscription.js').ObjectSubscriptionRawState> &
+ *     Partial<import('./objectRelated.js').ObjectRelatedRawState>
+ * )} ObjectCalculatedParentRawState
+ */
+
+/**
+ *
+ *
+ * @typedef {import('vue').UnwrapNestedRefs<(
+ *     ObjectCalculatedParentRawState
+ * )>} ObjectCalculatedParentState - The object calculated options.
+ */
+
+/**
+ * The state for object calculated.
+ *
+ * @typedef {import('vue').UnwrapNestedRefs<
+ *   ObjectCalculatedParentRawState &
+ *   ObjectCalculatedRawState
+ * >} ObjectCalculatedState
+ */
+
+/**
+ * The properties for object calculated.
+ *
+ * @typedef {object} ObjectCalculatedProperties
+ * @property {ObjectCalculatedParentState} parentState - The parent state.
+ * @property {ObjectCalculatedState} state - The object calculated state.
+ * @property {import('./watchesRunning.js').WatchesRunning} watchesRunning - The watches running rules.
+ * @property {import('vue').EffectScope} effectScope - The effect scope.
+ */
+
+// if we provided functions, we would add a typedef and mix them into ObjectCalculated
+
+/**
+ * The object calculated instance.
+ *
+ * @typedef {ObjectCalculatedProperties} ObjectCalculated
+ */
+
+/**
+ *
+ *
+ * @typedef {object} ObjectCalculatedRawProps
+ * @property {import('vue').Ref<ObjectCalculatedRules>} calculatedObjectRules - The calculated object rules.
+ */
+
+/**
+ *
+ * @typedef {({
+ *     parentState: ObjectCalculatedParentState,
+ * } & ObjectCalculatedRawProps)} ObjectCalculatedOptions
+ */
 
 export const objectCalculatedStateKeys = [
     "calculatedObject",
@@ -19,17 +105,73 @@ export const objectCalculatedStateKeys = [
 
 export const objectCalculatedFunctions = [];
 
-export function useObjectCalculateds(instances, args) {
-    for (const [key, value] of Object.entries(args)) {
-        useObjectCalculated({
-            parentState: instances[key].state,
-            ...value,
-        });
+/**
+ * Helper function to create multiple object calculateds instances.
+ *
+ * @param {{
+ *     [key: string]: ObjectCalculatedOptions
+ * }} objectCalculatedArgs - Options for each object calculated to create.
+ * @returns {{
+ *    [key: string]: ObjectCalculated
+ * }} - The created object calculated instances by key.
+ */
+export function useObjectCalculateds(objectCalculatedArgs) {
+    /**
+     * @type {{
+     *     [key: string]: ObjectCalculated
+      }} */
+    const calculateds = {};
+    for (const [key, value] of Object.entries(objectCalculatedArgs)) {
+        calculateds[key] = useObjectCalculated(value);
     }
+    return calculateds;
 }
 
-// the single object version of useListCalculated
+/**
+ * Vue Composition API composable function for object calculated.
+ *
+ * @example
+ * ```vue
+ * <script setup>
+ * import { useObjectCalculated, useObjectSubscription } from "@arrai-innovations/reactive-helpers";
+ * import { ref, reactive } from "vue";
+ *
+ * const objectSubscriptionProps = reactive({
+ *     // whatever object subscription props you need to work with your crud implementation
+ *     crudArgs: {},
+ *     retrieveArgs: {},
+ *     id: '1',
+ *     intendToRetrieve: true,
+ * };
+ * const objectSubscription = useObjectSubscription(objectSubscriptionProps);
+ * const objectCalculatedProps = reactive({
+ *     parentState: objectSubscription.state,
+ *     calculatedObjectRules: {
+ *         someRule: (object, relatedObject, calculatedObjects) => {
+ *            // some complex calculation, relatedObjects would be assuming there was a listRelated between the two
+ *            // calculatedObjects would be the other calculated objects in the list
+ *            // including yourself, so try not to create circular dependencies
+ *            // this is used as a computed body.
+ *            return object.someProperty + object.someOtherProperty;
+ *          },
+ *         ...
+ *      },
+ *  });
+ * </script>
+ * <template>
+ * <div>
+ *     <!-- the reactive result of the calculation, based on the fn passed in, turned into a computed -->
+ *     <p>{{ objectCalculated.state.calculatedObject.someRule }}</p>
+ * </div>
+ * </template>
+ * ```
+ *
+ * @param {ObjectCalculatedOptions} options - The object calculated options.
+ * @returns {ObjectCalculated} - The object calculated instance.
+ */
 export function useObjectCalculated({ parentState, calculatedObjectRules }) {
+    /** @type {ObjectCalculatedState} */
+    // @ts-ignore - parent state keys and computeds with be added in the effect scope
     const state = reactive({
         calculatedObjectRules,
         calculatedObject: {},
@@ -45,21 +187,29 @@ export function useObjectCalculated({ parentState, calculatedObjectRules }) {
 
     es.run(() => {
         for (const key of objectInstanceStateKeys) {
+            // @ts-ignore - add parent state keys programmatically, which are typescript isn't able to infer
             state[key] = toRef(parentState, key);
         }
         for (const key of objectSubscriptionStateKeys) {
+            // @ts-ignore - add parent state keys programmatically, which are typescript isn't able to infer
             state[key] = toRef(parentState, key);
         }
         for (const key of objectRelatedStateKeys) {
+            // @ts-ignore - add parent state keys programmatically, which are typescript isn't able to infer
             state[key] = toRef(parentState, key);
         }
 
         watch([() => state.calculatedObjectRules && Object.keys(state.calculatedObjectRules)], () => {
-            let addedKeys = [],
-                removedKeys = [],
-                sameKeys = [];
+            /** @type {Set<string>|undefined} */
+            let addedKeys = undefined,
+                /** @type {Set<string>|undefined} */
+                removedKeys = undefined,
+                /** @type {Set<string>|undefined} */
+                sameKeys = undefined;
             if (!state.calculatedObjectRules) {
-                removedKeys = Object.keys(calculatedObjectOriginalFunctions);
+                removedKeys = new Set(Object.keys(calculatedObjectOriginalFunctions));
+                addedKeys = new Set();
+                sameKeys = new Set();
             } else {
                 ({ addedKeys, removedKeys, sameKeys } = keyDiff(
                     Object.keys(state.calculatedObjectRules),
@@ -68,8 +218,8 @@ export function useObjectCalculated({ parentState, calculatedObjectRules }) {
             }
             for (const sameKey of sameKeys) {
                 if (calculatedObjectOriginalFunctions[sameKey] !== state.calculatedObjectRules[sameKey]) {
-                    removedKeys.push(sameKey);
-                    addedKeys.push(sameKey);
+                    removedKeys.add(sameKey);
+                    addedKeys.add(sameKey);
                 }
             }
             for (const removedKey of removedKeys) {
@@ -99,9 +249,11 @@ export function useObjectCalculated({ parentState, calculatedObjectRules }) {
             ],
         });
 
+        // @ts-ignore - assignment to UnwrapNestedRefs triggers tsc to mismatch on Ref vs non-Ref
         state.calculatedRunning = toRef(watchesRunning.state, "running");
         const parentRunning = ref(undefined);
         proxyRunning(parentState, "running", parentRunning);
+        // @ts-ignore - assignment to UnwrapNestedRefs triggers tsc to mismatch on ComputedRef vs non
         state.running = computed(() => loadingCombine(watchesRunning.state.running, parentRunning));
 
         onScopeDispose(() => {
@@ -113,10 +265,10 @@ export function useObjectCalculated({ parentState, calculatedObjectRules }) {
             }
         });
     });
-    return reactive({
+    return {
         state,
         parentState,
         watchesRunning,
         effectScope: es,
-    });
+    };
 }
