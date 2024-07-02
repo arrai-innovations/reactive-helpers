@@ -28,6 +28,7 @@
 - [use/objectRelated](use/objectRelated.md)
 - [use/objectSubscription](use/objectSubscription.md)
 - [use/paginatedListInstance](use/paginatedListInstance.md)
+- [use/running](use/running.md)
 - [use/search](use/search.md)
 - [use/watchesRunning](use/watchesRunning.md)
 - [utils](utils.md)
