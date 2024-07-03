@@ -285,7 +285,7 @@ export function useObjectRelated({ parentState, relatedObjectRules }) {
                 Object.keys(state.relatedObject)
             ));
         } else {
-            removedRuleKeys = new Set(Object.keys(state.relatedObjectRules));
+            removedRuleKeys = new Set(Object.keys(state.relatedObject));
             addedRuleKeys = new Set();
         }
         for (const removedRuleKey of removedRuleKeys) {
