@@ -5,20 +5,27 @@ import { readonly, ref } from "vue";
  */
 
 /**
- * A composable function for managing loading and error states.
- *
- * @returns {object} - An object containing reactive fields and actions for loading and error states.
- * @property {import("vue").Ref<boolean|undefined>} loading - Whether the component is loading.
- * @property {import("vue").Ref<Error|null>} error - The error that occurred.
- * @property {import("vue").Ref<boolean>} errored - Whether an error has occurred.
+ * @typedef {object} LoadingError
+ * @property {Readonly<import("vue").Ref<boolean|undefined>>} loading - Whether the component is loading.
+ * @property {Readonly<import("vue").Ref<Error|null>>} error - The error that occurred.
+ * @property {Readonly<import("vue").Ref<boolean>>} errored - Whether an error has occurred.
  * @property {() => void} setLoading - Set the loading state.
  * @property {() => void} clearLoading - Clear the loading state.
  * @property {(error) => void} setError - Set the error state.
  * @property {() => void} clearError - Clear the error state.
  */
+
+/**
+ * A composable function for managing loading and error states.
+ *
+ * @returns {LoadingError} - An object containing reactive fields and actions for loading and error states.
+ */
 export function useLoadingError() {
+    /** @type {import("vue").Ref<boolean|undefined>} */
     const loading = ref(undefined);
+    /** @type {import("vue").Ref<Error|null>} */
     const error = ref(null);
+    /** @type {import("vue").Ref<boolean>} */
     const errored = ref(false);
 
     return {
