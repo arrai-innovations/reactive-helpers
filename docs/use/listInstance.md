@@ -177,9 +177,17 @@ Default implementation are used as set by `setListCrud`.
 
 ###### list
 
-> **list**: `Function`
+> **list**: [`ListFn`](../config/listCrud.md#listfn)
 
-Provide the implementation for the list function.
+Provide the implementation for the list
+ function.
+
+###### subscribe
+
+> **subscribe**: [`SubscribeFn`](../config/listCrud.md#subscribefn)
+
+Provide the implementation for the
+ subscribe function.
 
 ##### keepOldPages
 

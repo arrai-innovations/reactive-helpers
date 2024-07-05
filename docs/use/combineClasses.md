@@ -6,6 +6,14 @@
 
 # use/combineClasses
 
+## Type Aliases
+
+### CSSClasses
+
+> **CSSClasses**\<\>: `string` \| `string`[] \| `object` \| `Ref`
+
+#### Type Parameters
+
 ## Functions
 
 ### useCombineClasses()
@@ -18,7 +26,7 @@ Normalize various ways of specifying CSS classes into an object for use in Vue.j
 
 #### Parameters
 
-• ...**classes**: (`string` \| `string`[] \| `object` \| `Ref`\<`string` \| `string`[]\>)[]
+• ...**classes**: [`CSSClasses`](combineClasses.md#cssclasses)[]
 
 A mixed array containing multiple ways of specifying CSS classes.
 

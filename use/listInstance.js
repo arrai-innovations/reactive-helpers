@@ -51,7 +51,10 @@ export class ListInstanceError extends Error {
  * @typedef {object} ListInstanceOptions
  * @property {import('vue').UnwrapNestedRefs<ListInstanceProps>} props - The props for the list instance.
  * @property {object} [functions] - Default implementation are used as set by `setListCrud`.
- * @property {Function} [functions.list] - Provide the implementation for the list function.
+ * @property {import('../config/listCrud.js').ListFn} [functions.list] - Provide the implementation for the list
+ *  function.
+ * @property {import('../config/listCrud.js').SubscribeFn} [functions.subscribe] - Provide the implementation for the
+ *  subscribe function.
  * @property {boolean} [keepOldPages=false] - If true, pages will not be cleared when defaultPageCallback is called.
  */
 

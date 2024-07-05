@@ -8,6 +8,54 @@
 
 ## Interfaces
 
+### CreateDetailArgs
+
+#### Properties
+
+##### crudArgs
+
+> **crudArgs**: `any`
+
+The arguments to be passed to the crud functions.
+
+##### object
+
+> **object**: `any`
+
+The data to be acted upon.
+
+##### retrieveArgs
+
+> **retrieveArgs**: `any`
+
+The arguments to be passed to the retrieve function.
+
+***
+
+### DeleteDetailArgs
+
+#### Properties
+
+##### crudArgs
+
+> **crudArgs**: `any`
+
+The arguments to be passed to the crud functions.
+
+##### id
+
+> **id**: `string`
+
+The id of the object to be acted upon.
+
+##### retrieveArgs
+
+> **retrieveArgs**: `any`
+
+The arguments to be passed to the retrieve function.
+
+***
+
 ### ObjectCrudArgsProperties
 
 #### Properties
@@ -24,47 +72,221 @@ The arguments to be passed to the crud functions.
 
 #### Properties
 
-##### create
+##### create()
 
-> **create**: `Function`
+> **create**: (`CreateDetailArgs`) => [`ResponseData`](objectCrud.md#responsedata)
 
 A function to be used instead of the default crud create function.
 
-##### delete
+###### Parameters
 
-> **delete**: `Function`
+• **CreateDetailArgs**: `any`
+
+###### Returns
+
+[`ResponseData`](objectCrud.md#responsedata)
+
+##### delete()
+
+> **delete**: (`DeleteDetailArgs`) => [`ResponseData`](objectCrud.md#responsedata)
 
 A function to be used instead of the default crud delete function.
 
-##### patch
+###### Parameters
 
-> **patch**: `Function`
+• **DeleteDetailArgs**: `any`
+
+###### Returns
+
+[`ResponseData`](objectCrud.md#responsedata)
+
+##### patch()
+
+> **patch**: (`PartialDetailArgs`) => [`ResponseData`](objectCrud.md#responsedata)
 
 A function to be used instead of the default crud patch function.
 
-##### retrieve
+###### Parameters
 
-> **retrieve**: `Function`
+• **PartialDetailArgs**: `any`
+
+###### Returns
+
+[`ResponseData`](objectCrud.md#responsedata)
+
+##### retrieve()
+
+> **retrieve**: (`RetrieveDetailArgs`) => [`ResponseData`](objectCrud.md#responsedata)
 
 A function to be used instead of the default crud retrieve function.
 
-##### subscribe
+###### Parameters
 
-> **subscribe**: `Function`
+• **RetrieveDetailArgs**: `any`
+
+###### Returns
+
+[`ResponseData`](objectCrud.md#responsedata)
+
+##### subscribe()
+
+> **subscribe**: (`SubscribeArgs`) => `void`
 
 A function to be used instead of the default crud subscribe function.
 
-##### update
+###### Parameters
 
-> **update**: `Function`
+• **SubscribeArgs**: `any`
+
+###### Returns
+
+`void`
+
+##### update()
+
+> **update**: (`UpdateDetailArgs`) => [`ResponseData`](objectCrud.md#responsedata)
 
 A function to be used instead of the default crud update function.
+
+###### Parameters
+
+• **UpdateDetailArgs**: `any`
+
+###### Returns
+
+[`ResponseData`](objectCrud.md#responsedata)
+
+***
+
+### PartialDetailArgs
+
+#### Properties
+
+##### crudArgs
+
+> **crudArgs**: `any`
+
+The arguments to be passed to the crud functions.
+
+##### id
+
+> **id**: `string`
+
+The id of the object to be acted upon.
+
+##### partialObject
+
+> **partialObject**: `any`
+
+The data to be acted upon.
+
+##### retrieveArgs
+
+> **retrieveArgs**: `any`
+
+The arguments to be passed to the retrieve function.
+
+***
+
+### RetrieveDetailArgs
+
+#### Properties
+
+##### crudArgs
+
+> **crudArgs**: `any`
+
+The arguments to be passed to the crud functions.
+
+##### id
+
+> **id**: `string`
+
+The id of the object to be acted upon.
+
+##### retrieveArgs
+
+> **retrieveArgs**: `any`
+
+The arguments to be passed to the retrieve function.
+
+***
+
+### SubscribeArgs
+
+#### Properties
+
+##### callback()
+
+> **callback**: (`data`, `action`) => `void`
+
+The callback to be called when the object is updated.
+
+###### Parameters
+
+• **data**: [`CrudObject`](../use/objectInstance.md#crudobject)
+
+• **action**: `string`
+
+###### Returns
+
+`void`
+
+##### crudArgs
+
+> **crudArgs**: `any`
+
+The arguments to be passed to the crud functions.
+
+##### id
+
+> **id**: `string`
+
+The id of the object to be acted upon.
+
+##### retrieveArgs
+
+> **retrieveArgs**: `any`
+
+The arguments to be passed to the retrieve function.
+
+***
+
+### UpdateDetailArgs
+
+#### Properties
+
+##### crudArgs
+
+> **crudArgs**: `any`
+
+The arguments to be passed to the crud functions.
+
+##### object
+
+> **object**: [`CrudObject`](../use/objectInstance.md#crudobject)
+
+The data to be acted upon.
+
+##### retrieveArgs
+
+> **retrieveArgs**: `any`
+
+The arguments to be passed to the retrieve function.
 
 ## Type Aliases
 
 ### ObjectCrudArgs
 
 > **ObjectCrudArgs**\<\>: [`ObjectCrudArgsProperties`](objectCrud.md#objectcrudargsproperties) & [`ObjectCrudFunctions`](objectCrud.md#objectcrudfunctions)
+
+#### Type Parameters
+
+***
+
+### ResponseData
+
+> **ResponseData**\<\>: `Promise`\<`object` \| `string`\>
 
 #### Type Parameters
 

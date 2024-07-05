@@ -36,41 +36,89 @@ The crud functions.
 
 The arguments to be passed to the crud functions.
 
-###### crud.create
+###### crud.create()
 
-> **create**: `Function`
+> **create**: (`CreateDetailArgs`) => [`ResponseData`](../config/objectCrud.md#responsedata)
 
 A function to be used instead of the default crud create function.
 
-###### crud.delete
+###### Parameters
 
-> **delete**: `Function`
+• **CreateDetailArgs**: `any`
+
+###### Returns
+
+[`ResponseData`](../config/objectCrud.md#responsedata)
+
+###### crud.delete()
+
+> **delete**: (`DeleteDetailArgs`) => [`ResponseData`](../config/objectCrud.md#responsedata)
 
 A function to be used instead of the default crud delete function.
 
-###### crud.patch
+###### Parameters
 
-> **patch**: `Function`
+• **DeleteDetailArgs**: `any`
+
+###### Returns
+
+[`ResponseData`](../config/objectCrud.md#responsedata)
+
+###### crud.patch()
+
+> **patch**: (`PartialDetailArgs`) => [`ResponseData`](../config/objectCrud.md#responsedata)
 
 A function to be used instead of the default crud patch function.
 
-###### crud.retrieve
+###### Parameters
 
-> **retrieve**: `Function`
+• **PartialDetailArgs**: `any`
+
+###### Returns
+
+[`ResponseData`](../config/objectCrud.md#responsedata)
+
+###### crud.retrieve()
+
+> **retrieve**: (`RetrieveDetailArgs`) => [`ResponseData`](../config/objectCrud.md#responsedata)
 
 A function to be used instead of the default crud retrieve function.
 
-###### crud.subscribe
+###### Parameters
 
-> **subscribe**: `Function`
+• **RetrieveDetailArgs**: `any`
+
+###### Returns
+
+[`ResponseData`](../config/objectCrud.md#responsedata)
+
+###### crud.subscribe()
+
+> **subscribe**: (`SubscribeArgs`) => `void`
 
 A function to be used instead of the default crud subscribe function.
 
-###### crud.update
+###### Parameters
 
-> **update**: `Function`
+• **SubscribeArgs**: `any`
+
+###### Returns
+
+`void`
+
+###### crud.update()
+
+> **update**: (`UpdateDetailArgs`) => [`ResponseData`](../config/objectCrud.md#responsedata)
 
 A function to be used instead of the default crud update function.
+
+###### Parameters
+
+• **UpdateDetailArgs**: `any`
+
+###### Returns
+
+[`ResponseData`](../config/objectCrud.md#responsedata)
 
 ###### deleted
 
@@ -168,41 +216,89 @@ The crud functions.
 
 The arguments to be passed to the crud functions.
 
-###### crud.create
+###### crud.create()
 
-> **create**: `Function`
+> **create**: (`CreateDetailArgs`) => [`ResponseData`](../config/objectCrud.md#responsedata)
 
 A function to be used instead of the default crud create function.
 
-###### crud.delete
+###### Parameters
 
-> **delete**: `Function`
+• **CreateDetailArgs**: `any`
+
+###### Returns
+
+[`ResponseData`](../config/objectCrud.md#responsedata)
+
+###### crud.delete()
+
+> **delete**: (`DeleteDetailArgs`) => [`ResponseData`](../config/objectCrud.md#responsedata)
 
 A function to be used instead of the default crud delete function.
 
-###### crud.patch
+###### Parameters
 
-> **patch**: `Function`
+• **DeleteDetailArgs**: `any`
+
+###### Returns
+
+[`ResponseData`](../config/objectCrud.md#responsedata)
+
+###### crud.patch()
+
+> **patch**: (`PartialDetailArgs`) => [`ResponseData`](../config/objectCrud.md#responsedata)
 
 A function to be used instead of the default crud patch function.
 
-###### crud.retrieve
+###### Parameters
 
-> **retrieve**: `Function`
+• **PartialDetailArgs**: `any`
+
+###### Returns
+
+[`ResponseData`](../config/objectCrud.md#responsedata)
+
+###### crud.retrieve()
+
+> **retrieve**: (`RetrieveDetailArgs`) => [`ResponseData`](../config/objectCrud.md#responsedata)
 
 A function to be used instead of the default crud retrieve function.
 
-###### crud.subscribe
+###### Parameters
 
-> **subscribe**: `Function`
+• **RetrieveDetailArgs**: `any`
+
+###### Returns
+
+[`ResponseData`](../config/objectCrud.md#responsedata)
+
+###### crud.subscribe()
+
+> **subscribe**: (`SubscribeArgs`) => `void`
 
 A function to be used instead of the default crud subscribe function.
 
-###### crud.update
+###### Parameters
 
-> **update**: `Function`
+• **SubscribeArgs**: `any`
+
+###### Returns
+
+`void`
+
+###### crud.update()
+
+> **update**: (`UpdateDetailArgs`) => [`ResponseData`](../config/objectCrud.md#responsedata)
 
 A function to be used instead of the default crud update function.
+
+###### Parameters
+
+• **UpdateDetailArgs**: `any`
+
+###### Returns
+
+[`ResponseData`](../config/objectCrud.md#responsedata)
 
 ###### deleted
 

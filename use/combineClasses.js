@@ -16,6 +16,15 @@ import { isRef, ref, watch, isReactive } from "vue";
 const isRefOrReactive = (v) => isRef(v) || isReactive(v);
 
 /**
+ * @typedef {(
+ *     string |
+ *     string[] |
+ *     { [key: string]: boolean | import("vue").Ref<boolean> } |
+ *     import("vue").Ref<string | string[]>
+ * )} CSSClasses
+ */
+
+/**
  * Normalize various ways of specifying CSS classes into an object for use in Vue.js with reactivity. If refs are
  *  present, the resulting object will be a ref containing an array of objects to preserve order of operations in
  *  reactive contexts.
@@ -40,12 +49,7 @@ const isRefOrReactive = (v) => isRef(v) || isReactive(v);
  * </script>
  * ```
  *
- * @param {...(
- *     string |
- *     string[] |
- *     { [key: string]: boolean | import("vue").Ref<boolean> } |
- *     import("vue").Ref<string | string[]>
- * )} classes - A mixed array containing multiple ways of specifying CSS classes.
+ * @param {...(CSSClasses)} classes - A mixed array containing multiple ways of specifying CSS classes.
  * @returns {import("vue").Ref<import('../utils/classes.js').CombinedClasses>} - A ref
  *  containing an object or array of objects containing CSS classes. Arrays are used if refs are present, to
  *  preserve order of operations in reactive contexts.

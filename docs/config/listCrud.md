@@ -26,15 +26,174 @@ The default arguments for the crud functions.
 
 ##### list
 
-> **list**: `Function`
+> **list**: [`ListFn`](listCrud.md#listfn)
 
 The list function to get a list of items.
 
 ##### subscribe
 
-> **subscribe**: `Function`
+> **subscribe**: [`SubscribeFn`](listCrud.md#subscribefn)
 
 The subscribe function to get a subscription to a list of items.
+
+***
+
+### ListFnArgs
+
+#### Properties
+
+##### crudArgs
+
+> **crudArgs**: `any`
+
+The arguments to be passed to the crud functions.
+
+##### isCancelled
+
+> **isCancelled**: `Readonly`\<`Ref`\<`boolean`\>\>
+
+A ref to a boolean indicating whether the request has
+ been cancelled.
+
+##### listArgs
+
+> **listArgs**: `any`
+
+The arguments to be passed for list crud functions.
+
+##### pageCallback
+
+> **pageCallback**: [`PageCallback`](listCrud.md#pagecallback-1)
+
+The method to call with new page(s) of data received.
+
+##### retrieveArgs
+
+> **retrieveArgs**: `any`
+
+The arguments to be passed to the retrieve function.
+
+***
+
+### PaginateInfo
+
+#### Properties
+
+##### perPage
+
+> **perPage**: `number`
+
+The per page.
+
+##### totalPages
+
+> **totalPages**: `number`
+
+The total pages.
+
+##### totalRecords
+
+> **totalRecords**: `number`
+
+The total records.
+
+***
+
+### SubscribeFnArgs
+
+#### Properties
+
+##### crudArgs
+
+> **crudArgs**: `any`
+
+The arguments to be passed to the crud functions.
+
+##### listArgs
+
+> **listArgs**: `any`
+
+The arguments to be passed for list crud functions.
+
+##### retrieveArgs
+
+> **retrieveArgs**: `any`
+
+The arguments to be passed to the retrieve function.
+
+##### subscriptionEventCallback
+
+> **subscriptionEventCallback**: [`SubscriptionEventCallback`](listCrud.md#subscriptioneventcallback-1)
+
+The method to call when new data is received.
+
+## Type Aliases
+
+### ListFn()
+
+> **ListFn**\<\>: (`ListFnArgs`) => `void`
+
+#### Type Parameters
+
+#### Parameters
+
+• **ListFnArgs**: `any`
+
+#### Returns
+
+`void`
+
+***
+
+### PageCallback()
+
+> **PageCallback**\<\>: (`newObjects`, `paginationInfo`) => `void`
+
+#### Type Parameters
+
+#### Parameters
+
+• **newObjects**: [`use/listInstance`](../use/listInstance.md)
+
+• **paginationInfo**: [`PaginateInfo`](listCrud.md#paginateinfo) \| `undefined`
+
+#### Returns
+
+`void`
+
+***
+
+### SubscribeFn()
+
+> **SubscribeFn**\<\>: (`SubscribeFnArgs`) => `void`
+
+#### Type Parameters
+
+#### Parameters
+
+• **SubscribeFnArgs**: `any`
+
+#### Returns
+
+`void`
+
+***
+
+### SubscriptionEventCallback()
+
+> **SubscriptionEventCallback**\<\>: (`newOrUpdatedOrDeleteObject`, `action`) => `void`
+
+#### Type Parameters
+
+#### Parameters
+
+• **newOrUpdatedOrDeleteObject**: [`use/listInstance`](../use/listInstance.md) \| `string`
+
+• **action**: `"create"` \| `"update"` \| `"delete"`
+
+#### Returns
+
+`void`
 
 ## Functions
 
@@ -54,11 +213,11 @@ The reactive crud object, which will be mutated.
 
 The default arguments for the crud functions.
 
-• **reactiveCrud.list**: `Function`
+• **reactiveCrud.list**: [`ListFn`](listCrud.md#listfn)
 
 The list function to get a list of items.
 
-• **reactiveCrud.subscribe**: `Function`
+• **reactiveCrud.subscribe**: [`SubscribeFn`](listCrud.md#subscribefn)
 
 The subscribe function to get a subscription to a list of items.
 

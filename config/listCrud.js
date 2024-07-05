@@ -10,9 +10,56 @@ const defaultCrud = {
 };
 
 /**
+ * @typedef {object} PaginateInfo
+ * @property {number} totalRecords - The total records.
+ * @property {number} totalPages - The total pages.
+ * @property {number} perPage - The per page.
+ */
+
+/**
+ * @typedef {(
+ *     newObjects:import('../use/listInstance.js').ListObject,
+ *     paginationInfo: PaginateInfo|undefined
+ * )=>void} PageCallback
+ */
+
+/**
+ * @typedef {object} ListFnArgs
+ * @property {object} crudArgs - The arguments to be passed to the crud functions.
+ * @property {object} retrieveArgs - The arguments to be passed to the retrieve function.
+ * @property {object} listArgs - The arguments to be passed for list crud functions.
+ * @property {PageCallback} pageCallback - The method to call with new page(s) of data received.
+ * @property {Readonly<import('vue').Ref<boolean>>} isCancelled - A ref to a boolean indicating whether the request has
+ *  been cancelled.
+ */
+
+/**
+ * @typedef {(
+ *     newOrUpdatedOrDeleteObject:import('../use/listInstance.js').ListObject|string,
+ *     action: 'create'|'update'|'delete'
+ * )=>void} SubscriptionEventCallback
+ */
+
+/**
+ * @typedef {object} SubscribeFnArgs
+ * @property {object} crudArgs - The arguments to be passed to the crud functions.
+ * @property {object} retrieveArgs - The arguments to be passed to the retrieve function.
+ * @property {object} listArgs - The arguments to be passed for list crud functions.
+ * @property {SubscriptionEventCallback} subscriptionEventCallback - The method to call when new data is received.
+ */
+
+/**
+ * @typedef {(ListFnArgs)=>void} ListFn
+ */
+
+/**
+ * @typedef {(SubscribeFnArgs)=>void} SubscribeFn
+ */
+
+/**
  * @typedef {object} ListCrudFunctions
- * @property {Function} [list] - The list function to get a list of items.
- * @property {Function} [subscribe] - The subscribe function to get a subscription to a list of items.
+ * @property {ListFn} [list] - The list function to get a list of items.
+ * @property {SubscribeFn} [subscribe] - The subscribe function to get a subscription to a list of items.
  */
 
 /**

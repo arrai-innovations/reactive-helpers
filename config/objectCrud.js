@@ -21,15 +21,65 @@ const defaultCrud = {
  */
 
 /**
+ * @typedef {object} CreateDetailArgs
+ * @property {object} crudArgs - The arguments to be passed to the crud functions.
+ * @property {object} object - The data to be acted upon.
+ * @property {object} retrieveArgs - The arguments to be passed to the retrieve function.
+ */
+
+/**
+ * @typedef {object} RetrieveDetailArgs
+ * @property {object} crudArgs - The arguments to be passed to the crud functions.
+ * @property {string} id - The id of the object to be acted upon.
+ * @property {object} retrieveArgs - The arguments to be passed to the retrieve function.
+ */
+
+/**
+ * @typedef {object} UpdateDetailArgs
+ * @property {object} crudArgs - The arguments to be passed to the crud functions.
+ * @property {import('../use/objectInstance.js').CrudObject} object - The data to be acted upon.
+ * @property {object} retrieveArgs - The arguments to be passed to the retrieve function.
+ */
+
+/**
+ * @typedef {object} DeleteDetailArgs
+ * @property {object} crudArgs - The arguments to be passed to the crud functions.
+ * @property {string} id - The id of the object to be acted upon.
+ * @property {object} retrieveArgs - The arguments to be passed to the retrieve function.
+ */
+
+/**
+ * @typedef {object} PartialDetailArgs
+ * @property {object} crudArgs - The arguments to be passed to the crud functions.
+ * @property {string} id - The id of the object to be acted upon.
+ * @property {object} partialObject - The data to be acted upon.
+ * @property {object} retrieveArgs - The arguments to be passed to the retrieve function.
+ */
+
+/**
+ * @typedef {object} SubscribeArgs
+ * @property {object} crudArgs - The arguments to be passed to the crud functions.
+ * @property {string} id - The id of the object to be acted upon.
+ * @property {object} retrieveArgs - The arguments to be passed to the retrieve function.
+ * @property {(
+ *     data:import('../use/objectInstance.js').CrudObject, action:string
+ * ) => void} callback - The callback to be called when the object is updated.
+ */
+
+/**
+ * @typedef {Promise<object|string>} ResponseData
+ */
+
+/**
  * Defines the CRUD-related functions and additional utilities provided by the object instance.
  *
  * @typedef {object} ObjectCrudFunctions
- * @property {Function} [create] - A function to be used instead of the default crud create function.
- * @property {Function} [retrieve] - A function to be used instead of the default crud retrieve function.
- * @property {Function} [update] - A function to be used instead of the default crud update function.
- * @property {Function} [delete] - A function to be used instead of the default crud delete function.
- * @property {Function} [patch] - A function to be used instead of the default crud patch function.
- * @property {Function} [subscribe] - A function to be used instead of the default crud subscribe function.
+ * @property {(CreateDetailArgs)=>ResponseData} [create] - A function to be used instead of the default crud create function.
+ * @property {(RetrieveDetailArgs)=>ResponseData} [retrieve] - A function to be used instead of the default crud retrieve function.
+ * @property {(UpdateDetailArgs)=>ResponseData} [update] - A function to be used instead of the default crud update function.
+ * @property {(DeleteDetailArgs)=>ResponseData} [delete] - A function to be used instead of the default crud delete function.
+ * @property {(PartialDetailArgs)=>ResponseData} [patch] - A function to be used instead of the default crud patch function.
+ * @property {(SubscribeArgs)=>void} [subscribe] - A function to be used instead of the default crud subscribe function.
  */
 
 /**
