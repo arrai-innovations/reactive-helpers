@@ -1,7 +1,7 @@
 import { assignReactiveObject } from "../utils/assignReactiveObject.js";
 import { loadingCombine } from "../utils/loadingCombine.js";
 import { useCancellableIntent } from "./cancellableIntent.js";
-import useLoadingError from "./loadingError.js";
+import { useLoadingError } from "./loadingError.js";
 import { useObjectInstance, objectInstanceStateKeys } from "./objectInstance.js";
 import { computed, effectScope, reactive, toRef } from "vue";
 

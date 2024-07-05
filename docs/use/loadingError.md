@@ -8,9 +8,9 @@
 
 ## Functions
 
-### default()
+### useLoadingError()
 
-> **default**(): `any`
+> **useLoadingError**(): `any`
 
 A composable function for managing loading and error states.
 

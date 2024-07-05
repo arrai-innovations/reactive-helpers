@@ -16,7 +16,7 @@ import { readonly, ref } from "vue";
  * @property {(error) => void} setError - Set the error state.
  * @property {() => void} clearError - Clear the error state.
  */
-export default function useLoadingError() {
+export function useLoadingError() {
     const loading = ref(undefined);
     const error = ref(null);
     const errored = ref(false);

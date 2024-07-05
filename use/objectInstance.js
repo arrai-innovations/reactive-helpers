@@ -1,6 +1,6 @@
 import { getObjectCrud } from "../config/objectCrud.js";
 import { assignReactiveObject } from "../utils/assignReactiveObject.js";
-import useLoadingError from "./loadingError.js";
+import { useLoadingError } from "./loadingError.js";
 import { reactive, toRef } from "vue";
 
 /**

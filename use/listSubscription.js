@@ -2,7 +2,7 @@ import { loadingCombine } from "../utils/loadingCombine.js";
 import { useCancellableIntent } from "./cancellableIntent.js";
 import { useListInstance } from "./listInstance.js";
 import { listInstanceStateKeys } from "./listKeys.js";
-import useLoadingError from "./loadingError.js";
+import { useLoadingError } from "./loadingError.js";
 import inspect from "browser-util-inspect";
 import cloneDeep from "lodash-es/cloneDeep.js";
 import isEmpty from "lodash-es/isEmpty.js";

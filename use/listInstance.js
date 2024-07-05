@@ -1,7 +1,7 @@
 import { getListCrud } from "../config/listCrud.js";
 import { assignReactiveObject } from "../utils/assignReactiveObject.js";
 import { getFakeId } from "../utils/getFakeId.js";
-import useLoadingError from "./loadingError.js";
+import { useLoadingError } from "./loadingError.js";
 import inspect from "browser-util-inspect";
 import { computed, effectScope, nextTick, reactive, readonly, ref, toRef, unref, watch } from "vue";
 
