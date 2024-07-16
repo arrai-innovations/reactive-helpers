@@ -3,6 +3,12 @@ import cloneDeep from "lodash-es/cloneDeep.js";
 import isFunction from "lodash-es/isFunction.js";
 import { isReactive, toRef } from "vue";
 
+/**
+ * Configuration for the default object crud functions.
+ *
+ * @module config/objectCrud.js
+ */
+
 const defaultCrud = {
     args: {},
     retrieve: undefined,

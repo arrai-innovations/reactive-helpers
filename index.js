@@ -1,3 +1,4 @@
+// don't use default exports. it is easier if each file defines the canonical name for the function it exports.
 export * from "./config/listCrud.js";
 export * from "./config/objectCrud.js";
 export * from "./use/cancellableIntent.js";
