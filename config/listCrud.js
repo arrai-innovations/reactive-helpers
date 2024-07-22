@@ -66,7 +66,7 @@ const defaultCrud = {
  */
 
 /**
- * @typedef {(DeleteFnArgs)=>void} bulkDeleteFn
+ * @typedef {(DeleteFnArgs)=>void} BulkDeleteFn
  */
 
 /**
@@ -76,7 +76,7 @@ const defaultCrud = {
 /**
  * @typedef {object} ListCrudFunctions
  * @property {ListFn} [list] - The list function to get a list of items.
- * @property {bulkDeleteFn} [bulkDelete] - The delete function to bulk delete a list of items.
+ * @property {BulkDeleteFn} [bulkDelete] - The delete function to bulk delete a list of items.
  * @property {SubscribeFn} [subscribe] - The subscribe function to get a subscription to a list of items.
  */
 

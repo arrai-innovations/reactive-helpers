@@ -175,6 +175,13 @@ Updates an object in the list.
 
 Default implementation are used as set by `setListCrud`.
 
+###### bulkDelete
+
+> **bulkDelete**: [`BulkDeleteFn`](../config/listCrud.md#bulkdeletefn)
+
+Provide the implementation for the bulkDelete
+ function.
+
 ###### list
 
 > **list**: [`ListFn`](../config/listCrud.md#listfn)
