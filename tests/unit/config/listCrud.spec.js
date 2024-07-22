@@ -30,7 +30,7 @@ describe("config/listCrud.js", () => {
              */
             const retrievedCrud = reactive({});
             expect(() => getListCrud(retrievedCrud)).not.toThrow();
-            expect(new Set(Object.keys(retrievedCrud))).toEqual(new Set(["list", "subscribe", "args"]));
+            expect(new Set(Object.keys(retrievedCrud))).toEqual(new Set(["list", "bulkDelete", "subscribe", "args"]));
             expect(retrievedCrud.args).not.toBe(crud.args);
             expect(retrievedCrud.args).toEqual(crud.args);
             expect(retrievedCrud.list).toBe(crud.list);

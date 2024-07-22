@@ -53,6 +53,8 @@ export class ListInstanceError extends Error {
  * @property {object} [functions] - Default implementation are used as set by `setListCrud`.
  * @property {import('../config/listCrud.js').ListFn} [functions.list] - Provide the implementation for the list
  *  function.
+ *  @property {import('../config/listCrud.js').BulkDeleteFn} [functions.bulkDelete] - Provide the implementation for the bulkDelete
+ *  function.
  * @property {import('../config/listCrud.js').SubscribeFn} [functions.subscribe] - Provide the implementation for the
  *  subscribe function.
  * @property {boolean} [keepOldPages=false] - If true, pages will not be cleared when defaultPageCallback is called.
@@ -254,6 +256,7 @@ export function useListInstance({ props, functions = {}, keepOldPages = false })
         crud: {
             args: {},
             list: undefined,
+            bulkDelete: undefined,
         },
         retrieveArgs: toRef(props, "retrieveArgs"),
         listArgs: toRef(props, "listArgs"),
@@ -292,6 +295,31 @@ export function useListInstance({ props, functions = {}, keepOldPages = false })
         list: null,
     };
 
+    async function bulkDeleteFn() {
+        if (state.loading) {
+            return Promise.reject(new ListInstanceError("already loading.", "already-loading"));
+        }
+        loadingError.setLoading();
+        loadingError.clearError();
+        return state.crud
+            .bulkDelete({
+                crudArgs: state.crud.args,
+                ids: Object.keys(state.objects).map(Number),
+            })
+            .then(() => {
+                assignReactiveObject(state.objects, {});
+                loadingError.clearError();
+                return Promise.resolve(true);
+            })
+            .catch((error) => {
+                loadingError.setError(error);
+                return Promise.resolve(false);
+            })
+            .finally(() => {
+                loadingError.clearLoading();
+            });
+    }
+
     function list() {
         // this function cannot be async, or the resulting promise will lose its .cancel() method
         if (promises.list) {
@@ -316,6 +344,7 @@ export function useListInstance({ props, functions = {}, keepOldPages = false })
             pageCallback: returnedObject.pageCallback,
             isCancelled: readonly(isCancelled),
         });
+
         let resolveState = false;
         if (listPromise.cancel) {
             promises.list.cancel = async () => {
@@ -422,6 +451,7 @@ export function useListInstance({ props, functions = {}, keepOldPages = false })
     const returnedObject = {
         state,
         list,
+        bulkDelete: bulkDeleteFn,
         addListObject,
         updateListObject,
         deleteListObject,
