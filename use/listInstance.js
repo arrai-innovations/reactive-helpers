@@ -306,6 +306,7 @@ export function useListInstance({ props, functions = {}, keepOldPages = false })
             })
             .then(() => {
                 assignReactiveObject(state.objects, {});
+                loadingError.clearError();
                 return Promise.resolve(true);
             })
             .catch((error) => {
@@ -341,6 +342,7 @@ export function useListInstance({ props, functions = {}, keepOldPages = false })
             pageCallback: returnedObject.pageCallback,
             isCancelled: readonly(isCancelled),
         });
+
         let resolveState = false;
         if (listPromise.cancel) {
             promises.list.cancel = async () => {
