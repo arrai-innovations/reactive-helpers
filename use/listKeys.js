@@ -17,6 +17,7 @@ export const listInstanceStateKeys = [
 ];
 export const listInstanceFunctions = [
     "list",
+    "bulkDelete",
     "addListObject",
     "updateListObject",
     "deleteListObject",

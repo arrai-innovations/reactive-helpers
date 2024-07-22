@@ -254,6 +254,7 @@ export function useListInstance({ props, functions = {}, keepOldPages = false })
         crud: {
             args: {},
             list: undefined,
+            bulkDelete: undefined,
         },
         retrieveArgs: toRef(props, "retrieveArgs"),
         listArgs: toRef(props, "listArgs"),
@@ -291,6 +292,30 @@ export function useListInstance({ props, functions = {}, keepOldPages = false })
     const promises = {
         list: null,
     };
+
+    async function bulkDeleteFn() {
+        if (state.loading) {
+            return Promise.reject(new ListInstanceError("already loading.", "already-loading"));
+        }
+        loadingError.setLoading();
+        loadingError.clearError();
+        return state.crud
+            .bulkDelete({
+                crudArgs: state.crud.args,
+                ids: Object.keys(state.objects).map(Number),
+            })
+            .then(() => {
+                assignReactiveObject(state.objects, {});
+                return Promise.resolve(true);
+            })
+            .catch((error) => {
+                loadingError.setError(error);
+                return Promise.resolve(false);
+            })
+            .finally(() => {
+                loadingError.clearLoading();
+            });
+    }
 
     function list() {
         // this function cannot be async, or the resulting promise will lose its .cancel() method
@@ -422,6 +447,7 @@ export function useListInstance({ props, functions = {}, keepOldPages = false })
     const returnedObject = {
         state,
         list,
+        bulkDelete: bulkDeleteFn,
         addListObject,
         updateListObject,
         deleteListObject,

@@ -8,6 +8,24 @@
 
 ## Interfaces
 
+### DeleteFnArgs
+
+#### Properties
+
+##### crudArgs
+
+> **crudArgs**: `any`
+
+The arguments to be passed to the crud functions.
+
+##### ids
+
+> **ids**: `string`[]
+
+The ids of the objects to be deleted.
+
+***
+
 ### ListCrudArgs
 
 #### Properties
@@ -23,6 +41,12 @@ The default arguments for the crud functions.
 ### ListCrudFunctions
 
 #### Properties
+
+##### bulkDelete
+
+> **bulkDelete**: [`bulkDeleteFn`](listCrud.md#bulkdeletefn)
+
+The delete function to bulk delete a list of items.
 
 ##### list
 
@@ -195,6 +219,22 @@ The method to call when new data is received.
 
 `void`
 
+***
+
+### bulkDeleteFn()
+
+> **bulkDeleteFn**\<\>: (`DeleteFnArgs`) => `void`
+
+#### Type Parameters
+
+#### Parameters
+
+• **DeleteFnArgs**: `any`
+
+#### Returns
+
+`void`
+
 ## Functions
 
 ### getListCrud()
@@ -212,6 +252,10 @@ The reactive crud object, which will be mutated.
 • **reactiveCrud.args**: `any`
 
 The default arguments for the crud functions.
+
+• **reactiveCrud.bulkDelete**: [`bulkDeleteFn`](listCrud.md#bulkdeletefn)
+
+The delete function to bulk delete a list of items.
 
 • **reactiveCrud.list**: [`ListFn`](listCrud.md#listfn)
 

@@ -12,6 +12,7 @@ import { isReactive, toRef } from "vue";
 const defaultCrud = {
     args: {},
     list: undefined,
+    bulkDelete: undefined,
     subscribe: undefined,
 };
 
@@ -40,6 +41,12 @@ const defaultCrud = {
  */
 
 /**
+ * @typedef {object} DeleteFnArgs
+ * @property {object} crudArgs - The arguments to be passed to the crud functions.
+ * @property {string[]} ids - The ids of the objects to be deleted.
+ */
+
+/**
  * @typedef {(
  *     newOrUpdatedOrDeleteObject:import('../use/listInstance.js').ListObject|string,
  *     action: 'create'|'update'|'delete'
@@ -59,12 +66,17 @@ const defaultCrud = {
  */
 
 /**
+ * @typedef {(DeleteFnArgs)=>void} bulkDeleteFn
+ */
+
+/**
  * @typedef {(SubscribeFnArgs)=>void} SubscribeFn
  */
 
 /**
  * @typedef {object} ListCrudFunctions
  * @property {ListFn} [list] - The list function to get a list of items.
+ * @property {bulkDeleteFn} [bulkDelete] - The delete function to bulk delete a list of items.
  * @property {SubscribeFn} [subscribe] - The subscribe function to get a subscription to a list of items.
  */
 
@@ -80,9 +92,10 @@ const defaultCrud = {
  * @throws {Error} - If unknown keys are passed.
  * @returns {void}
  */
-export const setListCrud = ({ list, subscribe, args = {}, ...rest }) => {
+export const setListCrud = ({ list, bulkDelete, subscribe, args = {}, ...rest }) => {
     defaultCrud.list = list;
     defaultCrud.subscribe = subscribe;
+    defaultCrud.bulkDelete = bulkDelete;
     Object.assign(defaultCrud.args, cloneDeep(args));
     if (Object.keys(rest).length) {
         throw new Error(`Unknown key(s) passed to setListCrud: ${Object.keys(rest).join(", ")}`);
