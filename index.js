@@ -19,6 +19,7 @@ export * from "./use/objectInstance.js";
 export * from "./use/objectRelated.js";
 export * from "./use/objectSubscription.js";
 export * from "./use/paginatedListInstance.js";
+export * from "./use/proxyLoadingError.js";
 export * from "./use/search.js";
 export * from "./use/watchesRunning.js";
 export * from "./utils/assignReactiveObject.js";

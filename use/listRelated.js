@@ -34,7 +34,7 @@ import { computed, effectScope, onScopeDispose, reactive, ref, toRef, unref, wat
  * @typedef {object} ListRelatedRule
  * @property {string} pkKey - Specifies the foreign key used to link objects across lists. Planned to be renamed to
  *  'fkKey' to better reflect its usage.
- * @property {string[]} order - Specifies the order in which related objects should be sorted, if applicable.
+ * @property {string[]} [order] - Specifies the order in which related objects should be sorted, if applicable.
  * @property {import('./listInstance.js').ObjectsById} objects - The objects that can be related based on the foreign key.
  */
 

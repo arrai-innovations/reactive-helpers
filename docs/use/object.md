@@ -502,6 +502,8 @@ Whether the subscription is loading.
 
 > **useObject**(`options`): [`ObjectManager`](object.md#objectmanager)
 
+Initializes a chain of useObject* functions, returning an object of them.
+
 #### Parameters
 
 • **options**: [`ObjectManagerOptions`](object.md#objectmanageroptions)
@@ -514,11 +516,104 @@ The options to be passed to useObjectInstance, useObjectSubscription, useObjectR
 
 - An object managing a chain of useObject* instances.
 
+#### Example
+
+```
+<script setup>
+import { useObject } from "@arrai-innovations/reactive-helpers";
+import { reactive, ref, toRef } from "vue";
+
+const someObjectsSource = reactive({
+    objects: {
+        '1': { id: 1, name: 'one', secondOrderId: 15 },
+        '2': { id: 2, name: 'two', secondOrderId: 10 },
+        '3': { id: 3, name: 'three', secondOrderId: 5 },
+    },
+});
+const someOtherObjectsSource = reactive({
+    objects: {
+        '5': { id: 5, name: 'five' },
+        '10': { id: 10, name: 'ten' },
+        '15': { id: 15, name: 'fifteen' },
+    },
+});
+const props = defineProps({
+    app: { type: String, required: true },
+    model: { type: String, required: true },
+    id: { type: String, default: "" },
+});
+
+const objectProps = reactive({
+    crudArgs: {
+        app: toRef(props, "app"),
+        model: toRef(props, "model"),
+    },
+    retrieveArgs: {
+        fields: ['foo', 'bar'],
+    },
+    relatedObjectRules: {
+        firstOrder: {
+            pkKey: 'some_objects_id',
+            objects: someObjectsSource.objects,
+        },
+        some_objects_list_ids: {
+            // pkKey defaults to match rule name
+            objects: someObjectsSource.objects,
+            order: ['3','1','2'],
+        },
+        secondOrder: {
+            pkKey: 'relatedObject.secondOrderId',
+            objects: someOtherObjectsSource.objects,
+        },
+    },
+    calculatedObjectRules: {
+        someRule: (object, relatedObject, calculatedObjects) => {
+            // some complex calculation, relatedObjects would be assuming there was a listRelated between the two
+            // calculatedObjects would be the other calculated objects in the list
+            // including yourself, so try not to create circular dependencies
+            // this is used as a computed body.
+            return object.foo + object.name;
+        },
+        ...
+    },
+    intendToRetrieve: false,
+    intendToSubscribe: false,
+});
+objectProps.intendToRetrieve = objectProps.intendToSubscribe = computed(()=> !!props.id);
+const objectManager = useObject(objectProps);
+// objectManager.state.object comes back from the server (via configured crud retrieve function)
+// { id: 2, name: 'two', foo: 'bar', some_objects_id: 2, some_objects_list_ids: ['1','2','3'] }
+</script>
+<template>
+<div v-if="objectManager.state.loading">Loading...</div>
+<div v-else-if="objectManager.state.errored">Error: {{ objectManager.state.error.message }}</div>
+<div v-else-if="objectManager.state.object.id">
+    <p>Foo: {{ objectManager.state.object.foo }}</p>
+    <!-- 'bar' -->
+
+    <p>{{ objectManager.state.relatedObject.firstOrder }}</p>
+     <!-- { id: 2, name: 'two', secondOrderId: 10 } -->
+
+     <p>{{ objectManager.state.relatedObject.some_objects_list_ids }}</p>
+     <!-- [{ id: 3, name: 'three', secondOrderId: 5 }, { id: 1, name: 'one', secondOrderId: 15 }, { id: 2, name: 'two', secondOrderId: 10 }] -->
+
+     <p>{{ objectManager.state.relatedObject.secondOrder }}</p>
+     <!-- { id: 10, name: 'ten' } -->
+
+     <p>{{ objectManager.state.calculatedObject.someRule }}</p>
+     <!-- 'bartwo' -->
+</div>
+<div v-else>Object not found.</div>
+</template>
+```
+
 ***
 
 ### useObjects()
 
 > **useObjects**(`objectArgs`): `object`
+
+Initializes multiple useObject instances, returning an object of them based on the keys of the objectArgs.
 
 #### Parameters
 

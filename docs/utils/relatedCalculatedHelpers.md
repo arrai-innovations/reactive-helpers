@@ -24,6 +24,8 @@
 
 > **getObjectRelatedByKey**(`obj`, `relatedObj`, `key`): [`any`, `string`]
 
+Get the object and key of a related item.
+
 #### Parameters
 
 • **obj**: `any`
@@ -49,6 +51,8 @@ The object and key of the related item.
 ### getObjectRelatedCalculatedByKey()
 
 > **getObjectRelatedCalculatedByKey**(`obj`, `relatedObj`, `calculatedObj`, `key`): [`any`, `string`]
+
+Get the object and key of a calculated item.
 
 #### Parameters
 

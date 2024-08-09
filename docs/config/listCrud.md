@@ -289,6 +289,8 @@ The props to set for the crud.
 
 > **setListCrud**(`options`): `void`
 
+Set the list and subscribe functions for the default crud.
+
 #### Parameters
 
 • **options**: [`ListCrudFunctions`](listCrud.md#listcrudfunctions) & `Partial`\<[`ListCrudArgs`](listCrud.md#listcrudargs)\>
@@ -298,3 +300,7 @@ The options for the default crud.
 #### Returns
 
 `void`
+
+#### Throws
+
+- If unknown keys are passed.

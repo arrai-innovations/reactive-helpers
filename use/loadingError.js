@@ -5,14 +5,28 @@ import { readonly, ref } from "vue";
  */
 
 /**
- * @typedef {object} LoadingError
+ * The common API for loading and error states.
+ *
+ * @typedef {object} LoadingErrorStatus
  * @property {Readonly<import("vue").Ref<boolean|undefined>>} loading - Whether the component is loading.
  * @property {Readonly<import("vue").Ref<Error|null>>} error - The error that occurred.
  * @property {Readonly<import("vue").Ref<boolean>>} errored - Whether an error has occurred.
+ * @property {() => void} clearError - Clear the error state.
+ */
+
+/**
+ * The writable API for loading and error states.
+ *
+ * @typedef {object} LoadingErrorMutations
  * @property {() => void} setLoading - Set the loading state.
  * @property {() => void} clearLoading - Clear the loading state.
  * @property {(error) => void} setError - Set the error state.
- * @property {() => void} clearError - Clear the error state.
+ */
+
+/**
+ * The instance of useLoadingError.
+ *
+ * @typedef {LoadingErrorStatus & LoadingErrorMutations} LoadingError
  */
 
 /**

@@ -8,19 +8,9 @@
 
 ## Interfaces
 
-### LoadingError
+### LoadingErrorMutations
 
 #### Properties
-
-##### clearError()
-
-> **clearError**: () => `void`
-
-Clear the error state.
-
-###### Returns
-
-`void`
 
 ##### clearLoading()
 
@@ -31,24 +21,6 @@ Clear the loading state.
 ###### Returns
 
 `void`
-
-##### error
-
-> **error**: `Readonly`\<`Ref`\<`Error`\>\>
-
-The error that occurred.
-
-##### errored
-
-> **errored**: `Readonly`\<`Ref`\<`boolean`\>\>
-
-Whether an error has occurred.
-
-##### loading
-
-> **loading**: `Readonly`\<`Ref`\<`boolean`\>\>
-
-Whether the component is loading.
 
 ##### setError()
 
@@ -73,6 +45,48 @@ Set the loading state.
 ###### Returns
 
 `void`
+
+***
+
+### LoadingErrorStatus
+
+#### Properties
+
+##### clearError()
+
+> **clearError**: () => `void`
+
+Clear the error state.
+
+###### Returns
+
+`void`
+
+##### error
+
+> **error**: `Readonly`\<`Ref`\<`Error`\>\>
+
+The error that occurred.
+
+##### errored
+
+> **errored**: `Readonly`\<`Ref`\<`boolean`\>\>
+
+Whether an error has occurred.
+
+##### loading
+
+> **loading**: `Readonly`\<`Ref`\<`boolean`\>\>
+
+Whether the component is loading.
+
+## Type Aliases
+
+### LoadingError
+
+> **LoadingError**\<\>: [`LoadingErrorStatus`](loadingError.md#loadingerrorstatus) & [`LoadingErrorMutations`](loadingError.md#loadingerrormutations)
+
+#### Type Parameters
 
 ## Functions
 

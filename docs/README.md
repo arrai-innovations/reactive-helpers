@@ -26,6 +26,7 @@
 - [use/objectRelated](use/objectRelated.md)
 - [use/objectSubscription](use/objectSubscription.md)
 - [use/paginatedListInstance](use/paginatedListInstance.md)
+- [use/proxyLoadingError](use/proxyLoadingError.md)
 - [use/search](use/search.md)
 - [use/watchesRunning](use/watchesRunning.md)
 - [utils/assignReactiveObject](utils/assignReactiveObject.md)

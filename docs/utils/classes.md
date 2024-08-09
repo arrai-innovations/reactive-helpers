@@ -30,6 +30,11 @@ The normalized form of the CSS classes, either as a string of space-separated cl
 
 > **combineClasses**(...`classes`): [`CombinedClasses`](classes.md#combinedclasses)
 
+Combines and normalizes different formats of CSS class specifications into a single format suitable for Vue.js
+ components. If objects are in the mix, objects are returned. Otherwise, a string is returned.
+
+We unref your refs, so probably want a computed around this.
+
 #### Parameters
 
 • ...**classes**: ([`CombinedClassesArgument`](classes.md#combinedclassesargument) \| [`CombinedClassesArgument`](classes.md#combinedclassesargument)[])[]
@@ -50,6 +55,8 @@ A variable list of class specifications in
 
 > **objectifyClasses**(...`classes`): `object` \| `object`[]
 
+Normalize various ways of specifying CSS classes into an object for use in Vue.js.
+
 #### Parameters
 
 • ...**classes**: (`string` \| `string`[] \| `string`[][] \| `object` \| `Ref`\<`string` \| `string`[] \| `string`[][]\>)[]
@@ -69,6 +76,8 @@ An object or array of objects containing CSS classes. Arrays are used if refs ar
 
 > **stringifyClass**(`cls`): `string`
 
+Normalizes various ways of specifying CSS classes into a space-separated list of CSS classes.
+
 #### Parameters
 
 • **cls**: `string` \| `string`[] \| `object`
@@ -86,6 +95,8 @@ A space-separated list of CSS classes.
 ### stringifyClasses()
 
 > **stringifyClasses**(...`classes`): `string`
+
+Normalizes various ways of specifying CSS classes into a space-separated list of CSS classes.
 
 #### Parameters
 

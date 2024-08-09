@@ -254,6 +254,9 @@ Current text query used for filtering the list.
 
 > **useList**(`options`): [`ListManager`](list.md#listmanager)
 
+Creates and manages an enhanced list instance by orchestrating various list-related composables.
+It ensures seamless integration of all list functionalities such as sorting, searching, filtering, and advanced state management.
+
 #### Parameters
 
 • **options**: [`ListOptions`](list.md#listoptions)
@@ -266,11 +269,18 @@ The options for the list./.
 
 - The managed stack of list-related composable functions.
 
+#### Example
+
+```vue
+```
+
 ***
 
 ### useLists()
 
 > **useLists**(`listOptions`): `object`
+
+Initializes multiple list management instances with provided configurations.
 
 #### Parameters
 

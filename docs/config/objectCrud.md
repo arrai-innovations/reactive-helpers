@@ -326,6 +326,10 @@ The arguments to be passed to the crud functions.
 
 `void`
 
+#### Throws
+
+- If an invalid function is passed, or if the function is not a function.
+
 ***
 
 ### setObjectCrud()
@@ -343,3 +347,7 @@ The options for the object crud functions.
 #### Returns
 
 `void`
+
+#### Throws
+
+- if unknown keys are passed.
