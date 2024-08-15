@@ -16,7 +16,7 @@
 
 > **id**: `string`
 
-The document field to use as an identifier. Default is "id".
+The document field to use as an identifier. Populated from `pkKey`.
 
 ##### index
 
@@ -106,7 +106,7 @@ FlexSearch.Document options.
 
 > **id**: `string`
 
-The document field to use as an identifier. Default is "id".
+The document field to use as an identifier. Populated from `pkKey`.
 
 ###### customDocumentOptions.index
 
@@ -221,6 +221,12 @@ FlexSearch.Document options.
 > **customSearchOptions**: [`SearchOptions`](search.md#searchoptions)
 
 Search options.
+
+##### pkKey
+
+> **pkKey**: `string`
+
+The primary key field.
 
 ***
 

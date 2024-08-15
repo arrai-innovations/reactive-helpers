@@ -58,6 +58,7 @@ describe("use/useListSort", () => {
         listInstance = useListInstance({
             props: {
                 crudArgs: {},
+                pkKey: "id",
                 retrieveArgs: {
                     fields: ["id", "lexical_name", "organization", "relatedObjects"],
                 },
@@ -169,6 +170,7 @@ describe("use/useListSort", () => {
         const listInstanceA = useListInstance({
             props: {
                 crudArgs: { stream: "test_streamA" },
+                pkKey: "id",
                 listArgs: { user: 1 },
                 retrieveArgs: {
                     fields,
@@ -232,6 +234,7 @@ describe("use/useListSort", () => {
             props: reactive({
                 crudArgs: { stream: "test_stream" },
                 listArgs: { user: 1 },
+                pkKey: "id",
                 retrieveArgs: {
                     fields: ["id", "__str__", "name", "relatedItem", "calculatedItem"],
                 },
@@ -241,6 +244,7 @@ describe("use/useListSort", () => {
             props: reactive({
                 crudArgs: { stream: "test_related_stream" },
                 listArgs: { user: 1 },
+                pkKey: "id",
                 retrieveArgs: {
                     fields: ["id", "__str__", "name"],
                 },

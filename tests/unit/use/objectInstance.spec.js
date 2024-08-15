@@ -101,7 +101,8 @@ describe("use/objectInstance.js", function () {
             const objectInstance = useObjectInstance({
                 props: {
                     crudArgs: { stream: "test_stream" },
-                    id,
+                    pk: id,
+                    pkKey: "id",
                     retrieveArgs,
                 },
             });
@@ -131,7 +132,8 @@ describe("use/objectInstance.js", function () {
             expect({ ...objectInstance.state.object }).toEqual(crudRetrieveResolved);
             expect(objectInstance.state.crud.retrieve).toHaveBeenCalledWith({
                 crudArgs: { stream: "test_stream" },
-                id: 1,
+                pk: 1,
+                pkKey: "id",
                 retrieveArgs: { fields: ["id", "__str__", "name"] },
             });
             expect(objectInstance.state.crud.retrieve).toHaveBeenCalledTimes(1);
@@ -172,7 +174,8 @@ describe("use/objectInstance.js", function () {
             expect({ ...objectInstance.state.object }).toEqual(crudRetrieveResolved);
             expect(objectInstance.state.crud.retrieve).toHaveBeenCalledWith({
                 crudArgs: { stream: "test_stream" },
-                id: 1,
+                pk: 1,
+                pkKey: "id",
                 retrieveArgs: { fields: ["id", "__str__", "name"] },
             });
             expect(objectInstance.state.crud.retrieve).toHaveBeenCalledTimes(1);
@@ -213,7 +216,8 @@ describe("use/objectInstance.js", function () {
             expect({ ...objectInstance.state.object }).toEqual({});
             expect(objectInstance.state.crud.retrieve).toHaveBeenCalledWith({
                 crudArgs: { stream: "test_stream" },
-                id: 1,
+                pk: 1,
+                pkKey: "id",
                 retrieveArgs: { fields: ["id", "__str__", "name"] },
             });
             expect(objectInstance.state.crud.retrieve).toHaveBeenCalledTimes(1);
@@ -273,7 +277,8 @@ describe("use/objectInstance.js", function () {
             expect(firstPromise).toBe(secondPromise);
             expect(objectInstance.state.crud.retrieve).toHaveBeenCalledWith({
                 crudArgs: { stream: "test_stream" },
-                id: 1,
+                pk: 1,
+                pkKey: "id",
                 retrieveArgs: { fields: ["id", "__str__", "name"] },
             });
             expect(objectInstance.state.crud.retrieve).toHaveBeenCalledTimes(1);
@@ -290,7 +295,8 @@ describe("use/objectInstance.js", function () {
             const objectInstance = useObjectInstance({
                 props: {
                     crudArgs: { stream: "test_stream" },
-                    id,
+                    pk: id,
+                    pkKey: "id",
                     retrieveArgs,
                 },
             });
@@ -341,7 +347,8 @@ describe("use/objectInstance.js", function () {
             const objectInstance = useObjectInstance({
                 props: {
                     crudArgs: { stream: "test_stream" },
-                    id,
+                    pk: id,
+                    pkKey: "id",
                     retrieveArgs,
                 },
             });
@@ -390,7 +397,8 @@ describe("use/objectInstance.js", function () {
             const objectInstance = useObjectInstance({
                 props: {
                     crudArgs: { stream: "test_stream" },
-                    id,
+                    pk: id,
+                    pkKey: "id",
                     retrieveArgs,
                 },
             });
@@ -440,7 +448,8 @@ describe("use/objectInstance.js", function () {
             const objectInstance = useObjectInstance({
                 props: {
                     crudArgs: { stream: "test_stream" },
-                    id,
+                    pk: id,
+                    pkKey: "id",
                     retrieveArgs,
                 },
             });
@@ -486,7 +495,8 @@ describe("use/objectInstance.js", function () {
             const objectInstance = useObjectInstance({
                 props: {
                     crudArgs: { stream: "test_stream" },
-                    id,
+                    pk: id,
+                    pkKey: "id",
                     retrieveArgs,
                 },
             });
@@ -538,7 +548,8 @@ describe("use/objectInstance.js", function () {
             const objectInstance = useObjectInstance({
                 props: {
                     crudArgs: { stream: "test_stream" },
-                    id,
+                    pk: id,
+                    pkKey: "id",
                     retrieveArgs,
                 },
             });
@@ -588,7 +599,8 @@ describe("use/objectInstance.js", function () {
             const objectInstance = useObjectInstance({
                 props: {
                     crudArgs: { stream: "test_stream" },
-                    id,
+                    pk: id,
+                    pkKey: "id",
                     retrieveArgs,
                 },
             });
@@ -638,7 +650,8 @@ describe("use/objectInstance.js", function () {
             const objectInstance = useObjectInstance({
                 props: {
                     crudArgs: { stream: "test_stream" },
-                    id,
+                    pk: id,
+                    pkKey: "id",
                     retrieveArgs,
                 },
             });
@@ -687,7 +700,8 @@ describe("use/objectInstance.js", function () {
             const objectInstance = useObjectInstance({
                 props: {
                     crudArgs: { stream: "test_stream" },
-                    id,
+                    pk: id,
+                    pkKey: "id",
                     retrieveArgs,
                 },
             });
@@ -740,7 +754,8 @@ describe("use/objectInstance.js", function () {
             const objectInstance = useObjectInstance({
                 props: {
                     crudArgs: { stream: "test_stream" },
-                    id,
+                    pk: id,
+                    pkKey: "id",
                     retrieveArgs,
                 },
             });
@@ -791,7 +806,8 @@ describe("use/objectInstance.js", function () {
             const objectInstance = useObjectInstance({
                 props: {
                     crudArgs: { stream: "test_stream" },
-                    id,
+                    pk: id,
+                    pkKey: "id",
                     retrieveArgs,
                 },
             });
@@ -816,7 +832,8 @@ describe("use/objectInstance.js", function () {
                 crudArgs: {
                     stream: "test_stream",
                 },
-                id: 1,
+                pk: 1,
+                pkKey: "id",
                 partialObject: {
                     id: 1,
                     name: "zxcv!",

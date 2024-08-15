@@ -80,7 +80,7 @@ describe("use/listInstance.spec.js", function () {
             const retrieveArgs = reactive({
                 fields,
             });
-            const listInstance = useListInstance({ props: { listArgs, retrieveArgs } });
+            const listInstance = useListInstance({ props: { pkKey: "id", listArgs, retrieveArgs } });
             let crudListResolve;
             const crudListPromise = new Promise((resolve) => {
                 crudListResolve = resolve;
@@ -132,6 +132,7 @@ describe("use/listInstance.spec.js", function () {
             expect({ ...listInstance.state.objects }).toEqual(crudListResolvedObjects2);
             expect(globalList).toHaveBeenCalledWith({
                 crudArgs: { stream: "test_stream" },
+                pkKey: "id",
                 listArgs: { user: 1 },
                 retrieveArgs: { fields: fields },
                 pageCallback: passedPageCallback,
@@ -146,7 +147,7 @@ describe("use/listInstance.spec.js", function () {
             const retrieveArgs = reactive({
                 fields,
             });
-            const listInstance = useListInstance({ props: { listArgs, retrieveArgs } });
+            const listInstance = useListInstance({ props: { pkKey: "id", listArgs, retrieveArgs } });
             expectErrorToBeNull(listInstance.state.error);
             expect(listInstance.state.errored).toBe(false);
             expect(listInstance.state.loading).toBeUndefined();
@@ -158,6 +159,7 @@ describe("use/listInstance.spec.js", function () {
 
             expect(globalList).toHaveBeenCalledWith({
                 crudArgs: { stream: "test_stream" },
+                pkKey: "id",
                 listArgs: { user: 1 },
                 retrieveArgs: { fields: fields },
                 pageCallback: expect.any(Function),
@@ -176,7 +178,7 @@ describe("use/listInstance.spec.js", function () {
             const retrieveArgs = reactive({
                 fields,
             });
-            const listInstance = useListInstance({ props: { listArgs, retrieveArgs } });
+            const listInstance = useListInstance({ props: { pkKey: "id", listArgs, retrieveArgs } });
             let crudListReject;
             const crudListPromise = new Promise((resolve, reject) => {
                 crudListReject = reject;
@@ -214,6 +216,7 @@ describe("use/listInstance.spec.js", function () {
             expect({ ...listInstance.state.objects }).toEqual({});
             expect(globalList).toHaveBeenCalledWith({
                 crudArgs: { stream: "test_stream" },
+                pkKey: "id",
                 listArgs: { user: 1 },
                 retrieveArgs: { fields: fields },
                 pageCallback: passedPageCallback,
@@ -229,7 +232,7 @@ describe("use/listInstance.spec.js", function () {
                 fields,
             });
             const listInstance = useListInstance({
-                props: { listArgs, retrieveArgs, crudArgs: { stream: "custom_stream" } },
+                props: { pkKey: "id", listArgs, retrieveArgs, crudArgs: { stream: "custom_stream" } },
             });
             let crudListResolve;
             const crudListPromise = new Promise((resolve) => {
@@ -283,6 +286,7 @@ describe("use/listInstance.spec.js", function () {
             expect({ ...listInstance.state.objects }).toEqual(crudListResolvedObjects2);
             expect(globalList).toHaveBeenCalledWith({
                 crudArgs: { stream: "custom_stream" },
+                pkKey: "id",
                 listArgs: { user: 1 },
                 retrieveArgs: { fields: fields },
                 pageCallback: passedPageCallback,
@@ -333,6 +337,7 @@ describe("use/listInstance.spec.js", function () {
             expect(listInstance.state.objectsInOrder).toEqual(Object.values(crudListResolvedObjects2));
             expect(globalList).toHaveBeenCalledWith({
                 crudArgs: { stream: "test_stream" },
+                pkKey: "id",
                 listArgs: { user: 1 },
                 retrieveArgs: { fields: fields },
                 pageCallback: passedPageCallback,
@@ -354,7 +359,8 @@ describe("use/listInstance.spec.js", function () {
         const listInstanceA = useListInstance({
             props: {
                 crudArgs: { stream: "test_streamA" },
-                id: 1,
+                pk: 1,
+                pkKey: "id",
                 retrieveArgs: {
                     fields,
                 },
@@ -363,7 +369,8 @@ describe("use/listInstance.spec.js", function () {
         const listInstanceB = useListInstance({
             props: {
                 crudArgs: { stream: "test_streamB" },
-                id: 2,
+                pk: 2,
+                pkKey: "id",
                 retrieveArgs: {
                     fields,
                 },
@@ -373,7 +380,8 @@ describe("use/listInstance.spec.js", function () {
             A: {
                 props: {
                     crudArgs: { stream: "test_streamA" },
-                    id: 1,
+                    pk: 1,
+                    pkKey: "id",
                     retrieveArgs: {
                         fields,
                     },
@@ -382,7 +390,8 @@ describe("use/listInstance.spec.js", function () {
             B: {
                 props: {
                     crudArgs: { stream: "test_streamB" },
-                    id: 2,
+                    pk: 2,
+                    pkKey: "id",
                     retrieveArgs: {
                         fields,
                     },
@@ -396,13 +405,13 @@ describe("use/listInstance.spec.js", function () {
         it("errored", function () {
             const listInstance = useListInstance({ props: {} });
             expect(() => listInstance.addListObject({ listObject })).toThrowError(ListInstanceError);
-            listObject.id = listInstance.getFakeId();
+            listObject.id = listInstance.getFakePk();
             listInstance.addListObject(listObject);
             expect(() => listInstance.addListObject({ listObject })).toThrowError(ListInstanceError);
         });
         it("succeeded", async function () {
             const listInstance = useListInstance({ props: {} });
-            const newId = listInstance.getFakeId();
+            const newId = listInstance.getFakePk();
             listObject.id = newId;
             listInstance.addListObject(listObject);
             expect(listInstance.state.objects[newId]).toEqual(listObject);
@@ -523,7 +532,7 @@ describe("use/listInstance.spec.js", function () {
             const retrieveArgs = reactive({
                 fields,
             });
-            const listInstance = useListInstance({ props: { listArgs, retrieveArgs } });
+            const listInstance = useListInstance({ props: { pkKey: "id", listArgs, retrieveArgs } });
             let crudListResolve;
             const crudListPromise = new Promise((resolve) => {
                 crudListResolve = resolve;
@@ -561,10 +570,10 @@ describe("use/listInstance.spec.js", function () {
             expect({ ...listInstance.state.objects }).toEqual({});
         });
     });
-    describe("getFakeId", function () {
+    describe("getFakePk", function () {
         it("returns fakeId", function () {
             const listInstance = useListInstance({ props: {} });
-            const fakeId = listInstance.getFakeId();
+            const fakeId = listInstance.getFakePk();
             expect(fakeId).toBeTruthy();
         });
     });
@@ -592,7 +601,9 @@ describe("use/listInstance.spec.js", function () {
             __str__: "yuio",
             name: "yiuo",
         };
-        const listInstance = useListInstance({ props: { listArgs: { user: 1 }, retrieveArgs: { fields: fields } } });
+        const listInstance = useListInstance({
+            props: { pkKey: "id", listArgs: { user: 1 }, retrieveArgs: { fields: fields } },
+        });
         let crudListResolve;
         const crudListPromise = new Promise((resolve) => {
             crudListResolve = resolve;

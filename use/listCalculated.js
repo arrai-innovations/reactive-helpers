@@ -47,7 +47,7 @@ import { computed, effectScope, onScopeDispose, reactive, ref, toRef, unref, wat
  * The raw state for a list calculated.
  *
  * @typedef {object} ListCalculatedRawState - The raw state for a list calculated property.
- * @property {{[id: string]: {[rule: string]: import('vue').ComputedRef<any>}}} calculatedObjects - The calculated objects.
+ * @property {{[pk: string]: {[rule: string]: import('vue').ComputedRef<any>}}} calculatedObjects - The calculated objects.
  * @property {ListCalculatedRules} calculatedObjectsRules - The rules for the calculated objects.
  * @property {boolean} calculatedObjectsParentStateObjectsWatchRunning - Whether the parent state objects watch is running.
  * @property {boolean} calculatedObjectsWatchRunning - Whether the calculated objects watch is running.
@@ -160,6 +160,7 @@ export function useListCalculateds(listCalculatedArgs) {
  *     // whatever props you need to get the list to work with your crud implementation
  *     crudArgs: {},
  *     listArgs: {},
+ *     pkKey: "pk",
  *     retrieveArgs: {},
  *     intendToList: true,
  * });
@@ -185,7 +186,7 @@ export function useListCalculateds(listCalculatedArgs) {
  *             {{ obj }}
  *             <div>
  *                 <!-- the computed object or objects based on the rule -->
- *                 {{ listComputed.state.computedObjects[obj.id].someRule }}
+ *                 {{ listComputed.state.computedObjects[obj.pk].someRule }}
  *             </div>
  *         </li>
  *     </ul>

@@ -138,12 +138,6 @@ The error.
 
 Whether the object errored.
 
-###### id
-
-> **id**: `string`
-
-The id of the object.
-
 ###### intendToRetrieve
 
 > **intendToRetrieve**: `boolean`
@@ -167,6 +161,18 @@ Whether the object is loading.
 > **object**: `object` \| `object`
 
 The object.
+
+###### pk
+
+> **pk**: `string`
+
+The pk of the object.
+
+###### pkKey
+
+> **pkKey**: `string`
+
+The pk key of the object.
 
 ###### retrieveArgs
 
@@ -318,12 +324,6 @@ The error.
 
 Whether the object errored.
 
-###### id
-
-> **id**: `string`
-
-The id of the object.
-
 ###### intendToRetrieve
 
 > **intendToRetrieve**: `boolean`
@@ -353,6 +353,18 @@ The object.
 > **parentStateObjectWatchRunning**: `boolean`
 
 Whether the parent state object watch is running.
+
+###### pk
+
+> **pk**: `string`
+
+The pk of the object.
+
+###### pkKey
+
+> **pkKey**: `string`
+
+The pk key of the object.
 
 ###### relatedObject
 
@@ -490,7 +502,7 @@ Whether the related objects are loading or the parent state is loading.
 
 ##### objects
 
-> **objects**: [`ObjectsById`](listInstance.md#objectsbyid)
+> **objects**: [`ObjectsByPk`](listInstance.md#objectsbypk)
 
 The related objects, indexed by the key in the related object.
 
@@ -620,7 +632,8 @@ const someOtherObjectsSource = reactive({
 const objectSubscriptionProps = reactive({
     crudArgs: { app: 'foo', model: 'bar'},
     retrieveArgs: {},
-    id: '99',
+    pk: '99',
+    pkKey: 'id',
     intendToSubscribe: true,
     intendToRetreive: true,
 });

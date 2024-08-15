@@ -43,7 +43,8 @@ describe.skip("use/objectSubscription.js", function () {
 
         objectSubscription = useObjectSubscription({
             props: {
-                id: 1,
+                pk: 1,
+                pkKey: "id",
                 retrieveArgs: cloneDeep({ fields }),
             },
         });
@@ -134,7 +135,8 @@ describe.skip("use/objectSubscription.js", function () {
 
             expect(globalRetrieve).toHaveBeenCalledWith({
                 crudArgs: { stream: "test_stream" },
-                id: 1,
+                pk: 1,
+                pkKey: "id",
                 retrieveArgs: {
                     fields,
                 },
@@ -142,7 +144,8 @@ describe.skip("use/objectSubscription.js", function () {
             expect(globalRetrieve).toHaveBeenCalledTimes(1);
             expect(globalSubscribe).toHaveBeenCalledWith({
                 crudArgs: { stream: "test_stream" },
-                id: 1,
+                pk: 1,
+                pkKey: "id",
                 retrieveArgs: {
                     fields,
                 },
@@ -211,7 +214,8 @@ describe.skip("use/objectSubscription.js", function () {
             expect(globalRetrieve).toHaveBeenCalledTimes(0);
             expect(globalSubscribe).toHaveBeenNthCalledWith(1, {
                 crudArgs: { stream: "test_stream" },
-                id: 1,
+                pk: 1,
+                pkKey: "id",
                 retrieveArgs: {
                     fields,
                 },
@@ -273,7 +277,8 @@ describe.skip("use/objectSubscription.js", function () {
 
             expect(globalRetrieve).toHaveBeenNthCalledWith(1, {
                 crudArgs: { stream: "test_stream" },
-                id: 1,
+                pk: 1,
+                pkKey: "id",
                 retrieveArgs: {
                     fields,
                 },
@@ -281,7 +286,8 @@ describe.skip("use/objectSubscription.js", function () {
             expect(globalRetrieve).toHaveBeenCalledTimes(1);
             expect(globalSubscribe).toHaveBeenNthCalledWith(1, {
                 crudArgs: { stream: "test_stream" },
-                id: 1,
+                pk: 1,
+                pkKey: "id",
                 retrieveArgs: {
                     fields,
                 },
@@ -330,7 +336,8 @@ describe.skip("use/objectSubscription.js", function () {
 
             expect(globalRetrieve).toHaveBeenCalledWith({
                 crudArgs: { stream: "test_stream" },
-                id: 1,
+                pk: 1,
+                pkKey: "id",
                 retrieveArgs: {
                     fields,
                 },
@@ -338,7 +345,8 @@ describe.skip("use/objectSubscription.js", function () {
             expect(globalRetrieve).toHaveBeenCalledTimes(1);
             expect(globalSubscribe).toHaveBeenCalledWith({
                 crudArgs: { stream: "test_stream" },
-                id: 1,
+                pk: 1,
+                pkKey: "id",
                 retrieveArgs: {
                     fields,
                 },
@@ -389,7 +397,8 @@ describe.skip("use/objectSubscription.js", function () {
 
             expect(globalRetrieve).toHaveBeenCalledWith({
                 crudArgs: { stream: "test_stream" },
-                id: 1,
+                pk: 1,
+                pkKey: "id",
                 retrieveArgs: {
                     fields,
                 },
@@ -397,7 +406,8 @@ describe.skip("use/objectSubscription.js", function () {
             expect(globalRetrieve).toHaveBeenCalledTimes(1);
             expect(globalSubscribe).toHaveBeenCalledWith({
                 crudArgs: { stream: "test_stream" },
-                id: 1,
+                pk: 1,
+                pkKey: "id",
                 retrieveArgs: {
                     fields,
                 },
@@ -555,7 +565,8 @@ describe.skip("use/objectSubscription.js", function () {
             const objectSubscription = useObjectSubscription({
                 props: {
                     crudArgs: { stream: "test_stream2" },
-                    id: 1,
+                    pk: 1,
+                    pkKey: "id",
                     retrieveArgs: {
                         fields,
                     },
@@ -571,7 +582,8 @@ describe.skip("use/objectSubscription.js", function () {
 
             expect(globalRetrieve).toHaveBeenCalledWith({
                 crudArgs: { stream: "test_stream2" },
-                id: 1,
+                pk: 1,
+                pkKey: "id",
                 retrieveArgs: {
                     fields,
                 },
@@ -579,7 +591,8 @@ describe.skip("use/objectSubscription.js", function () {
             expect(globalRetrieve).toHaveBeenCalledTimes(1);
             expect(globalSubscribe).toHaveBeenCalledWith({
                 crudArgs: { stream: "test_stream2" },
-                id: 1,
+                pk: 1,
+                pkKey: "id",
                 retrieveArgs: {
                     fields,
                 },
@@ -608,7 +621,8 @@ describe.skip("use/objectSubscription.js", function () {
 
             const objectSubscription = useObjectSubscription({
                 props: {
-                    id: 1,
+                    pk: 1,
+                    pkKey: "id",
                     retrieveArgs: {
                         fields,
                     },
@@ -629,7 +643,8 @@ describe.skip("use/objectSubscription.js", function () {
             expect(globalSubscribe).toHaveBeenCalledTimes(0);
             expect(customCrudRetrieve).toHaveBeenCalledWith({
                 crudArgs: { stream: "test_stream" },
-                id: 1,
+                pk: 1,
+                pkKey: "id",
                 retrieveArgs: {
                     fields,
                 },
@@ -637,7 +652,8 @@ describe.skip("use/objectSubscription.js", function () {
             expect(customCrudRetrieve).toHaveBeenCalledTimes(1);
             expect(customCrudSubscribe).toHaveBeenCalledWith({
                 crudArgs: { stream: "test_stream" },
-                id: 1,
+                pk: 1,
+                pkKey: "id",
                 retrieveArgs: {
                     fields,
                 },
@@ -650,7 +666,8 @@ describe.skip("use/objectSubscription.js", function () {
         const objectSubscriptionA = useObjectSubscription({
             props: {
                 crudArgs: { stream: "test_streamA" },
-                id: 1,
+                pk: 1,
+                pkKey: "id",
                 retrieveArgs: {
                     fields,
                 },
@@ -659,7 +676,8 @@ describe.skip("use/objectSubscription.js", function () {
         const objectSubscriptionB = useObjectSubscription({
             props: {
                 crudArgs: { stream: "test_streamB" },
-                id: 2,
+                pk: 2,
+                pkKey: "id",
                 retrieveArgs: {
                     fields,
                 },
@@ -669,7 +687,8 @@ describe.skip("use/objectSubscription.js", function () {
             A: {
                 props: {
                     crudArgs: { stream: "test_streamA" },
-                    id: 1,
+                    pk: 1,
+                    pkKey: "id",
                     retrieveArgs: {
                         fields,
                     },
@@ -678,7 +697,8 @@ describe.skip("use/objectSubscription.js", function () {
             B: {
                 props: {
                     crudArgs: { stream: "test_streamB" },
-                    id: 2,
+                    pk: 2,
+                    pkKey: "id",
                     retrieveArgs: {
                         fields,
                     },

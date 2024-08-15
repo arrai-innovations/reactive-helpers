@@ -38,7 +38,7 @@ The calculated objects.
 
 ###### Index Signature
 
- \[`id`: `string`\]: `object`
+ \[`pk`: `string`\]: `object`
 
 ###### calculatedObjectsParentStateObjectsWatchRunning
 
@@ -116,15 +116,15 @@ Indicates if an error occurred during the last operation.
 
 Function to determine if an item should be excluded based on custom logic.
 
-###### fkForIdAndRule
+###### fkForPkAndRule
 
-> **fkForIdAndRule**: `object`
+> **fkForPkAndRule**: `object`
 
-Maintains computed references to the foreign keys for each object ID and rule, crucial for navigating complex data relationships.
+Maintains computed references to the foreign keys for each object pk and rule, crucial for navigating complex data relationships.
 
 ###### Index Signature
 
- \[`id`: `string`\]: `object`
+ \[`pk`: `string`\]: `object`
 
 ###### inResults
 
@@ -156,15 +156,15 @@ Arguments passed to the server for listing operations.
 
 Indicates if the list is currently loading.
 
-###### objAndKeyForIdAndRule
+###### objAndKeyForPkAndRule
 
-> **objAndKeyForIdAndRule**: `object`
+> **objAndKeyForPkAndRule**: `object`
 
-Maps each object ID and rule to a tuple consisting of the related object and its respective key, facilitating direct data manipulation.
+Maps each object pk and rule to a tuple consisting of the related object and its respective key, facilitating direct data manipulation.
 
 ###### Index Signature
 
- \[`id`: `string`\]: `object`
+ \[`pk`: `string`\]: `object`
 
 ###### objectIndexes
 
@@ -174,9 +174,9 @@ Indexes built for quick search across objects based on rules.
 
 ###### objects
 
-> **objects**: [`ObjectsById`](listInstance.md#objectsbyid)
+> **objects**: [`ObjectsByPk`](listInstance.md#objectsbypk)
 
-The list objects stored by their IDs.
+The list objects stored by their pks.
 
 ###### objectsInOrder
 
@@ -202,15 +202,21 @@ The order of objects in the list.
 
 Flag indicating if the order watch is active.
 
+###### pkKey
+
+> **pkKey**: `string`
+
+The primary key field for the list objects.
+
 ###### relatedObjects
 
 > **relatedObjects**: `object`
 
-Stores computed references to related objects, allowing for dynamic access based on object ID and specific rules.
+Stores computed references to related objects, allowing for dynamic access based on object pk and specific rules.
 
 ###### Index Signature
 
- \[`id`: `string`\]: `object`
+ \[`pk`: `string`\]: `object`
 
 ###### relatedObjectsParentStateObjectsWatchRunning
 
@@ -339,7 +345,7 @@ The calculated objects.
 
 ###### Index Signature
 
- \[`id`: `string`\]: `object`
+ \[`pk`: `string`\]: `object`
 
 ###### calculatedObjectsParentStateObjectsWatchRunning
 
@@ -417,15 +423,15 @@ Indicates if an error occurred during the last operation.
 
 Function to determine if an item should be excluded based on custom logic.
 
-###### fkForIdAndRule
+###### fkForPkAndRule
 
-> **fkForIdAndRule**: `object`
+> **fkForPkAndRule**: `object`
 
-Maintains computed references to the foreign keys for each object ID and rule, crucial for navigating complex data relationships.
+Maintains computed references to the foreign keys for each object pk and rule, crucial for navigating complex data relationships.
 
 ###### Index Signature
 
- \[`id`: `string`\]: `object`
+ \[`pk`: `string`\]: `object`
 
 ###### inResults
 
@@ -457,15 +463,15 @@ Arguments passed to the server for listing operations.
 
 Indicates if the list is currently loading.
 
-###### objAndKeyForIdAndRule
+###### objAndKeyForPkAndRule
 
-> **objAndKeyForIdAndRule**: `object`
+> **objAndKeyForPkAndRule**: `object`
 
-Maps each object ID and rule to a tuple consisting of the related object and its respective key, facilitating direct data manipulation.
+Maps each object pk and rule to a tuple consisting of the related object and its respective key, facilitating direct data manipulation.
 
 ###### Index Signature
 
- \[`id`: `string`\]: `object`
+ \[`pk`: `string`\]: `object`
 
 ###### objectIndexes
 
@@ -475,9 +481,9 @@ Indexes built for quick search across objects based on rules.
 
 ###### objects
 
-> **objects**: [`ObjectsById`](listInstance.md#objectsbyid)
+> **objects**: [`ObjectsByPk`](listInstance.md#objectsbypk)
 
-The list objects stored by their IDs.
+The list objects stored by their pks.
 
 ###### objectsInOrder
 
@@ -503,15 +509,21 @@ The order of objects in the list.
 
 Flag indicating if the order watch is active.
 
+###### pkKey
+
+> **pkKey**: `string`
+
+The primary key field for the list objects.
+
 ###### relatedObjects
 
 > **relatedObjects**: `object`
 
-Stores computed references to related objects, allowing for dynamic access based on object ID and specific rules.
+Stores computed references to related objects, allowing for dynamic access based on object pk and specific rules.
 
 ###### Index Signature
 
- \[`id`: `string`\]: `object`
+ \[`pk`: `string`\]: `object`
 
 ###### relatedObjectsParentStateObjectsWatchRunning
 
@@ -622,7 +634,7 @@ The calculated objects.
 
 ###### Index Signature
 
- \[`id`: `string`\]: `object`
+ \[`pk`: `string`\]: `object`
 
 ###### calculatedObjectsParentStateObjectsWatchRunning
 
@@ -700,15 +712,15 @@ Indicates if an error occurred during the last operation.
 
 Function to determine if an item should be excluded based on custom logic.
 
-###### fkForIdAndRule
+###### fkForPkAndRule
 
-> **fkForIdAndRule**: `object`
+> **fkForPkAndRule**: `object`
 
-Maintains computed references to the foreign keys for each object ID and rule, crucial for navigating complex data relationships.
+Maintains computed references to the foreign keys for each object pk and rule, crucial for navigating complex data relationships.
 
 ###### Index Signature
 
- \[`id`: `string`\]: `object`
+ \[`pk`: `string`\]: `object`
 
 ###### inResults
 
@@ -740,15 +752,15 @@ Arguments passed to the server for listing operations.
 
 Indicates if the list is currently loading.
 
-###### objAndKeyForIdAndRule
+###### objAndKeyForPkAndRule
 
-> **objAndKeyForIdAndRule**: `object`
+> **objAndKeyForPkAndRule**: `object`
 
-Maps each object ID and rule to a tuple consisting of the related object and its respective key, facilitating direct data manipulation.
+Maps each object pk and rule to a tuple consisting of the related object and its respective key, facilitating direct data manipulation.
 
 ###### Index Signature
 
- \[`id`: `string`\]: `object`
+ \[`pk`: `string`\]: `object`
 
 ###### objectIndexes
 
@@ -758,9 +770,9 @@ Indexes built for quick search across objects based on rules.
 
 ###### objects
 
-> **objects**: [`ObjectsById`](listInstance.md#objectsbyid)
+> **objects**: [`ObjectsByPk`](listInstance.md#objectsbypk)
 
-The list objects stored by their IDs.
+The list objects stored by their pks.
 
 ###### objectsInOrder
 
@@ -804,15 +816,21 @@ Flag indicating if the order watch is active.
 
 Flag to indicate if there are pending reactive effects needing resolution.
 
+###### pkKey
+
+> **pkKey**: `string`
+
+The primary key field for the list objects.
+
 ###### relatedObjects
 
 > **relatedObjects**: `object`
 
-Stores computed references to related objects, allowing for dynamic access based on object ID and specific rules.
+Stores computed references to related objects, allowing for dynamic access based on object pk and specific rules.
 
 ###### Index Signature
 
- \[`id`: `string`\]: `object`
+ \[`pk`: `string`\]: `object`
 
 ###### relatedObjectsParentStateObjectsWatchRunning
 
@@ -1100,6 +1118,7 @@ import { useListSort, useListInstance } from '@arrai-innovations/reactive-helper
 const listInstanceProps = reactive({
     crudArgs: {},
     listArgs: {},
+    pkKey: 'id',
     retrieveArgs: {},
     intendToList: true,
 });

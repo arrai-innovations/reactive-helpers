@@ -45,9 +45,9 @@ const parentStateKeys = difference(
  * Represents the raw reactive state used by the list search functionality.
  *
  * @typedef {object} ListSearchRawState
- * @property {import('./listInstance.js').ObjectsById} objects - Currently filtered objects based on the search.
+ * @property {import('./listInstance.js').ObjectsByPk} objects - Currently filtered objects based on the search.
  * @property {import('./listInstance.js').ObjectsInOrder} objectsInOrder - The list of objects sorted according to the current search criteria.
- * @property {import('./listInstance.js').ListOrder} order - The current sort order of object IDs after search have been applied.
+ * @property {import('./listInstance.js').ListOrder} order - The current sort order of object pks after search have been applied.
  * @property {object} textSearchRules - Rules defining how text search should be applied on list items. Each rule
  *  specifies a key and a function to extract the searchable text.
  * @property {string} textSearchValue - The current value used for searching.
@@ -195,6 +195,9 @@ export function useListSearch({ parentState, props, throttle = 500, showAllWhenE
     if (!parentState) {
         throw new Error("parentState is required");
     }
+    if (!parentState.pkKey) {
+        throw new Error("parentState.pkKey is required");
+    }
     const internalState = reactive({
         /** @type {import('./listFilter.js').ObjectsInOrderRefs} */
         objectsInOrderRefs: [],
@@ -232,7 +235,7 @@ export function useListSearch({ parentState, props, throttle = 500, showAllWhenE
             };
             if (!options.document) {
                 options.document = {
-                    id: "id",
+                    id: parentState.pkKey,
                 };
             }
             options.document.index = state.textSearchRules;
@@ -242,6 +245,7 @@ export function useListSearch({ parentState, props, throttle = 500, showAllWhenE
             ...state.customSearchOptions, // todo: not sure if this is ok inside a computed
             limit: state.customSearchOptions.limit ?? 1000,
         })),
+        pkKey: toRef(parentState, "pkKey"),
     });
 
     const es = effectScope();
@@ -275,63 +279,63 @@ export function useListSearch({ parentState, props, throttle = 500, showAllWhenE
             return;
         }
         const {
-            addedKeys: addedObjectIds,
-            removedKeys: removedObjectIds,
-            sameKeys: sameObjectIds,
+            addedKeys: addedObjectPks,
+            removedKeys: removedObjectPks,
+            sameKeys: sameObjectPks,
         } = keyDiff(Object.keys(parentState.objects), Object.keys(state.objects));
         const { addedKeys: addedTextSearchRules, removedKeys: removedTextSearchRules } = keyDiff(
             state.textSearchRules,
             previousTextSearchRules
         );
-        for (const removedObjectId of removedObjectIds) {
-            delete state.objectIndexes[removedObjectId];
+        for (const removedObjectPk of removedObjectPks) {
+            delete state.objectIndexes[removedObjectPk];
             // the effect scope will be stopped when the object is removed.
-            delete objectComputeds[removedObjectId];
-            if (objectEffectScopes[removedObjectId]) {
-                objectEffectScopes[removedObjectId].stop();
-                delete objectEffectScopes[removedObjectId];
+            delete objectComputeds[removedObjectPk];
+            if (objectEffectScopes[removedObjectPk]) {
+                objectEffectScopes[removedObjectPk].stop();
+                delete objectEffectScopes[removedObjectPk];
             }
         }
-        for (const addedObjectId of addedObjectIds) {
-            state.objectIndexes[addedObjectId] = { id: addedObjectId };
-            objectComputeds[addedObjectId] = {};
-            objectEffectScopes[addedObjectId] = effectScope();
-            const objectEffectScope = objectEffectScopes[addedObjectId];
-            const objectRef = toRef(parentState.objects, addedObjectId);
+        for (const addedObjectPk of addedObjectPks) {
+            state.objectIndexes[addedObjectPk] = { [parentState.pkKey]: addedObjectPk };
+            objectComputeds[addedObjectPk] = {};
+            objectEffectScopes[addedObjectPk] = effectScope();
+            const objectEffectScope = objectEffectScopes[addedObjectPk];
+            const objectRef = toRef(parentState.objects, addedObjectPk);
             const relatedRef = parentState.relatedObjects
-                ? toRef(parentState.relatedObjects, addedObjectId)
+                ? toRef(parentState.relatedObjects, addedObjectPk)
                 : undefined;
             const calculatedRef = parentState.calculatedObjects
-                ? toRef(parentState.calculatedObjects, addedObjectId)
+                ? toRef(parentState.calculatedObjects, addedObjectPk)
                 : undefined;
             objectEffectScope.run(() => {
                 for (const rule of state.textSearchRules || []) {
                     const [obj, key] = getObjectRelatedCalculatedByKey(objectRef, relatedRef, calculatedRef, rule);
                     internalState.newSearchComputeds = true;
-                    state.objectIndexes[addedObjectId][rule] = objectComputeds[addedObjectId][rule] = computed(() => {
+                    state.objectIndexes[addedObjectPk][rule] = objectComputeds[addedObjectPk][rule] = computed(() => {
                         return get(unref(obj), key);
                     });
                 }
             });
         }
-        for (const sameObjectId of sameObjectIds) {
-            const objectEffectScope = objectEffectScopes[sameObjectId];
-            const objectRef = toRef(parentState.objects, sameObjectId);
-            const relatedRef = parentState.relatedObjects ? toRef(parentState.relatedObjects, sameObjectId) : undefined;
+        for (const sameObjectPk of sameObjectPks) {
+            const objectEffectScope = objectEffectScopes[sameObjectPk];
+            const objectRef = toRef(parentState.objects, sameObjectPk);
+            const relatedRef = parentState.relatedObjects ? toRef(parentState.relatedObjects, sameObjectPk) : undefined;
             const calculatedRef = parentState.calculatedObjects
-                ? toRef(parentState.calculatedObjects, sameObjectId)
+                ? toRef(parentState.calculatedObjects, sameObjectPk)
                 : undefined;
             for (const key of removedTextSearchRules) {
-                delete state.objectIndexes[sameObjectId][key];
+                delete state.objectIndexes[sameObjectPk][key];
                 // stop a computed earlier than the effect scope
-                objectComputeds[sameObjectId][key].effect.stop();
-                delete objectComputeds[sameObjectId][key];
+                objectComputeds[sameObjectPk][key].effect.stop();
+                delete objectComputeds[sameObjectPk][key];
             }
             objectEffectScope.run(() => {
                 for (const rule of addedTextSearchRules) {
                     const [obj, key] = getObjectRelatedCalculatedByKey(objectRef, relatedRef, calculatedRef, rule);
                     internalState.newSearchComputeds = true;
-                    state.objectIndexes[sameObjectId][rule] = objectComputeds[sameObjectId][rule] = computed(() => {
+                    state.objectIndexes[sameObjectPk][rule] = objectComputeds[sameObjectPk][rule] = computed(() => {
                         return get(unref(obj), key);
                     });
                 }
@@ -384,17 +388,17 @@ export function useListSearch({ parentState, props, throttle = 500, showAllWhenE
             Object.fromEntries(
                 Object.entries(textSearchIndex.state.results)
                     .filter(([, value]) => !!value)
-                    .map(([id]) => [id, toRef(parentState.objects, id)])
+                    .map(([pk]) => [pk, toRef(parentState.objects, pk)])
             )
         );
     };
 
     const updateOrder = () => {
-        state.order = parentState.order.filter((id) => !!state.objects[id]);
+        state.order = parentState.order.filter((pk) => !!state.objects[pk]);
         assignReactiveObject(
             internalState.objectsInOrderRefs,
             // @ts-ignore - order items will be in objects
-            state.order.map((id) => toRef(state.objects, id))
+            state.order.map((pk) => toRef(state.objects, pk))
         );
     };
 

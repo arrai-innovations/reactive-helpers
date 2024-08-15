@@ -34,7 +34,7 @@
 - [utils/compact](utils/compact.md)
 - [utils/deleteKey](utils/deleteKey.md)
 - [utils/flattenPaths](utils/flattenPaths.md)
-- [utils/getFakeId](utils/getFakeId.md)
+- [utils/getFakePk](utils/getFakePk.md)
 - [utils/keyDiff](utils/keyDiff.md)
 - [utils/loadingCombine](utils/loadingCombine.md)
 - [utils/proxyRunning](utils/proxyRunning.md)

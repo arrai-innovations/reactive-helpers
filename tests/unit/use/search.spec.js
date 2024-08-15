@@ -13,25 +13,25 @@ describe("use/search", () => {
                 customDocumentOptions: {
                     tokenize: "forward",
                     document: {
-                        id: "id",
                         index: ["field1", "field2"],
                     },
                 },
+                pkKey: "notId",
             }),
             throttle: 50,
         });
         search.addIndex({
-            id: 1,
+            notId: 1,
             field1: "test index value field1 one",
             field2: "test index value field2 one",
         });
         search.addIndex({
-            id: 2,
+            notId: 2,
             field1: "test index value field1 two",
             field2: "test index value field2 two",
         });
         search.addIndex({
-            id: 3,
+            notId: 3,
             field1: "test index value field1 three",
             field2: "test index value field2 three",
         });
@@ -53,25 +53,25 @@ describe("use/search", () => {
                 customDocumentOptions: {
                     tokenize: "forward",
                     document: {
-                        id: "id",
                         index: ["field1", "field2"],
                     },
                 },
+                pkKey: "notPk",
             }),
             throttle: 50,
         });
         search.addIndex({
-            id: 1,
+            notPk: 1,
             field1: "test index value field1 one",
             field2: "test index value field2 one",
         });
         search.addIndex({
-            id: 2,
+            notPk: 2,
             field1: "test index value field1 two",
             field2: "test index value field2 two",
         });
         search.addIndex({
-            id: 3,
+            notPk: 3,
             field1: "test index value field1 three",
             field2: "test index value field2 three",
         });
@@ -95,10 +95,10 @@ describe("use/search", () => {
                 customDocumentOptions: {
                     tokenize: "forward",
                     document: {
-                        id: "id",
                         index: ["field1", "field2"],
                     },
                 },
+                pkKey: "id",
             }),
             throttle: 50,
         });
@@ -146,10 +146,10 @@ describe("use/search", () => {
                 customDocumentOptions: {
                     tokenize: "forward",
                     document: {
-                        id: "id",
                         index: ["field1", "field2"],
                     },
                 },
+                pkKey: "id",
             }),
             throttle: 50,
         });
@@ -182,10 +182,10 @@ describe("use/search", () => {
             customDocumentOptions: {
                 tokenize: "forward",
                 document: {
-                    id: "id",
                     index: ["field1", "field2"],
                 },
             },
+            pkKey: "id",
         });
         const search = useSearch({
             props: searchProps,

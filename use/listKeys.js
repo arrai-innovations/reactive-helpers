@@ -1,5 +1,6 @@
 export const listInstanceStateKeys = [
     "crud",
+    "pkKey",
     "retrieveArgs",
     "listArgs",
     "objects",
@@ -23,7 +24,7 @@ export const listInstanceFunctions = [
     "deleteListObject",
     "clearList",
     "clearError",
-    "getFakeId",
+    "getFakePk",
     "defaultPageCallback",
     "pageCallback",
 ];
@@ -44,8 +45,8 @@ export const listRelatedStateKeys = [
     "relatedObjectsWatchRunning",
     "relatedObjectsParentStateObjectsWatchRunning",
     "running",
-    "objAndKeyForIdAndRule",
-    "fkForIdAndRule",
+    "objAndKeyForPkAndRule",
+    "fkForPkAndRule",
 ];
 export const listRelatedFunctions = [];
 

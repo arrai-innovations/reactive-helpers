@@ -140,6 +140,7 @@ describe("use/listSearch", () => {
             const listInstanceA = useListInstance({
                 props: {
                     crudArgs: { stream: "test_streamA" },
+                    pkKey: "id",
                     listArgs: { user: 1 },
                     retrieveArgs: {
                         fields,

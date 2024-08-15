@@ -1,7 +1,7 @@
-import { useObjectCalculated, objectCalculatedFunctions } from "./objectCalculated.js";
-import { useObjectInstance, objectInstanceFunctions } from "./objectInstance.js";
-import { useObjectRelated, objectRelatedFunctions } from "./objectRelated.js";
-import { useObjectSubscription, objectSubscriptionFunctions } from "./objectSubscription.js";
+import { objectCalculatedFunctions, useObjectCalculated } from "./objectCalculated.js";
+import { objectInstanceFunctions, useObjectInstance } from "./objectInstance.js";
+import { objectRelatedFunctions, useObjectRelated } from "./objectRelated.js";
+import { objectSubscriptionFunctions, useObjectSubscription } from "./objectSubscription.js";
 import { effectScope, reactive, shallowReactive, shallowReadonly, toRef } from "vue";
 
 /**
@@ -139,7 +139,7 @@ export const useObjects = (objectArgs) => {
  * const props = defineProps({
  *     app: { type: String, required: true },
  *     model: { type: String, required: true },
- *     id: { type: String, default: "" },
+ *     pk: { type: String, default: "" },
  * });
  *
  * const objectProps = reactive({
@@ -147,6 +147,8 @@ export const useObjects = (objectArgs) => {
  *         app: toRef(props, "app"),
  *         model: toRef(props, "model"),
  *     },
+ *     pk: toRef(props, "pk"),
+ *     pkKey: 'id',
  *     retrieveArgs: {
  *         fields: ['foo', 'bar'],
  *     },
@@ -178,7 +180,7 @@ export const useObjects = (objectArgs) => {
  *     intendToRetrieve: false,
  *     intendToSubscribe: false,
  * });
- * objectProps.intendToRetrieve = objectProps.intendToSubscribe = computed(()=> !!props.id);
+ * objectProps.intendToRetrieve = objectProps.intendToSubscribe = computed(()=> !!props.pk);
  * const objectManager = useObject(objectProps);
  * // objectManager.state.object comes back from the server (via configured crud retrieve function)
  * // { id: 2, name: 'two', foo: 'bar', some_objects_id: 2, some_objects_list_ids: ['1','2','3'] }
@@ -216,13 +218,6 @@ export const useObject = ({ props, functions }) => {
         objectRelated: null,
         objectCalculated: null,
     });
-
-    if (!("id" in props)) {
-        console.error("id not set, must be true for intendToRetrieve or intendToSubscribe to work.");
-    }
-    if (!("retrieveArgs" in props)) {
-        console.error("retrieveArgs not set, must be true for intendToRetrieve or intendToSubscribe to work.");
-    }
 
     const es = effectScope();
 

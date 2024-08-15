@@ -31,12 +31,14 @@ const defaultCrud = {
  * @property {object} crudArgs - The arguments to be passed to the crud functions.
  * @property {object} object - The data to be acted upon.
  * @property {object} retrieveArgs - The arguments to be passed to the retrieve function.
+ * @property {string} pkKey - The key name of the primary key.
  */
 
 /**
  * @typedef {object} RetrieveDetailArgs
  * @property {object} crudArgs - The arguments to be passed to the crud functions.
- * @property {string} id - The id of the object to be acted upon.
+ * @property {string} pk - The pk of the object to be acted upon.
+ * @property {string} pkKey - The key name of the primary key.
  * @property {object} retrieveArgs - The arguments to be passed to the retrieve function.
  */
 
@@ -45,19 +47,22 @@ const defaultCrud = {
  * @property {object} crudArgs - The arguments to be passed to the crud functions.
  * @property {import('../use/objectInstance.js').CrudObject} object - The data to be acted upon.
  * @property {object} retrieveArgs - The arguments to be passed to the retrieve function.
+ * @property {string} pkKey - The key name of the primary key.
  */
 
 /**
  * @typedef {object} DeleteDetailArgs
  * @property {object} crudArgs - The arguments to be passed to the crud functions.
- * @property {string} id - The id of the object to be acted upon.
+ * @property {string} pk - The pk of the object to be acted upon.
+ * @property {string} pkKey - The key name of the primary key.
  * @property {object} retrieveArgs - The arguments to be passed to the retrieve function.
  */
 
 /**
  * @typedef {object} PartialDetailArgs
  * @property {object} crudArgs - The arguments to be passed to the crud functions.
- * @property {string} id - The id of the object to be acted upon.
+ * @property {string} pk - The pk of the object to be acted upon.
+ * @property {string} pkKey - The key name of the primary key.
  * @property {object} partialObject - The data to be acted upon.
  * @property {object} retrieveArgs - The arguments to be passed to the retrieve function.
  */
@@ -65,7 +70,8 @@ const defaultCrud = {
 /**
  * @typedef {object} SubscribeArgs
  * @property {object} crudArgs - The arguments to be passed to the crud functions.
- * @property {string} id - The id of the object to be acted upon.
+ * @property {string} pk - The pk of the object to be acted upon.
+ * @property {string} pkKey - The key name of the primary key.
  * @property {object} retrieveArgs - The arguments to be passed to the retrieve function.
  * @property {(
  *     data:import('../use/objectInstance.js').CrudObject, action:string

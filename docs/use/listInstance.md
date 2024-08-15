@@ -105,7 +105,7 @@ Handles new or updated objects, respecting the keepOldPages setting.
 
 > **deleteListObject**: (`objectId`) => `void`
 
-Deletes an object from the list by ID.
+Deletes an object from the list by pk.
 
 ###### Parameters
 
@@ -115,11 +115,11 @@ Deletes an object from the list by ID.
 
 `void`
 
-##### getFakeId()
+##### getFakePk()
 
-> **getFakeId**: () => `string`
+> **getFakePk**: () => `string`
 
-Generates a unique fake ID for use within the list.
+Generates a unique fake pk for use within the list.
 
 ###### Returns
 
@@ -220,6 +220,12 @@ Implementation specific arguments.
 
 The arguments passed to the server.
 
+###### pkKey
+
+> **pkKey**: `string`
+
+The primary key field for the list objects.
+
 ###### retrieveArgs
 
 > **retrieveArgs**: `any`
@@ -243,6 +249,12 @@ Implementation specific arguments.
 > **listArgs**: `any`
 
 The arguments passed to the server.
+
+##### pkKey
+
+> **pkKey**: `string`
+
+The primary key field for the list objects.
 
 ##### retrieveArgs
 
@@ -300,9 +312,9 @@ Indicates if the list is currently loading.
 
 ##### objects
 
-> **objects**: [`ObjectsById`](listInstance.md#objectsbyid)
+> **objects**: [`ObjectsByPk`](listInstance.md#objectsbypk)
 
-The list objects stored by their IDs.
+The list objects stored by their pks.
 
 ##### objectsInOrder
 
@@ -315,6 +327,12 @@ The objects in the order specified by the list.
 > **order**: `ComputedRef`\<`string`[]\>
 
 The order of objects in the list.
+
+##### pkKey
+
+> **pkKey**: `string`
+
+The primary key field for the list objects.
 
 ##### retrieveArgs
 
@@ -372,9 +390,9 @@ Indicates if there are ongoing reactive updates.
 
 #### Type declaration
 
-##### id
+##### pk
 
-> **id**: `string`
+> **pk**: `string`
 
 ***
 
@@ -386,15 +404,15 @@ Indicates if there are ongoing reactive updates.
 
 ***
 
-### ObjectsById
+### ObjectsByPk
 
-> **ObjectsById**\<\>: `object`
+> **ObjectsByPk**\<\>: `object`
 
 #### Type Parameters
 
 #### Index Signature
 
- \[`key`: `string`\]: [`ListObject`](listInstance.md#listobject)
+ \[`pk`: `string`\]: [`ListObject`](listInstance.md#listobject)
 
 ***
 

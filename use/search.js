@@ -25,7 +25,7 @@ const unionReduce = (accumulator, currentValue) => {
  * Configuration options for creating a document in FlexSearch.
  *
  * @typedef {object} DocumentOptions
- * @property {string} id - The document field to use as an identifier. Default is "id".
+ * @property {string} id - The document field to use as an identifier. Populated from `pkKey`.
  * @property {boolean|string} tag - The document field to use as a tag. Default is false, can be set to a string.
  * @property {string | string[] | object[]} index - Fields to index. Can be a single string, an array of strings, or an array of objects specifying custom index options.
  * @property {boolean|string|string[]} store - Specifies if and what document fields to store. Can be false, a string, or an array of strings. Default is false.
@@ -60,7 +60,6 @@ const unionReduce = (accumulator, currentValue) => {
 const defaultDocumentOptions = {
     tokenize: "forward",
     document: {
-        id: "id",
         index: ["name"],
     },
 };
@@ -71,6 +70,7 @@ const defaultDocumentOptions = {
  * @typedef {object} SearchProps
  * @property {DocumentOptions} customDocumentOptions - FlexSearch.Document options.
  * @property {SearchOptions} customSearchOptions - Search options.
+ * @property {string} pkKey - The primary key field.
  */
 
 /**
@@ -91,6 +91,7 @@ export function useSearch({ props, throttle = 500 }) {
         searching: false,
         customDocumentOptions: toRef(props, "customDocumentOptions"),
         customSearchOptions: toRef(props, "customSearchOptions"),
+        pkKey: toRef(props, "pkKey"),
         called: 0,
         pending: 0,
         running: computed(() => state.searching || state.pending > state.called),
@@ -117,10 +118,10 @@ export function useSearch({ props, throttle = 500 }) {
         }
         throttledDoSearch();
     };
-    const removeIndex = async (id) => {
+    const removeIndex = async (searchId) => {
         ++state.pending;
         try {
-            await searchIndex.removeAsync(id);
+            await searchIndex.removeAsync(searchId);
         } catch (e) {
             ++state.called;
             throw e;
@@ -137,8 +138,15 @@ export function useSearch({ props, throttle = 500 }) {
         }
     };
 
+    const pkKeyWatchHandler = (newPKKey, oldPKKey) => {
+        if (newPKKey !== oldPKKey) {
+            clearIndex();
+        }
+    };
+
     const makeIndex = () => {
         const unrefCustomDocumentOptions = deepUnref(state.customDocumentOptions) || cloneDeep(defaultDocumentOptions);
+        unrefCustomDocumentOptions.document.id = props.pkKey || "id";
         previousCustomDocumentOptions = unrefCustomDocumentOptions;
         searchIndex = new FlexSearch.Document(unrefCustomDocumentOptions);
     };
@@ -187,6 +195,7 @@ export function useSearch({ props, throttle = 500 }) {
         watch(toRef(state, "customDocumentOptions"), customDocumentOptionsWatchHandler, {
             deep: true,
         });
+        watch(() => state.pkKey, pkKeyWatchHandler);
         makeIndex();
         watch(
             toRef(state, "search"),

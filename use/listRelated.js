@@ -35,7 +35,7 @@ import { computed, effectScope, onScopeDispose, reactive, ref, toRef, unref, wat
  * @property {string} pkKey - Specifies the foreign key used to link objects across lists. Planned to be renamed to
  *  'fkKey' to better reflect its usage.
  * @property {string[]} [order] - Specifies the order in which related objects should be sorted, if applicable.
- * @property {import('./listInstance.js').ObjectsById} objects - The objects that can be related based on the foreign key.
+ * @property {import('./listInstance.js').ObjectsByPk} objects - The objects that can be related based on the foreign key.
  */
 
 /**
@@ -52,21 +52,21 @@ import { computed, effectScope, onScopeDispose, reactive, ref, toRef, unref, wat
  *
  * @typedef {object} ListRelatedRawState
  * @property {{
- *     [id: string]: {
+ *     [pk: string]: {
  *         [rule: string]: import('vue').ComputedRef<any>,
  *     },
- * }} relatedObjects - Stores computed references to related objects, allowing for dynamic access based on object ID and specific rules.
+ * }} relatedObjects - Stores computed references to related objects, allowing for dynamic access based on object pk and specific rules.
  * @property {ListRelatedRules} relatedObjectsRules - Defines the rules for establishing relationships, such as foreign key links and sorting orders.
  * @property {{
- *     [id: string]: {
+ *     [pk: string]: {
  *         [rule: string]: import('vue').ComputedRef<[object, string]>,
  *     },
- * }} objAndKeyForIdAndRule - Maps each object ID and rule to a tuple consisting of the related object and its respective key, facilitating direct data manipulation.
+ * }} objAndKeyForPkAndRule - Maps each object pk and rule to a tuple consisting of the related object and its respective key, facilitating direct data manipulation.
  * @property {{
- *     [id: string]: {
+ *     [pk: string]: {
  *         [rule: string]: import('vue').ComputedRef<any>,
  *     },
- * }} fkForIdAndRule - Maintains computed references to the foreign keys for each object ID and rule, crucial for navigating complex data relationships.
+ * }} fkForPkAndRule - Maintains computed references to the foreign keys for each object pk and rule, crucial for navigating complex data relationships.
  * @property {boolean} relatedObjectsParentStateObjectsWatchRunning - Flags whether the watch on parent state objects is currently active, ensuring updates trigger as needed.
  * @property {boolean} relatedObjectsWatchRunning - Indicates if watches on the related objects themselves are active, managing updates efficiently.
  * @property {boolean} relatedRunning - Signals whether any computations related to object relationships are currently in progress.
@@ -191,6 +191,7 @@ export function useListRelateds(listRelatedArgs) {
  *         // whatever arguments are required for your configured list function to get the right list
  *         someListFilter: toRef(props, "someListFilter"),
  *     },
+ *     pkKey: 'id',
  *     retrieveArgs: {
  *         // whatever arguments are required for your configured list function to get items back looking as expected
  *     },
@@ -203,7 +204,7 @@ export function useListRelateds(listRelatedArgs) {
  *     relatedObjectsRules: {
  *         someRule: {
  *             // this can point to a key or an array of keys to relate to
- *             pkKey: "dot.separated.key.to.id.on.an.listInstance.object",
+ *             pkKey: "dot.separated.key.to.pk.on.an.listInstance.object",
  *             objects: toRef(props, "objects"),
  *             order: toRef(props, "order"),
  *         },
@@ -237,8 +238,8 @@ export function useListRelated({ parentState, relatedObjectsRules }) {
         /** @type {ListRelatedRawState} */ {
             relatedObjectsRules,
             relatedObjects: {},
-            objAndKeyForIdAndRule: {},
-            fkForIdAndRule: {},
+            objAndKeyForPkAndRule: {},
+            fkForPkAndRule: {},
             relatedObjectsParentStateObjectsWatchRunning: false,
             relatedObjectsWatchRunning: false,
         }
@@ -252,8 +253,8 @@ export function useListRelated({ parentState, relatedObjectsRules }) {
         );
         for (const removedId of removedIds) {
             delete state.relatedObjects[removedId];
-            delete state.objAndKeyForIdAndRule[removedId];
-            delete state.fkForIdAndRule[removedId];
+            delete state.objAndKeyForPkAndRule[removedId];
+            delete state.fkForPkAndRule[removedId];
             if (relatedObjectsEffectScopes[removedId]) {
                 relatedObjectsEffectScopes[removedId].stop();
                 delete relatedObjectsEffectScopes[removedId];
@@ -261,27 +262,27 @@ export function useListRelated({ parentState, relatedObjectsRules }) {
         }
         for (const addedId of addedIds) {
             state.relatedObjects[addedId] = {};
-            state.objAndKeyForIdAndRule[addedId] = {};
-            state.fkForIdAndRule[addedId] = {};
+            state.objAndKeyForPkAndRule[addedId] = {};
+            state.fkForPkAndRule[addedId] = {};
         }
         state.relatedObjectsParentStateObjectsWatchRunning = false;
     }
 
     function applyRuleToObject(objectKey, ruleKey, originalObjectRef, relatedObjectRef) {
         const rule = toRef(state.relatedObjectsRules, ruleKey);
-        state.objAndKeyForIdAndRule[objectKey][ruleKey] = computed(() => {
+        state.objAndKeyForPkAndRule[objectKey][ruleKey] = computed(() => {
             const rulePkKey = unref(rule).pkKey || ruleKey;
             const object = unref(originalObjectRef);
             const relatedObject = unref(relatedObjectRef);
             return getObjectRelatedByKey(object, relatedObject, rulePkKey);
         });
 
-        state.fkForIdAndRule[objectKey][ruleKey] = computed(() =>
+        state.fkForPkAndRule[objectKey][ruleKey] = computed(() =>
             computeForeignKey(ruleKey, objectKey, rule, relatedObjectRef)
         );
 
         state.relatedObjects[objectKey][ruleKey] = computed(() => {
-            const value = unref(state.fkForIdAndRule[objectKey][ruleKey]);
+            const value = unref(state.fkForPkAndRule[objectKey][ruleKey]);
             const objects = unref(rule).objects;
             if (isArray(value)) {
                 return value.map((e) => objects[e]).filter(identity);
@@ -293,7 +294,7 @@ export function useListRelated({ parentState, relatedObjectsRules }) {
     function computeForeignKey(ruleKey, objectKey, rule, relatedObjectRef) {
         const ruleOrder = unref(rule).order;
         const relatedObject = unref(relatedObjectRef);
-        const [objectForGet, key] = unref(state.objAndKeyForIdAndRule[objectKey][ruleKey]);
+        const [objectForGet, key] = unref(state.objAndKeyForPkAndRule[objectKey][ruleKey]);
         let value = get(objectForGet, key);
         if (objectForGet === relatedObject && isUndefined(value)) {
             // Handle nested arrays
@@ -335,10 +336,10 @@ export function useListRelated({ parentState, relatedObjectsRules }) {
             for (const removedRuleKey of removedRuleKeys) {
                 state.relatedObjects[objectKey][removedRuleKey]?.effect?.stop();
                 delete state.relatedObjects[objectKey][removedRuleKey];
-                state.objAndKeyForIdAndRule[objectKey][removedRuleKey]?.effect?.stop();
-                delete state.objAndKeyForIdAndRule[objectKey][removedRuleKey];
-                state.fkForIdAndRule[objectKey][removedRuleKey]?.effect?.stop();
-                delete state.fkForIdAndRule[objectKey][removedRuleKey];
+                state.objAndKeyForPkAndRule[objectKey][removedRuleKey]?.effect?.stop();
+                delete state.objAndKeyForPkAndRule[objectKey][removedRuleKey];
+                state.fkForPkAndRule[objectKey][removedRuleKey]?.effect?.stop();
+                delete state.fkForPkAndRule[objectKey][removedRuleKey];
             }
             if (addedRuleKeys.size) {
                 if (!relatedObjectsEffectScopes[objectKey]) {

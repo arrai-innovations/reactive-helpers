@@ -25,7 +25,7 @@ import { computed, effectScope, reactive, ref, toRef, unref, watch } from "vue";
  *
  * @typedef {object} ObjectRelatedRule
  * @property {string} pkKey - The key in the managed object that corresponds to the key in the related object.
- * @property {import('./listInstance.js').ObjectsById} objects - The related objects, indexed by the key in the related object.
+ * @property {import('./listInstance.js').ObjectsByPk} objects - The related objects, indexed by the key in the related object.
  * @property {string[]} order - The order of the related objects, if the related objects are an array.
  */
 
@@ -162,7 +162,8 @@ export function useObjectRelateds(objectRelatedArgs) {
  * const objectSubscriptionProps = reactive({
  *     crudArgs: { app: 'foo', model: 'bar'},
  *     retrieveArgs: {},
- *     id: '99',
+ *     pk: '99',
+ *     pkKey: 'id',
  *     intendToSubscribe: true,
  *     intendToRetreive: true,
  * });

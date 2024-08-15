@@ -18,9 +18,15 @@
 
 The arguments to be passed to the crud functions.
 
-##### ids
+##### pkKey
 
-> **ids**: `string`[]
+> **pkKey**: `string`
+
+The key name of the primary key.
+
+##### pks
+
+> **pks**: `string`[]
 
 The ids of the objects to be deleted.
 
@@ -91,6 +97,12 @@ The arguments to be passed for list crud functions.
 
 The method to call with new page(s) of data received.
 
+##### pkKey
+
+> **pkKey**: `string`
+
+The key name of the primary key.
+
 ##### retrieveArgs
 
 > **retrieveArgs**: `any`
@@ -138,6 +150,12 @@ The arguments to be passed to the crud functions.
 > **listArgs**: `any`
 
 The arguments to be passed for list crud functions.
+
+##### pkKey
+
+> **pkKey**: `string`
+
+The key name of the primary key.
 
 ##### retrieveArgs
 

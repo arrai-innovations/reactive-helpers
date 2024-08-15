@@ -97,7 +97,7 @@ Called to patch the current object on the server.
 
 > **retrieve**: `Function`
 
-Called to retrieve the current object by id from the server.
+Called to retrieve the current object by pk from the server.
 
 ##### update
 
@@ -219,11 +219,17 @@ A function to be used instead of the default crud update function.
 
 [`ResponseData`](../config/objectCrud.md#responsedata)
 
-###### id
+###### pk
 
-> **id**: `string`
+> **pk**: `string`
 
-The id of the object.
+The pk of the object, optional to support creating new objects.
+
+###### pkKey
+
+> **pkKey**: `string`
+
+The pk key of the object.
 
 ###### retrieveArgs
 
@@ -357,12 +363,6 @@ The error.
 
 Whether the object errored.
 
-###### id
-
-> **id**: `string`
-
-The id of the object.
-
 ###### loading
 
 > **loading**: `boolean`
@@ -374,6 +374,18 @@ Whether the object is loading.
 > **object**: `object` \| `object`
 
 The object.
+
+###### pk
+
+> **pk**: `string`
+
+The pk of the object.
+
+###### pkKey
+
+> **pkKey**: `string`
+
+The pk key of the object.
 
 ###### retrieveArgs
 
@@ -393,11 +405,17 @@ The arguments to be passed to the retrieve function.
 
 The arguments to be passed to the crud functions.
 
-##### id
+##### pk
 
-> **id**: `string`
+> **pk**: `string`
 
-The id of the object.
+The pk of the object, optional to support creating new objects.
+
+##### pkKey
+
+> **pkKey**: `string`
+
+The pk key of the object.
 
 ##### retrieveArgs
 
@@ -435,12 +453,6 @@ The error.
 
 Whether the object errored.
 
-##### id
-
-> **id**: `string`
-
-The id of the object.
-
 ##### loading
 
 > **loading**: `Readonly`\<`Ref`\<`boolean`\>\>
@@ -452,6 +464,18 @@ Whether the object is loading.
 > **object**: [`CrudObject`](objectInstance.md#crudobject)
 
 The object.
+
+##### pk
+
+> **pk**: `string`
+
+The pk of the object.
+
+##### pkKey
+
+> **pkKey**: `string`
+
+The pk key of the object.
 
 ##### retrieveArgs
 
@@ -533,15 +557,16 @@ const props = defineProps({
         type: String,
         required: true,
     },
-    id: {
+    pk: {
         type: String,
         default: '',
     },
 });
 
-const idRef = toRef(props, 'id');
+const pkRef = toRef(props, 'pk');
 const objectInstanceProps = reactive({
-  id: idRef,
+  pk: pkRef,
+  pkKey: 'id',
   crudArgs: {
       app: toRef(props, "app"),
       model: toRef(props, "model"),
@@ -549,14 +574,14 @@ const objectInstanceProps = reactive({
   retrieveArgs: {},
 });
 const objectInstance = useObjectInstance(objectInstanceProps);
-watch(idRef, (newValue, oldValue) => {
+watch(pkRef, (newValue, oldValue) => {
     if (newValue !== oldValue && newValue) {
         objectInstance.retrieve();
     }
 });
 </script>
 <template>
-    <!-- Display the retrieved object reactively, as a valid id is provided in props. -->
+    <!-- Display the retrieved object reactively, as a valid pk is provided in props. -->
     <div>{{ objectInstance.state.object }}</div>
 </template>
 ```
