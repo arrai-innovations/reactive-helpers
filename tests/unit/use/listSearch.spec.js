@@ -22,7 +22,7 @@ describe("use/listSearch", () => {
     it("should match by search term", async () => {
         const textSearchValue = ref("one");
         // const textSearchValue = ref("");
-        const list = useListInstance({ props: {} });
+        const list = useListInstance({ props: { pkKey: "id" } });
         const search = useListSearch({
             parentState: list.state,
             props: reactive({
@@ -79,7 +79,7 @@ describe("use/listSearch", () => {
         });
     });
     it("no args: returns objects unsearched", async () => {
-        const listInstance = useListInstance({ props: {} });
+        const listInstance = useListInstance({ props: { pkKey: "id" } });
         const listItems = [
             { id: 4, name: "four", has_things: true },
             { id: 2, name: "two", has_things: true },
@@ -103,7 +103,7 @@ describe("use/listSearch", () => {
             vi.resetAllMocks();
             const orderByRules = [{ key: "name", desc: true, localeCompare: false }];
             const sortThrottleWait = 0;
-            const listInstance = useListInstance({ props: {} });
+            const listInstance = useListInstance({ props: { pkKey: "id" } });
             const listItems = [
                 { id: 4, name: "four", has_things: true },
                 { id: 2, name: "two", has_things: true },
@@ -150,6 +150,7 @@ describe("use/listSearch", () => {
             const listInstanceB = useListInstance({
                 props: {
                     crudArgs: { stream: "test_streamB" },
+                    pkKey: "id",
                     listArgs: { user: 2 },
                     retrieveArgs: {
                         fields,
@@ -243,8 +244,8 @@ describe("use/listSearch", () => {
     describe("useListSearch accepts relatedItem. and calculatedItem. rules", () => {
         it("in textSearchRules", async () => {
             const textSearchValue = ref("four");
-            const list = useListInstance({ props: {} });
-            const relatedList = useListInstance({ props: {} });
+            const list = useListInstance({ props: { pkKey: "id" } });
+            const relatedList = useListInstance({ props: { pkKey: "id" } });
             const related = useListRelated({
                 parentState: list.state,
                 relatedObjectsRules: {
@@ -297,7 +298,7 @@ describe("use/listSearch", () => {
     });
     describe("useListSearch updates index when", () => {
         it("parentState.objects is updated", async () => {
-            const list = useListInstance({ props: {} });
+            const list = useListInstance({ props: { pkKey: "id" } });
             const textSearchValue = ref("");
             const search = useListSearch({
                 parentState: list.state,
@@ -339,8 +340,8 @@ describe("use/listSearch", () => {
             });
         });
         it("parentState.relatedObjects is updated", async () => {
-            const list = useListInstance({ props: {} });
-            const relatedList = useListInstance({ props: {} });
+            const list = useListInstance({ props: { pkKey: "id" } });
+            const relatedList = useListInstance({ props: { pkKey: "id" } });
             const related = useListRelated({
                 parentState: list.state,
                 relatedObjectsRules: reactive({
@@ -383,7 +384,7 @@ describe("use/listSearch", () => {
             });
         });
         it("parentState.calculatedObjects is updated", async () => {
-            const list = useListInstance({ props: {} });
+            const list = useListInstance({ props: { pkKey: "id" } });
             const calculated = useListCalculated({
                 parentState: list.state,
                 calculatedObjectsRules: reactive({
@@ -430,7 +431,7 @@ describe("use/listSearch", () => {
             });
         });
         it("textSearchRules is updated", async () => {
-            const list = useListInstance({ props: {} });
+            const list = useListInstance({ props: { pkKey: "id" } });
             const textSearchValue = ref("");
             const searchProps = reactive({
                 textSearchValue,
@@ -478,7 +479,7 @@ describe("use/listSearch", () => {
         });
     });
     it("does not pass through when showAllWhenEmpty is false", async () => {
-        const list = useListInstance({ props: {} });
+        const list = useListInstance({ props: { pkKey: "id" } });
         const textSearchValue = ref("");
         const search = useListSearch({
             parentState: list.state,
@@ -509,7 +510,7 @@ describe("use/listSearch", () => {
     });
     it("should update when parentState is filtered in pass through mode.", async () => {
         const listInstance = useListInstance({
-            props: {},
+            props: { pkKey: "id" },
         });
         const allowedFilter = ref((obj) => !obj.filtered);
         const listFilter = useListFilter({

@@ -214,7 +214,7 @@ describe("use/listSubscription.spec.js", function () {
                     },
                     "create"
                 )
-            ).toThrow("addFromSubscription: data missing id.\n{ __str__: 'qwer', name: 'qwer' }");
+            ).toThrow("addFromSubscription: data missing pk(id).\n{ __str__: 'qwer', name: 'qwer' }");
 
             passedSubscriptionEventCallback(
                 {
@@ -232,7 +232,7 @@ describe("use/listSubscription.spec.js", function () {
                 },
                 "create"
             );
-            expect(warnMock).toHaveBeenCalledWith("addFromSubscription: add for id already in objects (1).");
+            expect(warnMock).toHaveBeenCalledWith("addFromSubscription: add for pk(id) already in objects (1).");
 
             expect(listSubscription.listInstance.state.objects).toEqual({
                 1: {
@@ -250,7 +250,7 @@ describe("use/listSubscription.spec.js", function () {
                 },
                 "update"
             );
-            expect(warnMock).toHaveBeenCalledWith("updateFromSubscription: update for id not in objects (2).");
+            expect(warnMock).toHaveBeenCalledWith("updateFromSubscription: update for pk(id) not in objects (2).");
 
             expect(() =>
                 passedSubscriptionEventCallback(
@@ -269,7 +269,7 @@ describe("use/listSubscription.spec.js", function () {
                     },
                     "update"
                 )
-            ).toThrow("updateFromSubscription: data missing id.\n{ __str__: 'qwer', name: 'qwer' }");
+            ).toThrow("updateFromSubscription: data missing pk(id).\n{ __str__: 'qwer', name: 'qwer' }");
 
             passedSubscriptionEventCallback(
                 {
@@ -279,11 +279,11 @@ describe("use/listSubscription.spec.js", function () {
                 "delete"
             );
             expect(warnMock).toHaveBeenCalledWith(
-                "deleteFromSubscription: delete for id not in objects ({ __str__: 'qwer', name: 'qwer' })."
+                "deleteFromSubscription: delete for pk(id) not in objects ({ __str__: 'qwer', name: 'qwer' })."
             );
 
             passedSubscriptionEventCallback(2, "delete");
-            expect(warnMock).toHaveBeenCalledWith("deleteFromSubscription: delete for id not in objects (2).");
+            expect(warnMock).toHaveBeenCalledWith("deleteFromSubscription: delete for pk(id) not in objects (2).");
 
             await poll(() => listSubscription.state.subscribed);
             const unsubscribe = listSubscription.unsubscribe();
@@ -507,6 +507,7 @@ describe("use/listSubscription.spec.js", function () {
             expect(crudSubscribe).toHaveBeenCalledWith({
                 crudArgs: { stream: "test_stream" },
                 listArgs: { user: 2 },
+                pkKey: "id",
                 retrieveArgs: { fields: ["name"] },
                 subscriptionEventCallback: expect.any(Function),
             });

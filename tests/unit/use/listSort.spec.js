@@ -181,6 +181,7 @@ describe("use/useListSort", () => {
             props: {
                 crudArgs: { stream: "test_streamB" },
                 listArgs: { user: 2 },
+                pkKey: "id",
                 retrieveArgs: {
                     fields,
                 },
@@ -202,6 +203,7 @@ describe("use/useListSort", () => {
                     retrieveArgs: {
                         fields,
                     },
+                    pkKey: "id",
                 },
             },
             B: {
@@ -211,6 +213,7 @@ describe("use/useListSort", () => {
                     retrieveArgs: {
                         fields,
                     },
+                    pkKey: "id",
                 },
             },
         });
@@ -354,7 +357,7 @@ describe("use/useListSort", () => {
     });
     it("pass through correctly when parentState changes their order", async () => {
         const listInstance = useListInstance({
-            props: reactive({}),
+            props: reactive({ pkKey: "id" }),
         });
         const allowedFilter = ref((obj) => obj.name !== "two");
         const listFilter = useListFilter({

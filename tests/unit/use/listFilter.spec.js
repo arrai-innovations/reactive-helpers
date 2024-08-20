@@ -19,7 +19,7 @@ describe("use/listFilter", () => {
     });
 
     it("should match an allowed filter function", async () => {
-        const list = useListInstance({ props: {} });
+        const list = useListInstance({ props: { pkKey: "id" } });
         const filter = useListFilter({
             parentState: list.state,
             allowedFilter: (object) => object.id === 1 || object.id === 3,
@@ -65,7 +65,7 @@ describe("use/listFilter", () => {
         });
     });
     it("should match an excluded filter function", async () => {
-        const list = useListInstance({ props: {} });
+        const list = useListInstance({ props: { pkKey: "id" } });
         const filter = useListFilter({
             parentState: list.state,
             excludedFilter: (object) => object.id == 2 || object.id == 4,
@@ -111,7 +111,7 @@ describe("use/listFilter", () => {
         });
     });
     it("no args: returns objects unfiltered", async () => {
-        const listInstance = useListInstance({ props: {} });
+        const listInstance = useListInstance({ props: { pkKey: "id" } });
         const listItems = [
             { id: 4, name: "four", has_things: true },
             { id: 2, name: "two", has_things: true },
@@ -135,7 +135,7 @@ describe("use/listFilter", () => {
             vi.resetAllMocks();
             const orderByRules = [{ key: "name", desc: true, localeCompare: false }];
             const sortThrottleWait = 0;
-            const listInstance = useListInstance({ props: {} });
+            const listInstance = useListInstance({ props: { pkKey: "id" } });
             const listItems = [
                 { id: 4, name: "four", has_things: true },
                 { id: 2, name: "two", has_things: true },
@@ -223,7 +223,7 @@ describe("use/listFilter", () => {
     });
     describe("useListFilters updates index when", () => {
         it("parentInstance.objects is updated", async () => {
-            const list = useListInstance({ props: {} });
+            const list = useListInstance({ props: { pkKey: "id" } });
             const filter = useListFilter({
                 parentState: list.state,
                 allowedFilter: (object) => !!object.allowed?.every((e) => e),
@@ -264,8 +264,8 @@ describe("use/listFilter", () => {
             });
         });
         it("parentInstance.relatedObjects is updated", async () => {
-            const list = useListInstance({ props: {} });
-            const relatedList = useListInstance({ props: {} });
+            const list = useListInstance({ props: { pkKey: "id" } });
+            const relatedList = useListInstance({ props: { pkKey: "id" } });
             const related = useListRelated({
                 parentState: list.state,
                 relatedObjectsRules: {
@@ -320,7 +320,7 @@ describe("use/listFilter", () => {
             });
         });
         it("parentInstance.calculatedObjects is updated", async () => {
-            const list = useListInstance({ props: {} });
+            const list = useListInstance({ props: { pkKey: "id" } });
             const calculated = useListCalculated({
                 parentState: list.state,
                 calculatedObjectsRules: reactive({
@@ -364,7 +364,7 @@ describe("use/listFilter", () => {
         });
     });
     it("you can use nested useListFilters", async () => {
-        const list = useListInstance({ props: {} });
+        const list = useListInstance({ props: { pkKey: "id" } });
 
         function filter1AllowedFilter(object) {
             return object.has_things && object.has_stuff;

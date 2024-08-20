@@ -141,12 +141,13 @@ describe("use/objectInstance.js", function () {
             await expect(oiRetrieveResolve).resolves.toBe(true);
         });
         it("success (retrieveArgs)", async function () {
-            const id = ref(1);
+            const pk = ref(1);
             const retrieveArgs = reactive({ fields });
             const objectInstance = useObjectInstance({
                 props: {
                     crudArgs: { stream: "test_stream" },
-                    id,
+                    pk,
+                    pkKey: "id",
                     retrieveArgs,
                 },
             });
@@ -183,12 +184,13 @@ describe("use/objectInstance.js", function () {
             expect(returnValue).toBe(true);
         });
         it("errored", async function () {
-            const id = ref(1);
+            const pk = ref(1);
             const retrieveArgs = reactive({ fields });
             const objectInstance = useObjectInstance({
                 props: {
                     crudArgs: { stream: "test_stream" },
-                    id,
+                    pk,
+                    pkKey: "id",
                     retrieveArgs,
                 },
             });
@@ -225,12 +227,13 @@ describe("use/objectInstance.js", function () {
             expect(returnValue).toBe(false);
         });
         it("already loading", async function () {
-            const id = ref(1);
+            const pk = ref(1);
             const retrieveArgs = reactive({ fields });
             const objectInstance = useObjectInstance({
                 props: {
                     crudArgs: { stream: "test_stream" },
-                    id,
+                    pk,
+                    pkKey: "id",
                     retrieveArgs,
                 },
             });
@@ -256,12 +259,13 @@ describe("use/objectInstance.js", function () {
             expect({ ...objectInstance.state.object }).toEqual({});
         });
         it("double retrieve gets the same promise", async function () {
-            const id = ref(1);
+            const pk = ref(1);
             const retrieveArgs = reactive({ fields });
             const objectInstance = useObjectInstance({
                 props: {
                     crudArgs: { stream: "test_stream" },
-                    id,
+                    pk,
+                    pkKey: "id",
                     retrieveArgs,
                 },
             });
@@ -335,6 +339,7 @@ describe("use/objectInstance.js", function () {
                 object: {
                     name: "qwer",
                 },
+                pkKey: "id",
                 retrieveArgs: { fields: ["id", "__str__", "name"] },
             });
             expect(objectInstance.state.crud.create).toHaveBeenCalledTimes(1);
@@ -382,6 +387,7 @@ describe("use/objectInstance.js", function () {
                 crudArgs: {
                     stream: "test_stream",
                 },
+                pkKey: "id",
                 object: {
                     name: "qwer",
                 },
@@ -433,6 +439,7 @@ describe("use/objectInstance.js", function () {
                 crudArgs: {
                     stream: "test_stream",
                 },
+                pkKey: "id",
                 object: {
                     name: "qwer",
                 },
@@ -476,6 +483,7 @@ describe("use/objectInstance.js", function () {
                 crudArgs: {
                     stream: "test_stream",
                 },
+                pkKey: "id",
                 object: {
                     name: "qwer",
                 },
@@ -534,6 +542,7 @@ describe("use/objectInstance.js", function () {
                 crudArgs: {
                     stream: "test_stream",
                 },
+                pkKey: "id",
                 object: {
                     id: 1,
                     name: "zxcv!",
@@ -585,6 +594,7 @@ describe("use/objectInstance.js", function () {
                 crudArgs: {
                     stream: "test_stream",
                 },
+                pkKey: "id",
                 object: {
                     id: 1,
                     name: "zxcv!",
@@ -636,6 +646,7 @@ describe("use/objectInstance.js", function () {
                 crudArgs: {
                     stream: "test_stream",
                 },
+                pkKey: "id",
                 object: {
                     id: 1,
                     name: "zxcv!",
@@ -684,6 +695,7 @@ describe("use/objectInstance.js", function () {
                 crudArgs: {
                     stream: "test_stream",
                 },
+                pkKey: "id",
                 object: {
                     id: 1,
                     name: "zxcv!",
@@ -739,7 +751,8 @@ describe("use/objectInstance.js", function () {
                 crudArgs: {
                     stream: "test_stream",
                 },
-                id: 1,
+                pk: 1,
+                pkKey: "id",
                 partialObject: {
                     id: 1,
                     name: "zxcv!",
@@ -791,7 +804,8 @@ describe("use/objectInstance.js", function () {
                 crudArgs: {
                     stream: "test_stream",
                 },
-                id: 1,
+                pk: 1,
+                pkKey: "id",
                 partialObject: {
                     id: 1,
                     name: "zxcv!",
@@ -801,12 +815,12 @@ describe("use/objectInstance.js", function () {
             expect(objectInstance.state.crud.patch).toHaveBeenCalledTimes(1);
         });
         it("already loading", async function () {
-            const id = ref(1);
+            const pk = ref(1);
             const retrieveArgs = reactive({ fields });
             const objectInstance = useObjectInstance({
                 props: {
                     crudArgs: { stream: "test_stream" },
-                    pk: id,
+                    pk,
                     pkKey: "id",
                     retrieveArgs,
                 },
@@ -845,12 +859,13 @@ describe("use/objectInstance.js", function () {
     });
     describe("delete", function () {
         it("success", async function () {
-            const id = ref(1);
+            const pk = ref(1);
             const retrieveArgs = reactive({ fields });
             const objectInstance = useObjectInstance({
                 props: {
                     crudArgs: { stream: "test_stream" },
-                    id,
+                    pk,
+                    pkKey: "id",
                     retrieveArgs,
                 },
             });
@@ -891,17 +906,19 @@ describe("use/objectInstance.js", function () {
             await expect(returnsPromise).resolves.toBe(true);
             expect(objectInstance.state.crud.delete).toHaveBeenCalledWith({
                 crudArgs: { stream: "test_stream" },
-                id: 1,
+                pk: 1,
+                pkKey: "id",
             });
             expect(objectInstance.state.crud.delete).toHaveBeenCalledTimes(1);
         });
         it("errored", async function () {
-            const id = ref(1);
+            const pk = ref(1);
             const retrieveArgs = reactive({ fields });
             const objectInstance = useObjectInstance({
                 props: {
                     crudArgs: { stream: "test_stream" },
-                    id,
+                    pk,
+                    pkKey: "id",
                     retrieveArgs,
                 },
             });
@@ -942,17 +959,19 @@ describe("use/objectInstance.js", function () {
             await expect(returnsPromise).resolves.toBe(false);
             expect(objectInstance.state.crud.delete).toHaveBeenCalledWith({
                 crudArgs: { stream: "test_stream" },
-                id: 1,
+                pk: 1,
+                pkKey: "id",
             });
             expect(objectInstance.state.crud.delete).toHaveBeenCalledTimes(1);
         });
         it("already loading", async function () {
-            const id = ref(1);
+            const pk = ref(1);
             const retrieveArgs = reactive({ fields });
             const objectInstance = useObjectInstance({
                 props: {
                     crudArgs: { stream: "test_stream" },
-                    id,
+                    pk,
+                    pkKey: "id",
                     retrieveArgs,
                 },
             });
@@ -963,7 +982,8 @@ describe("use/objectInstance.js", function () {
             await expect(() => objectInstance.delete()).rejects.toThrow(ObjectError);
             expect(objectInstance.state.crud.delete).toHaveBeenCalledWith({
                 crudArgs: { stream: "test_stream" },
-                id: 1,
+                pk: 1,
+                pkKey: "id",
             });
             expect(objectInstance.state.crud.delete).toHaveBeenCalledTimes(1);
         });
@@ -972,7 +992,8 @@ describe("use/objectInstance.js", function () {
         const objectInstanceA = useObjectInstance({
             props: {
                 crudArgs: { stream: "test_streamA" },
-                id: 1,
+                pk: 1,
+                pkKey: "id",
                 retrieveArgs: {
                     fields,
                 },
@@ -981,7 +1002,8 @@ describe("use/objectInstance.js", function () {
         const objectInstanceB = useObjectInstance({
             props: {
                 crudArgs: { stream: "test_streamB" },
-                id: 2,
+                pk: 2,
+                pkKey: "id",
                 retrieveArgs: {
                     fields,
                 },
@@ -991,7 +1013,8 @@ describe("use/objectInstance.js", function () {
             A: {
                 props: {
                     crudArgs: { stream: "test_streamA" },
-                    id: 1,
+                    pk: 1,
+                    pkKey: "id",
                     retrieveArgs: {
                         fields,
                     },
@@ -1000,7 +1023,8 @@ describe("use/objectInstance.js", function () {
             B: {
                 props: {
                     crudArgs: { stream: "test_streamB" },
-                    id: 2,
+                    pk: 2,
+                    pkKey: "id",
                     retrieveArgs: {
                         fields,
                     },

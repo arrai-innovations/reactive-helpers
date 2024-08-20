@@ -305,6 +305,7 @@ describe("use/listInstance.spec.js", function () {
                 props: {
                     listArgs,
                     retrieveArgs,
+                    pkKey: "id",
                 },
             });
             let crudListResolve;
@@ -403,14 +404,14 @@ describe("use/listInstance.spec.js", function () {
     });
     describe("addListObject", function () {
         it("errored", function () {
-            const listInstance = useListInstance({ props: {} });
+            const listInstance = useListInstance({ props: { pkKey: "id" } });
             expect(() => listInstance.addListObject({ listObject })).toThrowError(ListInstanceError);
             listObject.id = listInstance.getFakePk();
             listInstance.addListObject(listObject);
             expect(() => listInstance.addListObject({ listObject })).toThrowError(ListInstanceError);
         });
         it("succeeded", async function () {
-            const listInstance = useListInstance({ props: {} });
+            const listInstance = useListInstance({ props: { pkKey: "id" } });
             const newId = listInstance.getFakePk();
             listObject.id = newId;
             listInstance.addListObject(listObject);
@@ -433,7 +434,7 @@ describe("use/listInstance.spec.js", function () {
     });
     describe("updateListObject", function () {
         it("errors", function () {
-            const listInstance = useListInstance({ props: {} });
+            const listInstance = useListInstance({ props: { pkKey: "id" } });
             expect(() => listInstance.updateListObject({ listObject })).toThrowError(ListInstanceError);
             listObject.id = -50002000;
             listInstance.addListObject(listObject);
@@ -441,7 +442,7 @@ describe("use/listInstance.spec.js", function () {
         });
         it("succeeds", async function () {
             const listInstance = useListInstance({
-                props: {},
+                props: { pkKey: "id" },
             });
             let crudListResolve;
             const crudListPromise = new Promise((resolve) => {
@@ -479,12 +480,12 @@ describe("use/listInstance.spec.js", function () {
     });
     describe("deleteListObject", function () {
         it("errors", function () {
-            const listInstance = useListInstance({ props: {} });
+            const listInstance = useListInstance({ props: { pkKey: "id" } });
             expect(() => listInstance.deleteListObject(-50002000)).toThrowError(ListInstanceError);
         });
         it("succeeds", async function () {
             const listInstance = useListInstance({
-                props: {},
+                props: { pkKey: "id" },
             });
             let crudListResolve;
             const crudListPromise = new Promise((resolve) => {
@@ -558,7 +559,8 @@ describe("use/listInstance.spec.js", function () {
             expect(listInstance.state.loading).toBe(true);
             expect(globalbulkDelete).toHaveBeenCalledWith({
                 crudArgs: { stream: "test_stream" },
-                ids: Object.keys(crudListResolvedObjects2).map(Number),
+                pkKey: "id",
+                pks: Object.keys(crudListResolvedObjects2).map(Number),
             });
 
             expect(globalbulkDelete).toHaveBeenCalledTimes(1);
@@ -572,7 +574,7 @@ describe("use/listInstance.spec.js", function () {
     });
     describe("getFakePk", function () {
         it("returns fakeId", function () {
-            const listInstance = useListInstance({ props: {} });
+            const listInstance = useListInstance({ props: { pkKey: "id" } });
             const fakeId = listInstance.getFakePk();
             expect(fakeId).toBeTruthy();
         });
