@@ -528,6 +528,29 @@ describe("use/listSubscription.spec.js", function () {
             expect(listSubscription.state.subscribed).toBe(false);
         });
     });
+    describe("useListSubscription", function () {
+        it("throw error when missing list instance and props", async function () {
+            expect(() => useListSubscription({})).toThrow(
+                "useListSubscription should be passed listInstance or props and functions."
+            );
+        });
+        it("throw error when both listInstance and props passed in", async function () {
+            crudSubscribeResolvable[0].promise.cancel.mockImplementation(() => Promise.resolve(true));
+            const listArgs = reactive({
+                user: 1,
+            });
+            const retrieveArgs = reactive({
+                fields: fields,
+            });
+            const listInstance = useListInstance({
+                props: { pkKey: "id", listArgs, retrieveArgs },
+            });
+            const props = { pkKey: "id", listArgs, retrieveArgs };
+            expect(() => useListSubscription({ listInstance, props })).toThrow(
+                "useListSubscription should be passed listInstance or props and functions, not both."
+            );
+        });
+    });
     it("useListSubscriptions", async function () {
         const listSubscriptionA = useListSubscription({
             props: {
@@ -641,6 +664,72 @@ describe("use/listSubscription.spec.js", function () {
         expect(inspect(listSubscription.A)).toEqual(inspect(listSubscriptionA));
         expect(inspect(listSubscription.B)).toEqual(inspect(listSubscriptionB));
     });
+    it("custom pkKey", async function () {
+        const listArgs = reactive({
+            user: 1,
+        });
+        const retrieveArgs = reactive({
+            fields: fields,
+        });
+        const listSubscription = useListSubscription({
+            props: {
+                pkKey: "hash",
+                listArgs,
+                retrieveArgs,
+            },
+        });
+        listSubscription.subscribe();
+        await nextTick();
+        await flushPromises();
+        expect(crudSubscribe).toHaveBeenCalledWith({
+            crudArgs: { stream: "test_stream" },
+            pkKey: "hash",
+            listArgs: { user: 1 },
+            retrieveArgs: { fields: fields },
+            subscriptionEventCallback: expect.any(Function),
+        });
+        expect(crudSubscribe).toHaveBeenCalledTimes(1);
+        expect(listSubscription.state.subscribed).toBe(true);
+
+        crudListResolvable[0].resolve();
+        crudSubscribeResolvable[0].resolve();
+        await poll(() => listSubscription.state.subscribed);
+
+        passedSubscriptionEventCallback(
+            {
+                hash: 1,
+                __str__: "blur",
+                name: "blur",
+            },
+            "create"
+        );
+
+        expect(listSubscription.listInstance.state.objects).toEqual({
+            1: {
+                hash: 1,
+                __str__: "blur",
+                name: "blur",
+            },
+        });
+
+        passedSubscriptionEventCallback(
+            {
+                hash: 1,
+                __str__: "blur",
+                fame: "blur",
+            },
+            "update"
+        );
+
+        expect(listSubscription.listInstance.state.objects).toEqual({
+            1: {
+                hash: 1,
+                __str__: "blur",
+                fame: "blur",
+            },
+        });
+    });
+
     describe("clearListOnListIntentTriggered true", function () {
         it("on true", async function () {
             crudSubscribeResolvable[0].promise.cancel.mockImplementation(() => Promise.resolve(true));

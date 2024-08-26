@@ -65,6 +65,23 @@ describe("use/listInstance.spec.js", function () {
             name: "nm,.",
         },
     ];
+    const crudListResolvedPageNonStandardPK = [
+        {
+            unique: 1,
+            __str__: "fdg",
+            name: "fdg",
+        },
+        {
+            unique: 2,
+            __str__: "ryt",
+            name: "ryt",
+        },
+        {
+            unique: 3,
+            __str__: "pui",
+            name: "pui",
+        },
+    ];
     const listObject = {
         id: null,
         __str__: "nvm",
@@ -72,6 +89,7 @@ describe("use/listInstance.spec.js", function () {
     };
     const crudListResolvedObjects1 = keyBy(crudListResolvedPage1, "id");
     const crudListResolvedObjects2 = keyBy(crudListResolvedPage2, "id");
+    const crudListResolvedObjectsNonStandardPK = keyBy(crudListResolvedPageNonStandardPK, "unique");
     describe("list", function () {
         it("success", async function () {
             const listArgs = reactive({
@@ -133,6 +151,55 @@ describe("use/listInstance.spec.js", function () {
             expect(globalList).toHaveBeenCalledWith({
                 crudArgs: { stream: "test_stream" },
                 pkKey: "id",
+                listArgs: { user: 1 },
+                retrieveArgs: { fields: fields },
+                pageCallback: passedPageCallback,
+                isCancelled: expect.any(Object), // ref
+            });
+            expect(globalList).toHaveBeenCalledTimes(1);
+        });
+        it("success with non-standard primary key", async function () {
+            const listArgs = reactive({
+                user: 1,
+            });
+            const retrieveArgs = reactive({
+                fields,
+            });
+            const listInstance = useListInstance({ props: { pkKey: "unique", listArgs, retrieveArgs } });
+            let crudListResolve;
+            const crudListPromise = new Promise((resolve) => {
+                crudListResolve = resolve;
+            });
+            let passedPageCallback;
+            globalList.mockImplementation(({ pageCallback }) => {
+                passedPageCallback = pageCallback;
+                return crudListPromise;
+            });
+
+            expectErrorToBeNull(listInstance.state.error);
+            expect(listInstance.state.errored).toBe(false);
+            expect(listInstance.state.loading).toBeUndefined();
+            expect({ ...listInstance.state.objects }).toEqual({});
+
+            listInstance.list();
+
+            expectErrorToBeNull(listInstance.state.error);
+            expect(listInstance.state.errored).toBe(false);
+            expect(listInstance.state.loading).toBe(true);
+            expect({ ...listInstance.state.objects }).toEqual({});
+
+            await nextTick();
+
+            // @ts-ignore - pageCallback is set in the mock, if not it will throw which is what we want
+            passedPageCallback(crudListResolvedPageNonStandardPK);
+
+            expectErrorToBeNull(listInstance.state.error);
+            expect(listInstance.state.errored).toBe(false);
+            expect(listInstance.state.loading).toBe(true);
+            expect({ ...listInstance.state.objects }).toEqual(crudListResolvedObjectsNonStandardPK);
+            expect(globalList).toHaveBeenCalledWith({
+                crudArgs: { stream: "test_stream" },
+                pkKey: "unique",
                 listArgs: { user: 1 },
                 retrieveArgs: { fields: fields },
                 pageCallback: passedPageCallback,
@@ -465,7 +532,6 @@ describe("use/listInstance.spec.js", function () {
                 obj: listInstance.state,
                 prop: "running",
             });
-
             let updateObject = listInstance.state.objects["1"];
             updateObject.name = "updated";
             listInstance.updateListObject(updateObject);
@@ -561,6 +627,51 @@ describe("use/listInstance.spec.js", function () {
                 crudArgs: { stream: "test_stream" },
                 pkKey: "id",
                 pks: Object.keys(crudListResolvedObjects2).map(Number),
+            });
+
+            expect(globalbulkDelete).toHaveBeenCalledTimes(1);
+
+            // @ts-ignore - bulkDeleteResolve is set in a promise, since we await this will be set
+            crudListResolve();
+            await flushPromises();
+            await expect(bulkDeleteResolve).resolves.toBe(true);
+            expect({ ...listInstance.state.objects }).toEqual({});
+        });
+        it("succeeds with non-standard primary key", async function () {
+            const listArgs = reactive({
+                user: 1,
+            });
+            const retrieveArgs = reactive({
+                fields,
+            });
+            const listInstance = useListInstance({ props: { pkKey: "unique", listArgs, retrieveArgs } });
+            let crudListResolve;
+            const crudListPromise = new Promise((resolve) => {
+                crudListResolve = resolve;
+            });
+            let passedPageCallback;
+            globalList.mockImplementation(({ pageCallback }) => {
+                passedPageCallback = pageCallback;
+                return crudListPromise;
+            });
+            const liListResolve = listInstance.list();
+            await nextTick();
+            // @ts-ignore - pageCallback is set in the mock, if not it will throw which is what we want
+            passedPageCallback(crudListResolvedPageNonStandardPK);
+            // @ts-ignore - crudListResolve is set in a promise, since we await this will be set
+            crudListResolve();
+            await flushPromises();
+            await expect(liListResolve).resolves.toBe(true);
+
+            expect({ ...listInstance.state.objects }).toEqual(crudListResolvedObjectsNonStandardPK);
+            const bulkDeleteResolve = listInstance.bulkDelete();
+            expectErrorToBeNull(listInstance.state.error);
+            expect(listInstance.state.errored).toBe(false);
+            expect(listInstance.state.loading).toBe(true);
+            expect(globalbulkDelete).toHaveBeenCalledWith({
+                crudArgs: { stream: "test_stream" },
+                pkKey: "unique",
+                pks: Object.keys(crudListResolvedObjectsNonStandardPK).map(Number),
             });
 
             expect(globalbulkDelete).toHaveBeenCalledTimes(1);
