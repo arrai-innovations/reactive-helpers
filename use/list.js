@@ -31,6 +31,7 @@ import { effectScope, reactive, shallowReactive, shallowReadonly, toRef } from "
  *
  * @typedef {object} ListRawProps
  * @property {boolean} listArgs - The arguments to pass to the registered list crud functions, related to the list itself.
+ * @property {string} pkKey - The primary key for the list items.
  * @property {boolean} retrieveArgs - The arguments to pass to the registered list crud functions, related to the items.
  * @property {boolean} crudArgs - General arguments to pass to the registered list crud functions, often related to endpoints.
  * @property {boolean} intendToList - Indicates whether the list should be fetched immediately.

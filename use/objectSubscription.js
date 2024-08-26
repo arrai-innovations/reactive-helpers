@@ -142,10 +142,11 @@ export function useObjectSubscriptions(subscriptionArgs) {
  * import { useObjectSubscription } from "@arrai-innovations/reactive-helpers";
  * import { reactive, ref, toRef } from "vue";
  *
+ * const pkKey = "id";
  * const props = defineProps({
  *     app: { type: String, required: true },
  *     model: { type: String, required: true },
- *     id: { type: String, default: "" },
+ *     pk: { type: String, default: "" },
  * });
  *
  * const objectSubscriptionProps = reactive({
@@ -153,19 +154,21 @@ export function useObjectSubscriptions(subscriptionArgs) {
  *         app: toRef(props, "app"),
  *         model: toRef(props, "model"),
  *     },
+ *     pk: toRef(props, "pk"),
+ *     pkKey: pkKey,
  *     retrieveArgs: {
  *         fields: ['foo', 'bar'],
  *     },
  *     intendToRetrieve: false,
  *     intendToSubscribe: false,
  * });
- * objectSubscriptionProps.intendToRetrieve = objectSubscriptionProps.intendToSubscribe = computed(()=> !!props.id);
+ * objectSubscriptionProps.intendToRetrieve = objectSubscriptionProps.intendToSubscribe = computed(()=> !!props.pk);
  * const objectSubscription = useObjectSubscription(objectSubscriptionProps);
  * </script>
  * <template>
  *     <div v-if="objectSubscription.state.loading">Loading...</div>
  *     <div v-else-if="objectSubscription.state.errored">Error: {{ objectSubscription.state.error.message }}</div>
- *     <div v-else-if="objectSubscription.state.object.id">Foo: {{ objectSubscription.state.object.foo }}</div>
+ *     <div v-else-if="objectSubscription.state.object[pkKey]">Foo: {{ objectSubscription.state.object.foo }}</div>
  *     <div v-else>Object not found.</div>
  * </template>
  * ```
@@ -177,14 +180,26 @@ export function useObjectSubscription({ objectInstance, props, functions }) {
     if (!objectInstance) {
         objectInstance = useObjectInstance({ props, functions });
     } else {
-        if (!("id" in props)) {
-            console.error("id not set, must be true for intendToRetrieve or intendToSubscribe to work.");
+        // pkKey is required for objectInstances, so we don't need to check for it here
+        if (!("pk" in props)) {
+            // falsely values are fine, especially when loading, but your going to have a bad time if you
+            //  don't have something to react to.
+            throw new ObjectSubscriptionError(
+                "pk not in props, must be truthy for intendToRetrieve or intendToSubscribe to work.",
+                "missing-pk"
+            );
         }
         if (!("retrieveArgs" in props)) {
-            console.error("retrieveArgs not set, must be true for intendToRetrieve or intendToSubscribe to work.");
+            // falsely values are fine, especially when loading, but your going to have a bad time if you
+            //  don't have something to react to.
+            throw new ObjectSubscriptionError(
+                "retrieveArgs not in props, must be truthy for intendToRetrieve or intendToSubscribe to work.",
+                "missing-retrieveArgs"
+            );
         }
         if (functions) {
             console.error(
+                // warn doesn't provide a stack trace, which is useful for finding the source of this issue
                 "functions passed to useObjectSubscription, but objectInstance was passed. functions ignored."
             );
         }
@@ -241,7 +256,7 @@ export function useObjectSubscription({ objectInstance, props, functions }) {
 
     function subscribe() {
         // this function cannot be async, or the resulting promise will lose its .cancel() method
-        if (subscribeIntent.state.active || state.subscribed) {
+        if (state.subscribed) {
             return Promise.reject(
                 new ObjectSubscriptionError("already subscribed or subscribing.", "already-subscribed")
             );
@@ -251,7 +266,8 @@ export function useObjectSubscription({ objectInstance, props, functions }) {
         let subscribePromise;
         subscribePromise = parentState.crud.subscribe({
             crudArgs: parentState.crud.args,
-            id: parentState.id,
+            pk: parentState.pk,
+            pkKey: parentState.pkKey,
             retrieveArgs: state.retrieveArgs,
             callback: (data, action) => {
                 if (action === "delete") {
@@ -284,7 +300,9 @@ export function useObjectSubscription({ objectInstance, props, functions }) {
             })
             .finally(() => {
                 loadingError.clearLoading();
-                subscribePromise = null;
+                if (!state.subscribed) {
+                    subscribePromise = null;
+                }
             });
         catchPromise.cancel = cancelSubscription;
         return catchPromise;
@@ -326,7 +344,8 @@ export function useObjectSubscription({ objectInstance, props, functions }) {
             awaitableWithCancel: subscribe,
             watchArguments: reactive({
                 intendToSubscribe: toRef(state, "intendToSubscribe"),
-                id: toRef(parentState, "id"),
+                pk: toRef(parentState, "pk"),
+                pkKey: toRef(parentState, "pkKey"),
                 retrieveArgs: toRef(parentState, "retrieveArgs"),
             }),
             clearActiveOnResolved: false,
@@ -336,7 +355,8 @@ export function useObjectSubscription({ objectInstance, props, functions }) {
             awaitableWithCancel: objectInstance.retrieve,
             watchArguments: reactive({
                 intendToRetrieve: toRef(state, "intendToRetrieve"),
-                id: toRef(parentState, "id"),
+                pk: toRef(parentState, "pk"),
+                pkKey: toRef(parentState, "pkKey"),
                 retrieveArgs: toRef(parentState, "retrieveArgs"),
             }),
             // delay triggering a retrieve until the last retrieve has finished/cancelled

@@ -24,6 +24,12 @@ The arguments to be passed to the crud functions.
 
 The data to be acted upon.
 
+##### pkKey
+
+> **pkKey**: `string`
+
+The key name of the primary key.
+
 ##### retrieveArgs
 
 > **retrieveArgs**: `any`
@@ -42,11 +48,17 @@ The arguments to be passed to the retrieve function.
 
 The arguments to be passed to the crud functions.
 
-##### id
+##### pk
 
-> **id**: `string`
+> **pk**: `string`
 
-The id of the object to be acted upon.
+The pk of the object to be acted upon.
+
+##### pkKey
+
+> **pkKey**: `string`
+
+The key name of the primary key.
 
 ##### retrieveArgs
 
@@ -168,17 +180,23 @@ A function to be used instead of the default crud update function.
 
 The arguments to be passed to the crud functions.
 
-##### id
-
-> **id**: `string`
-
-The id of the object to be acted upon.
-
 ##### partialObject
 
 > **partialObject**: `any`
 
 The data to be acted upon.
+
+##### pk
+
+> **pk**: `string`
+
+The pk of the object to be acted upon.
+
+##### pkKey
+
+> **pkKey**: `string`
+
+The key name of the primary key.
 
 ##### retrieveArgs
 
@@ -198,11 +216,17 @@ The arguments to be passed to the retrieve function.
 
 The arguments to be passed to the crud functions.
 
-##### id
+##### pk
 
-> **id**: `string`
+> **pk**: `string`
 
-The id of the object to be acted upon.
+The pk of the object to be acted upon.
+
+##### pkKey
+
+> **pkKey**: `string`
+
+The key name of the primary key.
 
 ##### retrieveArgs
 
@@ -238,11 +262,17 @@ The callback to be called when the object is updated.
 
 The arguments to be passed to the crud functions.
 
-##### id
+##### pk
 
-> **id**: `string`
+> **pk**: `string`
 
-The id of the object to be acted upon.
+The pk of the object to be acted upon.
+
+##### pkKey
+
+> **pkKey**: `string`
+
+The key name of the primary key.
 
 ##### retrieveArgs
 
@@ -267,6 +297,12 @@ The arguments to be passed to the crud functions.
 > **object**: [`CrudObject`](../use/objectInstance.md#crudobject)
 
 The data to be acted upon.
+
+##### pkKey
+
+> **pkKey**: `string`
+
+The key name of the primary key.
 
 ##### retrieveArgs
 

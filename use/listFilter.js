@@ -187,7 +187,7 @@ export function useListFilter({ parentState, allowedFilter, excludedFilter }) {
             allowedFilter,
             excludedFilter,
             inResults: {},
-            /** @type {import('./listInstance.js').ObjectsById} */
+            /** @type {import('./listInstance.js').ObjectsByPk} */
             objects: {},
             // @ts-ignore - objectsInOrder will become a computed in the effect scope
             objectsInOrder: [],
@@ -253,7 +253,7 @@ export function useListFilter({ parentState, allowedFilter, excludedFilter }) {
                 Object.fromEntries(
                     Object.entries(state.inResults)
                         .filter(([, value]) => !!value)
-                        .map(([id]) => [id, toRef(parentState.objects, id)])
+                        .map(([pk]) => [pk, toRef(parentState.objects, pk)])
                 )
             );
         }
@@ -266,7 +266,7 @@ export function useListFilter({ parentState, allowedFilter, excludedFilter }) {
 
     const orderWatch = () => {
         state.orderWatchRunning = true;
-        let desiredOrder = parentState.order.filter((id) => !!state.objects[id]);
+        let desiredOrder = parentState.order.filter((pk) => !!state.objects[pk]);
         if (!state.allowedFilter && !state.excludedFilter) {
             desiredOrder = parentState.order;
         }
@@ -277,18 +277,18 @@ export function useListFilter({ parentState, allowedFilter, excludedFilter }) {
             state.order.length = entries.length;
             internalState.objectsInOrderRefs.length = entries.length;
         }
-        for (const [index, id] of entries) {
-            if (state.order[index] !== id) {
-                state.order[index] = id;
+        for (const [index, pk] of entries) {
+            if (state.order[index] !== pk) {
+                state.order[index] = pk;
             }
             // @ts-ignore - objectsInOrderRefs is a reactive array of refs
-            if (unref(toRef(internalState.objectsInOrderRefs, index)) !== unref(toRef(state.objects, id))) {
-                internalState.objectsInOrderRefs[index] = toRef(state.objects, id);
+            if (unref(toRef(internalState.objectsInOrderRefs, index)) !== unref(toRef(state.objects, pk))) {
+                internalState.objectsInOrderRefs[index] = toRef(state.objects, pk);
             }
         }
         assignReactiveObject(
             internalState.objectsInOrderRefs,
-            desiredOrder.map((id) => toRef(state.objects, id))
+            desiredOrder.map((pk) => toRef(state.objects, pk))
         );
         nextTick().then(() => {
             state.orderWatchRunning = false;

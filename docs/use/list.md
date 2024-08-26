@@ -150,6 +150,12 @@ The arguments to pass to the registered list crud functions, related to the list
 
 Sorting rules that define the order of list items.
 
+##### pkKey
+
+> **pkKey**: `string`
+
+The primary key for the list items.
+
 ##### relatedObjectsRules
 
 > **relatedObjectsRules**: `object`

@@ -65,6 +65,23 @@ describe("use/listInstance.spec.js", function () {
             name: "nm,.",
         },
     ];
+    const crudListResolvedPageNonStandardPK = [
+        {
+            unique: 1,
+            __str__: "fdg",
+            name: "fdg",
+        },
+        {
+            unique: 2,
+            __str__: "ryt",
+            name: "ryt",
+        },
+        {
+            unique: 3,
+            __str__: "pui",
+            name: "pui",
+        },
+    ];
     const listObject = {
         id: null,
         __str__: "nvm",
@@ -72,6 +89,7 @@ describe("use/listInstance.spec.js", function () {
     };
     const crudListResolvedObjects1 = keyBy(crudListResolvedPage1, "id");
     const crudListResolvedObjects2 = keyBy(crudListResolvedPage2, "id");
+    const crudListResolvedObjectsNonStandardPK = keyBy(crudListResolvedPageNonStandardPK, "unique");
     describe("list", function () {
         it("success", async function () {
             const listArgs = reactive({
@@ -80,7 +98,7 @@ describe("use/listInstance.spec.js", function () {
             const retrieveArgs = reactive({
                 fields,
             });
-            const listInstance = useListInstance({ props: { listArgs, retrieveArgs } });
+            const listInstance = useListInstance({ props: { pkKey: "id", listArgs, retrieveArgs } });
             let crudListResolve;
             const crudListPromise = new Promise((resolve) => {
                 crudListResolve = resolve;
@@ -132,6 +150,56 @@ describe("use/listInstance.spec.js", function () {
             expect({ ...listInstance.state.objects }).toEqual(crudListResolvedObjects2);
             expect(globalList).toHaveBeenCalledWith({
                 crudArgs: { stream: "test_stream" },
+                pkKey: "id",
+                listArgs: { user: 1 },
+                retrieveArgs: { fields: fields },
+                pageCallback: passedPageCallback,
+                isCancelled: expect.any(Object), // ref
+            });
+            expect(globalList).toHaveBeenCalledTimes(1);
+        });
+        it("success with non-standard primary key", async function () {
+            const listArgs = reactive({
+                user: 1,
+            });
+            const retrieveArgs = reactive({
+                fields,
+            });
+            const listInstance = useListInstance({ props: { pkKey: "unique", listArgs, retrieveArgs } });
+            let crudListResolve;
+            const crudListPromise = new Promise((resolve) => {
+                crudListResolve = resolve;
+            });
+            let passedPageCallback;
+            globalList.mockImplementation(({ pageCallback }) => {
+                passedPageCallback = pageCallback;
+                return crudListPromise;
+            });
+
+            expectErrorToBeNull(listInstance.state.error);
+            expect(listInstance.state.errored).toBe(false);
+            expect(listInstance.state.loading).toBeUndefined();
+            expect({ ...listInstance.state.objects }).toEqual({});
+
+            listInstance.list();
+
+            expectErrorToBeNull(listInstance.state.error);
+            expect(listInstance.state.errored).toBe(false);
+            expect(listInstance.state.loading).toBe(true);
+            expect({ ...listInstance.state.objects }).toEqual({});
+
+            await nextTick();
+
+            // @ts-ignore - pageCallback is set in the mock, if not it will throw which is what we want
+            passedPageCallback(crudListResolvedPageNonStandardPK);
+
+            expectErrorToBeNull(listInstance.state.error);
+            expect(listInstance.state.errored).toBe(false);
+            expect(listInstance.state.loading).toBe(true);
+            expect({ ...listInstance.state.objects }).toEqual(crudListResolvedObjectsNonStandardPK);
+            expect(globalList).toHaveBeenCalledWith({
+                crudArgs: { stream: "test_stream" },
+                pkKey: "unique",
                 listArgs: { user: 1 },
                 retrieveArgs: { fields: fields },
                 pageCallback: passedPageCallback,
@@ -146,7 +214,7 @@ describe("use/listInstance.spec.js", function () {
             const retrieveArgs = reactive({
                 fields,
             });
-            const listInstance = useListInstance({ props: { listArgs, retrieveArgs } });
+            const listInstance = useListInstance({ props: { pkKey: "id", listArgs, retrieveArgs } });
             expectErrorToBeNull(listInstance.state.error);
             expect(listInstance.state.errored).toBe(false);
             expect(listInstance.state.loading).toBeUndefined();
@@ -158,6 +226,7 @@ describe("use/listInstance.spec.js", function () {
 
             expect(globalList).toHaveBeenCalledWith({
                 crudArgs: { stream: "test_stream" },
+                pkKey: "id",
                 listArgs: { user: 1 },
                 retrieveArgs: { fields: fields },
                 pageCallback: expect.any(Function),
@@ -176,7 +245,7 @@ describe("use/listInstance.spec.js", function () {
             const retrieveArgs = reactive({
                 fields,
             });
-            const listInstance = useListInstance({ props: { listArgs, retrieveArgs } });
+            const listInstance = useListInstance({ props: { pkKey: "id", listArgs, retrieveArgs } });
             let crudListReject;
             const crudListPromise = new Promise((resolve, reject) => {
                 crudListReject = reject;
@@ -214,6 +283,7 @@ describe("use/listInstance.spec.js", function () {
             expect({ ...listInstance.state.objects }).toEqual({});
             expect(globalList).toHaveBeenCalledWith({
                 crudArgs: { stream: "test_stream" },
+                pkKey: "id",
                 listArgs: { user: 1 },
                 retrieveArgs: { fields: fields },
                 pageCallback: passedPageCallback,
@@ -229,7 +299,7 @@ describe("use/listInstance.spec.js", function () {
                 fields,
             });
             const listInstance = useListInstance({
-                props: { listArgs, retrieveArgs, crudArgs: { stream: "custom_stream" } },
+                props: { pkKey: "id", listArgs, retrieveArgs, crudArgs: { stream: "custom_stream" } },
             });
             let crudListResolve;
             const crudListPromise = new Promise((resolve) => {
@@ -283,6 +353,7 @@ describe("use/listInstance.spec.js", function () {
             expect({ ...listInstance.state.objects }).toEqual(crudListResolvedObjects2);
             expect(globalList).toHaveBeenCalledWith({
                 crudArgs: { stream: "custom_stream" },
+                pkKey: "id",
                 listArgs: { user: 1 },
                 retrieveArgs: { fields: fields },
                 pageCallback: passedPageCallback,
@@ -301,6 +372,7 @@ describe("use/listInstance.spec.js", function () {
                 props: {
                     listArgs,
                     retrieveArgs,
+                    pkKey: "id",
                 },
             });
             let crudListResolve;
@@ -333,6 +405,7 @@ describe("use/listInstance.spec.js", function () {
             expect(listInstance.state.objectsInOrder).toEqual(Object.values(crudListResolvedObjects2));
             expect(globalList).toHaveBeenCalledWith({
                 crudArgs: { stream: "test_stream" },
+                pkKey: "id",
                 listArgs: { user: 1 },
                 retrieveArgs: { fields: fields },
                 pageCallback: passedPageCallback,
@@ -354,7 +427,8 @@ describe("use/listInstance.spec.js", function () {
         const listInstanceA = useListInstance({
             props: {
                 crudArgs: { stream: "test_streamA" },
-                id: 1,
+                pk: 1,
+                pkKey: "id",
                 retrieveArgs: {
                     fields,
                 },
@@ -363,7 +437,8 @@ describe("use/listInstance.spec.js", function () {
         const listInstanceB = useListInstance({
             props: {
                 crudArgs: { stream: "test_streamB" },
-                id: 2,
+                pk: 2,
+                pkKey: "id",
                 retrieveArgs: {
                     fields,
                 },
@@ -373,7 +448,8 @@ describe("use/listInstance.spec.js", function () {
             A: {
                 props: {
                     crudArgs: { stream: "test_streamA" },
-                    id: 1,
+                    pk: 1,
+                    pkKey: "id",
                     retrieveArgs: {
                         fields,
                     },
@@ -382,7 +458,8 @@ describe("use/listInstance.spec.js", function () {
             B: {
                 props: {
                     crudArgs: { stream: "test_streamB" },
-                    id: 2,
+                    pk: 2,
+                    pkKey: "id",
                     retrieveArgs: {
                         fields,
                     },
@@ -394,15 +471,15 @@ describe("use/listInstance.spec.js", function () {
     });
     describe("addListObject", function () {
         it("errored", function () {
-            const listInstance = useListInstance({ props: {} });
+            const listInstance = useListInstance({ props: { pkKey: "id" } });
             expect(() => listInstance.addListObject({ listObject })).toThrowError(ListInstanceError);
-            listObject.id = listInstance.getFakeId();
+            listObject.id = listInstance.getFakePk();
             listInstance.addListObject(listObject);
             expect(() => listInstance.addListObject({ listObject })).toThrowError(ListInstanceError);
         });
         it("succeeded", async function () {
-            const listInstance = useListInstance({ props: {} });
-            const newId = listInstance.getFakeId();
+            const listInstance = useListInstance({ props: { pkKey: "id" } });
+            const newId = listInstance.getFakePk();
             listObject.id = newId;
             listInstance.addListObject(listObject);
             expect(listInstance.state.objects[newId]).toEqual(listObject);
@@ -424,7 +501,7 @@ describe("use/listInstance.spec.js", function () {
     });
     describe("updateListObject", function () {
         it("errors", function () {
-            const listInstance = useListInstance({ props: {} });
+            const listInstance = useListInstance({ props: { pkKey: "id" } });
             expect(() => listInstance.updateListObject({ listObject })).toThrowError(ListInstanceError);
             listObject.id = -50002000;
             listInstance.addListObject(listObject);
@@ -432,7 +509,7 @@ describe("use/listInstance.spec.js", function () {
         });
         it("succeeds", async function () {
             const listInstance = useListInstance({
-                props: {},
+                props: { pkKey: "id" },
             });
             let crudListResolve;
             const crudListPromise = new Promise((resolve) => {
@@ -455,7 +532,6 @@ describe("use/listInstance.spec.js", function () {
                 obj: listInstance.state,
                 prop: "running",
             });
-
             let updateObject = listInstance.state.objects["1"];
             updateObject.name = "updated";
             listInstance.updateListObject(updateObject);
@@ -470,12 +546,12 @@ describe("use/listInstance.spec.js", function () {
     });
     describe("deleteListObject", function () {
         it("errors", function () {
-            const listInstance = useListInstance({ props: {} });
+            const listInstance = useListInstance({ props: { pkKey: "id" } });
             expect(() => listInstance.deleteListObject(-50002000)).toThrowError(ListInstanceError);
         });
         it("succeeds", async function () {
             const listInstance = useListInstance({
-                props: {},
+                props: { pkKey: "id" },
             });
             let crudListResolve;
             const crudListPromise = new Promise((resolve) => {
@@ -523,7 +599,7 @@ describe("use/listInstance.spec.js", function () {
             const retrieveArgs = reactive({
                 fields,
             });
-            const listInstance = useListInstance({ props: { listArgs, retrieveArgs } });
+            const listInstance = useListInstance({ props: { pkKey: "id", listArgs, retrieveArgs } });
             let crudListResolve;
             const crudListPromise = new Promise((resolve) => {
                 crudListResolve = resolve;
@@ -549,7 +625,53 @@ describe("use/listInstance.spec.js", function () {
             expect(listInstance.state.loading).toBe(true);
             expect(globalbulkDelete).toHaveBeenCalledWith({
                 crudArgs: { stream: "test_stream" },
-                ids: Object.keys(crudListResolvedObjects2).map(Number),
+                pkKey: "id",
+                pks: Object.keys(crudListResolvedObjects2).map(Number),
+            });
+
+            expect(globalbulkDelete).toHaveBeenCalledTimes(1);
+
+            // @ts-ignore - bulkDeleteResolve is set in a promise, since we await this will be set
+            crudListResolve();
+            await flushPromises();
+            await expect(bulkDeleteResolve).resolves.toBe(true);
+            expect({ ...listInstance.state.objects }).toEqual({});
+        });
+        it("succeeds with non-standard primary key", async function () {
+            const listArgs = reactive({
+                user: 1,
+            });
+            const retrieveArgs = reactive({
+                fields,
+            });
+            const listInstance = useListInstance({ props: { pkKey: "unique", listArgs, retrieveArgs } });
+            let crudListResolve;
+            const crudListPromise = new Promise((resolve) => {
+                crudListResolve = resolve;
+            });
+            let passedPageCallback;
+            globalList.mockImplementation(({ pageCallback }) => {
+                passedPageCallback = pageCallback;
+                return crudListPromise;
+            });
+            const liListResolve = listInstance.list();
+            await nextTick();
+            // @ts-ignore - pageCallback is set in the mock, if not it will throw which is what we want
+            passedPageCallback(crudListResolvedPageNonStandardPK);
+            // @ts-ignore - crudListResolve is set in a promise, since we await this will be set
+            crudListResolve();
+            await flushPromises();
+            await expect(liListResolve).resolves.toBe(true);
+
+            expect({ ...listInstance.state.objects }).toEqual(crudListResolvedObjectsNonStandardPK);
+            const bulkDeleteResolve = listInstance.bulkDelete();
+            expectErrorToBeNull(listInstance.state.error);
+            expect(listInstance.state.errored).toBe(false);
+            expect(listInstance.state.loading).toBe(true);
+            expect(globalbulkDelete).toHaveBeenCalledWith({
+                crudArgs: { stream: "test_stream" },
+                pkKey: "unique",
+                pks: Object.keys(crudListResolvedObjectsNonStandardPK).map(Number),
             });
 
             expect(globalbulkDelete).toHaveBeenCalledTimes(1);
@@ -561,10 +683,10 @@ describe("use/listInstance.spec.js", function () {
             expect({ ...listInstance.state.objects }).toEqual({});
         });
     });
-    describe("getFakeId", function () {
+    describe("getFakePk", function () {
         it("returns fakeId", function () {
-            const listInstance = useListInstance({ props: {} });
-            const fakeId = listInstance.getFakeId();
+            const listInstance = useListInstance({ props: { pkKey: "id" } });
+            const fakeId = listInstance.getFakePk();
             expect(fakeId).toBeTruthy();
         });
     });
@@ -592,7 +714,9 @@ describe("use/listInstance.spec.js", function () {
             __str__: "yuio",
             name: "yiuo",
         };
-        const listInstance = useListInstance({ props: { listArgs: { user: 1 }, retrieveArgs: { fields: fields } } });
+        const listInstance = useListInstance({
+            props: { pkKey: "id", listArgs: { user: 1 }, retrieveArgs: { fields: fields } },
+        });
         let crudListResolve;
         const crudListPromise = new Promise((resolve) => {
             crudListResolve = resolve;

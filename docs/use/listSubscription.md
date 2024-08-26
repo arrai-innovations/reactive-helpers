@@ -166,9 +166,9 @@ Indicates if the list is currently loading.
 
 ###### objects
 
-> **objects**: [`ObjectsById`](listInstance.md#objectsbyid)
+> **objects**: [`ObjectsByPk`](listInstance.md#objectsbypk)
 
-The list objects stored by their IDs.
+The list objects stored by their pks.
 
 ###### objectsInOrder
 
@@ -181,6 +181,12 @@ The objects in the order specified by the list.
 > **order**: `string`[]
 
 The order of objects in the list.
+
+###### pkKey
+
+> **pkKey**: `string`
+
+The primary key field for the list objects.
 
 ###### retrieveArgs
 

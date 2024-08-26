@@ -12,7 +12,7 @@ import { reactive, toRef } from "vue";
 /**
  * The object being managed by the instance. Empty object is the default.
  *
- * @typedef {{id: string, [key: string]: any}|{}} CrudObject
+ * @typedef {{pkKey: string, [key: string]: any}|{}} CrudObject
  */
 
 /**
@@ -27,7 +27,8 @@ import { reactive, toRef } from "vue";
  * Reactive arguments to be passed to the object instance.
  *
  * @typedef {object} ObjectInstanceRawProps
- * @property {string} id - The id of the object.
+ * @property {string} [pk] - The pk of the object, optional to support creating new objects.
+ * @property {string} pkKey - The pk key of the object.
  * @property {object} retrieveArgs - The arguments to be passed to the retrieve function.
  * @property {import('../config/objectCrud.js').ObjectCrudArgs} crudArgs - The arguments to be passed to the crud functions.
  */
@@ -37,7 +38,8 @@ import { reactive, toRef } from "vue";
  *
  * @typedef {object} ObjectInstanceRawState
  * @property {import('../config/objectCrud.js').ObjectCrudArgs} crud - The crud functions.
- * @property {string} id - The id of the object.
+ * @property {string} pk - The pk of the object.
+ * @property {string} pkKey - The pk key of the object.
  * @property {object} retrieveArgs - The arguments to be passed to the retrieve function.
  * @property {CrudObject} object - The object.
  * @property {Readonly<import('vue').Ref<boolean>>} loading - Whether the object is loading.
@@ -58,7 +60,7 @@ import { reactive, toRef } from "vue";
  *
  * @typedef {object} ObjectInstanceFunctions
  * @property {Function} create - Called to turn the current object into a new object on the server.
- * @property {Function} retrieve - Called to retrieve the current object by id from the server.
+ * @property {Function} retrieve - Called to retrieve the current object by pk from the server.
  * @property {Function} update - Called to update the current object on the server.
  * @property {Function} delete - Called to delete the current object on the server.
  * @property {Function} patch - Called to patch the current object on the server.
@@ -99,7 +101,8 @@ export class ObjectError extends Error {
 
 export const objectInstanceStateKeys = [
     "crud",
-    "id",
+    "pk",
+    "pkKey",
     "retrieveArgs",
     "object",
     "loading",
@@ -145,15 +148,16 @@ export function useObjectInstances(instanceArgs) {
  *         type: String,
  *         required: true,
  *     },
- *     id: {
+ *     pk: {
  *         type: String,
  *         default: '',
  *     },
  * });
  *
- * const idRef = toRef(props, 'id');
+ * const pkRef = toRef(props, 'pk');
  * const objectInstanceProps = reactive({
- *   id: idRef,
+ *   pk: pkRef,
+ *   pkKey: 'id',
  *   crudArgs: {
  *       app: toRef(props, "app"),
  *       model: toRef(props, "model"),
@@ -161,14 +165,14 @@ export function useObjectInstances(instanceArgs) {
  *   retrieveArgs: {},
  * });
  * const objectInstance = useObjectInstance(objectInstanceProps);
- * watch(idRef, (newValue, oldValue) => {
+ * watch(pkRef, (newValue, oldValue) => {
  *     if (newValue !== oldValue && newValue) {
  *         objectInstance.retrieve();
  *     }
  * });
  * </script>
  * <template>
- *     <!-- Display the retrieved object reactively, as a valid id is provided in props. -->
+ *     <!-- Display the retrieved object reactively, as a valid pk is provided in props. -->
  *     <div>{{ objectInstance.state.object }}</div>
  * </template>
  * ```
@@ -177,6 +181,11 @@ export function useObjectInstances(instanceArgs) {
  * @returns {ObjectInstance} - An object used to manage create, retrieve, update, delete, and patch operations.
  */
 export function useObjectInstance({ props, functions = {} }) {
+    // missing pk is fine, to support creating new objects
+    // however, pkKey is required
+    if (!props.pkKey) {
+        throw new ObjectError("pkKey is required.", "missing-pkKey");
+    }
     const loadingError = useLoadingError();
     /** @type {ObjectInstanceState} */
     const state = reactive(
@@ -191,7 +200,8 @@ export function useObjectInstance({ props, functions = {} }) {
                 subscribe: undefined,
             },
             object: {},
-            id: toRef(props, "id"),
+            pk: toRef(props, "pk"),
+            pkKey: toRef(props, "pkKey"),
             retrieveArgs: toRef(props, "retrieveArgs"),
             loading: loadingError.loading,
             errored: loadingError.errored,
@@ -223,8 +233,9 @@ export function useObjectInstance({ props, functions = {} }) {
         promises.retrieve = state.crud
             .retrieve({
                 crudArgs: state.crud.args,
-                id: state.id,
+                pk: state.pk,
                 retrieveArgs: state.retrieveArgs,
+                pkKey: state.pkKey,
             })
             .then((object) => {
                 assignReactiveObject(state.object, object);
@@ -252,6 +263,7 @@ export function useObjectInstance({ props, functions = {} }) {
                 crudArgs: state.crud.args,
                 object,
                 retrieveArgs: state.retrieveArgs,
+                pkKey: state.pkKey,
             })
             .then((object) => {
                 assignReactiveObject(state.object, object);
@@ -277,6 +289,7 @@ export function useObjectInstance({ props, functions = {} }) {
                 crudArgs: state.crud.args,
                 object,
                 retrieveArgs: state.retrieveArgs,
+                pkKey: state.pkKey,
             })
             .then((object) => {
                 assignReactiveObject(state.object, object);
@@ -300,7 +313,8 @@ export function useObjectInstance({ props, functions = {} }) {
         return state.crud
             .patch({
                 crudArgs: state.crud.args,
-                id: state.id,
+                pk: state.pk,
+                pkKey: state.pkKey,
                 partialObject,
                 retrieveArgs: state.retrieveArgs,
             })
@@ -326,7 +340,8 @@ export function useObjectInstance({ props, functions = {} }) {
         return state.crud
             .delete({
                 crudArgs: state.crud.args,
-                id: state.id,
+                pk: state.pk,
+                pkKey: state.pkKey,
             })
             .then(() => {
                 state.deleted = true;

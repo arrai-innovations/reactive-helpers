@@ -51,7 +51,7 @@ export function usePagedListInstance({ keepOldPages = false, ...useListInstanceA
             listInstance.clearList();
         }
         newObjects.forEach((newObject) => {
-            if (newObject.id in listInstance.state.objects) {
+            if (newObject[listInstance.state.pkKey] in listInstance.state.objects) {
                 listInstance.updateListObject(newObject);
             } else {
                 listInstance.addListObject(newObject);

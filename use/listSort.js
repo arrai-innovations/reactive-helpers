@@ -179,6 +179,7 @@ export function useListSorts(listSortArgs) {
  * const listInstanceProps = reactive({
  *     crudArgs: {},
  *     listArgs: {},
+ *     pkKey: 'id',
  *     retrieveArgs: {},
  *     intendToList: true,
  * });

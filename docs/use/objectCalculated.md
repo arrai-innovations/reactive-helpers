@@ -138,12 +138,6 @@ The error.
 
 Whether the object errored.
 
-###### id
-
-> **id**: `string`
-
-The id of the object.
-
 ###### intendToRetrieve
 
 > **intendToRetrieve**: `boolean`
@@ -173,6 +167,18 @@ The object.
 > **parentStateObjectWatchRunning**: `boolean`
 
 Whether the parent state object watch is running.
+
+###### pk
+
+> **pk**: `string`
+
+The pk of the object.
+
+###### pkKey
+
+> **pkKey**: `string`
+
+The pk key of the object.
 
 ###### relatedObject
 
@@ -386,12 +392,6 @@ The error.
 
 Whether the object errored.
 
-###### id
-
-> **id**: `string`
-
-The id of the object.
-
 ###### intendToRetrieve
 
 > **intendToRetrieve**: `boolean`
@@ -421,6 +421,18 @@ The object.
 > **parentStateObjectWatchRunning**: `boolean`
 
 Whether the parent state object watch is running.
+
+###### pk
+
+> **pk**: `string`
+
+The pk of the object.
+
+###### pkKey
+
+> **pkKey**: `string`
+
+The pk key of the object.
 
 ###### relatedObject
 
@@ -655,7 +667,8 @@ const objectSubscriptionProps = reactive({
     // whatever object subscription props you need to work with your crud implementation
     crudArgs: {},
     retrieveArgs: {},
-    id: '1',
+    pk: '1',
+    pkKey: 'id',
     intendToRetrieve: true,
 };
 const objectSubscription = useObjectSubscription(objectSubscriptionProps);

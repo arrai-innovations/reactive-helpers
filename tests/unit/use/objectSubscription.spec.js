@@ -6,7 +6,7 @@ import { poll } from "../poll.js";
 import flushPromises from "flush-promises";
 import cloneDeep from "lodash-es/cloneDeep.js";
 import { inspect } from "util";
-import { nextTick } from "vue";
+import { nextTick, ref } from "vue";
 
 // getMockOnUnmounted();
 
@@ -14,7 +14,7 @@ afterAll(() => {
     vi.restoreAllMocks();
 });
 
-describe.skip("use/objectSubscription.js", function () {
+describe("use/objectSubscription.js", function () {
     let useObjectSubscription,
         useObjectSubscriptions,
         globalSubscribe,
@@ -43,7 +43,8 @@ describe.skip("use/objectSubscription.js", function () {
 
         objectSubscription = useObjectSubscription({
             props: {
-                id: 1,
+                pk: 1,
+                pkKey: "id",
                 retrieveArgs: cloneDeep({ fields }),
             },
         });
@@ -53,6 +54,11 @@ describe.skip("use/objectSubscription.js", function () {
     });
     const crudRetrieveResolved = {
         id: 1,
+        __str__: "asdf",
+        name: "zxcv",
+    };
+    const crudRetrieveResolvedNonStandardPk = {
+        hash: 1,
         __str__: "asdf",
         name: "zxcv",
     };
@@ -134,7 +140,8 @@ describe.skip("use/objectSubscription.js", function () {
 
             expect(globalRetrieve).toHaveBeenCalledWith({
                 crudArgs: { stream: "test_stream" },
-                id: 1,
+                pk: 1,
+                pkKey: "id",
                 retrieveArgs: {
                     fields,
                 },
@@ -142,7 +149,8 @@ describe.skip("use/objectSubscription.js", function () {
             expect(globalRetrieve).toHaveBeenCalledTimes(1);
             expect(globalSubscribe).toHaveBeenCalledWith({
                 crudArgs: { stream: "test_stream" },
-                id: 1,
+                pk: 1,
+                pkKey: "id",
                 retrieveArgs: {
                     fields,
                 },
@@ -211,7 +219,8 @@ describe.skip("use/objectSubscription.js", function () {
             expect(globalRetrieve).toHaveBeenCalledTimes(0);
             expect(globalSubscribe).toHaveBeenNthCalledWith(1, {
                 crudArgs: { stream: "test_stream" },
-                id: 1,
+                pk: 1,
+                pkKey: "id",
                 retrieveArgs: {
                     fields,
                 },
@@ -220,7 +229,7 @@ describe.skip("use/objectSubscription.js", function () {
             expect(globalSubscribe).toHaveBeenCalledTimes(1);
         });
         it("delayed success", async function () {
-            objectSubscription.objectInstance.state.retrieveArgs = false;
+            objectSubscription.objectInstance.state.retrieveArgs = ref(false);
 
             expect(objectSubscription.state.loading).toBeUndefined();
             expect(objectSubscription.state.errored).toBe(false);
@@ -273,7 +282,8 @@ describe.skip("use/objectSubscription.js", function () {
 
             expect(globalRetrieve).toHaveBeenNthCalledWith(1, {
                 crudArgs: { stream: "test_stream" },
-                id: 1,
+                pk: 1,
+                pkKey: "id",
                 retrieveArgs: {
                     fields,
                 },
@@ -281,7 +291,8 @@ describe.skip("use/objectSubscription.js", function () {
             expect(globalRetrieve).toHaveBeenCalledTimes(1);
             expect(globalSubscribe).toHaveBeenNthCalledWith(1, {
                 crudArgs: { stream: "test_stream" },
-                id: 1,
+                pk: 1,
+                pkKey: "id",
                 retrieveArgs: {
                     fields,
                 },
@@ -330,7 +341,8 @@ describe.skip("use/objectSubscription.js", function () {
 
             expect(globalRetrieve).toHaveBeenCalledWith({
                 crudArgs: { stream: "test_stream" },
-                id: 1,
+                pk: 1,
+                pkKey: "id",
                 retrieveArgs: {
                     fields,
                 },
@@ -338,7 +350,8 @@ describe.skip("use/objectSubscription.js", function () {
             expect(globalRetrieve).toHaveBeenCalledTimes(1);
             expect(globalSubscribe).toHaveBeenCalledWith({
                 crudArgs: { stream: "test_stream" },
-                id: 1,
+                pk: 1,
+                pkKey: "id",
                 retrieveArgs: {
                     fields,
                 },
@@ -389,7 +402,8 @@ describe.skip("use/objectSubscription.js", function () {
 
             expect(globalRetrieve).toHaveBeenCalledWith({
                 crudArgs: { stream: "test_stream" },
-                id: 1,
+                pk: 1,
+                pkKey: "id",
                 retrieveArgs: {
                     fields,
                 },
@@ -397,7 +411,8 @@ describe.skip("use/objectSubscription.js", function () {
             expect(globalRetrieve).toHaveBeenCalledTimes(1);
             expect(globalSubscribe).toHaveBeenCalledWith({
                 crudArgs: { stream: "test_stream" },
-                id: 1,
+                pk: 1,
+                pkKey: "id",
                 retrieveArgs: {
                     fields,
                 },
@@ -555,7 +570,8 @@ describe.skip("use/objectSubscription.js", function () {
             const objectSubscription = useObjectSubscription({
                 props: {
                     crudArgs: { stream: "test_stream2" },
-                    id: 1,
+                    pk: 1,
+                    pkKey: "id",
                     retrieveArgs: {
                         fields,
                     },
@@ -571,7 +587,8 @@ describe.skip("use/objectSubscription.js", function () {
 
             expect(globalRetrieve).toHaveBeenCalledWith({
                 crudArgs: { stream: "test_stream2" },
-                id: 1,
+                pk: 1,
+                pkKey: "id",
                 retrieveArgs: {
                     fields,
                 },
@@ -579,7 +596,8 @@ describe.skip("use/objectSubscription.js", function () {
             expect(globalRetrieve).toHaveBeenCalledTimes(1);
             expect(globalSubscribe).toHaveBeenCalledWith({
                 crudArgs: { stream: "test_stream2" },
-                id: 1,
+                pk: 1,
+                pkKey: "id",
                 retrieveArgs: {
                     fields,
                 },
@@ -608,7 +626,8 @@ describe.skip("use/objectSubscription.js", function () {
 
             const objectSubscription = useObjectSubscription({
                 props: {
-                    id: 1,
+                    pk: 1,
+                    pkKey: "id",
                     retrieveArgs: {
                         fields,
                     },
@@ -629,7 +648,8 @@ describe.skip("use/objectSubscription.js", function () {
             expect(globalSubscribe).toHaveBeenCalledTimes(0);
             expect(customCrudRetrieve).toHaveBeenCalledWith({
                 crudArgs: { stream: "test_stream" },
-                id: 1,
+                pk: 1,
+                pkKey: "id",
                 retrieveArgs: {
                     fields,
                 },
@@ -637,7 +657,8 @@ describe.skip("use/objectSubscription.js", function () {
             expect(customCrudRetrieve).toHaveBeenCalledTimes(1);
             expect(customCrudSubscribe).toHaveBeenCalledWith({
                 crudArgs: { stream: "test_stream" },
-                id: 1,
+                pk: 1,
+                pkKey: "id",
                 retrieveArgs: {
                     fields,
                 },
@@ -646,11 +667,114 @@ describe.skip("use/objectSubscription.js", function () {
             expect(customCrudSubscribe).toHaveBeenCalledTimes(1);
         });
     });
+    describe("custom primary key", function () {
+        it("custom pkKeys", async function () {
+            let crudRetrieveResolve, crudSubscribeResolve;
+            const crudRetrievePromise = new Promise((resolve) => {
+                crudRetrieveResolve = resolve;
+            });
+            globalRetrieve.mockReturnValueOnce(crudRetrievePromise);
+            const crudSubscribePromise = new Promise((resolve) => {
+                crudSubscribeResolve = resolve;
+            });
+            // @ts-ignore - mocking cancel
+            crudSubscribePromise.cancel = vi.fn();
+            // @ts-ignore - mocking cancel
+            crudSubscribePromise.cancel.mockReturnValueOnce(true).mockReturnValue(false);
+            globalSubscribe.mockReturnValueOnce(crudSubscribePromise);
+
+            const objectSubscription = useObjectSubscription({
+                props: {
+                    crudArgs: { stream: "test_streamA" },
+                    pk: 1,
+                    pkKey: "hash",
+                    retrieveArgs: {
+                        fields,
+                    },
+                },
+            });
+
+            expect(objectSubscription.subscribe()).toBe(true);
+            // @ts-ignore - crudRetrieveResolve is set as a result of the subscribe call
+            crudRetrieveResolve(crudRetrieveResolvedNonStandardPk);
+            // @ts-ignore - crudSubscribeResolve is set as a result of the subscribe call
+            crudSubscribeResolve(crudSubscribeResolved);
+            await flushPromises();
+
+            expect(globalRetrieve).toHaveBeenCalledWith({
+                crudArgs: { stream: "test_streamA" },
+                pk: 1,
+                pkKey: "hash",
+                retrieveArgs: {
+                    fields,
+                },
+            });
+            expect(globalRetrieve).toHaveBeenCalledTimes(1);
+            expect(globalSubscribe).toHaveBeenCalledWith({
+                crudArgs: { stream: "test_streamA" },
+                pk: 1,
+                pkKey: "hash",
+                retrieveArgs: {
+                    fields,
+                },
+                callback: expect.any(Function),
+            });
+            expect(globalSubscribe).toHaveBeenCalledTimes(1);
+        });
+    });
+    describe("useObjectSubscriptions with objectInstance", function () {
+        let useObjectInstance, ObjectError, objectInstance;
+        beforeEach(async () => {
+            const imported = await import("../../../use/objectInstance.js");
+            useObjectInstance = imported.useObjectInstance;
+            ObjectError = imported.ObjectError;
+        });
+        it("error when missing pk", async function () {
+            objectInstance = useObjectInstance({
+                props: {
+                    crudArgs: { stream: "test_stream" },
+                    pk: 1,
+                    pkKey: "id",
+                    retrieveArgs: {
+                        fields,
+                    },
+                },
+            });
+            expect(() => {
+                // @ts-ignore - we're testing the error case
+                useObjectSubscription({
+                    objectInstance,
+                    props: {
+                        retrieveArgs: {
+                            fields,
+                        },
+                    },
+                });
+            }).toThrow("pk not in props, must be truthy for intendToRetrieve or intendToSubscribe to work.");
+        });
+        it("error when missing retrieveArgs", async function () {
+            objectInstance = useObjectInstance({
+                props: {
+                    crudArgs: { stream: "test_stream" },
+                    pk: 1,
+                    pkKey: "id",
+                    retrieveArgs: {
+                        fields,
+                    },
+                },
+            });
+            expect(() => {
+                // @ts-ignore - we're testing the error case
+                useObjectSubscription({ objectInstance, props: { pk: 1 } });
+            }).toThrow("retrieveArgs not in props, must be truthy for intendToRetrieve or intendToSubscribe to work.");
+        });
+    });
     it("useObjectSubscriptions", async function () {
         const objectSubscriptionA = useObjectSubscription({
             props: {
                 crudArgs: { stream: "test_streamA" },
-                id: 1,
+                pk: 1,
+                pkKey: "id",
                 retrieveArgs: {
                     fields,
                 },
@@ -659,7 +783,8 @@ describe.skip("use/objectSubscription.js", function () {
         const objectSubscriptionB = useObjectSubscription({
             props: {
                 crudArgs: { stream: "test_streamB" },
-                id: 2,
+                pk: 2,
+                pkKey: "id",
                 retrieveArgs: {
                     fields,
                 },
@@ -669,7 +794,8 @@ describe.skip("use/objectSubscription.js", function () {
             A: {
                 props: {
                     crudArgs: { stream: "test_streamA" },
-                    id: 1,
+                    pk: 1,
+                    pkKey: "id",
                     retrieveArgs: {
                         fields,
                     },
@@ -678,7 +804,8 @@ describe.skip("use/objectSubscription.js", function () {
             B: {
                 props: {
                     crudArgs: { stream: "test_streamB" },
-                    id: 2,
+                    pk: 2,
+                    pkKey: "id",
                     retrieveArgs: {
                         fields,
                     },
@@ -691,6 +818,7 @@ describe.skip("use/objectSubscription.js", function () {
     it("updateFromSubscription", function () {
         const objectSubscription = useObjectSubscription({
             stream: "test_stream",
+            props: { pkKey: "id" },
         });
         assignReactiveObject(objectSubscription.state.object, {
             id: 1,
@@ -705,6 +833,7 @@ describe.skip("use/objectSubscription.js", function () {
     it("deleteFromSubscription", function () {
         const objectSubscription = useObjectSubscription({
             stream: "test_stream",
+            props: { pkKey: "id" },
         });
         assignReactiveObject(objectSubscription.state.object, {
             id: 1,

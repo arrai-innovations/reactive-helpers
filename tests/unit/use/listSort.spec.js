@@ -58,6 +58,7 @@ describe("use/useListSort", () => {
         listInstance = useListInstance({
             props: {
                 crudArgs: {},
+                pkKey: "id",
                 retrieveArgs: {
                     fields: ["id", "lexical_name", "organization", "relatedObjects"],
                 },
@@ -169,6 +170,7 @@ describe("use/useListSort", () => {
         const listInstanceA = useListInstance({
             props: {
                 crudArgs: { stream: "test_streamA" },
+                pkKey: "id",
                 listArgs: { user: 1 },
                 retrieveArgs: {
                     fields,
@@ -179,6 +181,7 @@ describe("use/useListSort", () => {
             props: {
                 crudArgs: { stream: "test_streamB" },
                 listArgs: { user: 2 },
+                pkKey: "id",
                 retrieveArgs: {
                     fields,
                 },
@@ -200,6 +203,7 @@ describe("use/useListSort", () => {
                     retrieveArgs: {
                         fields,
                     },
+                    pkKey: "id",
                 },
             },
             B: {
@@ -209,6 +213,7 @@ describe("use/useListSort", () => {
                     retrieveArgs: {
                         fields,
                     },
+                    pkKey: "id",
                 },
             },
         });
@@ -232,6 +237,7 @@ describe("use/useListSort", () => {
             props: reactive({
                 crudArgs: { stream: "test_stream" },
                 listArgs: { user: 1 },
+                pkKey: "id",
                 retrieveArgs: {
                     fields: ["id", "__str__", "name", "relatedItem", "calculatedItem"],
                 },
@@ -241,6 +247,7 @@ describe("use/useListSort", () => {
             props: reactive({
                 crudArgs: { stream: "test_related_stream" },
                 listArgs: { user: 1 },
+                pkKey: "id",
                 retrieveArgs: {
                     fields: ["id", "__str__", "name"],
                 },
@@ -350,7 +357,7 @@ describe("use/useListSort", () => {
     });
     it("pass through correctly when parentState changes their order", async () => {
         const listInstance = useListInstance({
-            props: reactive({}),
+            props: reactive({ pkKey: "id" }),
         });
         const allowedFilter = ref((obj) => obj.name !== "two");
         const listFilter = useListFilter({

@@ -33,6 +33,7 @@ const defaultCrud = {
 /**
  * @typedef {object} ListFnArgs
  * @property {object} crudArgs - The arguments to be passed to the crud functions.
+ * @property {string} pkKey - The key name of the primary key.
  * @property {object} retrieveArgs - The arguments to be passed to the retrieve function.
  * @property {object} listArgs - The arguments to be passed for list crud functions.
  * @property {PageCallback} pageCallback - The method to call with new page(s) of data received.
@@ -43,7 +44,8 @@ const defaultCrud = {
 /**
  * @typedef {object} DeleteFnArgs
  * @property {object} crudArgs - The arguments to be passed to the crud functions.
- * @property {string[]} ids - The ids of the objects to be deleted.
+ * @property {string[]} pks - The ids of the objects to be deleted.
+ * @property {string} pkKey - The key name of the primary key.
  */
 
 /**
@@ -56,6 +58,7 @@ const defaultCrud = {
 /**
  * @typedef {object} SubscribeFnArgs
  * @property {object} crudArgs - The arguments to be passed to the crud functions.
+ * @property {string} pkKey - The key name of the primary key.
  * @property {object} retrieveArgs - The arguments to be passed to the retrieve function.
  * @property {object} listArgs - The arguments to be passed for list crud functions.
  * @property {SubscriptionEventCallback} subscriptionEventCallback - The method to call when new data is received.

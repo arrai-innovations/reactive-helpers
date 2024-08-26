@@ -1,6 +1,6 @@
 import { getListCrud } from "../config/listCrud.js";
 import { assignReactiveObject } from "../utils/assignReactiveObject.js";
-import { getFakeId } from "../utils/getFakeId.js";
+import { getFakePk } from "../utils/getFakePk.js";
 import { useLoadingError } from "./loadingError.js";
 import inspect from "browser-util-inspect";
 import { computed, effectScope, nextTick, reactive, readonly, ref, toRef, unref, watch } from "vue";
@@ -12,10 +12,10 @@ import { computed, effectScope, nextTick, reactive, readonly, ref, toRef, unref,
  */
 
 /**
- * Defines the structure for the objects stored within the list, each identified by a unique ID and capable of
+ * Defines the structure for the objects stored within the list, each identified by a unique pk and capable of
  *  holding various key-value pairs.
  *
- * @typedef {{id: string, [key: string]: any}} ListObject
+ * @typedef {{pk: string, [key: string]: any}} ListObject
  */
 
 /**
@@ -40,6 +40,7 @@ export class ListInstanceError extends Error {
  * The reactive arguments for the list instance.
  *
  * @typedef {object} ListInstanceProps
+ * @property {string} pkKey - The primary key field for the list objects.
  * @property {object} retrieveArgs - The arguments passed to the server.
  * @property {object} listArgs - The arguments passed to the server.
  * @property {object} crudArgs - Implementation specific arguments.
@@ -61,9 +62,9 @@ export class ListInstanceError extends Error {
  */
 
 /**
- * The objects by id.
+ * The objects by pk.
  *
- * @typedef {{[key: string]: ListObject}} ObjectsById
+ * @typedef {{[pk: string]: ListObject}} ObjectsByPk
  */
 
 /**
@@ -85,9 +86,10 @@ export class ListInstanceError extends Error {
  * @property {object} crud - CRUD functions and their configurations for the list.
  * @property {object} crud.args - Arguments for the CRUD functions.
  * @property {Function} [crud.list] - Function to list objects.
+ * @property {string} pkKey - The primary key field for the list objects.
  * @property {object} retrieveArgs - Arguments passed to the server for retrieval operations.
  * @property {object} listArgs - Arguments passed to the server for listing operations.
- * @property {ObjectsById} objects - The list objects stored by their IDs.
+ * @property {ObjectsByPk} objects - The list objects stored by their pks.
  * @property {boolean} running - Indicates if there are ongoing reactive updates.
  * @property {Readonly<import('vue').Ref<boolean>>} [loading] - Indicates if the list is currently loading.
  * @property {Readonly<import('vue').Ref<boolean>>} errored - Indicates if an error occurred during the last operation.
@@ -110,9 +112,9 @@ export class ListInstanceError extends Error {
  * @property {(newObjects: ListObject[]) => void} pageCallback - Customizable callback for handling new objects per page.
  * @property {(object: ListObject) => void} addListObject - Adds an object to the list.
  * @property {(object: ListObject) => void} updateListObject - Updates an object in the list.
- * @property {(objectId: string) => void} deleteListObject - Deletes an object from the list by ID.
+ * @property {(objectId: string) => void} deleteListObject - Deletes an object from the list by pk.
  * @property {() => void} clearList - Clears all objects and errors from the list.
- * @property {() => string} getFakeId - Generates a unique fake ID for use within the list.
+ * @property {() => string} getFakePk - Generates a unique fake pk for use within the list.
  * @property {() => Promise<void>} list - Initiates a fetch to retrieve objects according to the CRUD configuration.
  */
 
@@ -258,6 +260,7 @@ export function useListInstance({ props, functions = {}, keepOldPages = false })
             list: undefined,
             bulkDelete: undefined,
         },
+        pkKey: toRef(props, "pkKey"),
         retrieveArgs: toRef(props, "retrieveArgs"),
         listArgs: toRef(props, "listArgs"),
         /** @type {{[key: string]: ListObject}} */
@@ -282,7 +285,7 @@ export function useListInstance({ props, functions = {}, keepOldPages = false })
             clearList();
         }
         newObjects.forEach((newObject) => {
-            if (newObject.id in state.objects) {
+            if (newObject[state.pkKey] in state.objects) {
                 updateListObject(newObject);
             } else {
                 addListObject(newObject);
@@ -304,7 +307,8 @@ export function useListInstance({ props, functions = {}, keepOldPages = false })
         return state.crud
             .bulkDelete({
                 crudArgs: state.crud.args,
-                ids: Object.keys(state.objects).map(Number),
+                pks: Object.keys(state.objects).map(Number),
+                pkKey: state.pkKey,
             })
             .then(() => {
                 assignReactiveObject(state.objects, {});
@@ -339,6 +343,7 @@ export function useListInstance({ props, functions = {}, keepOldPages = false })
         const isCancelled = ref(false);
         const listPromise = state.crud.list({
             crudArgs: state.crud.args,
+            pkKey: state.pkKey,
             retrieveArgs: state.retrieveArgs,
             listArgs: state.listArgs,
             pageCallback: returnedObject.pageCallback,
@@ -373,45 +378,51 @@ export function useListInstance({ props, functions = {}, keepOldPages = false })
     }
 
     function addListObject(object) {
-        if (!object.id) {
-            throw new ListInstanceError(`addListObject: object missing id.\n${inspect(object)}`, "missing-id");
-        }
-        if (object.id in state.objects) {
+        if (!object[state.pkKey]) {
             throw new ListInstanceError(
-                `addListObject: list already has object for id: ${inspect(object.id)}`,
-                "duplicate-id"
+                `addListObject: object missing pk(${state.pkKey}).\n${inspect(object)}`,
+                "missing-pk"
             );
         }
-        state.objects[object.id] = object;
+        if (object[state.pkKey] in state.objects) {
+            throw new ListInstanceError(
+                `addListObject: list already has object for pk(${state.pkKey}): ${inspect(object[state.pkKey])}`,
+                "duplicate-pk"
+            );
+        }
+        state.objects[object[state.pkKey]] = object;
         if (!state.running) {
             state.running = true;
         }
     }
 
     function updateListObject(object) {
-        if (!object.id) {
-            throw new ListInstanceError(`updateListObject: object missing id.\n${inspect(object)}`, "missing-id");
-        }
-        if (!(object.id in state.objects)) {
+        if (!object[state.pkKey]) {
             throw new ListInstanceError(
-                `updateListObject: list missing object for update by id: ${inspect(object.id)}`,
+                `updateListObject: object missing pk(${state.pkKey}).\n${inspect(object)}`,
+                "missing-pk"
+            );
+        }
+        if (!(object[state.pkKey] in state.objects)) {
+            throw new ListInstanceError(
+                `updateListObject: list missing object for update by pk(${state.pkKey}): ${inspect(object[state.pkKey])}`,
                 "missing-object"
             );
         }
-        assignReactiveObject(state.objects[object.id], object);
+        assignReactiveObject(state.objects[object[state.pkKey]], object);
         if (!state.running) {
             state.running = true;
         }
     }
 
-    function deleteListObject(objectId) {
-        if (!(objectId in state.objects)) {
+    function deleteListObject(pk) {
+        if (!(pk in state.objects)) {
             throw new ListInstanceError(
-                `deleteListObject: list missing object for removal by id: ${inspect(objectId)}`,
+                `deleteListObject: list missing object for removal by pk(${state.pkKey}): ${inspect(pk)}`,
                 "missing-object"
             );
         }
-        delete state.objects[objectId];
+        delete state.objects[pk];
         if (!state.running) {
             state.running = true;
         }
@@ -422,8 +433,8 @@ export function useListInstance({ props, functions = {}, keepOldPages = false })
         loadingError.clearError();
     }
 
-    function ourGetFakeId() {
-        return getFakeId(state.objects);
+    function ourGetFakePk() {
+        return getFakePk(state.objects, state.pkKey);
     }
 
     es.run(() => {
@@ -457,7 +468,7 @@ export function useListInstance({ props, functions = {}, keepOldPages = false })
         deleteListObject,
         clearList,
         clearError: loadingError.clearError,
-        getFakeId: ourGetFakeId,
+        getFakePk: ourGetFakePk,
         defaultPageCallback,
         pageCallback: defaultPageCallback,
         effectScope: es,

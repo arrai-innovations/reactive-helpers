@@ -140,7 +140,8 @@ export function useObjectCalculateds(objectCalculatedArgs) {
  *     // whatever object subscription props you need to work with your crud implementation
  *     crudArgs: {},
  *     retrieveArgs: {},
- *     id: '1',
+ *     pk: '1',
+ *     pkKey: 'id',
  *     intendToRetrieve: true,
  * };
  * const objectSubscription = useObjectSubscription(objectSubscriptionProps);

@@ -126,12 +126,6 @@ A function to be used instead of the default crud update function.
 
 [`ResponseData`](../config/objectCrud.md#responsedata)
 
-###### id
-
-> **id**: `string`
-
-The id of the object.
-
 ###### intendToRetrieve
 
 > **intendToRetrieve**: `boolean`
@@ -143,6 +137,18 @@ Whether the object intends to retrieve.
 > **intendToSubscribe**: `boolean`
 
 Whether the object intends to subscribe.
+
+###### pk
+
+> **pk**: `string`
+
+The pk of the object, optional to support creating new objects.
+
+###### pkKey
+
+> **pkKey**: `string`
+
+The pk key of the object.
 
 ###### relatedObjectRules
 
@@ -322,12 +328,6 @@ The error.
 
 Whether the object errored.
 
-###### id
-
-> **id**: `string`
-
-The id of the object.
-
 ###### intendToRetrieve
 
 > **intendToRetrieve**: `boolean`
@@ -357,6 +357,18 @@ The object.
 > **parentStateObjectWatchRunning**: `boolean`
 
 Whether the parent state object watch is running.
+
+###### pk
+
+> **pk**: `string`
+
+The pk of the object.
+
+###### pkKey
+
+> **pkKey**: `string`
+
+The pk key of the object.
 
 ###### relatedObject
 
@@ -540,7 +552,7 @@ const someOtherObjectsSource = reactive({
 const props = defineProps({
     app: { type: String, required: true },
     model: { type: String, required: true },
-    id: { type: String, default: "" },
+    pk: { type: String, default: "" },
 });
 
 const objectProps = reactive({
@@ -548,6 +560,8 @@ const objectProps = reactive({
         app: toRef(props, "app"),
         model: toRef(props, "model"),
     },
+    pk: toRef(props, "pk"),
+    pkKey: 'id',
     retrieveArgs: {
         fields: ['foo', 'bar'],
     },
@@ -579,7 +593,7 @@ const objectProps = reactive({
     intendToRetrieve: false,
     intendToSubscribe: false,
 });
-objectProps.intendToRetrieve = objectProps.intendToSubscribe = computed(()=> !!props.id);
+objectProps.intendToRetrieve = objectProps.intendToSubscribe = computed(()=> !!props.pk);
 const objectManager = useObject(objectProps);
 // objectManager.state.object comes back from the server (via configured crud retrieve function)
 // { id: 2, name: 'two', foo: 'bar', some_objects_id: 2, some_objects_list_ids: ['1','2','3'] }

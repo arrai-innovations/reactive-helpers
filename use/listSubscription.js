@@ -271,19 +271,23 @@ export function useListSubscription({
      *
      * @memberof ListSubscription
      * @param {object} data - The object to add.
-     * @throws {ListSubscriptionError} - If data is missing an id.
+     * @param {string} [pkKey="id"] - The primary key field.
+     * @throws {ListSubscriptionError} - If data is missing a pk.
      * @throws {ListInstanceError} - If the object is already in the list.
      * @returns {void}
      */
-    function addFromSubscription(data) {
-        if (!data.id) {
-            throw new ListSubscriptionError(`addFromSubscription: data missing id.\n${inspect(data)}`, "missing-id");
+    function addFromSubscription(data, pkKey = parentState.pkKey) {
+        if (!data[pkKey]) {
+            throw new ListSubscriptionError(
+                `addFromSubscription: data missing pk(${pkKey}).\n${inspect(data)}`,
+                "missing-pk"
+            );
         }
         try {
             listInstance.addListObject(data);
         } catch (err) {
-            if (err.name === "ListInstanceError" && err.code === "duplicate-id") {
-                console.warn(`addFromSubscription: add for id already in objects (${data.id}).`);
+            if (err.name === "ListInstanceError" && err.code === "duplicate-pk") {
+                console.warn(`addFromSubscription: add for pk(${pkKey}) already in objects (${data[pkKey]}).`);
                 return;
             }
             throw err;
@@ -295,19 +299,23 @@ export function useListSubscription({
      *
      * @memberof ListSubscription
      * @param {object} data - The object to update.
-     * @throws {ListSubscriptionError} - If data is missing an id.
+     * @param {string} [pkKey="id"] - The primary key field.
+     * @throws {ListSubscriptionError} - If data is missing an pk.
      * @throws {ListInstanceError} - If the object is not in the list.
      * @returns {void}
      */
-    function updateFromSubscription(data) {
-        if (!data.id) {
-            throw new ListSubscriptionError(`updateFromSubscription: data missing id.\n${inspect(data)}`, "missing-id");
+    function updateFromSubscription(data, pkKey = parentState.pkKey) {
+        if (!data[pkKey]) {
+            throw new ListSubscriptionError(
+                `updateFromSubscription: data missing pk(${pkKey}).\n${inspect(data)}`,
+                "missing-pk"
+            );
         }
         try {
             listInstance.updateListObject(data);
         } catch (err) {
             if (err.name === "ListInstanceError" && err.code === "missing-object") {
-                console.warn(`updateFromSubscription: update for id not in objects (${data.id}).`);
+                console.warn(`updateFromSubscription: update for pk(${pkKey}) not in objects (${data[pkKey]}).`);
                 return;
             }
             throw err;
@@ -318,16 +326,17 @@ export function useListSubscription({
      * Delete an object from the list from a subscription event.
      *
      * @memberof ListSubscription
-     * @param {string} id - The id of the object to delete.
+     * @param {string} pk - The pk of the object to delete.
+     * @param {string} [pkKey="id"] - The primary key field, used in error messages.
      * @throws {ListInstanceError} - If the object is not in the list.
      * @returns {void}
      */
-    function deleteFromSubscription(id) {
+    function deleteFromSubscription(pk, pkKey = parentState.pkKey) {
         try {
-            listInstance.deleteListObject(id);
+            listInstance.deleteListObject(pk);
         } catch (err) {
             if (err.name === "ListInstanceError" && err.code === "missing-object") {
-                console.warn(`deleteFromSubscription: delete for id not in objects (${inspect(id)}).`);
+                console.warn(`deleteFromSubscription: delete for pk(${pkKey}) not in objects (${inspect(pk)}).`);
                 return;
             }
             throw err;
@@ -364,6 +373,7 @@ export function useListSubscription({
                 // this function cannot be async, or the resulting promise will lose its .cancel() method
                 const subscribePromise = parentState.crud.subscribe({
                     crudArgs: cloneDeep(parentState.crud.args),
+                    pkKey: parentState.pkKey,
                     listArgs: cloneDeep(parentState.listArgs),
                     retrieveArgs: cloneDeep(parentState.retrieveArgs),
                     subscriptionEventCallback,

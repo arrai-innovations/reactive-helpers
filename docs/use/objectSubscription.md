@@ -269,12 +269,6 @@ The error.
 
 Whether the object errored.
 
-###### id
-
-> **id**: `string`
-
-The id of the object.
-
 ###### intendToRetrieve
 
 > **intendToRetrieve**: `boolean`
@@ -298,6 +292,18 @@ Whether the object is loading.
 > **object**: `object` \| `object`
 
 The object.
+
+###### pk
+
+> **pk**: `string`
+
+The pk of the object.
+
+###### pkKey
+
+> **pkKey**: `string`
+
+The pk key of the object.
 
 ###### retrieveArgs
 
@@ -458,10 +464,11 @@ Options for initializing the object subscription.
 import { useObjectSubscription } from "@arrai-innovations/reactive-helpers";
 import { reactive, ref, toRef } from "vue";
 
+const pkKey = "id";
 const props = defineProps({
     app: { type: String, required: true },
     model: { type: String, required: true },
-    id: { type: String, default: "" },
+    pk: { type: String, default: "" },
 });
 
 const objectSubscriptionProps = reactive({
@@ -469,19 +476,21 @@ const objectSubscriptionProps = reactive({
         app: toRef(props, "app"),
         model: toRef(props, "model"),
     },
+    pk: toRef(props, "pk"),
+    pkKey: pkKey,
     retrieveArgs: {
         fields: ['foo', 'bar'],
     },
     intendToRetrieve: false,
     intendToSubscribe: false,
 });
-objectSubscriptionProps.intendToRetrieve = objectSubscriptionProps.intendToSubscribe = computed(()=> !!props.id);
+objectSubscriptionProps.intendToRetrieve = objectSubscriptionProps.intendToSubscribe = computed(()=> !!props.pk);
 const objectSubscription = useObjectSubscription(objectSubscriptionProps);
 </script>
 <template>
     <div v-if="objectSubscription.state.loading">Loading...</div>
     <div v-else-if="objectSubscription.state.errored">Error: {{ objectSubscription.state.error.message }}</div>
-    <div v-else-if="objectSubscription.state.object.id">Foo: {{ objectSubscription.state.object.foo }}</div>
+    <div v-else-if="objectSubscription.state.object[pkKey]">Foo: {{ objectSubscription.state.object.foo }}</div>
     <div v-else>Object not found.</div>
 </template>
 ```

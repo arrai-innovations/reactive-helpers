@@ -74,6 +74,7 @@ describe("use/listSubscription.spec.js", function () {
             });
             const listSubscription = useListSubscription({
                 props: {
+                    pkKey: "id",
                     listArgs,
                     retrieveArgs,
                 },
@@ -83,6 +84,7 @@ describe("use/listSubscription.spec.js", function () {
             await flushPromises();
             expect(crudSubscribe).toHaveBeenCalledWith({
                 crudArgs: { stream: "test_stream" },
+                pkKey: "id",
                 listArgs: { user: 1 },
                 retrieveArgs: { fields: fields },
                 subscriptionEventCallback: expect.any(Function),
@@ -155,13 +157,14 @@ describe("use/listSubscription.spec.js", function () {
                 fields: fields,
             });
             const listSubscription = useListSubscription({
-                props: { listArgs, retrieveArgs },
+                props: { pkKey: "id", listArgs, retrieveArgs },
             });
             listSubscription.subscribe();
             crudSubscribeResolvable[0].resolve();
             await poll(() => listSubscription.state.subscribed);
             expect(crudSubscribe).toHaveBeenCalledWith({
                 crudArgs: { stream: "test_stream" },
+                pkKey: "id",
                 listArgs: { user: 1 },
                 retrieveArgs: { fields: fields },
                 subscriptionEventCallback: expect.any(Function),
@@ -211,7 +214,7 @@ describe("use/listSubscription.spec.js", function () {
                     },
                     "create"
                 )
-            ).toThrow("addFromSubscription: data missing id.\n{ __str__: 'qwer', name: 'qwer' }");
+            ).toThrow("addFromSubscription: data missing pk(id).\n{ __str__: 'qwer', name: 'qwer' }");
 
             passedSubscriptionEventCallback(
                 {
@@ -229,7 +232,7 @@ describe("use/listSubscription.spec.js", function () {
                 },
                 "create"
             );
-            expect(warnMock).toHaveBeenCalledWith("addFromSubscription: add for id already in objects (1).");
+            expect(warnMock).toHaveBeenCalledWith("addFromSubscription: add for pk(id) already in objects (1).");
 
             expect(listSubscription.listInstance.state.objects).toEqual({
                 1: {
@@ -247,7 +250,7 @@ describe("use/listSubscription.spec.js", function () {
                 },
                 "update"
             );
-            expect(warnMock).toHaveBeenCalledWith("updateFromSubscription: update for id not in objects (2).");
+            expect(warnMock).toHaveBeenCalledWith("updateFromSubscription: update for pk(id) not in objects (2).");
 
             expect(() =>
                 passedSubscriptionEventCallback(
@@ -266,7 +269,7 @@ describe("use/listSubscription.spec.js", function () {
                     },
                     "update"
                 )
-            ).toThrow("updateFromSubscription: data missing id.\n{ __str__: 'qwer', name: 'qwer' }");
+            ).toThrow("updateFromSubscription: data missing pk(id).\n{ __str__: 'qwer', name: 'qwer' }");
 
             passedSubscriptionEventCallback(
                 {
@@ -276,11 +279,11 @@ describe("use/listSubscription.spec.js", function () {
                 "delete"
             );
             expect(warnMock).toHaveBeenCalledWith(
-                "deleteFromSubscription: delete for id not in objects ({ __str__: 'qwer', name: 'qwer' })."
+                "deleteFromSubscription: delete for pk(id) not in objects ({ __str__: 'qwer', name: 'qwer' })."
             );
 
             passedSubscriptionEventCallback(2, "delete");
-            expect(warnMock).toHaveBeenCalledWith("deleteFromSubscription: delete for id not in objects (2).");
+            expect(warnMock).toHaveBeenCalledWith("deleteFromSubscription: delete for pk(id) not in objects (2).");
 
             await poll(() => listSubscription.state.subscribed);
             const unsubscribe = listSubscription.unsubscribe();
@@ -300,6 +303,7 @@ describe("use/listSubscription.spec.js", function () {
             });
             const listSubscription = useListSubscription({
                 props: {
+                    pkKey: "id",
                     listArgs,
                     retrieveArgs,
                 },
@@ -310,6 +314,7 @@ describe("use/listSubscription.spec.js", function () {
             await poll(() => listSubscription.state.subscribed);
             expect(crudSubscribe).toHaveBeenCalledWith({
                 crudArgs: { stream: "test_stream" },
+                pkKey: "id",
                 listArgs: { user: 1 },
                 retrieveArgs: { fields: fields },
                 subscriptionEventCallback: expect.any(Function),
@@ -334,6 +339,7 @@ describe("use/listSubscription.spec.js", function () {
                 fields: fields,
             });
             const listSubscriptionProps = reactive({
+                pkKey: "id",
                 listArgs,
                 retrieveArgs,
             });
@@ -356,6 +362,7 @@ describe("use/listSubscription.spec.js", function () {
             });
             const listSubscription = useListSubscription({
                 props: {
+                    pkKey: "id",
                     listArgs,
                     retrieveArgs,
                 },
@@ -366,6 +373,7 @@ describe("use/listSubscription.spec.js", function () {
             await flushPromises();
             expect(crudSubscribe).toHaveBeenCalledWith({
                 crudArgs: { stream: "test_stream" },
+                pkKey: "id",
                 listArgs: { user: 1 },
                 retrieveArgs: { fields: fields },
                 subscriptionEventCallback: expect.any(Function),
@@ -392,7 +400,7 @@ describe("use/listSubscription.spec.js", function () {
                 fields: fields,
             });
             const listInstance = useListInstance({
-                props: { listArgs, retrieveArgs },
+                props: { pkKey: "id", listArgs, retrieveArgs },
             });
             const listSubscription = useListSubscription({
                 listInstance,
@@ -403,6 +411,7 @@ describe("use/listSubscription.spec.js", function () {
             await flushPromises();
             expect(crudSubscribe).toHaveBeenCalledWith({
                 crudArgs: { stream: "test_stream" },
+                pkKey: "id",
                 listArgs: { user: 1 },
                 retrieveArgs: { fields: fields },
                 subscriptionEventCallback: expect.any(Function),
@@ -465,6 +474,7 @@ describe("use/listSubscription.spec.js", function () {
             });
             const listSubscription = useListSubscription({
                 props: reactive({
+                    pkKey: "id",
                     listArgs,
                     retrieveArgs,
                 }),
@@ -473,6 +483,7 @@ describe("use/listSubscription.spec.js", function () {
             await poll(() => listSubscription.state.subscribed);
             expect(crudSubscribe).toHaveBeenCalledWith({
                 crudArgs: { stream: "test_stream" },
+                pkKey: "id",
                 listArgs: { user: 1 },
                 retrieveArgs: { fields: fields },
                 subscriptionEventCallback: expect.any(Function),
@@ -496,6 +507,7 @@ describe("use/listSubscription.spec.js", function () {
             expect(crudSubscribe).toHaveBeenCalledWith({
                 crudArgs: { stream: "test_stream" },
                 listArgs: { user: 2 },
+                pkKey: "id",
                 retrieveArgs: { fields: ["name"] },
                 subscriptionEventCallback: expect.any(Function),
             });
@@ -516,10 +528,34 @@ describe("use/listSubscription.spec.js", function () {
             expect(listSubscription.state.subscribed).toBe(false);
         });
     });
+    describe("useListSubscription", function () {
+        it("throw error when missing list instance and props", async function () {
+            expect(() => useListSubscription({})).toThrow(
+                "useListSubscription should be passed listInstance or props and functions."
+            );
+        });
+        it("throw error when both listInstance and props passed in", async function () {
+            crudSubscribeResolvable[0].promise.cancel.mockImplementation(() => Promise.resolve(true));
+            const listArgs = reactive({
+                user: 1,
+            });
+            const retrieveArgs = reactive({
+                fields: fields,
+            });
+            const listInstance = useListInstance({
+                props: { pkKey: "id", listArgs, retrieveArgs },
+            });
+            const props = { pkKey: "id", listArgs, retrieveArgs };
+            expect(() => useListSubscription({ listInstance, props })).toThrow(
+                "useListSubscription should be passed listInstance or props and functions, not both."
+            );
+        });
+    });
     it("useListSubscriptions", async function () {
         const listSubscriptionA = useListSubscription({
             props: {
                 crudArgs: { stream: "test_streamA" },
+                pkKey: "id",
                 listArgs: { user: 1 },
                 retrieveArgs: {
                     fields,
@@ -529,6 +565,7 @@ describe("use/listSubscription.spec.js", function () {
         const listSubscriptionB = useListSubscription({
             props: {
                 crudArgs: { stream: "test_streamB" },
+                pkKey: "id",
                 listArgs: { user: 2 },
                 retrieveArgs: {
                     fields,
@@ -539,6 +576,7 @@ describe("use/listSubscription.spec.js", function () {
             A: {
                 props: {
                     crudArgs: { stream: "test_streamA" },
+                    pkKey: "id",
                     listArgs: { user: 1 },
                     retrieveArgs: {
                         fields,
@@ -548,6 +586,7 @@ describe("use/listSubscription.spec.js", function () {
             B: {
                 props: {
                     crudArgs: { stream: "test_streamB" },
+                    pkKey: "id",
                     listArgs: { user: 2 },
                     retrieveArgs: {
                         fields,
@@ -562,6 +601,7 @@ describe("use/listSubscription.spec.js", function () {
         const listInstanceA = useListInstance({
             props: {
                 crudArgs: { stream: "test_streamA" },
+                pkKey: "id",
                 listArgs: { user: 1 },
                 retrieveArgs: {
                     fields,
@@ -571,6 +611,7 @@ describe("use/listSubscription.spec.js", function () {
         const listInstanceB = useListInstance({
             props: {
                 crudArgs: { stream: "test_streamB" },
+                pkKey: "id",
                 listArgs: { user: 2 },
                 retrieveArgs: {
                     fields,
@@ -588,6 +629,7 @@ describe("use/listSubscription.spec.js", function () {
                 listInstance: listInstanceA,
                 props: {
                     crudArgs: { stream: "test_streamA" },
+                    pkKey: "id",
                     listArgs: { user: 1 },
                     retrieveArgs: {
                         fields,
@@ -598,6 +640,7 @@ describe("use/listSubscription.spec.js", function () {
                 listInstance: listInstanceB,
                 props: {
                     crudArgs: { stream: "test_streamB" },
+                    pkKey: "id",
                     listArgs: { user: 2 },
                     retrieveArgs: {
                         fields,
@@ -621,6 +664,72 @@ describe("use/listSubscription.spec.js", function () {
         expect(inspect(listSubscription.A)).toEqual(inspect(listSubscriptionA));
         expect(inspect(listSubscription.B)).toEqual(inspect(listSubscriptionB));
     });
+    it("custom pkKey", async function () {
+        const listArgs = reactive({
+            user: 1,
+        });
+        const retrieveArgs = reactive({
+            fields: fields,
+        });
+        const listSubscription = useListSubscription({
+            props: {
+                pkKey: "hash",
+                listArgs,
+                retrieveArgs,
+            },
+        });
+        listSubscription.subscribe();
+        await nextTick();
+        await flushPromises();
+        expect(crudSubscribe).toHaveBeenCalledWith({
+            crudArgs: { stream: "test_stream" },
+            pkKey: "hash",
+            listArgs: { user: 1 },
+            retrieveArgs: { fields: fields },
+            subscriptionEventCallback: expect.any(Function),
+        });
+        expect(crudSubscribe).toHaveBeenCalledTimes(1);
+        expect(listSubscription.state.subscribed).toBe(true);
+
+        crudListResolvable[0].resolve();
+        crudSubscribeResolvable[0].resolve();
+        await poll(() => listSubscription.state.subscribed);
+
+        passedSubscriptionEventCallback(
+            {
+                hash: 1,
+                __str__: "blur",
+                name: "blur",
+            },
+            "create"
+        );
+
+        expect(listSubscription.listInstance.state.objects).toEqual({
+            1: {
+                hash: 1,
+                __str__: "blur",
+                name: "blur",
+            },
+        });
+
+        passedSubscriptionEventCallback(
+            {
+                hash: 1,
+                __str__: "blur",
+                fame: "blur",
+            },
+            "update"
+        );
+
+        expect(listSubscription.listInstance.state.objects).toEqual({
+            1: {
+                hash: 1,
+                __str__: "blur",
+                fame: "blur",
+            },
+        });
+    });
+
     describe("clearListOnListIntentTriggered true", function () {
         it("on true", async function () {
             crudSubscribeResolvable[0].promise.cancel.mockImplementation(() => Promise.resolve(true));
@@ -631,7 +740,7 @@ describe("use/listSubscription.spec.js", function () {
                 fields: fields,
             });
             const listInstance = useListInstance({
-                props: { listArgs, retrieveArgs },
+                props: { pkKey: "id", listArgs, retrieveArgs },
             });
             listInstance.clearList = vi.fn().mockImplementationOnce(() => undefined);
             const listSubscription = useListSubscription({
@@ -655,7 +764,7 @@ describe("use/listSubscription.spec.js", function () {
                 fields: fields,
             });
             const listInstance = useListInstance({
-                props: { listArgs, retrieveArgs },
+                props: { pkKey: "id", listArgs, retrieveArgs },
             });
             listInstance.clearList = vi.fn().mockImplementationOnce(() => undefined);
             const listSubscription = useListSubscription({

@@ -90,6 +90,7 @@ const listProps = reactive({
     crudArgs: {
         stream: "contacts",
     },
+    pkKey: "id",
     retrieveArgs: {
         fields: ["id", "has_name", "lexical_name", "organization", "phone"],
     },
@@ -156,6 +157,7 @@ const listProps = reactive({
         subscribeAction: "subscribe_contacts",
         unsubscribeAction: "unsubscribe_contacts",
     },
+    pkKey: "id",
     retrieveArgs: {
         fields: ["id", "has_name", "lexical_name", "organization", "phone"],
     },
@@ -218,6 +220,7 @@ import { useListInstance, useListRelated, doAwaitNot } from "@arrai-innovations/
 import { reactive, toRef } from "vue";
 
 const organizationsProps = reactive({
+    pkKey: "id",
     retrieveArgs: {
         fields: ["id", "name"],
     },
@@ -226,6 +229,7 @@ const organizations = useListInstance({
     props: organizationsProps,
 });
 const contactsProps = reactive({
+    pkKey: "id",
     retrieveArgs: {
         fields: ["id", "lexical_name", "organization"],
     },
@@ -301,6 +305,7 @@ import { useListInstance, useListCalculated } from "@arrai-innovations/reactive-
 import { nextTick, reactive } from "vue";
 
 const contactsProps = reactive({
+    pkKey: "id",
     retrieveArgs: {
         fields: ["id", "has_name", "has_billing", "lexical_name", "organization"],
     },
@@ -355,6 +360,7 @@ import { useListInstance, useListFilter, doAwaitNot } from "@arrai-innovations/r
 import { reactive, ref } from "vue";
 
 const contactsProps = reactive({
+    pkKey: "id",
     retrieveArgs: {
         fields: ["id", "has_name", "has_billing", "lexical_name", "organization"],
     },
@@ -399,6 +405,7 @@ import { useListInstance, useListSearch, doAwaitNot } from "@arrai-innovations/r
 import { reactive } from "vue";
 
 const contactsProps = reactive({
+    pkKey: "id",
     retrieveArgs: {
         fields: ["id", "has_name", "has_billing", "lexical_name", "organization"],
     },
@@ -443,6 +450,7 @@ import { useListInstance, useListSort, doAwaitNot } from "@arrai-innovations/rea
 import { reactive } from "vue";
 
 const contactsProps = reactive({
+    pkKey: "id",
     retrieveArgs: {
         fields: ["id", "has_name", "lexical_name", "organization"],
     },
@@ -487,6 +495,7 @@ const managedListProps = reactive({
         subscribeAction: "subscribe_contacts",
         unsubscribeAction: "unsubscribe_contacts",
     },
+    pkKey: "id",
     retrieveArgs: {
         fields: ["id", "has_name", "lexical_name", "organization", "phone"],
     },
@@ -664,7 +673,8 @@ const managedObjectProps = reactive({
     retrieveArgs: {
         fields: ["id", "has_name", "lexical_name", "organization", "phone"],
     },
-    id: contactId,
+    pk: contactId,
+    pkKey: "id",
     relatedObjectRules: {
         organization: {
             // desired key on relatedObjects
