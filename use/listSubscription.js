@@ -276,7 +276,7 @@ export function useListSubscription({
      * @throws {ListInstanceError} - If the object is already in the list.
      * @returns {void}
      */
-    function addFromSubscription(data, pkKey = "id") {
+    function addFromSubscription(data, pkKey = parentState.pkKey) {
         if (!data[pkKey]) {
             throw new ListSubscriptionError(
                 `addFromSubscription: data missing pk(${pkKey}).\n${inspect(data)}`,
@@ -304,7 +304,7 @@ export function useListSubscription({
      * @throws {ListInstanceError} - If the object is not in the list.
      * @returns {void}
      */
-    function updateFromSubscription(data, pkKey = "id") {
+    function updateFromSubscription(data, pkKey = parentState.pkKey) {
         if (!data[pkKey]) {
             throw new ListSubscriptionError(
                 `updateFromSubscription: data missing pk(${pkKey}).\n${inspect(data)}`,
@@ -331,7 +331,7 @@ export function useListSubscription({
      * @throws {ListInstanceError} - If the object is not in the list.
      * @returns {void}
      */
-    function deleteFromSubscription(pk, pkKey = "id") {
+    function deleteFromSubscription(pk, pkKey = parentState.pkKey) {
         try {
             listInstance.deleteListObject(pk);
         } catch (err) {

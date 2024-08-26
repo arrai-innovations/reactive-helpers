@@ -256,7 +256,7 @@ export function useObjectSubscription({ objectInstance, props, functions }) {
 
     function subscribe() {
         // this function cannot be async, or the resulting promise will lose its .cancel() method
-        if (subscribeIntent.state.active || state.subscribed) {
+        if (state.subscribed) {
             return Promise.reject(
                 new ObjectSubscriptionError("already subscribed or subscribing.", "already-subscribed")
             );
@@ -300,7 +300,9 @@ export function useObjectSubscription({ objectInstance, props, functions }) {
             })
             .finally(() => {
                 loadingError.clearLoading();
-                subscribePromise = null;
+                if (!state.subscribed) {
+                    subscribePromise = null;
+                }
             });
         catchPromise.cancel = cancelSubscription;
         return catchPromise;
