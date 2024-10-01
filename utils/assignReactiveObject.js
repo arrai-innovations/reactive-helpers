@@ -2,9 +2,10 @@ import { keyDiff } from "./keyDiff.js";
 import inspect from "browser-util-inspect";
 import isArray from "lodash-es/isArray.js";
 import isObject from "lodash-es/isObject.js";
-import isObjectLike from "lodash-es/isObjectLike.js";
 import { isReactive, isRef, toRef, unref } from "vue";
 import isSet from "lodash-es/isSet.js";
+import isMap from "lodash-es/isMap.js";
+import isPlainObject from "lodash-es/isPlainObject.js";
 
 /**
  * Reactive object assignment utilities.
@@ -100,16 +101,20 @@ function reactiveReplaceKeys(target, source, keys, exclude) {
     let didAnything = false;
     for (const key of keys) {
         if (!exclude?.includes(key)) {
+            const sourceValue = source[key];
+            const targetValue = target[key];
+            if (isSet(sourceValue) || isMap(sourceValue)) {
+                if (targetValue === sourceValue) {
+                    continue;
+                }
+                target[key] = sourceValue;
+                didAnything = true;
+            }
             if (targetIsReactive && sourceIsReactive) {
                 const targetPropRaw = unref(toRef(target, key));
-                // if they are object like  we can see if the values are the same
-                if (isObjectLike(targetPropRaw)) {
-                    const sourcePropRaw = unref(toRef(source, key));
-                    if (isObjectLike(sourcePropRaw)) {
-                        if (targetPropRaw === sourcePropRaw) {
-                            continue;
-                        }
-                    }
+                const sourcePropRaw = unref(toRef(source, key));
+                if (targetPropRaw === sourcePropRaw) {
+                    continue;
                 }
                 target[key] = toRef(source, key);
                 didAnything = true;
@@ -348,28 +353,37 @@ export function assignReactiveObject(target, source, exclude) {
  * @returns {boolean} True if any keys were added, updated, or removed, false otherwise.
  */
 function recursiveInner(target, source, exclude, addedKeys, sameKeys, path, fn) {
+    let didAnything = false;
     const wasAdded = addReactiveObject(target, source, exclude, addedKeys);
-    const keysForRecurse = [];
-    const keysForReplace = [];
+    didAnything = didAnything || wasAdded;
     for (const key of sameKeys) {
         if (!exclude?.includes(key)) {
-            if (isObject(source[key]) && isObject(target[key])) {
-                keysForRecurse.push(key);
-            } else if (target[key] !== source[key]) {
-                keysForReplace.push(key);
+            const sourceValue = source[key];
+            const targetValue = target[key];
+
+            if (isSet(sourceValue) || isMap(sourceValue)) {
+                if (targetValue !== sourceValue) {
+                    target[key] = sourceValue;
+                    didAnything = true;
+                }
+            } else if (isPlainObject(sourceValue) && isPlainObject(targetValue)) {
+                const nextLevelExclude = exclude
+                    ?.filter((excludeKey) => !excludeKey.startsWith(path))
+                    .map((excludeKey) => excludeKey.replace(path, ""));
+                const nextPath = `${path}.${key}`;
+                const didRecurse = fn(targetValue, sourceValue, nextLevelExclude, nextPath);
+                didAnything = didAnything || didRecurse;
+            } else if (isArray(sourceValue) && isArray(targetValue)) {
+                const didAssignArray = assignReactiveArray(targetValue, sourceValue);
+                didAnything = didAnything || didAssignArray;
+            } else if (targetValue !== sourceValue) {
+                // Assign other types directly
+                target[key] = sourceValue;
+                didAnything = true;
             }
         }
     }
-    const wasReplaced = reactiveReplaceKeys(target, source, keysForReplace, exclude);
-    for (const key of keysForRecurse) {
-        // scope exclude for this next level, remove keys that don't start with the current path, trim keys that do to remove the current path
-        const nextLevelExclude = exclude
-            ?.filter((excludeKey) => !excludeKey.startsWith(path))
-            .map((excludeKey) => excludeKey.replace(path, ""));
-        const nextPath = isArray(source[key]) ? `${path}[${key}]` : `${path}.${key}`;
-        fn(target[key], source[key], nextLevelExclude, nextPath);
-    }
-    return wasAdded || wasReplaced;
+    return didAnything;
 }
 
 /**
