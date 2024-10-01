@@ -22,6 +22,7 @@ export const listInstanceFunctions = [
     "addListObject",
     "updateListObject",
     "deleteListObject",
+    "executeAction",
     "clearList",
     "clearError",
     "getFakePk",
