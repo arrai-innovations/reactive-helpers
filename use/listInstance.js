@@ -259,6 +259,7 @@ export function useListInstance({ props, functions = {}, keepOldPages = false })
             args: {},
             list: undefined,
             bulkDelete: undefined,
+            executeAction: undefined,
         },
         pkKey: toRef(props, "pkKey"),
         retrieveArgs: toRef(props, "retrieveArgs"),
@@ -306,6 +307,32 @@ export function useListInstance({ props, functions = {}, keepOldPages = false })
         loadingError.clearError();
         return state.crud
             .bulkDelete({
+                crudArgs: state.crud.args,
+                pks: Object.keys(state.objects).map(Number),
+                pkKey: state.pkKey,
+            })
+            .then(() => {
+                assignReactiveObject(state.objects, {});
+                loadingError.clearError();
+                return Promise.resolve(true);
+            })
+            .catch((error) => {
+                loadingError.setError(error);
+                return Promise.resolve(false);
+            })
+            .finally(() => {
+                loadingError.clearLoading();
+            });
+    }
+
+    async function executeActionFn() {
+        if (state.loading) {
+            return Promise.reject(new ListInstanceError("already loading.", "already-loading"));
+        }
+        loadingError.setLoading();
+        loadingError.clearError();
+        return state.crud
+            .executeAction({
                 crudArgs: state.crud.args,
                 pks: Object.keys(state.objects).map(Number),
                 pkKey: state.pkKey,
@@ -463,6 +490,7 @@ export function useListInstance({ props, functions = {}, keepOldPages = false })
         state,
         list,
         bulkDelete: bulkDeleteFn,
+        executeAction: executeActionFn,
         addListObject,
         updateListObject,
         deleteListObject,

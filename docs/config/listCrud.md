@@ -54,6 +54,12 @@ The default arguments for the crud functions.
 
 The delete function to bulk delete a list of items.
 
+##### executeAction
+
+> **executeAction**: [`ExecuteActionFn`](listCrud.md#executeactionfn)
+
+The  function to execute a certain action on a list of items.
+
 ##### list
 
 > **list**: [`ListFn`](listCrud.md#listfn)
@@ -187,6 +193,22 @@ The method to call when new data is received.
 
 ***
 
+### ExecuteActionFn()
+
+> **ExecuteActionFn**\<\>: (`ExecuteActionFnArgs`) => `void`
+
+#### Type Parameters
+
+#### Parameters
+
+• **ExecuteActionFnArgs**: `any`
+
+#### Returns
+
+`void`
+
+***
+
 ### ListFn()
 
 > **ListFn**\<\>: (`ListFnArgs`) => `void`
@@ -274,6 +296,10 @@ The default arguments for the crud functions.
 • **reactiveCrud.bulkDelete**: [`BulkDeleteFn`](listCrud.md#bulkdeletefn)
 
 The delete function to bulk delete a list of items.
+
+• **reactiveCrud.executeAction**: [`ExecuteActionFn`](listCrud.md#executeactionfn)
+
+The  function to execute a certain action on a list of items.
 
 • **reactiveCrud.list**: [`ListFn`](listCrud.md#listfn)
 
