@@ -58,7 +58,7 @@ export class ListInstanceError extends Error {
  *  function.
  * @property {import('../config/listCrud.js').SubscribeFn} [functions.subscribe] - Provide the implementation for the
  *  subscribe function.
- * @property {boolean} [keepOldPages=false] - If true, pages will not be cleared when defaultPageCallback is called.
+ * @property {boolean} [keepOldPages] - If true, pages will not be cleared when defaultPageCallback is called.
  */
 
 /**
@@ -198,11 +198,14 @@ export function useListInstances(listInstanceArgs) {
  * @param {ListInstanceOptions} options - Specifies the configuration options for creating a list instance, including
  *  properties for CRUD operations and UI behaviors like page persistence.
  * @returns {ListInstance} The list instance.
- * @throws {ListInstanceError} If the props are missing.
+ * @throws {ListInstanceError} If the props or keepOldPages are missing.
  */
-export function useListInstance({ props, functions = {}, keepOldPages = false }) {
+export function useListInstance({ props, functions = {}, keepOldPages }) {
     if (!props) {
         throw new ListInstanceError(`useListInstance requires props`, "missing-props");
+    }
+    if (keepOldPages === undefined) {
+        throw new ListInstanceError(`useListInstance requires keepOldPages`, "missing-keepOldPages");
     }
 
     // ### touching the _objectsMap or _objectsProxy directly will not trigger reactivity ###

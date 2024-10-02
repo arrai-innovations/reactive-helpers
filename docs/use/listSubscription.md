@@ -362,7 +362,8 @@ const listSubscription = useListSubscription({ props: listSubscriptionProps });
 
 #### Throws
 
-- If both listInstance and props are passed, or if neither are passed.
+- If both listInstance and props are passed, or if neither are passed. Also thrown if
+keepOldPages or clearListOnListIntentTriggered are both passed.
 
 ***
 

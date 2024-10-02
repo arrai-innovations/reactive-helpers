@@ -98,7 +98,10 @@ describe("use/listInstance.spec.js", function () {
             const retrieveArgs = reactive({
                 fields,
             });
-            const listInstance = useListInstance({ props: { pkKey: "id", listArgs, retrieveArgs } });
+            const listInstance = useListInstance({
+                props: { pkKey: "id", listArgs, retrieveArgs },
+                keepOldPages: false,
+            });
             let crudListResolve;
             const crudListPromise = new Promise((resolve) => {
                 crudListResolve = resolve;
@@ -165,7 +168,10 @@ describe("use/listInstance.spec.js", function () {
             const retrieveArgs = reactive({
                 fields,
             });
-            const listInstance = useListInstance({ props: { pkKey: "unique", listArgs, retrieveArgs } });
+            const listInstance = useListInstance({
+                props: { pkKey: "unique", listArgs, retrieveArgs },
+                keepOldPages: false,
+            });
             let crudListResolve;
             const crudListPromise = new Promise((resolve) => {
                 crudListResolve = resolve;
@@ -214,7 +220,10 @@ describe("use/listInstance.spec.js", function () {
             const retrieveArgs = reactive({
                 fields,
             });
-            const listInstance = useListInstance({ props: { pkKey: "id", listArgs, retrieveArgs } });
+            const listInstance = useListInstance({
+                props: { pkKey: "id", listArgs, retrieveArgs, keepOldPages: false },
+                keepOldPages: false,
+            });
             expectErrorToBeNull(listInstance.state.error);
             expect(listInstance.state.errored).toBe(false);
             expect(listInstance.state.loading).toBeUndefined();
@@ -245,7 +254,10 @@ describe("use/listInstance.spec.js", function () {
             const retrieveArgs = reactive({
                 fields,
             });
-            const listInstance = useListInstance({ props: { pkKey: "id", listArgs, retrieveArgs } });
+            const listInstance = useListInstance({
+                props: { pkKey: "id", listArgs, retrieveArgs },
+                keepOldPages: false,
+            });
             let crudListReject;
             const crudListPromise = new Promise((resolve, reject) => {
                 crudListReject = reject;
@@ -300,6 +312,7 @@ describe("use/listInstance.spec.js", function () {
             });
             const listInstance = useListInstance({
                 props: { pkKey: "id", listArgs, retrieveArgs, crudArgs: { stream: "custom_stream" } },
+                keepOldPages: false,
             });
             let crudListResolve;
             const crudListPromise = new Promise((resolve) => {
@@ -374,6 +387,7 @@ describe("use/listInstance.spec.js", function () {
                     retrieveArgs,
                     pkKey: "id",
                 },
+                keepOldPages: false,
             });
             let crudListResolve;
             const crudListPromise = new Promise((resolve) => {
@@ -433,6 +447,7 @@ describe("use/listInstance.spec.js", function () {
                     fields,
                 },
             },
+            keepOldPages: false,
         });
         const listInstanceB = useListInstance({
             props: {
@@ -443,6 +458,7 @@ describe("use/listInstance.spec.js", function () {
                     fields,
                 },
             },
+            keepOldPages: false,
         });
         const listInstances = useListInstances({
             A: {
@@ -454,6 +470,7 @@ describe("use/listInstance.spec.js", function () {
                         fields,
                     },
                 },
+                keepOldPages: false,
             },
             B: {
                 props: {
@@ -464,6 +481,7 @@ describe("use/listInstance.spec.js", function () {
                         fields,
                     },
                 },
+                keepOldPages: false,
             },
         });
         expect(inspect(listInstances.A)).toEqual(inspect(listInstanceA));
@@ -471,14 +489,14 @@ describe("use/listInstance.spec.js", function () {
     });
     describe("addListObject", function () {
         it("errored", function () {
-            const listInstance = useListInstance({ props: { pkKey: "id" } });
+            const listInstance = useListInstance({ props: { pkKey: "id" }, keepOldPages: false });
             expect(() => listInstance.addListObject({ listObject })).toThrowError(ListInstanceError);
             listObject.id = listInstance.getFakePk();
             listInstance.addListObject(listObject);
             expect(() => listInstance.addListObject({ listObject })).toThrowError(ListInstanceError);
         });
         it("succeeded", async function () {
-            const listInstance = useListInstance({ props: { pkKey: "id" } });
+            const listInstance = useListInstance({ props: { pkKey: "id" }, keepOldPages: false });
             const newId = listInstance.getFakePk();
             listObject.id = newId;
             listInstance.addListObject(listObject);
@@ -501,7 +519,7 @@ describe("use/listInstance.spec.js", function () {
     });
     describe("updateListObject", function () {
         it("errors", function () {
-            const listInstance = useListInstance({ props: { pkKey: "id" } });
+            const listInstance = useListInstance({ props: { pkKey: "id" }, keepOldPages: false });
             expect(() => listInstance.updateListObject({ listObject })).toThrowError(ListInstanceError);
             listObject.id = -50002000;
             listInstance.addListObject(listObject);
@@ -510,6 +528,7 @@ describe("use/listInstance.spec.js", function () {
         it("succeeds", async function () {
             const listInstance = useListInstance({
                 props: { pkKey: "id" },
+                keepOldPages: false,
             });
             let crudListResolve;
             const crudListPromise = new Promise((resolve) => {
@@ -546,12 +565,13 @@ describe("use/listInstance.spec.js", function () {
     });
     describe("deleteListObject", function () {
         it("errors", function () {
-            const listInstance = useListInstance({ props: { pkKey: "id" } });
+            const listInstance = useListInstance({ props: { pkKey: "id" }, keepOldPages: false });
             expect(() => listInstance.deleteListObject(-50002000)).toThrowError(ListInstanceError);
         });
         it("succeeds", async function () {
             const listInstance = useListInstance({
                 props: { pkKey: "id" },
+                keepOldPages: false,
             });
             let crudListResolve;
             const crudListPromise = new Promise((resolve) => {
@@ -599,7 +619,10 @@ describe("use/listInstance.spec.js", function () {
             const retrieveArgs = reactive({
                 fields,
             });
-            const listInstance = useListInstance({ props: { pkKey: "id", listArgs, retrieveArgs } });
+            const listInstance = useListInstance({
+                props: { pkKey: "id", listArgs, retrieveArgs },
+                keepOldPages: false,
+            });
             let crudListResolve;
             const crudListPromise = new Promise((resolve) => {
                 crudListResolve = resolve;
@@ -644,7 +667,10 @@ describe("use/listInstance.spec.js", function () {
             const retrieveArgs = reactive({
                 fields,
             });
-            const listInstance = useListInstance({ props: { pkKey: "unique", listArgs, retrieveArgs } });
+            const listInstance = useListInstance({
+                props: { pkKey: "unique", listArgs, retrieveArgs },
+                keepOldPages: false,
+            });
             let crudListResolve;
             const crudListPromise = new Promise((resolve) => {
                 crudListResolve = resolve;
@@ -685,7 +711,7 @@ describe("use/listInstance.spec.js", function () {
     });
     describe("getFakePk", function () {
         it("returns fakeId", function () {
-            const listInstance = useListInstance({ props: { pkKey: "id" } });
+            const listInstance = useListInstance({ props: { pkKey: "id" }, keepOldPages: false });
             const fakeId = listInstance.getFakePk();
             expect(fakeId).toBeTruthy();
         });
@@ -716,6 +742,7 @@ describe("use/listInstance.spec.js", function () {
         };
         const listInstance = useListInstance({
             props: { pkKey: "id", listArgs: { user: 1 }, retrieveArgs: { fields: fields } },
+            keepOldPages: false,
         });
         let crudListResolve;
         const crudListPromise = new Promise((resolve) => {
@@ -771,6 +798,7 @@ describe("use/listInstance.spec.js", function () {
                 functions: {
                     list: myListFn,
                 },
+                keepOldPages: false,
             });
 
             const cancelablePromise = listInstance.list();
@@ -791,6 +819,31 @@ describe("use/listInstance.spec.js", function () {
             // @ts-ignore: we already asserted that passedIsCancelled is truthy and a ref, so it won't be undefined
             expect(passedIsCancelled.value).toBe(true);
             expect(listInstance.state.loading).toBe(false);
+        });
+    });
+    describe("useListInstance", function () {
+        it("throw error when missing keepOldPages", async function () {
+            const listArgs = reactive({
+                user: 1,
+            });
+            const retrieveArgs = reactive({
+                fields: fields,
+            });
+            expect(() =>
+                useListInstance({
+                    props: { pkKey: "id", listArgs, retrieveArgs },
+                    keepOldPages: false,
+                }).toThrow("useListInstance requires keepOldPages.")
+            );
+        });
+        it("throw error when missing props", async function () {
+            const listArgs = reactive({
+                user: 1,
+            });
+            const retrieveArgs = reactive({
+                fields: fields,
+            });
+            expect(() => useListInstance({}).toThrow("useListInstance requires props."));
         });
     });
 });

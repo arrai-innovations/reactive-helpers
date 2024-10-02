@@ -6,6 +6,56 @@
 
 # use/list
 
+## Classes
+
+### ListError
+
+Custom error class for use list errors.
+
+#### Extends
+
+- `Error`
+
+#### Constructors
+
+##### new ListError()
+
+> **new ListError**(`message`, `code`): [`ListError`](list.md#listerror)
+
+Creates a new ListError.
+
+###### Parameters
+
+• **message**: `string`
+
+The error message.
+
+• **code**: `string`
+
+The error code.
+
+###### Returns
+
+[`ListError`](list.md#listerror)
+
+###### Overrides
+
+`Error.constructor`
+
+#### Properties
+
+##### code
+
+> **code**: `string`
+
+##### name
+
+> **name**: `string`
+
+###### Inherited from
+
+`Error.name`
+
 ## Interfaces
 
 ### ListManagerProperties
@@ -279,6 +329,10 @@ The options for the list./.
 
 ```vue
 ```
+
+#### Throws
+
+- If required options are not provided.
 
 ***
 

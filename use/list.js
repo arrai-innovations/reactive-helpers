@@ -27,6 +27,23 @@ import { effectScope, reactive, shallowReactive, shallowReadonly, toRef } from "
  */
 
 /**
+ * Custom error class for use list errors.
+ */
+export class ListError extends Error {
+    /**
+     * Creates a new ListError.
+     *
+     * @param {string} message - The error message.
+     * @param {string} code - The error code.
+     */
+    constructor(message, code) {
+        super(message);
+        this.name = "ListError";
+        this.code = code;
+    }
+}
+
+/**
  * Defines properties for configuring the list management system.
  *
  * @typedef {object} ListRawProps
@@ -57,6 +74,7 @@ import { effectScope, reactive, shallowReactive, shallowReadonly, toRef } from "
  * @property {number} searchThrottle - The throttle time for text search.
  * @property {number} sortThrottleWait - The throttle time for sorting.
  * @property {boolean} searchShowAllWhenEmpty - Indicates whether all items should be shown when the search query is empty.
+ *
  */
 
 /**
@@ -156,13 +174,14 @@ export const useLists = (listOptions) => {
  *
  * @param {ListOptions} options - The options for the list./.
  * @returns {ListManager} - The managed stack of list-related composable functions.
+ * @throws {ListError} - If required options are not provided.
  */
 export const useList = ({
     props,
     functions = {},
-    paged = false,
-    keepOldPages = false,
-    clearListOnListIntentTriggered = false,
+    paged,
+    keepOldPages,
+    clearListOnListIntentTriggered,
     searchThrottle = 500,
     sortThrottleWait,
     searchShowAllWhenEmpty,
@@ -176,6 +195,12 @@ export const useList = ({
         listSearch: null,
         listSort: null,
     });
+    if (paged === undefined || keepOldPages === undefined || clearListOnListIntentTriggered === undefined) {
+        throw new ListError(
+            "useList requires paged, keepOldPages, and clearListOnListIntentTriggered to be all set.",
+            "missing-arguments"
+        );
+    }
 
     if (!("listArgs" in props)) {
         console.error("listArgs not set, must be true for intendToList or intendToSubscribe to work.");

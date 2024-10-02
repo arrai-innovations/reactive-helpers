@@ -15,8 +15,8 @@ describe("use/listCalculated", () => {
         AwaitNot = watchesModule.AwaitNot;
     });
     it("should return a list of calculated items", async () => {
-        const mainListInstance = useListInstance({ props: { pkKey: "id" } });
-        const calculatedListInstance = useListInstance({ props: { pkKey: "id" } });
+        const mainListInstance = useListInstance({ props: { pkKey: "id" }, keepOldPages: false });
+        const calculatedListInstance = useListInstance({ props: { pkKey: "id" }, keepOldPages: false });
         mainListInstance.addListObject({
             id: "1",
             name: "main",
@@ -77,8 +77,8 @@ describe("use/listCalculated", () => {
         });
     });
     it("should allow calculated objects to return results based on related objects", async () => {
-        const mainListInstance = useListInstance({ props: { pkKey: "id" } });
-        const relatedListInstance = useListInstance({ props: { pkKey: "id" } });
+        const mainListInstance = useListInstance({ props: { pkKey: "id" }, keepOldPages: false });
+        const relatedListInstance = useListInstance({ props: { pkKey: "id" }, keepOldPages: false });
         mainListInstance.addListObject({
             id: "1",
             name: "main",
