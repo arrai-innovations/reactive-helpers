@@ -56,6 +56,8 @@ export class ListInstanceError extends Error {
  *  function.
  *  @property {import('../config/listCrud.js').BulkDeleteFn} [functions.bulkDelete] - Provide the implementation for the bulkDelete
  *  function.
+ *   @property {import('../config/listCrud.js').ExecuteActionFn} [functions.executeAction] - Provide the implementation for the executeAction
+ *  function.
  * @property {import('../config/listCrud.js').SubscribeFn} [functions.subscribe] - Provide the implementation for the
  *  subscribe function.
  * @property {boolean} [keepOldPages=false] - If true, pages will not be cleared when defaultPageCallback is called.
@@ -116,6 +118,8 @@ export class ListInstanceError extends Error {
  * @property {() => void} clearList - Clears all objects and errors from the list.
  * @property {() => string} getFakePk - Generates a unique fake pk for use within the list.
  * @property {() => Promise<void>} list - Initiates a fetch to retrieve objects according to the CRUD configuration.
+ * @property {() => Promise<void>} bulkDelete - Initiates a bulk delete operation on all objects in the list.
+ * @property {() => Promise<void>} executeAction - Initiates an action on all objects in the list.
  */
 
 /**

@@ -77,6 +77,16 @@ Adds an object to the list.
 
 `void`
 
+##### bulkDelete()
+
+> **bulkDelete**: () => `Promise`\<`void`\>
+
+Initiates a bulk delete operation on all objects in the list.
+
+###### Returns
+
+`Promise`\<`void`\>
+
 ##### clearList()
 
 > **clearList**: () => `void`
@@ -114,6 +124,16 @@ Deletes an object from the list by pk.
 ###### Returns
 
 `void`
+
+##### executeAction()
+
+> **executeAction**: () => `Promise`\<`void`\>
+
+Initiates an action on all objects in the list.
+
+###### Returns
+
+`Promise`\<`void`\>
 
 ##### getFakePk()
 
@@ -180,6 +200,13 @@ Default implementation are used as set by `setListCrud`.
 > **bulkDelete**: [`BulkDeleteFn`](../config/listCrud.md#bulkdeletefn)
 
 Provide the implementation for the bulkDelete
+ function.
+
+###### executeAction
+
+> **executeAction**: [`ExecuteActionFn`](../config/listCrud.md#executeactionfn)
+
+Provide the implementation for the executeAction
  function.
 
 ###### list
