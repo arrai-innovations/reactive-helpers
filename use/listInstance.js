@@ -58,7 +58,7 @@ export class ListInstanceError extends Error {
  *  function.
  * @property {import('../config/listCrud.js').SubscribeFn} [functions.subscribe] - Provide the implementation for the
  *  subscribe function.
- * @property {boolean} [keepOldPages] - If true, pages will not be cleared when defaultPageCallback is called.
+ * @property {boolean} keepOldPages - If true, pages will not be cleared when defaultPageCallback is called.
  */
 
 /**

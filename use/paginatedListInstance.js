@@ -7,7 +7,7 @@ import { useListInstance } from "./listInstance.js";
 
 /**
  * @typedef {object} PagedListListanceOptions
- * @property {boolean} [keepOldPages=false] - Whether to keep old pages.
+ * @property {boolean} keepOldPages - Whether to keep old pages.
  */
 
 /**
@@ -27,9 +27,9 @@ import { useListInstance } from "./listInstance.js";
  * @param {PagedListListanceOptions & import('./listInstance.js').ListInstanceOptions} options - The options.
  * @returns {PagedListInstance} - The paged list instance.
  */
-export function usePagedListInstance({ keepOldPages = false, ...useListInstanceArgs }) {
+export function usePagedListInstance({ keepOldPages, ...useListInstanceArgs }) {
     const listInstance = /** @type {PagedListInstance & import('./listInstance.js').ListInstance} */ (
-        /** @type {unknown} */ (useListInstance(useListInstanceArgs))
+        /** @type {unknown} */ (useListInstance({ keepOldPages, ...useListInstanceArgs }))
     );
 
     listInstance.state.totalRecords = 0;
@@ -43,6 +43,9 @@ export function usePagedListInstance({ keepOldPages = false, ...useListInstanceA
         listInstance.state.totalPages = 0;
         listInstance.state.perPage = 0;
     };
+    if (keepOldPages === undefined) {
+        throw new Error("keepOldPages is required");
+    }
 
     listInstance.pageCallback = (newObjects, { totalRecords, totalPages, perPage }) => {
         // with keepOldPages, you are responsible for clearing the list as needed
