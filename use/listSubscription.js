@@ -152,8 +152,9 @@ export function useListSubscriptions(listSubscriptionArgs) {
  * @param {ListSubscriptionOptions} options - The options for the list subscription.
  * @returns {ListSubscription} - Returns a robust list subscription object that manages a list instance with
  *  capabilities to subscribe and unsubscribe to data sources, alongside handling real-time data updates.
- * @throws {ListSubscriptionError} - If both listInstance and props are passed, or if neither are passed. Also thrown if
- * keepOldPages or clearListOnListIntentTriggered are both passed.
+ * @throws {ListSubscriptionError} - If both listInstance and props are passed, or if neither are
+ * passed. Also thrown if clearListOnListIntentTriggered is not passed or if neither listInstance
+ * nor keepOldPages are passed.
  */
 export function useListSubscription({ listInstance, props, functions, keepOldPages, clearListOnListIntentTriggered }) {
     if (!listInstance && !props) {
