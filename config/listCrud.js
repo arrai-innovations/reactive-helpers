@@ -14,6 +14,7 @@ const defaultCrud = {
     list: undefined,
     bulkDelete: undefined,
     subscribe: undefined,
+    executeAction: undefined,
 };
 
 /**
@@ -77,9 +78,14 @@ const defaultCrud = {
  */
 
 /**
+ * @typedef {(ExecuteActionFnArgs)=>void} ExecuteActionFn
+ */
+
+/**
  * @typedef {object} ListCrudFunctions
  * @property {ListFn} [list] - The list function to get a list of items.
  * @property {BulkDeleteFn} [bulkDelete] - The delete function to bulk delete a list of items.
+ * @property {ExecuteActionFn} [executeAction] - The  function to execute a certain action on a list of items.
  * @property {SubscribeFn} [subscribe] - The subscribe function to get a subscription to a list of items.
  */
 
@@ -95,10 +101,11 @@ const defaultCrud = {
  * @throws {Error} - If unknown keys are passed.
  * @returns {void}
  */
-export const setListCrud = ({ list, bulkDelete, subscribe, args = {}, ...rest }) => {
+export const setListCrud = ({ list, bulkDelete, subscribe, executeAction, args = {}, ...rest }) => {
     defaultCrud.list = list;
     defaultCrud.subscribe = subscribe;
     defaultCrud.bulkDelete = bulkDelete;
+    defaultCrud.executeAction = executeAction;
     Object.assign(defaultCrud.args, cloneDeep(args));
     if (Object.keys(rest).length) {
         throw new Error(`Unknown key(s) passed to setListCrud: ${Object.keys(rest).join(", ")}`);

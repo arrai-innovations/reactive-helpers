@@ -56,6 +56,8 @@ export class ListInstanceError extends Error {
  *  function.
  *  @property {import('../config/listCrud.js').BulkDeleteFn} [functions.bulkDelete] - Provide the implementation for the bulkDelete
  *  function.
+ *   @property {import('../config/listCrud.js').ExecuteActionFn} [functions.executeAction] - Provide the implementation for the executeAction
+ *  function.
  * @property {import('../config/listCrud.js').SubscribeFn} [functions.subscribe] - Provide the implementation for the
  *  subscribe function.
  * @property {boolean} [keepOldPages=false] - If true, pages will not be cleared when defaultPageCallback is called.
@@ -116,6 +118,8 @@ export class ListInstanceError extends Error {
  * @property {() => void} clearList - Clears all objects and errors from the list.
  * @property {() => string} getFakePk - Generates a unique fake pk for use within the list.
  * @property {() => Promise<void>} list - Initiates a fetch to retrieve objects according to the CRUD configuration.
+ * @property {() => Promise<void>} bulkDelete - Initiates a bulk delete operation on all objects in the list.
+ * @property {() => Promise<void>} executeAction - Initiates an action on all objects in the list.
  */
 
 /**
@@ -259,6 +263,7 @@ export function useListInstance({ props, functions = {}, keepOldPages = false })
             args: {},
             list: undefined,
             bulkDelete: undefined,
+            executeAction: undefined,
         },
         pkKey: toRef(props, "pkKey"),
         retrieveArgs: toRef(props, "retrieveArgs"),
@@ -306,6 +311,32 @@ export function useListInstance({ props, functions = {}, keepOldPages = false })
         loadingError.clearError();
         return state.crud
             .bulkDelete({
+                crudArgs: state.crud.args,
+                pks: Object.keys(state.objects).map(Number),
+                pkKey: state.pkKey,
+            })
+            .then(() => {
+                assignReactiveObject(state.objects, {});
+                loadingError.clearError();
+                return Promise.resolve(true);
+            })
+            .catch((error) => {
+                loadingError.setError(error);
+                return Promise.resolve(false);
+            })
+            .finally(() => {
+                loadingError.clearLoading();
+            });
+    }
+
+    async function executeActionFn() {
+        if (state.loading) {
+            return Promise.reject(new ListInstanceError("already loading.", "already-loading"));
+        }
+        loadingError.setLoading();
+        loadingError.clearError();
+        return state.crud
+            .executeAction({
                 crudArgs: state.crud.args,
                 pks: Object.keys(state.objects).map(Number),
                 pkKey: state.pkKey,
@@ -463,6 +494,7 @@ export function useListInstance({ props, functions = {}, keepOldPages = false })
         state,
         list,
         bulkDelete: bulkDeleteFn,
+        executeAction: executeActionFn,
         addListObject,
         updateListObject,
         deleteListObject,

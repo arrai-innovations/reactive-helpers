@@ -3,7 +3,8 @@ import { expectErrorToBeNull } from "../expectHelpers.js";
 import flushPromises from "flush-promises";
 import keyBy from "lodash-es/keyBy.js";
 import { inspect } from "util";
-import { isReactive, nextTick, reactive, isRef, isReadonly } from "vue";
+import { isReactive, nextTick, reactive, isRef, isReadonly, ref } from "vue";
+import { ListInstanceError } from "../../../use/listInstance.js";
 
 afterAll(() => {
     vi.restoreAllMocks();
@@ -11,17 +12,19 @@ afterAll(() => {
 
 const fields = ["id", "__str__", "name"];
 describe("use/listInstance.spec.js", function () {
-    let useListInstance, ListInstanceError, useListInstances, globalList, globalbulkDelete;
+    let useListInstance, ListInstanceError, useListInstances, globalList, globalbulkDelete, globalexecuteAction;
     beforeEach(async () => {
         const listCrud = await import("../../../config/listCrud.js");
         const imported = await import("../../../use/listInstance.js");
         globalList = vi.fn();
         globalbulkDelete = vi.fn(() => Promise.resolve(true));
+        globalexecuteAction = vi.fn(() => Promise.resolve(true));
         // @ts-ignore
         globalList.cancel = vi.fn();
         listCrud.setListCrud({
             list: globalList,
             bulkDelete: globalbulkDelete,
+            executeAction: globalexecuteAction,
             args: { stream: "test_stream" },
         });
         useListInstance = imported.useListInstance;
@@ -207,7 +210,7 @@ describe("use/listInstance.spec.js", function () {
             });
             expect(globalList).toHaveBeenCalledTimes(1);
         });
-        it("already loading", async function () {
+        it("already retrieving", async function () {
             const listArgs = reactive({
                 user: 1,
             });
@@ -237,6 +240,29 @@ describe("use/listInstance.spec.js", function () {
             expect(listInstance.state.errored).toBe(false);
             expect(listInstance.state.loading).toBe(true);
             expect({ ...listInstance.state.objects }).toEqual({});
+        });
+        it("already loading", async function () {
+            const listArgs = reactive({
+                user: 1,
+            });
+            const retrieveArgs = reactive({
+                fields,
+            });
+            const listInstance = useListInstance({ props: { pkKey: "id", listArgs, retrieveArgs } });
+            expectErrorToBeNull(listInstance.state.error);
+            expect(listInstance.state.errored).toBe(false);
+            expect(listInstance.state.loading).toBeUndefined();
+            expect({ ...listInstance.state.objects }).toEqual({});
+            globalList.mockImplementation(() => new Promise(() => {}));
+            listInstance.bulkDelete();
+
+            expectErrorToBeNull(listInstance.state.error);
+            expect(listInstance.state.errored).toBe(false);
+            expect(listInstance.state.loading).toBe(true);
+            await expect(() => listInstance.list()).rejects.toThrow(ListInstanceError);
+            expectErrorToBeNull(listInstance.state.error);
+            expect(listInstance.state.errored).toBe(false);
+            expect(listInstance.state.loading).toBe(true);
         });
         it("errored", async function () {
             const listArgs = reactive({
@@ -591,6 +617,170 @@ describe("use/listInstance.spec.js", function () {
             expect(listInstance.state.order).toEqual(["2", "3"]);
         });
     });
+    describe("executeAction", function () {
+        it("succeeds", async function () {
+            const listArgs = reactive({
+                user: 1,
+            });
+            const retrieveArgs = reactive({
+                fields,
+            });
+            const listInstance = useListInstance({ props: { pkKey: "id", listArgs, retrieveArgs } });
+            let crudListResolve;
+            const crudListPromise = new Promise((resolve) => {
+                crudListResolve = resolve;
+            });
+            let passedPageCallback;
+            globalList.mockImplementation(({ pageCallback }) => {
+                passedPageCallback = pageCallback;
+                return crudListPromise;
+            });
+            const liListResolve = listInstance.list();
+            await nextTick();
+            // @ts-ignore - pageCallback is set in the mock, if not it will throw which is what we want
+            passedPageCallback(crudListResolvedPage2);
+            // @ts-ignore - crudListResolve is set in a promise, since we await this will be set
+            crudListResolve();
+            await flushPromises();
+            await expect(liListResolve).resolves.toBe(true);
+
+            expect({ ...listInstance.state.objects }).toEqual(crudListResolvedObjects2);
+            const executeActionResolve = listInstance.executeAction();
+            expectErrorToBeNull(listInstance.state.error);
+            expect(listInstance.state.errored).toBe(false);
+            expect(listInstance.state.loading).toBe(true);
+            expect(globalexecuteAction).toHaveBeenCalledWith({
+                crudArgs: { stream: "test_stream" },
+                pkKey: "id",
+                pks: Object.keys(crudListResolvedObjects2).map(Number),
+            });
+
+            expect(globalexecuteAction).toHaveBeenCalledTimes(1);
+
+            // @ts-ignore - executeAction is set in a promise, since we await this will be set
+            crudListResolve();
+            await flushPromises();
+            await expect(executeActionResolve).resolves.toBe(true);
+            expect({ ...listInstance.state.objects }).toEqual({});
+        });
+        it("succeeds with non-standard primary key", async function () {
+            const listArgs = reactive({
+                user: 1,
+            });
+            const retrieveArgs = reactive({
+                fields,
+            });
+            const listInstance = useListInstance({ props: { pkKey: "unique", listArgs, retrieveArgs } });
+            let crudListResolve;
+            const crudListPromise = new Promise((resolve) => {
+                crudListResolve = resolve;
+            });
+            let passedPageCallback;
+            globalList.mockImplementation(({ pageCallback }) => {
+                passedPageCallback = pageCallback;
+                return crudListPromise;
+            });
+            const liListResolve = listInstance.list();
+            await nextTick();
+            // @ts-ignore - pageCallback is set in the mock, if not it will throw which is what we want
+            passedPageCallback(crudListResolvedPageNonStandardPK);
+            // @ts-ignore - crudListResolve is set in a promise, since we await this will be set
+            crudListResolve();
+            await flushPromises();
+            await expect(liListResolve).resolves.toBe(true);
+
+            expect({ ...listInstance.state.objects }).toEqual(crudListResolvedObjectsNonStandardPK);
+            const executeActionResolve = listInstance.executeAction();
+            expectErrorToBeNull(listInstance.state.error);
+            expect(listInstance.state.errored).toBe(false);
+            expect(listInstance.state.loading).toBe(true);
+            expect(globalexecuteAction).toHaveBeenCalledWith({
+                crudArgs: { stream: "test_stream" },
+                pkKey: "unique",
+                pks: Object.keys(crudListResolvedObjectsNonStandardPK).map(Number),
+            });
+
+            expect(globalexecuteAction).toHaveBeenCalledTimes(1);
+
+            // @ts-ignore - globalexecuteAction is set in a promise, since we await this will be set
+            crudListResolve();
+            await flushPromises();
+            await expect(executeActionResolve).resolves.toBe(true);
+            expect({ ...listInstance.state.objects }).toEqual({});
+        });
+        it("already loading", async function () {
+            const listArgs = reactive({
+                user: 1,
+            });
+            const retrieveArgs = reactive({
+                fields,
+            });
+            const listInstance = useListInstance({ props: { pkKey: "id", listArgs, retrieveArgs } });
+            expectErrorToBeNull(listInstance.state.error);
+            expect(listInstance.state.errored).toBe(false);
+            expect(listInstance.state.loading).toBeUndefined();
+            expect({ ...listInstance.state.objects }).toEqual({});
+            globalexecuteAction.mockImplementation(() => new Promise(() => {}));
+            listInstance.executeAction();
+            expectErrorToBeNull(listInstance.state.error);
+            expect(listInstance.state.errored).toBe(false);
+            expect(listInstance.state.loading).toBe(true);
+            await expect(() => listInstance.executeAction()).rejects.toThrow(ListInstanceError);
+            expectErrorToBeNull(listInstance.state.error);
+            expect(listInstance.state.errored).toBe(false);
+            expect(listInstance.state.loading).toBe(true);
+        });
+        it("errored", async function () {
+            const listArgs = reactive({
+                user: 1,
+            });
+            const retrieveArgs = reactive({
+                fields,
+            });
+            const listInstance = useListInstance({ props: { pkKey: "id", listArgs, retrieveArgs } });
+            let crudListReject;
+            const crudListPromise = new Promise((resolve, reject) => {
+                crudListReject = reject;
+            });
+            let passedPageCallback;
+            globalexecuteAction.mockImplementation(({ pageCallback }) => {
+                passedPageCallback = pageCallback;
+                return crudListPromise;
+            });
+
+            expectErrorToBeNull(listInstance.state.error);
+            expect(listInstance.state.errored).toBe(false);
+            expect(listInstance.state.loading).toBeUndefined();
+            expect({ ...listInstance.state.objects }).toEqual({});
+
+            const liListResolve = listInstance.executeAction();
+
+            expectErrorToBeNull(listInstance.state.error);
+            expect(listInstance.state.errored).toBe(false);
+            expect(listInstance.state.loading).toBe(true);
+            expect({ ...listInstance.state.objects }).toEqual({});
+
+            await nextTick();
+
+            const rejected = new Error("Test Error");
+            // @ts-ignore - crudListReject is set in a promise, since we await this will be set
+            crudListReject(rejected);
+            await flushPromises();
+
+            await expect(liListResolve).resolves.toBe(false);
+
+            expect(listInstance.state.error).toBe(rejected);
+            expect(listInstance.state.errored).toBe(true);
+            expect(listInstance.state.loading).toBe(false);
+            expect({ ...listInstance.state.objects }).toEqual({});
+            expect(globalexecuteAction).toHaveBeenCalledWith({
+                crudArgs: { stream: "test_stream" },
+                pkKey: "id",
+                pks: [],
+            });
+            expect(globalexecuteAction).toHaveBeenCalledTimes(1);
+        });
+    });
     describe("bulkDelete", function () {
         it("succeeds", async function () {
             const listArgs = reactive({
@@ -681,6 +871,81 @@ describe("use/listInstance.spec.js", function () {
             await flushPromises();
             await expect(bulkDeleteResolve).resolves.toBe(true);
             expect({ ...listInstance.state.objects }).toEqual({});
+        });
+        it("already loading", async function () {
+            const listArgs = reactive({
+                user: 1,
+            });
+            const retrieveArgs = reactive({
+                fields,
+            });
+            const listInstance = useListInstance({ props: { pkKey: "id", listArgs, retrieveArgs } });
+            expectErrorToBeNull(listInstance.state.error);
+            expect(listInstance.state.errored).toBe(false);
+            expect(listInstance.state.loading).toBeUndefined();
+            expect({ ...listInstance.state.objects }).toEqual({});
+            globalbulkDelete.mockImplementation(() => new Promise(() => {}));
+            expectErrorToBeNull(listInstance.state.error);
+            expect(listInstance.state.errored).toBe(false);
+            expect(listInstance.state.loading).toBeUndefined();
+            listInstance.bulkDelete();
+            expectErrorToBeNull(listInstance.state.error);
+            expect(listInstance.state.errored).toBe(false);
+            expect(listInstance.state.loading).toBe(true);
+            await expect(() => listInstance.bulkDelete()).rejects.toThrow(ListInstanceError);
+            expectErrorToBeNull(listInstance.state.error);
+            expect(listInstance.state.errored).toBe(false);
+            expect(listInstance.state.loading).toBe(true);
+        });
+        it("errored", async function () {
+            const listArgs = reactive({
+                user: 1,
+            });
+            const retrieveArgs = reactive({
+                fields,
+            });
+            const listInstance = useListInstance({ props: { pkKey: "id", listArgs, retrieveArgs } });
+            let crudListReject;
+            const crudListPromise = new Promise((resolve, reject) => {
+                crudListReject = reject;
+            });
+            let passedPageCallback;
+            globalbulkDelete.mockImplementation(({ pageCallback }) => {
+                passedPageCallback = pageCallback;
+                return crudListPromise;
+            });
+
+            expectErrorToBeNull(listInstance.state.error);
+            expect(listInstance.state.errored).toBe(false);
+            expect(listInstance.state.loading).toBeUndefined();
+            expect({ ...listInstance.state.objects }).toEqual({});
+
+            const liListResolve = listInstance.bulkDelete();
+
+            expectErrorToBeNull(listInstance.state.error);
+            expect(listInstance.state.errored).toBe(false);
+            expect(listInstance.state.loading).toBe(true);
+            expect({ ...listInstance.state.objects }).toEqual({});
+
+            await nextTick();
+
+            const rejected = new Error("Test Error");
+            // @ts-ignore - crudListReject is set in a promise, since we await this will be set
+            crudListReject(rejected);
+            await flushPromises();
+
+            await expect(liListResolve).resolves.toBe(false);
+
+            expect(listInstance.state.error).toBe(rejected);
+            expect(listInstance.state.errored).toBe(true);
+            expect(listInstance.state.loading).toBe(false);
+            expect({ ...listInstance.state.objects }).toEqual({});
+            expect(globalbulkDelete).toHaveBeenCalledWith({
+                crudArgs: { stream: "test_stream" },
+                pkKey: "id",
+                pks: [],
+            });
+            expect(globalbulkDelete).toHaveBeenCalledTimes(1);
         });
     });
     describe("getFakePk", function () {
