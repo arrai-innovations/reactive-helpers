@@ -257,7 +257,10 @@ describe("use/listInstance.spec.js", function () {
             const retrieveArgs = reactive({
                 fields,
             });
-            const listInstance = useListInstance({ props: { pkKey: "id", listArgs, retrieveArgs } });
+            const listInstance = useListInstance({
+                props: { pkKey: "id", listArgs, retrieveArgs },
+                keepOldPages: false,
+            });
             expectErrorToBeNull(listInstance.state.error);
             expect(listInstance.state.errored).toBe(false);
             expect(listInstance.state.loading).toBeUndefined();
@@ -645,7 +648,10 @@ describe("use/listInstance.spec.js", function () {
             const retrieveArgs = reactive({
                 fields,
             });
-            const listInstance = useListInstance({ props: { pkKey: "id", listArgs, retrieveArgs } });
+            const listInstance = useListInstance({
+                props: { pkKey: "id", listArgs, retrieveArgs },
+                keepOldPages: false,
+            });
             let crudListResolve;
             const crudListPromise = new Promise((resolve) => {
                 crudListResolve = resolve;
@@ -690,7 +696,10 @@ describe("use/listInstance.spec.js", function () {
             const retrieveArgs = reactive({
                 fields,
             });
-            const listInstance = useListInstance({ props: { pkKey: "unique", listArgs, retrieveArgs } });
+            const listInstance = useListInstance({
+                props: { pkKey: "unique", listArgs, retrieveArgs },
+                keepOldPages: false,
+            });
             let crudListResolve;
             const crudListPromise = new Promise((resolve) => {
                 crudListResolve = resolve;
@@ -735,7 +744,10 @@ describe("use/listInstance.spec.js", function () {
             const retrieveArgs = reactive({
                 fields,
             });
-            const listInstance = useListInstance({ props: { pkKey: "id", listArgs, retrieveArgs } });
+            const listInstance = useListInstance({
+                props: { pkKey: "id", listArgs, retrieveArgs },
+                keepOldPages: false,
+            });
             expectErrorToBeNull(listInstance.state.error);
             expect(listInstance.state.errored).toBe(false);
             expect(listInstance.state.loading).toBeUndefined();
@@ -757,7 +769,10 @@ describe("use/listInstance.spec.js", function () {
             const retrieveArgs = reactive({
                 fields,
             });
-            const listInstance = useListInstance({ props: { pkKey: "id", listArgs, retrieveArgs } });
+            const listInstance = useListInstance({
+                props: { pkKey: "id", listArgs, retrieveArgs },
+                keepOldPages: false,
+            });
             let crudListReject;
             const crudListPromise = new Promise((resolve, reject) => {
                 crudListReject = reject;
@@ -905,7 +920,10 @@ describe("use/listInstance.spec.js", function () {
             const retrieveArgs = reactive({
                 fields,
             });
-            const listInstance = useListInstance({ props: { pkKey: "id", listArgs, retrieveArgs } });
+            const listInstance = useListInstance({
+                props: { pkKey: "id", listArgs, retrieveArgs },
+                keepOldPages: false,
+            });
             expectErrorToBeNull(listInstance.state.error);
             expect(listInstance.state.errored).toBe(false);
             expect(listInstance.state.loading).toBeUndefined();
@@ -930,7 +948,10 @@ describe("use/listInstance.spec.js", function () {
             const retrieveArgs = reactive({
                 fields,
             });
-            const listInstance = useListInstance({ props: { pkKey: "id", listArgs, retrieveArgs } });
+            const listInstance = useListInstance({
+                props: { pkKey: "id", listArgs, retrieveArgs },
+                keepOldPages: false,
+            });
             let crudListReject;
             const crudListPromise = new Promise((resolve, reject) => {
                 crudListReject = reject;
