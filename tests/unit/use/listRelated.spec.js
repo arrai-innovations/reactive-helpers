@@ -13,8 +13,8 @@ describe("use/listRelated", () => {
         AwaitNot = watchesModule.AwaitNot;
     });
     it("should return a list of related items", async () => {
-        const mainListInstance = useListInstance({ props: { pkKey: "id" } });
-        const relatedListInstance = useListInstance({ props: { pkKey: "id" } });
+        const mainListInstance = useListInstance({ props: { pkKey: "id" }, keepOldPages: false });
+        const relatedListInstance = useListInstance({ props: { pkKey: "id" }, keepOldPages: false });
         mainListInstance.addListObject({
             id: "1",
             name: "main",
@@ -82,9 +82,9 @@ describe("use/listRelated", () => {
     });
     it('should allow related objects pkKey to be prefixed with "relatedItem." to reference previously related objects', async () => {
         //
-        const mainListInstance = useListInstance({ props: { pkKey: "id" } });
-        const intermediateListInstance = useListInstance({ props: { pkKey: "id" } });
-        const relatedListInstance = useListInstance({ props: { pkKey: "id" } });
+        const mainListInstance = useListInstance({ props: { pkKey: "id" }, keepOldPages: false });
+        const intermediateListInstance = useListInstance({ props: { pkKey: "id" }, keepOldPages: false });
+        const relatedListInstance = useListInstance({ props: { pkKey: "id" }, keepOldPages: false });
         mainListInstance.addListObject({
             id: "1",
             name: "main",

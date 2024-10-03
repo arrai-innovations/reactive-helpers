@@ -78,6 +78,8 @@ describe("use/listSubscription.spec.js", function () {
                     listArgs,
                     retrieveArgs,
                 },
+                keepOldPages: false,
+                clearListOnListIntentTriggered: false,
             });
             listSubscription.subscribe();
             await nextTick();
@@ -158,6 +160,8 @@ describe("use/listSubscription.spec.js", function () {
             });
             const listSubscription = useListSubscription({
                 props: { pkKey: "id", listArgs, retrieveArgs },
+                keepOldPages: false,
+                clearListOnListIntentTriggered: false,
             });
             listSubscription.subscribe();
             crudSubscribeResolvable[0].resolve();
@@ -307,6 +311,8 @@ describe("use/listSubscription.spec.js", function () {
                     listArgs,
                     retrieveArgs,
                 },
+                keepOldPages: false,
+                clearListOnListIntentTriggered: false,
             });
             expect(listSubscription.unsubscribe()).toBe(false);
             listSubscription.subscribe();
@@ -345,6 +351,8 @@ describe("use/listSubscription.spec.js", function () {
             });
             const listSubscription = useListSubscription({
                 props: listSubscriptionProps,
+                keepOldPages: false,
+                clearListOnListIntentTriggered: false,
             });
 
             const returnValue = await listSubscription.unsubscribe();
@@ -366,6 +374,8 @@ describe("use/listSubscription.spec.js", function () {
                     listArgs,
                     retrieveArgs,
                 },
+                keepOldPages: false,
+                clearListOnListIntentTriggered: false,
             });
             const firstReturnValue = listSubscription.subscribe();
             const secondReturnValue = listSubscription.subscribe();
@@ -401,9 +411,11 @@ describe("use/listSubscription.spec.js", function () {
             });
             const listInstance = useListInstance({
                 props: { pkKey: "id", listArgs, retrieveArgs },
+                keepOldPages: false,
             });
             const listSubscription = useListSubscription({
                 listInstance,
+                clearListOnListIntentTriggered: false,
             });
             expect(listSubscription.listInstance).toBe(listInstance);
             listSubscription.subscribe();
@@ -478,6 +490,8 @@ describe("use/listSubscription.spec.js", function () {
                     listArgs,
                     retrieveArgs,
                 }),
+                keepOldPages: false,
+                clearListOnListIntentTriggered: false,
             });
             listSubscription.subscribe();
             await poll(() => listSubscription.state.subscribed);
@@ -544,10 +558,40 @@ describe("use/listSubscription.spec.js", function () {
             });
             const listInstance = useListInstance({
                 props: { pkKey: "id", listArgs, retrieveArgs },
+                keepOldPages: false,
             });
             const props = { pkKey: "id", listArgs, retrieveArgs };
             expect(() => useListSubscription({ listInstance, props })).toThrow(
                 "useListSubscription should be passed listInstance or props and functions, not both."
+            );
+        });
+        it("throw error when missing clearListOnListIntentTriggered", async function () {
+            crudSubscribeResolvable[0].promise.cancel.mockImplementation(() => Promise.resolve(true));
+            const listArgs = reactive({
+                user: 1,
+            });
+            const retrieveArgs = reactive({
+                fields: fields,
+            });
+            const listInstance = useListInstance({
+                props: { pkKey: "id", listArgs, retrieveArgs },
+                keepOldPages: false,
+            });
+            expect(() => useListSubscription({ listInstance })).toThrow(
+                "useListSubscription should be passed clearListOnListIntentTriggered."
+            );
+        });
+        it("throw error when missing keepOldPages and instance", async function () {
+            crudSubscribeResolvable[0].promise.cancel.mockImplementation(() => Promise.resolve(true));
+            const listArgs = reactive({
+                user: 1,
+            });
+            const retrieveArgs = reactive({
+                fields: fields,
+            });
+            const props = { pkKey: "id", listArgs, retrieveArgs, keepOldPages: false };
+            expect(() => useListSubscription({ props, clearListOnListIntentTriggered: false })).toThrow(
+                "useListSubscription should be passed listInstance or keepOldPages."
             );
         });
     });
@@ -561,6 +605,8 @@ describe("use/listSubscription.spec.js", function () {
                     fields,
                 },
             },
+            keepOldPages: false,
+            clearListOnListIntentTriggered: false,
         });
         const listSubscriptionB = useListSubscription({
             props: {
@@ -571,6 +617,8 @@ describe("use/listSubscription.spec.js", function () {
                     fields,
                 },
             },
+            keepOldPages: false,
+            clearListOnListIntentTriggered: false,
         });
         const listSubscription = useListSubscriptions({
             A: {
@@ -582,6 +630,8 @@ describe("use/listSubscription.spec.js", function () {
                         fields,
                     },
                 },
+                keepOldPages: false,
+                clearListOnListIntentTriggered: false,
             },
             B: {
                 props: {
@@ -592,6 +642,8 @@ describe("use/listSubscription.spec.js", function () {
                         fields,
                     },
                 },
+                keepOldPages: false,
+                clearListOnListIntentTriggered: false,
             },
         });
         expect(inspect(listSubscription.A)).toEqual(inspect(listSubscriptionA));
@@ -607,6 +659,7 @@ describe("use/listSubscription.spec.js", function () {
                     fields,
                 },
             },
+            keepOldPages: false,
         });
         const listInstanceB = useListInstance({
             props: {
@@ -617,12 +670,15 @@ describe("use/listSubscription.spec.js", function () {
                     fields,
                 },
             },
+            keepOldPages: false,
         });
         const listSubscriptionA = useListSubscription({
             listInstance: listInstanceA,
+            clearListOnListIntentTriggered: false,
         });
         const listSubscriptionB = useListSubscription({
             listInstance: listInstanceB,
+            clearListOnListIntentTriggered: false,
         });
         const listInstances = useListInstances({
             A: {
@@ -635,6 +691,7 @@ describe("use/listSubscription.spec.js", function () {
                         fields,
                     },
                 },
+                keepOldPages: false,
             },
             B: {
                 listInstance: listInstanceB,
@@ -646,15 +703,18 @@ describe("use/listSubscription.spec.js", function () {
                         fields,
                     },
                 },
+                keepOldPages: false,
             },
         });
         const listSubscription = useListSubscriptions(
             {
                 A: {
                     listInstance: listInstanceA,
+                    clearListOnListIntentTriggered: false,
                 },
                 B: {
                     listInstance: listInstanceB,
+                    clearListOnListIntentTriggered: false,
                 },
             },
             listInstances
@@ -677,6 +737,8 @@ describe("use/listSubscription.spec.js", function () {
                 listArgs,
                 retrieveArgs,
             },
+            keepOldPages: false,
+            clearListOnListIntentTriggered: false,
         });
         listSubscription.subscribe();
         await nextTick();
@@ -741,6 +803,7 @@ describe("use/listSubscription.spec.js", function () {
             });
             const listInstance = useListInstance({
                 props: { pkKey: "id", listArgs, retrieveArgs },
+                keepOldPages: false,
             });
             listInstance.clearList = vi.fn().mockImplementationOnce(() => undefined);
             const listSubscription = useListSubscription({
@@ -765,6 +828,7 @@ describe("use/listSubscription.spec.js", function () {
             });
             const listInstance = useListInstance({
                 props: { pkKey: "id", listArgs, retrieveArgs },
+                keepOldPages: false,
             });
             listInstance.clearList = vi.fn().mockImplementationOnce(() => undefined);
             const listSubscription = useListSubscription({

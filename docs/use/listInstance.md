@@ -520,7 +520,7 @@ watch(toRef(props, "someListFilter"), (newValue, oldValue) => {
 
 #### Throws
 
-If the props are missing.
+If the props or keepOldPages are missing.
 
 ***
 

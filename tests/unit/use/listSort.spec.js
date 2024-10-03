@@ -64,6 +64,7 @@ describe("use/useListSort", () => {
                 },
                 listArgs: {},
             },
+            keepOldPages: false,
         });
         useListSort = importedSortModule.useListSort;
         useListSorts = importedSortModule.useListSorts;
@@ -176,6 +177,7 @@ describe("use/useListSort", () => {
                     fields,
                 },
             },
+            keepOldPages: false,
         });
         const listInstanceB = useListInstance({
             props: {
@@ -186,6 +188,7 @@ describe("use/useListSort", () => {
                     fields,
                 },
             },
+            keepOldPages: false,
         });
         const listSortA = useListSort({
             parentState: listInstanceA.state,
@@ -205,6 +208,7 @@ describe("use/useListSort", () => {
                     },
                     pkKey: "id",
                 },
+                keepOldPages: false,
             },
             B: {
                 props: {
@@ -215,6 +219,7 @@ describe("use/useListSort", () => {
                     },
                     pkKey: "id",
                 },
+                keepOldPages: false,
             },
         });
         const listSorts = useListSorts({
@@ -242,6 +247,7 @@ describe("use/useListSort", () => {
                     fields: ["id", "__str__", "name", "relatedItem", "calculatedItem"],
                 },
             }),
+            keepOldPages: false,
         });
         const relatedListInstance = useListInstance({
             props: reactive({
@@ -252,6 +258,7 @@ describe("use/useListSort", () => {
                     fields: ["id", "__str__", "name"],
                 },
             }),
+            keepOldPages: false,
         });
         const listRelated = useListRelated({
             parentState: listInstance.state,
@@ -358,6 +365,7 @@ describe("use/useListSort", () => {
     it("pass through correctly when parentState changes their order", async () => {
         const listInstance = useListInstance({
             props: reactive({ pkKey: "id" }),
+            keepOldPages: false,
         });
         const allowedFilter = ref((obj) => obj.name !== "two");
         const listFilter = useListFilter({

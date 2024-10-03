@@ -86,6 +86,7 @@ export class ListSubscriptionError extends Error {
  * @typedef {object & import("./listInstance.js").ListInstanceOptions} ListSubscriptionOptions
  * @property {import("./listInstance.js").ListInstance} listInstance - A list instance to use instead of creating one.
  * @property {boolean} clearListOnListIntentTriggered - If true, the list will be cleared when the list intent is triggered. Default is false.
+ * @property {boolean} keepOldPages - If true, pages will not be cleared when defaultPageCallback is called.
  */
 
 /**
@@ -151,15 +152,11 @@ export function useListSubscriptions(listSubscriptionArgs) {
  * @param {ListSubscriptionOptions} options - The options for the list subscription.
  * @returns {ListSubscription} - Returns a robust list subscription object that manages a list instance with
  *  capabilities to subscribe and unsubscribe to data sources, alongside handling real-time data updates.
- * @throws {ListSubscriptionError} - If both listInstance and props are passed, or if neither are passed.
+ * @throws {ListSubscriptionError} - If both listInstance and props are passed, or if neither are
+ * passed. Also thrown if clearListOnListIntentTriggered is not passed or if neither listInstance
+ * nor keepOldPages are passed.
  */
-export function useListSubscription({
-    listInstance,
-    props,
-    functions,
-    keepOldPages = false,
-    clearListOnListIntentTriggered = false,
-}) {
+export function useListSubscription({ listInstance, props, functions, keepOldPages, clearListOnListIntentTriggered }) {
     if (!listInstance && !props) {
         throw new ListSubscriptionError(
             "useListSubscription should be passed listInstance or props and functions.",
@@ -170,6 +167,18 @@ export function useListSubscription({
         throw new ListSubscriptionError(
             "useListSubscription should be passed listInstance or props and functions, not both.",
             "too-many-arguments"
+        );
+    }
+    if (clearListOnListIntentTriggered === undefined) {
+        throw new ListSubscriptionError(
+            "useListSubscription should be passed clearListOnListIntentTriggered.",
+            "missing-arguments"
+        );
+    }
+    if (!listInstance && keepOldPages === undefined) {
+        throw new ListSubscriptionError(
+            "useListSubscription should be passed listInstance or keepOldPages.",
+            "missing-arguments"
         );
     }
     if (!listInstance) {
@@ -185,6 +194,7 @@ export function useListSubscription({
             console.error("functions passed to useListSubscription, but listInstance was passed. functions ignored.");
         }
     }
+
     const parentState = listInstance.state;
 
     let subscribeIntent, listIntent;
