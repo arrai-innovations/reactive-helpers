@@ -1,7 +1,17 @@
 import identity from "lodash-es/identity.js";
 import isEmpty from "lodash-es/isEmpty.js";
 import isEqual from "lodash-es/isEqual.js";
-import { computed, effectScope, nextTick, onScopeDispose, reactive, readonly, watch } from "vue";
+import {
+    computed,
+    effectScope,
+    nextTick,
+    onActivated,
+    onDeactivated,
+    onScopeDispose,
+    reactive,
+    readonly,
+    watch,
+} from "vue";
 import { deepUnref } from "vue-deepunref";
 
 /**
@@ -209,6 +219,17 @@ export function useCancellableIntent({
         }
     };
 
+    const cleanup = () => {
+        // cancel the intent when the component is deactivated
+        cancel();
+        if (state.clearActiveOnResolved) {
+            // otherwise it clears when resolved
+            cancelFunction = null;
+        }
+        // reset the previous watch values for the next activation
+        previousWatchValues = null;
+    };
+
     es.run(() => {
         state.active = computed(() => {
             if (state.activeCount === undefined) {
@@ -233,9 +254,16 @@ export function useCancellableIntent({
             deep: true,
         });
 
-        nextTick().then(intentWatch);
+        onActivated(() => {
+            state.activeCount = 0;
+            state.resolvingCount = 0;
+            // trigger the intent watch manually to get current watch values
+            intentWatch();
+        });
+        onDeactivated(cleanup);
+        onScopeDispose(cleanup);
 
-        onScopeDispose(cancel);
+        nextTick().then(intentWatch);
     });
     return {
         state,
