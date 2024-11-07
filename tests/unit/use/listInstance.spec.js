@@ -12,19 +12,43 @@ afterAll(() => {
 
 const fields = ["id", "__str__", "name"];
 describe("use/listInstance.spec.js", function () {
-    let useListInstance, ListInstanceError, useListInstances, globalList, globalbulkDelete, globalexecuteAction;
+    let useListInstance,
+        ListInstanceError,
+        useListInstances,
+        globalList,
+        globalBulkDelete,
+        globalExecuteAction,
+        globalListCancel,
+        globalBulkDeleteCancel,
+        globalExecuteActionCancel;
     beforeEach(async () => {
         const listCrud = await import("../../../config/listCrud.js");
         const imported = await import("../../../use/listInstance.js");
+        globalListCancel = vi.fn();
+        globalBulkDeleteCancel = vi.fn();
+        globalExecuteActionCancel = vi.fn();
         globalList = vi.fn();
-        globalbulkDelete = vi.fn(() => Promise.resolve(true));
-        globalexecuteAction = vi.fn(() => Promise.resolve(true));
-        // @ts-ignore
-        globalList.cancel = vi.fn();
+        globalBulkDelete = vi.fn(
+            (() => {
+                const fn = () => Promise.resolve(true);
+                fn.cancel = globalBulkDeleteCancel;
+                return fn;
+            })()
+        );
+        globalExecuteAction = vi.fn(
+            (() => {
+                const fn = () => Promise.resolve(true);
+                fn.cancel = globalExecuteActionCancel;
+                return fn;
+            })()
+        );
         listCrud.setListCrud({
+            // @ts-ignore - mock is an acceptable substitute
             list: globalList,
-            bulkDelete: globalbulkDelete,
-            executeAction: globalexecuteAction,
+            // @ts-ignore - mock is an acceptable substitute
+            bulkDelete: globalBulkDelete,
+            // @ts-ignore - mock is an acceptable substitute
+            executeAction: globalExecuteAction,
             args: { stream: "test_stream" },
         });
         useListInstance = imported.useListInstance;
@@ -675,19 +699,19 @@ describe("use/listInstance.spec.js", function () {
             expectErrorToBeNull(listInstance.state.error);
             expect(listInstance.state.errored).toBe(false);
             expect(listInstance.state.loading).toBe(true);
-            expect(globalexecuteAction).toHaveBeenCalledWith({
+            expect(globalExecuteAction).toHaveBeenCalledWith({
                 crudArgs: { stream: "test_stream" },
                 pkKey: "id",
                 pks: Object.keys(crudListResolvedObjects2).map(Number),
             });
 
-            expect(globalexecuteAction).toHaveBeenCalledTimes(1);
+            expect(globalExecuteAction).toHaveBeenCalledTimes(1);
 
             // @ts-ignore - executeAction is set in a promise, since we await this will be set
             crudListResolve();
             await flushPromises();
             await expect(executeActionResolve).resolves.toBe(true);
-            expect({ ...listInstance.state.objects }).toEqual({});
+            expect({ ...listInstance.state.objects }).toEqual(crudListResolvedObjects2);
         });
         it("succeeds with non-standard primary key", async function () {
             const listArgs = reactive({
@@ -723,19 +747,19 @@ describe("use/listInstance.spec.js", function () {
             expectErrorToBeNull(listInstance.state.error);
             expect(listInstance.state.errored).toBe(false);
             expect(listInstance.state.loading).toBe(true);
-            expect(globalexecuteAction).toHaveBeenCalledWith({
+            expect(globalExecuteAction).toHaveBeenCalledWith({
                 crudArgs: { stream: "test_stream" },
                 pkKey: "unique",
                 pks: Object.keys(crudListResolvedObjectsNonStandardPK).map(Number),
             });
 
-            expect(globalexecuteAction).toHaveBeenCalledTimes(1);
+            expect(globalExecuteAction).toHaveBeenCalledTimes(1);
 
-            // @ts-ignore - globalexecuteAction is set in a promise, since we await this will be set
+            // @ts-ignore - globalExecuteAction is set in a promise, since we await this will be set
             crudListResolve();
             await flushPromises();
             await expect(executeActionResolve).resolves.toBe(true);
-            expect({ ...listInstance.state.objects }).toEqual({});
+            expect({ ...listInstance.state.objects }).toEqual(crudListResolvedObjectsNonStandardPK);
         });
         it("already loading", async function () {
             const listArgs = reactive({
@@ -752,7 +776,7 @@ describe("use/listInstance.spec.js", function () {
             expect(listInstance.state.errored).toBe(false);
             expect(listInstance.state.loading).toBeUndefined();
             expect({ ...listInstance.state.objects }).toEqual({});
-            globalexecuteAction.mockImplementation(() => new Promise(() => {}));
+            globalExecuteAction.mockImplementation(() => new Promise(() => {}));
             listInstance.executeAction();
             expectErrorToBeNull(listInstance.state.error);
             expect(listInstance.state.errored).toBe(false);
@@ -778,7 +802,7 @@ describe("use/listInstance.spec.js", function () {
                 crudListReject = reject;
             });
             let passedPageCallback;
-            globalexecuteAction.mockImplementation(({ pageCallback }) => {
+            globalExecuteAction.mockImplementation(({ pageCallback }) => {
                 passedPageCallback = pageCallback;
                 return crudListPromise;
             });
@@ -808,12 +832,12 @@ describe("use/listInstance.spec.js", function () {
             expect(listInstance.state.errored).toBe(true);
             expect(listInstance.state.loading).toBe(false);
             expect({ ...listInstance.state.objects }).toEqual({});
-            expect(globalexecuteAction).toHaveBeenCalledWith({
+            expect(globalExecuteAction).toHaveBeenCalledWith({
                 crudArgs: { stream: "test_stream" },
                 pkKey: "id",
                 pks: [],
             });
-            expect(globalexecuteAction).toHaveBeenCalledTimes(1);
+            expect(globalExecuteAction).toHaveBeenCalledTimes(1);
         });
     });
     describe("bulkDelete", function () {
@@ -851,13 +875,13 @@ describe("use/listInstance.spec.js", function () {
             expectErrorToBeNull(listInstance.state.error);
             expect(listInstance.state.errored).toBe(false);
             expect(listInstance.state.loading).toBe(true);
-            expect(globalbulkDelete).toHaveBeenCalledWith({
+            expect(globalBulkDelete).toHaveBeenCalledWith({
                 crudArgs: { stream: "test_stream" },
                 pkKey: "id",
                 pks: Object.keys(crudListResolvedObjects2).map(Number),
             });
 
-            expect(globalbulkDelete).toHaveBeenCalledTimes(1);
+            expect(globalBulkDelete).toHaveBeenCalledTimes(1);
 
             // @ts-ignore - bulkDeleteResolve is set in a promise, since we await this will be set
             crudListResolve();
@@ -899,13 +923,13 @@ describe("use/listInstance.spec.js", function () {
             expectErrorToBeNull(listInstance.state.error);
             expect(listInstance.state.errored).toBe(false);
             expect(listInstance.state.loading).toBe(true);
-            expect(globalbulkDelete).toHaveBeenCalledWith({
+            expect(globalBulkDelete).toHaveBeenCalledWith({
                 crudArgs: { stream: "test_stream" },
                 pkKey: "unique",
                 pks: Object.keys(crudListResolvedObjectsNonStandardPK).map(Number),
             });
 
-            expect(globalbulkDelete).toHaveBeenCalledTimes(1);
+            expect(globalBulkDelete).toHaveBeenCalledTimes(1);
 
             // @ts-ignore - bulkDeleteResolve is set in a promise, since we await this will be set
             crudListResolve();
@@ -928,7 +952,7 @@ describe("use/listInstance.spec.js", function () {
             expect(listInstance.state.errored).toBe(false);
             expect(listInstance.state.loading).toBeUndefined();
             expect({ ...listInstance.state.objects }).toEqual({});
-            globalbulkDelete.mockImplementation(() => new Promise(() => {}));
+            globalBulkDelete.mockImplementation(() => new Promise(() => {}));
             expectErrorToBeNull(listInstance.state.error);
             expect(listInstance.state.errored).toBe(false);
             expect(listInstance.state.loading).toBeUndefined();
@@ -957,7 +981,7 @@ describe("use/listInstance.spec.js", function () {
                 crudListReject = reject;
             });
             let passedPageCallback;
-            globalbulkDelete.mockImplementation(({ pageCallback }) => {
+            globalBulkDelete.mockImplementation(({ pageCallback }) => {
                 passedPageCallback = pageCallback;
                 return crudListPromise;
             });
@@ -987,12 +1011,12 @@ describe("use/listInstance.spec.js", function () {
             expect(listInstance.state.errored).toBe(true);
             expect(listInstance.state.loading).toBe(false);
             expect({ ...listInstance.state.objects }).toEqual({});
-            expect(globalbulkDelete).toHaveBeenCalledWith({
+            expect(globalBulkDelete).toHaveBeenCalledWith({
                 crudArgs: { stream: "test_stream" },
                 pkKey: "id",
                 pks: [],
             });
-            expect(globalbulkDelete).toHaveBeenCalledTimes(1);
+            expect(globalBulkDelete).toHaveBeenCalledTimes(1);
         });
     });
     describe("getFakePk", function () {

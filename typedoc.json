@@ -1,7 +1,6 @@
 {
     "entryPoints": ["config/**/*.js", "use/**/*.js", "utils/**/*.js"],
     "out": "docs",
-    "exclude": [],
     "excludeExternals": true,
     "excludePrivate": true,
     "excludeProtected": true,

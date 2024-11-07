@@ -142,7 +142,7 @@ A function to be used instead of the default crud retrieve function.
 
 ##### subscribe()
 
-> **subscribe**: (`SubscribeArgs`) => `void`
+> **subscribe**: (`SubscribeArgs`) => `void` & `object`
 
 A function to be used instead of the default crud subscribe function.
 
@@ -152,7 +152,7 @@ A function to be used instead of the default crud subscribe function.
 
 ###### Returns
 
-`void`
+`void` & `object`
 
 ##### update()
 
@@ -322,7 +322,17 @@ The arguments to be passed to the retrieve function.
 
 ### ResponseData
 
-> **ResponseData**\<\>: `Promise`\<`object` \| `string`\>
+> **ResponseData**\<\>: `Promise`\<`object` \| `string`\> & `object`
+
+#### Type declaration
+
+##### cancel()
+
+> **cancel**: () => `Promise`\<`void`\> \| `void`
+
+###### Returns
+
+`Promise`\<`void`\> \| `void`
 
 #### Type Parameters
 

@@ -117,9 +117,9 @@ export class ListInstanceError extends Error {
  * @property {(objectId: string) => void} deleteListObject - Deletes an object from the list by pk.
  * @property {() => void} clearList - Clears all objects and errors from the list.
  * @property {() => string} getFakePk - Generates a unique fake pk for use within the list.
- * @property {() => Promise<void>} list - Initiates a fetch to retrieve objects according to the CRUD configuration.
- * @property {() => Promise<void>} bulkDelete - Initiates a bulk delete operation on all objects in the list.
- * @property {() => Promise<void>} executeAction - Initiates an action on all objects in the list.
+ * @property {() => Promise<boolean>} list - Initiates a fetch to retrieve objects according to the CRUD configuration, returning a promise to a boolean indicating success.
+ * @property {() => Promise<boolean>} bulkDelete - Initiates a bulk delete operation on all objects in the list, returning a promise to a boolean indicating success.
+ * @property {() => Promise<object|string|false>} executeAction - Initiates an action on all objects in the list, returning the response, or false if the action failed.
  */
 
 /**
@@ -344,10 +344,9 @@ export function useListInstance({ props, functions = {}, keepOldPages }) {
                 pks: Object.keys(state.objects).map(Number),
                 pkKey: state.pkKey,
             })
-            .then(() => {
-                assignReactiveObject(state.objects, {});
+            .then((responseData) => {
                 loadingError.clearError();
-                return Promise.resolve(true);
+                return Promise.resolve(responseData);
             })
             .catch((error) => {
                 loadingError.setError(error);
@@ -493,6 +492,7 @@ export function useListInstance({ props, functions = {}, keepOldPages }) {
         state.order = computed(() => Object.keys(state.objects));
     });
 
+    // This isn't a direct return because we want the live returnedObject.pageCallback in list()
     const returnedObject = {
         state,
         list,

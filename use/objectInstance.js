@@ -59,13 +59,13 @@ import { reactive, toRef } from "vue";
  * The functions available on the object instance.
  *
  * @typedef {object} ObjectInstanceFunctions
- * @property {Function} create - Called to turn the current object into a new object on the server.
- * @property {Function} retrieve - Called to retrieve the current object by pk from the server.
- * @property {Function} update - Called to update the current object on the server.
- * @property {Function} delete - Called to delete the current object on the server.
- * @property {Function} patch - Called to patch the current object on the server.
- * @property {Function} clearError - Called to clear the error state.
- * @property {Function} clear - Called to clear the object state.
+ * @property {(args: { object: object }) => Promise<boolean>} create - Called to turn the current object into a new object on the server.
+ * @property {() => Promise<boolean>} retrieve - Called to retrieve the current object by pk from the server.
+ * @property {(args: { object: CrudObject }) => Promise<boolean>} update - Called to update the current object on the server.
+ * @property {() => Promise<boolean>} delete - Called to delete the current object on the server.
+ * @property {(args: { partialObject: CrudObject }) => Promise<boolean>} patch - Called to patch the current object on the server.
+ * @property {import('./loadingError.js').ClearErrorFn} clearError - Called to clear the error state.
+ * @property {() => void} clear - Called to clear the object state.
  */
 
 /**
@@ -362,7 +362,7 @@ export function useObjectInstance({ props, functions = {} }) {
         assignReactiveObject(state.object, {});
     }
 
-    return reactive({
+    return {
         state,
         create,
         retrieve,
@@ -371,5 +371,5 @@ export function useObjectInstance({ props, functions = {} }) {
         patch,
         clearError: loadingError.clearError,
         clear,
-    });
+    };
 }
