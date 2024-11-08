@@ -52,15 +52,11 @@ Set the loading state.
 
 #### Properties
 
-##### clearError()
+##### clearError
 
-> **clearError**: () => `void`
+> **clearError**: [`ClearErrorFn`](loadingError.md#clearerrorfn)
 
 Clear the error state.
-
-###### Returns
-
-`void`
 
 ##### error
 
@@ -81,6 +77,20 @@ Whether an error has occurred.
 Whether the component is loading.
 
 ## Type Aliases
+
+### ClearErrorFn()
+
+> **ClearErrorFn**\<\>: () => `void`
+
+Clear the error state.
+
+#### Type Parameters
+
+#### Returns
+
+`void`
+
+***
 
 ### LoadingError
 

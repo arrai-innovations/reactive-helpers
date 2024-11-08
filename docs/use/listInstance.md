@@ -79,13 +79,13 @@ Adds an object to the list.
 
 ##### bulkDelete()
 
-> **bulkDelete**: () => `Promise`\<`void`\>
+> **bulkDelete**: () => `Promise`\<`boolean`\>
 
-Initiates a bulk delete operation on all objects in the list.
+Initiates a bulk delete operation on all objects in the list, returning a promise to a boolean indicating success.
 
 ###### Returns
 
-`Promise`\<`void`\>
+`Promise`\<`boolean`\>
 
 ##### clearList()
 
@@ -127,13 +127,13 @@ Deletes an object from the list by pk.
 
 ##### executeAction()
 
-> **executeAction**: () => `Promise`\<`void`\>
+> **executeAction**: () => `Promise`\<`any`\>
 
-Initiates an action on all objects in the list.
+Initiates an action on all objects in the list, returning the response, or false if the action failed.
 
 ###### Returns
 
-`Promise`\<`void`\>
+`Promise`\<`any`\>
 
 ##### getFakePk()
 
@@ -147,13 +147,13 @@ Generates a unique fake pk for use within the list.
 
 ##### list()
 
-> **list**: () => `Promise`\<`void`\>
+> **list**: () => `Promise`\<`boolean`\>
 
-Initiates a fetch to retrieve objects according to the CRUD configuration.
+Initiates a fetch to retrieve objects according to the CRUD configuration, returning a promise to a boolean indicating success.
 
 ###### Returns
 
-`Promise`\<`void`\>
+`Promise`\<`boolean`\>
 
 ##### pageCallback()
 

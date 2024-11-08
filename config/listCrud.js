@@ -66,19 +66,27 @@ const defaultCrud = {
  */
 
 /**
- * @typedef {(ListFnArgs)=>void} ListFn
+ * @typedef {object} ExecuteActionFnArgs
+ * @property {object} crudArgs - The arguments to be passed to the crud functions.
+ * @property {string[]} pks - The ids of the objects to be acted upon.
+ * @property {string} pkKey - The key name of the primary key.
+ * @property {string} action - The action to execute.
  */
 
 /**
- * @typedef {(DeleteFnArgs)=>void} BulkDeleteFn
+ * @typedef {(ListFnArgs)=>Promise<boolean> & { cancel: () => Promise<void>|void }} ListFn - The list function to get a list of items, returning a boolean indicating success.
  */
 
 /**
- * @typedef {(SubscribeFnArgs)=>void} SubscribeFn
+ * @typedef {(DeleteFnArgs)=>Promise<boolean> & { cancel: () => Promise<void>|void }} BulkDeleteFn - The delete function to bulk delete a list of items.
  */
 
 /**
- * @typedef {(ExecuteActionFnArgs)=>void} ExecuteActionFn
+ * @typedef {(SubscribeFnArgs)=>Promise<boolean> & { cancel: () => Promise<void>|void }} SubscribeFn - The subscribe function to set up a subscription to a list of items.
+ */
+
+/**
+ * @typedef {(ExecuteActionFnArgs)=>Promise<import('./objectCrud.js').ResponseData|false> & { cancel: () => Promise<void>|void }} ExecuteActionFn - The function to execute a certain action on a list of items, returning the response data or false.
  */
 
 /**

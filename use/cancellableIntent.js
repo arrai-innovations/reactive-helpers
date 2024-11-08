@@ -1,18 +1,9 @@
 import identity from "lodash-es/identity.js";
 import isEmpty from "lodash-es/isEmpty.js";
 import isEqual from "lodash-es/isEqual.js";
-import {
-    computed,
-    effectScope,
-    nextTick,
-    onActivated,
-    onDeactivated,
-    onScopeDispose,
-    reactive,
-    readonly,
-    watch,
-} from "vue";
+import { computed, effectScope, nextTick, onScopeDispose, reactive, readonly, watch } from "vue";
 import { deepUnref } from "vue-deepunref";
+import { tryOnActivated, tryOnDeactivated } from "../utils/keepAliveTry.js";
 
 /**
  * @module use/cancellableIntent.js - A composable function for handling cancellable intents.
@@ -254,13 +245,13 @@ export function useCancellableIntent({
             deep: true,
         });
 
-        onActivated(() => {
+        tryOnActivated(() => {
             state.activeCount = 0;
             state.resolvingCount = 0;
             // trigger the intent watch manually to get current watch values
             intentWatch();
         });
-        onDeactivated(cleanup);
+        tryOnDeactivated(cleanup);
         onScopeDispose(cleanup);
 
         nextTick().then(intentWatch);

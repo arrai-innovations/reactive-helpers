@@ -94,7 +94,7 @@ A function to be used instead of the default crud retrieve function.
 
 ###### crud.subscribe()
 
-> **subscribe**: (`SubscribeArgs`) => `void`
+> **subscribe**: (`SubscribeArgs`) => `void` & `object`
 
 A function to be used instead of the default crud subscribe function.
 
@@ -104,7 +104,7 @@ A function to be used instead of the default crud subscribe function.
 
 ###### Returns
 
-`void`
+`void` & `object`
 
 ###### crud.update()
 
@@ -280,7 +280,7 @@ A function to be used instead of the default crud retrieve function.
 
 ###### crud.subscribe()
 
-> **subscribe**: (`SubscribeArgs`) => `void`
+> **subscribe**: (`SubscribeArgs`) => `void` & `object`
 
 A function to be used instead of the default crud subscribe function.
 
@@ -290,7 +290,7 @@ A function to be used instead of the default crud subscribe function.
 
 ###### Returns
 
-`void`
+`void` & `object`
 
 ###### crud.update()
 

@@ -32,6 +32,36 @@ The ids of the objects to be deleted.
 
 ***
 
+### ExecuteActionFnArgs
+
+#### Properties
+
+##### action
+
+> **action**: `string`
+
+The action to execute.
+
+##### crudArgs
+
+> **crudArgs**: `any`
+
+The arguments to be passed to the crud functions.
+
+##### pkKey
+
+> **pkKey**: `string`
+
+The key name of the primary key.
+
+##### pks
+
+> **pks**: `string`[]
+
+The ids of the objects to be acted upon.
+
+***
+
 ### ListCrudArgs
 
 #### Properties
@@ -179,7 +209,9 @@ The method to call when new data is received.
 
 ### BulkDeleteFn()
 
-> **BulkDeleteFn**\<\>: (`DeleteFnArgs`) => `void`
+> **BulkDeleteFn**\<\>: (`DeleteFnArgs`) => `Promise`\<`boolean`\> & `object`
+
+The delete function to bulk delete a list of items.
 
 #### Type Parameters
 
@@ -189,13 +221,15 @@ The method to call when new data is received.
 
 #### Returns
 
-`void`
+`Promise`\<`boolean`\> & `object`
 
 ***
 
 ### ExecuteActionFn()
 
-> **ExecuteActionFn**\<\>: (`ExecuteActionFnArgs`) => `void`
+> **ExecuteActionFn**\<\>: (`ExecuteActionFnArgs`) => `Promise`\<[`config/objectCrud`](objectCrud.md) \| `false`\> & `object`
+
+The function to execute a certain action on a list of items, returning the response data or false.
 
 #### Type Parameters
 
@@ -205,13 +239,15 @@ The method to call when new data is received.
 
 #### Returns
 
-`void`
+`Promise`\<[`config/objectCrud`](objectCrud.md) \| `false`\> & `object`
 
 ***
 
 ### ListFn()
 
-> **ListFn**\<\>: (`ListFnArgs`) => `void`
+> **ListFn**\<\>: (`ListFnArgs`) => `Promise`\<`boolean`\> & `object`
+
+The list function to get a list of items, returning a boolean indicating success.
 
 #### Type Parameters
 
@@ -221,7 +257,7 @@ The method to call when new data is received.
 
 #### Returns
 
-`void`
+`Promise`\<`boolean`\> & `object`
 
 ***
 
@@ -245,7 +281,9 @@ The method to call when new data is received.
 
 ### SubscribeFn()
 
-> **SubscribeFn**\<\>: (`SubscribeFnArgs`) => `void`
+> **SubscribeFn**\<\>: (`SubscribeFnArgs`) => `Promise`\<`boolean`\> & `object`
+
+The subscribe function to set up a subscription to a list of items.
 
 #### Type Parameters
 
@@ -255,7 +293,7 @@ The method to call when new data is received.
 
 #### Returns
 
-`void`
+`Promise`\<`boolean`\> & `object`
 
 ***
 

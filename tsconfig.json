@@ -12,8 +12,8 @@
         "moduleResolution": "nodenext",
         "esModuleInterop": true,
         "target": "es2023",
-        "types": ["vitest/globals"]
+        "types": ["vitest/globals"],
+        "skipLibCheck": true
     },
-    // match with ./makeTypeDoc.sh
     "include": ["config/**/*.js", "use/**/*.js", "utils/**/*.js", "tests/**/*.js", "index.js"]
 }

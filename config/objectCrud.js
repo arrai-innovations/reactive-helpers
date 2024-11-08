@@ -79,7 +79,7 @@ const defaultCrud = {
  */
 
 /**
- * @typedef {Promise<object|string>} ResponseData
+ * @typedef {Promise<object|string> & { cancel: () => Promise<void>|void }} ResponseData
  */
 
 /**
@@ -91,7 +91,7 @@ const defaultCrud = {
  * @property {(UpdateDetailArgs)=>ResponseData} [update] - A function to be used instead of the default crud update function.
  * @property {(DeleteDetailArgs)=>ResponseData} [delete] - A function to be used instead of the default crud delete function.
  * @property {(PartialDetailArgs)=>ResponseData} [patch] - A function to be used instead of the default crud patch function.
- * @property {(SubscribeArgs)=>void} [subscribe] - A function to be used instead of the default crud subscribe function.
+ * @property {(SubscribeArgs)=>void & { cancel: () => Promise<void>|void }} [subscribe] - A function to be used instead of the default crud subscribe function.
  */
 
 /**

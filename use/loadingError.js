@@ -5,13 +5,17 @@ import { readonly, ref } from "vue";
  */
 
 /**
+ * @typedef {() => void} ClearErrorFn - Clear the error state.
+ */
+
+/**
  * The common API for loading and error states.
  *
  * @typedef {object} LoadingErrorStatus
  * @property {Readonly<import("vue").Ref<boolean|undefined>>} loading - Whether the component is loading.
  * @property {Readonly<import("vue").Ref<Error|null>>} error - The error that occurred.
  * @property {Readonly<import("vue").Ref<boolean>>} errored - Whether an error has occurred.
- * @property {() => void} clearError - Clear the error state.
+ * @property {ClearErrorFn} clearError - Clear the error state.
  */
 
 /**

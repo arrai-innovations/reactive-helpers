@@ -63,47 +63,89 @@ The error code.
 
 #### Properties
 
-##### clear
+##### clear()
 
-> **clear**: `Function`
+> **clear**: () => `void`
 
 Called to clear the object state.
 
+###### Returns
+
+`void`
+
 ##### clearError
 
-> **clearError**: `Function`
+> **clearError**: [`ClearErrorFn`](loadingError.md#clearerrorfn)
 
 Called to clear the error state.
 
-##### create
+##### create()
 
-> **create**: `Function`
+> **create**: (`args`) => `Promise`\<`boolean`\>
 
 Called to turn the current object into a new object on the server.
 
-##### delete
+###### Parameters
 
-> **delete**: `Function`
+• **args**
+
+• **args.object**: `any`
+
+###### Returns
+
+`Promise`\<`boolean`\>
+
+##### delete()
+
+> **delete**: () => `Promise`\<`boolean`\>
 
 Called to delete the current object on the server.
 
-##### patch
+###### Returns
 
-> **patch**: `Function`
+`Promise`\<`boolean`\>
+
+##### patch()
+
+> **patch**: (`args`) => `Promise`\<`boolean`\>
 
 Called to patch the current object on the server.
 
-##### retrieve
+###### Parameters
 
-> **retrieve**: `Function`
+• **args**
+
+• **args.partialObject**: [`CrudObject`](objectInstance.md#crudobject)
+
+###### Returns
+
+`Promise`\<`boolean`\>
+
+##### retrieve()
+
+> **retrieve**: () => `Promise`\<`boolean`\>
 
 Called to retrieve the current object by pk from the server.
 
-##### update
+###### Returns
 
-> **update**: `Function`
+`Promise`\<`boolean`\>
+
+##### update()
+
+> **update**: (`args`) => `Promise`\<`boolean`\>
 
 Called to update the current object on the server.
+
+###### Parameters
+
+• **args**
+
+• **args.object**: [`CrudObject`](objectInstance.md#crudobject)
+
+###### Returns
+
+`Promise`\<`boolean`\>
 
 ***
 
@@ -193,7 +235,7 @@ A function to be used instead of the default crud retrieve function.
 
 ###### crudArgs.subscribe()
 
-> **subscribe**: (`SubscribeArgs`) => `void`
+> **subscribe**: (`SubscribeArgs`) => `void` & `object`
 
 A function to be used instead of the default crud subscribe function.
 
@@ -203,7 +245,7 @@ A function to be used instead of the default crud subscribe function.
 
 ###### Returns
 
-`void`
+`void` & `object`
 
 ###### crudArgs.update()
 
@@ -319,7 +361,7 @@ A function to be used instead of the default crud retrieve function.
 
 ###### crud.subscribe()
 
-> **subscribe**: (`SubscribeArgs`) => `void`
+> **subscribe**: (`SubscribeArgs`) => `void` & `object`
 
 A function to be used instead of the default crud subscribe function.
 
@@ -329,7 +371,7 @@ A function to be used instead of the default crud subscribe function.
 
 ###### Returns
 
-`void`
+`void` & `object`
 
 ###### crud.update()
 
