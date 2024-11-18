@@ -47,10 +47,10 @@ export class ListError extends Error {
  * Defines properties for configuring the list management system.
  *
  * @typedef {object} ListRawProps
- * @property {boolean} listArgs - The arguments to pass to the registered list crud functions, related to the list itself.
+ * @property {object} listArgs - The arguments to pass to the registered list crud functions, related to the list itself.
  * @property {string} pkKey - The primary key for the list items.
- * @property {boolean} retrieveArgs - The arguments to pass to the registered list crud functions, related to the items.
- * @property {boolean} crudArgs - General arguments to pass to the registered list crud functions, often related to endpoints.
+ * @property {object} retrieveArgs - The arguments to pass to the registered list crud functions, related to the items.
+ * @property {object} crudArgs - General arguments to pass to the registered list crud functions, often related to endpoints.
  * @property {boolean} intendToList - Indicates whether the list should be fetched immediately.
  * @property {boolean} intendToSubscribe - Indicates whether changes to the list should be subscribed to.
  * @property {import('./listRelated.js').ListRelatedRules} relatedObjectsRules - Defines rules for associating related objects with list items.
@@ -74,7 +74,6 @@ export class ListError extends Error {
  * @property {number} searchThrottle - The throttle time for text search.
  * @property {number} sortThrottleWait - The throttle time for sorting.
  * @property {boolean} searchShowAllWhenEmpty - Indicates whether all items should be shown when the search query is empty.
- *
  */
 
 /**

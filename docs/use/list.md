@@ -154,7 +154,7 @@ Defines rules for dynamically calculating properties of list items.
 
 ##### crudArgs
 
-> **crudArgs**: `boolean`
+> **crudArgs**: `any`
 
 General arguments to pass to the registered list crud functions, often related to endpoints.
 
@@ -190,7 +190,7 @@ Indicates whether changes to the list should be subscribed to.
 
 ##### listArgs
 
-> **listArgs**: `boolean`
+> **listArgs**: `any`
 
 The arguments to pass to the registered list crud functions, related to the list itself.
 
@@ -218,7 +218,7 @@ Defines rules for associating related objects with list items.
 
 ##### retrieveArgs
 
-> **retrieveArgs**: `boolean`
+> **retrieveArgs**: `any`
 
 The arguments to pass to the registered list crud functions, related to the items.
 
