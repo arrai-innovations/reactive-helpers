@@ -6,6 +6,8 @@ import isBoolean from "lodash-es/isBoolean.js";
 import identity from "lodash-es/identity.js";
 import flatMapDeep from "lodash-es/flatMapDeep.js";
 import isEmpty from "lodash-es/isEmpty.js";
+import isSet from "lodash-es/isSet.js";
+import isMap from "lodash-es/isMap.js";
 
 /**
  * @typedef {(
@@ -52,8 +54,16 @@ const deepUnrefFlatten = (val) => {
         return deepUnrefFlatten(unref(val));
     }
 
+    if (isSet(val)) {
+        return Array.from(val).flatMap(deepUnrefFlatten);
+    }
+
     if (isArray(val)) {
         return val.flatMap(deepUnrefFlatten);
+    }
+
+    if (isMap(val)) {
+        return Array.from(/** @type {Map<any, any>} */ (val).values()).flatMap(deepUnrefFlatten);
     }
 
     if (isObject(val)) {
