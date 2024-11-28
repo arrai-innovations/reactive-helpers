@@ -1,4 +1,4 @@
-[**@arrai-innovations/reactive-helpers**](../README.md) • **Docs**
+[**@arrai-innovations/reactive-helpers**](../README.md)
 
 ***
 
@@ -30,7 +30,9 @@ Set the error state.
 
 ###### Parameters
 
-• **error**: `any`
+###### error
+
+`any`
 
 ###### Returns
 
@@ -60,19 +62,19 @@ Clear the error state.
 
 ##### error
 
-> **error**: `Readonly`\<`Ref`\<`Error`\>\>
+> **error**: `Readonly`\<`Ref`\<`Error`, `Error`\>\>
 
 The error that occurred.
 
 ##### errored
 
-> **errored**: `Readonly`\<`Ref`\<`boolean`\>\>
+> **errored**: `Readonly`\<`Ref`\<`boolean`, `boolean`\>\>
 
 Whether an error has occurred.
 
 ##### loading
 
-> **loading**: `Readonly`\<`Ref`\<`boolean`\>\>
+> **loading**: `Readonly`\<`Ref`\<`boolean`, `boolean`\>\>
 
 Whether the component is loading.
 

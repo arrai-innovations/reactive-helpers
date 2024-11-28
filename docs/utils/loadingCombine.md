@@ -1,4 +1,4 @@
-[**@arrai-innovations/reactive-helpers**](../README.md) • **Docs**
+[**@arrai-innovations/reactive-helpers**](../README.md)
 
 ***
 
@@ -17,7 +17,9 @@ If all are undefined, the combined state is undefined. Otherwise, the combined s
 
 #### Parameters
 
-• ...**loadingStates**: `boolean`[]
+##### loadingStates
+
+...`boolean`[]
 
 The loading states to combine.
 

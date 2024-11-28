@@ -1,4 +1,4 @@
-[**@arrai-innovations/reactive-helpers**](../README.md) • **Docs**
+[**@arrai-innovations/reactive-helpers**](../README.md)
 
 ***
 
@@ -66,9 +66,9 @@ The ids of the objects to be acted upon.
 
 #### Properties
 
-##### args
+##### args?
 
-> **args**: `any`
+> `optional` **args**: `any`
 
 The default arguments for the crud functions.
 
@@ -78,27 +78,27 @@ The default arguments for the crud functions.
 
 #### Properties
 
-##### bulkDelete
+##### bulkDelete?
 
-> **bulkDelete**: [`BulkDeleteFn`](listCrud.md#bulkdeletefn)
+> `optional` **bulkDelete**: [`BulkDeleteFn`](listCrud.md#bulkdeletefn)
 
 The delete function to bulk delete a list of items.
 
-##### executeAction
+##### executeAction?
 
-> **executeAction**: [`ExecuteActionFn`](listCrud.md#executeactionfn)
+> `optional` **executeAction**: [`ExecuteActionFn`](listCrud.md#executeactionfn)
 
 The  function to execute a certain action on a list of items.
 
-##### list
+##### list?
 
-> **list**: [`ListFn`](listCrud.md#listfn)
+> `optional` **list**: [`ListFn`](listCrud.md#listfn)
 
 The list function to get a list of items.
 
-##### subscribe
+##### subscribe?
 
-> **subscribe**: [`SubscribeFn`](listCrud.md#subscribefn)
+> `optional` **subscribe**: [`SubscribeFn`](listCrud.md#subscribefn)
 
 The subscribe function to get a subscription to a list of items.
 
@@ -116,7 +116,7 @@ The arguments to be passed to the crud functions.
 
 ##### isCancelled
 
-> **isCancelled**: `Readonly`\<`Ref`\<`boolean`\>\>
+> **isCancelled**: `Readonly`\<`Ref`\<`boolean`, `boolean`\>\>
 
 A ref to a boolean indicating whether the request has
  been cancelled.
@@ -217,7 +217,9 @@ The delete function to bulk delete a list of items.
 
 #### Parameters
 
-• **DeleteFnArgs**: `any`
+##### DeleteFnArgs
+
+`any`
 
 #### Returns
 
@@ -227,7 +229,7 @@ The delete function to bulk delete a list of items.
 
 ### ExecuteActionFn()
 
-> **ExecuteActionFn**\<\>: (`ExecuteActionFnArgs`) => `Promise`\<[`config/objectCrud`](objectCrud.md) \| `false`\> & `object`
+> **ExecuteActionFn**\<\>: (`ExecuteActionFnArgs`) => `Promise`\<[`ResponseData`](objectCrud.md#responsedata) \| `false`\> & `object`
 
 The function to execute a certain action on a list of items, returning the response data or false.
 
@@ -235,11 +237,13 @@ The function to execute a certain action on a list of items, returning the respo
 
 #### Parameters
 
-• **ExecuteActionFnArgs**: `any`
+##### ExecuteActionFnArgs
+
+`any`
 
 #### Returns
 
-`Promise`\<[`config/objectCrud`](objectCrud.md) \| `false`\> & `object`
+`Promise`\<[`ResponseData`](objectCrud.md#responsedata) \| `false`\> & `object`
 
 ***
 
@@ -253,7 +257,9 @@ The list function to get a list of items, returning a boolean indicating success
 
 #### Parameters
 
-• **ListFnArgs**: `any`
+##### ListFnArgs
+
+`any`
 
 #### Returns
 
@@ -269,9 +275,13 @@ The list function to get a list of items, returning a boolean indicating success
 
 #### Parameters
 
-• **newObjects**: [`use/listInstance`](../use/listInstance.md)
+##### newObjects
 
-• **paginationInfo**: [`PaginateInfo`](listCrud.md#paginateinfo) \| `undefined`
+[`ListObject`](../use/listInstance.md#listobject)
+
+##### paginationInfo
+
+[`PaginateInfo`](listCrud.md#paginateinfo) | `undefined`
 
 #### Returns
 
@@ -289,7 +299,9 @@ The subscribe function to set up a subscription to a list of items.
 
 #### Parameters
 
-• **SubscribeFnArgs**: `any`
+##### SubscribeFnArgs
+
+`any`
 
 #### Returns
 
@@ -305,9 +317,13 @@ The subscribe function to set up a subscription to a list of items.
 
 #### Parameters
 
-• **newOrUpdatedOrDeleteObject**: [`use/listInstance`](../use/listInstance.md) \| `string`
+##### newOrUpdatedOrDeleteObject
 
-• **action**: `"create"` \| `"update"` \| `"delete"`
+[`ListObject`](../use/listInstance.md#listobject) | `string`
+
+##### action
+
+`"create"` | `"update"` | `"delete"`
 
 #### Returns
 
@@ -323,43 +339,59 @@ Get the previously set list and subscribe functions for the default crud.
 
 #### Parameters
 
-• **reactiveCrud**
+##### reactiveCrud
 
 The reactive crud object, which will be mutated.
 
-• **reactiveCrud.args**: `any`
+###### reactiveCrud.args
+
+`any`
 
 The default arguments for the crud functions.
 
-• **reactiveCrud.bulkDelete**: [`BulkDeleteFn`](listCrud.md#bulkdeletefn)
+###### reactiveCrud.bulkDelete
+
+[`BulkDeleteFn`](listCrud.md#bulkdeletefn)
 
 The delete function to bulk delete a list of items.
 
-• **reactiveCrud.executeAction**: [`ExecuteActionFn`](listCrud.md#executeactionfn)
+###### reactiveCrud.executeAction
+
+[`ExecuteActionFn`](listCrud.md#executeactionfn)
 
 The  function to execute a certain action on a list of items.
 
-• **reactiveCrud.list**: [`ListFn`](listCrud.md#listfn)
+###### reactiveCrud.list
+
+[`ListFn`](listCrud.md#listfn)
 
 The list function to get a list of items.
 
-• **reactiveCrud.subscribe**: [`SubscribeFn`](listCrud.md#subscribefn)
+###### reactiveCrud.subscribe
+
+[`SubscribeFn`](listCrud.md#subscribefn)
 
 The subscribe function to get a subscription to a list of items.
 
-• **options** = `{}`
+##### options
 
 The options for the default crud.
 
-• **options.functions**: [`ListCrudFunctions`](listCrud.md#listcrudfunctions) & [`ListCrudArgs`](listCrud.md#listcrudargs)
+###### options.functions
+
+[`ListCrudFunctions`](listCrud.md#listcrudfunctions) & [`ListCrudArgs`](listCrud.md#listcrudargs)
 
 The functions to set for the crud.
 
-• **options.props**
+###### options.props
+
+`object`
 
 The props to set for the crud.
 
-• **options.props.crudArgs**: `any`
+###### options.props.crudArgs
+
+`any`
 
 #### Returns
 
@@ -375,7 +407,9 @@ Set the list and subscribe functions for the default crud.
 
 #### Parameters
 
-• **options**: [`ListCrudFunctions`](listCrud.md#listcrudfunctions) & `Partial`\<[`ListCrudArgs`](listCrud.md#listcrudargs)\>
+##### options
+
+[`ListCrudFunctions`](listCrud.md#listcrudfunctions) & `Partial`\<[`ListCrudArgs`](listCrud.md#listcrudargs)\>
 
 The options for the default crud.
 

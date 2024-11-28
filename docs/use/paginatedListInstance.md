@@ -1,4 +1,4 @@
-[**@arrai-innovations/reactive-helpers**](../README.md) • **Docs**
+[**@arrai-innovations/reactive-helpers**](../README.md)
 
 ***
 
@@ -32,9 +32,9 @@ CRUD functions and their configurations for the list.
 
 Arguments for the CRUD functions.
 
-###### crud.list
+###### crud.list?
 
-> **list**: `Function`
+> `optional` **list**: `Function`
 
 Function to list objects.
 
@@ -56,9 +56,9 @@ Indicates if an error occurred during the last operation.
 
 Arguments passed to the server for listing operations.
 
-###### loading
+###### loading?
 
-> **loading**: `boolean`
+> `optional` **loading**: `boolean`
 
 Indicates if the list is currently loading.
 
@@ -142,7 +142,9 @@ Whether to keep old pages.
 
 #### Parameters
 
-• **options**: [`PagedListListanceOptions`](paginatedListInstance.md#pagedlistlistanceoptions) & [`ListInstanceOptions`](listInstance.md#listinstanceoptions)
+##### options
+
+[`PagedListListanceOptions`](paginatedListInstance.md#pagedlistlistanceoptions) & [`ListInstanceOptions`](listInstance.md#listinstanceoptions)
 
 The options.
 

@@ -1,4 +1,4 @@
-[**@arrai-innovations/reactive-helpers**](../README.md) • **Docs**
+[**@arrai-innovations/reactive-helpers**](../README.md)
 
 ***
 
@@ -26,11 +26,15 @@ Creates a new ListSubscriptionError.
 
 ###### Parameters
 
-• **message**: `string`
+###### message
+
+`string`
 
 The error message.
 
-• **code**: `string`
+###### code
+
+`string`
 
 The error code.
 
@@ -122,9 +126,9 @@ CRUD functions and their configurations for the list.
 
 Arguments for the CRUD functions.
 
-###### crud.list
+###### crud.list?
 
-> **list**: `Function`
+> `optional` **list**: `Function`
 
 Function to list objects.
 
@@ -158,9 +162,9 @@ If this is true, the subscription should start or restart if arguments change.
 
 Arguments passed to the server for listing operations.
 
-###### loading
+###### loading?
 
-> **loading**: `boolean`
+> `optional` **loading**: `boolean`
 
 Indicates if the list is currently loading.
 
@@ -256,19 +260,19 @@ Whether the subscription is active.
 
 ##### subscriptionError
 
-> **subscriptionError**: `Readonly`\<`Ref`\<`Error`\>\>
+> **subscriptionError**: `Readonly`\<`Ref`\<`Error`, `Error`\>\>
 
 The error that occurred.
 
 ##### subscriptionErrored
 
-> **subscriptionErrored**: `Readonly`\<`Ref`\<`boolean`\>\>
+> **subscriptionErrored**: `Readonly`\<`Ref`\<`boolean`, `boolean`\>\>
 
 Whether the subscription has errored.
 
 ##### subscriptionLoading
 
-> **subscriptionLoading**: `Readonly`\<`Ref`\<`boolean`\>\>
+> **subscriptionLoading**: `Readonly`\<`Ref`\<`boolean`, `boolean`\>\>
 
 Whether the subscription is loading.
 
@@ -284,7 +288,7 @@ Whether the subscription is loading.
 
 ### ListSubscriptionOptions
 
-> **ListSubscriptionOptions**\<\>: `object` & [`use/listInstance`](listInstance.md)
+> **ListSubscriptionOptions**\<\>: `object` & [`ListInstanceOptions`](listInstance.md#listinstanceoptions)
 
 #### Type Parameters
 
@@ -307,7 +311,9 @@ A composition function that creates a reactive object that manages a list of obj
 
 #### Parameters
 
-• **options**: `any`
+##### options
+
+`any`
 
 The options for the list subscription.
 
@@ -376,7 +382,7 @@ A Vue composition function that creates multiple list subscriptions, and returns
 
 #### Parameters
 
-• **listSubscriptionArgs**
+##### listSubscriptionArgs
 
 Each desired list instance options, keyed by an instance name.
 

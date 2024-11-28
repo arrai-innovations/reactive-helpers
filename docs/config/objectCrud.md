@@ -1,4 +1,4 @@
-[**@arrai-innovations/reactive-helpers**](../README.md) • **Docs**
+[**@arrai-innovations/reactive-helpers**](../README.md)
 
 ***
 
@@ -72,9 +72,9 @@ The arguments to be passed to the retrieve function.
 
 #### Properties
 
-##### args
+##### args?
 
-> **args**: `any`
+> `optional` **args**: `any`
 
 The arguments to be passed to the crud functions.
 
@@ -84,85 +84,97 @@ The arguments to be passed to the crud functions.
 
 #### Properties
 
-##### create()
+##### create()?
 
-> **create**: (`CreateDetailArgs`) => [`ResponseData`](objectCrud.md#responsedata)
+> `optional` **create**: (`CreateDetailArgs`) => [`ResponseData`](objectCrud.md#responsedata)
 
 A function to be used instead of the default crud create function.
 
 ###### Parameters
 
-• **CreateDetailArgs**: `any`
+###### CreateDetailArgs
+
+`any`
 
 ###### Returns
 
 [`ResponseData`](objectCrud.md#responsedata)
 
-##### delete()
+##### delete()?
 
-> **delete**: (`DeleteDetailArgs`) => [`ResponseData`](objectCrud.md#responsedata)
+> `optional` **delete**: (`DeleteDetailArgs`) => [`ResponseData`](objectCrud.md#responsedata)
 
 A function to be used instead of the default crud delete function.
 
 ###### Parameters
 
-• **DeleteDetailArgs**: `any`
+###### DeleteDetailArgs
+
+`any`
 
 ###### Returns
 
 [`ResponseData`](objectCrud.md#responsedata)
 
-##### patch()
+##### patch()?
 
-> **patch**: (`PartialDetailArgs`) => [`ResponseData`](objectCrud.md#responsedata)
+> `optional` **patch**: (`PartialDetailArgs`) => [`ResponseData`](objectCrud.md#responsedata)
 
 A function to be used instead of the default crud patch function.
 
 ###### Parameters
 
-• **PartialDetailArgs**: `any`
+###### PartialDetailArgs
+
+`any`
 
 ###### Returns
 
 [`ResponseData`](objectCrud.md#responsedata)
 
-##### retrieve()
+##### retrieve()?
 
-> **retrieve**: (`RetrieveDetailArgs`) => [`ResponseData`](objectCrud.md#responsedata)
+> `optional` **retrieve**: (`RetrieveDetailArgs`) => [`ResponseData`](objectCrud.md#responsedata)
 
 A function to be used instead of the default crud retrieve function.
 
 ###### Parameters
 
-• **RetrieveDetailArgs**: `any`
+###### RetrieveDetailArgs
+
+`any`
 
 ###### Returns
 
 [`ResponseData`](objectCrud.md#responsedata)
 
-##### subscribe()
+##### subscribe()?
 
-> **subscribe**: (`SubscribeArgs`) => `void` & `object`
+> `optional` **subscribe**: (`SubscribeArgs`) => `void` & `object`
 
 A function to be used instead of the default crud subscribe function.
 
 ###### Parameters
 
-• **SubscribeArgs**: `any`
+###### SubscribeArgs
+
+`any`
 
 ###### Returns
 
 `void` & `object`
 
-##### update()
+##### update()?
 
-> **update**: (`UpdateDetailArgs`) => [`ResponseData`](objectCrud.md#responsedata)
+> `optional` **update**: (`UpdateDetailArgs`) => [`ResponseData`](objectCrud.md#responsedata)
 
 A function to be used instead of the default crud update function.
 
 ###### Parameters
 
-• **UpdateDetailArgs**: `any`
+###### UpdateDetailArgs
+
+`any`
 
 ###### Returns
 
@@ -248,9 +260,13 @@ The callback to be called when the object is updated.
 
 ###### Parameters
 
-• **data**: [`CrudObject`](../use/objectInstance.md#crudobject)
+###### data
 
-• **action**: `string`
+[`CrudObject`](../use/objectInstance.md#crudobject)
+
+###### action
+
+`string`
 
 ###### Returns
 
@@ -346,25 +362,35 @@ Get the previously set object crud functions.
 
 #### Parameters
 
-• **reactiveCrud**: `any`
+##### reactiveCrud
+
+`any`
 
 The reactive object you want to add the resulting crud to.
 
-• **options** = `{}`
+##### options
 
 The options for the reactive crud object.
 
-• **options.functions**: [`ObjectCrudFunctions`](objectCrud.md#objectcrudfunctions)
+###### options.functions
+
+[`ObjectCrudFunctions`](objectCrud.md#objectcrudfunctions)
 
 Any functions to override the default crud functions.
 
-• **options.props**
+###### options.props
+
+`object`
 
 The props with any passed crudArgs.
 
-• **options.props.crudArgs**
+###### options.props.crudArgs
 
-• **options.props.crudArgs.args**: `any`
+`object`
+
+###### options.props.crudArgs.args
+
+`any`
 
 The arguments to be passed to the crud functions.
 
@@ -386,7 +412,9 @@ Set the object crud functions.
 
 #### Parameters
 
-• **options**: [`ObjectCrudArgs`](objectCrud.md#objectcrudargs)
+##### options
+
+[`ObjectCrudArgs`](objectCrud.md#objectcrudargs)
 
 The options for the object crud functions.
 

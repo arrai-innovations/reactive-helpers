@@ -1,4 +1,4 @@
-[**@arrai-innovations/reactive-helpers**](../README.md) • **Docs**
+[**@arrai-innovations/reactive-helpers**](../README.md)
 
 ***
 
@@ -16,15 +16,21 @@ Proxy a parent's running state to a child's running state.
 
 #### Parameters
 
-• **parentState**: `any`
+##### parentState
+
+`any`
 
 The parent state.
 
-• **parentStateProp**: `string`
+##### parentStateProp
+
+`string`
 
 The parent state property.
 
-• **ref**: `Ref`\<`boolean`\>
+##### ref
+
+`Ref`\<`boolean`, `boolean`\>
 
 The ref to proxy to.
 

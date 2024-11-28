@@ -1,4 +1,4 @@
-[**@arrai-innovations/reactive-helpers**](../README.md) • **Docs**
+[**@arrai-innovations/reactive-helpers**](../README.md)
 
 ***
 
@@ -16,11 +16,15 @@ Returns the difference of two sets, containing elements present only in the firs
 
 #### Parameters
 
-• **setA**: `Set`\<`any`\>
+##### setA
+
+`Set`\<`any`\>
 
 The first set.
 
-• **setB**: `Set`\<`any`\>
+##### setB
+
+`Set`\<`any`\>
 
 The second set.
 
@@ -48,11 +52,15 @@ Tests if two sets are equal, meaning they contain exactly the same elements.
 
 #### Parameters
 
-• **setA**: `Set`\<`any`\>
+##### setA
+
+`Set`\<`any`\>
 
 The first set.
 
-• **setB**: `Set`\<`any`\>
+##### setB
+
+`Set`\<`any`\>
 
 The second set.
 
@@ -80,11 +88,15 @@ Returns the intersection of two sets, containing only elements that are present 
 
 #### Parameters
 
-• **setA**: `Set`\<`any`\>
+##### setA
+
+`Set`\<`any`\>
 
 The first set.
 
-• **setB**: `Set`\<`any`\>
+##### setB
+
+`Set`\<`any`\>
 
 The second set.
 
@@ -112,11 +124,15 @@ Checks if one set is a superset of another set, meaning all elements of the subs
 
 #### Parameters
 
-• **set**: `Set`\<`any`\>
+##### set
+
+`Set`\<`any`\>
 
 The candidate superset.
 
-• **subset**: `Set`\<`any`\>
+##### subset
+
+`Set`\<`any`\>
 
 The candidate subset.
 
@@ -144,11 +160,15 @@ Returns the symmetric difference of two sets, containing elements present in onl
 
 #### Parameters
 
-• **setA**: `Set`\<`any`\>
+##### setA
+
+`Set`\<`any`\>
 
 The first set.
 
-• **setB**: `Set`\<`any`\>
+##### setB
+
+`Set`\<`any`\>
 
 The second set.
 
@@ -176,11 +196,15 @@ Returns the union of two sets, containing all unique elements from both sets.
 
 #### Parameters
 
-• **setA**: `Set`\<`any`\>
+##### setA
+
+`Set`\<`any`\>
 
 The first set.
 
-• **setB**: `Set`\<`any`\>
+##### setB
+
+`Set`\<`any`\>
 
 The second set.
 

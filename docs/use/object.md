@@ -1,4 +1,4 @@
-[**@arrai-innovations/reactive-helpers**](../README.md) • **Docs**
+[**@arrai-innovations/reactive-helpers**](../README.md)
 
 ***
 
@@ -36,111 +36,123 @@ The calculated object rules.
 
 The arguments to be passed to the crud functions.
 
-###### crudArgs.args
+###### crudArgs.args?
 
-> **args**: `any`
+> `optional` **args**: `any`
 
 The arguments to be passed to the crud functions.
 
-###### crudArgs.create()
+###### crudArgs.create()?
 
-> **create**: (`CreateDetailArgs`) => [`ResponseData`](../config/objectCrud.md#responsedata)
+> `optional` **create**: (`CreateDetailArgs`) => [`ResponseData`](../config/objectCrud.md#responsedata)
 
 A function to be used instead of the default crud create function.
 
 ###### Parameters
 
-• **CreateDetailArgs**: `any`
+###### CreateDetailArgs
+
+`any`
 
 ###### Returns
 
 [`ResponseData`](../config/objectCrud.md#responsedata)
 
-###### crudArgs.delete()
+###### crudArgs.delete()?
 
-> **delete**: (`DeleteDetailArgs`) => [`ResponseData`](../config/objectCrud.md#responsedata)
+> `optional` **delete**: (`DeleteDetailArgs`) => [`ResponseData`](../config/objectCrud.md#responsedata)
 
 A function to be used instead of the default crud delete function.
 
 ###### Parameters
 
-• **DeleteDetailArgs**: `any`
+###### DeleteDetailArgs
+
+`any`
 
 ###### Returns
 
 [`ResponseData`](../config/objectCrud.md#responsedata)
 
-###### crudArgs.patch()
+###### crudArgs.patch()?
 
-> **patch**: (`PartialDetailArgs`) => [`ResponseData`](../config/objectCrud.md#responsedata)
+> `optional` **patch**: (`PartialDetailArgs`) => [`ResponseData`](../config/objectCrud.md#responsedata)
 
 A function to be used instead of the default crud patch function.
 
 ###### Parameters
 
-• **PartialDetailArgs**: `any`
+###### PartialDetailArgs
+
+`any`
 
 ###### Returns
 
 [`ResponseData`](../config/objectCrud.md#responsedata)
 
-###### crudArgs.retrieve()
+###### crudArgs.retrieve()?
 
-> **retrieve**: (`RetrieveDetailArgs`) => [`ResponseData`](../config/objectCrud.md#responsedata)
+> `optional` **retrieve**: (`RetrieveDetailArgs`) => [`ResponseData`](../config/objectCrud.md#responsedata)
 
 A function to be used instead of the default crud retrieve function.
 
 ###### Parameters
 
-• **RetrieveDetailArgs**: `any`
+###### RetrieveDetailArgs
+
+`any`
 
 ###### Returns
 
 [`ResponseData`](../config/objectCrud.md#responsedata)
 
-###### crudArgs.subscribe()
+###### crudArgs.subscribe()?
 
-> **subscribe**: (`SubscribeArgs`) => `void` & `object`
+> `optional` **subscribe**: (`SubscribeArgs`) => `void` & `object`
 
 A function to be used instead of the default crud subscribe function.
 
 ###### Parameters
 
-• **SubscribeArgs**: `any`
+###### SubscribeArgs
+
+`any`
 
 ###### Returns
 
 `void` & `object`
 
-###### crudArgs.update()
+###### crudArgs.update()?
 
-> **update**: (`UpdateDetailArgs`) => [`ResponseData`](../config/objectCrud.md#responsedata)
+> `optional` **update**: (`UpdateDetailArgs`) => [`ResponseData`](../config/objectCrud.md#responsedata)
 
 A function to be used instead of the default crud update function.
 
 ###### Parameters
 
-• **UpdateDetailArgs**: `any`
+###### UpdateDetailArgs
+
+`any`
 
 ###### Returns
 
 [`ResponseData`](../config/objectCrud.md#responsedata)
 
-###### intendToRetrieve
+###### intendToRetrieve?
 
-> **intendToRetrieve**: `boolean`
+> `optional` **intendToRetrieve**: `boolean`
 
 Whether the object intends to retrieve.
 
-###### intendToSubscribe
+###### intendToSubscribe?
 
-> **intendToSubscribe**: `boolean`
+> `optional` **intendToSubscribe**: `boolean`
 
 Whether the object intends to subscribe.
 
-###### pk
+###### pk?
 
-> **pk**: `string`
+> `optional` **pk**: `string`
 
 The pk of the object, optional to support creating new objects.
 
@@ -194,7 +206,7 @@ The calculated object.
 
 ###### Index Signature
 
- \[`ruleKey`: `string`\]: `ComputedRef`
+ \[`ruleKey`: `string`\]: `ComputedRef`\<`any`\>
 
 ###### calculatedObjectRules
 
@@ -220,91 +232,103 @@ Whether the calculated is running.
 
 The crud functions.
 
-###### crud.args
+###### crud.args?
 
-> **args**: `any`
+> `optional` **args**: `any`
 
 The arguments to be passed to the crud functions.
 
-###### crud.create()
+###### crud.create()?
 
-> **create**: (`CreateDetailArgs`) => [`ResponseData`](../config/objectCrud.md#responsedata)
+> `optional` **create**: (`CreateDetailArgs`) => [`ResponseData`](../config/objectCrud.md#responsedata)
 
 A function to be used instead of the default crud create function.
 
 ###### Parameters
 
-• **CreateDetailArgs**: `any`
+###### CreateDetailArgs
+
+`any`
 
 ###### Returns
 
 [`ResponseData`](../config/objectCrud.md#responsedata)
 
-###### crud.delete()
+###### crud.delete()?
 
-> **delete**: (`DeleteDetailArgs`) => [`ResponseData`](../config/objectCrud.md#responsedata)
+> `optional` **delete**: (`DeleteDetailArgs`) => [`ResponseData`](../config/objectCrud.md#responsedata)
 
 A function to be used instead of the default crud delete function.
 
 ###### Parameters
 
-• **DeleteDetailArgs**: `any`
+###### DeleteDetailArgs
+
+`any`
 
 ###### Returns
 
 [`ResponseData`](../config/objectCrud.md#responsedata)
 
-###### crud.patch()
+###### crud.patch()?
 
-> **patch**: (`PartialDetailArgs`) => [`ResponseData`](../config/objectCrud.md#responsedata)
+> `optional` **patch**: (`PartialDetailArgs`) => [`ResponseData`](../config/objectCrud.md#responsedata)
 
 A function to be used instead of the default crud patch function.
 
 ###### Parameters
 
-• **PartialDetailArgs**: `any`
+###### PartialDetailArgs
+
+`any`
 
 ###### Returns
 
 [`ResponseData`](../config/objectCrud.md#responsedata)
 
-###### crud.retrieve()
+###### crud.retrieve()?
 
-> **retrieve**: (`RetrieveDetailArgs`) => [`ResponseData`](../config/objectCrud.md#responsedata)
+> `optional` **retrieve**: (`RetrieveDetailArgs`) => [`ResponseData`](../config/objectCrud.md#responsedata)
 
 A function to be used instead of the default crud retrieve function.
 
 ###### Parameters
 
-• **RetrieveDetailArgs**: `any`
+###### RetrieveDetailArgs
+
+`any`
 
 ###### Returns
 
 [`ResponseData`](../config/objectCrud.md#responsedata)
 
-###### crud.subscribe()
+###### crud.subscribe()?
 
-> **subscribe**: (`SubscribeArgs`) => `void` & `object`
+> `optional` **subscribe**: (`SubscribeArgs`) => `void` & `object`
 
 A function to be used instead of the default crud subscribe function.
 
 ###### Parameters
 
-• **SubscribeArgs**: `any`
+###### SubscribeArgs
+
+`any`
 
 ###### Returns
 
 `void` & `object`
 
-###### crud.update()
+###### crud.update()?
 
-> **update**: (`UpdateDetailArgs`) => [`ResponseData`](../config/objectCrud.md#responsedata)
+> `optional` **update**: (`UpdateDetailArgs`) => [`ResponseData`](../config/objectCrud.md#responsedata)
 
 A function to be used instead of the default crud update function.
 
 ###### Parameters
 
-• **UpdateDetailArgs**: `any`
+###### UpdateDetailArgs
+
+`any`
 
 ###### Returns
 
@@ -348,7 +372,7 @@ Whether the object is loading.
 
 ###### object
 
-> **object**: `object` \| `object`
+> **object**: \{\} \| \{`[key: string]`: `any`; `pkKey`: `string`; \}
 
 The object.
 
@@ -378,7 +402,7 @@ The related objects, indexed by the key in the related object.
 
 ###### Index Signature
 
- \[`rule`: `string`\]: `ComputedRef`
+ \[`rule`: `string`\]: `ComputedRef`\<`any`\>
 
 ###### relatedObjectRules
 
@@ -446,19 +470,19 @@ Whether the subscription is loading.
 
 ##### objectCalculated
 
-> **objectCalculated**: [`use/objectCalculated`](objectCalculated.md)
+> **objectCalculated**: [`ObjectCalculated`](objectCalculated.md#objectcalculated)
 
 ##### objectInstance
 
-> **objectInstance**: [`use/objectInstance`](objectInstance.md)
+> **objectInstance**: [`ObjectInstance`](objectInstance.md#objectinstance)
 
 ##### objectRelated
 
-> **objectRelated**: [`use/objectRelated`](objectRelated.md)
+> **objectRelated**: [`ObjectRelated`](objectRelated.md#objectrelated)
 
 ##### objectSubscription
 
-> **objectSubscription**: [`use/objectSubscription`](objectSubscription.md)
+> **objectSubscription**: [`ObjectSubscription`](objectSubscription.md#objectsubscription)
 
 ***
 
@@ -472,7 +496,7 @@ Whether the subscription is loading.
 
 ### ObjectManagerFunctions
 
-> **ObjectManagerFunctions**\<\>: [`use/objectInstance`](objectInstance.md) & [`use/objectSubscription`](objectSubscription.md)
+> **ObjectManagerFunctions**\<\>: [`ObjectInstanceFunctions`](objectInstance.md#objectinstancefunctions) & [`ObjectSubscriptionFunctions`](objectSubscription.md#objectsubscriptionfunctions)
 
 #### Type Parameters
 
@@ -488,7 +512,7 @@ Whether the subscription is loading.
 
 ### ObjectManagerRawProps
 
-> **ObjectManagerRawProps**\<\>: [`use/objectInstance`](objectInstance.md) & [`use/objectSubscription`](objectSubscription.md) & [`use/objectRelated`](objectRelated.md) & [`use/objectCalculated`](objectCalculated.md)
+> **ObjectManagerRawProps**\<\>: [`ObjectInstanceRawProps`](objectInstance.md#objectinstancerawprops) & [`ObjectSubscriptionRawProps`](objectSubscription.md#objectsubscriptionrawprops) & [`ObjectRelatedRawProps`](objectRelated.md#objectrelatedrawprops) & [`ObjectCalculatedRawProps`](objectCalculated.md#objectcalculatedrawprops)
 
 #### Type Parameters
 
@@ -496,7 +520,7 @@ Whether the subscription is loading.
 
 ### ObjectManagerRawState
 
-> **ObjectManagerRawState**\<\>: [`use/objectInstance`](objectInstance.md) & [`use/objectSubscription`](objectSubscription.md) & [`use/objectRelated`](objectRelated.md) & [`use/objectCalculated`](objectCalculated.md)
+> **ObjectManagerRawState**\<\>: [`ObjectInstanceRawState`](objectInstance.md#objectinstancerawstate) & [`ObjectSubscriptionRawState`](objectSubscription.md#objectsubscriptionrawstate) & [`ObjectRelatedRawState`](objectRelated.md#objectrelatedrawstate) & [`ObjectCalculatedRawState`](objectCalculated.md#objectcalculatedrawstate)
 
 #### Type Parameters
 
@@ -518,7 +542,9 @@ Initializes a chain of useObject* functions, returning an object of them.
 
 #### Parameters
 
-• **options**: [`ObjectManagerOptions`](object.md#objectmanageroptions)
+##### options
+
+[`ObjectManagerOptions`](object.md#objectmanageroptions)
 
 The options to be passed to useObjectInstance, useObjectSubscription, useObjectRelated, and useObjectCalculated.
 
@@ -631,7 +657,7 @@ Initializes multiple useObject instances, returning an object of them based on t
 
 #### Parameters
 
-• **objectArgs**
+##### objectArgs
 
 An object of objects to be passed to useObject.
 

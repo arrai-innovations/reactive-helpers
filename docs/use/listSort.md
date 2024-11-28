@@ -1,4 +1,4 @@
-[**@arrai-innovations/reactive-helpers**](../README.md) • **Docs**
+[**@arrai-innovations/reactive-helpers**](../README.md)
 
 ***
 
@@ -14,7 +14,7 @@
 
 ##### orderByRules
 
-> **orderByRules**: [`OrderByRule`](listSort.md#orderbyrule)[] \| `Ref`\<[`OrderByRule`](listSort.md#orderbyrule)[]\>
+> **orderByRules**: [`OrderByRule`](listSort.md#orderbyrule)[] \| `Ref`\<[`OrderByRule`](listSort.md#orderbyrule)[], [`OrderByRule`](listSort.md#orderbyrule)[]\>
 
 Rules defining how the list should be sorted, including key and direction.
 
@@ -24,15 +24,15 @@ Rules defining how the list should be sorted, including key and direction.
 
 The parent state containing the list data and any associated state needed for sorting.
 
-###### allowedFilter
+###### allowedFilter?
 
-> **allowedFilter**: `Function`
+> `optional` **allowedFilter**: `Function`
 
 Function to determine if an item should be included based on custom logic.
 
-###### calculatedObjects
+###### calculatedObjects?
 
-> **calculatedObjects**: `object`
+> `optional` **calculatedObjects**: `object`
 
 The calculated objects.
 
@@ -40,15 +40,15 @@ The calculated objects.
 
  \[`pk`: `string`\]: `object`
 
-###### calculatedObjectsParentStateObjectsWatchRunning
+###### calculatedObjectsParentStateObjectsWatchRunning?
 
-> **calculatedObjectsParentStateObjectsWatchRunning**: `boolean`
+> `optional` **calculatedObjectsParentStateObjectsWatchRunning**: `boolean`
 
 Whether the parent state objects watch is running.
 
-###### calculatedObjectsRules
+###### calculatedObjectsRules?
 
-> **calculatedObjectsRules**: `object`
+> `optional` **calculatedObjectsRules**: `object`
 
 The rules for the calculated objects.
 
@@ -56,15 +56,15 @@ The rules for the calculated objects.
 
  \[`rule`: `string`\]: (`object`, `relatedObject`, `calculatedObjects`) => `any`
 
-###### calculatedObjectsWatchRunning
+###### calculatedObjectsWatchRunning?
 
-> **calculatedObjectsWatchRunning**: `boolean`
+> `optional` **calculatedObjectsWatchRunning**: `boolean`
 
 Whether the calculated objects watch is running.
 
-###### calculatedRunning
+###### calculatedRunning?
 
-> **calculatedRunning**: `boolean`
+> `optional` **calculatedRunning**: `boolean`
 
 Whether the calculated properties are running.
 
@@ -80,21 +80,21 @@ CRUD functions and their configurations for the list.
 
 Arguments for the CRUD functions.
 
-###### crud.list
+###### crud.list?
 
-> **list**: `Function`
+> `optional` **list**: `Function`
 
 Function to list objects.
 
-###### customDocumentOptions
+###### customDocumentOptions?
 
-> **customDocumentOptions**: `any`
+> `optional` **customDocumentOptions**: `any`
 
 Configuration options for the search document, used by FlexSearch.
 
-###### customSearchOptions
+###### customSearchOptions?
 
-> **customSearchOptions**: `any`
+> `optional` **customSearchOptions**: `any`
 
 Additional search options for FlexSearch.
 
@@ -110,15 +110,15 @@ The last error encountered.
 
 Indicates if an error occurred during the last operation.
 
-###### excludedFilter
+###### excludedFilter?
 
-> **excludedFilter**: `Function`
+> `optional` **excludedFilter**: `Function`
 
 Function to determine if an item should be excluded based on custom logic.
 
-###### fkForPkAndRule
+###### fkForPkAndRule?
 
-> **fkForPkAndRule**: `object`
+> `optional` **fkForPkAndRule**: `object`
 
 Maintains computed references to the foreign keys for each object pk and rule, crucial for navigating complex data relationships.
 
@@ -126,21 +126,21 @@ Maintains computed references to the foreign keys for each object pk and rule, c
 
  \[`pk`: `string`\]: `object`
 
-###### inResults
+###### inResults?
 
-> **inResults**: `any`
+> `optional` **inResults**: `any`
 
 A map of items to boolean values indicating filter results.
 
-###### intendToList
+###### intendToList?
 
-> **intendToList**: `boolean`
+> `optional` **intendToList**: `boolean`
 
 If this is true, the list should be fetched, or re-fetched if arguments change.
 
-###### intendToSubscribe
+###### intendToSubscribe?
 
-> **intendToSubscribe**: `boolean`
+> `optional` **intendToSubscribe**: `boolean`
 
 If this is true, the subscription should start or restart if arguments change.
 
@@ -150,15 +150,15 @@ If this is true, the subscription should start or restart if arguments change.
 
 Arguments passed to the server for listing operations.
 
-###### loading
+###### loading?
 
-> **loading**: `boolean`
+> `optional` **loading**: `boolean`
 
 Indicates if the list is currently loading.
 
-###### objAndKeyForPkAndRule
+###### objAndKeyForPkAndRule?
 
-> **objAndKeyForPkAndRule**: `object`
+> `optional` **objAndKeyForPkAndRule**: `object`
 
 Maps each object pk and rule to a tuple consisting of the related object and its respective key, facilitating direct data manipulation.
 
@@ -166,9 +166,9 @@ Maps each object pk and rule to a tuple consisting of the related object and its
 
  \[`pk`: `string`\]: `object`
 
-###### objectIndexes
+###### objectIndexes?
 
-> **objectIndexes**: `any`
+> `optional` **objectIndexes**: `any`
 
 Indexes built for quick search across objects based on rules.
 
@@ -184,9 +184,9 @@ The list objects stored by their pks.
 
 The objects in the order specified by the list.
 
-###### objectsWatchRunning
+###### objectsWatchRunning?
 
-> **objectsWatchRunning**: `boolean`
+> `optional` **objectsWatchRunning**: `boolean`
 
 Flag indicating if the object watch is active.
 
@@ -196,9 +196,9 @@ Flag indicating if the object watch is active.
 
 The order of objects in the list.
 
-###### orderWatchRunning
+###### orderWatchRunning?
 
-> **orderWatchRunning**: `boolean`
+> `optional` **orderWatchRunning**: `boolean`
 
 Flag indicating if the order watch is active.
 
@@ -208,9 +208,9 @@ Flag indicating if the order watch is active.
 
 The primary key field for the list objects.
 
-###### relatedObjects
+###### relatedObjects?
 
-> **relatedObjects**: `object`
+> `optional` **relatedObjects**: `object`
 
 Stores computed references to related objects, allowing for dynamic access based on object pk and specific rules.
 
@@ -218,15 +218,15 @@ Stores computed references to related objects, allowing for dynamic access based
 
  \[`pk`: `string`\]: `object`
 
-###### relatedObjectsParentStateObjectsWatchRunning
+###### relatedObjectsParentStateObjectsWatchRunning?
 
-> **relatedObjectsParentStateObjectsWatchRunning**: `boolean`
+> `optional` **relatedObjectsParentStateObjectsWatchRunning**: `boolean`
 
 Flags whether the watch on parent state objects is currently active, ensuring updates trigger as needed.
 
-###### relatedObjectsRules
+###### relatedObjectsRules?
 
-> **relatedObjectsRules**: `object`
+> `optional` **relatedObjectsRules**: `object`
 
 Defines the rules for establishing relationships, such as foreign key links and sorting orders.
 
@@ -234,21 +234,21 @@ Defines the rules for establishing relationships, such as foreign key links and 
 
  \[`rule`: `string`\]: [`ListRelatedRule`](listRelated.md#listrelatedrule)
 
-###### relatedObjectsWatchRunning
+###### relatedObjectsWatchRunning?
 
-> **relatedObjectsWatchRunning**: `boolean`
+> `optional` **relatedObjectsWatchRunning**: `boolean`
 
 Indicates if watches on the related objects themselves are active, managing updates efficiently.
 
-###### relatedRunning
+###### relatedRunning?
 
-> **relatedRunning**: `boolean`
+> `optional` **relatedRunning**: `boolean`
 
 Signals whether any computations related to object relationships are currently in progress.
 
-###### resultsWatchRunning
+###### resultsWatchRunning?
 
-> **resultsWatchRunning**: `boolean`
+> `optional` **resultsWatchRunning**: `boolean`
 
 Flag indicating if the results watch is active.
 
@@ -264,46 +264,46 @@ Arguments passed to the server for retrieval operations.
 
 Indicates if there are ongoing reactive updates.
 
-###### searched
+###### searched?
 
-> **searched**: `boolean`
+> `optional` **searched**: `boolean`
 
 Flag indicating if a search has been performed.
 
-###### subscribed
+###### subscribed?
 
-> **subscribed**: `boolean`
+> `optional` **subscribed**: `boolean`
 
 Whether the subscription is active.
 
-###### subscriptionError
+###### subscriptionError?
 
-> **subscriptionError**: `Error`
+> `optional` **subscriptionError**: `Error`
 
 The error that occurred.
 
-###### subscriptionErrored
+###### subscriptionErrored?
 
-> **subscriptionErrored**: `boolean`
+> `optional` **subscriptionErrored**: `boolean`
 
 Whether the subscription has errored.
 
-###### subscriptionLoading
+###### subscriptionLoading?
 
-> **subscriptionLoading**: `boolean`
+> `optional` **subscriptionLoading**: `boolean`
 
 Whether the subscription is loading.
 
-###### textSearchRules
+###### textSearchRules?
 
-> **textSearchRules**: `any`
+> `optional` **textSearchRules**: `any`
 
 Rules defining how text search should be applied on list items. Each rule
  specifies a key and a function to extract the searchable text.
 
-###### textSearchValue
+###### textSearchValue?
 
-> **textSearchValue**: `string`
+> `optional` **textSearchValue**: `string`
 
 The current value used for searching.
 
@@ -331,15 +331,15 @@ The effect scope for the list sort.
 
 The parent state.
 
-###### allowedFilter
+###### allowedFilter?
 
-> **allowedFilter**: `Function`
+> `optional` **allowedFilter**: `Function`
 
 Function to determine if an item should be included based on custom logic.
 
-###### calculatedObjects
+###### calculatedObjects?
 
-> **calculatedObjects**: `object`
+> `optional` **calculatedObjects**: `object`
 
 The calculated objects.
 
@@ -347,15 +347,15 @@ The calculated objects.
 
  \[`pk`: `string`\]: `object`
 
-###### calculatedObjectsParentStateObjectsWatchRunning
+###### calculatedObjectsParentStateObjectsWatchRunning?
 
-> **calculatedObjectsParentStateObjectsWatchRunning**: `boolean`
+> `optional` **calculatedObjectsParentStateObjectsWatchRunning**: `boolean`
 
 Whether the parent state objects watch is running.
 
-###### calculatedObjectsRules
+###### calculatedObjectsRules?
 
-> **calculatedObjectsRules**: `object`
+> `optional` **calculatedObjectsRules**: `object`
 
 The rules for the calculated objects.
 
@@ -363,15 +363,15 @@ The rules for the calculated objects.
 
  \[`rule`: `string`\]: (`object`, `relatedObject`, `calculatedObjects`) => `any`
 
-###### calculatedObjectsWatchRunning
+###### calculatedObjectsWatchRunning?
 
-> **calculatedObjectsWatchRunning**: `boolean`
+> `optional` **calculatedObjectsWatchRunning**: `boolean`
 
 Whether the calculated objects watch is running.
 
-###### calculatedRunning
+###### calculatedRunning?
 
-> **calculatedRunning**: `boolean`
+> `optional` **calculatedRunning**: `boolean`
 
 Whether the calculated properties are running.
 
@@ -387,21 +387,21 @@ CRUD functions and their configurations for the list.
 
 Arguments for the CRUD functions.
 
-###### crud.list
+###### crud.list?
 
-> **list**: `Function`
+> `optional` **list**: `Function`
 
 Function to list objects.
 
-###### customDocumentOptions
+###### customDocumentOptions?
 
-> **customDocumentOptions**: `any`
+> `optional` **customDocumentOptions**: `any`
 
 Configuration options for the search document, used by FlexSearch.
 
-###### customSearchOptions
+###### customSearchOptions?
 
-> **customSearchOptions**: `any`
+> `optional` **customSearchOptions**: `any`
 
 Additional search options for FlexSearch.
 
@@ -417,15 +417,15 @@ The last error encountered.
 
 Indicates if an error occurred during the last operation.
 
-###### excludedFilter
+###### excludedFilter?
 
-> **excludedFilter**: `Function`
+> `optional` **excludedFilter**: `Function`
 
 Function to determine if an item should be excluded based on custom logic.
 
-###### fkForPkAndRule
+###### fkForPkAndRule?
 
-> **fkForPkAndRule**: `object`
+> `optional` **fkForPkAndRule**: `object`
 
 Maintains computed references to the foreign keys for each object pk and rule, crucial for navigating complex data relationships.
 
@@ -433,21 +433,21 @@ Maintains computed references to the foreign keys for each object pk and rule, c
 
  \[`pk`: `string`\]: `object`
 
-###### inResults
+###### inResults?
 
-> **inResults**: `any`
+> `optional` **inResults**: `any`
 
 A map of items to boolean values indicating filter results.
 
-###### intendToList
+###### intendToList?
 
-> **intendToList**: `boolean`
+> `optional` **intendToList**: `boolean`
 
 If this is true, the list should be fetched, or re-fetched if arguments change.
 
-###### intendToSubscribe
+###### intendToSubscribe?
 
-> **intendToSubscribe**: `boolean`
+> `optional` **intendToSubscribe**: `boolean`
 
 If this is true, the subscription should start or restart if arguments change.
 
@@ -457,15 +457,15 @@ If this is true, the subscription should start or restart if arguments change.
 
 Arguments passed to the server for listing operations.
 
-###### loading
+###### loading?
 
-> **loading**: `boolean`
+> `optional` **loading**: `boolean`
 
 Indicates if the list is currently loading.
 
-###### objAndKeyForPkAndRule
+###### objAndKeyForPkAndRule?
 
-> **objAndKeyForPkAndRule**: `object`
+> `optional` **objAndKeyForPkAndRule**: `object`
 
 Maps each object pk and rule to a tuple consisting of the related object and its respective key, facilitating direct data manipulation.
 
@@ -473,9 +473,9 @@ Maps each object pk and rule to a tuple consisting of the related object and its
 
  \[`pk`: `string`\]: `object`
 
-###### objectIndexes
+###### objectIndexes?
 
-> **objectIndexes**: `any`
+> `optional` **objectIndexes**: `any`
 
 Indexes built for quick search across objects based on rules.
 
@@ -491,9 +491,9 @@ The list objects stored by their pks.
 
 The objects in the order specified by the list.
 
-###### objectsWatchRunning
+###### objectsWatchRunning?
 
-> **objectsWatchRunning**: `boolean`
+> `optional` **objectsWatchRunning**: `boolean`
 
 Flag indicating if the object watch is active.
 
@@ -503,9 +503,9 @@ Flag indicating if the object watch is active.
 
 The order of objects in the list.
 
-###### orderWatchRunning
+###### orderWatchRunning?
 
-> **orderWatchRunning**: `boolean`
+> `optional` **orderWatchRunning**: `boolean`
 
 Flag indicating if the order watch is active.
 
@@ -515,9 +515,9 @@ Flag indicating if the order watch is active.
 
 The primary key field for the list objects.
 
-###### relatedObjects
+###### relatedObjects?
 
-> **relatedObjects**: `object`
+> `optional` **relatedObjects**: `object`
 
 Stores computed references to related objects, allowing for dynamic access based on object pk and specific rules.
 
@@ -525,15 +525,15 @@ Stores computed references to related objects, allowing for dynamic access based
 
  \[`pk`: `string`\]: `object`
 
-###### relatedObjectsParentStateObjectsWatchRunning
+###### relatedObjectsParentStateObjectsWatchRunning?
 
-> **relatedObjectsParentStateObjectsWatchRunning**: `boolean`
+> `optional` **relatedObjectsParentStateObjectsWatchRunning**: `boolean`
 
 Flags whether the watch on parent state objects is currently active, ensuring updates trigger as needed.
 
-###### relatedObjectsRules
+###### relatedObjectsRules?
 
-> **relatedObjectsRules**: `object`
+> `optional` **relatedObjectsRules**: `object`
 
 Defines the rules for establishing relationships, such as foreign key links and sorting orders.
 
@@ -541,21 +541,21 @@ Defines the rules for establishing relationships, such as foreign key links and 
 
  \[`rule`: `string`\]: [`ListRelatedRule`](listRelated.md#listrelatedrule)
 
-###### relatedObjectsWatchRunning
+###### relatedObjectsWatchRunning?
 
-> **relatedObjectsWatchRunning**: `boolean`
+> `optional` **relatedObjectsWatchRunning**: `boolean`
 
 Indicates if watches on the related objects themselves are active, managing updates efficiently.
 
-###### relatedRunning
+###### relatedRunning?
 
-> **relatedRunning**: `boolean`
+> `optional` **relatedRunning**: `boolean`
 
 Signals whether any computations related to object relationships are currently in progress.
 
-###### resultsWatchRunning
+###### resultsWatchRunning?
 
-> **resultsWatchRunning**: `boolean`
+> `optional` **resultsWatchRunning**: `boolean`
 
 Flag indicating if the results watch is active.
 
@@ -571,46 +571,46 @@ Arguments passed to the server for retrieval operations.
 
 Indicates if there are ongoing reactive updates.
 
-###### searched
+###### searched?
 
-> **searched**: `boolean`
+> `optional` **searched**: `boolean`
 
 Flag indicating if a search has been performed.
 
-###### subscribed
+###### subscribed?
 
-> **subscribed**: `boolean`
+> `optional` **subscribed**: `boolean`
 
 Whether the subscription is active.
 
-###### subscriptionError
+###### subscriptionError?
 
-> **subscriptionError**: `Error`
+> `optional` **subscriptionError**: `Error`
 
 The error that occurred.
 
-###### subscriptionErrored
+###### subscriptionErrored?
 
-> **subscriptionErrored**: `boolean`
+> `optional` **subscriptionErrored**: `boolean`
 
 Whether the subscription has errored.
 
-###### subscriptionLoading
+###### subscriptionLoading?
 
-> **subscriptionLoading**: `boolean`
+> `optional` **subscriptionLoading**: `boolean`
 
 Whether the subscription is loading.
 
-###### textSearchRules
+###### textSearchRules?
 
-> **textSearchRules**: `any`
+> `optional` **textSearchRules**: `any`
 
 Rules defining how text search should be applied on list items. Each rule
  specifies a key and a function to extract the searchable text.
 
-###### textSearchValue
+###### textSearchValue?
 
-> **textSearchValue**: `string`
+> `optional` **textSearchValue**: `string`
 
 The current value used for searching.
 
@@ -620,15 +620,15 @@ The current value used for searching.
 
 The reactive state for the list sort.
 
-###### allowedFilter
+###### allowedFilter?
 
-> **allowedFilter**: `Function`
+> `optional` **allowedFilter**: `Function`
 
 Function to determine if an item should be included based on custom logic.
 
-###### calculatedObjects
+###### calculatedObjects?
 
-> **calculatedObjects**: `object`
+> `optional` **calculatedObjects**: `object`
 
 The calculated objects.
 
@@ -636,15 +636,15 @@ The calculated objects.
 
  \[`pk`: `string`\]: `object`
 
-###### calculatedObjectsParentStateObjectsWatchRunning
+###### calculatedObjectsParentStateObjectsWatchRunning?
 
-> **calculatedObjectsParentStateObjectsWatchRunning**: `boolean`
+> `optional` **calculatedObjectsParentStateObjectsWatchRunning**: `boolean`
 
 Whether the parent state objects watch is running.
 
-###### calculatedObjectsRules
+###### calculatedObjectsRules?
 
-> **calculatedObjectsRules**: `object`
+> `optional` **calculatedObjectsRules**: `object`
 
 The rules for the calculated objects.
 
@@ -652,15 +652,15 @@ The rules for the calculated objects.
 
  \[`rule`: `string`\]: (`object`, `relatedObject`, `calculatedObjects`) => `any`
 
-###### calculatedObjectsWatchRunning
+###### calculatedObjectsWatchRunning?
 
-> **calculatedObjectsWatchRunning**: `boolean`
+> `optional` **calculatedObjectsWatchRunning**: `boolean`
 
 Whether the calculated objects watch is running.
 
-###### calculatedRunning
+###### calculatedRunning?
 
-> **calculatedRunning**: `boolean`
+> `optional` **calculatedRunning**: `boolean`
 
 Whether the calculated properties are running.
 
@@ -676,21 +676,21 @@ CRUD functions and their configurations for the list.
 
 Arguments for the CRUD functions.
 
-###### crud.list
+###### crud.list?
 
-> **list**: `Function`
+> `optional` **list**: `Function`
 
 Function to list objects.
 
-###### customDocumentOptions
+###### customDocumentOptions?
 
-> **customDocumentOptions**: `any`
+> `optional` **customDocumentOptions**: `any`
 
 Configuration options for the search document, used by FlexSearch.
 
-###### customSearchOptions
+###### customSearchOptions?
 
-> **customSearchOptions**: `any`
+> `optional` **customSearchOptions**: `any`
 
 Additional search options for FlexSearch.
 
@@ -706,15 +706,15 @@ The last error encountered.
 
 Indicates if an error occurred during the last operation.
 
-###### excludedFilter
+###### excludedFilter?
 
-> **excludedFilter**: `Function`
+> `optional` **excludedFilter**: `Function`
 
 Function to determine if an item should be excluded based on custom logic.
 
-###### fkForPkAndRule
+###### fkForPkAndRule?
 
-> **fkForPkAndRule**: `object`
+> `optional` **fkForPkAndRule**: `object`
 
 Maintains computed references to the foreign keys for each object pk and rule, crucial for navigating complex data relationships.
 
@@ -722,21 +722,21 @@ Maintains computed references to the foreign keys for each object pk and rule, c
 
  \[`pk`: `string`\]: `object`
 
-###### inResults
+###### inResults?
 
-> **inResults**: `any`
+> `optional` **inResults**: `any`
 
 A map of items to boolean values indicating filter results.
 
-###### intendToList
+###### intendToList?
 
-> **intendToList**: `boolean`
+> `optional` **intendToList**: `boolean`
 
 If this is true, the list should be fetched, or re-fetched if arguments change.
 
-###### intendToSubscribe
+###### intendToSubscribe?
 
-> **intendToSubscribe**: `boolean`
+> `optional` **intendToSubscribe**: `boolean`
 
 If this is true, the subscription should start or restart if arguments change.
 
@@ -746,15 +746,15 @@ If this is true, the subscription should start or restart if arguments change.
 
 Arguments passed to the server for listing operations.
 
-###### loading
+###### loading?
 
-> **loading**: `boolean`
+> `optional` **loading**: `boolean`
 
 Indicates if the list is currently loading.
 
-###### objAndKeyForPkAndRule
+###### objAndKeyForPkAndRule?
 
-> **objAndKeyForPkAndRule**: `object`
+> `optional` **objAndKeyForPkAndRule**: `object`
 
 Maps each object pk and rule to a tuple consisting of the related object and its respective key, facilitating direct data manipulation.
 
@@ -762,9 +762,9 @@ Maps each object pk and rule to a tuple consisting of the related object and its
 
  \[`pk`: `string`\]: `object`
 
-###### objectIndexes
+###### objectIndexes?
 
-> **objectIndexes**: `any`
+> `optional` **objectIndexes**: `any`
 
 Indexes built for quick search across objects based on rules.
 
@@ -780,9 +780,9 @@ The list objects stored by their pks.
 
 The objects in the order specified by the list.
 
-###### objectsWatchRunning
+###### objectsWatchRunning?
 
-> **objectsWatchRunning**: `boolean`
+> `optional` **objectsWatchRunning**: `boolean`
 
 Flag indicating if the object watch is active.
 
@@ -804,9 +804,9 @@ Flags indicating whether each sort criterion is in descending order.
 
 Current sorting rules applied to the list.
 
-###### orderWatchRunning
+###### orderWatchRunning?
 
-> **orderWatchRunning**: `boolean`
+> `optional` **orderWatchRunning**: `boolean`
 
 Flag indicating if the order watch is active.
 
@@ -822,9 +822,9 @@ Flag to indicate if there are pending reactive effects needing resolution.
 
 The primary key field for the list objects.
 
-###### relatedObjects
+###### relatedObjects?
 
-> **relatedObjects**: `object`
+> `optional` **relatedObjects**: `object`
 
 Stores computed references to related objects, allowing for dynamic access based on object pk and specific rules.
 
@@ -832,15 +832,15 @@ Stores computed references to related objects, allowing for dynamic access based
 
  \[`pk`: `string`\]: `object`
 
-###### relatedObjectsParentStateObjectsWatchRunning
+###### relatedObjectsParentStateObjectsWatchRunning?
 
-> **relatedObjectsParentStateObjectsWatchRunning**: `boolean`
+> `optional` **relatedObjectsParentStateObjectsWatchRunning**: `boolean`
 
 Flags whether the watch on parent state objects is currently active, ensuring updates trigger as needed.
 
-###### relatedObjectsRules
+###### relatedObjectsRules?
 
-> **relatedObjectsRules**: `object`
+> `optional` **relatedObjectsRules**: `object`
 
 Defines the rules for establishing relationships, such as foreign key links and sorting orders.
 
@@ -848,21 +848,21 @@ Defines the rules for establishing relationships, such as foreign key links and 
 
  \[`rule`: `string`\]: [`ListRelatedRule`](listRelated.md#listrelatedrule)
 
-###### relatedObjectsWatchRunning
+###### relatedObjectsWatchRunning?
 
-> **relatedObjectsWatchRunning**: `boolean`
+> `optional` **relatedObjectsWatchRunning**: `boolean`
 
 Indicates if watches on the related objects themselves are active, managing updates efficiently.
 
-###### relatedRunning
+###### relatedRunning?
 
-> **relatedRunning**: `boolean`
+> `optional` **relatedRunning**: `boolean`
 
 Signals whether any computations related to object relationships are currently in progress.
 
-###### resultsWatchRunning
+###### resultsWatchRunning?
 
-> **resultsWatchRunning**: `boolean`
+> `optional` **resultsWatchRunning**: `boolean`
 
 Flag indicating if the results watch is active.
 
@@ -878,9 +878,9 @@ Arguments passed to the server for retrieval operations.
 
 Indicates if there are ongoing reactive updates.
 
-###### searched
+###### searched?
 
-> **searched**: `boolean`
+> `optional` **searched**: `boolean`
 
 Flag indicating if a search has been performed.
 
@@ -902,40 +902,40 @@ Flag to indicate if sorting criteria computations are actively updating.
 
 Flag to indicate if the sort operation is actively processing.
 
-###### subscribed
+###### subscribed?
 
-> **subscribed**: `boolean`
+> `optional` **subscribed**: `boolean`
 
 Whether the subscription is active.
 
-###### subscriptionError
+###### subscriptionError?
 
-> **subscriptionError**: `Error`
+> `optional` **subscriptionError**: `Error`
 
 The error that occurred.
 
-###### subscriptionErrored
+###### subscriptionErrored?
 
-> **subscriptionErrored**: `boolean`
+> `optional` **subscriptionErrored**: `boolean`
 
 Whether the subscription has errored.
 
-###### subscriptionLoading
+###### subscriptionLoading?
 
-> **subscriptionLoading**: `boolean`
+> `optional` **subscriptionLoading**: `boolean`
 
 Whether the subscription is loading.
 
-###### textSearchRules
+###### textSearchRules?
 
-> **textSearchRules**: `any`
+> `optional` **textSearchRules**: `any`
 
 Rules defining how text search should be applied on list items. Each rule
  specifies a key and a function to extract the searchable text.
 
-###### textSearchValue
+###### textSearchValue?
 
-> **textSearchValue**: `string`
+> `optional` **textSearchValue**: `string`
 
 The current value used for searching.
 
@@ -1005,7 +1005,7 @@ Flag to indicate if the sort operation is actively processing.
 
 ### ListSortParentRawState
 
-> **ListSortParentRawState**\<\>: [`use/listInstance`](listInstance.md) & `Partial`\<[`use/listSubscription`](listSubscription.md)\> & `Partial`\<[`use/listRelated`](listRelated.md)\> & `Partial`\<[`use/listCalculated`](listCalculated.md)\> & `Partial`\<[`use/listFilter`](listFilter.md)\> & `Partial`\<[`use/listSearch`](listSearch.md)\>
+> **ListSortParentRawState**\<\>: [`ListInstanceRawState`](listInstance.md#listinstancerawstate) & `Partial`\<[`ListSubscriptionRawState`](listSubscription.md#listsubscriptionrawstate)\> & `Partial`\<[`ListRelatedRawState`](listRelated.md#listrelatedrawstate)\> & `Partial`\<[`ListCalculatedRawState`](listCalculated.md#listcalculatedrawstate)\> & `Partial`\<[`ListFilterRawState`](listFilter.md#listfilterrawstate)\> & `Partial`\<[`ListSearchRawState`](listSearch.md#listsearchrawstate)\>
 
 #### Type Parameters
 
@@ -1049,9 +1049,13 @@ Flag to indicate if the sort operation is actively processing.
 
 ###### Parameters
 
-• **object**: `any`
+###### object
 
-• **state**: [`ListSortState`](listSort.md#listsortstate)
+`any`
+
+###### state
+
+[`ListSortState`](listSort.md#listsortstate)
 
 ###### Returns
 
@@ -1073,11 +1077,13 @@ instance configurations.
 
 #### Parameters
 
-• **options**
+##### options
 
 Configuration options to set as defaults for list sorting.
 
-• **options.sortThrottleWait**: `number`
+###### options.sortThrottleWait
+
+`number`
 
 Default throttle wait time, in milliseconds, to control the rate at
 which sorting operations are processed, enhancing performance on large lists.
@@ -1099,7 +1105,9 @@ various data types and structures.
 
 #### Parameters
 
-• **options**: [`ListSortOptions`](listSort.md#listsortoptions)
+##### options
+
+[`ListSortOptions`](listSort.md#listsortoptions)
 
 The configuration options for initializing the list sort instance.
 
@@ -1152,7 +1160,7 @@ Creates multiple list sort instances.
 
 #### Parameters
 
-• **listSortArgs**
+##### listSortArgs
 
 The options for the list sort.
 

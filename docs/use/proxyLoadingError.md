@@ -1,16 +1,10 @@
-[**@arrai-innovations/reactive-helpers**](../README.md) • **Docs**
+[**@arrai-innovations/reactive-helpers**](../README.md)
 
 ***
 
 [@arrai-innovations/reactive-helpers](../README.md) / use/proxyLoadingError
 
 # use/proxyLoadingError
-
-## References
-
-### ProxyLoadingError
-
-Renames and re-exports [LoadingErrorStatus](loadingError.md#loadingerrorstatus)
 
 ## Type Aliases
 
@@ -24,7 +18,7 @@ Renames and re-exports [LoadingErrorStatus](loadingError.md#loadingerrorstatus)
 
 ### WatchableLoadingErrorsRaw
 
-> **WatchableLoadingErrorsRaw**\<\>: [`use/loadingError`](loadingError.md)[]
+> **WatchableLoadingErrorsRaw**\<\>: [`LoadingErrorStatus`](loadingError.md#loadingerrorstatus)[]
 
 #### Type Parameters
 
@@ -38,7 +32,9 @@ A composable function for managing aggregated loading and error states across mu
 
 #### Parameters
 
-• **loadingErrors**: [`WatchableLoadingErrors`](proxyLoadingError.md#watchableloadingerrors)
+##### loadingErrors
+
+[`WatchableLoadingErrors`](proxyLoadingError.md#watchableloadingerrors)
 
 A collection of loading error statuses to monitor and aggregate.
 
@@ -47,3 +43,9 @@ A collection of loading error statuses to monitor and aggregate.
 [`LoadingErrorStatus`](loadingError.md#loadingerrorstatus)
 
 An object containing aggregated reactive fields and actions for loading and error states.
+
+## References
+
+### ProxyLoadingError
+
+Renames and re-exports [LoadingErrorStatus](loadingError.md#loadingerrorstatus)

@@ -1,4 +1,4 @@
-[**@arrai-innovations/reactive-helpers**](../README.md) • **Docs**
+[**@arrai-innovations/reactive-helpers**](../README.md)
 
 ***
 
@@ -16,11 +16,15 @@ Delete a key from an object. Lodash-like delete function, as companion for get/s
 
 #### Parameters
 
-• **obj**: `any`
+##### obj
+
+`any`
 
 The object to modify.
 
-• **path**: `string`
+##### path
+
+`string`
 
 The key to delete.
 
@@ -38,11 +42,15 @@ Split a string into an array of keys.
 
 #### Parameters
 
-• **string**: `string`
+##### string
+
+`string`
 
 The string to split.
 
-• **object**: `any`
+##### object
+
+`any`
 
 The object to split keys for.
 

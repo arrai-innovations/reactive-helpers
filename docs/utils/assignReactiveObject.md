@@ -1,4 +1,4 @@
-[**@arrai-innovations/reactive-helpers**](../README.md) • **Docs**
+[**@arrai-innovations/reactive-helpers**](../README.md)
 
 ***
 
@@ -24,11 +24,15 @@ Error thrown when an invalid value is passed to a function.
 
 ###### Parameters
 
-• **message**: `string`
+###### message
+
+`string`
 
 The error message.
 
-• **code**: `string`
+###### code
+
+`string`
 
 The error code.
 
@@ -56,20 +60,20 @@ The error code.
 
 ## Type Aliases
 
+### validateTargetAndSourceResult
+
+> **validateTargetAndSourceResult**\<\>: `object`
+
+#### Type Parameters
+
+***
+
 ### ValidTargetOrSource
 
 > **ValidTargetOrSource**\<\>: `Ref` \| `object` \| `any`[]
 
 targets and sources must be refs, objects, or arrays
 and refs must ultimately resolve to objects or arrays
-
-#### Type Parameters
-
-***
-
-### validateTargetAndSourceResult
-
-> **validateTargetAndSourceResult**\<\>: `object`
 
 #### Type Parameters
 
@@ -83,29 +87,35 @@ Adds to a target the missing keys from a source, and updates a target with mutua
 
 #### Parameters
 
-• **target**: `any`
+##### target
+
+`any`
 
 The object receiving values.
 
-• **source**: `any`
+##### source
+
+`any`
 
 The object providing values.
 
-• **exclude?**: `any`[]
+##### exclude?
+
+`any`[]
 
 Keys to exclude from the addition or update.
 
-• **addedKeys?**: `any`[] \| `Set`\<`any`\> = `null`
+##### addedKeys?
 
-Precaulcated array of keys to add, if available. Otherwise, the
-keys will be calculated.
+`any`[] | `Set`\<`any`\>
 
-• **sameKeys?**: `any`[] \| `Set`\<`any`\> = `null`
+##### sameKeys?
 
-Precaulcated array of keys to update, if available. Otherwise, the
-keys will be calculated.
+`any`[] | `Set`\<`any`\>
 
-• **doNotSetUndefinedKeys?**: `boolean` = `true`
+##### doNotSetUndefinedKeys?
+
+`boolean` = `true`
 
 If true, do not update keys in the target that are undefined in the source.
 
@@ -126,15 +136,21 @@ keys present in both are updated in the target. Missing keys are not removed.
 
 #### Parameters
 
-• **target**: `any`
+##### target
+
+`any`
 
 The object receiving updates.
 
-• **source**: `any`
+##### source
+
+`any`
 
 The object providing updates.
 
-• **exclude?**: `any`[]
+##### exclude?
+
+`any`[]
 
 Keys to exclude from the update.
 
@@ -158,22 +174,27 @@ Adds to a target the missing keys from a source. `addedKeys` can be precalculate
 
 #### Parameters
 
-• **target**: `any`
+##### target
+
+`any`
 
 The object receiving values.
 
-• **source**: `any`
+##### source
+
+`any`
 
 The object providing values.
 
-• **exclude?**: `any`[]
+##### exclude?
+
+`any`[]
 
 Keys to exclude from the addition.
 
-• **addedKeys?**: `any`[] \| `Set`\<`any`\> = `null`
+##### addedKeys?
 
-Precaulcated array of keys to add, if available. Otherwise, the
-keys will be calculated.
+`any`[] | `Set`\<`any`\>
 
 #### Returns
 
@@ -197,11 +218,15 @@ This function is optimized for arrays.
 
 #### Parameters
 
-• **target**: `any`
+##### target
+
+`any`
 
 The array receiving updates.
 
-• **source**: `any`
+##### source
+
+`any`
 
 The reactive array to assign.
 
@@ -222,15 +247,21 @@ keys present in the source are added to the target, and keys present in both are
 
 #### Parameters
 
-• **target**: `any`
+##### target
+
+`any`
 
 The target object or array.
 
-• **source**: `any`
+##### source
+
+`any`
 
 The reactive object to assign.
 
-• **exclude?**: `any`[]
+##### exclude?
+
+`any`[]
 
 Keys to exclude from the assignment.
 
@@ -255,15 +286,21 @@ keys present in the source are added to the target, and keys present in both are
 
 #### Parameters
 
-• **target**: `any`
+##### target
+
+`any`
 
 The object receiving updates.
 
-• **source**: `any`
+##### source
+
+`any`
 
 The object providing updates.
 
-• **exclude?**: `any`[]
+##### exclude?
+
+`any`[]
 
 Keys to exclude from the assignment.
 
@@ -287,21 +324,27 @@ Removes keys from a target that are not present in a source.
 
 #### Parameters
 
-• **target**: `any`
+##### target
+
+`any`
 
 The object receiving trimming.
 
-• **source**: `any`
+##### source
+
+`any`
 
 The object that provides the allowed set of keys for calculating `removedKeys`.
 
-• **exclude?**: `any`[]
+##### exclude?
+
+`any`[]
 
 Keys to exclude from removal.
 
-• **removedKeys?**: `any`[] \| `Set`\<`any`\> = `null`
+##### removedKeys?
 
-An array to store removed keys.
+`any`[] | `Set`\<`any`\>
 
 #### Returns
 
@@ -323,22 +366,27 @@ Updates a target with mutually shared keys from a source. `sameKeys` can be prec
 
 #### Parameters
 
-• **target**: `any`
+##### target
+
+`any`
 
 The object receiving values.
 
-• **source**: `any`
+##### source
+
+`any`
 
 The object providing values.
 
-• **exclude?**: `any`[]
+##### exclude?
+
+`any`[]
 
 Keys to exclude from the update.
 
-• **sameKeys?**: `any`[] \| `Set`\<`any`\> = `null`
+##### sameKeys?
 
-Precaulcated array of keys to update, if available. Otherwise, the
-keys will be calculated.
+`any`[] | `Set`\<`any`\>
 
 #### Returns
 

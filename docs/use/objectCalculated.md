@@ -1,4 +1,4 @@
-[**@arrai-innovations/reactive-helpers**](../README.md) • **Docs**
+[**@arrai-innovations/reactive-helpers**](../README.md)
 
 ***
 
@@ -30,91 +30,103 @@ The parent state.
 
 The crud functions.
 
-###### crud.args
+###### crud.args?
 
-> **args**: `any`
+> `optional` **args**: `any`
 
 The arguments to be passed to the crud functions.
 
-###### crud.create()
+###### crud.create()?
 
-> **create**: (`CreateDetailArgs`) => [`ResponseData`](../config/objectCrud.md#responsedata)
+> `optional` **create**: (`CreateDetailArgs`) => [`ResponseData`](../config/objectCrud.md#responsedata)
 
 A function to be used instead of the default crud create function.
 
 ###### Parameters
 
-• **CreateDetailArgs**: `any`
+###### CreateDetailArgs
+
+`any`
 
 ###### Returns
 
 [`ResponseData`](../config/objectCrud.md#responsedata)
 
-###### crud.delete()
+###### crud.delete()?
 
-> **delete**: (`DeleteDetailArgs`) => [`ResponseData`](../config/objectCrud.md#responsedata)
+> `optional` **delete**: (`DeleteDetailArgs`) => [`ResponseData`](../config/objectCrud.md#responsedata)
 
 A function to be used instead of the default crud delete function.
 
 ###### Parameters
 
-• **DeleteDetailArgs**: `any`
+###### DeleteDetailArgs
+
+`any`
 
 ###### Returns
 
 [`ResponseData`](../config/objectCrud.md#responsedata)
 
-###### crud.patch()
+###### crud.patch()?
 
-> **patch**: (`PartialDetailArgs`) => [`ResponseData`](../config/objectCrud.md#responsedata)
+> `optional` **patch**: (`PartialDetailArgs`) => [`ResponseData`](../config/objectCrud.md#responsedata)
 
 A function to be used instead of the default crud patch function.
 
 ###### Parameters
 
-• **PartialDetailArgs**: `any`
+###### PartialDetailArgs
+
+`any`
 
 ###### Returns
 
 [`ResponseData`](../config/objectCrud.md#responsedata)
 
-###### crud.retrieve()
+###### crud.retrieve()?
 
-> **retrieve**: (`RetrieveDetailArgs`) => [`ResponseData`](../config/objectCrud.md#responsedata)
+> `optional` **retrieve**: (`RetrieveDetailArgs`) => [`ResponseData`](../config/objectCrud.md#responsedata)
 
 A function to be used instead of the default crud retrieve function.
 
 ###### Parameters
 
-• **RetrieveDetailArgs**: `any`
+###### RetrieveDetailArgs
+
+`any`
 
 ###### Returns
 
 [`ResponseData`](../config/objectCrud.md#responsedata)
 
-###### crud.subscribe()
+###### crud.subscribe()?
 
-> **subscribe**: (`SubscribeArgs`) => `void` & `object`
+> `optional` **subscribe**: (`SubscribeArgs`) => `void` & `object`
 
 A function to be used instead of the default crud subscribe function.
 
 ###### Parameters
 
-• **SubscribeArgs**: `any`
+###### SubscribeArgs
+
+`any`
 
 ###### Returns
 
 `void` & `object`
 
-###### crud.update()
+###### crud.update()?
 
-> **update**: (`UpdateDetailArgs`) => [`ResponseData`](../config/objectCrud.md#responsedata)
+> `optional` **update**: (`UpdateDetailArgs`) => [`ResponseData`](../config/objectCrud.md#responsedata)
 
 A function to be used instead of the default crud update function.
 
 ###### Parameters
 
-• **UpdateDetailArgs**: `any`
+###### UpdateDetailArgs
+
+`any`
 
 ###### Returns
 
@@ -138,15 +150,15 @@ The error.
 
 Whether the object errored.
 
-###### intendToRetrieve
+###### intendToRetrieve?
 
-> **intendToRetrieve**: `boolean`
+> `optional` **intendToRetrieve**: `boolean`
 
 Whether the object intends to retrieve.
 
-###### intendToSubscribe
+###### intendToSubscribe?
 
-> **intendToSubscribe**: `boolean`
+> `optional` **intendToSubscribe**: `boolean`
 
 Whether the object intends to subscribe.
 
@@ -158,13 +170,13 @@ Whether the object is loading.
 
 ###### object
 
-> **object**: `object` \| `object`
+> **object**: \{\} \| \{`[key: string]`: `any`; `pkKey`: `string`; \}
 
 The object.
 
-###### parentStateObjectWatchRunning
+###### parentStateObjectWatchRunning?
 
-> **parentStateObjectWatchRunning**: `boolean`
+> `optional` **parentStateObjectWatchRunning**: `boolean`
 
 Whether the parent state object watch is running.
 
@@ -180,31 +192,31 @@ The pk of the object.
 
 The pk key of the object.
 
-###### relatedObject
+###### relatedObject?
 
-> **relatedObject**: `object`
+> `optional` **relatedObject**: `object`
 
 The related objects, indexed by the key in the related object.
 
 ###### Index Signature
 
- \[`rule`: `string`\]: `ComputedRef`
+ \[`rule`: `string`\]: `ComputedRef`\<`any`\>
 
-###### relatedObjectRules
+###### relatedObjectRules?
 
-> **relatedObjectRules**: [`ObjectRelatedRawRules`](objectRelated.md#objectrelatedrawrules)
+> `optional` **relatedObjectRules**: [`ObjectRelatedRawRules`](objectRelated.md#objectrelatedrawrules)
 
 The rules for defining relationships for the managed object to other collections of objects.
 
-###### relatedObjectWatchRunning
+###### relatedObjectWatchRunning?
 
-> **relatedObjectWatchRunning**: `boolean`
+> `optional` **relatedObjectWatchRunning**: `boolean`
 
 Whether the related object watch is running.
 
-###### relatedRunning
+###### relatedRunning?
 
-> **relatedRunning**: `boolean`
+> `optional` **relatedRunning**: `boolean`
 
 Whether the related objects are loading.
 
@@ -214,33 +226,33 @@ Whether the related objects are loading.
 
 The arguments to be passed to the retrieve function.
 
-###### running
+###### running?
 
-> **running**: `boolean`
+> `optional` **running**: `boolean`
 
 Whether the related objects are loading or the parent state is loading.
 
-###### subscribed
+###### subscribed?
 
-> **subscribed**: `boolean`
+> `optional` **subscribed**: `boolean`
 
 Whether the object is subscribed.
 
-###### subscriptionError
+###### subscriptionError?
 
-> **subscriptionError**: `Error`
+> `optional` **subscriptionError**: `Error`
 
 The error that occurred.
 
-###### subscriptionErrored
+###### subscriptionErrored?
 
-> **subscriptionErrored**: `boolean`
+> `optional` **subscriptionErrored**: `boolean`
 
 Whether the subscription has errored.
 
-###### subscriptionLoading
+###### subscriptionLoading?
 
-> **subscriptionLoading**: `boolean`
+> `optional` **subscriptionLoading**: `boolean`
 
 Whether the subscription is loading.
 
@@ -258,7 +270,7 @@ The calculated object.
 
 ###### Index Signature
 
- \[`ruleKey`: `string`\]: `ComputedRef`
+ \[`ruleKey`: `string`\]: `ComputedRef`\<`any`\>
 
 ###### calculatedObjectRules
 
@@ -284,91 +296,103 @@ Whether the calculated is running.
 
 The crud functions.
 
-###### crud.args
+###### crud.args?
 
-> **args**: `any`
+> `optional` **args**: `any`
 
 The arguments to be passed to the crud functions.
 
-###### crud.create()
+###### crud.create()?
 
-> **create**: (`CreateDetailArgs`) => [`ResponseData`](../config/objectCrud.md#responsedata)
+> `optional` **create**: (`CreateDetailArgs`) => [`ResponseData`](../config/objectCrud.md#responsedata)
 
 A function to be used instead of the default crud create function.
 
 ###### Parameters
 
-• **CreateDetailArgs**: `any`
+###### CreateDetailArgs
+
+`any`
 
 ###### Returns
 
 [`ResponseData`](../config/objectCrud.md#responsedata)
 
-###### crud.delete()
+###### crud.delete()?
 
-> **delete**: (`DeleteDetailArgs`) => [`ResponseData`](../config/objectCrud.md#responsedata)
+> `optional` **delete**: (`DeleteDetailArgs`) => [`ResponseData`](../config/objectCrud.md#responsedata)
 
 A function to be used instead of the default crud delete function.
 
 ###### Parameters
 
-• **DeleteDetailArgs**: `any`
+###### DeleteDetailArgs
+
+`any`
 
 ###### Returns
 
 [`ResponseData`](../config/objectCrud.md#responsedata)
 
-###### crud.patch()
+###### crud.patch()?
 
-> **patch**: (`PartialDetailArgs`) => [`ResponseData`](../config/objectCrud.md#responsedata)
+> `optional` **patch**: (`PartialDetailArgs`) => [`ResponseData`](../config/objectCrud.md#responsedata)
 
 A function to be used instead of the default crud patch function.
 
 ###### Parameters
 
-• **PartialDetailArgs**: `any`
+###### PartialDetailArgs
+
+`any`
 
 ###### Returns
 
 [`ResponseData`](../config/objectCrud.md#responsedata)
 
-###### crud.retrieve()
+###### crud.retrieve()?
 
-> **retrieve**: (`RetrieveDetailArgs`) => [`ResponseData`](../config/objectCrud.md#responsedata)
+> `optional` **retrieve**: (`RetrieveDetailArgs`) => [`ResponseData`](../config/objectCrud.md#responsedata)
 
 A function to be used instead of the default crud retrieve function.
 
 ###### Parameters
 
-• **RetrieveDetailArgs**: `any`
+###### RetrieveDetailArgs
+
+`any`
 
 ###### Returns
 
 [`ResponseData`](../config/objectCrud.md#responsedata)
 
-###### crud.subscribe()
+###### crud.subscribe()?
 
-> **subscribe**: (`SubscribeArgs`) => `void` & `object`
+> `optional` **subscribe**: (`SubscribeArgs`) => `void` & `object`
 
 A function to be used instead of the default crud subscribe function.
 
 ###### Parameters
 
-• **SubscribeArgs**: `any`
+###### SubscribeArgs
+
+`any`
 
 ###### Returns
 
 `void` & `object`
 
-###### crud.update()
+###### crud.update()?
 
-> **update**: (`UpdateDetailArgs`) => [`ResponseData`](../config/objectCrud.md#responsedata)
+> `optional` **update**: (`UpdateDetailArgs`) => [`ResponseData`](../config/objectCrud.md#responsedata)
 
 A function to be used instead of the default crud update function.
 
 ###### Parameters
 
-• **UpdateDetailArgs**: `any`
+###### UpdateDetailArgs
+
+`any`
 
 ###### Returns
 
@@ -392,15 +416,15 @@ The error.
 
 Whether the object errored.
 
-###### intendToRetrieve
+###### intendToRetrieve?
 
-> **intendToRetrieve**: `boolean`
+> `optional` **intendToRetrieve**: `boolean`
 
 Whether the object intends to retrieve.
 
-###### intendToSubscribe
+###### intendToSubscribe?
 
-> **intendToSubscribe**: `boolean`
+> `optional` **intendToSubscribe**: `boolean`
 
 Whether the object intends to subscribe.
 
@@ -412,7 +436,7 @@ Whether the object is loading.
 
 ###### object
 
-> **object**: `object` \| `object`
+> **object**: \{\} \| \{`[key: string]`: `any`; `pkKey`: `string`; \}
 
 The object.
 
@@ -434,31 +458,31 @@ The pk of the object.
 
 The pk key of the object.
 
-###### relatedObject
+###### relatedObject?
 
-> **relatedObject**: `object`
+> `optional` **relatedObject**: `object`
 
 The related objects, indexed by the key in the related object.
 
 ###### Index Signature
 
- \[`rule`: `string`\]: `ComputedRef`
+ \[`rule`: `string`\]: `ComputedRef`\<`any`\>
 
-###### relatedObjectRules
+###### relatedObjectRules?
 
-> **relatedObjectRules**: [`ObjectRelatedRawRules`](objectRelated.md#objectrelatedrawrules)
+> `optional` **relatedObjectRules**: [`ObjectRelatedRawRules`](objectRelated.md#objectrelatedrawrules)
 
 The rules for defining relationships for the managed object to other collections of objects.
 
-###### relatedObjectWatchRunning
+###### relatedObjectWatchRunning?
 
-> **relatedObjectWatchRunning**: `boolean`
+> `optional` **relatedObjectWatchRunning**: `boolean`
 
 Whether the related object watch is running.
 
-###### relatedRunning
+###### relatedRunning?
 
-> **relatedRunning**: `boolean`
+> `optional` **relatedRunning**: `boolean`
 
 Whether the related objects are loading.
 
@@ -474,27 +498,27 @@ The arguments to be passed to the retrieve function.
 
 Whether the related objects are loading or the parent state is loading.
 
-###### subscribed
+###### subscribed?
 
-> **subscribed**: `boolean`
+> `optional` **subscribed**: `boolean`
 
 Whether the object is subscribed.
 
-###### subscriptionError
+###### subscriptionError?
 
-> **subscriptionError**: `Error`
+> `optional` **subscriptionError**: `Error`
 
 The error that occurred.
 
-###### subscriptionErrored
+###### subscriptionErrored?
 
-> **subscriptionErrored**: `boolean`
+> `optional` **subscriptionErrored**: `boolean`
 
 Whether the subscription has errored.
 
-###### subscriptionLoading
+###### subscriptionLoading?
 
-> **subscriptionLoading**: `boolean`
+> `optional` **subscriptionLoading**: `boolean`
 
 Whether the subscription is loading.
 
@@ -512,7 +536,7 @@ The watches running rules.
 
 ##### calculatedObjectRules
 
-> **calculatedObjectRules**: `Ref`\<[`ObjectCalculatedRules`](objectCalculated.md#objectcalculatedrules)\>
+> **calculatedObjectRules**: `Ref`\<[`ObjectCalculatedRules`](objectCalculated.md#objectcalculatedrules), [`ObjectCalculatedRules`](objectCalculated.md#objectcalculatedrules)\>
 
 The calculated object rules.
 
@@ -532,7 +556,7 @@ The calculated object.
 
 ###### Index Signature
 
- \[`ruleKey`: `string`\]: `ComputedRef`
+ \[`ruleKey`: `string`\]: `ComputedRef`\<`any`\>
 
 ##### calculatedObjectRules
 
@@ -560,7 +584,7 @@ Whether the parent state object watch is running.
 
 ##### running
 
-> **running**: `Ref`\<`boolean`\>
+> **running**: `Ref`\<`boolean`, `boolean`\>
 
 Whether the object calculated is running.
 
@@ -590,7 +614,7 @@ Whether the object calculated is running.
 
 ### ObjectCalculatedParentRawState
 
-> **ObjectCalculatedParentRawState**\<\>: [`use/objectInstance`](objectInstance.md) & `Partial`\<[`use/objectSubscription`](objectSubscription.md)\> & `Partial`\<[`use/objectRelated`](objectRelated.md)\>
+> **ObjectCalculatedParentRawState**\<\>: [`ObjectInstanceRawState`](objectInstance.md#objectinstancerawstate) & `Partial`\<[`ObjectSubscriptionRawState`](objectSubscription.md#objectsubscriptionrawstate)\> & `Partial`\<[`ObjectRelatedRawState`](objectRelated.md#objectrelatedrawstate)\>
 
 #### Type Parameters
 
@@ -646,7 +670,9 @@ Vue Composition API composable function for object calculated.
 
 #### Parameters
 
-• **options**: [`ObjectCalculatedOptions`](objectCalculated.md#objectcalculatedoptions)
+##### options
+
+[`ObjectCalculatedOptions`](objectCalculated.md#objectcalculatedoptions)
 
 The object calculated options.
 
@@ -704,7 +730,7 @@ Helper function to create multiple object calculateds instances.
 
 #### Parameters
 
-• **objectCalculatedArgs**
+##### objectCalculatedArgs
 
 Options for each object calculated to create.
 

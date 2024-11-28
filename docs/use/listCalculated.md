@@ -1,4 +1,4 @@
-[**@arrai-innovations/reactive-helpers**](../README.md) • **Docs**
+[**@arrai-innovations/reactive-helpers**](../README.md)
 
 ***
 
@@ -16,7 +16,7 @@ Options to configure the behavior of the list calculated properties.
 
 ##### calculatedObjectsRules
 
-> **calculatedObjectsRules**: `Ref`\<`object`\>
+> **calculatedObjectsRules**: `Ref`\<`object`, `object`\>
 
 A reactive reference to rules used for dynamic calculations
  within list objects. Proper setup of this reference ensures that updates are managed reactively, including deep
@@ -40,9 +40,9 @@ CRUD functions and their configurations for the list.
 
 Arguments for the CRUD functions.
 
-###### crud.list
+###### crud.list?
 
-> **list**: `Function`
+> `optional` **list**: `Function`
 
 Function to list objects.
 
@@ -58,9 +58,9 @@ The last error encountered.
 
 Indicates if an error occurred during the last operation.
 
-###### fkForPkAndRule
+###### fkForPkAndRule?
 
-> **fkForPkAndRule**: `object`
+> `optional` **fkForPkAndRule**: `object`
 
 Maintains computed references to the foreign keys for each object pk and rule, crucial for navigating complex data relationships.
 
@@ -68,15 +68,15 @@ Maintains computed references to the foreign keys for each object pk and rule, c
 
  \[`pk`: `string`\]: `object`
 
-###### intendToList
+###### intendToList?
 
-> **intendToList**: `boolean`
+> `optional` **intendToList**: `boolean`
 
 If this is true, the list should be fetched, or re-fetched if arguments change.
 
-###### intendToSubscribe
+###### intendToSubscribe?
 
-> **intendToSubscribe**: `boolean`
+> `optional` **intendToSubscribe**: `boolean`
 
 If this is true, the subscription should start or restart if arguments change.
 
@@ -86,15 +86,15 @@ If this is true, the subscription should start or restart if arguments change.
 
 Arguments passed to the server for listing operations.
 
-###### loading
+###### loading?
 
-> **loading**: `boolean`
+> `optional` **loading**: `boolean`
 
 Indicates if the list is currently loading.
 
-###### objAndKeyForPkAndRule
+###### objAndKeyForPkAndRule?
 
-> **objAndKeyForPkAndRule**: `object`
+> `optional` **objAndKeyForPkAndRule**: `object`
 
 Maps each object pk and rule to a tuple consisting of the related object and its respective key, facilitating direct data manipulation.
 
@@ -126,9 +126,9 @@ The order of objects in the list.
 
 The primary key field for the list objects.
 
-###### relatedObjects
+###### relatedObjects?
 
-> **relatedObjects**: `object`
+> `optional` **relatedObjects**: `object`
 
 Stores computed references to related objects, allowing for dynamic access based on object pk and specific rules.
 
@@ -136,15 +136,15 @@ Stores computed references to related objects, allowing for dynamic access based
 
  \[`pk`: `string`\]: `object`
 
-###### relatedObjectsParentStateObjectsWatchRunning
+###### relatedObjectsParentStateObjectsWatchRunning?
 
-> **relatedObjectsParentStateObjectsWatchRunning**: `boolean`
+> `optional` **relatedObjectsParentStateObjectsWatchRunning**: `boolean`
 
 Flags whether the watch on parent state objects is currently active, ensuring updates trigger as needed.
 
-###### relatedObjectsRules
+###### relatedObjectsRules?
 
-> **relatedObjectsRules**: `object`
+> `optional` **relatedObjectsRules**: `object`
 
 Defines the rules for establishing relationships, such as foreign key links and sorting orders.
 
@@ -152,15 +152,15 @@ Defines the rules for establishing relationships, such as foreign key links and 
 
  \[`rule`: `string`\]: [`ListRelatedRule`](listRelated.md#listrelatedrule)
 
-###### relatedObjectsWatchRunning
+###### relatedObjectsWatchRunning?
 
-> **relatedObjectsWatchRunning**: `boolean`
+> `optional` **relatedObjectsWatchRunning**: `boolean`
 
 Indicates if watches on the related objects themselves are active, managing updates efficiently.
 
-###### relatedRunning
+###### relatedRunning?
 
-> **relatedRunning**: `boolean`
+> `optional` **relatedRunning**: `boolean`
 
 Signals whether any computations related to object relationships are currently in progress.
 
@@ -176,27 +176,27 @@ Arguments passed to the server for retrieval operations.
 
 Indicates if there are ongoing reactive updates.
 
-###### subscribed
+###### subscribed?
 
-> **subscribed**: `boolean`
+> `optional` **subscribed**: `boolean`
 
 Whether the subscription is active.
 
-###### subscriptionError
+###### subscriptionError?
 
-> **subscriptionError**: `Error`
+> `optional` **subscriptionError**: `Error`
 
 The error that occurred.
 
-###### subscriptionErrored
+###### subscriptionErrored?
 
-> **subscriptionErrored**: `boolean`
+> `optional` **subscriptionErrored**: `boolean`
 
 Whether the subscription has errored.
 
-###### subscriptionLoading
+###### subscriptionLoading?
 
-> **subscriptionLoading**: `boolean`
+> `optional` **subscriptionLoading**: `boolean`
 
 Whether the subscription is loading.
 
@@ -230,9 +230,9 @@ CRUD functions and their configurations for the list.
 
 Arguments for the CRUD functions.
 
-###### crud.list
+###### crud.list?
 
-> **list**: `Function`
+> `optional` **list**: `Function`
 
 Function to list objects.
 
@@ -248,9 +248,9 @@ The last error encountered.
 
 Indicates if an error occurred during the last operation.
 
-###### fkForPkAndRule
+###### fkForPkAndRule?
 
-> **fkForPkAndRule**: `object`
+> `optional` **fkForPkAndRule**: `object`
 
 Maintains computed references to the foreign keys for each object pk and rule, crucial for navigating complex data relationships.
 
@@ -258,15 +258,15 @@ Maintains computed references to the foreign keys for each object pk and rule, c
 
  \[`pk`: `string`\]: `object`
 
-###### intendToList
+###### intendToList?
 
-> **intendToList**: `boolean`
+> `optional` **intendToList**: `boolean`
 
 If this is true, the list should be fetched, or re-fetched if arguments change.
 
-###### intendToSubscribe
+###### intendToSubscribe?
 
-> **intendToSubscribe**: `boolean`
+> `optional` **intendToSubscribe**: `boolean`
 
 If this is true, the subscription should start or restart if arguments change.
 
@@ -276,15 +276,15 @@ If this is true, the subscription should start or restart if arguments change.
 
 Arguments passed to the server for listing operations.
 
-###### loading
+###### loading?
 
-> **loading**: `boolean`
+> `optional` **loading**: `boolean`
 
 Indicates if the list is currently loading.
 
-###### objAndKeyForPkAndRule
+###### objAndKeyForPkAndRule?
 
-> **objAndKeyForPkAndRule**: `object`
+> `optional` **objAndKeyForPkAndRule**: `object`
 
 Maps each object pk and rule to a tuple consisting of the related object and its respective key, facilitating direct data manipulation.
 
@@ -316,9 +316,9 @@ The order of objects in the list.
 
 The primary key field for the list objects.
 
-###### relatedObjects
+###### relatedObjects?
 
-> **relatedObjects**: `object`
+> `optional` **relatedObjects**: `object`
 
 Stores computed references to related objects, allowing for dynamic access based on object pk and specific rules.
 
@@ -326,15 +326,15 @@ Stores computed references to related objects, allowing for dynamic access based
 
  \[`pk`: `string`\]: `object`
 
-###### relatedObjectsParentStateObjectsWatchRunning
+###### relatedObjectsParentStateObjectsWatchRunning?
 
-> **relatedObjectsParentStateObjectsWatchRunning**: `boolean`
+> `optional` **relatedObjectsParentStateObjectsWatchRunning**: `boolean`
 
 Flags whether the watch on parent state objects is currently active, ensuring updates trigger as needed.
 
-###### relatedObjectsRules
+###### relatedObjectsRules?
 
-> **relatedObjectsRules**: `object`
+> `optional` **relatedObjectsRules**: `object`
 
 Defines the rules for establishing relationships, such as foreign key links and sorting orders.
 
@@ -342,15 +342,15 @@ Defines the rules for establishing relationships, such as foreign key links and 
 
  \[`rule`: `string`\]: [`ListRelatedRule`](listRelated.md#listrelatedrule)
 
-###### relatedObjectsWatchRunning
+###### relatedObjectsWatchRunning?
 
-> **relatedObjectsWatchRunning**: `boolean`
+> `optional` **relatedObjectsWatchRunning**: `boolean`
 
 Indicates if watches on the related objects themselves are active, managing updates efficiently.
 
-###### relatedRunning
+###### relatedRunning?
 
-> **relatedRunning**: `boolean`
+> `optional` **relatedRunning**: `boolean`
 
 Signals whether any computations related to object relationships are currently in progress.
 
@@ -366,27 +366,27 @@ Arguments passed to the server for retrieval operations.
 
 Indicates if there are ongoing reactive updates.
 
-###### subscribed
+###### subscribed?
 
-> **subscribed**: `boolean`
+> `optional` **subscribed**: `boolean`
 
 Whether the subscription is active.
 
-###### subscriptionError
+###### subscriptionError?
 
-> **subscriptionError**: `Error`
+> `optional` **subscriptionError**: `Error`
 
 The error that occurred.
 
-###### subscriptionErrored
+###### subscriptionErrored?
 
-> **subscriptionErrored**: `boolean`
+> `optional` **subscriptionErrored**: `boolean`
 
 Whether the subscription has errored.
 
-###### subscriptionLoading
+###### subscriptionLoading?
 
-> **subscriptionLoading**: `boolean`
+> `optional` **subscriptionLoading**: `boolean`
 
 Whether the subscription is loading.
 
@@ -446,9 +446,9 @@ CRUD functions and their configurations for the list.
 
 Arguments for the CRUD functions.
 
-###### crud.list
+###### crud.list?
 
-> **list**: `Function`
+> `optional` **list**: `Function`
 
 Function to list objects.
 
@@ -464,9 +464,9 @@ The last error encountered.
 
 Indicates if an error occurred during the last operation.
 
-###### fkForPkAndRule
+###### fkForPkAndRule?
 
-> **fkForPkAndRule**: `object`
+> `optional` **fkForPkAndRule**: `object`
 
 Maintains computed references to the foreign keys for each object pk and rule, crucial for navigating complex data relationships.
 
@@ -474,15 +474,15 @@ Maintains computed references to the foreign keys for each object pk and rule, c
 
  \[`pk`: `string`\]: `object`
 
-###### intendToList
+###### intendToList?
 
-> **intendToList**: `boolean`
+> `optional` **intendToList**: `boolean`
 
 If this is true, the list should be fetched, or re-fetched if arguments change.
 
-###### intendToSubscribe
+###### intendToSubscribe?
 
-> **intendToSubscribe**: `boolean`
+> `optional` **intendToSubscribe**: `boolean`
 
 If this is true, the subscription should start or restart if arguments change.
 
@@ -492,15 +492,15 @@ If this is true, the subscription should start or restart if arguments change.
 
 Arguments passed to the server for listing operations.
 
-###### loading
+###### loading?
 
-> **loading**: `boolean`
+> `optional` **loading**: `boolean`
 
 Indicates if the list is currently loading.
 
-###### objAndKeyForPkAndRule
+###### objAndKeyForPkAndRule?
 
-> **objAndKeyForPkAndRule**: `object`
+> `optional` **objAndKeyForPkAndRule**: `object`
 
 Maps each object pk and rule to a tuple consisting of the related object and its respective key, facilitating direct data manipulation.
 
@@ -532,9 +532,9 @@ The order of objects in the list.
 
 The primary key field for the list objects.
 
-###### relatedObjects
+###### relatedObjects?
 
-> **relatedObjects**: `object`
+> `optional` **relatedObjects**: `object`
 
 Stores computed references to related objects, allowing for dynamic access based on object pk and specific rules.
 
@@ -542,15 +542,15 @@ Stores computed references to related objects, allowing for dynamic access based
 
  \[`pk`: `string`\]: `object`
 
-###### relatedObjectsParentStateObjectsWatchRunning
+###### relatedObjectsParentStateObjectsWatchRunning?
 
-> **relatedObjectsParentStateObjectsWatchRunning**: `boolean`
+> `optional` **relatedObjectsParentStateObjectsWatchRunning**: `boolean`
 
 Flags whether the watch on parent state objects is currently active, ensuring updates trigger as needed.
 
-###### relatedObjectsRules
+###### relatedObjectsRules?
 
-> **relatedObjectsRules**: `object`
+> `optional` **relatedObjectsRules**: `object`
 
 Defines the rules for establishing relationships, such as foreign key links and sorting orders.
 
@@ -558,15 +558,15 @@ Defines the rules for establishing relationships, such as foreign key links and 
 
  \[`rule`: `string`\]: [`ListRelatedRule`](listRelated.md#listrelatedrule)
 
-###### relatedObjectsWatchRunning
+###### relatedObjectsWatchRunning?
 
-> **relatedObjectsWatchRunning**: `boolean`
+> `optional` **relatedObjectsWatchRunning**: `boolean`
 
 Indicates if watches on the related objects themselves are active, managing updates efficiently.
 
-###### relatedRunning
+###### relatedRunning?
 
-> **relatedRunning**: `boolean`
+> `optional` **relatedRunning**: `boolean`
 
 Signals whether any computations related to object relationships are currently in progress.
 
@@ -582,27 +582,27 @@ Arguments passed to the server for retrieval operations.
 
 Indicates if there are ongoing reactive updates.
 
-###### subscribed
+###### subscribed?
 
-> **subscribed**: `boolean`
+> `optional` **subscribed**: `boolean`
 
 Whether the subscription is active.
 
-###### subscriptionError
+###### subscriptionError?
 
-> **subscriptionError**: `Error`
+> `optional` **subscriptionError**: `Error`
 
 The error that occurred.
 
-###### subscriptionErrored
+###### subscriptionErrored?
 
-> **subscriptionErrored**: `boolean`
+> `optional` **subscriptionErrored**: `boolean`
 
 Whether the subscription has errored.
 
-###### subscriptionLoading
+###### subscriptionLoading?
 
-> **subscriptionLoading**: `boolean`
+> `optional` **subscriptionLoading**: `boolean`
 
 Whether the subscription is loading.
 
@@ -638,7 +638,7 @@ Whether the parent state objects watch is running.
 
 ##### calculatedObjectsRules
 
-> **calculatedObjectsRules**: `Ref`\<`object`\>
+> **calculatedObjectsRules**: `Ref`\<`object`, `object`\>
 
 The rules for the calculated objects.
 
@@ -656,7 +656,7 @@ Whether the calculated properties are running.
 
 ##### running
 
-> **running**: `Ref`\<`boolean`\>
+> **running**: `Ref`\<`boolean`, `boolean`\>
 
 Whether the list is running.
 
@@ -672,7 +672,7 @@ Whether the list is running.
 
 ### ListCalculatedParentRawState
 
-> **ListCalculatedParentRawState**\<\>: [`use/listInstance`](listInstance.md) & `Partial`\<[`use/listSubscription`](listSubscription.md)\> & `Partial`\<[`use/listRelated`](listRelated.md)\>
+> **ListCalculatedParentRawState**\<\>: [`ListInstanceRawState`](listInstance.md#listinstancerawstate) & `Partial`\<[`ListSubscriptionRawState`](listSubscription.md#listsubscriptionrawstate)\> & `Partial`\<[`ListRelatedRawState`](listRelated.md#listrelatedrawstate)\>
 
 #### Type Parameters
 
@@ -714,7 +714,9 @@ consistency in dynamic UIs.
 
 #### Parameters
 
-• **options**: [`ListCalculatedOptions`](listCalculated.md#listcalculatedoptions)
+##### options
+
+[`ListCalculatedOptions`](listCalculated.md#listcalculatedoptions)
 
 Configuration options including the parent state and rules for dynamically
  generating calculated properties. This setup allows the system to handle calculations as part of the list management
@@ -731,7 +733,7 @@ Configuration options including the parent state and rules for dynamically
 
 ```vue
 <script setup>
-import { useListSubscription, useListComputed } from "@arrai-innovations/reactive-helpers";
+import { useListSubscription, useListCalculated } from "@arrai-innovations/reactive-helpers";
 import { reactive, toRef } from "vue";
 
 const listSubscriptionProps = reactive({
@@ -743,7 +745,7 @@ const listSubscriptionProps = reactive({
     intendToList: true,
 });
 const listSubscription = useListSubscription(listSubscriptionProps);
-const listComputedProps = reactive({
+const listCalculatedProps = reactive({
     parentState: listSubscription.state,
     computedObjectsRules: {
         someRule: (object, relatedObjects, calculatedObjects) => {
@@ -755,7 +757,7 @@ const listComputedProps = reactive({
         }
     },
 });
-const listComputed = useListComputed(listComputedProps);
+const listCalculated = useListCalculated(listCalculatedProps);
 </script>
 <template>
     <ul>
@@ -764,7 +766,7 @@ const listComputed = useListComputed(listComputedProps);
             {{ obj }}
             <div>
                 <!-- the computed object or objects based on the rule -->
-                {{ listComputed.state.computedObjects[obj.pk].someRule }}
+                {{ listCalculated.state.computedObjects[obj.pk].someRule }}
             </div>
         </li>
     </ul>
@@ -781,7 +783,7 @@ A composable function to create multiple list calculated objects.
 
 #### Parameters
 
-• **listCalculatedArgs**
+##### listCalculatedArgs
 
 The arguments for the list calculated objects.
 

@@ -1,4 +1,4 @@
-[**@arrai-innovations/reactive-helpers**](../README.md) • **Docs**
+[**@arrai-innovations/reactive-helpers**](../README.md)
 
 ***
 
@@ -61,15 +61,19 @@ A composable function for handling watches running. When all the trigger refs ar
 
 #### Parameters
 
-• **options**
+##### options
 
 The options for the watches running.
 
-• **options.triggerRefs**: `WatchSource`\<`any`\>[]
+###### options.triggerRefs
+
+`WatchSource`\<`any`\>[]
 
 The trigger refs.
 
-• **options.watchSentinelRefs**: `Ref`\<`boolean`\>[]
+###### options.watchSentinelRefs
+
+`Ref`\<`boolean`, `boolean`\>[]
 
 The watch sentinel refs.
 

@@ -1,4 +1,4 @@
-[**@arrai-innovations/reactive-helpers**](../README.md) • **Docs**
+[**@arrai-innovations/reactive-helpers**](../README.md)
 
 ***
 
@@ -17,15 +17,21 @@ The value recursed into is the transformed value, not the original value.
 
 #### Parameters
 
-• **obj**: `any`
+##### obj
+
+`any`
 
 The object to start walking from.
 
-• **transformFn**: `Function`
+##### transformFn
+
+`Function`
 
 The function to transform each value.
 
-• **path**: `string` = `""`
+##### path
+
+`string` = `""`
 
 The path to the current value.
 

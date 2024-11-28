@@ -1,4 +1,4 @@
-[**@arrai-innovations/reactive-helpers**](../README.md) • **Docs**
+[**@arrai-innovations/reactive-helpers**](../README.md)
 
 ***
 
@@ -30,9 +30,9 @@ CRUD functions and their configurations for the list.
 
 Arguments for the CRUD functions.
 
-###### crud.list
+###### crud.list?
 
-> **list**: `Function`
+> `optional` **list**: `Function`
 
 Function to list objects.
 
@@ -48,15 +48,15 @@ The last error encountered.
 
 Indicates if an error occurred during the last operation.
 
-###### intendToList
+###### intendToList?
 
-> **intendToList**: `boolean`
+> `optional` **intendToList**: `boolean`
 
 If this is true, the list should be fetched, or re-fetched if arguments change.
 
-###### intendToSubscribe
+###### intendToSubscribe?
 
-> **intendToSubscribe**: `boolean`
+> `optional` **intendToSubscribe**: `boolean`
 
 If this is true, the subscription should start or restart if arguments change.
 
@@ -66,9 +66,9 @@ If this is true, the subscription should start or restart if arguments change.
 
 Arguments passed to the server for listing operations.
 
-###### loading
+###### loading?
 
-> **loading**: `boolean`
+> `optional` **loading**: `boolean`
 
 Indicates if the list is currently loading.
 
@@ -108,33 +108,33 @@ Arguments passed to the server for retrieval operations.
 
 Indicates if there are ongoing reactive updates.
 
-###### subscribed
+###### subscribed?
 
-> **subscribed**: `boolean`
+> `optional` **subscribed**: `boolean`
 
 Whether the subscription is active.
 
-###### subscriptionError
+###### subscriptionError?
 
-> **subscriptionError**: `Error`
+> `optional` **subscriptionError**: `Error`
 
 The error that occurred.
 
-###### subscriptionErrored
+###### subscriptionErrored?
 
-> **subscriptionErrored**: `boolean`
+> `optional` **subscriptionErrored**: `boolean`
 
 Whether the subscription has errored.
 
-###### subscriptionLoading
+###### subscriptionLoading?
 
-> **subscriptionLoading**: `boolean`
+> `optional` **subscriptionLoading**: `boolean`
 
 Whether the subscription is loading.
 
 ##### relatedObjectsRules
 
-> **relatedObjectsRules**: `Ref`\<`object`\>
+> **relatedObjectsRules**: `Ref`\<`object`, `object`\>
 
 The rules for the related objects.
 
@@ -168,9 +168,9 @@ CRUD functions and their configurations for the list.
 
 Arguments for the CRUD functions.
 
-###### crud.list
+###### crud.list?
 
-> **list**: `Function`
+> `optional` **list**: `Function`
 
 Function to list objects.
 
@@ -186,15 +186,15 @@ The last error encountered.
 
 Indicates if an error occurred during the last operation.
 
-###### intendToList
+###### intendToList?
 
-> **intendToList**: `boolean`
+> `optional` **intendToList**: `boolean`
 
 If this is true, the list should be fetched, or re-fetched if arguments change.
 
-###### intendToSubscribe
+###### intendToSubscribe?
 
-> **intendToSubscribe**: `boolean`
+> `optional` **intendToSubscribe**: `boolean`
 
 If this is true, the subscription should start or restart if arguments change.
 
@@ -204,9 +204,9 @@ If this is true, the subscription should start or restart if arguments change.
 
 Arguments passed to the server for listing operations.
 
-###### loading
+###### loading?
 
-> **loading**: `boolean`
+> `optional` **loading**: `boolean`
 
 Indicates if the list is currently loading.
 
@@ -246,27 +246,27 @@ Arguments passed to the server for retrieval operations.
 
 Indicates if there are ongoing reactive updates.
 
-###### subscribed
+###### subscribed?
 
-> **subscribed**: `boolean`
+> `optional` **subscribed**: `boolean`
 
 Whether the subscription is active.
 
-###### subscriptionError
+###### subscriptionError?
 
-> **subscriptionError**: `Error`
+> `optional` **subscriptionError**: `Error`
 
 The error that occurred.
 
-###### subscriptionErrored
+###### subscriptionErrored?
 
-> **subscriptionErrored**: `boolean`
+> `optional` **subscriptionErrored**: `boolean`
 
 Whether the subscription has errored.
 
-###### subscriptionLoading
+###### subscriptionLoading?
 
-> **subscriptionLoading**: `boolean`
+> `optional` **subscriptionLoading**: `boolean`
 
 Whether the subscription is loading.
 
@@ -288,9 +288,9 @@ CRUD functions and their configurations for the list.
 
 Arguments for the CRUD functions.
 
-###### crud.list
+###### crud.list?
 
-> **list**: `Function`
+> `optional` **list**: `Function`
 
 Function to list objects.
 
@@ -316,15 +316,15 @@ Maintains computed references to the foreign keys for each object pk and rule, c
 
  \[`pk`: `string`\]: `object`
 
-###### intendToList
+###### intendToList?
 
-> **intendToList**: `boolean`
+> `optional` **intendToList**: `boolean`
 
 If this is true, the list should be fetched, or re-fetched if arguments change.
 
-###### intendToSubscribe
+###### intendToSubscribe?
 
-> **intendToSubscribe**: `boolean`
+> `optional` **intendToSubscribe**: `boolean`
 
 If this is true, the subscription should start or restart if arguments change.
 
@@ -334,9 +334,9 @@ If this is true, the subscription should start or restart if arguments change.
 
 Arguments passed to the server for listing operations.
 
-###### loading
+###### loading?
 
-> **loading**: `boolean`
+> `optional` **loading**: `boolean`
 
 Indicates if the list is currently loading.
 
@@ -424,27 +424,27 @@ Arguments passed to the server for retrieval operations.
 
 Indicates if there are ongoing reactive updates.
 
-###### subscribed
+###### subscribed?
 
-> **subscribed**: `boolean`
+> `optional` **subscribed**: `boolean`
 
 Whether the subscription is active.
 
-###### subscriptionError
+###### subscriptionError?
 
-> **subscriptionError**: `Error`
+> `optional` **subscriptionError**: `Error`
 
 The error that occurred.
 
-###### subscriptionErrored
+###### subscriptionErrored?
 
-> **subscriptionErrored**: `boolean`
+> `optional` **subscriptionErrored**: `boolean`
 
 Whether the subscription has errored.
 
-###### subscriptionLoading
+###### subscriptionLoading?
 
-> **subscriptionLoading**: `boolean`
+> `optional` **subscriptionLoading**: `boolean`
 
 Whether the subscription is loading.
 
@@ -520,7 +520,7 @@ Signals whether any computations related to object relationships are currently i
 
 ##### running
 
-> **running**: `Ref`\<`boolean`\>
+> **running**: `Ref`\<`boolean`, `boolean`\>
 
 General flag that indicates if the list-related logic is processing, used to manage UI feedback or prevent concurrent operations.
 
@@ -536,9 +536,9 @@ General flag that indicates if the list-related logic is processing, used to man
 
 The objects that can be related based on the foreign key.
 
-##### order
+##### order?
 
-> **order**: `string`[]
+> `optional` **order**: `string`[]
 
 Specifies the order in which related objects should be sorted, if applicable.
 
@@ -561,7 +561,7 @@ Specifies the foreign key used to link objects across lists. Planned to be renam
 
 ### ListRelatedParentRawState
 
-> **ListRelatedParentRawState**\<\>: [`use/listInstance`](listInstance.md) & `Partial`\<[`use/listSubscription`](listSubscription.md)\>
+> **ListRelatedParentRawState**\<\>: [`ListInstanceRawState`](listInstance.md#listinstancerawstate) & `Partial`\<[`ListSubscriptionRawState`](listSubscription.md#listsubscriptionrawstate)\>
 
 #### Type Parameters
 
@@ -602,7 +602,9 @@ state are reflected in the relationships defined by the rules.
 
 #### Parameters
 
-• **options**: [`ListRelatedOptions`](listRelated.md#listrelatedoptions)
+##### options
+
+[`ListRelatedOptions`](listRelated.md#listrelatedoptions)
 
 The configuration options including the parent state and rules for related
  objects.
@@ -693,7 +695,7 @@ based on provided configuration.
 
 #### Parameters
 
-• **listRelatedArgs**
+##### listRelatedArgs
 
 The options for the list related properties.
 
