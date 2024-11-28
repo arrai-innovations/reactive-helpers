@@ -1,4 +1,4 @@
-[**@arrai-innovations/reactive-helpers**](../README.md) • **Docs**
+[**@arrai-innovations/reactive-helpers**](../README.md)
 
 ***
 
@@ -26,11 +26,15 @@ Creates a new ListError.
 
 ###### Parameters
 
-• **message**: `string`
+###### message
+
+`string`
 
 The error message.
 
-• **code**: `string`
+###### code
+
+`string`
 
 The error code.
 
@@ -148,7 +152,7 @@ Function or rule to determine if an item should be included based on inclusion c
 
 ##### calculatedObjectsRules
 
-> **calculatedObjectsRules**: `Ref`\<`object`\>
+> **calculatedObjectsRules**: `Ref`\<`object`, `object`\>
 
 Defines rules for dynamically calculating properties of list items.
 
@@ -238,7 +242,7 @@ Current text query used for filtering the list.
 
 ### ListFunctions
 
-> **ListFunctions**\<\>: [`use/listInstance`](listInstance.md) & [`use/listSubscription`](listSubscription.md)
+> **ListFunctions**\<\>: [`ListInstanceFunctions`](listInstance.md#listinstancefunctions) & [`ListSubscriptionFunctions`](listSubscription.md#listsubscriptionfunctions)
 
 #### Type Parameters
 
@@ -254,31 +258,31 @@ Current text query used for filtering the list.
 
 ##### listCalculated
 
-> **listCalculated**: [`use/listCalculated`](listCalculated.md)
+> **listCalculated**: [`ListCalculated`](listCalculated.md#listcalculated)
 
 ##### listFilter
 
-> **listFilter**: [`use/listFilter`](listFilter.md)
+> **listFilter**: [`ListFilter`](listFilter.md#listfilter)
 
 ##### listInstance
 
-> **listInstance**: [`use/listInstance`](listInstance.md)
+> **listInstance**: [`ListInstance`](listInstance.md#listinstance)
 
 ##### listRelated
 
-> **listRelated**: [`use/listRelated`](listRelated.md)
+> **listRelated**: [`ListRelated`](listRelated.md#listrelated)
 
 ##### listSearch
 
-> **listSearch**: [`use/listSearch`](listSearch.md)
+> **listSearch**: [`ListSearch`](listSearch.md#listsearch)
 
 ##### listSort
 
-> **listSort**: [`use/listSort`](listSort.md)
+> **listSort**: [`ListSort`](listSort.md#listsort)
 
 ##### listSubscription
 
-> **listSubscription**: [`use/listSubscription`](listSubscription.md)
+> **listSubscription**: [`ListSubscription`](listSubscription.md#listsubscription)
 
 ***
 
@@ -292,7 +296,7 @@ Current text query used for filtering the list.
 
 ### ListRawState
 
-> **ListRawState**\<\>: [`use/listInstance`](listInstance.md) \| [`use/listSubscription`](listSubscription.md) \| [`use/listRelated`](listRelated.md) \| [`use/listCalculated`](listCalculated.md) \| [`use/listFilter`](listFilter.md) \| [`use/listSearch`](listSearch.md) \| [`use/listSort`](listSort.md)
+> **ListRawState**\<\>: [`ListInstanceRawState`](listInstance.md#listinstancerawstate) \| [`ListSubscriptionRawState`](listSubscription.md#listsubscriptionrawstate) \| [`ListRelatedRawState`](listRelated.md#listrelatedrawstate) \| [`ListCalculatedRawState`](listCalculated.md#listcalculatedrawstate) \| [`ListFilterRawState`](listFilter.md#listfilterrawstate) \| [`ListSearchRawState`](listSearch.md#listsearchrawstate) \| [`ListSortRawState`](listSort.md#listsortrawstate)
 
 #### Type Parameters
 
@@ -315,7 +319,9 @@ It ensures seamless integration of all list functionalities such as sorting, sea
 
 #### Parameters
 
-• **options**: [`ListOptions`](list.md#listoptions)
+##### options
+
+[`ListOptions`](list.md#listoptions)
 
 The options for the list./.
 
@@ -344,7 +350,7 @@ Initializes multiple list management instances with provided configurations.
 
 #### Parameters
 
-• **listOptions**
+##### listOptions
 
 The options for initializing multiple list instances.
 

@@ -1,4 +1,4 @@
-[**@arrai-innovations/reactive-helpers**](../README.md) • **Docs**
+[**@arrai-innovations/reactive-helpers**](../README.md)
 
 ***
 
@@ -24,9 +24,9 @@ The document field to use as an identifier. Populated from `pkKey`.
 
 Fields to index. Can be a single string, an array of strings, or an array of objects specifying custom index options.
 
-##### minLength
+##### minLength?
 
-> **minLength**: `number`
+> `optional` **minLength**: `number`
 
 Minimum length of a token to be indexed.
 
@@ -42,9 +42,9 @@ Specifies if and what document fields to store. Can be false, a string, or an ar
 
 The document field to use as a tag. Default is false, can be set to a string.
 
-##### tokenizer
+##### tokenizer?
 
-> **tokenizer**: `string`
+> `optional` **tokenizer**: `string`
 
 Specifies the tokenizer to use.
 
@@ -114,9 +114,9 @@ The document field to use as an identifier. Populated from `pkKey`.
 
 Fields to index. Can be a single string, an array of strings, or an array of objects specifying custom index options.
 
-###### customDocumentOptions.minLength
+###### customDocumentOptions.minLength?
 
-> **minLength**: `number`
+> `optional` **minLength**: `number`
 
 Minimum length of a token to be indexed.
 
@@ -132,9 +132,9 @@ Specifies if and what document fields to store. Can be false, a string, or an ar
 
 The document field to use as a tag. Default is false, can be set to a string.
 
-###### customDocumentOptions.tokenizer
+###### customDocumentOptions.tokenizer?
 
-> **tokenizer**: `string`
+> `optional` **tokenizer**: `string`
 
 Specifies the tokenizer to use.
 
@@ -298,15 +298,19 @@ A reactive wrapper around FlexSearch.Index.
 
 #### Parameters
 
-• **options**
+##### options
 
 Options.
 
-• **options.props**: [`SearchProps`](search.md#searchprops)
+###### options.props
+
+[`SearchProps`](search.md#searchprops)
 
 Props.
 
-• **options.throttle**: `number` = `500`
+###### options.throttle
+
+`number` = `500`
 
 Throttle wait time.
 

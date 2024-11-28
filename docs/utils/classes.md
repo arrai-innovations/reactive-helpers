@@ -1,4 +1,4 @@
-[**@arrai-innovations/reactive-helpers**](../README.md) • **Docs**
+[**@arrai-innovations/reactive-helpers**](../README.md)
 
 ***
 
@@ -8,9 +8,17 @@
 
 ## Type Aliases
 
+### BooleanOrRef
+
+> **BooleanOrRef**\<\>: `boolean` \| `Ref`
+
+#### Type Parameters
+
+***
+
 ### CombinedClasses
 
-> **CombinedClasses**\<\>: `string` \| `object` \| `object`[]
+> **CombinedClasses**\<\>: `string` \| \{\} \| `object`[]
 
 The normalized form of the CSS classes, either as a string of space-separated class names or an
 
@@ -20,7 +28,15 @@ The normalized form of the CSS classes, either as a string of space-separated cl
 
 ### CombinedClassesArgument
 
-> **CombinedClassesArgument**\<\>: `string` \| `string`[] \| `string`[][] \| `object` \| `Ref` \| `Ref` \| `UnwrapNestedRefs`
+> **CombinedClassesArgument**\<\>: [`NestedArrayStructureWithStrings`](classes.md#nestedarraystructurewithstrings) \| \{\} \| `Ref`
+
+#### Type Parameters
+
+***
+
+### NestedArrayStructureWithStrings
+
+> **NestedArrayStructureWithStrings**\<\>: `string` \| `string`[] \| `Ref`
 
 #### Type Parameters
 
@@ -33,42 +49,44 @@ The normalized form of the CSS classes, either as a string of space-separated cl
 Combines and normalizes different formats of CSS class specifications into a single format suitable for Vue.js
  components. If objects are in the mix, objects are returned. Otherwise, a string is returned.
 
-We unref your refs, so probably want a computed around this.
+We unref your refs, so probably want a computed around this. We filter out false values, as Vue will not necessarily
+ do this if it can't statically realize a bound value for class will be an object.
 
 #### Parameters
 
-• ...**classes**: ([`CombinedClassesArgument`](classes.md#combinedclassesargument) \| [`CombinedClassesArgument`](classes.md#combinedclassesargument)[])[]
+##### classes
 
-A variable list of class specifications in
- different formats.
+...([`CombinedClassesArgument`](classes.md#combinedclassesargument) \| [`CombinedClassesArgument`](classes.md#combinedclassesargument)[])[]
+
+A variable list of class specifications.
 
 #### Returns
 
 [`CombinedClasses`](classes.md#combinedclasses)
 
-- The normalized form of the CSS classes, either as a string of space-separated class
- names or an object map of class names to boolean values indicating their presence.
+- The normalized form of the CSS classes, either as a string or an object.
 
 ***
 
 ### objectifyClasses()
 
-> **objectifyClasses**(...`classes`): `object` \| `object`[]
+> **objectifyClasses**(...`classes`): `object`
 
 Normalize various ways of specifying CSS classes into an object for use in Vue.js.
 
 #### Parameters
 
-• ...**classes**: (`string` \| `string`[] \| `object` \| `string`[][] \| `Ref`\<`string` \| `string`[] \| `string`[][]\>)[]
+##### classes
+
+...([`CombinedClassesArgument`](classes.md#combinedclassesargument) \| [`CombinedClassesArgument`](classes.md#combinedclassesargument)[])[]
 
 A mixed array containing multiple ways of specifying CSS classes.
 
 #### Returns
 
-`object` \| `object`[]
+`object`
 
-An object or array of objects containing CSS classes. Arrays are used if refs are present, to preserve order
- of operations in reactive contexts.
+An object containing flattened CSS classes.
 
 ***
 
@@ -78,11 +96,14 @@ An object or array of objects containing CSS classes. Arrays are used if refs ar
 
 Normalizes various ways of specifying CSS classes into a space-separated list of CSS classes.
 
+We unref your refs, so probably want a computed around this. We filter out false values, as Vue will not necessarily
+ do this if it can't statically realize a bound value for class will be an object.
+
 #### Parameters
 
-• **cls**: `string` \| `string`[] \| `object`
+##### cls
 
-Handles the multiple ways of specifying CSS class related values.
+[`CombinedClassesArgument`](classes.md#combinedclassesargument) | [`CombinedClassesArgument`](classes.md#combinedclassesargument)[]
 
 #### Returns
 
@@ -98,9 +119,14 @@ A space-separated list of CSS classes.
 
 Normalizes various ways of specifying CSS classes into a space-separated list of CSS classes.
 
+We unref your refs, so probably want a computed around this. We filter out false values, as Vue will not necessarily
+ do this if it can't statically realize a bound value for class will be an object.
+
 #### Parameters
 
-• ...**classes**: (`string` \| `string`[] \| `object`)[]
+##### classes
+
+...([`CombinedClassesArgument`](classes.md#combinedclassesargument) \| [`CombinedClassesArgument`](classes.md#combinedclassesargument)[])[]
 
 Handles the multiple ways of specifying CSS class related values.
 

@@ -1,4 +1,4 @@
-[**@arrai-innovations/reactive-helpers**](../README.md) • **Docs**
+[**@arrai-innovations/reactive-helpers**](../README.md)
 
 ***
 
@@ -30,91 +30,103 @@ The parent state.
 
 The crud functions.
 
-###### crud.args
+###### crud.args?
 
-> **args**: `any`
+> `optional` **args**: `any`
 
 The arguments to be passed to the crud functions.
 
-###### crud.create()
+###### crud.create()?
 
-> **create**: (`CreateDetailArgs`) => [`ResponseData`](../config/objectCrud.md#responsedata)
+> `optional` **create**: (`CreateDetailArgs`) => [`ResponseData`](../config/objectCrud.md#responsedata)
 
 A function to be used instead of the default crud create function.
 
 ###### Parameters
 
-• **CreateDetailArgs**: `any`
+###### CreateDetailArgs
+
+`any`
 
 ###### Returns
 
 [`ResponseData`](../config/objectCrud.md#responsedata)
 
-###### crud.delete()
+###### crud.delete()?
 
-> **delete**: (`DeleteDetailArgs`) => [`ResponseData`](../config/objectCrud.md#responsedata)
+> `optional` **delete**: (`DeleteDetailArgs`) => [`ResponseData`](../config/objectCrud.md#responsedata)
 
 A function to be used instead of the default crud delete function.
 
 ###### Parameters
 
-• **DeleteDetailArgs**: `any`
+###### DeleteDetailArgs
+
+`any`
 
 ###### Returns
 
 [`ResponseData`](../config/objectCrud.md#responsedata)
 
-###### crud.patch()
+###### crud.patch()?
 
-> **patch**: (`PartialDetailArgs`) => [`ResponseData`](../config/objectCrud.md#responsedata)
+> `optional` **patch**: (`PartialDetailArgs`) => [`ResponseData`](../config/objectCrud.md#responsedata)
 
 A function to be used instead of the default crud patch function.
 
 ###### Parameters
 
-• **PartialDetailArgs**: `any`
+###### PartialDetailArgs
+
+`any`
 
 ###### Returns
 
 [`ResponseData`](../config/objectCrud.md#responsedata)
 
-###### crud.retrieve()
+###### crud.retrieve()?
 
-> **retrieve**: (`RetrieveDetailArgs`) => [`ResponseData`](../config/objectCrud.md#responsedata)
+> `optional` **retrieve**: (`RetrieveDetailArgs`) => [`ResponseData`](../config/objectCrud.md#responsedata)
 
 A function to be used instead of the default crud retrieve function.
 
 ###### Parameters
 
-• **RetrieveDetailArgs**: `any`
+###### RetrieveDetailArgs
+
+`any`
 
 ###### Returns
 
 [`ResponseData`](../config/objectCrud.md#responsedata)
 
-###### crud.subscribe()
+###### crud.subscribe()?
 
-> **subscribe**: (`SubscribeArgs`) => `void` & `object`
+> `optional` **subscribe**: (`SubscribeArgs`) => `void` & `object`
 
 A function to be used instead of the default crud subscribe function.
 
 ###### Parameters
 
-• **SubscribeArgs**: `any`
+###### SubscribeArgs
+
+`any`
 
 ###### Returns
 
 `void` & `object`
 
-###### crud.update()
+###### crud.update()?
 
-> **update**: (`UpdateDetailArgs`) => [`ResponseData`](../config/objectCrud.md#responsedata)
+> `optional` **update**: (`UpdateDetailArgs`) => [`ResponseData`](../config/objectCrud.md#responsedata)
 
 A function to be used instead of the default crud update function.
 
 ###### Parameters
 
-• **UpdateDetailArgs**: `any`
+###### UpdateDetailArgs
+
+`any`
 
 ###### Returns
 
@@ -138,15 +150,15 @@ The error.
 
 Whether the object errored.
 
-###### intendToRetrieve
+###### intendToRetrieve?
 
-> **intendToRetrieve**: `boolean`
+> `optional` **intendToRetrieve**: `boolean`
 
 Whether the object intends to retrieve.
 
-###### intendToSubscribe
+###### intendToSubscribe?
 
-> **intendToSubscribe**: `boolean`
+> `optional` **intendToSubscribe**: `boolean`
 
 Whether the object intends to subscribe.
 
@@ -158,7 +170,7 @@ Whether the object is loading.
 
 ###### object
 
-> **object**: `object` \| `object`
+> **object**: \{\} \| \{`[key: string]`: `any`; `pkKey`: `string`; \}
 
 The object.
 
@@ -180,27 +192,27 @@ The pk key of the object.
 
 The arguments to be passed to the retrieve function.
 
-###### subscribed
+###### subscribed?
 
-> **subscribed**: `boolean`
+> `optional` **subscribed**: `boolean`
 
 Whether the object is subscribed.
 
-###### subscriptionError
+###### subscriptionError?
 
-> **subscriptionError**: `Error`
+> `optional` **subscriptionError**: `Error`
 
 The error that occurred.
 
-###### subscriptionErrored
+###### subscriptionErrored?
 
-> **subscriptionErrored**: `boolean`
+> `optional` **subscriptionErrored**: `boolean`
 
 Whether the subscription has errored.
 
-###### subscriptionLoading
+###### subscriptionLoading?
 
-> **subscriptionLoading**: `boolean`
+> `optional` **subscriptionLoading**: `boolean`
 
 Whether the subscription is loading.
 
@@ -216,91 +228,103 @@ The state of the object related instance.
 
 The crud functions.
 
-###### crud.args
+###### crud.args?
 
-> **args**: `any`
+> `optional` **args**: `any`
 
 The arguments to be passed to the crud functions.
 
-###### crud.create()
+###### crud.create()?
 
-> **create**: (`CreateDetailArgs`) => [`ResponseData`](../config/objectCrud.md#responsedata)
+> `optional` **create**: (`CreateDetailArgs`) => [`ResponseData`](../config/objectCrud.md#responsedata)
 
 A function to be used instead of the default crud create function.
 
 ###### Parameters
 
-• **CreateDetailArgs**: `any`
+###### CreateDetailArgs
+
+`any`
 
 ###### Returns
 
 [`ResponseData`](../config/objectCrud.md#responsedata)
 
-###### crud.delete()
+###### crud.delete()?
 
-> **delete**: (`DeleteDetailArgs`) => [`ResponseData`](../config/objectCrud.md#responsedata)
+> `optional` **delete**: (`DeleteDetailArgs`) => [`ResponseData`](../config/objectCrud.md#responsedata)
 
 A function to be used instead of the default crud delete function.
 
 ###### Parameters
 
-• **DeleteDetailArgs**: `any`
+###### DeleteDetailArgs
+
+`any`
 
 ###### Returns
 
 [`ResponseData`](../config/objectCrud.md#responsedata)
 
-###### crud.patch()
+###### crud.patch()?
 
-> **patch**: (`PartialDetailArgs`) => [`ResponseData`](../config/objectCrud.md#responsedata)
+> `optional` **patch**: (`PartialDetailArgs`) => [`ResponseData`](../config/objectCrud.md#responsedata)
 
 A function to be used instead of the default crud patch function.
 
 ###### Parameters
 
-• **PartialDetailArgs**: `any`
+###### PartialDetailArgs
+
+`any`
 
 ###### Returns
 
 [`ResponseData`](../config/objectCrud.md#responsedata)
 
-###### crud.retrieve()
+###### crud.retrieve()?
 
-> **retrieve**: (`RetrieveDetailArgs`) => [`ResponseData`](../config/objectCrud.md#responsedata)
+> `optional` **retrieve**: (`RetrieveDetailArgs`) => [`ResponseData`](../config/objectCrud.md#responsedata)
 
 A function to be used instead of the default crud retrieve function.
 
 ###### Parameters
 
-• **RetrieveDetailArgs**: `any`
+###### RetrieveDetailArgs
+
+`any`
 
 ###### Returns
 
 [`ResponseData`](../config/objectCrud.md#responsedata)
 
-###### crud.subscribe()
+###### crud.subscribe()?
 
-> **subscribe**: (`SubscribeArgs`) => `void` & `object`
+> `optional` **subscribe**: (`SubscribeArgs`) => `void` & `object`
 
 A function to be used instead of the default crud subscribe function.
 
 ###### Parameters
 
-• **SubscribeArgs**: `any`
+###### SubscribeArgs
+
+`any`
 
 ###### Returns
 
 `void` & `object`
 
-###### crud.update()
+###### crud.update()?
 
-> **update**: (`UpdateDetailArgs`) => [`ResponseData`](../config/objectCrud.md#responsedata)
+> `optional` **update**: (`UpdateDetailArgs`) => [`ResponseData`](../config/objectCrud.md#responsedata)
 
 A function to be used instead of the default crud update function.
 
 ###### Parameters
 
-• **UpdateDetailArgs**: `any`
+###### UpdateDetailArgs
+
+`any`
 
 ###### Returns
 
@@ -324,15 +348,15 @@ The error.
 
 Whether the object errored.
 
-###### intendToRetrieve
+###### intendToRetrieve?
 
-> **intendToRetrieve**: `boolean`
+> `optional` **intendToRetrieve**: `boolean`
 
 Whether the object intends to retrieve.
 
-###### intendToSubscribe
+###### intendToSubscribe?
 
-> **intendToSubscribe**: `boolean`
+> `optional` **intendToSubscribe**: `boolean`
 
 Whether the object intends to subscribe.
 
@@ -344,7 +368,7 @@ Whether the object is loading.
 
 ###### object
 
-> **object**: `object` \| `object`
+> **object**: \{\} \| \{`[key: string]`: `any`; `pkKey`: `string`; \}
 
 The object.
 
@@ -374,7 +398,7 @@ The related objects, indexed by the key in the related object.
 
 ###### Index Signature
 
- \[`rule`: `string`\]: `ComputedRef`
+ \[`rule`: `string`\]: `ComputedRef`\<`any`\>
 
 ###### relatedObjectRules
 
@@ -406,27 +430,27 @@ The arguments to be passed to the retrieve function.
 
 Whether the related objects are loading or the parent state is loading.
 
-###### subscribed
+###### subscribed?
 
-> **subscribed**: `boolean`
+> `optional` **subscribed**: `boolean`
 
 Whether the object is subscribed.
 
-###### subscriptionError
+###### subscriptionError?
 
-> **subscriptionError**: `Error`
+> `optional` **subscriptionError**: `Error`
 
 The error that occurred.
 
-###### subscriptionErrored
+###### subscriptionErrored?
 
-> **subscriptionErrored**: `boolean`
+> `optional` **subscriptionErrored**: `boolean`
 
 Whether the subscription has errored.
 
-###### subscriptionLoading
+###### subscriptionLoading?
 
-> **subscriptionLoading**: `boolean`
+> `optional` **subscriptionLoading**: `boolean`
 
 Whether the subscription is loading.
 
@@ -444,7 +468,7 @@ The watches running instance.
 
 ##### relatedObjectRules
 
-> **relatedObjectRules**: `Ref`\<[`ObjectRelatedRawRules`](objectRelated.md#objectrelatedrawrules)\>
+> **relatedObjectRules**: `Ref`\<[`ObjectRelatedRawRules`](objectRelated.md#objectrelatedrawrules), [`ObjectRelatedRawRules`](objectRelated.md#objectrelatedrawrules)\>
 
 The rules for defining relationships for the managed object to other collections of objects.
 
@@ -468,7 +492,7 @@ The related objects, indexed by the key in the related object.
 
 ###### Index Signature
 
- \[`rule`: `string`\]: `ComputedRef`
+ \[`rule`: `string`\]: `ComputedRef`\<`any`\>
 
 ##### relatedObjectRules
 
@@ -544,7 +568,7 @@ The key in the managed object that corresponds to the key in the related object.
 
 ### ObjectRelatedParentRawState
 
-> **ObjectRelatedParentRawState**\<\>: [`use/objectInstance`](objectInstance.md) & `Partial`\<[`use/objectSubscription`](objectSubscription.md)\>
+> **ObjectRelatedParentRawState**\<\>: [`ObjectInstanceRawState`](objectInstance.md#objectinstancerawstate) & `Partial`\<[`ObjectSubscriptionRawState`](objectSubscription.md#objectsubscriptionrawstate)\>
 
 #### Type Parameters
 
@@ -598,7 +622,9 @@ Creates an object related reactive object.
 
 #### Parameters
 
-• **options**: [`ObjectRelatedOptions`](objectRelated.md#objectrelatedoptions)
+##### options
+
+[`ObjectRelatedOptions`](objectRelated.md#objectrelatedoptions)
 
 The options for the object related reactive object.
 
@@ -686,7 +712,7 @@ const objectRelated = useObjectRelated(objectRelatedProps);
 
 #### Parameters
 
-• **objectRelatedArgs**
+##### objectRelatedArgs
 
 The options for the desired object related reactive objects.
 

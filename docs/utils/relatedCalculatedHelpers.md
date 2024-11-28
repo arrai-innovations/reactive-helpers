@@ -1,4 +1,4 @@
-[**@arrai-innovations/reactive-helpers**](../README.md) • **Docs**
+[**@arrai-innovations/reactive-helpers**](../README.md)
 
 ***
 
@@ -28,15 +28,21 @@ Get the object and key of a related item.
 
 #### Parameters
 
-• **obj**: `any`
+##### obj
+
+`any`
 
 The object to get the related item from.
 
-• **relatedObj**: `any`
+##### relatedObj
+
+`any`
 
 The object to get the related item from.
 
-• **key**: `string`
+##### key
+
+`string`
 
 The key to get the related item from.
 
@@ -56,19 +62,27 @@ Get the object and key of a calculated item.
 
 #### Parameters
 
-• **obj**: `any`
+##### obj
+
+`any`
 
 The object to get the calculated item from.
 
-• **relatedObj**: `any`
+##### relatedObj
+
+`any`
 
 The object to get the related item from.
 
-• **calculatedObj**: `any`
+##### calculatedObj
+
+`any`
 
 The object to get the calculated item from.
 
-• **key**: `string`
+##### key
+
+`string`
 
 The key to get the calculated item from.
 

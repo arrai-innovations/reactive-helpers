@@ -1,4 +1,4 @@
-[**@arrai-innovations/reactive-helpers**](../README.md) • **Docs**
+[**@arrai-innovations/reactive-helpers**](../README.md)
 
 ***
 
@@ -23,27 +23,37 @@ Initializes the AwaitNot with specified options for reactive property watching a
 
 ###### Parameters
 
-• **options**
+###### options
 
 Configuration options for AwaitNot.
 
-• **options.couldAlreadyBeFalse**: `boolean` = `false`
+###### options.couldAlreadyBeFalse
+
+`boolean` = `false`
 
 Indicates if the property could already be in the false state at initialization.
 
-• **options.obj**: `any`
+###### options.obj
+
+`any`
 
 The object containing the property to watch.
 
-• **options.prop**: `string`
+###### options.prop
+
+`string`
 
 The property name to watch within the object.
 
-• **options.ref**: `Ref`\<`any`\>
+###### options.ref
+
+`Ref`\<`any`, `any`\>
 
 A Vue ref to directly watch if provided.
 
-• **options.timeout**: `number` = `1000`
+###### options.timeout
+
+`number` = `1000`
 
 The timeout in milliseconds before the promise is rejected.
 
@@ -67,7 +77,7 @@ The timeout in milliseconds before the promise is rejected.
 
 ##### ref
 
-> **ref**: `Readonly`\<`Ref`\<`any`\>\>
+> **ref**: `Readonly`\<`Ref`\<`any`, `any`\>\>
 
 ##### reject()
 
@@ -75,7 +85,9 @@ The timeout in milliseconds before the promise is rejected.
 
 ###### Parameters
 
-• **reason?**: `any`
+###### reason?
+
+`any`
 
 ###### Returns
 
@@ -87,7 +99,9 @@ The timeout in milliseconds before the promise is rejected.
 
 ###### Parameters
 
-• **value**: `any`
+###### value
+
+`any`
 
 ###### Returns
 
@@ -146,9 +160,13 @@ The error thrown when an AwaitNot operation times out.
 
 ###### Parameters
 
-• **message**: `any`
+###### message
 
-• **code**: `any`
+`any`
+
+###### code
+
+`any`
 
 ###### Returns
 
@@ -194,11 +212,13 @@ Creates an instance of AwaitTimeout with a specified timeout duration.
 
 ###### Parameters
 
-• **options**
+###### options
 
 The options for the AwaitTimeout.
 
-• **options.timeout**: `number` = `1000`
+###### options.timeout
+
+`number` = `1000`
 
 The timeout in milliseconds.
 
@@ -222,7 +242,9 @@ The timeout in milliseconds.
 
 ###### Parameters
 
-• **reason?**: `any`
+###### reason?
+
+`any`
 
 ###### Returns
 
@@ -234,7 +256,9 @@ The timeout in milliseconds.
 
 ###### Parameters
 
-• **value**: `any`
+###### value
+
+`any`
 
 ###### Returns
 
@@ -288,9 +312,13 @@ The error thrown when an AwaitTimeout operation times out.
 
 ###### Parameters
 
-• **message**: `any`
+###### message
 
-• **code**: `any`
+`any`
+
+###### code
+
+`any`
 
 ###### Returns
 
@@ -338,7 +366,7 @@ based on conditions encountered during the initial execution of the watch functi
 
 ##### stopWatch
 
-> **stopWatch**: `WatchStopHandle`
+> **stopWatch**: `WatchHandle`
 
 #### Methods
 
@@ -350,19 +378,25 @@ Starts the watch.
 
 ###### Parameters
 
-• **watchSources**: `WatchSource`\<`any`\> \| `WatchSource`\<`any`\>[]
+###### watchSources
 
-The source(s) to watch.
+`WatchSource`\<`any`\> | `WatchSource`\<`any`\>[]
 
-• **watchFunc**: `WatchCallback`\<`any`, `any`\>
+###### watchFunc
+
+`WatchCallback`\<`any`, `any`\>
 
 The callback to execute when the source changes.
 
-• **watchFuncArgs?**: `any`[] = `[]`
+###### watchFuncArgs?
+
+`any`[] = `[]`
 
 Optional arguments to pass to the watch function.
 
-• **watchOptions?**: `WatchOptions`\<`boolean`\> = `{}`
+###### watchOptions?
+
+`WatchOptions`\<`boolean`\> = `{}`
 
 Optional watch options.
 
@@ -390,27 +424,37 @@ Helper function to get the resulting promise from an AwaitNot instance.
 
 #### Parameters
 
-• **options**
+##### options
 
 Configuration options for AwaitNot.
 
-• **options.couldAlreadyBeFalse**: `boolean` = `true`
+###### options.couldAlreadyBeFalse
+
+`boolean` = `true`
 
 Indicates if the property could already be in the false state at initialization.
 
-• **options.obj**: `any`
+###### options.obj
+
+`any`
 
 The object containing the property to watch.
 
-• **options.prop**: `string`
+###### options.prop
+
+`string`
 
 The property name to watch within the object.
 
-• **options.ref**: `Ref`\<`any`\>
+###### options.ref
+
+`Ref`\<`any`, `any`\>
 
 A Vue ref to directly watch if provided.
 
-• **options.timeout**: `number` = `1000`
+###### options.timeout
+
+`number` = `1000`
 
 The timeout in milliseconds before the promise is rejected.
 
@@ -430,7 +474,9 @@ Helper function to get the resulting promise from an AwaitTimeout instance.
 
 #### Parameters
 
-• **timeout**: `number`
+##### timeout
+
+`number`
 
 The timeout in milliseconds.
 

@@ -1,4 +1,4 @@
-[**@arrai-innovations/reactive-helpers**](../README.md) • **Docs**
+[**@arrai-innovations/reactive-helpers**](../README.md)
 
 ***
 
@@ -16,11 +16,15 @@ If there is an active component, set up an onActivated hook.
 
 #### Parameters
 
-• **fn**: `Function`
+##### fn
+
+`Function`
 
 The function to call.
 
-• **target?**: `any`
+##### target?
+
+`any`
 
 The target to call the function on.
 
@@ -38,11 +42,15 @@ If there is an active component, set up an onDeactivated hook.
 
 #### Parameters
 
-• **fn**: `Function`
+##### fn
+
+`Function`
 
 The function to call.
 
-• **target?**: `any`
+##### target?
+
+`any`
 
 The target to call the function on.
 

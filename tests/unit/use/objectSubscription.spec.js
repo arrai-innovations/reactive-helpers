@@ -5,8 +5,9 @@ import { expectErrorToBeNull } from "../expectHelpers.js";
 import { poll } from "../poll.js";
 import flushPromises from "flush-promises";
 import cloneDeep from "lodash-es/cloneDeep.js";
-import { inspect } from "util";
 import { nextTick, ref } from "vue";
+import { stringify } from "flatted";
+import { deepUnref } from "vue-deepunref";
 
 // getMockOnUnmounted();
 
@@ -812,8 +813,8 @@ describe("use/objectSubscription.js", function () {
                 },
             },
         });
-        expect(inspect(objSubs.A)).toEqual(inspect(objectSubscriptionA));
-        expect(inspect(objSubs.B)).toEqual(inspect(objectSubscriptionB));
+        expect(deepUnref(objSubs.A.state)).toEqual(deepUnref(objectSubscriptionA.state));
+        expect(deepUnref(objSubs.B.state)).toEqual(deepUnref(objectSubscriptionB.state));
     });
     it("updateFromSubscription", function () {
         const objectSubscription = useObjectSubscription({

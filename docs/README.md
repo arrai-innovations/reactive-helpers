@@ -1,4 +1,4 @@
-**@arrai-innovations/reactive-helpers** • **Docs**
+**@arrai-innovations/reactive-helpers**
 
 ***
 

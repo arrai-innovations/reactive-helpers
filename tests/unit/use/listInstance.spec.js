@@ -2,9 +2,8 @@ import { doAwaitNot } from "../../../utils/watches.js";
 import { expectErrorToBeNull } from "../expectHelpers.js";
 import flushPromises from "flush-promises";
 import keyBy from "lodash-es/keyBy.js";
-import { inspect } from "util";
-import { isReactive, nextTick, reactive, isRef, isReadonly, ref } from "vue";
-import { ListInstanceError } from "../../../use/listInstance.js";
+import { isReactive, nextTick, reactive, isRef, isReadonly } from "vue";
+import { deepUnref } from "vue-deepunref";
 
 afterAll(() => {
     vi.restoreAllMocks();
@@ -537,8 +536,8 @@ describe("use/listInstance.spec.js", function () {
                 keepOldPages: false,
             },
         });
-        expect(inspect(listInstances.A)).toEqual(inspect(listInstanceA));
-        expect(inspect(listInstances.B)).toEqual(inspect(listInstanceB));
+        expect(deepUnref(listInstances.A.state)).toEqual(deepUnref(listInstanceA.state));
+        expect(deepUnref(listInstances.B.state)).toEqual(deepUnref(listInstanceB.state));
     });
     describe("addListObject", function () {
         it("errored", function () {

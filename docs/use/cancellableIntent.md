@@ -1,4 +1,4 @@
-[**@arrai-innovations/reactive-helpers**](../README.md) • **Docs**
+[**@arrai-innovations/reactive-helpers**](../README.md)
 
 ***
 
@@ -62,21 +62,21 @@ The function that returns a promise that can be cancelled.
 
 [`CancellablePromise`](cancellableIntent.md#cancellablepromise)
 
-##### clearActiveOnResolved
+##### clearActiveOnResolved?
 
-> **clearActiveOnResolved**: `boolean`
+> `optional` **clearActiveOnResolved**: `boolean`
 
 Whether to clear the active state when the promise resolves.
 
-##### guardArguments
+##### guardArguments?
 
-> **guardArguments**: `any`
+> `optional` **guardArguments**: `any`
 
 The reactive object to watch for truthiness before running the intent.
 
-##### watchArguments
+##### watchArguments?
 
-> **watchArguments**: `any`
+> `optional` **watchArguments**: `any`
 
 The reactive object to watch for changes.
 
@@ -120,7 +120,9 @@ If the promise is not resolved before the watch arguments change again, the prev
 
 #### Parameters
 
-• **options**: [`CancellableIntentOptions`](cancellableIntent.md#cancellableintentoptions)
+##### options
+
+[`CancellableIntentOptions`](cancellableIntent.md#cancellableintentoptions)
 
 The options for the cancellable intent.
 

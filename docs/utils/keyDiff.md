@@ -1,4 +1,4 @@
-[**@arrai-innovations/reactive-helpers**](../README.md) • **Docs**
+[**@arrai-innovations/reactive-helpers**](../README.md)
 
 ***
 
@@ -12,21 +12,21 @@
 
 #### Properties
 
-##### addedKeys
+##### addedKeys?
 
-> **addedKeys**: `Set`\<`any`\>
+> `optional` **addedKeys**: `Set`\<`any`\>
 
 If addedKeys option is true, return keys that are added.
 
-##### removedKeys
+##### removedKeys?
 
-> **removedKeys**: `Set`\<`any`\>
+> `optional` **removedKeys**: `Set`\<`any`\>
 
 If removedKeys option is true, return keys that are removed.
 
-##### sameKeys
+##### sameKeys?
 
-> **sameKeys**: `Set`\<`any`\>
+> `optional` **sameKeys**: `Set`\<`any`\>
 
 If sameKeys option is true, return keys that are the same.
 
@@ -41,27 +41,33 @@ are the same, what keys are removed, and what keys are added.
 
 #### Parameters
 
-• **newKeys**: `string`[] \| `Set`\<`any`\>
+##### newKeys
 
-Keys to consider as new.
+`string`[] | `Set`\<`any`\>
 
-• **oldKeys**: `string`[] \| `Set`\<`any`\>
+##### oldKeys
 
-Keys to consider as old.
+`string`[] | `Set`\<`any`\>
 
-• **options?** = `{}`
+##### options?
 
 Which differences are returned.
 
-• **options.addedKeys?**: `boolean` = `true`
+###### options.addedKeys
+
+`boolean` = `true`
 
 If true, return keys that are added.
 
-• **options.removedKeys?**: `boolean` = `true`
+###### options.removedKeys
+
+`boolean` = `true`
 
 If true, return keys that are removed.
 
-• **options.sameKeys?**: `boolean` = `true`
+###### options.sameKeys
+
+`boolean` = `true`
 
 If true, return keys that are the same.
 
@@ -82,15 +88,21 @@ what keys are removed, and what keys are added. Keys are sourced deeply in the o
 
 #### Parameters
 
-• **newObj**: `any`
+##### newObj
+
+`any`
 
 The new version of the object.
 
-• **oldObj**: `any`
+##### oldObj
+
+`any`
 
 The old version of the object.
 
-• **options?**: `any` = `{}`
+##### options?
+
+`any` = `{}`
 
 Which differences are returned.
 

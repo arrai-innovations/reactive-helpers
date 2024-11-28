@@ -1,4 +1,4 @@
-[**@arrai-innovations/reactive-helpers**](../README.md) • **Docs**
+[**@arrai-innovations/reactive-helpers**](../README.md)
 
 ***
 
@@ -18,23 +18,31 @@ Array indexes are wrapped in square brackets and object keys are prefixed with a
 
 #### Parameters
 
-• **arrayOrObject**: `any`
+##### arrayOrObject
+
+`any`
 
 Array or object to flatten.
 
-• **options?** = `{}`
+##### options?
 
 Options.
 
-• **options.currentPath?**: `string`
+###### options.currentPath
+
+`string`
 
 Current path, for recursion or as a starting point.
 
-• **options.depth?**: `number`
+###### options.depth
+
+`number`
 
 Current depth, for recursion.
 
-• **options.limit?**: `number`
+###### options.limit
+
+`number`
 
 Limit the depth of recursion.
 

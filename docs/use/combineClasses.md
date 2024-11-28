@@ -1,4 +1,4 @@
-[**@arrai-innovations/reactive-helpers**](../README.md) • **Docs**
+[**@arrai-innovations/reactive-helpers**](../README.md)
 
 ***
 
@@ -10,7 +10,7 @@
 
 ### CSSClasses
 
-> **CSSClasses**\<\>: `string` \| `string`[] \| `object` \| `Ref`
+> **CSSClasses**\<\>: `string` \| `string`[] \| \{\} \| `Ref`
 
 #### Type Parameters
 
@@ -18,7 +18,7 @@
 
 ### useCombineClasses()
 
-> **useCombineClasses**(...`classes`): `Ref`\<[`CombinedClasses`](../utils/classes.md#combinedclasses)\>
+> **useCombineClasses**(...`classes`): `Ref`\<[`CombinedClasses`](../utils/classes.md#combinedclasses), [`CombinedClasses`](../utils/classes.md#combinedclasses)\>
 
 Normalize various ways of specifying CSS classes into an object for use in Vue.js with reactivity. If refs are
  present, the resulting object will be a ref containing an array of objects to preserve order of operations in
@@ -26,13 +26,15 @@ Normalize various ways of specifying CSS classes into an object for use in Vue.j
 
 #### Parameters
 
-• ...**classes**: [`CSSClasses`](combineClasses.md#cssclasses)[]
+##### classes
+
+...[`CSSClasses`](combineClasses.md#cssclasses)[]
 
 A mixed array containing multiple ways of specifying CSS classes.
 
 #### Returns
 
-`Ref`\<[`CombinedClasses`](../utils/classes.md#combinedclasses)\>
+`Ref`\<[`CombinedClasses`](../utils/classes.md#combinedclasses), [`CombinedClasses`](../utils/classes.md#combinedclasses)\>
 
 - A ref
  containing an object or array of objects containing CSS classes. Arrays are used if refs are present, to

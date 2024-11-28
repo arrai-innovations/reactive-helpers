@@ -153,7 +153,7 @@ export function useListCalculateds(listCalculatedArgs) {
  * @example
  * ```vue
  * <script setup>
- * import { useListSubscription, useListComputed } from "@arrai-innovations/reactive-helpers";
+ * import { useListSubscription, useListCalculated } from "@arrai-innovations/reactive-helpers";
  * import { reactive, toRef } from "vue";
  *
  * const listSubscriptionProps = reactive({
@@ -165,7 +165,7 @@ export function useListCalculateds(listCalculatedArgs) {
  *     intendToList: true,
  * });
  * const listSubscription = useListSubscription(listSubscriptionProps);
- * const listComputedProps = reactive({
+ * const listCalculatedProps = reactive({
  *     parentState: listSubscription.state,
  *     computedObjectsRules: {
  *         someRule: (object, relatedObjects, calculatedObjects) => {
@@ -177,7 +177,7 @@ export function useListCalculateds(listCalculatedArgs) {
  *         }
  *     },
  * });
- * const listComputed = useListComputed(listComputedProps);
+ * const listCalculated = useListCalculated(listCalculatedProps);
  * </script>
  * <template>
  *     <ul>
@@ -186,7 +186,7 @@ export function useListCalculateds(listCalculatedArgs) {
  *             {{ obj }}
  *             <div>
  *                 <!-- the computed object or objects based on the rule -->
- *                 {{ listComputed.state.computedObjects[obj.pk].someRule }}
+ *                 {{ listCalculated.state.computedObjects[obj.pk].someRule }}
  *             </div>
  *         </li>
  *     </ul>
@@ -249,8 +249,8 @@ export function useListCalculated({ parentState, calculatedObjectsRules }) {
                 addedRuleKeys = [];
             }
             for (const removedRuleKey of removedRuleKeys) {
-                // this is an unofficial api
-                calculatedObjectsObject[removedRuleKey].effect.stop();
+                // @ts-ignore - this is an unofficial api, effect is internal
+                calculatedObjectsObject[removedRuleKey]?.effect?.stop?.();
                 delete calculatedObjectsObject[removedRuleKey];
             }
             if (!calculatedObjectsEffectScopes[objectKey]) {

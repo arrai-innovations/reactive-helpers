@@ -1,4 +1,4 @@
-[**@arrai-innovations/reactive-helpers**](../README.md) • **Docs**
+[**@arrai-innovations/reactive-helpers**](../README.md)
 
 ***
 
@@ -16,7 +16,9 @@ Remove undefined values from arrays in a mixed object array tree. Mutates the ob
 
 #### Parameters
 
-• **obj**: `any`
+##### obj
+
+`any`
 
 The object or array to compact sparse arrays in.
 
@@ -34,7 +36,9 @@ Remove empty objects from a mixed object array tree. Mutates the object.
 
 #### Parameters
 
-• **obj**: `any`
+##### obj
+
+`any`
 
 The object or array to remove empty objects from.
 
@@ -52,7 +56,9 @@ Remove empty objects and undefined values from arrays in a mixed object array tr
 
 #### Parameters
 
-• **obj**: `any`
+##### obj
+
+`any`
 
 The object or array to remove empty objects from and compact sparse arrays in.
 

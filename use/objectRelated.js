@@ -290,11 +290,14 @@ export function useObjectRelated({ parentState, relatedObjectRules }) {
             addedRuleKeys = new Set();
         }
         for (const removedRuleKey of removedRuleKeys) {
-            state.relatedObject[removedRuleKey]?.effect?.stop();
+            // @ts-ignore - this is an unofficial api, effect is internal
+            state.relatedObject[removedRuleKey]?.effect?.stop?.();
             delete state.relatedObject[removedRuleKey];
-            internalState.fkForRule[removedRuleKey]?.effect?.stop();
+            // @ts-ignore - this is an unofficial api, effect is internal
+            internalState.fkForRule[removedRuleKey]?.effect?.stop?.();
             delete internalState.fkForRule[removedRuleKey];
-            internalState.objAndKeyForRule[removedRuleKey]?.effect?.stop();
+            // @ts-ignore - this is an unofficial api, effect is internal
+            internalState.objAndKeyForRule[removedRuleKey]?.effect?.stop?.();
             delete internalState.objAndKeyForRule[removedRuleKey];
         }
 

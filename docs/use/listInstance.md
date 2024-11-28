@@ -1,4 +1,4 @@
-[**@arrai-innovations/reactive-helpers**](../README.md) • **Docs**
+[**@arrai-innovations/reactive-helpers**](../README.md)
 
 ***
 
@@ -27,11 +27,15 @@ Creates an instance of ListInstanceError.
 
 ###### Parameters
 
-• **message**: `string`
+###### message
+
+`string`
 
 The error message.
 
-• **code**: `string`
+###### code
+
+`string`
 
 The error code.
 
@@ -71,7 +75,9 @@ Adds an object to the list.
 
 ###### Parameters
 
-• **object**: [`ListObject`](listInstance.md#listobject)
+###### object
+
+[`ListObject`](listInstance.md#listobject)
 
 ###### Returns
 
@@ -105,7 +111,9 @@ Handles new or updated objects, respecting the keepOldPages setting.
 
 ###### Parameters
 
-• **newObjects**: [`ListObject`](listInstance.md#listobject)[]
+###### newObjects
+
+[`ListObject`](listInstance.md#listobject)[]
 
 ###### Returns
 
@@ -119,7 +127,9 @@ Deletes an object from the list by pk.
 
 ###### Parameters
 
-• **objectId**: `string`
+###### objectId
+
+`string`
 
 ###### Returns
 
@@ -163,7 +173,9 @@ Customizable callback for handling new objects per page.
 
 ###### Parameters
 
-• **newObjects**: [`ListObject`](listInstance.md#listobject)[]
+###### newObjects
+
+[`ListObject`](listInstance.md#listobject)[]
 
 ###### Returns
 
@@ -177,7 +189,9 @@ Updates an object in the list.
 
 ###### Parameters
 
-• **object**: [`ListObject`](listInstance.md#listobject)
+###### object
+
+[`ListObject`](listInstance.md#listobject)
 
 ###### Returns
 
@@ -189,36 +203,36 @@ Updates an object in the list.
 
 #### Properties
 
-##### functions
+##### functions?
 
-> **functions**: `object`
+> `optional` **functions**: `object`
 
 Default implementation are used as set by `setListCrud`.
 
-###### bulkDelete
+###### bulkDelete?
 
-> **bulkDelete**: [`BulkDeleteFn`](../config/listCrud.md#bulkdeletefn)
+> `optional` **bulkDelete**: [`BulkDeleteFn`](../config/listCrud.md#bulkdeletefn)
 
 Provide the implementation for the bulkDelete
  function.
 
-###### executeAction
+###### executeAction?
 
-> **executeAction**: [`ExecuteActionFn`](../config/listCrud.md#executeactionfn)
+> `optional` **executeAction**: [`ExecuteActionFn`](../config/listCrud.md#executeactionfn)
 
 Provide the implementation for the executeAction
  function.
 
-###### list
+###### list?
 
-> **list**: [`ListFn`](../config/listCrud.md#listfn)
+> `optional` **list**: [`ListFn`](../config/listCrud.md#listfn)
 
 Provide the implementation for the list
  function.
 
-###### subscribe
+###### subscribe?
 
-> **subscribe**: [`SubscribeFn`](../config/listCrud.md#subscribefn)
+> `optional` **subscribe**: [`SubscribeFn`](../config/listCrud.md#subscribefn)
 
 Provide the implementation for the
  subscribe function.
@@ -307,21 +321,21 @@ CRUD functions and their configurations for the list.
 
 Arguments for the CRUD functions.
 
-###### list
+###### list?
 
-> **list**: `Function`
+> `optional` **list**: `Function`
 
 Function to list objects.
 
 ##### error
 
-> **error**: `Readonly`\<`Ref`\<`Error`\>\>
+> **error**: `Readonly`\<`Ref`\<`Error`, `Error`\>\>
 
 The last error encountered.
 
 ##### errored
 
-> **errored**: `Readonly`\<`Ref`\<`boolean`\>\>
+> **errored**: `Readonly`\<`Ref`\<`boolean`, `boolean`\>\>
 
 Indicates if an error occurred during the last operation.
 
@@ -331,9 +345,9 @@ Indicates if an error occurred during the last operation.
 
 Arguments passed to the server for listing operations.
 
-##### loading
+##### loading?
 
-> **loading**: `Readonly`\<`Ref`\<`boolean`\>\>
+> `optional` **loading**: `Readonly`\<`Ref`\<`boolean`, `boolean`\>\>
 
 Indicates if the list is currently loading.
 
@@ -411,11 +425,11 @@ Indicates if there are ongoing reactive updates.
 
 #### Type Parameters
 
+#### Type declaration
+
 #### Index Signature
 
  \[`key`: `string`\]: `any`
-
-#### Type declaration
 
 ##### pk
 
@@ -460,7 +474,9 @@ Creates and manages a reactive list of objects, providing utilities to add, upda
 
 #### Parameters
 
-• **options**: [`ListInstanceOptions`](listInstance.md#listinstanceoptions)
+##### options
+
+[`ListInstanceOptions`](listInstance.md#listinstanceoptions)
 
 Specifies the configuration options for creating a list instance, including
  properties for CRUD operations and UI behaviors like page persistence.
@@ -532,7 +548,7 @@ Creates and manages multiple list instances.
 
 #### Parameters
 
-• **listInstanceArgs**
+##### listInstanceArgs
 
 The arguments for each list instance.
 
