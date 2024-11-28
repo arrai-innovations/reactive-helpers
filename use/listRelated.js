@@ -335,13 +335,13 @@ export function useListRelated({ parentState, relatedObjectsRules }) {
             }
             for (const removedRuleKey of removedRuleKeys) {
                 // @ts-ignore - this is an unofficial api, effect is internal
-                state.relatedObjects[objectKey][removedRuleKey].effect.stop();
+                state.relatedObjects[objectKey][removedRuleKey]?.effect?.stop?.();
                 delete state.relatedObjects[objectKey][removedRuleKey];
                 // @ts-ignore - this is an unofficial api, effect is internal
-                state.objAndKeyForPkAndRule[objectKey][removedRuleKey].effect.stop();
+                state.objAndKeyForPkAndRule[objectKey][removedRuleKey]?.effect?.stop?.();
                 delete state.objAndKeyForPkAndRule[objectKey][removedRuleKey];
                 // @ts-ignore - this is an unofficial api, effect is internal
-                state.fkForPkAndRule[objectKey][removedRuleKey].effect.stop();
+                state.fkForPkAndRule[objectKey][removedRuleKey]?.effect?.stop?.();
                 delete state.fkForPkAndRule[objectKey][removedRuleKey];
             }
             if (addedRuleKeys.size) {

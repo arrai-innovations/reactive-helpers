@@ -250,7 +250,7 @@ export function useListCalculated({ parentState, calculatedObjectsRules }) {
             }
             for (const removedRuleKey of removedRuleKeys) {
                 // @ts-ignore - this is an unofficial api, effect is internal
-                calculatedObjectsObject[removedRuleKey].effect.stop();
+                calculatedObjectsObject[removedRuleKey]?.effect?.stop?.();
                 delete calculatedObjectsObject[removedRuleKey];
             }
             if (!calculatedObjectsEffectScopes[objectKey]) {
