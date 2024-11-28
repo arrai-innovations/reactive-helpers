@@ -1,8 +1,8 @@
 import { assignReactiveObject } from "../../../utils/assignReactiveObject.js";
 import { expectErrorToBeNull } from "../expectHelpers.js";
 import flushPromises from "flush-promises";
-import { inspect } from "util";
 import { nextTick, reactive, ref } from "vue";
+import { deepUnref } from "vue-deepunref";
 
 afterAll(() => {
     vi.restoreAllMocks();
@@ -1509,8 +1509,8 @@ describe("use/objectInstance.js", function () {
                 },
             },
         });
-        expect(inspect(objInstances.A)).toEqual(inspect(objectInstanceA));
-        expect(inspect(objInstances.B)).toEqual(inspect(objectInstanceB));
+        expect(deepUnref(objInstances.A.state)).toEqual(deepUnref(objectInstanceA.state));
+        expect(deepUnref(objInstances.B.state)).toEqual(deepUnref(objectInstanceB.state));
     });
     it("useObjectInstance missing pkKey", async function () {
         const objectInstanceProps = {

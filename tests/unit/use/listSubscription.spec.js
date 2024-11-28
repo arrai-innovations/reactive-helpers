@@ -2,8 +2,8 @@ import { doAwaitNot } from "../../../utils/watches.js";
 import { CancellableResolvable } from "../crudPromise.js";
 import { poll } from "../poll.js";
 import flushPromises from "flush-promises";
-import { inspect } from "util";
 import { nextTick, reactive } from "vue";
+import { deepUnref } from "vue-deepunref";
 
 describe("use/listSubscription.spec.js", function () {
     let useListSubscription,
@@ -646,8 +646,8 @@ describe("use/listSubscription.spec.js", function () {
                 clearListOnListIntentTriggered: false,
             },
         });
-        expect(inspect(listSubscription.A)).toEqual(inspect(listSubscriptionA));
-        expect(inspect(listSubscription.B)).toEqual(inspect(listSubscriptionB));
+        expect(deepUnref(listSubscription.A.state)).toEqual(deepUnref(listSubscriptionA.state));
+        expect(deepUnref(listSubscription.B.state)).toEqual(deepUnref(listSubscriptionB.state));
     });
     it("useListSubscriptions & useListInstances", async function () {
         const listInstanceA = useListInstance({
@@ -719,10 +719,10 @@ describe("use/listSubscription.spec.js", function () {
             },
             listInstances
         );
-        expect(inspect(listSubscription.A.listInstance)).toEqual(inspect(listInstanceA));
-        expect(inspect(listSubscription.B.listInstance)).toEqual(inspect(listInstanceB));
-        expect(inspect(listSubscription.A)).toEqual(inspect(listSubscriptionA));
-        expect(inspect(listSubscription.B)).toEqual(inspect(listSubscriptionB));
+        expect(deepUnref(listSubscription.A.listInstance.state)).toEqual(deepUnref(listInstanceA.state));
+        expect(deepUnref(listSubscription.B.listInstance.state)).toEqual(deepUnref(listInstanceB.state));
+        expect(deepUnref(listSubscription.A.state)).toEqual(deepUnref(listSubscriptionA.state));
+        expect(deepUnref(listSubscription.B.state)).toEqual(deepUnref(listSubscriptionB.state));
     });
     it("custom pkKey", async function () {
         const listArgs = reactive({
