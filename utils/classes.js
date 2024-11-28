@@ -87,7 +87,12 @@ export const objectifyClasses = (...classes) => {
             });
         } else if (isObject(c)) {
             Object.entries(c).forEach(([key, value]) => {
-                classObject[key] = unref(value);
+                // split compound class names in a key, to support negation of individual classes
+                const classNames = key.split(/\s+/);
+                const unrefValue = unref(value);
+                classNames.forEach((cls) => {
+                    classObject[cls] = unrefValue;
+                });
             });
         } else {
             throw new Error(`Expected string or object, got ${c}`);

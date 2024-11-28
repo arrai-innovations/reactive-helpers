@@ -81,6 +81,18 @@ describe("utils/classes.js", () => {
                 classB: true,
             });
         });
+        it("should handle negation of individual classes in a compound key", () => {
+            const actual = objectifyClasses({
+                "classA classB": true,
+                classC: false,
+            });
+            const expected = {
+                classA: true,
+                classB: true,
+                classC: false,
+            };
+            expect(actual).toStrictEqual(expected);
+        });
     });
     describe("combineClasses", () => {
         it("should combine all strings", () => {
