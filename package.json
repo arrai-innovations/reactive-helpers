@@ -1,6 +1,6 @@
 {
     "name": "@arrai-innovations/reactive-helpers",
-    "version": "16.0.0",
+    "version": "17.0.0",
     "description": "VueJS 3 utility composition functions to help manipulate objects and lists.",
     "main": "index.js",
     "type": "module",
@@ -52,8 +52,8 @@
         "jsdom": "^24.1.1",
         "lint-staged": "^15.2.8",
         "prettier": "^3.3.3",
-        "typedoc": "^0.26.5",
-        "typedoc-plugin-markdown": "^4.2.3",
+        "typedoc": "^0.27.1",
+        "typedoc-plugin-markdown": "^4.3.0",
         "typescript": "^5.5.4",
         "vitest": "^1.6.0"
     },
