@@ -98,12 +98,6 @@ export const objectifyClasses = (...classes) => {
             throw new Error(`Expected string or object, got ${c}`);
         }
     }
-
-    for (const [key, value] of Object.entries(classObject)) {
-        if (!value) {
-            delete classObject[key];
-        }
-    }
     return classObject;
 };
 
@@ -127,11 +121,6 @@ export const combineClasses = (...classes) => {
         return stringifyClasses(...filteredClasses);
     }
     const result = objectifyClasses(...filteredClasses);
-    for (const [key, value] of Object.entries(result)) {
-        if (!value) {
-            delete result[key];
-        }
-    }
     return isEmpty(result) ? undefined : result;
 };
 

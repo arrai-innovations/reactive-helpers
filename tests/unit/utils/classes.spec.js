@@ -11,6 +11,7 @@ describe("utils/classes.js", () => {
                 test2: true,
                 test3: true,
                 test4: true,
+                test5: false,
             };
             expect(actual).toStrictEqual(expected);
         });
@@ -35,8 +36,7 @@ describe("utils/classes.js", () => {
             const result = objectifyClasses({ classA: trueRef, classB: falseRef });
 
             expect(result.classA).toBe(true);
-            expect(result.classB).toBe(undefined);
-            expect("classB" in result).toBe(false);
+            expect(result.classB).toBe(false);
         });
         it("should flatten objects and arrays into a single object", () => {
             const actual = objectifyClasses("test", ["test2", "test3"], { test4: true, test5: false }, [
@@ -50,9 +50,11 @@ describe("utils/classes.js", () => {
                 test2: true,
                 test3: true,
                 test4: true,
+                test5: false,
                 test6: true,
                 test7: true,
                 test8: true,
+                test9: false,
                 test10: true,
             };
             expect(actual).toStrictEqual(expected);
@@ -70,6 +72,7 @@ describe("utils/classes.js", () => {
             const result = computed(() => objectifyClasses(reactiveStructure));
             const expected = {
                 classA: true,
+                classB: false,
                 classC: true,
             };
             expect(result.value).toStrictEqual(expected);
@@ -79,6 +82,7 @@ describe("utils/classes.js", () => {
             expect(result.value).toStrictEqual({
                 classA: true,
                 classB: true,
+                classC: false,
             });
         });
         it("should handle negation of individual classes in a compound key", () => {
@@ -109,7 +113,9 @@ describe("utils/classes.js", () => {
             const actual = combineClasses({ test: true, test2: true }, { test2: false, test3: true, test4: false });
             const expected = {
                 test: true,
+                test2: false,
                 test3: true,
+                test4: false,
             };
             expect(actual).toStrictEqual(expected);
         });
@@ -117,7 +123,9 @@ describe("utils/classes.js", () => {
             const actual = combineClasses({ test: true, test2: true }, { test2: false, test3: true, test4: false });
             const expected = {
                 test: true,
+                test2: false,
                 test3: true,
+                test4: false,
             };
             expect(actual).toStrictEqual(expected);
         });
@@ -133,13 +141,18 @@ describe("utils/classes.js", () => {
 
             expect(computedResult.value).toStrictEqual({
                 test: true,
+                test2: false,
                 test3: true,
+                test4: false,
             });
 
             classObj.test2 = false;
             negatingObj.test3 = false;
             expect(computedResult.value).toStrictEqual({
                 test: true,
+                test2: false,
+                test3: false,
+                test4: false,
             });
         });
         it("should combine deep mixes of undefined, strings, arrays and objects", () => {
@@ -154,9 +167,11 @@ describe("utils/classes.js", () => {
                 test2: true,
                 test3: true,
                 test4: true,
+                test5: false,
                 test6: true,
                 test7: true,
                 test8: true,
+                test9: false,
                 test10: true,
             };
             expect(actual).toStrictEqual(expected);
@@ -180,9 +195,11 @@ describe("utils/classes.js", () => {
                 test2: true,
                 test3: true,
                 test4: true,
+                test5: false,
                 test6: true,
                 test7: true,
                 test8: true,
+                test9: false,
             };
             expect(actual).toStrictEqual(expected);
         });
@@ -201,12 +218,18 @@ describe("utils/classes.js", () => {
 
             const computedResult = computed(() => combineClasses(classObj));
 
-            expect(computedResult.value).toStrictEqual({ classA: true });
+            expect(computedResult.value).toStrictEqual({
+                classA: true,
+                classB: false,
+            });
 
             classObj.classB = true;
             classObj.classA = false;
 
-            expect(computedResult.value).toStrictEqual({ classB: true });
+            expect(computedResult.value).toStrictEqual({
+                classA: false,
+                classB: true,
+            });
         });
         it("should handle nested reactive structures", () => {
             const nestedReactive = reactive({
@@ -223,6 +246,7 @@ describe("utils/classes.js", () => {
 
             expect(computedResult.value).toStrictEqual({
                 classA: true,
+                classB: false,
                 classC: true,
             });
 
@@ -232,6 +256,7 @@ describe("utils/classes.js", () => {
             expect(computedResult.value).toStrictEqual({
                 classA: true,
                 classB: true,
+                classC: false,
             });
         });
         it("should handle computed properties as inputs", () => {
@@ -252,13 +277,25 @@ describe("utils/classes.js", () => {
 
             const computedResult = computed(() => combineClasses(shallowClassRef));
 
-            expect(computedResult.value).toStrictEqual({ classA: true });
+            expect(computedResult.value).toStrictEqual({
+                classA: true,
+                classB: false,
+            });
 
             shallowClassRef.value.classB = true;
-            expect(computedResult.value).toStrictEqual({ classA: true });
+            expect(computedResult.value).toStrictEqual({
+                classA: true,
+                classB: false, // shallowRef does not react to nested changes
+            });
 
-            shallowClassRef.value = { classA: false, classB: true };
-            expect(computedResult.value).toStrictEqual({ classB: true });
+            shallowClassRef.value = {
+                classA: false,
+                classB: true,
+            };
+            expect(computedResult.value).toStrictEqual({
+                classA: false,
+                classB: true,
+            });
         });
         it("should unwrap nested refs correctly", () => {
             const nestedRefs = {
@@ -275,6 +312,7 @@ describe("utils/classes.js", () => {
 
             expect(result).toStrictEqual({
                 classA: true,
+                classB: false,
                 classC: true,
             });
         });
