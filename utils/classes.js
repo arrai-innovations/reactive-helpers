@@ -176,5 +176,13 @@ export const stringifyClass = (cls) => {
             .filter((key) => unref(/** @type {boolean | import('vue').Ref<boolean>} */ (cls[key])))
             .join(" ");
     }
+    if (isString(cls)) {
+        const arrayish = cls.split(/\s+/);
+        const unique = new Set(arrayish);
+        if (unique.size === arrayish.length) {
+            return cls;
+        }
+        return [...unique].join(" ");
+    }
     return cls;
 };

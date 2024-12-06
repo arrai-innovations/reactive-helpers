@@ -107,9 +107,15 @@ Keys to exclude from the addition or update.
 
 ##### addedKeys?
 
+Precaulcated array of keys to add, if available. Otherwise, the
+keys will be calculated.
+
 `any`[] | `Set`\<`any`\>
 
 ##### sameKeys?
+
+Precaulcated array of keys to update, if available. Otherwise, the
+keys will be calculated.
 
 `any`[] | `Set`\<`any`\>
 
@@ -193,6 +199,9 @@ The object providing values.
 Keys to exclude from the addition.
 
 ##### addedKeys?
+
+Precaulcated array of keys to add, if available. Otherwise, the
+keys will be calculated.
 
 `any`[] | `Set`\<`any`\>
 
@@ -344,6 +353,8 @@ Keys to exclude from removal.
 
 ##### removedKeys?
 
+An array to store removed keys.
+
 `any`[] | `Set`\<`any`\>
 
 #### Returns
@@ -385,6 +396,9 @@ The object providing values.
 Keys to exclude from the update.
 
 ##### sameKeys?
+
+Precaulcated array of keys to update, if available. Otherwise, the
+keys will be calculated.
 
 `any`[] | `Set`\<`any`\>
 

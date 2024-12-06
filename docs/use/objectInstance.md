@@ -93,7 +93,7 @@ Called to turn the current object into a new object on the server.
 
 ###### args
 
-###### args.object
+###### object
 
 `any`
 
@@ -121,7 +121,7 @@ Called to patch the current object on the server.
 
 ###### args
 
-###### args.partialObject
+###### partialObject
 
 [`CrudObject`](objectInstance.md#crudobject)
 
@@ -149,7 +149,7 @@ Called to update the current object on the server.
 
 ###### args
 
-###### args.object
+###### object
 
 [`CrudObject`](objectInstance.md#crudobject)
 

@@ -1081,7 +1081,7 @@ instance configurations.
 
 Configuration options to set as defaults for list sorting.
 
-###### options.sortThrottleWait
+###### sortThrottleWait
 
 `number`
 

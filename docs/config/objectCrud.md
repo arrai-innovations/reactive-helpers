@@ -372,23 +372,23 @@ The reactive object you want to add the resulting crud to.
 
 The options for the reactive crud object.
 
-###### options.functions
+###### functions
 
 [`ObjectCrudFunctions`](objectCrud.md#objectcrudfunctions)
 
 Any functions to override the default crud functions.
 
-###### options.props
+###### props
 
-`object`
+\{`crudArgs`: \{`args`: `any`; \}; \}
 
 The props with any passed crudArgs.
 
-###### options.props.crudArgs
+###### props.crudArgs
 
-`object`
+\{`args`: `any`; \}
 
-###### options.props.crudArgs.args
+###### props.crudArgs.args
 
 `any`
 

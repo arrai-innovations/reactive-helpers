@@ -28,19 +28,19 @@ Array or object to flatten.
 
 Options.
 
-###### options.currentPath
+###### currentPath
 
 `string`
 
 Current path, for recursion or as a starting point.
 
-###### options.depth
+###### depth
 
 `number`
 
 Current depth, for recursion.
 
-###### options.limit
+###### limit
 
 `number`
 

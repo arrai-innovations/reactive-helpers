@@ -302,13 +302,13 @@ A reactive wrapper around FlexSearch.Index.
 
 Options.
 
-###### options.props
+###### props
 
 [`SearchProps`](search.md#searchprops)
 
 Props.
 
-###### options.throttle
+###### throttle
 
 `number` = `500`
 

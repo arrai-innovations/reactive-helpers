@@ -43,9 +43,13 @@ are the same, what keys are removed, and what keys are added.
 
 ##### newKeys
 
+Keys to consider as new.
+
 `string`[] | `Set`\<`any`\>
 
 ##### oldKeys
+
+Keys to consider as old.
 
 `string`[] | `Set`\<`any`\>
 
@@ -53,19 +57,19 @@ are the same, what keys are removed, and what keys are added.
 
 Which differences are returned.
 
-###### options.addedKeys
+###### addedKeys
 
 `boolean` = `true`
 
 If true, return keys that are added.
 
-###### options.removedKeys
+###### removedKeys
 
 `boolean` = `true`
 
 If true, return keys that are removed.
 
-###### options.sameKeys
+###### sameKeys
 
 `boolean` = `true`
 

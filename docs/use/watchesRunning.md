@@ -65,13 +65,13 @@ A composable function for handling watches running. When all the trigger refs ar
 
 The options for the watches running.
 
-###### options.triggerRefs
+###### triggerRefs
 
 `WatchSource`\<`any`\>[]
 
 The trigger refs.
 
-###### options.watchSentinelRefs
+###### watchSentinelRefs
 
 `Ref`\<`boolean`, `boolean`\>[]
 

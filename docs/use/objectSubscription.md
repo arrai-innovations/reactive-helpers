@@ -98,7 +98,7 @@ Subscribes to updates from an object, managing subscription state and
 
 ###### \_\_namedParameters?
 
-###### __namedParameters.retrieve
+###### retrieve
 
 `boolean`
 

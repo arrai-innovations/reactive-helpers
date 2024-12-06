@@ -103,6 +103,8 @@ We unref your refs, so probably want a computed around this. We filter out false
 
 ##### cls
 
+Handles the multiple ways of specifying CSS class related values.
+
 [`CombinedClassesArgument`](classes.md#combinedclassesargument) | [`CombinedClassesArgument`](classes.md#combinedclassesargument)[]
 
 #### Returns
