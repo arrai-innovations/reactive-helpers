@@ -380,13 +380,13 @@ Any functions to override the default crud functions.
 
 ###### props
 
-\{`crudArgs`: \{`args`: `any`; \}; \}
+\{ `crudArgs`: \{ `args`: `any`; \}; \}
 
 The props with any passed crudArgs.
 
 ###### props.crudArgs
 
-\{`args`: `any`; \}
+\{ `args`: `any`; \}
 
 ###### props.crudArgs.args
 

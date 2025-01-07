@@ -1,6 +1,6 @@
 export default {
     "**/*.{js,cjs,mjs,ts,jsx,tsx}": [
-        "npx --no-install eslint --fix",
+        "npx --no-install eslint --cache --fix",
         "npx --no-install prettier --write",
         "npm run docs",
     ],

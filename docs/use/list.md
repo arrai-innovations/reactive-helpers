@@ -152,7 +152,7 @@ Function or rule to determine if an item should be included based on inclusion c
 
 ##### calculatedObjectsRules
 
-> **calculatedObjectsRules**: `Ref`\<`object`, `object`\>
+> **calculatedObjectsRules**: `Ref`\<\{\}, \{\}\>
 
 Defines rules for dynamically calculating properties of list items.
 

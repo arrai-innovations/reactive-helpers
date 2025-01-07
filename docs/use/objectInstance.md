@@ -447,7 +447,7 @@ Whether the object is loading.
 
 ###### object
 
-> **object**: \{\} \| \{`[key: string]`: `any`; `pkKey`: `string`; \}
+> **object**: \{\} \| \{ `[key: string]`: `any`;  `pkKey`: `string`; \}
 
 The object.
 
@@ -563,7 +563,7 @@ The arguments to be passed to the retrieve function.
 
 ### CrudObject
 
-> **CrudObject**\<\>: \{`[key: string]`: `any`; `pkKey`: `string`; \} \| \{\}
+> **CrudObject**\<\>: \{ `[key: string]`: `any`;  `pkKey`: `string`; \} \| \{\}
 
 #### Type Parameters
 

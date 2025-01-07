@@ -16,7 +16,7 @@ Options to configure the behavior of the list calculated properties.
 
 ##### calculatedObjectsRules
 
-> **calculatedObjectsRules**: `Ref`\<`object`, `object`\>
+> **calculatedObjectsRules**: `Ref`\<\{\}, \{\}\>
 
 A reactive reference to rules used for dynamic calculations
  within list objects. Proper setup of this reference ensures that updates are managed reactively, including deep
@@ -638,7 +638,7 @@ Whether the parent state objects watch is running.
 
 ##### calculatedObjectsRules
 
-> **calculatedObjectsRules**: `Ref`\<`object`, `object`\>
+> **calculatedObjectsRules**: `Ref`\<\{\}, \{\}\>
 
 The rules for the calculated objects.
 

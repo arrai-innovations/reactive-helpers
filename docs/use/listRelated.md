@@ -134,7 +134,7 @@ Whether the subscription is loading.
 
 ##### relatedObjectsRules
 
-> **relatedObjectsRules**: `Ref`\<`object`, `object`\>
+> **relatedObjectsRules**: `Ref`\<\{\}, \{\}\>
 
 The rules for the related objects.
 

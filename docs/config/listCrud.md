@@ -385,7 +385,7 @@ The functions to set for the crud.
 
 ###### props
 
-\{`crudArgs`: `any`; \}
+\{ `crudArgs`: `any`; \}
 
 The props to set for the crud.
 

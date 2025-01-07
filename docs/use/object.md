@@ -372,7 +372,7 @@ Whether the object is loading.
 
 ###### object
 
-> **object**: \{\} \| \{`[key: string]`: `any`; `pkKey`: `string`; \}
+> **object**: \{\} \| \{ `[key: string]`: `any`;  `pkKey`: `string`; \}
 
 The object.
 
