@@ -463,6 +463,10 @@ export function useListInstance({ props, functions = {}, keepOldPages }) {
 
     function clearList() {
         assignReactiveObject(state.objects, {});
+        // to avoid objectsInOrderRefs from being in a broken state
+        // for a tick or two, where all the elements are undefined
+        // we need to clear it as well
+        objectsInOrderRefs.value = [];
         loadingError.clearError();
     }
 
