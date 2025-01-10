@@ -314,7 +314,7 @@ Maintains computed references to the foreign keys for each object pk and rule, c
 
 ###### Index Signature
 
- \[`pk`: `string`\]: `object`
+\[`pk`: `string`\]: `object`
 
 ###### intendToList?
 
@@ -348,7 +348,7 @@ Maps each object pk and rule to a tuple consisting of the related object and its
 
 ###### Index Signature
 
- \[`pk`: `string`\]: `object`
+\[`pk`: `string`\]: `object`
 
 ###### objects
 
@@ -382,7 +382,7 @@ Stores computed references to related objects, allowing for dynamic access based
 
 ###### Index Signature
 
- \[`pk`: `string`\]: `object`
+\[`pk`: `string`\]: `object`
 
 ###### relatedObjectsParentStateObjectsWatchRunning
 
@@ -398,7 +398,7 @@ Defines the rules for establishing relationships, such as foreign key links and 
 
 ###### Index Signature
 
- \[`rule`: `string`\]: [`ListRelatedRule`](listRelated.md#listrelatedrule)
+\[`rule`: `string`\]: [`ListRelatedRule`](listRelated.md#listrelatedrule)
 
 ###### relatedObjectsWatchRunning
 
@@ -468,7 +468,7 @@ Maintains computed references to the foreign keys for each object pk and rule, c
 
 ###### Index Signature
 
- \[`pk`: `string`\]: `object`
+\[`pk`: `string`\]: `object`
 
 ##### objAndKeyForPkAndRule
 
@@ -478,7 +478,7 @@ Maps each object pk and rule to a tuple consisting of the related object and its
 
 ###### Index Signature
 
- \[`pk`: `string`\]: `object`
+\[`pk`: `string`\]: `object`
 
 ##### relatedObjects
 
@@ -488,7 +488,7 @@ Stores computed references to related objects, allowing for dynamic access based
 
 ###### Index Signature
 
- \[`pk`: `string`\]: `object`
+\[`pk`: `string`\]: `object`
 
 ##### relatedObjectsParentStateObjectsWatchRunning
 
@@ -504,7 +504,7 @@ Defines the rules for establishing relationships, such as foreign key links and 
 
 ###### Index Signature
 
- \[`rule`: `string`\]: [`ListRelatedRule`](listRelated.md#listrelatedrule)
+\[`rule`: `string`\]: [`ListRelatedRule`](listRelated.md#listrelatedrule)
 
 ##### relatedObjectsWatchRunning
 

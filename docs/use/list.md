@@ -218,7 +218,7 @@ Defines rules for associating related objects with list items.
 
 ###### Index Signature
 
- \[`rule`: `string`\]: [`ListRelatedRule`](listRelated.md#listrelatedrule)
+\[`rule`: `string`\]: [`ListRelatedRule`](listRelated.md#listrelatedrule)
 
 ##### retrieveArgs
 
@@ -228,7 +228,7 @@ The arguments to pass to the registered list crud functions, related to the item
 
 ##### textSearchRules
 
-> **textSearchRules**: [`TextSearchRules`](listSearch.md#textsearchrules-5)
+> **textSearchRules**: [`TextSearchRules`](listSearch.md#textsearchrules-3)
 
 Defines the properties and conditions used to filter the list via text search.
 

@@ -1,4 +1,4 @@
-import { doAwaitNot } from "../../../utils/watches.js";
+import { doAwaitNot, doAwaitTimeout } from "../../../utils/watches.js";
 import { expectErrorToBeNull } from "../expectHelpers.js";
 import flushPromises from "flush-promises";
 import keyBy from "lodash-es/keyBy.js";
@@ -274,30 +274,38 @@ describe("use/listInstance.spec.js", function () {
             expect({ ...listInstance.state.objects }).toEqual({});
         });
         it("already loading", async function () {
-            const listArgs = reactive({
-                user: 1,
-            });
-            const retrieveArgs = reactive({
-                fields,
-            });
+            const listArgs = reactive({ user: 1 });
+            const retrieveArgs = reactive({ fields });
             const listInstance = useListInstance({
                 props: { pkKey: "id", listArgs, retrieveArgs },
                 keepOldPages: false,
             });
-            expectErrorToBeNull(listInstance.state.error);
-            expect(listInstance.state.errored).toBe(false);
-            expect(listInstance.state.loading).toBeUndefined();
-            expect({ ...listInstance.state.objects }).toEqual({});
-            globalList.mockImplementation(() => new Promise(() => {}));
-            listInstance.bulkDelete();
 
             expectErrorToBeNull(listInstance.state.error);
             expect(listInstance.state.errored).toBe(false);
+            expect(listInstance.state.loading).toBeUndefined();
+
+            let bulkDeleteResolve;
+            const bulkDeletePromise = new Promise((resolve) => {
+                bulkDeleteResolve = resolve;
+            });
+            globalBulkDelete.mockImplementation(() => bulkDeletePromise);
+            listInstance.bulkDelete();
+
             expect(listInstance.state.loading).toBe(true);
+
             await expect(() => listInstance.list()).rejects.toThrow(ListInstanceError);
+
+            expect(listInstance.state.loading).toBe(true);
+
+            // @ts-ignore - bulkDeleteResolve is set in a promise. promise executors run immediately
+            bulkDeleteResolve();
+            await flushPromises();
+
+            expect(globalBulkDelete).toHaveBeenCalledTimes(1);
             expectErrorToBeNull(listInstance.state.error);
             expect(listInstance.state.errored).toBe(false);
-            expect(listInstance.state.loading).toBe(true);
+            expect(listInstance.state.loading).toBe(false);
         });
         it("errored", async function () {
             const listArgs = reactive({

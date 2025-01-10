@@ -47,7 +47,7 @@ The property name to watch within the object.
 
 ###### ref
 
-`Ref`\<`any`, `any`\>
+`Ref`
 
 A Vue ref to directly watch if provided.
 
@@ -77,7 +77,7 @@ The timeout in milliseconds before the promise is rejected.
 
 ##### ref
 
-> **ref**: `Readonly`\<`Ref`\<`any`, `any`\>\>
+> **ref**: `Readonly`\<`Ref`\>
 
 ##### reject()
 
@@ -398,7 +398,7 @@ Optional arguments to pass to the watch function.
 
 ###### watchOptions?
 
-`WatchOptions`\<`boolean`\> = `{}`
+`WatchOptions` = `{}`
 
 Optional watch options.
 
@@ -450,7 +450,7 @@ The property name to watch within the object.
 
 ###### ref
 
-`Ref`\<`any`, `any`\>
+`Ref`
 
 A Vue ref to directly watch if provided.
 

@@ -22,7 +22,7 @@
 
 ### getObjectRelatedByKey()
 
-> **getObjectRelatedByKey**(`obj`, `relatedObj`, `key`): [`any`, `string`]
+> **getObjectRelatedByKey**(`obj`, `relatedObj`, `key`): \[`any`, `string`\]
 
 Get the object and key of a related item.
 
@@ -48,7 +48,7 @@ The key to get the related item from.
 
 #### Returns
 
-[`any`, `string`]
+\[`any`, `string`\]
 
 The object and key of the related item.
 
@@ -56,7 +56,7 @@ The object and key of the related item.
 
 ### getObjectRelatedCalculatedByKey()
 
-> **getObjectRelatedCalculatedByKey**(`obj`, `relatedObj`, `calculatedObj`, `key`): [`any`, `string`]
+> **getObjectRelatedCalculatedByKey**(`obj`, `relatedObj`, `calculatedObj`, `key`): \[`any`, `string`\]
 
 Get the object and key of a calculated item.
 
@@ -88,6 +88,6 @@ The key to get the calculated item from.
 
 #### Returns
 
-[`any`, `string`]
+\[`any`, `string`\]
 
 The object and key of the calculated item.

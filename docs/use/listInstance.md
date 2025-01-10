@@ -429,7 +429,7 @@ Indicates if there are ongoing reactive updates.
 
 #### Index Signature
 
- \[`key`: `string`\]: `any`
+\[`key`: `string`\]: `any`
 
 ##### pk
 
@@ -453,7 +453,7 @@ Indicates if there are ongoing reactive updates.
 
 #### Index Signature
 
- \[`pk`: `string`\]: [`ListObject`](listInstance.md#listobject)
+\[`pk`: `string`\]: [`ListObject`](listInstance.md#listobject)
 
 ***
 

@@ -398,7 +398,7 @@ The related objects, indexed by the key in the related object.
 
 ###### Index Signature
 
- \[`rule`: `string`\]: `ComputedRef`\<`any`\>
+\[`rule`: `string`\]: `ComputedRef`
 
 ###### relatedObjectRules
 
@@ -492,7 +492,7 @@ The related objects, indexed by the key in the related object.
 
 ###### Index Signature
 
- \[`rule`: `string`\]: `ComputedRef`\<`any`\>
+\[`rule`: `string`\]: `ComputedRef`
 
 ##### relatedObjectRules
 
@@ -590,7 +590,7 @@ The key in the managed object that corresponds to the key in the related object.
 
 #### Index Signature
 
- \[`rule`: `string`\]: [`ObjectRelatedRule`](objectRelated.md#objectrelatedrule)
+\[`rule`: `string`\]: [`ObjectRelatedRule`](objectRelated.md#objectrelatedrule)
 
 ***
 
