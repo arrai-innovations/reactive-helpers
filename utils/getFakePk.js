@@ -3,7 +3,8 @@ import isMap from "lodash-es/isMap.js";
 import isSet from "lodash-es/isSet.js";
 
 /**
- * Get a fake pk that is not in the array, set, map, or object.
+ * Get a fake pk that is not in the array, set, map, or object. The fake pk is negative number, so they can be
+ * differentiated from real ids. They are returned as strings, as javascript object property keys are always strings.
  *
  * @param {Array|Set|Map|object} arraySetMapOrObject - The array, set, map, or object to check for the fake pk.
  *  An array is assumed to be an array of objects.
