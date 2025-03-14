@@ -28,9 +28,8 @@
     },
     "homepage": "https://github.com/arrai-innovations/reactive-helpers#readme",
     "devDependencies": {
-        "@arrai-innovations/commitlint-config": "^1.1.0",
+        "@arrai-innovations/commitlint-config": "^2.0.0",
         "@commitlint/cli": "^19.4.0",
-        "@commitlint/config-conventional": "^19.8.0",
         "@godaddy/dmd": "^1.0.4",
         "@trivago/prettier-plugin-sort-imports": "^5.2.1",
         "@types/browser-util-inspect": "^0.2.4",
