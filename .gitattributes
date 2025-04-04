@@ -1,0 +1,5 @@
+# Mark TypeScript declaration files as generated
+types/**/*.d.ts linguist-generated
+types/**/*.d.ts.map linguist-generated
+# Mark Documentation files as generated
+docs/**/*.md linguist-generated
