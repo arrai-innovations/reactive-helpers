@@ -27,31 +27,31 @@ Initializes the AwaitNot with specified options for reactive property watching a
 
 Configuration options for AwaitNot.
 
-###### couldAlreadyBeFalse
+###### couldAlreadyBeFalse?
 
 `boolean` = `false`
 
 Indicates if the property could already be in the false state at initialization.
 
-###### obj
+###### obj?
 
 `any`
 
 The object containing the property to watch.
 
-###### prop
+###### prop?
 
 `string`
 
 The property name to watch within the object.
 
-###### ref
+###### ref?
 
-`Ref`
+`Ref`\<`any`, `any`\>
 
 A Vue ref to directly watch if provided.
 
-###### timeout
+###### timeout?
 
 `number` = `1000`
 
@@ -77,7 +77,7 @@ The timeout in milliseconds before the promise is rejected.
 
 ##### ref
 
-> **ref**: `Readonly`\<`Ref`\>
+> **ref**: `Readonly`\<`Ref`\<`any`, `any`\>\>
 
 ##### reject()
 
@@ -216,7 +216,7 @@ Creates an instance of AwaitTimeout with a specified timeout duration.
 
 The options for the AwaitTimeout.
 
-###### timeout
+###### timeout?
 
 `number` = `1000`
 
@@ -398,7 +398,7 @@ Optional arguments to pass to the watch function.
 
 ###### watchOptions?
 
-`WatchOptions` = `{}`
+`WatchOptions`\<`boolean`\> = `{}`
 
 Optional watch options.
 
@@ -430,7 +430,7 @@ Helper function to get the resulting promise from an AwaitNot instance.
 
 Configuration options for AwaitNot.
 
-###### couldAlreadyBeFalse
+###### couldAlreadyBeFalse?
 
 `boolean` = `true`
 
@@ -448,13 +448,13 @@ The object containing the property to watch.
 
 The property name to watch within the object.
 
-###### ref
+###### ref?
 
-`Ref`
+`Ref`\<`any`, `any`\>
 
 A Vue ref to directly watch if provided.
 
-###### timeout
+###### timeout?
 
 `number` = `1000`
 

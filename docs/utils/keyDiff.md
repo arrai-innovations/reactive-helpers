@@ -57,19 +57,19 @@ Keys to consider as old.
 
 Which differences are returned.
 
-###### addedKeys
+###### addedKeys?
 
 `boolean` = `true`
 
 If true, return keys that are added.
 
-###### removedKeys
+###### removedKeys?
 
 `boolean` = `true`
 
 If true, return keys that are removed.
 
-###### sameKeys
+###### sameKeys?
 
 `boolean` = `true`
 

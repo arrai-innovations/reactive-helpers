@@ -24,7 +24,7 @@ import { readonly, ref } from "vue";
  * @typedef {object} LoadingErrorMutations
  * @property {() => void} setLoading - Set the loading state.
  * @property {() => void} clearLoading - Clear the loading state.
- * @property {(error) => void} setError - Set the error state.
+ * @property {(error: Error) => void} setError - Set the error state.
  */
 
 /**

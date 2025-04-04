@@ -343,31 +343,31 @@ Get the previously set list and subscribe functions for the default crud.
 
 The reactive crud object, which will be mutated.
 
-###### args
+###### args?
 
 `any`
 
 The default arguments for the crud functions.
 
-###### bulkDelete
+###### bulkDelete?
 
 [`BulkDeleteFn`](listCrud.md#bulkdeletefn)
 
 The delete function to bulk delete a list of items.
 
-###### executeAction
+###### executeAction?
 
 [`ExecuteActionFn`](listCrud.md#executeactionfn)
 
 The  function to execute a certain action on a list of items.
 
-###### list
+###### list?
 
 [`ListFn`](listCrud.md#listfn)
 
 The list function to get a list of items.
 
-###### subscribe
+###### subscribe?
 
 [`SubscribeFn`](listCrud.md#subscribefn)
 
@@ -377,13 +377,13 @@ The subscribe function to get a subscription to a list of items.
 
 The options for the default crud.
 
-###### functions
+###### functions?
 
 [`ListCrudFunctions`](listCrud.md#listcrudfunctions) & [`ListCrudArgs`](listCrud.md#listcrudargs)
 
 The functions to set for the crud.
 
-###### props
+###### props?
 
 \{ `crudArgs`: `any`; \}
 

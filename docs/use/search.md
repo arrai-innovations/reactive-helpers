@@ -308,7 +308,7 @@ Options.
 
 Props.
 
-###### throttle
+###### throttle?
 
 `number` = `500`
 

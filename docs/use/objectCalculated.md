@@ -200,7 +200,7 @@ The related objects, indexed by the key in the related object.
 
 ###### Index Signature
 
-\[`rule`: `string`\]: `ComputedRef`
+\[`rule`: `string`\]: `ComputedRef`\<`any`\>
 
 ###### relatedObjectRules?
 
@@ -270,7 +270,7 @@ The calculated object.
 
 ###### Index Signature
 
-\[`ruleKey`: `string`\]: `ComputedRef`
+\[`ruleKey`: `string`\]: `ComputedRef`\<`any`\>
 
 ###### calculatedObjectRules
 
@@ -466,7 +466,7 @@ The related objects, indexed by the key in the related object.
 
 ###### Index Signature
 
-\[`rule`: `string`\]: `ComputedRef`
+\[`rule`: `string`\]: `ComputedRef`\<`any`\>
 
 ###### relatedObjectRules?
 
@@ -556,7 +556,7 @@ The calculated object.
 
 ###### Index Signature
 
-\[`ruleKey`: `string`\]: `ComputedRef`
+\[`ruleKey`: `string`\]: `ComputedRef`\<`any`\>
 
 ##### calculatedObjectRules
 

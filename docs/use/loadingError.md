@@ -32,7 +32,7 @@ Set the error state.
 
 ###### error
 
-`any`
+`Error`
 
 ###### Returns
 
