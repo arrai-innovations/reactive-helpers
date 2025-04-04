@@ -10,10 +10,10 @@
         "tests": "tests"
     },
     "scripts": {
-        "test": "npx vitest",
+        "test": "npx --no-install vitest",
         "eslint": "npx --no-install eslint --fix index.js config/**/*.js tests/**/*.js use/**/*.js utils/**/*.js",
         "prettier": "npx --no-install prettier --write .",
-        "coverage": "npm test -- --run --coverage=true",
+        "coverage": "npm test -- run --coverage=true",
         "prepare": "npx --no-install husky",
         "docs": "node make_type_doc.js"
     },
