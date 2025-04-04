@@ -8,17 +8,9 @@
 
 ## Type Aliases
 
-### WatchableLoadingErrors
+### WatchableLoadingError
 
-> **WatchableLoadingErrors**\<\>: `UnwrapNestedRefs` \| `Ref` \| [`WatchableLoadingErrorsRaw`](proxyLoadingError.md#watchableloadingerrorsraw)
-
-#### Type Parameters
-
-***
-
-### WatchableLoadingErrorsRaw
-
-> **WatchableLoadingErrorsRaw**\<\>: [`LoadingErrorStatus`](loadingError.md#loadingerrorstatus)[]
+> **WatchableLoadingError**\<\>: `UnwrapNestedRefs` \| `Ref` \| [`LoadingErrorStatus`](loadingError.md#loadingerrorstatus)
 
 #### Type Parameters
 
@@ -34,7 +26,7 @@ A composable function for managing aggregated loading and error states across mu
 
 ##### loadingErrors
 
-[`WatchableLoadingErrors`](proxyLoadingError.md#watchableloadingerrors)
+[`WatchableLoadingError`](proxyLoadingError.md#watchableloadingerror)[]
 
 A collection of loading error statuses to monitor and aggregate.
 
@@ -43,9 +35,3 @@ A collection of loading error statuses to monitor and aggregate.
 [`LoadingErrorStatus`](loadingError.md#loadingerrorstatus)
 
 An object containing aggregated reactive fields and actions for loading and error states.
-
-## References
-
-### ProxyLoadingError
-
-Renames and re-exports [LoadingErrorStatus](loadingError.md#loadingerrorstatus)

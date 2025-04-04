@@ -1,51 +1,38 @@
 import { computed, readonly, unref } from "vue";
 import { loadingCombine } from "../utils/loadingCombine.js";
-
-/**
- * @typedef {(
- *     import('./loadingError.js').LoadingErrorStatus[]
- * )} WatchableLoadingErrorsRaw
- */
+import identity from "lodash-es/identity.js";
 
 /**
  * A watchable collection of loading errors.
  *
  * @typedef {(
- *     import('vue').UnwrapNestedRefs<WatchableLoadingErrorsRaw> |
- *     import('vue').Ref<WatchableLoadingErrorsRaw> |
- *     WatchableLoadingErrorsRaw
- * )} WatchableLoadingErrors
- */
-
-/**
- * The instance of useProxyLoadingError.
- *
- * @typedef {import('./loadingError.js').LoadingErrorStatus} ProxyLoadingError
+ *     import('vue').UnwrapNestedRefs<import('./loadingError.js').LoadingErrorStatus> |
+ *     import('vue').Ref<import('./loadingError.js').LoadingErrorStatus> |
+ *     import('./loadingError.js').LoadingErrorStatus
+ * )} WatchableLoadingError
  */
 
 /**
  * A composable function for managing aggregated loading and error states across multiple sources.
  *
- * @param {WatchableLoadingErrors} loadingErrors - A collection of loading error statuses to monitor and aggregate.
- * @returns {ProxyLoadingError} An object containing aggregated reactive fields and actions for loading and error states.
+ * @param {WatchableLoadingError[]} loadingErrors - A collection of loading error statuses to monitor and aggregate.
+ * @returns {import('./loadingError.js').LoadingErrorStatus} An object containing aggregated reactive fields and actions for loading and error states.
  */
 export function useProxyLoadingError(loadingErrors) {
-    /** @type {import("vue").ComputedRef<boolean|undefined>} */
     const loading = computed(() =>
-        loadingCombine(...unref(loadingErrors).map((loadingError) => unref(loadingError.loading)))
+        loadingCombine(...unref(loadingErrors).map((loadingError) => unref(unref(loadingError).loading)))
     );
-    /** @type {import("vue").ComputedRef<Error|null>} */
     const error = computed(
         () =>
+            /** @type {Error|null} */
             unref(loadingErrors)
-                .map((loadingError) => unref(loadingError.error))
-                .find((error) => error) || null
+                .map((loadingError) => unref(unref(loadingError).error))
+                .find(identity) || null
     );
-    /** @type {import("vue").ComputedRef<boolean>} */
     const errored = computed(() =>
         unref(loadingErrors)
-            .map((loadingError) => unref(loadingError.errored))
-            .some((errored) => errored)
+            .map((loadingError) => unref(unref(loadingError).errored))
+            .some(identity)
     );
 
     return {
@@ -53,7 +40,7 @@ export function useProxyLoadingError(loadingErrors) {
         error: readonly(error),
         errored: readonly(errored),
         clearError: () => {
-            unref(loadingErrors).forEach((loadingError) => loadingError.clearError());
+            unref(loadingErrors).forEach((loadingError) => unref(loadingError).clearError());
         },
     };
 }
