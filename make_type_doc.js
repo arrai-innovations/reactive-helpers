@@ -26,34 +26,44 @@ process.on("SIGINT", () => {
     process.exit(1);
 });
 
-execSync(`npx --no-install typedoc --out "${tempDir}" --plugin typedoc-plugin-markdown --disableSources`, {
-    stdio: "inherit",
-});
-
-let docsAreDifferent = false;
-
-try {
-    execSync(`git diff --no-index --quiet "${tempDir}" "${docsDir}"`, {
+async function main() {
+    execSync(`npx --no-install typedoc --out "${tempDir}" --plugin typedoc-plugin-markdown --disableSources`, {
         stdio: "inherit",
     });
-} catch (error) {
-    if (error.status === 1) {
-        // Differences found
-        docsAreDifferent = true;
-    } else {
-        // Unexpected error
-        throw error;
+
+    let docsAreDifferent = false;
+
+    try {
+        execSync(`git diff --no-index --quiet "${tempDir}" "${docsDir}"`, {
+            stdio: "inherit",
+        });
+    } catch (error) {
+        if (error.status === 1) {
+            // Differences found
+            docsAreDifferent = true;
+        } else {
+            // Unexpected error
+            throw error;
+        }
     }
-}
 
-if (docsAreDifferent) {
-    console.log(`[${scriptName}] ${ORANGE_COLOR}Docs are out of date, updating...${RESET_COLOR}`);
-    fs.rmSync("./docs", { recursive: true, force: true });
-    fs.renameSync(tempDir, "./docs");
-    execSync(`git add ./docs`, { stdio: "inherit" });
-} else {
-    console.log(`[${scriptName}] ${BLUE_COLOR}Docs are up to date${RESET_COLOR}`);
-}
+    if (docsAreDifferent) {
+        console.log(`[${scriptName}] ${ORANGE_COLOR}Docs are out of date, updating...${RESET_COLOR}`);
+        fs.rmSync("./docs", { recursive: true, force: true });
+        fs.renameSync(tempDir, "./docs");
+        execSync(`git add ./docs`, { stdio: "inherit" });
+    } else {
+        console.log(`[${scriptName}] ${BLUE_COLOR}Docs are up to date${RESET_COLOR}`);
+    }
 
-cleanup();
-process.exit(0);
+    cleanup();
+}
+main()
+    .then(() => {
+        process.exit(0);
+    })
+    .catch((error) => {
+        console.error(`[${scriptName}] ${ORANGE_COLOR}Error: ${error.message}${RESET_COLOR}`);
+        cleanup();
+        process.exit(1);
+    });

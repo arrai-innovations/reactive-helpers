@@ -4,6 +4,21 @@
     "description": "VueJS 3 utility composition functions to help manipulate objects and lists.",
     "main": "index.js",
     "type": "module",
+    "types": "types/index.d.ts",
+    "exports": {
+        ".": {
+            "import": "./index.js",
+            "types": "./types/index.d.ts"
+        }
+    },
+    "files": [
+        "index.js",
+        "README.md",
+        "use/",
+        "utils/",
+        "config/",
+        "types/"
+    ],
     "directories": {
         "use": "use",
         "utils": "utils",
@@ -15,7 +30,7 @@
         "prettier": "npx --no-install prettier --write .",
         "coverage": "npm test -- run --coverage=true",
         "prepare": "npx --no-install husky",
-        "docs": "node make_type_doc.js"
+        "docs": "npx --no-install tsc && node make_type_doc.js"
     },
     "repository": {
         "type": "git",

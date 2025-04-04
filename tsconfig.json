@@ -1,7 +1,6 @@
 {
     "compilerOptions": {
         "checkJs": true,
-        "noEmit": true,
         "allowJs": true,
         "lib": ["es6", "dom"],
         "strict": false,
@@ -13,7 +12,11 @@
         "esModuleInterop": true,
         "target": "es2023",
         "types": ["vitest/globals"],
-        "skipLibCheck": true
+        "skipLibCheck": true,
+        "declaration": true,
+        "emitDeclarationOnly": true,
+        "outDir": "types",
+        "declarationMap": true
     },
     "include": ["config/**/*.js", "use/**/*.js", "utils/**/*.js", "tests/**/*.js", "index.js"]
 }
