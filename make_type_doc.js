@@ -55,7 +55,15 @@ async function main() {
     } else {
         console.log(`[${scriptName}] ${BLUE_COLOR}Docs are up to date${RESET_COLOR}`);
     }
+    // Check if types/ has unstaged changes
+    const unstagedTypeChanges = execSync("git diff --name-only types").toString().trim();
 
+    if (unstagedTypeChanges) {
+        console.error(
+            `[${scriptName}] ${ORANGE_COLOR}Unstaged type changes detected. Please stage them before committing.${RESET_COLOR}`
+        );
+        process.exit(1);
+    }
     cleanup();
 }
 main()
