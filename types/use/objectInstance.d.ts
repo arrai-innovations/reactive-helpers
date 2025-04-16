@@ -77,7 +77,7 @@ export function useObjectInstance({ props, functions }: ObjectInstanceOptions): 
  *
  * @typedef {object} ObjectInstanceOptions
  * @property {import('vue').UnwrapNestedRefs<ObjectInstanceRawProps>} props - The reactive configuration object.
- * @property {import('../config/objectCrud.js').ObjectCrudFunctions} functions - An object of custom crud functions to use instead of the defaults.
+ * @property {import('../config/objectCrud.js').ObjectCrudFunctions} [functions] - An object of custom crud functions to use instead of the defaults.
  */
 /**
  * Reactive arguments to be passed to the object instance.
@@ -165,7 +165,7 @@ export type ObjectInstanceOptions = {
     /**
      * - An object of custom crud functions to use instead of the defaults.
      */
-    functions: import("../config/objectCrud.js").ObjectCrudFunctions;
+    functions?: import("../config/objectCrud.js").ObjectCrudFunctions;
 };
 /**
  * Reactive arguments to be passed to the object instance.

@@ -20,7 +20,7 @@ import { reactive, toRef } from "vue";
  *
  * @typedef {object} ObjectInstanceOptions
  * @property {import('vue').UnwrapNestedRefs<ObjectInstanceRawProps>} props - The reactive configuration object.
- * @property {import('../config/objectCrud.js').ObjectCrudFunctions} functions - An object of custom crud functions to use instead of the defaults.
+ * @property {import('../config/objectCrud.js').ObjectCrudFunctions} [functions] - An object of custom crud functions to use instead of the defaults.
  */
 
 /**

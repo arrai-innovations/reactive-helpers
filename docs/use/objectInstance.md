@@ -163,9 +163,9 @@ Called to update the current object on the server.
 
 #### Properties
 
-##### functions
+##### functions?
 
-> **functions**: [`ObjectCrudFunctions`](../config/objectCrud.md#objectcrudfunctions)
+> `optional` **functions**: [`ObjectCrudFunctions`](../config/objectCrud.md#objectcrudfunctions)
 
 An object of custom crud functions to use instead of the defaults.
 
