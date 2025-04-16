@@ -122,12 +122,12 @@ export const objectifyClasses = (...classes) => {
  * @returns {CombinedClasses} - The normalized form of the CSS classes, either as a string or an object.
  */
 export const combineClasses = (...classes) => {
-    const rawClasses = deepUnrefFlatten(classes);
-    const flattenedClasses = rawClasses.flat(Infinity);
-    const filteredClasses = flattenedClasses.filter(identity);
-    const hasStrings = filteredClasses.some(isString);
+    const filteredClasses = deepUnrefFlatten(classes).flat(Infinity).filter(identity);
+    if (filteredClasses.every(isString)) {
+        return filteredClasses.join(" ");
+    }
     const hasObjects = filteredClasses.some(isObject);
-    if (hasStrings && !hasObjects) {
+    if (!hasObjects) {
         return stringifyClasses(...filteredClasses);
     }
     const result = objectifyClasses(...filteredClasses);
