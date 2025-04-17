@@ -277,8 +277,8 @@ export function useObjectSubscription({ objectInstance, props, functions }) {
                 }
             },
         });
-        let cancelSubscription = async () => {
-            let cancelPromise = subscribePromise.cancel();
+        let cancelSubscription = async (reason) => {
+            let cancelPromise = subscribePromise.cancel(reason);
             cancelSubscription = null;
             state.subscribed = false;
             return cancelPromise;

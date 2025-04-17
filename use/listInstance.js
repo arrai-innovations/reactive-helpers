@@ -385,8 +385,8 @@ export function useListInstance({ props, functions = {}, keepOldPages }) {
 
         let resolveState = false;
         if (listPromise.cancel) {
-            promises.list.cancel = async () => {
-                let promise = listPromise.cancel();
+            promises.list.cancel = async (reason) => {
+                let promise = listPromise.cancel(reason);
                 isCancelled.value = true;
                 if (promise) {
                     await promise;

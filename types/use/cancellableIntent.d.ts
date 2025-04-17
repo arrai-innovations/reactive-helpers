@@ -4,7 +4,7 @@
 /**
  * A Promise that can be cancelled.
  *
- * @typedef {Promise<any> & { cancel: () => Promise<void>|void }} CancellablePromise
+ * @typedef {Promise<any> & { cancel: (reason?: any) => Promise<void>|void }} CancellablePromise
  */
 /**
  * @typedef {import("vue").UnwrapNestedRefs<object>} CancellableIntentState - The state of the cancellable intent.
@@ -74,7 +74,7 @@ export function useCancellableIntent({ awaitableWithCancel, watchArguments, guar
  * A Promise that can be cancelled.
  */
 export type CancellablePromise = Promise<any> & {
-    cancel: () => Promise<void> | void;
+    cancel: (reason?: any) => Promise<void> | void;
 };
 /**
  * - The state of the cancellable intent.

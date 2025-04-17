@@ -30,7 +30,7 @@
         "prettier": "npx --no-install prettier --write .",
         "coverage": "npm test -- run --coverage=true",
         "prepare": "npx --no-install husky",
-        "docs": "npx --no-install tsc && node make_type_doc.js"
+        "docs": "node make_type_doc.js"
     },
     "repository": {
         "type": "git",

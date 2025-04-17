@@ -12,7 +12,7 @@ import { tryOnActivated, tryOnDeactivated } from "../utils/keepAliveTry.js";
 /**
  * A Promise that can be cancelled.
  *
- * @typedef {Promise<any> & { cancel: () => Promise<void>|void }} CancellablePromise
+ * @typedef {Promise<any> & { cancel: (reason?: any) => Promise<void>|void }} CancellablePromise
  */
 
 /**
@@ -112,9 +112,9 @@ export function useCancellableIntent({
         es.stop();
     }
 
-    async function cancel() {
+    async function cancel(reason) {
         if (cancelFunction) {
-            return cancelFunction()
+            return cancelFunction(reason)
                 .catch(console.error)
                 .finally(() => {
                     if (!state.clearActiveOnResolved) {
@@ -145,7 +145,7 @@ export function useCancellableIntent({
         // we don't want to await this, because we want to be able to cancel it
         awaitablePromise
             .catch(async (err) => {
-                await cancel();
+                await cancel("Error in awaitableWithCancel");
                 console.error(err);
                 state.errored = true;
                 state.error = err;
@@ -174,7 +174,7 @@ export function useCancellableIntent({
             if (isEqual(newWatchValues, previousWatchValues)) {
                 return;
             }
-            await cancel(); // this can take time so guards and watches can change!
+            await cancel("Intent watch cancelled"); // this can take time so guards and watches can change!
             newWatchValues = deepUnref(Object.values(watchArguments));
             if (isEqual(newWatchValues, previousWatchValues)) {
                 return;
@@ -212,7 +212,8 @@ export function useCancellableIntent({
 
     const cleanup = () => {
         // cancel the intent when the component is deactivated
-        cancel();
+        // noinspection JSIgnoredPromiseFromCall
+        cancel("Component deactivated");
         if (state.clearActiveOnResolved) {
             // otherwise it clears when resolved
             cancelFunction = null;

@@ -100,7 +100,13 @@ The state of the cancellable intent.
 
 ##### cancel()
 
-> **cancel**: () => `Promise`\<`void`\> \| `void`
+> **cancel**: (`reason`?) => `Promise`\<`void`\> \| `void`
+
+###### Parameters
+
+###### reason?
+
+`any`
 
 ###### Returns
 
