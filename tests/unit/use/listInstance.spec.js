@@ -3,7 +3,7 @@ import { expectErrorToBeNull } from "../expectHelpers.js";
 import flushPromises from "flush-promises";
 import keyBy from "lodash-es/keyBy.js";
 import { isReactive, nextTick, reactive, isRef, isReadonly } from "vue";
-import { deepUnref } from "vue-deepunref";
+import { deepUnref } from "../../../utils/deepUnref.js";
 
 afterAll(() => {
     vi.restoreAllMocks();

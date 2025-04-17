@@ -1,6 +1,6 @@
 import { doAwaitNot, doAwaitTimeout } from "../../../utils/watches.js";
 import { nextTick, reactive, ref, unref } from "vue";
-import { deepUnref } from "vue-deepunref";
+import { deepUnref } from "../../../utils/deepUnref.js";
 
 describe("use/listSearch", () => {
     let useListInstance, useListSearch, useListSearches, useListSort, useListRelated, useListCalculated, useListFilter;

@@ -25,6 +25,7 @@ export * from "./use/watchesRunning.js";
 export * from "./utils/assignReactiveObject.js";
 export * from "./utils/classes.js";
 export * from "./utils/compact.js";
+export * from "./utils/deepUnref.js";
 export * from "./utils/deleteKey.js";
 export * from "./utils/flattenPaths.js";
 export * from "./utils/getFakePk.js";

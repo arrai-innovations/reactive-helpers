@@ -4,7 +4,7 @@ import FlexSearch from "flexsearch";
 import cloneDeep from "lodash-es/cloneDeep.js";
 import isEqual from "lodash-es/isEqual.js";
 import { effectScope, reactive, toRef, watch, computed } from "vue";
-import { deepUnref } from "vue-deepunref";
+import { deepUnref } from "../utils/deepUnref.js";
 
 /* minimize new Set() allocations */
 const unionReduce = (accumulator, currentValue) => {

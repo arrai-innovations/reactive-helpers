@@ -2,7 +2,7 @@ import identity from "lodash-es/identity.js";
 import isEmpty from "lodash-es/isEmpty.js";
 import isEqual from "lodash-es/isEqual.js";
 import { computed, effectScope, nextTick, onScopeDispose, reactive, readonly, watch } from "vue";
-import { deepUnref } from "vue-deepunref";
+import { deepUnref } from "../utils/deepUnref.js";
 import { tryOnActivated, tryOnDeactivated } from "../utils/keepAliveTry.js";
 
 /**

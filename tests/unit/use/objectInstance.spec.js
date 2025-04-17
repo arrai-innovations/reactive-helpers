@@ -2,7 +2,7 @@ import { assignReactiveObject } from "../../../utils/assignReactiveObject.js";
 import { expectErrorToBeNull } from "../expectHelpers.js";
 import flushPromises from "flush-promises";
 import { nextTick, reactive, ref } from "vue";
-import { deepUnref } from "vue-deepunref";
+import { deepUnref } from "../../../utils/deepUnref.js";
 
 afterAll(() => {
     vi.restoreAllMocks();

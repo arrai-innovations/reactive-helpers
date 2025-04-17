@@ -32,6 +32,7 @@
 - [utils/assignReactiveObject](utils/assignReactiveObject.md)
 - [utils/classes](utils/classes.md)
 - [utils/compact](utils/compact.md)
+- [utils/deepUnref](utils/deepUnref.md)
 - [utils/deleteKey](utils/deleteKey.md)
 - [utils/flattenPaths](utils/flattenPaths.md)
 - [utils/getFakePk](utils/getFakePk.md)

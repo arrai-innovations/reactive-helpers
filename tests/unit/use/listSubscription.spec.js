@@ -3,7 +3,7 @@ import { CancellableResolvable } from "../crudPromise.js";
 import { poll } from "../poll.js";
 import flushPromises from "flush-promises";
 import { nextTick, reactive } from "vue";
-import { deepUnref } from "vue-deepunref";
+import { deepUnref } from "../../../utils/deepUnref.js";
 
 describe("use/listSubscription.spec.js", function () {
     let useListSubscription,

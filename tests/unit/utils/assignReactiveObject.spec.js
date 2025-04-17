@@ -6,7 +6,7 @@ import {
     assignReactiveArray,
 } from "../../../utils/assignReactiveObject.js";
 import { computed, EffectScope, effectScope, reactive, toRef, unref } from "vue";
-import { deepUnref } from "vue-deepunref";
+import { deepUnref } from "../../../utils/deepUnref.js";
 
 describe("utils/assignReactiveObject", function () {
     describe("assignReactiveObject", function () {

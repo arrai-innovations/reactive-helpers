@@ -15,7 +15,7 @@ import { useSearch } from "./search.js";
 import get from "lodash-es/get.js";
 import isEqual from "lodash-es/isEqual.js";
 import { computed, effectScope, onScopeDispose, reactive, readonly, ref, toRef, unref, watch } from "vue";
-import { deepUnref } from "vue-deepunref";
+import { deepUnref } from "../utils/deepUnref.js";
 import { assignReactiveObject } from "../utils/assignReactiveObject.js";
 import { loadingCombine } from "../utils/loadingCombine.js";
 

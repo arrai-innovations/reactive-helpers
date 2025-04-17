@@ -1,0 +1,28 @@
+import { deepUnref as _deepUnref } from "vue-deepunref";
+
+/* eslint-disable jsdoc/valid-types */
+
+/**
+ * Recursively unwraps refs from a nested object, array, or primitive.
+ *
+ * @template T
+ * @typedef {T extends import('vue').Ref<infer U>
+ *   ? DeepUnwrap<U>
+ *   : T extends Array<infer V>
+ *     ? Array<DeepUnwrap<V>>
+ *     : T extends object
+ *       ? { [K in keyof T]: DeepUnwrap<T[K]> }
+ *       : T
+ * } DeepUnwrap
+ */
+
+/* eslint-enable jsdoc/valid-types */
+
+/**
+ * Safe, recursively-typed deep unref.
+ *
+ * @template T
+ * @param {T} val - The value to deeply unwrap.
+ * @returns {DeepUnwrap<T>} - The deeply unwrapped value.
+ */
+export const deepUnref = _deepUnref;
