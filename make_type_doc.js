@@ -95,7 +95,8 @@ async function main() {
     if (docsAreDifferent) {
         console.log(`[${scriptName}] ${ORANGE_COLOR}Docs are out of date, updating...${RESET_COLOR}`);
         fs.rmSync(docsDir, { recursive: true, force: true });
-        fs.renameSync(tempDir, docsDir);
+        fs.cpSync(tempDir, docsDir, { recursive: true });
+        fs.rmSync(tempDir, { recursive: true, force: true });
         execSync("git add docs", { stdio: "inherit" });
     } else {
         console.log(`[${scriptName}] ${BLUE_COLOR}Docs are up to date${RESET_COLOR}`);
