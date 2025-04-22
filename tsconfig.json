@@ -2,7 +2,6 @@
     "compilerOptions": {
         "checkJs": true,
         "allowJs": true,
-        "lib": ["es6", "dom"],
         "strict": false,
         "noImplicitAny": false,
         "strictNullChecks": false,
