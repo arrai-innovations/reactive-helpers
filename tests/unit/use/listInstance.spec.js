@@ -4,6 +4,7 @@ import flushPromises from "flush-promises";
 import keyBy from "lodash-es/keyBy.js";
 import { isReactive, nextTick, reactive, isRef, isReadonly } from "vue";
 import { deepUnref } from "../../../utils/deepUnref.js";
+import { CancellablePromise } from "../../../utils/cancellablePromise.js";
 
 afterAll(() => {
     vi.restoreAllMocks();
@@ -1100,15 +1101,13 @@ describe("use/listInstance.spec.js", function () {
             let myListFnCancelResolve, passedIsCancelled;
             const myListFn = vi.fn().mockImplementation(({ isCancelled }) => {
                 passedIsCancelled = isCancelled;
-                /** @type {import('../../../use/cancellableIntent.js').CancellablePromise} */
-                // @ts-ignore - we will set cancel on the next line
-                const promise = new Promise(() => {});
-                promise.cancel = async () => {
-                    await new Promise((resolve) => {
-                        myListFnCancelResolve = resolve;
-                    });
-                };
-                return promise;
+                return CancellablePromise(new Promise(() => {}), () => {
+                    myListFnCancelResolve = () => {
+                        return new Promise((resolve) => {
+                            myListFnCancelResolve = resolve;
+                        });
+                    };
+                });
             });
             const listInstance = useListInstance({
                 props: {},

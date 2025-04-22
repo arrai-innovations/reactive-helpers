@@ -157,13 +157,13 @@ Generates a unique fake pk for use within the list.
 
 ##### list()
 
-> **list**: () => `Promise`\<`boolean`\>
+> **list**: () => [`MaybeCancellablePromise`](../utils/cancellablePromise.md#maybecancellablepromiset)\<`boolean`\>
 
 Initiates a fetch to retrieve objects according to the CRUD configuration, returning a promise to a boolean indicating success.
 
 ###### Returns
 
-`Promise`\<`boolean`\>
+[`MaybeCancellablePromise`](../utils/cancellablePromise.md#maybecancellablepromiset)\<`boolean`\>
 
 ##### pageCallback()
 

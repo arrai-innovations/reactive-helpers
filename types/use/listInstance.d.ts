@@ -72,7 +72,7 @@
  * @property {(objectId: string) => void} deleteListObject - Deletes an object from the list by pk.
  * @property {() => void} clearList - Clears all objects and errors from the list.
  * @property {() => string} getFakePk - Generates a unique fake pk for use within the list.
- * @property {() => Promise<boolean>} list - Initiates a fetch to retrieve objects according to the CRUD configuration, returning a promise to a boolean indicating success.
+ * @property {() => import('../utils/cancellablePromise.js').MaybeCancellablePromise<boolean|never>} list - Initiates a fetch to retrieve objects according to the CRUD configuration, returning a promise to a boolean indicating success.
  * @property {() => Promise<boolean>} bulkDelete - Initiates a bulk delete operation on all objects in the list, returning a promise to a boolean indicating success.
  * @property {() => Promise<object|string|false>} executeAction - Initiates an action on all objects in the list, returning the response, or false if the action failed.
  */
@@ -326,7 +326,7 @@ export type ListInstanceFunctions = {
     /**
      * - Initiates a fetch to retrieve objects according to the CRUD configuration, returning a promise to a boolean indicating success.
      */
-    list: () => Promise<boolean>;
+    list: () => import("../utils/cancellablePromise.js").MaybeCancellablePromise<boolean | never>;
     /**
      * - Initiates a bulk delete operation on all objects in the list, returning a promise to a boolean indicating success.
      */

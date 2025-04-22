@@ -8,6 +8,7 @@ import cloneDeep from "lodash-es/cloneDeep.js";
 import { nextTick, ref } from "vue";
 import { stringify } from "flatted";
 import { deepUnref } from "../../../utils/deepUnref.js";
+import { CancellablePromise } from "../../../utils/cancellablePromise.js";
 
 // getMockOnUnmounted();
 
@@ -87,18 +88,13 @@ describe("use/objectSubscription.js", function () {
                 crudRetrieveReject = reject;
             });
             globalRetrieve.mockReturnValueOnce(crudRetrievePromise);
-            /** @type {import('../../../use/cancellableIntent.js').CancellablePromise} */
-            crudSubscribePromise =
-                /** @type {import('../../../use/cancellableIntent.js').CancellablePromise} */ new Promise(
-                    (resolve, reject) => {
-                        crudSubscribeResolve = resolve;
-                        crudSubscribeReject = reject;
-                    }
-                );
-            // @ts-ignore - mocking cancel
-            crudSubscribePromise.cancel = vi.fn();
-            // @ts-ignore - mocking cancel
-            crudSubscribePromise.cancel.mockReturnValueOnce(true).mockReturnValue(false);
+            crudSubscribePromise = CancellablePromise(
+                new Promise((resolve, reject) => {
+                    crudSubscribeResolve = resolve;
+                    crudSubscribeReject = reject;
+                }),
+                vi.fn().mockReturnValueOnce(true).mockReturnValue(false)
+            );
             globalSubscribe.mockReturnValueOnce(crudSubscribePromise);
         });
         it("success", async function () {

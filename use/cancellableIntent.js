@@ -10,12 +10,6 @@ import { tryOnActivated, tryOnDeactivated } from "../utils/keepAliveTry.js";
  */
 
 /**
- * A Promise that can be cancelled.
- *
- * @typedef {Promise<any> & { cancel: (reason?: any) => Promise<void>|void }} CancellablePromise
- */
-
-/**
  * @typedef {import("vue").UnwrapNestedRefs<object>} CancellableIntentState - The state of the cancellable intent.
  * @property {number} activeCount - The number of active intents.
  * @property {boolean} active - Whether there are active intents.
@@ -28,7 +22,7 @@ import { tryOnActivated, tryOnDeactivated } from "../utils/keepAliveTry.js";
 
 /**
  * @typedef {object} CancellableIntentOptions - The options for the cancellable intent.
- * @property {() => CancellablePromise} awaitableWithCancel - The function that returns a promise that can be cancelled.
+ * @property {() => import('../utils/cancellablePromise.js').MaybeCancellablePromise<void>} awaitableWithCancel - The function that returns a promise that can be cancelled.
  * @property {import("vue").UnwrapNestedRefs<object>} [watchArguments={}] - The reactive object to watch for changes.
  * @property {import("vue").UnwrapNestedRefs<object>} [guardArguments={}] - The reactive object to watch for truthiness before running the intent.
  * @property {boolean} [clearActiveOnResolved=true] - Whether to clear the active state when the promise resolves.

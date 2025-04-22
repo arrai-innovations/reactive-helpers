@@ -4,6 +4,7 @@ import { getFakePk } from "../utils/getFakePk.js";
 import { useLoadingError } from "./loadingError.js";
 import inspect from "browser-util-inspect";
 import { computed, effectScope, nextTick, reactive, readonly, ref, toRef, unref, watch } from "vue";
+import { CancellablePromise, wrapMaybeCancellable } from "../utils/cancellablePromise.js";
 
 /**
  * A composable function for managing a list of objects.
@@ -117,7 +118,7 @@ export class ListInstanceError extends Error {
  * @property {(objectId: string) => void} deleteListObject - Deletes an object from the list by pk.
  * @property {() => void} clearList - Clears all objects and errors from the list.
  * @property {() => string} getFakePk - Generates a unique fake pk for use within the list.
- * @property {() => Promise<boolean>} list - Initiates a fetch to retrieve objects according to the CRUD configuration, returning a promise to a boolean indicating success.
+ * @property {() => import('../utils/cancellablePromise.js').MaybeCancellablePromise<boolean|never>} list - Initiates a fetch to retrieve objects according to the CRUD configuration, returning a promise to a boolean indicating success.
  * @property {() => Promise<boolean>} bulkDelete - Initiates a bulk delete operation on all objects in the list, returning a promise to a boolean indicating success.
  * @property {() => Promise<object|string|false>} executeAction - Initiates an action on all objects in the list, returning the response, or false if the action failed.
  */
@@ -286,7 +287,7 @@ export function useListInstance({ props, functions = {}, keepOldPages }) {
 
     getListCrud(state.crud, { props, functions });
 
-    const defaultPageCallback = (newObjects) => {
+    const defaultPageCallback = (/** @type {ListObject[]} */ newObjects) => {
         // with keepOldPages, you are responsible for clearing the list as needed
         if (!keepOldPages) {
             // display one page at a time, clear the list
@@ -301,7 +302,7 @@ export function useListInstance({ props, functions = {}, keepOldPages }) {
         });
     };
 
-    /** @type {{[key: string]: import('./cancellableIntent.js').CancellablePromise|null}} */
+    /** @type {{[key: string]: import('../utils/cancellablePromise.js').MaybeCancellablePromise<boolean>|null}} */
     const promises = {
         list: null,
     };
@@ -323,7 +324,7 @@ export function useListInstance({ props, functions = {}, keepOldPages }) {
                 loadingError.clearError();
                 return Promise.resolve(true);
             })
-            .catch((error) => {
+            .catch((/** @type {Error} */ error) => {
                 loadingError.setError(error);
                 return Promise.resolve(false);
             })
@@ -344,11 +345,11 @@ export function useListInstance({ props, functions = {}, keepOldPages }) {
                 pks: Object.keys(state.objects).map(Number),
                 pkKey: state.pkKey,
             })
-            .then((responseData) => {
+            .then((/** @type {any} */ responseData) => {
                 loadingError.clearError();
                 return Promise.resolve(responseData);
             })
-            .catch((error) => {
+            .catch((/** @type {Error} */ error) => {
                 loadingError.setError(error);
                 return Promise.resolve(false);
             })
@@ -357,6 +358,12 @@ export function useListInstance({ props, functions = {}, keepOldPages }) {
             });
     }
 
+    /**
+     * Fetches a list of objects from the server, using the configured CRUD operations and arguments.
+     *
+     * @throws {ListInstanceError} If the list is already loading.
+     * @returns {import('../utils/cancellablePromise.js').MaybeCancellablePromise<boolean|never>} A promise that resolves to true if the list was successfully retrieved, or false if an error occurred.
+     */
     function list() {
         // this function cannot be async, or the resulting promise will lose its .cancel() method
         if (promises.list) {
@@ -364,13 +371,8 @@ export function useListInstance({ props, functions = {}, keepOldPages }) {
             return promises.list;
         }
         if (state.loading) {
-            return Promise.reject(new ListInstanceError("already loading.", "already-loading"));
+            return CancellablePromise.reject(new ListInstanceError("already loading.", "already-loading"));
         }
-        let returnPromiseResolve;
-        // @ts-ignore - we are setting this in the promise
-        promises.list = /** @type {import('./cancellableIntent.js').CancellablePromise} */ new Promise(
-            (resolve) => (returnPromiseResolve = resolve)
-        );
         loadingError.clearError();
         loadingError.setLoading();
         const isCancelled = ref(false);
@@ -382,35 +384,31 @@ export function useListInstance({ props, functions = {}, keepOldPages }) {
             pageCallback: returnedObject.pageCallback,
             isCancelled: readonly(isCancelled),
         });
-
-        let resolveState = false;
-        if (listPromise.cancel) {
-            promises.list.cancel = async (reason) => {
-                let promise = listPromise.cancel(reason);
-                isCancelled.value = true;
-                if (promise) {
-                    await promise;
-                }
-                loadingError.clearLoading();
-            };
-        }
-        // the indirection of promises here is to allow us to do additional work on listPromise's cancel
-        listPromise
-            .then(() => {
-                resolveState = true;
-            })
-            .catch((error) => {
-                loadingError.setError(error);
-            })
-            .finally(() => {
-                loadingError.clearLoading();
-                returnPromiseResolve(resolveState);
-                promises.list = null;
-            });
+        promises.list = wrapMaybeCancellable(
+            listPromise
+                .then(() => {
+                    return true;
+                })
+                .catch((/** @type {Error} */ error) => {
+                    loadingError.setError(error);
+                    return false;
+                })
+                .finally(() => {
+                    loadingError.clearLoading();
+                    promises.list = null;
+                }),
+            listPromise.cancel
+                ? async (/** @type {any} */ reason) => {
+                      isCancelled.value = true;
+                      await listPromise.cancel?.(reason);
+                      loadingError.clearLoading();
+                  }
+                : undefined
+        );
         return promises.list;
     }
 
-    function addListObject(object) {
+    function addListObject(/** @type {ListObject} */ object) {
         if (!object[state.pkKey]) {
             throw new ListInstanceError(
                 `addListObject: object missing pk(${state.pkKey}).\n${inspect(object)}`,
@@ -429,7 +427,7 @@ export function useListInstance({ props, functions = {}, keepOldPages }) {
         }
     }
 
-    function updateListObject(object) {
+    function updateListObject(/** @type {ListObject} */ object) {
         if (!object[state.pkKey]) {
             throw new ListInstanceError(
                 `updateListObject: object missing pk(${state.pkKey}).\n${inspect(object)}`,
@@ -448,7 +446,7 @@ export function useListInstance({ props, functions = {}, keepOldPages }) {
         }
     }
 
-    function deleteListObject(pk) {
+    function deleteListObject(/** @type {string} */ pk) {
         if (!(pk in state.objects)) {
             throw new ListInstanceError(
                 `deleteListObject: list missing object for removal by pk(${state.pkKey}): ${inspect(pk)}`,
@@ -479,6 +477,7 @@ export function useListInstance({ props, functions = {}, keepOldPages }) {
             toRef(state, "objects"),
             () => {
                 objectsInOrderRefs.value = Object.values(state.objects).map((object) => ref(object));
+                // noinspection JSIgnoredPromiseFromCall
                 nextTick(() => {
                     if (state.running) {
                         state.running = false;
