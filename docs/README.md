@@ -30,6 +30,7 @@
 - [use/search](use/search.md)
 - [use/watchesRunning](use/watchesRunning.md)
 - [utils/assignReactiveObject](utils/assignReactiveObject.md)
+- [utils/cancellableFetch](utils/cancellableFetch.md)
 - [utils/cancellablePromise](utils/cancellablePromise.md)
 - [utils/classes](utils/classes.md)
 - [utils/compact](utils/compact.md)

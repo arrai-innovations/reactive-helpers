@@ -282,11 +282,7 @@ export function useObjectSubscription({ objectInstance, props, functions }) {
             } else {
                 objectInstance.updateFromSubscription(data);
             }
-<<<<<<< Updated upstream
-        }
-=======
         };
->>>>>>> Stashed changes
         const subscribePromise = parentState.crud.subscribe({
             crudArgs: parentState.crud.args,
             pk: parentState.pk,
