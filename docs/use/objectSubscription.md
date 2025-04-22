@@ -88,15 +88,15 @@ Delete the object from a subscription.
 
 ##### subscribe()
 
-> **subscribe**: (`__namedParameters`?) => `boolean`
+> **subscribe**: (`options`?) => `boolean`
 
-Subscribes to updates from an object, managing subscription state and
- handling errors internally. Ensures that only one active subscription can exist at a time to prevent duplicate
- calls. Returns a promise that resolves to true if the subscription was successful, and false if it failed.
+Subscribes to updates from an object, managing subscription state and handling errors internally.
+ Ensures that only one active subscription can exist at a time to prevent duplicate calls. Returns a promise that
+ resolves to true if the subscription was successful, and false if it failed.
 
 ###### Parameters
 
-###### \_\_namedParameters?
+###### options?
 
 ###### retrieve?
 
@@ -121,7 +121,8 @@ Unsubscribes from the object, resetting related state flags. Returns
 
 > **updateFromSubscription**: (`data`) => `void`
 
-Update the object from a subscription.
+Update the
+ object from a subscription.
 
 ###### Parameters
 
@@ -269,24 +270,6 @@ The subscribe intent.
 
 #### Properties
 
-##### intendToRetrieve?
-
-> `optional` **intendToRetrieve**: `boolean`
-
-Whether the object intends to retrieve.
-
-##### intendToSubscribe?
-
-> `optional` **intendToSubscribe**: `boolean`
-
-Whether the object intends to subscribe.
-
-***
-
-### ObjectSubscriptionRawState
-
-#### Properties
-
 ##### intendToRetrieve
 
 > **intendToRetrieve**: `boolean`
@@ -299,9 +282,27 @@ Whether the object intends to retrieve.
 
 Whether the object intends to subscribe.
 
+***
+
+### ObjectSubscriptionRawState
+
+#### Properties
+
+##### intendToRetrieve
+
+> **intendToRetrieve**: `Ref`\<`boolean`, `boolean`\>
+
+Whether the object intends to retrieve.
+
+##### intendToSubscribe
+
+> **intendToSubscribe**: `Ref`\<`boolean`, `boolean`\>
+
+Whether the object intends to subscribe.
+
 ##### subscribed
 
-> **subscribed**: `boolean`
+> **subscribed**: `Ref`\<`boolean`, `boolean`\>
 
 Whether the object is subscribed.
 
@@ -343,7 +344,7 @@ Whether the subscription is loading.
 
 ### ObjectSubscriptionState
 
-> **ObjectSubscriptionState**\<\>: `UnwrapNestedRefs`
+> **ObjectSubscriptionState**\<\>: `Reactive`
 
 #### Type Parameters
 

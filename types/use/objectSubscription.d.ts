@@ -2,17 +2,17 @@
  * The raw state of the object subscription.
  *
  * @typedef {object} ObjectSubscriptionRawState
- * @property {Readonly<import('vue').Ref<boolean>>} subscriptionLoading - Whether the subscription is loading.
- * @property {Readonly<import('vue').Ref<boolean>>} subscriptionErrored - Whether the subscription has errored.
- * @property {Readonly<import('vue').Ref<Error>>} subscriptionError - The error that occurred.
- * @property {boolean} intendToRetrieve - Whether the object intends to retrieve.
- * @property {boolean} intendToSubscribe - Whether the object intends to subscribe.
- * @property {boolean} subscribed - Whether the object is subscribed.
+ * @property {import('./loadingError.js').LoadingReadonlyRef} subscriptionLoading - Whether the subscription is loading.
+ * @property {import('./loadingError.js').ErroredReadonlyRef} subscriptionErrored - Whether the subscription has errored.
+ * @property {import('./loadingError.js').ErrorReadonlyRef} subscriptionError - The error that occurred.
+ * @property {import('vue').Ref<boolean>} intendToRetrieve - Whether the object intends to retrieve.
+ * @property {import('vue').Ref<boolean>} intendToSubscribe - Whether the object intends to subscribe.
+ * @property {import('vue').Ref<boolean|undefined>} subscribed - Whether the object is subscribed.
  */
 /**
  * The state of the object subscription, including both subscription and object instance states.
  *
- * @typedef {import('vue').UnwrapNestedRefs<
+ * @typedef {import('vue').Reactive<
  *     ObjectSubscriptionRawState &
  *     import('./objectInstance.js').ObjectInstanceRawState
  * >} ObjectSubscriptionState
@@ -21,12 +21,15 @@
  * Functions available for object subscription management.
  *
  * @typedef {object} ObjectSubscriptionFunctions
- * @property {({ retrieve }?: { retrieve?: boolean }) => boolean} subscribe - Subscribes to updates from an object, managing subscription state and
- *  handling errors internally. Ensures that only one active subscription can exist at a time to prevent duplicate
- *  calls. Returns a promise that resolves to true if the subscription was successful, and false if it failed.
+ * @property {(
+ *     (options?: { retrieve?: boolean }) => boolean
+ * )} subscribe - Subscribes to updates from an object, managing subscription state and handling errors internally.
+ *  Ensures that only one active subscription can exist at a time to prevent duplicate calls. Returns a promise that
+ *  resolves to true if the subscription was successful, and false if it failed.
  * @property {() => boolean} unsubscribe - Unsubscribes from the object, resetting related state flags. Returns
  *  true if the object was unsubscribed, and false if it was not subscribed.
- * @property {(data: import('./objectInstance.js').ExistingCrudObject) => void} updateFromSubscription - Update the object from a subscription.
+ * @property {(data: import('./objectInstance.js').ExistingCrudObject) => void} updateFromSubscription - Update the
+ *  object from a subscription.
  * @property {() => void} deleteFromSubscription - Delete the object from a subscription.
  * @property {() => void} clearError - Clears any errors related to the subscription, and resets the loading state.
  */
@@ -49,8 +52,8 @@
  * Raw props for the object subscription.
  *
  * @typedef {object} ObjectSubscriptionRawProps
- * @property {boolean} [intendToRetrieve] - Whether the object intends to retrieve.
- * @property {boolean} [intendToSubscribe] - Whether the object intends to subscribe.
+ * @property {boolean|undefined} intendToRetrieve - Whether the object intends to retrieve.
+ * @property {boolean|undefined} intendToSubscribe - Whether the object intends to subscribe.
  */
 /**
  * Options for initializing an object subscription, including reactive props and non-reactive functions.
@@ -144,51 +147,52 @@ export type ObjectSubscriptionRawState = {
     /**
      * - Whether the subscription is loading.
      */
-    subscriptionLoading: Readonly<import("vue").Ref<boolean>>;
+    subscriptionLoading: import("./loadingError.js").LoadingReadonlyRef;
     /**
      * - Whether the subscription has errored.
      */
-    subscriptionErrored: Readonly<import("vue").Ref<boolean>>;
+    subscriptionErrored: import("./loadingError.js").ErroredReadonlyRef;
     /**
      * - The error that occurred.
      */
-    subscriptionError: Readonly<import("vue").Ref<Error>>;
+    subscriptionError: import("./loadingError.js").ErrorReadonlyRef;
     /**
      * - Whether the object intends to retrieve.
      */
-    intendToRetrieve: boolean;
+    intendToRetrieve: import("vue").Ref<boolean>;
     /**
      * - Whether the object intends to subscribe.
      */
-    intendToSubscribe: boolean;
+    intendToSubscribe: import("vue").Ref<boolean>;
     /**
      * - Whether the object is subscribed.
      */
-    subscribed: boolean;
+    subscribed: import("vue").Ref<boolean | undefined>;
 };
 /**
  * The state of the object subscription, including both subscription and object instance states.
  */
-export type ObjectSubscriptionState = import("vue").UnwrapNestedRefs<ObjectSubscriptionRawState & import("./objectInstance.js").ObjectInstanceRawState>;
+export type ObjectSubscriptionState = import("vue").Reactive<ObjectSubscriptionRawState & import("./objectInstance.js").ObjectInstanceRawState>;
 /**
  * Functions available for object subscription management.
  */
 export type ObjectSubscriptionFunctions = {
     /**
-     * - Subscribes to updates from an object, managing subscription state and
-     * handling errors internally. Ensures that only one active subscription can exist at a time to prevent duplicate
-     * calls. Returns a promise that resolves to true if the subscription was successful, and false if it failed.
+     * - Subscribes to updates from an object, managing subscription state and handling errors internally.
+     * Ensures that only one active subscription can exist at a time to prevent duplicate calls. Returns a promise that
+     * resolves to true if the subscription was successful, and false if it failed.
      */
-    subscribe: ({ retrieve }?: {
+    subscribe: ((options?: {
         retrieve?: boolean;
-    }) => boolean;
+    }) => boolean);
     /**
      * - Unsubscribes from the object, resetting related state flags. Returns
      * true if the object was unsubscribed, and false if it was not subscribed.
      */
     unsubscribe: () => boolean;
     /**
-     * - Update the object from a subscription.
+     * - Update the
+     * object from a subscription.
      */
     updateFromSubscription: (data: import("./objectInstance.js").ExistingCrudObject) => void;
     /**
@@ -236,11 +240,11 @@ export type ObjectSubscriptionRawProps = {
     /**
      * - Whether the object intends to retrieve.
      */
-    intendToRetrieve?: boolean;
+    intendToRetrieve: boolean | undefined;
     /**
      * - Whether the object intends to subscribe.
      */
-    intendToSubscribe?: boolean;
+    intendToSubscribe: boolean | undefined;
 };
 /**
  * Options for initializing an object subscription, including reactive props and non-reactive functions.

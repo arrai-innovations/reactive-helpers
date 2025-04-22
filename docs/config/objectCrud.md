@@ -258,25 +258,11 @@ The arguments to be passed to the retrieve function.
 
 #### Properties
 
-##### callback()
+##### callback
 
-> **callback**: (`data`, `action`) => `void`
+> **callback**: [`CrudSubscribeCallback`](objectCrud.md#crudsubscribecallback)
 
 The callback to be called when the object is updated.
-
-###### Parameters
-
-###### data
-
-[`ExistingCrudObject`](../use/objectInstance.md#existingcrudobject)
-
-###### action
-
-`string`
-
-###### Returns
-
-`void`
 
 ##### crudArgs
 
@@ -447,6 +433,32 @@ The arguments to be passed to the retrieve function.
 #### Returns
 
 [`CrudResponse`](objectCrud.md#crudresponse)
+
+***
+
+### CrudSubscribeCallback()
+
+> **CrudSubscribeCallback**\<\>: (`data`, `action`) => `any`
+
+#### Type Parameters
+
+#### Parameters
+
+##### data
+
+[`ExistingCrudObject`](../use/objectInstance.md#existingcrudobject)
+
+The data to be passed to the callback.
+
+##### action
+
+`string`
+
+The action that was performed.
+
+#### Returns
+
+`any`
 
 ***
 

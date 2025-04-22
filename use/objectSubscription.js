@@ -2,8 +2,8 @@ import { assignReactiveObject } from "../utils/assignReactiveObject.js";
 import { loadingCombine } from "../utils/loadingCombine.js";
 import { useCancellableIntent } from "./cancellableIntent.js";
 import { useLoadingError } from "./loadingError.js";
-import { useObjectInstance, objectInstanceStateKeys } from "./objectInstance.js";
-import { computed, effectScope, reactive, ref, toRef } from "vue";
+import { useObjectInstance } from "./objectInstance.js";
+import { computed, effectScope, reactive, ref, toRef, toRefs } from "vue";
 import { CancellablePromise } from "../utils/cancellablePromise.js";
 
 /**
@@ -50,38 +50,39 @@ export const objectSubscriptionFunctions = [
  * The raw state of the object subscription.
  *
  * @typedef {object} ObjectSubscriptionRawState
- * @property {Readonly<import('vue').Ref<boolean>>} subscriptionLoading - Whether the subscription is loading.
- * @property {Readonly<import('vue').Ref<boolean>>} subscriptionErrored - Whether the subscription has errored.
- * @property {Readonly<import('vue').Ref<Error>>} subscriptionError - The error that occurred.
- * @property {boolean} intendToRetrieve - Whether the object intends to retrieve.
- * @property {boolean} intendToSubscribe - Whether the object intends to subscribe.
- * @property {boolean} subscribed - Whether the object is subscribed.
+ * @property {import('./loadingError.js').LoadingReadonlyRef} subscriptionLoading - Whether the subscription is loading.
+ * @property {import('./loadingError.js').ErroredReadonlyRef} subscriptionErrored - Whether the subscription has errored.
+ * @property {import('./loadingError.js').ErrorReadonlyRef} subscriptionError - The error that occurred.
+ * @property {import('vue').Ref<boolean>} intendToRetrieve - Whether the object intends to retrieve.
+ * @property {import('vue').Ref<boolean>} intendToSubscribe - Whether the object intends to subscribe.
+ * @property {import('vue').Ref<boolean|undefined>} subscribed - Whether the object is subscribed.
  */
 
 /**
  * The state of the object subscription, including both subscription and object instance states.
  *
- * @typedef {import('vue').UnwrapNestedRefs<
+ * @typedef {import('vue').Reactive<
  *     ObjectSubscriptionRawState &
  *     import('./objectInstance.js').ObjectInstanceRawState
  * >} ObjectSubscriptionState
  */
 
-/* eslint-disable jsdoc/valid-types -- the subscribe function signature is valid typescript that irks eslint-plugin-jsdoc */
 /**
  * Functions available for object subscription management.
  *
  * @typedef {object} ObjectSubscriptionFunctions
- * @property {({ retrieve }?: { retrieve?: boolean }) => boolean} subscribe - Subscribes to updates from an object, managing subscription state and
- *  handling errors internally. Ensures that only one active subscription can exist at a time to prevent duplicate
- *  calls. Returns a promise that resolves to true if the subscription was successful, and false if it failed.
+ * @property {(
+ *     (options?: { retrieve?: boolean }) => boolean
+ * )} subscribe - Subscribes to updates from an object, managing subscription state and handling errors internally.
+ *  Ensures that only one active subscription can exist at a time to prevent duplicate calls. Returns a promise that
+ *  resolves to true if the subscription was successful, and false if it failed.
  * @property {() => boolean} unsubscribe - Unsubscribes from the object, resetting related state flags. Returns
  *  true if the object was unsubscribed, and false if it was not subscribed.
- * @property {(data: import('./objectInstance.js').ExistingCrudObject) => void} updateFromSubscription - Update the object from a subscription.
+ * @property {(data: import('./objectInstance.js').ExistingCrudObject) => void} updateFromSubscription - Update the
+ *  object from a subscription.
  * @property {() => void} deleteFromSubscription - Delete the object from a subscription.
  * @property {() => void} clearError - Clears any errors related to the subscription, and resets the loading state.
  */
-/* eslint-enable jsdoc/valid-types */
 
 /**
  * Properties of the object subscription.
@@ -104,8 +105,8 @@ export const objectSubscriptionFunctions = [
  * Raw props for the object subscription.
  *
  * @typedef {object} ObjectSubscriptionRawProps
- * @property {boolean} [intendToRetrieve] - Whether the object intends to retrieve.
- * @property {boolean} [intendToSubscribe] - Whether the object intends to subscribe.
+ * @property {boolean|undefined} intendToRetrieve - Whether the object intends to retrieve.
+ * @property {boolean|undefined} intendToSubscribe - Whether the object intends to subscribe.
  */
 
 /**
@@ -205,33 +206,42 @@ export function useObjectSubscription({ objectInstance, props, functions }) {
             );
         }
     }
+
+    const es = effectScope();
     const parentState = objectInstance.state;
     const loadingError = useLoadingError();
+    const {
+        crud: parentCrud,
+        pk: parentPk,
+        pkKey: parentPkKey,
+        retrieveArgs: parentRetrieveArgs,
+        object: parentObject,
+        deleted: parentDeleted,
+    } = toRefs(parentState);
     /** @type {ObjectSubscriptionState} */
-    // @ts-ignore - we're going to assign all the keys later, and in the effect scope
     const state = reactive({
+        crud: parentCrud,
+        pk: parentPk,
+        pkKey: parentPkKey,
+        retrieveArgs: parentRetrieveArgs,
+        object: parentObject,
+        deleted: parentDeleted,
         subscriptionLoading: loadingError.loading,
         subscriptionErrored: loadingError.errored,
         subscriptionError: loadingError.error,
-        subscribed: undefined,
-        intendToSubscribe: false,
-        intendToRetrieve: false,
+        subscribed: ref(undefined),
+        intendToSubscribe: "intendToSubscribe" in props ? toRef(props, "intendToSubscribe") : ref(false),
+        intendToRetrieve: "intendToRetrieve" in props ? toRef(props, "intendToRetrieve") : ref(false),
+        loading: es.run(() => computed(() => loadingCombine(parentState.loading, state.subscriptionLoading))),
+        errored: es.run(() => computed(() => parentState.errored || state.subscriptionErrored)),
+        error: es.run(() => computed(() => parentState.error || state.subscriptionError)),
     });
-    if ("intendToRetrieve" in props) {
-        // @ts-ignore - passing Ref<boolean> to boolean in an UnwrapNestedRefs is fine
-        state.intendToRetrieve = toRef(props, "intendToRetrieve");
-    }
-    if ("intendToSubscribe" in props) {
-        // @ts-ignore - passing Ref<boolean> to boolean in an UnwrapNestedRefs is fine
-        state.intendToSubscribe = toRef(props, "intendToSubscribe");
-    }
-
     /** @type {import('./cancellableIntent.js').CancellableIntent} */
     let subscribeIntent;
     /** @type {import('./cancellableIntent.js').CancellableIntent} */
     let retrieveIntent;
 
-    function updateFromSubscription(data) {
+    function updateFromSubscription(/** @type {import('./objectInstance.js').ExistingCrudObject} */ data) {
         assignReactiveObject(parentState.object, data);
     }
 
@@ -265,18 +275,24 @@ export function useObjectSubscription({ objectInstance, props, functions }) {
         loadingError.clearError();
         loadingError.setLoading();
         const isCancelled = ref(false);
+        /** @type {import('../config/objectCrud.js').CrudSubscribeCallback} */
+        const subscribeCallback = (data, action) => {
+            if (action === "delete") {
+                objectInstance.deleteFromSubscription();
+            } else {
+                objectInstance.updateFromSubscription(data);
+            }
+<<<<<<< Updated upstream
+        }
+=======
+        };
+>>>>>>> Stashed changes
         const subscribePromise = parentState.crud.subscribe({
             crudArgs: parentState.crud.args,
             pk: parentState.pk,
             pkKey: parentState.pkKey,
             retrieveArgs: state.retrieveArgs,
-            callback: (data, action) => {
-                if (action === "delete") {
-                    objectInstance.deleteFromSubscription();
-                } else {
-                    objectInstance.updateFromSubscription(data);
-                }
-            },
+            callback: subscribeCallback,
             isCancelled,
         });
         let cancelSubscription = async (/** @type {any} */ reason) => {
@@ -326,20 +342,7 @@ export function useObjectSubscription({ objectInstance, props, functions }) {
         objectInstance.clearError();
     }
 
-    const es = effectScope();
-
     es.run(() => {
-        // @ts-ignore - loadingCombine returns a boolean|undefined, our state loading is a boolean|undefined... should be fine
-        state.loading = computed(() => loadingCombine(parentState.loading, state.subscriptionLoading));
-        // @ts-ignore - the computed value is a boolean, our state errored is a boolean... should be fine
-        state.errored = computed(() => parentState.errored || state.subscriptionErrored);
-        // @ts-ignore - the computed value is an Error|undefined, our state error is an Error|undefined... should be fine
-        state.error = computed(() => parentState.error || state.subscriptionError);
-
-        for (const key of objectInstanceStateKeys.filter((key) => !["loading", "errored", "error"].includes(key))) {
-            state[key] = toRef(parentState, key);
-        }
-
         subscribeIntent = useCancellableIntent({
             awaitableWithCancel: subscribe,
             watchArguments: reactive({
@@ -359,7 +362,7 @@ export function useObjectSubscription({ objectInstance, props, functions }) {
                 pkKey: toRef(parentState, "pkKey"),
                 retrieveArgs: toRef(parentState, "retrieveArgs"),
             }),
-            // delay triggering a retrieve until the last retrieve has finished/cancelled
+            // delay triggering a retrieve until the last retrieve has finished/cancelled.
             // cancel can still be triggered
             guardArguments: reactive({
                 loading: toRef(state, "loading"),

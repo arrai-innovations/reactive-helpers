@@ -162,6 +162,7 @@ export type PartialDetailArgs = {
      */
     isCancelled: Readonly<import("vue").Ref<boolean>>;
 };
+export type CrudSubscribeCallback = (data: import("../use/objectInstance.js").ExistingCrudObject, action: string) => any;
 export type SubscribeArgs = {
     /**
      * - The arguments to be passed to the crud functions.
@@ -186,7 +187,7 @@ export type SubscribeArgs = {
     /**
      * - The callback to be called when the object is updated.
      */
-    callback: (data: import("../use/objectInstance.js").ExistingCrudObject, action: string) => void;
+    callback: CrudSubscribeCallback;
     /**
      * - A ref to indicate if the request was cancelled.
      */

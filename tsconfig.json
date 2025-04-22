@@ -15,7 +15,8 @@
         "declaration": true,
         "emitDeclarationOnly": true,
         "outDir": "types",
-        "declarationMap": true
+        "declarationMap": true,
+        "noErrorTruncation": true
     },
     "include": ["config/**/*.js", "use/**/*.js", "utils/**/*.js", "tests/**/*.js", "index.js"]
 }

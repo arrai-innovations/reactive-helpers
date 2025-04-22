@@ -99,14 +99,18 @@ const requiredCancelMissingMethod = (name) => () => {
  */
 
 /**
+ * @callback CrudSubscribeCallback
+ * @param {import('../use/objectInstance.js').ExistingCrudObject} data - The data to be passed to the callback.
+ * @param {string} action - The action that was performed.
+ */
+
+/**
  * @typedef {object} SubscribeArgs
  * @property {{[key:string]: any}} crudArgs - The arguments to be passed to the crud functions.
  * @property {string} pk - The pk of the object to be acted upon.
  * @property {string} pkKey - The key name of the primary key.
  * @property {{[key:string]: any}} retrieveArgs - The arguments to be passed to the retrieve function.
- * @property {(
- *     data:import('../use/objectInstance.js').ExistingCrudObject, action:string
- * ) => void} callback - The callback to be called when the object is updated.
+ * @property {CrudSubscribeCallback} callback - The callback to be called when the object is updated.
  * @property {Readonly<import('vue').Ref<boolean>>} isCancelled - A ref to indicate if the request was cancelled.
  */
 

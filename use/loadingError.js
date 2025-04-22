@@ -9,12 +9,36 @@ import { readonly, ref } from "vue";
  */
 
 /**
+ * @typedef {import("vue").Ref<boolean|undefined>} LoadingRef
+ */
+
+/**
+ * @typedef {import("vue").Ref<Error|null>} ErrorRef
+ */
+
+/**
+ * @typedef {import("vue").Ref<boolean>} ErroredRef
+ */
+
+/**
+ * @typedef {Readonly<LoadingRef>} LoadingReadonlyRef
+ */
+
+/**
+ * @typedef {Readonly<ErrorRef>} ErrorReadonlyRef
+ */
+
+/**
+ * @typedef {Readonly<ErroredRef>} ErroredReadonlyRef
+ */
+
+/**
  * The common API for loading and error states.
  *
  * @typedef {object} LoadingErrorStatus
- * @property {Readonly<import("vue").Ref<boolean|undefined>>} loading - Whether the component is loading.
- * @property {Readonly<import("vue").Ref<Error|null>>} error - The error that occurred.
- * @property {Readonly<import("vue").Ref<boolean>>} errored - Whether an error has occurred.
+ * @property {LoadingReadonlyRef} loading - Whether the component is loading.
+ * @property {ErrorReadonlyRef} error - The error that occurred.
+ * @property {ErroredReadonlyRef} errored - Whether an error has occurred.
  * @property {ClearErrorFn} clearError - Clear the error state.
  */
 
@@ -39,11 +63,11 @@ import { readonly, ref } from "vue";
  * @returns {LoadingError} - An object containing reactive fields and actions for loading and error states.
  */
 export function useLoadingError() {
-    /** @type {import("vue").Ref<boolean|undefined>} */
+    /** @type {LoadingRef} */
     const loading = ref(undefined);
-    /** @type {import("vue").Ref<Error|null>} */
+    /** @type {ErrorRef} */
     const error = ref(null);
-    /** @type {import("vue").Ref<boolean>} */
+    /** @type {ErroredRef} */
     const errored = ref(false);
 
     return {

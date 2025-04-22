@@ -94,9 +94,57 @@ Clear the error state.
 
 ***
 
+### ErroredReadonlyRef
+
+> **ErroredReadonlyRef**\<\>: `Readonly`\<[`ErroredRef`](loadingError.md#erroredref)\>
+
+#### Type Parameters
+
+***
+
+### ErroredRef
+
+> **ErroredRef**\<\>: `Ref`
+
+#### Type Parameters
+
+***
+
+### ErrorReadonlyRef
+
+> **ErrorReadonlyRef**\<\>: `Readonly`\<[`ErrorRef`](loadingError.md#errorref)\>
+
+#### Type Parameters
+
+***
+
+### ErrorRef
+
+> **ErrorRef**\<\>: `Ref`
+
+#### Type Parameters
+
+***
+
 ### LoadingError
 
 > **LoadingError**\<\>: [`LoadingErrorStatus`](loadingError.md#loadingerrorstatus) & [`LoadingErrorMutations`](loadingError.md#loadingerrormutations)
+
+#### Type Parameters
+
+***
+
+### LoadingReadonlyRef
+
+> **LoadingReadonlyRef**\<\>: `Readonly`\<[`LoadingRef`](loadingError.md#loadingref)\>
+
+#### Type Parameters
+
+***
+
+### LoadingRef
+
+> **LoadingRef**\<\>: `Ref`
 
 #### Type Parameters
 

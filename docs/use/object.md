@@ -78,15 +78,15 @@ A function to be used instead of the default crud subscribe function.
 
 A function to be used instead of the default crud update function.
 
-###### intendToRetrieve?
+###### intendToRetrieve
 
-> `optional` **intendToRetrieve**: `boolean`
+> **intendToRetrieve**: `boolean`
 
 Whether the object intends to retrieve.
 
-###### intendToSubscribe?
+###### intendToSubscribe
 
-> `optional` **intendToSubscribe**: `boolean`
+> **intendToSubscribe**: `boolean`
 
 Whether the object intends to subscribe.
 
