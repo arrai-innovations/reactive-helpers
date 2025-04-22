@@ -59,6 +59,7 @@ const requiredCancelMissingMethod = (name) => () => {
  * @property {{[key:string]: any}} object - The data to be acted upon.
  * @property {{[key:string]: any}} retrieveArgs - The arguments to be passed to the retrieve function.
  * @property {string} pkKey - The key name of the primary key.
+ * @property {Readonly<import('vue').Ref<boolean>>} isCancelled - A ref to indicate if the request was cancelled.
  */
 
 /**
@@ -67,6 +68,7 @@ const requiredCancelMissingMethod = (name) => () => {
  * @property {string} pk - The pk of the object to be acted upon.
  * @property {string} pkKey - The key name of the primary key.
  * @property {{[key:string]: any}} retrieveArgs - The arguments to be passed to the retrieve function.
+ * @property {Readonly<import('vue').Ref<boolean>>} isCancelled - A ref to indicate if the request was cancelled.
  */
 
 /**
@@ -75,6 +77,7 @@ const requiredCancelMissingMethod = (name) => () => {
  * @property {import('../use/objectInstance.js').ExistingCrudObject} object - The data to be acted upon.
  * @property {{[key:string]: any}} retrieveArgs - The arguments to be passed to the retrieve function.
  * @property {string} pkKey - The key name of the primary key.
+ * @property {Readonly<import('vue').Ref<boolean>>} isCancelled - A ref to indicate if the request was cancelled.
  */
 
 /**
@@ -82,6 +85,7 @@ const requiredCancelMissingMethod = (name) => () => {
  * @property {{[key:string]: any}} crudArgs - The arguments to be passed to the crud functions.
  * @property {string} pk - The pk of the object to be acted upon.
  * @property {string} pkKey - The key name of the primary key.
+ * @property {Readonly<import('vue').Ref<boolean>>} isCancelled - A ref to indicate if the request was cancelled.
  */
 
 /**
@@ -91,6 +95,7 @@ const requiredCancelMissingMethod = (name) => () => {
  * @property {string} pkKey - The key name of the primary key.
  * @property {{[key:string]: any}} partialObject - The data to be acted upon.
  * @property {{[key:string]: any}} retrieveArgs - The arguments to be passed to the retrieve function.
+ * @property {Readonly<import('vue').Ref<boolean>>} isCancelled - A ref to indicate if the request was cancelled.
  */
 
 /**
@@ -102,6 +107,7 @@ const requiredCancelMissingMethod = (name) => () => {
  * @property {(
  *     data:import('../use/objectInstance.js').ExistingCrudObject, action:string
  * ) => void} callback - The callback to be called when the object is updated.
+ * @property {Readonly<import('vue').Ref<boolean>>} isCancelled - A ref to indicate if the request was cancelled.
  */
 
 /**

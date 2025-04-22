@@ -1,23 +1,43 @@
 import { assignReactiveObject } from "../../../utils/assignReactiveObject.js";
 import { expectErrorToBeNull } from "../expectHelpers.js";
 import flushPromises from "flush-promises";
-import { nextTick, reactive, ref } from "vue";
+import { isRef, nextTick, reactive, ref, unref } from "vue";
 import { deepUnref } from "../../../utils/deepUnref.js";
+import { CancellablePromise } from "../../../utils/cancellablePromise.js";
 
 afterAll(() => {
     vi.restoreAllMocks();
 });
 
+const mockedUseLoadingError = vi.fn();
+let currentSetError = null;
+vi.mock("../../../use/loadingError.js", async () => {
+    const actual = /** @type {import("../../../use/loadingError.js")} */ (
+        await vi.importActual("../../../use/loadingError.js")
+    );
+    // we just want a way to call setError on the last run instance.
+    return {
+        ...actual,
+        useLoadingError: mockedUseLoadingError.mockImplementation(() => {
+            const real = actual.useLoadingError();
+            currentSetError = real.setError;
+            return real;
+        }),
+    };
+});
+
 describe("use/objectInstance.js", function () {
-    let useObjectInstance, ObjectError, useObjectInstances;
+    let useObjectInstance, ObjectError, useObjectInstances, useLoadingError;
     beforeAll(async () => {
         const imported = await import("../../../use/objectInstance.js");
         useObjectInstance = imported.useObjectInstance;
         ObjectError = imported.ObjectError;
         useObjectInstances = imported.useObjectInstances;
+        const loadingErrorImported = await import("../../../use/loadingError.js");
+        useLoadingError = loadingErrorImported.useLoadingError;
     });
     afterEach(function () {
-        vi.resetAllMocks();
+        vi.clearAllMocks();
     });
     const crudRetrieveResolved = {
         id: 1,
@@ -155,8 +175,11 @@ describe("use/objectInstance.js", function () {
                 pk: 1,
                 pkKey: "id",
                 retrieveArgs: { fields: ["id", "__str__", "name"] },
+                isCancelled: expect.any(Object),
             });
             expect(objectInstance.state.crud.retrieve).toHaveBeenCalledTimes(1);
+            expect(isRef(objectInstance.state.crud.retrieve.mock.calls[0][0].isCancelled)).toBe(true);
+            expect(unref(objectInstance.state.crud.retrieve.mock.calls[0][0].isCancelled)).toBe(false);
             await nextTick();
             await expect(oiRetrieveResolve).resolves.toBe(true);
         });
@@ -200,8 +223,11 @@ describe("use/objectInstance.js", function () {
                 pk: 1,
                 pkKey: "unique",
                 retrieveArgs: { fields: ["id", "__str__", "name"] },
+                isCancelled: expect.any(Object),
             });
             expect(objectInstance.state.crud.retrieve).toHaveBeenCalledTimes(1);
+            expect(isRef(objectInstance.state.crud.retrieve.mock.calls[0][0].isCancelled)).toBe(true);
+            expect(unref(objectInstance.state.crud.retrieve.mock.calls[0][0].isCancelled)).toBe(false);
             await nextTick();
             await expect(oiRetrieveResolve).resolves.toBe(true);
         });
@@ -243,6 +269,7 @@ describe("use/objectInstance.js", function () {
                 pk: 1,
                 pkKey: "id",
                 retrieveArgs: { fields: ["id", "__str__", "name"] },
+                isCancelled: expect.any(Object),
             });
             expect(objectInstance.state.crud.retrieve).toHaveBeenCalledTimes(1);
             const returnValue = await oiRetrieveResolve;
@@ -286,8 +313,11 @@ describe("use/objectInstance.js", function () {
                 pk: 1,
                 pkKey: "id",
                 retrieveArgs: { fields: ["id", "__str__", "name"] },
+                isCancelled: expect.any(Object),
             });
             expect(objectInstance.state.crud.retrieve).toHaveBeenCalledTimes(1);
+            expect(isRef(objectInstance.state.crud.retrieve.mock.calls[0][0].isCancelled)).toBe(true);
+            expect(unref(objectInstance.state.crud.retrieve.mock.calls[0][0].isCancelled)).toBe(false);
             const returnValue = await oiRetrieveResolve;
             expect(returnValue).toBe(false);
         });
@@ -329,8 +359,11 @@ describe("use/objectInstance.js", function () {
                 pk: 1,
                 pkKey: "pk",
                 retrieveArgs: { fields: ["id", "__str__", "name"] },
+                isCancelled: expect.any(Object),
             });
             expect(objectInstance.state.crud.retrieve).toHaveBeenCalledTimes(1);
+            expect(isRef(objectInstance.state.crud.retrieve.mock.calls[0][0].isCancelled)).toBe(true);
+            expect(unref(objectInstance.state.crud.retrieve.mock.calls[0][0].isCancelled)).toBe(false);
             const returnValue = await oiRetrieveResolve;
             expect(returnValue).toBe(false);
         });
@@ -359,7 +392,7 @@ describe("use/objectInstance.js", function () {
             expectErrorToBeNull(objectInstance.state.error);
             expect(objectInstance.state.errored).toBe(false);
             expect(objectInstance.state.loading).toBe(true);
-            await expect(() => objectInstance.retrieve()).rejects.toThrow(ObjectError);
+            expect(() => objectInstance.retrieve()).toThrow(new ObjectError("already loading.", "already-loading"));
             expect(objectInstance.state.crud.retrieve).toHaveBeenCalledTimes(0);
             expectErrorToBeNull(objectInstance.state.error);
             expect(objectInstance.state.errored).toBe(false);
@@ -385,19 +418,48 @@ describe("use/objectInstance.js", function () {
             expect({ ...objectInstance.state.object }).toEqual({});
             const firstPromise = objectInstance.retrieve();
             const secondPromise = objectInstance.retrieve();
-            // await expect(() => objectInstance.retrieve()).rejects.toThrow(ObjectError);
             expect(firstPromise).toBe(secondPromise);
             expect(objectInstance.state.crud.retrieve).toHaveBeenCalledWith({
                 crudArgs: { stream: "test_stream" },
                 pk: 1,
                 pkKey: "id",
                 retrieveArgs: { fields: ["id", "__str__", "name"] },
+                isCancelled: expect.any(Object),
             });
             expect(objectInstance.state.crud.retrieve).toHaveBeenCalledTimes(1);
+            expect(isRef(objectInstance.state.crud.retrieve.mock.calls[0][0].isCancelled)).toBe(true);
+            expect(unref(objectInstance.state.crud.retrieve.mock.calls[0][0].isCancelled)).toBe(false);
             expectErrorToBeNull(objectInstance.state.error);
             expect(objectInstance.state.errored).toBe(false);
             expect(objectInstance.state.loading).toBe(true);
             expect({ ...objectInstance.state.object }).toEqual({});
+        });
+        it("cancel", async () => {
+            const objectInstance = useObjectInstance({
+                props: {
+                    crudArgs: { stream: "test_stream" },
+                    pk: 1,
+                    pkKey: "id",
+                    retrieveArgs: { fields },
+                },
+            });
+
+            let cancelFnCalled = false;
+            const testPromise = CancellablePromise(new Promise(() => {}), () => {
+                cancelFnCalled = true;
+                return Promise.resolve();
+            });
+
+            objectInstance.state.crud.retrieve = vi.fn().mockReturnValueOnce(testPromise);
+
+            const result = objectInstance.retrieve();
+            expect(isRef(objectInstance.state.crud.retrieve.mock.calls[0][0].isCancelled)).toBe(true);
+            expect(unref(objectInstance.state.crud.retrieve.mock.calls[0][0].isCancelled)).toBe(false);
+
+            await result.cancel();
+
+            expect(cancelFnCalled).toBe(true);
+            expect(unref(objectInstance.state.crud.retrieve.mock.calls[0][0].isCancelled)).toBe(true);
         });
     });
     describe("create", function () {
@@ -449,8 +511,11 @@ describe("use/objectInstance.js", function () {
                 },
                 pkKey: "id",
                 retrieveArgs: { fields: ["id", "__str__", "name"] },
+                isCancelled: expect.any(Object),
             });
             expect(objectInstance.state.crud.create).toHaveBeenCalledTimes(1);
+            expect(isRef(objectInstance.state.crud.create.mock.calls[0][0].isCancelled)).toBe(true);
+            expect(unref(objectInstance.state.crud.create.mock.calls[0][0].isCancelled)).toBe(false);
             await nextTick();
             await expect(oiCreateResolve).resolves.toBe(true);
         });
@@ -500,8 +565,11 @@ describe("use/objectInstance.js", function () {
                     name: "qwer",
                 },
                 retrieveArgs: { fields: ["id", "__str__", "name"] },
+                isCancelled: expect.any(Object),
             });
             expect(objectInstance.state.crud.create).toHaveBeenCalledTimes(1);
+            expect(isRef(objectInstance.state.crud.create.mock.calls[0][0].isCancelled)).toBe(true);
+            expect(unref(objectInstance.state.crud.create.mock.calls[0][0].isCancelled)).toBe(false);
             const returnValue = await oiCreateResolve;
             expect(returnValue).toBe(true);
         });
@@ -553,8 +621,11 @@ describe("use/objectInstance.js", function () {
                 },
                 pkKey: "unique",
                 retrieveArgs: { fields: ["id", "__str__", "name"] },
+                isCancelled: expect.any(Object),
             });
             expect(objectInstance.state.crud.create).toHaveBeenCalledTimes(1);
+            expect(isRef(objectInstance.state.crud.create.mock.calls[0][0].isCancelled)).toBe(true);
+            expect(unref(objectInstance.state.crud.create.mock.calls[0][0].isCancelled)).toBe(false);
             await nextTick();
             await expect(oiCreateResolve).resolves.toBe(true);
         });
@@ -605,8 +676,11 @@ describe("use/objectInstance.js", function () {
                     name: "qwer",
                 },
                 retrieveArgs: { fields: ["id", "__str__", "name"] },
+                isCancelled: expect.any(Object),
             });
             expect(objectInstance.state.crud.create).toHaveBeenCalledTimes(1);
+            expect(isRef(objectInstance.state.crud.create.mock.calls[0][0].isCancelled)).toBe(true);
+            expect(unref(objectInstance.state.crud.create.mock.calls[0][0].isCancelled)).toBe(false);
             const returnValue = await oiCreateResolve;
             expect(returnValue).toBe(false);
         });
@@ -657,8 +731,11 @@ describe("use/objectInstance.js", function () {
                     name: "qwer",
                 },
                 retrieveArgs: { fields: ["id", "__str__", "name"] },
+                isCancelled: expect.any(Object),
             });
             expect(objectInstance.state.crud.create).toHaveBeenCalledTimes(1);
+            expect(isRef(objectInstance.state.crud.create.mock.calls[0][0].isCancelled)).toBe(true);
+            expect(unref(objectInstance.state.crud.create.mock.calls[0][0].isCancelled)).toBe(false);
             const returnValue = await oiCreateResolve;
             expect(returnValue).toBe(false);
         });
@@ -685,13 +762,13 @@ describe("use/objectInstance.js", function () {
                     name: "qwer",
                 },
             });
-            await expect(() =>
+            expect(() =>
                 objectInstance.create({
                     object: {
                         name: "qwer",
                     },
                 })
-            ).rejects.toThrow(ObjectError);
+            ).toThrow(new ObjectError("already loading.", "already-loading"));
             expect(objectInstance.state.crud.create).toHaveBeenCalledWith({
                 crudArgs: {
                     stream: "test_stream",
@@ -701,12 +778,44 @@ describe("use/objectInstance.js", function () {
                     name: "qwer",
                 },
                 retrieveArgs: { fields: ["id", "__str__", "name"] },
+                isCancelled: expect.any(Object),
             });
             expect(objectInstance.state.crud.create).toHaveBeenCalledTimes(1);
+            expect(isRef(objectInstance.state.crud.create.mock.calls[0][0].isCancelled)).toBe(true);
+            expect(unref(objectInstance.state.crud.create.mock.calls[0][0].isCancelled)).toBe(false);
             expectErrorToBeNull(objectInstance.state.error);
             expect(objectInstance.state.errored).toBe(false);
             expect(objectInstance.state.loading).toBe(true);
             expect({ ...objectInstance.state.object }).toEqual({});
+        });
+        it("cancel", async () => {
+            const objectInstance = useObjectInstance({
+                props: {
+                    crudArgs: { stream: "test_stream" },
+                    pk: 1,
+                    pkKey: "id",
+                    retrieveArgs: { fields },
+                },
+            });
+
+            let cancelFnCalled = false;
+            const testPromise = CancellablePromise(new Promise(() => {}), () => {
+                cancelFnCalled = true;
+                return Promise.resolve();
+            });
+
+            objectInstance.state.crud.create = vi.fn().mockReturnValueOnce(testPromise);
+
+            const result = objectInstance.create({
+                dummy: "object",
+            });
+            expect(isRef(objectInstance.state.crud.create.mock.calls[0][0].isCancelled)).toBe(true);
+            expect(unref(objectInstance.state.crud.create.mock.calls[0][0].isCancelled)).toBe(false);
+
+            await result.cancel();
+
+            expect(cancelFnCalled).toBe(true);
+            expect(unref(objectInstance.state.crud.create.mock.calls[0][0].isCancelled)).toBe(true);
         });
     });
     describe("update", function () {
@@ -761,8 +870,11 @@ describe("use/objectInstance.js", function () {
                     name: "zxcv!",
                 },
                 retrieveArgs: { fields: ["id", "__str__", "name"] },
+                isCancelled: expect.any(Object),
             });
             expect(objectInstance.state.crud.update).toHaveBeenCalledTimes(1);
+            expect(isRef(objectInstance.state.crud.update.mock.calls[0][0].isCancelled)).toBe(true);
+            expect(unref(objectInstance.state.crud.update.mock.calls[0][0].isCancelled)).toBe(false);
         });
         it("success (retrieveArgs)", async function () {
             const id = ref(1);
@@ -813,8 +925,11 @@ describe("use/objectInstance.js", function () {
                     name: "zxcv!",
                 },
                 retrieveArgs: { fields: ["id", "__str__", "name"] },
+                isCancelled: expect.any(Object),
             });
             expect(objectInstance.state.crud.update).toHaveBeenCalledTimes(1);
+            expect(isRef(objectInstance.state.crud.update.mock.calls[0][0].isCancelled)).toBe(true);
+            expect(unref(objectInstance.state.crud.update.mock.calls[0][0].isCancelled)).toBe(false);
         });
         it("success with non-standard pk", async function () {
             const id = ref(1);
@@ -865,8 +980,11 @@ describe("use/objectInstance.js", function () {
                     name: "zxcv!",
                 },
                 retrieveArgs: { fields: ["id", "__str__", "name"] },
+                isCancelled: expect.any(Object),
             });
             expect(objectInstance.state.crud.update).toHaveBeenCalledTimes(1);
+            expect(isRef(objectInstance.state.crud.update.mock.calls[0][0].isCancelled)).toBe(true);
+            expect(unref(objectInstance.state.crud.update.mock.calls[0][0].isCancelled)).toBe(false);
         });
         it("errored", async function () {
             const id = ref(1);
@@ -917,8 +1035,11 @@ describe("use/objectInstance.js", function () {
                     name: "zxcv!",
                 },
                 retrieveArgs: { fields: ["id", "__str__", "name"] },
+                isCancelled: expect.any(Object),
             });
             expect(objectInstance.state.crud.update).toHaveBeenCalledTimes(1);
+            expect(isRef(objectInstance.state.crud.update.mock.calls[0][0].isCancelled)).toBe(true);
+            expect(unref(objectInstance.state.crud.update.mock.calls[0][0].isCancelled)).toBe(false);
         });
         it("errored with non-matching pkKey", async function () {
             const id = ref(1);
@@ -969,8 +1090,11 @@ describe("use/objectInstance.js", function () {
                     name: "zxcv!",
                 },
                 retrieveArgs: { fields: ["id", "__str__", "name"] },
+                isCancelled: expect.any(Object),
             });
             expect(objectInstance.state.crud.update).toHaveBeenCalledTimes(1);
+            expect(isRef(objectInstance.state.crud.update.mock.calls[0][0].isCancelled)).toBe(true);
+            expect(unref(objectInstance.state.crud.update.mock.calls[0][0].isCancelled)).toBe(false);
         });
         it("already loading", async function () {
             const id = ref(1);
@@ -996,14 +1120,14 @@ describe("use/objectInstance.js", function () {
                     name: "zxcv!",
                 },
             });
-            await expect(() =>
+            expect(() =>
                 objectInstance.update({
                     object: {
                         id: 1,
                         name: "zxcv!",
                     },
                 })
-            ).rejects.toThrow(ObjectError);
+            ).toThrow(new ObjectError("already loading.", "already-loading"));
             expectErrorToBeNull(objectInstance.state.error);
             expect(objectInstance.state.errored).toBe(false);
             expect(objectInstance.state.loading).toBe(true);
@@ -1018,8 +1142,41 @@ describe("use/objectInstance.js", function () {
                     name: "zxcv!",
                 },
                 retrieveArgs: { fields: ["id", "__str__", "name"] },
+                isCancelled: expect.any(Object),
             });
             expect(objectInstance.state.crud.update).toHaveBeenCalledTimes(1);
+            expect(isRef(objectInstance.state.crud.update.mock.calls[0][0].isCancelled)).toBe(true);
+            expect(unref(objectInstance.state.crud.update.mock.calls[0][0].isCancelled)).toBe(false);
+        });
+        it("cancel", async () => {
+            const objectInstance = useObjectInstance({
+                props: {
+                    crudArgs: { stream: "test_stream" },
+                    pk: 1,
+                    pkKey: "id",
+                    retrieveArgs: { fields },
+                },
+            });
+
+            let cancelFnCalled = false;
+            const testPromise = CancellablePromise(new Promise(() => {}), () => {
+                cancelFnCalled = true;
+                return Promise.resolve();
+            });
+
+            objectInstance.state.crud.update = vi.fn().mockReturnValueOnce(testPromise);
+
+            const result = objectInstance.update({
+                id: 1,
+                dummy: "object",
+            });
+            expect(isRef(objectInstance.state.crud.update.mock.calls[0][0].isCancelled)).toBe(true);
+            expect(unref(objectInstance.state.crud.update.mock.calls[0][0].isCancelled)).toBe(false);
+
+            await result.cancel();
+
+            expect(cancelFnCalled).toBe(true);
+            expect(unref(objectInstance.state.crud.update.mock.calls[0][0].isCancelled)).toBe(true);
         });
     });
     describe("patch", function () {
@@ -1075,8 +1232,11 @@ describe("use/objectInstance.js", function () {
                     name: "zxcv!",
                 },
                 retrieveArgs: { fields: ["id", "__str__", "name"] },
+                isCancelled: expect.any(Object),
             });
             expect(objectInstance.state.crud.patch).toHaveBeenCalledTimes(1);
+            expect(isRef(objectInstance.state.crud.patch.mock.calls[0][0].isCancelled)).toBe(true);
+            expect(unref(objectInstance.state.crud.patch.mock.calls[0][0].isCancelled)).toBe(false);
         });
         it("success with non-standard pk", async function () {
             const id = ref(1);
@@ -1130,8 +1290,11 @@ describe("use/objectInstance.js", function () {
                     name: "zxcv!",
                 },
                 retrieveArgs: { fields: ["id", "__str__", "name"] },
+                isCancelled: expect.any(Object),
             });
             expect(objectInstance.state.crud.patch).toHaveBeenCalledTimes(1);
+            expect(isRef(objectInstance.state.crud.patch.mock.calls[0][0].isCancelled)).toBe(true);
+            expect(unref(objectInstance.state.crud.patch.mock.calls[0][0].isCancelled)).toBe(false);
         });
         it("errored", async function () {
             const id = ref(1);
@@ -1183,8 +1346,11 @@ describe("use/objectInstance.js", function () {
                     name: "zxcv!",
                 },
                 retrieveArgs: { fields: ["id", "__str__", "name"] },
+                isCancelled: expect.any(Object),
             });
             expect(objectInstance.state.crud.patch).toHaveBeenCalledTimes(1);
+            expect(isRef(objectInstance.state.crud.patch.mock.calls[0][0].isCancelled)).toBe(true);
+            expect(unref(objectInstance.state.crud.patch.mock.calls[0][0].isCancelled)).toBe(false);
         });
         it("errored with non-matching pkKey", async function () {
             const id = ref(1);
@@ -1236,8 +1402,11 @@ describe("use/objectInstance.js", function () {
                     name: "zxcv!",
                 },
                 retrieveArgs: { fields: ["id", "__str__", "name"] },
+                isCancelled: expect.any(Object),
             });
             expect(objectInstance.state.crud.patch).toHaveBeenCalledTimes(1);
+            expect(isRef(objectInstance.state.crud.patch.mock.calls[0][0].isCancelled)).toBe(true);
+            expect(unref(objectInstance.state.crud.patch.mock.calls[0][0].isCancelled)).toBe(false);
         });
         it("already loading", async function () {
             const pk = ref(1);
@@ -1259,14 +1428,14 @@ describe("use/objectInstance.js", function () {
                     name: "zxcv!",
                 },
             });
-            await expect(() =>
+            expect(() =>
                 objectInstance.patch({
                     partialObject: {
                         id: 1,
                         name: "zxcv!",
                     },
                 })
-            ).rejects.toThrow(ObjectError);
+            ).toThrow(new ObjectError("already loading.", "already-loading"));
             expect(objectInstance.state.crud.patch).toHaveBeenCalledWith({
                 crudArgs: {
                     stream: "test_stream",
@@ -1278,8 +1447,41 @@ describe("use/objectInstance.js", function () {
                     name: "zxcv!",
                 },
                 retrieveArgs: { fields: ["id", "__str__", "name"] },
+                isCancelled: expect.any(Object),
             });
             expect(objectInstance.state.crud.patch).toHaveBeenCalledTimes(1);
+            expect(isRef(objectInstance.state.crud.patch.mock.calls[0][0].isCancelled)).toBe(true);
+            expect(unref(objectInstance.state.crud.patch.mock.calls[0][0].isCancelled)).toBe(false);
+        });
+        it("cancel", async () => {
+            const objectInstance = useObjectInstance({
+                props: {
+                    crudArgs: { stream: "test_stream" },
+                    pk: 1,
+                    pkKey: "id",
+                    retrieveArgs: { fields },
+                },
+            });
+
+            let cancelFnCalled = false;
+            const testPromise = CancellablePromise(new Promise(() => {}), () => {
+                cancelFnCalled = true;
+                return Promise.resolve();
+            });
+
+            objectInstance.state.crud.patch = vi.fn().mockReturnValueOnce(testPromise);
+
+            const result = objectInstance.patch({
+                id: 1,
+                dummy: "object",
+            });
+            expect(isRef(objectInstance.state.crud.patch.mock.calls[0][0].isCancelled)).toBe(true);
+            expect(unref(objectInstance.state.crud.patch.mock.calls[0][0].isCancelled)).toBe(false);
+
+            await result.cancel();
+
+            expect(cancelFnCalled).toBe(true);
+            expect(unref(objectInstance.state.crud.patch.mock.calls[0][0].isCancelled)).toBe(true);
         });
     });
     describe("delete", function () {
@@ -1333,8 +1535,11 @@ describe("use/objectInstance.js", function () {
                 crudArgs: { stream: "test_stream" },
                 pk: 1,
                 pkKey: "unique",
+                isCancelled: expect.any(Object),
             });
             expect(objectInstance.state.crud.delete).toHaveBeenCalledTimes(1);
+            expect(isRef(objectInstance.state.crud.delete.mock.calls[0][0].isCancelled)).toBe(true);
+            expect(unref(objectInstance.state.crud.delete.mock.calls[0][0].isCancelled)).toBe(false);
         });
         it("errored", async function () {
             const pk = ref(1);
@@ -1386,8 +1591,11 @@ describe("use/objectInstance.js", function () {
                 crudArgs: { stream: "test_stream" },
                 pk: 1,
                 pkKey: "id",
+                isCancelled: expect.any(Object),
             });
             expect(objectInstance.state.crud.delete).toHaveBeenCalledTimes(1);
+            expect(isRef(objectInstance.state.crud.delete.mock.calls[0][0].isCancelled)).toBe(true);
+            expect(unref(objectInstance.state.crud.delete.mock.calls[0][0].isCancelled)).toBe(false);
         });
         it("errored with non-matching pkKey", async function () {
             const pk = ref(1);
@@ -1439,8 +1647,11 @@ describe("use/objectInstance.js", function () {
                 crudArgs: { stream: "test_stream" },
                 pk: 1,
                 pkKey: "unique",
+                isCancelled: expect.any(Object),
             });
             expect(objectInstance.state.crud.delete).toHaveBeenCalledTimes(1);
+            expect(isRef(objectInstance.state.crud.delete.mock.calls[0][0].isCancelled)).toBe(true);
+            expect(unref(objectInstance.state.crud.delete.mock.calls[0][0].isCancelled)).toBe(false);
         });
         it("already loading", async function () {
             const pk = ref(1);
@@ -1457,13 +1668,73 @@ describe("use/objectInstance.js", function () {
             objectInstance.state.crud.delete = vi.fn();
             objectInstance.state.crud.delete.mockReturnValueOnce(deletePromise);
             objectInstance.delete(1);
-            await expect(() => objectInstance.delete()).rejects.toThrow(ObjectError);
+            expect(() => objectInstance.delete()).toThrow(new ObjectError("already loading.", "already-loading"));
             expect(objectInstance.state.crud.delete).toHaveBeenCalledWith({
                 crudArgs: { stream: "test_stream" },
                 pk: 1,
                 pkKey: "id",
+                isCancelled: expect.any(Object),
             });
             expect(objectInstance.state.crud.delete).toHaveBeenCalledTimes(1);
+            expect(isRef(objectInstance.state.crud.delete.mock.calls[0][0].isCancelled)).toBe(true);
+            expect(unref(objectInstance.state.crud.delete.mock.calls[0][0].isCancelled)).toBe(false);
+        });
+        it("cancel", async () => {
+            const objectInstance = useObjectInstance({
+                props: {
+                    crudArgs: { stream: "test_stream" },
+                    pk: 1,
+                    pkKey: "id",
+                    retrieveArgs: { fields },
+                },
+            });
+
+            let cancelFnCalled = false;
+            const testPromise = CancellablePromise(new Promise(() => {}), () => {
+                cancelFnCalled = true;
+                return Promise.resolve();
+            });
+
+            objectInstance.state.crud.delete = vi.fn().mockReturnValueOnce(testPromise);
+
+            const result = objectInstance.delete();
+            expect(objectInstance.state.crud.delete).toHaveBeenCalledWith({
+                crudArgs: { stream: "test_stream" },
+                pk: 1,
+                pkKey: "id",
+                isCancelled: expect.any(Object),
+            });
+            expect(objectInstance.state.crud.delete).toHaveBeenCalledTimes(1);
+            expect(isRef(objectInstance.state.crud.delete.mock.calls[0][0].isCancelled)).toBe(true);
+            expect(unref(objectInstance.state.crud.delete.mock.calls[0][0].isCancelled)).toBe(false);
+
+            await result.cancel();
+
+            expect(cancelFnCalled).toBe(true);
+            expect(unref(objectInstance.state.crud.delete.mock.calls[0][0].isCancelled)).toBe(true);
+        });
+    });
+    describe("clear", () => {
+        it("resets object and error state", async () => {
+            const objectInstance = useObjectInstance({
+                props: {
+                    crudArgs: { stream: "test_stream" },
+                    pk: 1,
+                    pkKey: "id",
+                    retrieveArgs: { fields },
+                },
+            });
+
+            assignReactiveObject(objectInstance.state.object, crudRetrieveResolved);
+            // objectInstance.state.error = ref(new Error("Test"));
+            // objectInstance.state.errored = ref(true);
+            currentSetError(new Error("Test"));
+
+            objectInstance.clear();
+
+            expect(objectInstance.state.object).toEqual({});
+            expect(objectInstance.state.error).toBeNull();
+            expect(objectInstance.state.errored).toBe(false);
         });
     });
     it("useObjectSubscriptions", async function () {

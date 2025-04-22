@@ -22,6 +22,12 @@ The arguments to be passed to the crud functions.
 
 \[`key`: `string`\]: `any`
 
+##### isCancelled
+
+> **isCancelled**: `Readonly`\<`Ref`\<`boolean`, `boolean`\>\>
+
+A ref to indicate if the request was cancelled.
+
 ##### object
 
 > **object**: `object`
@@ -63,6 +69,12 @@ The arguments to be passed to the crud functions.
 ###### Index Signature
 
 \[`key`: `string`\]: `any`
+
+##### isCancelled
+
+> **isCancelled**: `Readonly`\<`Ref`\<`boolean`, `boolean`\>\>
+
+A ref to indicate if the request was cancelled.
 
 ##### pk
 
@@ -158,6 +170,12 @@ The arguments to be passed to the crud functions.
 
 \[`key`: `string`\]: `any`
 
+##### isCancelled
+
+> **isCancelled**: `Readonly`\<`Ref`\<`boolean`, `boolean`\>\>
+
+A ref to indicate if the request was cancelled.
+
 ##### partialObject
 
 > **partialObject**: `object`
@@ -205,6 +223,12 @@ The arguments to be passed to the crud functions.
 ###### Index Signature
 
 \[`key`: `string`\]: `any`
+
+##### isCancelled
+
+> **isCancelled**: `Readonly`\<`Ref`\<`boolean`, `boolean`\>\>
+
+A ref to indicate if the request was cancelled.
 
 ##### pk
 
@@ -264,6 +288,12 @@ The arguments to be passed to the crud functions.
 
 \[`key`: `string`\]: `any`
 
+##### isCancelled
+
+> **isCancelled**: `Readonly`\<`Ref`\<`boolean`, `boolean`\>\>
+
+A ref to indicate if the request was cancelled.
+
 ##### pk
 
 > **pk**: `string`
@@ -301,6 +331,12 @@ The arguments to be passed to the crud functions.
 ###### Index Signature
 
 \[`key`: `string`\]: `any`
+
+##### isCancelled
+
+> **isCancelled**: `Readonly`\<`Ref`\<`boolean`, `boolean`\>\>
+
+A ref to indicate if the request was cancelled.
 
 ##### object
 

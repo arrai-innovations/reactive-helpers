@@ -85,7 +85,7 @@ Called to clear the error state.
 
 ##### create()
 
-> **create**: (`args`) => `Promise`\<`boolean`\>
+> **create**: (`args`) => [`MaybeCancellablePromise`](../utils/cancellablePromise.md#maybecancellablepromiset)\<`boolean`\>
 
 Called to turn the current object into a new object on the server.
 
@@ -99,21 +99,21 @@ Called to turn the current object into a new object on the server.
 
 ###### Returns
 
-`Promise`\<`boolean`\>
+[`MaybeCancellablePromise`](../utils/cancellablePromise.md#maybecancellablepromiset)\<`boolean`\>
 
 ##### delete()
 
-> **delete**: () => `Promise`\<`boolean`\>
+> **delete**: () => [`MaybeCancellablePromise`](../utils/cancellablePromise.md#maybecancellablepromiset)\<`boolean`\>
 
 Called to delete the current object on the server.
 
 ###### Returns
 
-`Promise`\<`boolean`\>
+[`MaybeCancellablePromise`](../utils/cancellablePromise.md#maybecancellablepromiset)\<`boolean`\>
 
 ##### patch()
 
-> **patch**: (`args`) => `Promise`\<`boolean`\>
+> **patch**: (`args`) => [`MaybeCancellablePromise`](../utils/cancellablePromise.md#maybecancellablepromiset)\<`boolean`\>
 
 Called to patch the current object on the server.
 
@@ -127,21 +127,21 @@ Called to patch the current object on the server.
 
 ###### Returns
 
-`Promise`\<`boolean`\>
+[`MaybeCancellablePromise`](../utils/cancellablePromise.md#maybecancellablepromiset)\<`boolean`\>
 
 ##### retrieve()
 
-> **retrieve**: () => `Promise`\<`boolean`\>
+> **retrieve**: () => [`MaybeCancellablePromise`](../utils/cancellablePromise.md#maybecancellablepromiset)\<`boolean`\>
 
 Called to retrieve the current object by pk from the server.
 
 ###### Returns
 
-`Promise`\<`boolean`\>
+[`MaybeCancellablePromise`](../utils/cancellablePromise.md#maybecancellablepromiset)\<`boolean`\>
 
 ##### update()
 
-> **update**: (`args`) => `Promise`\<`boolean`\>
+> **update**: (`args`) => [`MaybeCancellablePromise`](../utils/cancellablePromise.md#maybecancellablepromiset)\<`boolean`\>
 
 Called to update the current object on the server.
 
@@ -155,7 +155,7 @@ Called to update the current object on the server.
 
 ###### Returns
 
-`Promise`\<`boolean`\>
+[`MaybeCancellablePromise`](../utils/cancellablePromise.md#maybecancellablepromiset)\<`boolean`\>
 
 ***
 

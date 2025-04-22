@@ -26,7 +26,7 @@
  *  calls. Returns a promise that resolves to true if the subscription was successful, and false if it failed.
  * @property {() => boolean} unsubscribe - Unsubscribes from the object, resetting related state flags. Returns
  *  true if the object was unsubscribed, and false if it was not subscribed.
- * @property {(data: import('./objectInstance.js').CrudObject) => void} updateFromSubscription - Update the object from a subscription.
+ * @property {(data: import('./objectInstance.js').ExistingCrudObject) => void} updateFromSubscription - Update the object from a subscription.
  * @property {() => void} deleteFromSubscription - Delete the object from a subscription.
  * @property {() => void} clearError - Clears any errors related to the subscription, and resets the loading state.
  */
@@ -190,7 +190,7 @@ export type ObjectSubscriptionFunctions = {
     /**
      * - Update the object from a subscription.
      */
-    updateFromSubscription: (data: import("./objectInstance.js").CrudObject) => void;
+    updateFromSubscription: (data: import("./objectInstance.js").ExistingCrudObject) => void;
     /**
      * - Delete the object from a subscription.
      */

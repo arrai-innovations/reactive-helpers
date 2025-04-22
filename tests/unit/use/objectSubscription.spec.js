@@ -5,7 +5,7 @@ import { expectErrorToBeNull } from "../expectHelpers.js";
 import { poll } from "../poll.js";
 import flushPromises from "flush-promises";
 import cloneDeep from "lodash-es/cloneDeep.js";
-import { nextTick, ref } from "vue";
+import { isRef, nextTick, ref, unref } from "vue";
 import { stringify } from "flatted";
 import { deepUnref } from "../../../utils/deepUnref.js";
 import { CancellablePromise } from "../../../utils/cancellablePromise.js";
@@ -14,6 +14,23 @@ import { CancellablePromise } from "../../../utils/cancellablePromise.js";
 
 afterAll(() => {
     vi.restoreAllMocks();
+});
+
+const mockedUseLoadingError = vi.fn();
+const currentSetErrors = [];
+vi.mock("../../../use/loadingError.js", async () => {
+    const actual = /** @type {import("../../../use/loadingError.js")} */ (
+        await vi.importActual("../../../use/loadingError.js")
+    );
+    // we just want a way to call setError on the last run instance.
+    return {
+        ...actual,
+        useLoadingError: mockedUseLoadingError.mockImplementation(() => {
+            const real = actual.useLoadingError();
+            currentSetErrors.push(real.setError);
+            return real;
+        }),
+    };
 });
 
 describe("use/objectSubscription.js", function () {
@@ -52,7 +69,8 @@ describe("use/objectSubscription.js", function () {
         });
     });
     afterEach(function () {
-        vi.resetAllMocks();
+        currentSetErrors.length = 0;
+        vi.clearAllMocks();
     });
     const crudRetrieveResolved = {
         id: 1,
@@ -142,8 +160,11 @@ describe("use/objectSubscription.js", function () {
                 retrieveArgs: {
                     fields,
                 },
+                isCancelled: expect.any(Object),
             });
             expect(globalRetrieve).toHaveBeenCalledTimes(1);
+            expect(isRef(globalRetrieve.mock.calls[0][0].isCancelled)).toBe(true);
+            expect(unref(globalRetrieve.mock.calls[0][0].isCancelled)).toBe(false);
             expect(globalSubscribe).toHaveBeenCalledWith({
                 crudArgs: { stream: "test_stream" },
                 pk: 1,
@@ -152,9 +173,11 @@ describe("use/objectSubscription.js", function () {
                     fields,
                 },
                 callback: expect.any(Function),
+                isCancelled: expect.any(Object),
             });
-            await doAwaitTimeout(1000);
             expect(globalSubscribe).toHaveBeenCalledTimes(1);
+            expect(isRef(globalSubscribe.mock.calls[0][0].isCancelled)).toBe(true);
+            expect(unref(globalSubscribe.mock.calls[0][0].isCancelled)).toBe(false);
         });
         it("subscribe callback", async function () {
             globalSubscribe.mockReset();
@@ -222,8 +245,11 @@ describe("use/objectSubscription.js", function () {
                     fields,
                 },
                 callback: expect.any(Function),
+                isCancelled: expect.any(Object),
             });
             expect(globalSubscribe).toHaveBeenCalledTimes(1);
+            expect(isRef(globalSubscribe.mock.calls[0][0].isCancelled)).toBe(true);
+            expect(unref(globalSubscribe.mock.calls[0][0].isCancelled)).toBe(false);
         });
         it("delayed success", async function () {
             objectSubscription.objectInstance.state.retrieveArgs = ref(false);
@@ -284,8 +310,11 @@ describe("use/objectSubscription.js", function () {
                 retrieveArgs: {
                     fields,
                 },
+                isCancelled: expect.any(Object),
             });
             expect(globalRetrieve).toHaveBeenCalledTimes(1);
+            expect(isRef(globalRetrieve.mock.calls[0][0].isCancelled)).toBe(true);
+            expect(unref(globalRetrieve.mock.calls[0][0].isCancelled)).toBe(false);
             expect(globalSubscribe).toHaveBeenNthCalledWith(1, {
                 crudArgs: { stream: "test_stream" },
                 pk: 1,
@@ -294,8 +323,11 @@ describe("use/objectSubscription.js", function () {
                     fields,
                 },
                 callback: expect.any(Function),
+                isCancelled: expect.any(Object),
             });
             expect(globalSubscribe).toHaveBeenCalledTimes(1);
+            expect(isRef(globalSubscribe.mock.calls[0][0].isCancelled)).toBe(true);
+            expect(unref(globalSubscribe.mock.calls[0][0].isCancelled)).toBe(false);
         });
         it("retrieve errored", async function () {
             expect(objectSubscription.state.loading).toBeUndefined();
@@ -343,8 +375,11 @@ describe("use/objectSubscription.js", function () {
                 retrieveArgs: {
                     fields,
                 },
+                isCancelled: expect.any(Object),
             });
             expect(globalRetrieve).toHaveBeenCalledTimes(1);
+            expect(isRef(globalRetrieve.mock.calls[0][0].isCancelled)).toBe(true);
+            expect(unref(globalRetrieve.mock.calls[0][0].isCancelled)).toBe(false);
             expect(globalSubscribe).toHaveBeenCalledWith({
                 crudArgs: { stream: "test_stream" },
                 pk: 1,
@@ -353,8 +388,11 @@ describe("use/objectSubscription.js", function () {
                     fields,
                 },
                 callback: expect.any(Function),
+                isCancelled: expect.any(Object),
             });
             expect(globalSubscribe).toHaveBeenCalledTimes(1);
+            expect(isRef(globalSubscribe.mock.calls[0][0].isCancelled)).toBe(true);
+            expect(unref(globalSubscribe.mock.calls[0][0].isCancelled)).toBe(false);
         });
         it("subscribe errored", async function () {
             expect(objectSubscription.state.loading).toBeUndefined();
@@ -404,8 +442,11 @@ describe("use/objectSubscription.js", function () {
                 retrieveArgs: {
                     fields,
                 },
+                isCancelled: expect.any(Object),
             });
             expect(globalRetrieve).toHaveBeenCalledTimes(1);
+            expect(isRef(globalRetrieve.mock.calls[0][0].isCancelled)).toBe(true);
+            expect(unref(globalRetrieve.mock.calls[0][0].isCancelled)).toBe(false);
             expect(globalSubscribe).toHaveBeenCalledWith({
                 crudArgs: { stream: "test_stream" },
                 pk: 1,
@@ -414,8 +455,11 @@ describe("use/objectSubscription.js", function () {
                     fields,
                 },
                 callback: expect.any(Function),
+                isCancelled: expect.any(Object),
             });
             expect(globalSubscribe).toHaveBeenCalledTimes(1);
+            expect(isRef(globalSubscribe.mock.calls[0][0].isCancelled)).toBe(true);
+            expect(unref(globalSubscribe.mock.calls[0][0].isCancelled)).toBe(false);
         });
         it("already subscribed", async function () {
             expect(objectSubscription.state.loading).toBeUndefined();
@@ -589,8 +633,11 @@ describe("use/objectSubscription.js", function () {
                 retrieveArgs: {
                     fields,
                 },
+                isCancelled: expect.any(Object),
             });
             expect(globalRetrieve).toHaveBeenCalledTimes(1);
+            expect(isRef(globalRetrieve.mock.calls[0][0].isCancelled)).toBe(true);
+            expect(unref(globalRetrieve.mock.calls[0][0].isCancelled)).toBe(false);
             expect(globalSubscribe).toHaveBeenCalledWith({
                 crudArgs: { stream: "test_stream2" },
                 pk: 1,
@@ -599,8 +646,11 @@ describe("use/objectSubscription.js", function () {
                     fields,
                 },
                 callback: expect.any(Function),
+                isCancelled: expect.any(Object),
             });
             expect(globalSubscribe).toHaveBeenCalledTimes(1);
+            expect(isRef(globalSubscribe.mock.calls[0][0].isCancelled)).toBe(true);
+            expect(unref(globalSubscribe.mock.calls[0][0].isCancelled)).toBe(false);
         });
         it("override subscribe", async function () {
             let crudRetrieveResolve, crudSubscribeResolve;
@@ -650,8 +700,11 @@ describe("use/objectSubscription.js", function () {
                 retrieveArgs: {
                     fields,
                 },
+                isCancelled: expect.any(Object),
             });
             expect(customCrudRetrieve).toHaveBeenCalledTimes(1);
+            expect(isRef(customCrudRetrieve.mock.calls[0][0].isCancelled)).toBe(true);
+            expect(unref(customCrudRetrieve.mock.calls[0][0].isCancelled)).toBe(false);
             expect(customCrudSubscribe).toHaveBeenCalledWith({
                 crudArgs: { stream: "test_stream" },
                 pk: 1,
@@ -660,8 +713,11 @@ describe("use/objectSubscription.js", function () {
                     fields,
                 },
                 callback: expect.any(Function),
+                isCancelled: expect.any(Object),
             });
             expect(customCrudSubscribe).toHaveBeenCalledTimes(1);
+            expect(isRef(customCrudSubscribe.mock.calls[0][0].isCancelled)).toBe(true);
+            expect(unref(customCrudSubscribe.mock.calls[0][0].isCancelled)).toBe(false);
         });
     });
     describe("custom primary key", function () {
@@ -705,8 +761,11 @@ describe("use/objectSubscription.js", function () {
                 retrieveArgs: {
                     fields,
                 },
+                isCancelled: expect.any(Object),
             });
             expect(globalRetrieve).toHaveBeenCalledTimes(1);
+            expect(isRef(globalRetrieve.mock.calls[0][0].isCancelled)).toBe(true);
+            expect(unref(globalRetrieve.mock.calls[0][0].isCancelled)).toBe(false);
             expect(globalSubscribe).toHaveBeenCalledWith({
                 crudArgs: { stream: "test_streamA" },
                 pk: 1,
@@ -715,8 +774,34 @@ describe("use/objectSubscription.js", function () {
                     fields,
                 },
                 callback: expect.any(Function),
+                isCancelled: expect.any(Object),
             });
             expect(globalSubscribe).toHaveBeenCalledTimes(1);
+            expect(isRef(globalSubscribe.mock.calls[0][0].isCancelled)).toBe(true);
+            expect(unref(globalSubscribe.mock.calls[0][0].isCancelled)).toBe(false);
+        });
+    });
+    describe("clearError", () => {
+        it("propagates clearError to loadingError and objectInstance", () => {
+            const objectSubscription = useObjectSubscription({
+                props: {
+                    pk: 1,
+                    pkKey: "id",
+                    retrieveArgs: { fields },
+                },
+            });
+
+            // Retrieve the last useLoadingError instance's clearLoading spy
+            const loadingErrorInstance = mockedUseLoadingError.mock.results.at(-1)?.value;
+            expect(loadingErrorInstance).toBeDefined();
+
+            const clearLoadingSpy = vi.spyOn(loadingErrorInstance, "clearLoading");
+            const objectClearErrorSpy = vi.spyOn(objectSubscription.objectInstance, "clearError");
+
+            objectSubscription.clearError();
+
+            expect(clearLoadingSpy).toHaveBeenCalledTimes(1);
+            expect(objectClearErrorSpy).toHaveBeenCalledTimes(1);
         });
     });
     describe("useObjectSubscriptions with objectInstance", function () {

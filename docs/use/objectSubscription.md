@@ -127,7 +127,7 @@ Update the object from a subscription.
 
 ###### data
 
-[`CrudObject`](objectInstance.md#crudobject)
+[`ExistingCrudObject`](objectInstance.md#existingcrudobject)
 
 ###### Returns
 

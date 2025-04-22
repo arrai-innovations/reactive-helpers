@@ -3,7 +3,8 @@ import { loadingCombine } from "../utils/loadingCombine.js";
 import { useCancellableIntent } from "./cancellableIntent.js";
 import { useLoadingError } from "./loadingError.js";
 import { useObjectInstance, objectInstanceStateKeys } from "./objectInstance.js";
-import { computed, effectScope, reactive, toRef } from "vue";
+import { computed, effectScope, reactive, ref, toRef } from "vue";
+import { CancellablePromise } from "../utils/cancellablePromise.js";
 
 /**
  * A composition function for managing object subscriptions, including subscription status, errors, and reactivity.
@@ -76,7 +77,7 @@ export const objectSubscriptionFunctions = [
  *  calls. Returns a promise that resolves to true if the subscription was successful, and false if it failed.
  * @property {() => boolean} unsubscribe - Unsubscribes from the object, resetting related state flags. Returns
  *  true if the object was unsubscribed, and false if it was not subscribed.
- * @property {(data: import('./objectInstance.js').CrudObject) => void} updateFromSubscription - Update the object from a subscription.
+ * @property {(data: import('./objectInstance.js').ExistingCrudObject) => void} updateFromSubscription - Update the object from a subscription.
  * @property {() => void} deleteFromSubscription - Delete the object from a subscription.
  * @property {() => void} clearError - Clears any errors related to the subscription, and resets the loading state.
  */
@@ -257,14 +258,14 @@ export function useObjectSubscription({ objectInstance, props, functions }) {
     function subscribe() {
         // this function cannot be async, or the resulting promise will lose its .cancel() method
         if (state.subscribed) {
-            return Promise.reject(
-                new ObjectSubscriptionError("already subscribed or subscribing.", "already-subscribed")
-            );
+            // we throw because we want devs to see this error in the console
+            // state.error should be for user facing errors, or unknown errors
+            throw new ObjectSubscriptionError("already subscribed or subscribing.", "already-subscribed");
         }
         loadingError.clearError();
         loadingError.setLoading();
-        let subscribePromise;
-        subscribePromise = parentState.crud.subscribe({
+        const isCancelled = ref(false);
+        const subscribePromise = parentState.crud.subscribe({
             crudArgs: parentState.crud.args,
             pk: parentState.pk,
             pkKey: parentState.pkKey,
@@ -276,36 +277,39 @@ export function useObjectSubscription({ objectInstance, props, functions }) {
                     objectInstance.updateFromSubscription(data);
                 }
             },
+            isCancelled,
         });
-        let cancelSubscription = async (reason) => {
+        let cancelSubscription = async (/** @type {any} */ reason) => {
             let cancelPromise = subscribePromise.cancel(reason);
             cancelSubscription = null;
             state.subscribed = false;
             return cancelPromise;
         };
-        // then/catch/finally makes a new promise, we need to make sure the cancel method lives on.
-        const catchPromise = subscribePromise
-            .then(() => {
-                state.subscribed = true;
-                return Promise.resolve(true);
-            })
-            .catch((error) => {
-                loadingError.setError(error);
-                if (cancelSubscription) {
-                    cancelSubscription();
-                    cancelSubscription = null;
-                    state.subscribed = false;
-                }
-                return Promise.resolve(false);
-            })
-            .finally(() => {
-                loadingError.clearLoading();
-                if (!state.subscribed) {
-                    subscribePromise = null;
-                }
-            });
-        catchPromise.cancel = cancelSubscription;
-        return catchPromise;
+        return CancellablePromise(
+            subscribePromise
+                .then(() => {
+                    state.subscribed = true;
+                    return true;
+                })
+                .catch((/** @type {Error} */ error) => {
+                    loadingError.setError(error);
+                    if (cancelSubscription) {
+                        // noinspection JSIgnoredPromiseFromCall
+                        cancelSubscription("Subscription error cancellation");
+                        cancelSubscription = null;
+                        state.subscribed = false;
+                    }
+                    return false;
+                })
+                .finally(() => {
+                    loadingError.clearLoading();
+                }),
+            cancelSubscription
+<<<<<<< Updated upstream
+        )
+=======
+        );
+>>>>>>> Stashed changes
     }
 
     function publicUnsubscribe() {

@@ -128,11 +128,11 @@ export function useObjectInstance({ props, functions }: ObjectInstanceOptions): 
  * The functions available on the object instance.
  *
  * @typedef {object} ObjectInstanceFunctions
- * @property {(args: { object: object }) => Promise<boolean>} create - Called to turn the current object into a new object on the server.
- * @property {() => Promise<boolean>} retrieve - Called to retrieve the current object by pk from the server.
- * @property {(args: { object: ExistingCrudObject }) => Promise<boolean>} update - Called to update the current object on the server.
- * @property {() => Promise<boolean>} delete - Called to delete the current object on the server.
- * @property {(args: { partialObject: ExistingCrudObject }) => Promise<boolean>} patch - Called to patch the current object on the server.
+ * @property {(args: { object: object }) => import('../utils/cancellablePromise.js').MaybeCancellablePromise<boolean>} create - Called to turn the current object into a new object on the server.
+ * @property {() => import('../utils/cancellablePromise.js').MaybeCancellablePromise<boolean>} retrieve - Called to retrieve the current object by pk from the server.
+ * @property {(args: { object: ExistingCrudObject }) => import('../utils/cancellablePromise.js').MaybeCancellablePromise<boolean>} update - Called to update the current object on the server.
+ * @property {() => import('../utils/cancellablePromise.js').MaybeCancellablePromise<boolean>} delete - Called to delete the current object on the server.
+ * @property {(args: { partialObject: ExistingCrudObject }) => import('../utils/cancellablePromise.js').MaybeCancellablePromise<boolean>} patch - Called to patch the current object on the server.
  * @property {import('./loadingError.js').ClearErrorFn} clearError - Called to clear the error state.
  * @property {() => void} clear - Called to clear the object state.
  */
@@ -295,27 +295,27 @@ export type ObjectInstanceFunctions = {
      */
     create: (args: {
         object: object;
-    }) => Promise<boolean>;
+    }) => import("../utils/cancellablePromise.js").MaybeCancellablePromise<boolean>;
     /**
      * - Called to retrieve the current object by pk from the server.
      */
-    retrieve: () => Promise<boolean>;
+    retrieve: () => import("../utils/cancellablePromise.js").MaybeCancellablePromise<boolean>;
     /**
      * - Called to update the current object on the server.
      */
     update: (args: {
         object: ExistingCrudObject;
-    }) => Promise<boolean>;
+    }) => import("../utils/cancellablePromise.js").MaybeCancellablePromise<boolean>;
     /**
      * - Called to delete the current object on the server.
      */
-    delete: () => Promise<boolean>;
+    delete: () => import("../utils/cancellablePromise.js").MaybeCancellablePromise<boolean>;
     /**
      * - Called to patch the current object on the server.
      */
     patch: (args: {
         partialObject: ExistingCrudObject;
-    }) => Promise<boolean>;
+    }) => import("../utils/cancellablePromise.js").MaybeCancellablePromise<boolean>;
     /**
      * - Called to clear the error state.
      */

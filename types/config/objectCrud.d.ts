@@ -53,6 +53,10 @@ export type CreateDetailArgs = {
      * - The key name of the primary key.
      */
     pkKey: string;
+    /**
+     * - A ref to indicate if the request was cancelled.
+     */
+    isCancelled: Readonly<import("vue").Ref<boolean>>;
 };
 export type RetrieveDetailArgs = {
     /**
@@ -75,6 +79,10 @@ export type RetrieveDetailArgs = {
     retrieveArgs: {
         [key: string]: any;
     };
+    /**
+     * - A ref to indicate if the request was cancelled.
+     */
+    isCancelled: Readonly<import("vue").Ref<boolean>>;
 };
 export type UpdateDetailArgs = {
     /**
@@ -97,6 +105,10 @@ export type UpdateDetailArgs = {
      * - The key name of the primary key.
      */
     pkKey: string;
+    /**
+     * - A ref to indicate if the request was cancelled.
+     */
+    isCancelled: Readonly<import("vue").Ref<boolean>>;
 };
 export type DeleteDetailArgs = {
     /**
@@ -113,6 +125,10 @@ export type DeleteDetailArgs = {
      * - The key name of the primary key.
      */
     pkKey: string;
+    /**
+     * - A ref to indicate if the request was cancelled.
+     */
+    isCancelled: Readonly<import("vue").Ref<boolean>>;
 };
 export type PartialDetailArgs = {
     /**
@@ -141,6 +157,10 @@ export type PartialDetailArgs = {
     retrieveArgs: {
         [key: string]: any;
     };
+    /**
+     * - A ref to indicate if the request was cancelled.
+     */
+    isCancelled: Readonly<import("vue").Ref<boolean>>;
 };
 export type SubscribeArgs = {
     /**
@@ -167,6 +187,10 @@ export type SubscribeArgs = {
      * - The callback to be called when the object is updated.
      */
     callback: (data: import("../use/objectInstance.js").ExistingCrudObject, action: string) => void;
+    /**
+     * - A ref to indicate if the request was cancelled.
+     */
+    isCancelled: Readonly<import("vue").Ref<boolean>>;
 };
 export type CrudResponse = import("../utils/cancellablePromise.js").MaybeCancellablePromise<object | string>;
 export type CrudCreateFn = (args: CreateDetailArgs) => CrudResponse;

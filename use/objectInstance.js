@@ -1,7 +1,8 @@
 import { defaultCrud, getObjectCrud } from "../config/objectCrud.js";
 import { assignReactiveObject } from "../utils/assignReactiveObject.js";
 import { useLoadingError } from "./loadingError.js";
-import { reactive, shallowReactive, toRef } from "vue";
+import { reactive, readonly, ref, shallowReactive, toRef } from "vue";
+import { wrapMaybeCancellable } from "../utils/cancellablePromise.js";
 
 /**
  * A composition function to manage create, retrieve, update, delete, and patch operations.
@@ -78,11 +79,11 @@ import { reactive, shallowReactive, toRef } from "vue";
  * The functions available on the object instance.
  *
  * @typedef {object} ObjectInstanceFunctions
- * @property {(args: { object: object }) => Promise<boolean>} create - Called to turn the current object into a new object on the server.
- * @property {() => Promise<boolean>} retrieve - Called to retrieve the current object by pk from the server.
- * @property {(args: { object: ExistingCrudObject }) => Promise<boolean>} update - Called to update the current object on the server.
- * @property {() => Promise<boolean>} delete - Called to delete the current object on the server.
- * @property {(args: { partialObject: ExistingCrudObject }) => Promise<boolean>} patch - Called to patch the current object on the server.
+ * @property {(args: { object: object }) => import('../utils/cancellablePromise.js').MaybeCancellablePromise<boolean>} create - Called to turn the current object into a new object on the server.
+ * @property {() => import('../utils/cancellablePromise.js').MaybeCancellablePromise<boolean>} retrieve - Called to retrieve the current object by pk from the server.
+ * @property {(args: { object: ExistingCrudObject }) => import('../utils/cancellablePromise.js').MaybeCancellablePromise<boolean>} update - Called to update the current object on the server.
+ * @property {() => import('../utils/cancellablePromise.js').MaybeCancellablePromise<boolean>} delete - Called to delete the current object on the server.
+ * @property {(args: { partialObject: ExistingCrudObject }) => import('../utils/cancellablePromise.js').MaybeCancellablePromise<boolean>} patch - Called to patch the current object on the server.
  * @property {import('./loadingError.js').ClearErrorFn} clearError - Called to clear the error state.
  * @property {() => void} clear - Called to clear the object state.
  */
@@ -242,6 +243,9 @@ export function useObjectInstance({ props, functions = {} }) {
         retrieve: null,
     };
 
+    /**
+     * @returns {import('../utils/cancellablePromise.js').MaybeCancellablePromise<boolean|never>} - A promise that resolves to true if the object was retrieved successfully, or false if there was an error.
+     */
     function retrieve() {
         // this function cannot be async, or the resulting promise will lose its .cancel() method
         if (promises.retrieve) {
@@ -249,136 +253,208 @@ export function useObjectInstance({ props, functions = {} }) {
             return promises.retrieve;
         }
         if (state.loading) {
-            // if another operation is already in progress, return a rejected promise
-            return Promise.reject(new ObjectError("already loading.", "already-loading"));
+            // if another operation is already in progress, throw an error
+            // we throw because we want devs to see this error in the console
+            // state.error should be for user facing errors, or unknown errors
+            throw new ObjectError("already loading.", "already-loading");
         }
         loadingError.setLoading();
         loadingError.clearError();
-        promises.retrieve = state.crud
-            .retrieve({
-                crudArgs: state.crud.args,
-                pk: state.pk,
-                retrieveArgs: state.retrieveArgs,
-                pkKey: state.pkKey,
-            })
-            .then((object) => {
-                assignReactiveObject(state.object, object);
-                return Promise.resolve(true);
-            })
-            .catch((error) => {
-                loadingError.setError(error);
-                return Promise.resolve(false);
-            })
-            .finally(() => {
-                loadingError.clearLoading();
-                promises.retrieve = null;
-            });
+        const isCancelled = ref(false);
+        const retrievePromise = state.crud.retrieve({
+            crudArgs: state.crud.args,
+            pk: state.pk,
+            retrieveArgs: state.retrieveArgs,
+            pkKey: state.pkKey,
+            isCancelled: readonly(isCancelled),
+        });
+
+        promises.retrieve = wrapMaybeCancellable(
+            retrievePromise
+                .then((/** @type {ExistingCrudObject} */ object) => {
+                    assignReactiveObject(state.object, object);
+                    return true;
+                })
+                .catch((/** @type {Error} */ error) => {
+                    loadingError.setError(error);
+                    return false;
+                })
+                .finally(() => {
+                    loadingError.clearLoading();
+                    promises.retrieve = null;
+                }),
+            retrievePromise.cancel
+                ? async (/** @type {any} */ reason) => {
+                      isCancelled.value = true;
+                      await retrievePromise.cancel?.(reason);
+                      loadingError.clearLoading();
+                  }
+                : undefined
+        );
+
         return promises.retrieve;
     }
 
-    async function create({ object }) {
+    function create({ object }) {
+        // this function cannot be async, or the resulting promise will lose its .cancel() method
         if (state.loading) {
+            // we throw because we want devs to see this error in the console
+            // state.error should be for user facing errors, or unknown errors
             throw new ObjectError("already loading.", "already-loading");
         }
         loadingError.setLoading();
         loadingError.clearError();
-        return state.crud
-            .create({
-                crudArgs: state.crud.args,
-                object,
-                retrieveArgs: state.retrieveArgs,
-                pkKey: state.pkKey,
-            })
-            .then((object) => {
-                assignReactiveObject(state.object, object);
-                return Promise.resolve(true);
-            })
-            .catch((error) => {
-                loadingError.setError(error);
-                return Promise.resolve(false);
-            })
-            .finally(() => {
-                loadingError.clearLoading();
-            });
+        const isCancelled = ref(false);
+        const createPromise = state.crud.create({
+            crudArgs: state.crud.args,
+            object,
+            retrieveArgs: state.retrieveArgs,
+            pkKey: state.pkKey,
+            isCancelled: readonly(isCancelled),
+        });
+
+        return wrapMaybeCancellable(
+            createPromise
+                .then((/** @type {ExistingCrudObject} */ object) => {
+                    assignReactiveObject(state.object, object);
+                    return true;
+                })
+                .catch((/** @type {Error} */ error) => {
+                    loadingError.setError(error);
+                    return false;
+                })
+                .finally(() => {
+                    loadingError.clearLoading();
+                }),
+            createPromise.cancel
+                ? async (/** @type {any} */ reason) => {
+                      isCancelled.value = true;
+                      await createPromise.cancel?.(reason);
+                      loadingError.clearLoading();
+                  }
+                : undefined
+        );
     }
 
-    async function update({ object }) {
+    function update({ object }) {
+        // this function cannot be async, or the resulting promise will lose its .cancel() method
         if (state.loading) {
+            // we throw because we want devs to see this error in the console
+            // state.error should be for user facing errors, or unknown errors
             throw new ObjectError("already loading.", "already-loading");
         }
         loadingError.setLoading();
         loadingError.clearError();
-        return state.crud
-            .update({
-                crudArgs: state.crud.args,
-                object,
-                retrieveArgs: state.retrieveArgs,
-                pkKey: state.pkKey,
-            })
-            .then((object) => {
-                assignReactiveObject(state.object, object);
-                return Promise.resolve(true);
-            })
-            .catch((error) => {
-                loadingError.setError(error);
-                return Promise.resolve(false);
-            })
-            .finally(() => {
-                loadingError.clearLoading();
-            });
+        const isCancelled = ref(false);
+        const updatePromise = state.crud.update({
+            crudArgs: state.crud.args,
+            object,
+            retrieveArgs: state.retrieveArgs,
+            pkKey: state.pkKey,
+            isCancelled: readonly(isCancelled),
+        });
+        return wrapMaybeCancellable(
+            updatePromise
+                .then((/** @type {ExistingCrudObject} */ object) => {
+                    assignReactiveObject(state.object, object);
+                    return true;
+                })
+                .catch((/** @type {Error} */ error) => {
+                    loadingError.setError(error);
+                    return false;
+                })
+                .finally(() => {
+                    loadingError.clearLoading();
+                }),
+            updatePromise.cancel
+                ? async (/** @type {any} */ reason) => {
+                      isCancelled.value = true;
+                      await updatePromise.cancel?.(reason);
+                      loadingError.clearLoading();
+                  }
+                : undefined
+        );
     }
 
-    async function patch({ partialObject }) {
+    function patch({ partialObject }) {
+        // this function cannot be async, or the resulting promise will lose its .cancel() method
         if (state.loading) {
+            // we throw because we want devs to see this error in the console
+            // state.error should be for user facing errors, or unknown errors
             throw new ObjectError("already loading.", "already-loading");
         }
         loadingError.setLoading();
         loadingError.clearError();
-        return state.crud
-            .patch({
-                crudArgs: state.crud.args,
-                pk: state.pk,
-                pkKey: state.pkKey,
-                partialObject,
-                retrieveArgs: state.retrieveArgs,
-            })
-            .then((object) => {
-                assignReactiveObject(state.object, object);
-                return Promise.resolve(true);
-            })
-            .catch((error) => {
-                loadingError.setError(error);
-                return Promise.resolve(false);
-            })
-            .finally(() => {
-                loadingError.clearLoading();
-            });
+        const isCancelled = ref(false);
+        const patchPromise = state.crud.patch({
+            crudArgs: state.crud.args,
+            pk: state.pk,
+            pkKey: state.pkKey,
+            partialObject,
+            retrieveArgs: state.retrieveArgs,
+            isCancelled: readonly(isCancelled),
+        });
+        return wrapMaybeCancellable(
+            patchPromise
+                .then((/** @type {ExistingCrudObject} */ object) => {
+                    assignReactiveObject(state.object, object);
+                    return true;
+                })
+                .catch((/** @type {Error} */ error) => {
+                    loadingError.setError(error);
+                    return false;
+                })
+                .finally(() => {
+                    loadingError.clearLoading();
+                }),
+            patchPromise.cancel
+                ? async (/** @type {any} */ reason) => {
+                      isCancelled.value = true;
+                      await patchPromise.cancel?.(reason);
+                      loadingError.clearLoading();
+                  }
+                : undefined
+        );
     }
 
-    async function deleteFn() {
+    function deleteFn() {
+        // this function cannot be async, or the resulting promise will lose its .cancel() method
         if (state.loading) {
+            // we throw because we want devs to see this error in the console
+            // state.error should be for user facing errors, or unknown errors
             throw new ObjectError("already loading.", "already-loading");
         }
         loadingError.setLoading();
         loadingError.clearError();
-        return state.crud
-            .delete({
-                crudArgs: state.crud.args,
-                pk: state.pk,
-                pkKey: state.pkKey,
-            })
-            .then(() => {
-                state.deleted = true;
-                assignReactiveObject(state.object, {});
-                return Promise.resolve(true);
-            })
-            .catch((error) => {
-                loadingError.setError(error);
-                return Promise.resolve(false);
-            })
-            .finally(() => {
-                loadingError.clearLoading();
-            });
+        const isCancelled = ref(false);
+        const deletePromise = state.crud.delete({
+            crudArgs: state.crud.args,
+            pk: state.pk,
+            pkKey: state.pkKey,
+            isCancelled: readonly(isCancelled),
+        });
+        return wrapMaybeCancellable(
+            deletePromise
+                .then(() => {
+                    state.deleted = true;
+                    assignReactiveObject(state.object, {});
+                    return true;
+                })
+                .catch((/** @type {Error} */ error) => {
+                    loadingError.setError(error);
+                    return false;
+                })
+                .finally(() => {
+                    loadingError.clearLoading();
+                }),
+            deletePromise.cancel
+                ? async (/** @type {any} */ reason) => {
+                      isCancelled.value = true;
+                      await deletePromise.cancel?.(reason);
+                      loadingError.clearLoading();
+                  }
+                : undefined
+        );
     }
 
     function clear() {
