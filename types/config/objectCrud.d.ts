@@ -1,10 +1,20 @@
+export const defaultCrud: {
+    readonly args: {};
+    readonly retrieve: (...args: any[]) => import("../utils/cancellablePromise.js").MaybeCancellablePromise<any>;
+    readonly create: (...args: any[]) => import("../utils/cancellablePromise.js").MaybeCancellablePromise<any>;
+    readonly update: (...args: any[]) => import("../utils/cancellablePromise.js").MaybeCancellablePromise<any>;
+    readonly patch: (...args: any[]) => import("../utils/cancellablePromise.js").MaybeCancellablePromise<any>;
+    readonly delete: (...args: any[]) => import("../utils/cancellablePromise.js").MaybeCancellablePromise<any>;
+    readonly subscribe: (...args: any[]) => CancellablePromise<any>;
+};
 export function setObjectCrud({ retrieve, create, update, patch, delete: deleteFn, subscribe, args, ...rest }: ObjectCrudArgs): void;
-export function getObjectCrud(reactiveCrud: import("vue").UnwrapNestedRefs<object>, { props, functions }?: {
-    props?: import("vue").UnwrapNestedRefs<{
-        crudArgs: ObjectCrudArgsProperties | undefined;
-    }>;
+export function getObjectCrud(reactiveCrud: import("vue").UnwrapNestedRefs<ObjectCrudArgsProperties>, { props, functions }?: {
+    props?: import("vue").UnwrapNestedRefs<ObjectCrudArgsOption>;
     functions?: ObjectCrudFunctions;
 }): void;
+export type ObjectCrudArgsArgs = {
+    [key: string]: any;
+};
 /**
  * Defines the CRUD-related functions and additional utilities provided by the object instance.
  */
@@ -12,21 +22,33 @@ export type ObjectCrudArgsProperties = {
     /**
      * - The arguments to be passed to the crud functions.
      */
-    args?: object;
+    args: ObjectCrudArgsArgs;
+};
+export type ObjectCrudArgsOption = {
+    /**
+     * - The arguments to be passed to the crud functions.
+     */
+    crudArgs?: ObjectCrudArgsArgs;
 };
 export type CreateDetailArgs = {
     /**
      * - The arguments to be passed to the crud functions.
      */
-    crudArgs: object;
+    crudArgs: {
+        [key: string]: any;
+    };
     /**
      * - The data to be acted upon.
      */
-    object: object;
+    object: {
+        [key: string]: any;
+    };
     /**
      * - The arguments to be passed to the retrieve function.
      */
-    retrieveArgs: object;
+    retrieveArgs: {
+        [key: string]: any;
+    };
     /**
      * - The key name of the primary key.
      */
@@ -36,7 +58,9 @@ export type RetrieveDetailArgs = {
     /**
      * - The arguments to be passed to the crud functions.
      */
-    crudArgs: object;
+    crudArgs: {
+        [key: string]: any;
+    };
     /**
      * - The pk of the object to be acted upon.
      */
@@ -48,21 +72,27 @@ export type RetrieveDetailArgs = {
     /**
      * - The arguments to be passed to the retrieve function.
      */
-    retrieveArgs: object;
+    retrieveArgs: {
+        [key: string]: any;
+    };
 };
 export type UpdateDetailArgs = {
     /**
      * - The arguments to be passed to the crud functions.
      */
-    crudArgs: object;
+    crudArgs: {
+        [key: string]: any;
+    };
     /**
      * - The data to be acted upon.
      */
-    object: import("../use/objectInstance.js").CrudObject;
+    object: import("../use/objectInstance.js").ExistingCrudObject;
     /**
      * - The arguments to be passed to the retrieve function.
      */
-    retrieveArgs: object;
+    retrieveArgs: {
+        [key: string]: any;
+    };
     /**
      * - The key name of the primary key.
      */
@@ -72,7 +102,9 @@ export type DeleteDetailArgs = {
     /**
      * - The arguments to be passed to the crud functions.
      */
-    crudArgs: object;
+    crudArgs: {
+        [key: string]: any;
+    };
     /**
      * - The pk of the object to be acted upon.
      */
@@ -81,16 +113,14 @@ export type DeleteDetailArgs = {
      * - The key name of the primary key.
      */
     pkKey: string;
-    /**
-     * - The arguments to be passed to the retrieve function.
-     */
-    retrieveArgs: object;
 };
 export type PartialDetailArgs = {
     /**
      * - The arguments to be passed to the crud functions.
      */
-    crudArgs: object;
+    crudArgs: {
+        [key: string]: any;
+    };
     /**
      * - The pk of the object to be acted upon.
      */
@@ -102,17 +132,23 @@ export type PartialDetailArgs = {
     /**
      * - The data to be acted upon.
      */
-    partialObject: object;
+    partialObject: {
+        [key: string]: any;
+    };
     /**
      * - The arguments to be passed to the retrieve function.
      */
-    retrieveArgs: object;
+    retrieveArgs: {
+        [key: string]: any;
+    };
 };
 export type SubscribeArgs = {
     /**
      * - The arguments to be passed to the crud functions.
      */
-    crudArgs: object;
+    crudArgs: {
+        [key: string]: any;
+    };
     /**
      * - The pk of the object to be acted upon.
      */
@@ -124,15 +160,21 @@ export type SubscribeArgs = {
     /**
      * - The arguments to be passed to the retrieve function.
      */
-    retrieveArgs: object;
+    retrieveArgs: {
+        [key: string]: any;
+    };
     /**
      * - The callback to be called when the object is updated.
      */
-    callback: (data: import("../use/objectInstance.js").CrudObject, action: string) => void;
+    callback: (data: import("../use/objectInstance.js").ExistingCrudObject, action: string) => void;
 };
-export type ResponseData = Promise<object | string> & {
-    cancel: () => Promise<void> | void;
-};
+export type CrudResponse = import("../utils/cancellablePromise.js").MaybeCancellablePromise<object | string>;
+export type CrudCreateFn = (args: CreateDetailArgs) => CrudResponse;
+export type CrudRetrieveFn = (args: RetrieveDetailArgs) => CrudResponse;
+export type CrudUpdateFn = (args: UpdateDetailArgs) => CrudResponse;
+export type CrudPatchFn = (args: PartialDetailArgs) => CrudResponse;
+export type CrudDeleteFn = (args: DeleteDetailArgs) => CrudResponse;
+export type CrudSubscribeFn = (args: SubscribeArgs) => import("../utils/cancellablePromise.js").CancellablePromise<void>;
 /**
  * Defines the CRUD-related functions and additional utilities provided by the object instance.
  */
@@ -140,32 +182,31 @@ export type ObjectCrudFunctions = {
     /**
      * - A function to be used instead of the default crud create function.
      */
-    create?: (CreateDetailArgs: any) => ResponseData;
+    create?: CrudCreateFn;
     /**
      * - A function to be used instead of the default crud retrieve function.
      */
-    retrieve?: (RetrieveDetailArgs: any) => ResponseData;
+    retrieve?: CrudRetrieveFn;
     /**
      * - A function to be used instead of the default crud update function.
      */
-    update?: (UpdateDetailArgs: any) => ResponseData;
+    update?: CrudUpdateFn;
     /**
      * - A function to be used instead of the default crud delete function.
      */
-    delete?: (DeleteDetailArgs: any) => ResponseData;
+    delete?: CrudDeleteFn;
     /**
      * - A function to be used instead of the default crud patch function.
      */
-    patch?: (PartialDetailArgs: any) => ResponseData;
+    patch?: CrudPatchFn;
     /**
      * - A function to be used instead of the default crud subscribe function.
      */
-    subscribe?: (SubscribeArgs: any) => void & {
-        cancel: () => Promise<void> | void;
-    };
+    subscribe?: CrudSubscribeFn;
 };
 /**
  * The CRUD arguments.
  */
 export type ObjectCrudArgs = ObjectCrudArgsProperties & ObjectCrudFunctions;
+import { CancellablePromise } from "../utils/cancellablePromise.js";
 //# sourceMappingURL=objectCrud.d.ts.map

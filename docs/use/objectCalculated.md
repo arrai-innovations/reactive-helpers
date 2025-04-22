@@ -26,111 +26,9 @@ The parent state.
 
 ###### crud
 
-> **crud**: `object`
+> **crud**: `ShallowReactive`\<[`ObjectInstanceRawStateCrud`](objectInstance.md#objectinstancerawstatecrud)\>
 
 The crud functions.
-
-###### crud.args?
-
-> `optional` **args**: `any`
-
-The arguments to be passed to the crud functions.
-
-###### crud.create()?
-
-> `optional` **create**: (`CreateDetailArgs`) => [`ResponseData`](../config/objectCrud.md#responsedata)
-
-A function to be used instead of the default crud create function.
-
-###### Parameters
-
-###### CreateDetailArgs
-
-`any`
-
-###### Returns
-
-[`ResponseData`](../config/objectCrud.md#responsedata)
-
-###### crud.delete()?
-
-> `optional` **delete**: (`DeleteDetailArgs`) => [`ResponseData`](../config/objectCrud.md#responsedata)
-
-A function to be used instead of the default crud delete function.
-
-###### Parameters
-
-###### DeleteDetailArgs
-
-`any`
-
-###### Returns
-
-[`ResponseData`](../config/objectCrud.md#responsedata)
-
-###### crud.patch()?
-
-> `optional` **patch**: (`PartialDetailArgs`) => [`ResponseData`](../config/objectCrud.md#responsedata)
-
-A function to be used instead of the default crud patch function.
-
-###### Parameters
-
-###### PartialDetailArgs
-
-`any`
-
-###### Returns
-
-[`ResponseData`](../config/objectCrud.md#responsedata)
-
-###### crud.retrieve()?
-
-> `optional` **retrieve**: (`RetrieveDetailArgs`) => [`ResponseData`](../config/objectCrud.md#responsedata)
-
-A function to be used instead of the default crud retrieve function.
-
-###### Parameters
-
-###### RetrieveDetailArgs
-
-`any`
-
-###### Returns
-
-[`ResponseData`](../config/objectCrud.md#responsedata)
-
-###### crud.subscribe()?
-
-> `optional` **subscribe**: (`SubscribeArgs`) => `void` & `object`
-
-A function to be used instead of the default crud subscribe function.
-
-###### Parameters
-
-###### SubscribeArgs
-
-`any`
-
-###### Returns
-
-`void` & `object`
-
-###### crud.update()?
-
-> `optional` **update**: (`UpdateDetailArgs`) => [`ResponseData`](../config/objectCrud.md#responsedata)
-
-A function to be used instead of the default crud update function.
-
-###### Parameters
-
-###### UpdateDetailArgs
-
-`any`
-
-###### Returns
-
-[`ResponseData`](../config/objectCrud.md#responsedata)
 
 ###### deleted
 
@@ -170,7 +68,7 @@ Whether the object is loading.
 
 ###### object
 
-> **object**: \{\} \| \{ `[key: string]`: `any`;  `pkKey`: `string`; \}
+> **object**: [`NewCrudObject`](objectInstance.md#newcrudobject) \| \{ `[key: string]`: `any`;  `pkKey`: `string`; \}
 
 The object.
 
@@ -222,9 +120,13 @@ Whether the related objects are loading.
 
 ###### retrieveArgs
 
-> **retrieveArgs**: `any`
+> **retrieveArgs**: `object`
 
 The arguments to be passed to the retrieve function.
+
+###### Index Signature
+
+\[`key`: `string`\]: `any`
 
 ###### running?
 
@@ -292,111 +194,9 @@ Whether the calculated is running.
 
 ###### crud
 
-> **crud**: `object`
+> **crud**: `ShallowReactive`\<[`ObjectInstanceRawStateCrud`](objectInstance.md#objectinstancerawstatecrud)\>
 
 The crud functions.
-
-###### crud.args?
-
-> `optional` **args**: `any`
-
-The arguments to be passed to the crud functions.
-
-###### crud.create()?
-
-> `optional` **create**: (`CreateDetailArgs`) => [`ResponseData`](../config/objectCrud.md#responsedata)
-
-A function to be used instead of the default crud create function.
-
-###### Parameters
-
-###### CreateDetailArgs
-
-`any`
-
-###### Returns
-
-[`ResponseData`](../config/objectCrud.md#responsedata)
-
-###### crud.delete()?
-
-> `optional` **delete**: (`DeleteDetailArgs`) => [`ResponseData`](../config/objectCrud.md#responsedata)
-
-A function to be used instead of the default crud delete function.
-
-###### Parameters
-
-###### DeleteDetailArgs
-
-`any`
-
-###### Returns
-
-[`ResponseData`](../config/objectCrud.md#responsedata)
-
-###### crud.patch()?
-
-> `optional` **patch**: (`PartialDetailArgs`) => [`ResponseData`](../config/objectCrud.md#responsedata)
-
-A function to be used instead of the default crud patch function.
-
-###### Parameters
-
-###### PartialDetailArgs
-
-`any`
-
-###### Returns
-
-[`ResponseData`](../config/objectCrud.md#responsedata)
-
-###### crud.retrieve()?
-
-> `optional` **retrieve**: (`RetrieveDetailArgs`) => [`ResponseData`](../config/objectCrud.md#responsedata)
-
-A function to be used instead of the default crud retrieve function.
-
-###### Parameters
-
-###### RetrieveDetailArgs
-
-`any`
-
-###### Returns
-
-[`ResponseData`](../config/objectCrud.md#responsedata)
-
-###### crud.subscribe()?
-
-> `optional` **subscribe**: (`SubscribeArgs`) => `void` & `object`
-
-A function to be used instead of the default crud subscribe function.
-
-###### Parameters
-
-###### SubscribeArgs
-
-`any`
-
-###### Returns
-
-`void` & `object`
-
-###### crud.update()?
-
-> `optional` **update**: (`UpdateDetailArgs`) => [`ResponseData`](../config/objectCrud.md#responsedata)
-
-A function to be used instead of the default crud update function.
-
-###### Parameters
-
-###### UpdateDetailArgs
-
-`any`
-
-###### Returns
-
-[`ResponseData`](../config/objectCrud.md#responsedata)
 
 ###### deleted
 
@@ -436,7 +236,7 @@ Whether the object is loading.
 
 ###### object
 
-> **object**: \{\} \| \{ `[key: string]`: `any`;  `pkKey`: `string`; \}
+> **object**: [`NewCrudObject`](objectInstance.md#newcrudobject) \| \{ `[key: string]`: `any`;  `pkKey`: `string`; \}
 
 The object.
 
@@ -488,9 +288,13 @@ Whether the related objects are loading.
 
 ###### retrieveArgs
 
-> **retrieveArgs**: `any`
+> **retrieveArgs**: `object`
 
 The arguments to be passed to the retrieve function.
+
+###### Index Signature
+
+\[`key`: `string`\]: `any`
 
 ###### running
 

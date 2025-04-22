@@ -229,7 +229,7 @@ The delete function to bulk delete a list of items.
 
 ### ExecuteActionFn()
 
-> **ExecuteActionFn**\<\>: (`ExecuteActionFnArgs`) => `Promise`\<[`ResponseData`](objectCrud.md#responsedata) \| `false`\> & `object`
+> **ExecuteActionFn**\<\>: (`ExecuteActionFnArgs`) => `Promise`\<[`CrudResponse`](objectCrud.md#crudresponse) \| `false`\> & `object`
 
 The function to execute a certain action on a list of items, returning the response data or false.
 
@@ -243,7 +243,7 @@ The function to execute a certain action on a list of items, returning the respo
 
 #### Returns
 
-`Promise`\<[`ResponseData`](objectCrud.md#responsedata) \| `false`\> & `object`
+`Promise`\<[`CrudResponse`](objectCrud.md#crudresponse) \| `false`\> & `object`
 
 ***
 

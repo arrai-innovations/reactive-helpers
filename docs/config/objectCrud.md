@@ -14,15 +14,23 @@
 
 ##### crudArgs
 
-> **crudArgs**: `any`
+> **crudArgs**: `object`
 
 The arguments to be passed to the crud functions.
 
+###### Index Signature
+
+\[`key`: `string`\]: `any`
+
 ##### object
 
-> **object**: `any`
+> **object**: `object`
 
 The data to be acted upon.
+
+###### Index Signature
+
+\[`key`: `string`\]: `any`
 
 ##### pkKey
 
@@ -32,9 +40,13 @@ The key name of the primary key.
 
 ##### retrieveArgs
 
-> **retrieveArgs**: `any`
+> **retrieveArgs**: `object`
 
 The arguments to be passed to the retrieve function.
+
+###### Index Signature
+
+\[`key`: `string`\]: `any`
 
 ***
 
@@ -44,9 +56,13 @@ The arguments to be passed to the retrieve function.
 
 ##### crudArgs
 
-> **crudArgs**: `any`
+> **crudArgs**: `object`
 
 The arguments to be passed to the crud functions.
+
+###### Index Signature
+
+\[`key`: `string`\]: `any`
 
 ##### pk
 
@@ -60,11 +76,17 @@ The pk of the object to be acted upon.
 
 The key name of the primary key.
 
-##### retrieveArgs
+***
 
-> **retrieveArgs**: `any`
+### ObjectCrudArgsOption
 
-The arguments to be passed to the retrieve function.
+#### Properties
+
+##### crudArgs?
+
+> `optional` **crudArgs**: [`ObjectCrudArgsArgs`](objectCrud.md#objectcrudargsargs)
+
+The arguments to be passed to the crud functions.
 
 ***
 
@@ -72,9 +94,9 @@ The arguments to be passed to the retrieve function.
 
 #### Properties
 
-##### args?
+##### args
 
-> `optional` **args**: `any`
+> **args**: [`ObjectCrudArgsArgs`](objectCrud.md#objectcrudargsargs)
 
 The arguments to be passed to the crud functions.
 
@@ -84,101 +106,41 @@ The arguments to be passed to the crud functions.
 
 #### Properties
 
-##### create()?
+##### create?
 
-> `optional` **create**: (`CreateDetailArgs`) => [`ResponseData`](objectCrud.md#responsedata)
+> `optional` **create**: [`CrudCreateFn`](objectCrud.md#crudcreatefn)
 
 A function to be used instead of the default crud create function.
 
-###### Parameters
+##### delete?
 
-###### CreateDetailArgs
-
-`any`
-
-###### Returns
-
-[`ResponseData`](objectCrud.md#responsedata)
-
-##### delete()?
-
-> `optional` **delete**: (`DeleteDetailArgs`) => [`ResponseData`](objectCrud.md#responsedata)
+> `optional` **delete**: [`CrudDeleteFn`](objectCrud.md#cruddeletefn)
 
 A function to be used instead of the default crud delete function.
 
-###### Parameters
+##### patch?
 
-###### DeleteDetailArgs
-
-`any`
-
-###### Returns
-
-[`ResponseData`](objectCrud.md#responsedata)
-
-##### patch()?
-
-> `optional` **patch**: (`PartialDetailArgs`) => [`ResponseData`](objectCrud.md#responsedata)
+> `optional` **patch**: [`CrudPatchFn`](objectCrud.md#crudpatchfn)
 
 A function to be used instead of the default crud patch function.
 
-###### Parameters
+##### retrieve?
 
-###### PartialDetailArgs
-
-`any`
-
-###### Returns
-
-[`ResponseData`](objectCrud.md#responsedata)
-
-##### retrieve()?
-
-> `optional` **retrieve**: (`RetrieveDetailArgs`) => [`ResponseData`](objectCrud.md#responsedata)
+> `optional` **retrieve**: [`CrudRetrieveFn`](objectCrud.md#crudretrievefn)
 
 A function to be used instead of the default crud retrieve function.
 
-###### Parameters
+##### subscribe?
 
-###### RetrieveDetailArgs
-
-`any`
-
-###### Returns
-
-[`ResponseData`](objectCrud.md#responsedata)
-
-##### subscribe()?
-
-> `optional` **subscribe**: (`SubscribeArgs`) => `void` & `object`
+> `optional` **subscribe**: [`CrudSubscribeFn`](objectCrud.md#crudsubscribefn)
 
 A function to be used instead of the default crud subscribe function.
 
-###### Parameters
+##### update?
 
-###### SubscribeArgs
-
-`any`
-
-###### Returns
-
-`void` & `object`
-
-##### update()?
-
-> `optional` **update**: (`UpdateDetailArgs`) => [`ResponseData`](objectCrud.md#responsedata)
+> `optional` **update**: [`CrudUpdateFn`](objectCrud.md#crudupdatefn)
 
 A function to be used instead of the default crud update function.
-
-###### Parameters
-
-###### UpdateDetailArgs
-
-`any`
-
-###### Returns
-
-[`ResponseData`](objectCrud.md#responsedata)
 
 ***
 
@@ -188,15 +150,23 @@ A function to be used instead of the default crud update function.
 
 ##### crudArgs
 
-> **crudArgs**: `any`
+> **crudArgs**: `object`
 
 The arguments to be passed to the crud functions.
 
+###### Index Signature
+
+\[`key`: `string`\]: `any`
+
 ##### partialObject
 
-> **partialObject**: `any`
+> **partialObject**: `object`
 
 The data to be acted upon.
+
+###### Index Signature
+
+\[`key`: `string`\]: `any`
 
 ##### pk
 
@@ -212,9 +182,13 @@ The key name of the primary key.
 
 ##### retrieveArgs
 
-> **retrieveArgs**: `any`
+> **retrieveArgs**: `object`
 
 The arguments to be passed to the retrieve function.
+
+###### Index Signature
+
+\[`key`: `string`\]: `any`
 
 ***
 
@@ -224,9 +198,13 @@ The arguments to be passed to the retrieve function.
 
 ##### crudArgs
 
-> **crudArgs**: `any`
+> **crudArgs**: `object`
 
 The arguments to be passed to the crud functions.
+
+###### Index Signature
+
+\[`key`: `string`\]: `any`
 
 ##### pk
 
@@ -242,9 +220,13 @@ The key name of the primary key.
 
 ##### retrieveArgs
 
-> **retrieveArgs**: `any`
+> **retrieveArgs**: `object`
 
 The arguments to be passed to the retrieve function.
+
+###### Index Signature
+
+\[`key`: `string`\]: `any`
 
 ***
 
@@ -262,7 +244,7 @@ The callback to be called when the object is updated.
 
 ###### data
 
-[`CrudObject`](../use/objectInstance.md#crudobject)
+[`ExistingCrudObject`](../use/objectInstance.md#existingcrudobject)
 
 ###### action
 
@@ -274,9 +256,13 @@ The callback to be called when the object is updated.
 
 ##### crudArgs
 
-> **crudArgs**: `any`
+> **crudArgs**: `object`
 
 The arguments to be passed to the crud functions.
+
+###### Index Signature
+
+\[`key`: `string`\]: `any`
 
 ##### pk
 
@@ -292,9 +278,13 @@ The key name of the primary key.
 
 ##### retrieveArgs
 
-> **retrieveArgs**: `any`
+> **retrieveArgs**: `object`
 
 The arguments to be passed to the retrieve function.
+
+###### Index Signature
+
+\[`key`: `string`\]: `any`
 
 ***
 
@@ -304,13 +294,17 @@ The arguments to be passed to the retrieve function.
 
 ##### crudArgs
 
-> **crudArgs**: `any`
+> **crudArgs**: `object`
 
 The arguments to be passed to the crud functions.
 
+###### Index Signature
+
+\[`key`: `string`\]: `any`
+
 ##### object
 
-> **object**: [`CrudObject`](../use/objectInstance.md#crudobject)
+> **object**: [`ExistingCrudObject`](../use/objectInstance.md#existingcrudobject)
 
 The data to be acted upon.
 
@@ -322,11 +316,143 @@ The key name of the primary key.
 
 ##### retrieveArgs
 
-> **retrieveArgs**: `any`
+> **retrieveArgs**: `object`
 
 The arguments to be passed to the retrieve function.
 
+###### Index Signature
+
+\[`key`: `string`\]: `any`
+
 ## Type Aliases
+
+### CrudCreateFn()
+
+> **CrudCreateFn**\<\>: (`args`) => [`CrudResponse`](objectCrud.md#crudresponse)
+
+#### Type Parameters
+
+#### Parameters
+
+##### args
+
+[`CreateDetailArgs`](objectCrud.md#createdetailargs)
+
+The arguments to be passed to the create function.
+
+#### Returns
+
+[`CrudResponse`](objectCrud.md#crudresponse)
+
+***
+
+### CrudDeleteFn()
+
+> **CrudDeleteFn**\<\>: (`args`) => [`CrudResponse`](objectCrud.md#crudresponse)
+
+#### Type Parameters
+
+#### Parameters
+
+##### args
+
+[`DeleteDetailArgs`](objectCrud.md#deletedetailargs)
+
+The arguments to be passed to the delete function.
+
+#### Returns
+
+[`CrudResponse`](objectCrud.md#crudresponse)
+
+***
+
+### CrudPatchFn()
+
+> **CrudPatchFn**\<\>: (`args`) => [`CrudResponse`](objectCrud.md#crudresponse)
+
+#### Type Parameters
+
+#### Parameters
+
+##### args
+
+[`PartialDetailArgs`](objectCrud.md#partialdetailargs)
+
+The arguments to be passed to the patch function.
+
+#### Returns
+
+[`CrudResponse`](objectCrud.md#crudresponse)
+
+***
+
+### CrudResponse
+
+> **CrudResponse**\<\>: [`MaybeCancellablePromise`](../utils/cancellablePromise.md#maybecancellablepromiset)
+
+#### Type Parameters
+
+***
+
+### CrudRetrieveFn()
+
+> **CrudRetrieveFn**\<\>: (`args`) => [`CrudResponse`](objectCrud.md#crudresponse)
+
+#### Type Parameters
+
+#### Parameters
+
+##### args
+
+[`RetrieveDetailArgs`](objectCrud.md#retrievedetailargs)
+
+The arguments to be passed to the retrieve function.
+
+#### Returns
+
+[`CrudResponse`](objectCrud.md#crudresponse)
+
+***
+
+### CrudSubscribeFn()
+
+> **CrudSubscribeFn**\<\>: (`args`) => [`CancellablePromise`](../utils/cancellablePromise.md#cancellablepromiset)
+
+#### Type Parameters
+
+#### Parameters
+
+##### args
+
+[`SubscribeArgs`](objectCrud.md#subscribeargs)
+
+The arguments to be passed to the subscribe function.
+
+#### Returns
+
+[`CancellablePromise`](../utils/cancellablePromise.md#cancellablepromiset)
+
+***
+
+### CrudUpdateFn()
+
+> **CrudUpdateFn**\<\>: (`args`) => [`CrudResponse`](objectCrud.md#crudresponse)
+
+#### Type Parameters
+
+#### Parameters
+
+##### args
+
+[`UpdateDetailArgs`](objectCrud.md#updatedetailargs)
+
+The arguments to be passed to the update function.
+
+#### Returns
+
+[`CrudResponse`](objectCrud.md#crudresponse)
+
+***
 
 ### ObjectCrudArgs
 
@@ -336,21 +462,111 @@ The arguments to be passed to the retrieve function.
 
 ***
 
-### ResponseData
+### ObjectCrudArgsArgs
 
-> **ResponseData**\<\>: `Promise`\<`object` \| `string`\> & `object`
+> **ObjectCrudArgsArgs**\<\>: `object`
+
+#### Type Parameters
+
+#### Index Signature
+
+\[`key`: `string`\]: `any`
+
+## Variables
+
+### defaultCrud
+
+> `const` **defaultCrud**: `object`
 
 #### Type declaration
 
-##### cancel()
+##### args
 
-> **cancel**: () => `Promise`\<`void`\> \| `void`
+> `readonly` **args**: `object` = `{}`
+
+##### create()
+
+> `readonly` **create**: (...`args`) => [`MaybeCancellablePromise`](../utils/cancellablePromise.md#maybecancellablepromiset)\<`any`\>
+
+###### Parameters
+
+###### args
+
+...`any`[]
 
 ###### Returns
 
-`Promise`\<`void`\> \| `void`
+[`MaybeCancellablePromise`](../utils/cancellablePromise.md#maybecancellablepromiset)\<`any`\>
 
-#### Type Parameters
+##### delete()
+
+> `readonly` **delete**: (...`args`) => [`MaybeCancellablePromise`](../utils/cancellablePromise.md#maybecancellablepromiset)\<`any`\>
+
+###### Parameters
+
+###### args
+
+...`any`[]
+
+###### Returns
+
+[`MaybeCancellablePromise`](../utils/cancellablePromise.md#maybecancellablepromiset)\<`any`\>
+
+##### patch()
+
+> `readonly` **patch**: (...`args`) => [`MaybeCancellablePromise`](../utils/cancellablePromise.md#maybecancellablepromiset)\<`any`\>
+
+###### Parameters
+
+###### args
+
+...`any`[]
+
+###### Returns
+
+[`MaybeCancellablePromise`](../utils/cancellablePromise.md#maybecancellablepromiset)\<`any`\>
+
+##### retrieve()
+
+> `readonly` **retrieve**: (...`args`) => [`MaybeCancellablePromise`](../utils/cancellablePromise.md#maybecancellablepromiset)\<`any`\>
+
+###### Parameters
+
+###### args
+
+...`any`[]
+
+###### Returns
+
+[`MaybeCancellablePromise`](../utils/cancellablePromise.md#maybecancellablepromiset)\<`any`\>
+
+##### subscribe()
+
+> `readonly` **subscribe**: (...`args`) => [`CancellablePromise`](../utils/cancellablePromise.md#cancellablepromiset)\<`any`\>
+
+###### Parameters
+
+###### args
+
+...`any`[]
+
+###### Returns
+
+[`CancellablePromise`](../utils/cancellablePromise.md#cancellablepromiset)\<`any`\>
+
+##### update()
+
+> `readonly` **update**: (...`args`) => [`MaybeCancellablePromise`](../utils/cancellablePromise.md#maybecancellablepromiset)\<`any`\>
+
+###### Parameters
+
+###### args
+
+...`any`[]
+
+###### Returns
+
+[`MaybeCancellablePromise`](../utils/cancellablePromise.md#maybecancellablepromiset)\<`any`\>
 
 ## Functions
 
@@ -364,9 +580,13 @@ Get the previously set object crud functions.
 
 ##### reactiveCrud
 
-`any`
-
 The reactive object you want to add the resulting crud to.
+
+###### args
+
+[`ObjectCrudArgsArgs`](objectCrud.md#objectcrudargsargs)
+
+The arguments to be passed to the crud functions.
 
 ##### options
 
@@ -380,17 +600,13 @@ Any functions to override the default crud functions.
 
 ###### props?
 
-\{ `crudArgs`: \{ `args`: `any`; \}; \}
+\{ `crudArgs`: [`ObjectCrudArgsArgs`](objectCrud.md#objectcrudargsargs); \}
 
 The props with any passed crudArgs.
 
-###### props.crudArgs
+###### props.crudArgs?
 
-\{ `args`: `any`; \}
-
-###### props.crudArgs.args?
-
-`any`
+[`ObjectCrudArgsArgs`](objectCrud.md#objectcrudargsargs)
 
 The arguments to be passed to the crud functions.
 

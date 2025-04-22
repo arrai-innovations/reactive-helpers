@@ -1,7 +1,7 @@
-import { getObjectCrud } from "../config/objectCrud.js";
+import { defaultCrud, getObjectCrud } from "../config/objectCrud.js";
 import { assignReactiveObject } from "../utils/assignReactiveObject.js";
 import { useLoadingError } from "./loadingError.js";
-import { reactive, toRef } from "vue";
+import { reactive, shallowReactive, toRef } from "vue";
 
 /**
  * A composition function to manage create, retrieve, update, delete, and patch operations.
@@ -12,7 +12,15 @@ import { reactive, toRef } from "vue";
 /**
  * The object being managed by the instance. Empty object is the default.
  *
- * @typedef {{pkKey: string, [key: string]: any}|{}} CrudObject
+ * @typedef {{pkKey: string, [key: string]: any}} ExistingCrudObject
+ */
+
+/**
+ * @typedef {{[key: string]: any}} NewCrudObject
+ */
+
+/**
+ * @typedef {ExistingCrudObject|NewCrudObject} CrudObject
  */
 
 /**
@@ -34,25 +42,36 @@ import { reactive, toRef } from "vue";
  */
 
 /**
+ * @typedef {object} ObjectInstanceRawStateCrud
+ * @property {import('vue').Reactive<import('../config/objectCrud.js').ObjectCrudArgsArgs|{}>} args - The arguments to be passed to the crud functions.
+ * @property {import('../config/objectCrud.js').CrudCreateFn} create - The create function.
+ * @property {import('../config/objectCrud.js').CrudRetrieveFn} retrieve - The retrieve function.
+ * @property {import('../config/objectCrud.js').CrudUpdateFn} update - The update function.
+ * @property {import('../config/objectCrud.js').CrudPatchFn} patch - The patch function.
+ * @property {import('../config/objectCrud.js').CrudDeleteFn} delete - The delete function.
+ * @property {import('../config/objectCrud.js').CrudSubscribeFn} subscribe - The subscribe function.
+ */
+
+/**
  * The raw state of the object instance.
  *
  * @typedef {object} ObjectInstanceRawState
- * @property {import('../config/objectCrud.js').ObjectCrudArgs} crud - The crud functions.
- * @property {string} pk - The pk of the object.
- * @property {string} pkKey - The pk key of the object.
- * @property {object} retrieveArgs - The arguments to be passed to the retrieve function.
- * @property {CrudObject} object - The object.
+ * @property {import('vue').ShallowReactive<ObjectInstanceRawStateCrud>} crud - The crud functions.
+ * @property {import('vue').Ref<string|undefined>} pk - The pk of the object.
+ * @property {import('vue').Ref<string|undefined>} pkKey - The pk key of the object.
+ * @property {import('vue').Ref<{[key:string]: any}>} retrieveArgs - The arguments to be passed to the retrieve function.
+ * @property {import('vue').Reactive<CrudObject>} object - The object.
  * @property {Readonly<import('vue').Ref<boolean>>} loading - Whether the object is loading.
  * @property {Readonly<import('vue').Ref<boolean>>} errored - Whether the object errored.
  * @property {Readonly<import('vue').Ref<Error|null>>} error - The error.
- * @property {Readonly<import('vue').Ref<boolean>>} deleted - Whether the object is deleted.
+ * @property {boolean} deleted - Whether the object is deleted.
  */
 
 /**
  * Manages a reactive state of an object including its CRUD status, loading states, and any operational errors.
  * Reactivity ensures that any changes in state immediately reflect in the UI components that depend on this state.
  *
- * @typedef {import('vue').UnwrapNestedRefs<ObjectInstanceRawState>} ObjectInstanceState
+ * @typedef {import('vue').Reactive<ObjectInstanceRawState>} ObjectInstanceState
  */
 
 /**
@@ -61,9 +80,9 @@ import { reactive, toRef } from "vue";
  * @typedef {object} ObjectInstanceFunctions
  * @property {(args: { object: object }) => Promise<boolean>} create - Called to turn the current object into a new object on the server.
  * @property {() => Promise<boolean>} retrieve - Called to retrieve the current object by pk from the server.
- * @property {(args: { object: CrudObject }) => Promise<boolean>} update - Called to update the current object on the server.
+ * @property {(args: { object: ExistingCrudObject }) => Promise<boolean>} update - Called to update the current object on the server.
  * @property {() => Promise<boolean>} delete - Called to delete the current object on the server.
- * @property {(args: { partialObject: CrudObject }) => Promise<boolean>} patch - Called to patch the current object on the server.
+ * @property {(args: { partialObject: ExistingCrudObject }) => Promise<boolean>} patch - Called to patch the current object on the server.
  * @property {import('./loadingError.js').ClearErrorFn} clearError - Called to clear the error state.
  * @property {() => void} clear - Called to clear the object state.
  */
@@ -189,17 +208,22 @@ export function useObjectInstance({ props, functions = {} }) {
     const loadingError = useLoadingError();
     /** @type {ObjectInstanceState} */
     const state = reactive(
-        /** @type {ObjectInstanceRawState} */ {
-            crud: {
-                args: {},
-                create: undefined,
-                retrieve: undefined,
-                update: undefined,
-                delete: undefined,
-                patch: undefined,
-                subscribe: undefined,
-            },
-            object: {},
+        /** @type {ObjectInstanceRawState} */
+        {
+            // function typing support is a lot nicer with shallow reactive
+            crud: shallowReactive(
+                /** @type {ObjectInstanceRawStateCrud} */
+                {
+                    args: reactive({}),
+                    create: defaultCrud.create,
+                    retrieve: defaultCrud.retrieve,
+                    update: defaultCrud.update,
+                    delete: defaultCrud.delete,
+                    patch: defaultCrud.patch,
+                    subscribe: defaultCrud.subscribe,
+                }
+            ),
+            object: reactive({}),
             pk: toRef(props, "pk"),
             pkKey: toRef(props, "pkKey"),
             retrieveArgs: toRef(props, "retrieveArgs"),

@@ -70,7 +70,13 @@ export function useObjectInstance({ props, functions }: ObjectInstanceOptions): 
 /**
  * The object being managed by the instance. Empty object is the default.
  *
- * @typedef {{pkKey: string, [key: string]: any}|{}} CrudObject
+ * @typedef {{pkKey: string, [key: string]: any}} ExistingCrudObject
+ */
+/**
+ * @typedef {{[key: string]: any}} NewCrudObject
+ */
+/**
+ * @typedef {ExistingCrudObject|NewCrudObject} CrudObject
  */
 /**
  * Arguments to be passed to the object instance.
@@ -89,24 +95,34 @@ export function useObjectInstance({ props, functions }: ObjectInstanceOptions): 
  * @property {import('../config/objectCrud.js').ObjectCrudArgs} crudArgs - The arguments to be passed to the crud functions.
  */
 /**
+ * @typedef {object} ObjectInstanceRawStateCrud
+ * @property {import('vue').Reactive<import('../config/objectCrud.js').ObjectCrudArgsArgs|{}>} args - The arguments to be passed to the crud functions.
+ * @property {import('../config/objectCrud.js').CrudCreateFn} create - The create function.
+ * @property {import('../config/objectCrud.js').CrudRetrieveFn} retrieve - The retrieve function.
+ * @property {import('../config/objectCrud.js').CrudUpdateFn} update - The update function.
+ * @property {import('../config/objectCrud.js').CrudPatchFn} patch - The patch function.
+ * @property {import('../config/objectCrud.js').CrudDeleteFn} delete - The delete function.
+ * @property {import('../config/objectCrud.js').CrudSubscribeFn} subscribe - The subscribe function.
+ */
+/**
  * The raw state of the object instance.
  *
  * @typedef {object} ObjectInstanceRawState
- * @property {import('../config/objectCrud.js').ObjectCrudArgs} crud - The crud functions.
- * @property {string} pk - The pk of the object.
- * @property {string} pkKey - The pk key of the object.
- * @property {object} retrieveArgs - The arguments to be passed to the retrieve function.
- * @property {CrudObject} object - The object.
+ * @property {import('vue').ShallowReactive<ObjectInstanceRawStateCrud>} crud - The crud functions.
+ * @property {import('vue').Ref<string|undefined>} pk - The pk of the object.
+ * @property {import('vue').Ref<string|undefined>} pkKey - The pk key of the object.
+ * @property {import('vue').Ref<{[key:string]: any}>} retrieveArgs - The arguments to be passed to the retrieve function.
+ * @property {import('vue').Reactive<CrudObject>} object - The object.
  * @property {Readonly<import('vue').Ref<boolean>>} loading - Whether the object is loading.
  * @property {Readonly<import('vue').Ref<boolean>>} errored - Whether the object errored.
  * @property {Readonly<import('vue').Ref<Error|null>>} error - The error.
- * @property {Readonly<import('vue').Ref<boolean>>} deleted - Whether the object is deleted.
+ * @property {boolean} deleted - Whether the object is deleted.
  */
 /**
  * Manages a reactive state of an object including its CRUD status, loading states, and any operational errors.
  * Reactivity ensures that any changes in state immediately reflect in the UI components that depend on this state.
  *
- * @typedef {import('vue').UnwrapNestedRefs<ObjectInstanceRawState>} ObjectInstanceState
+ * @typedef {import('vue').Reactive<ObjectInstanceRawState>} ObjectInstanceState
  */
 /**
  * The functions available on the object instance.
@@ -114,9 +130,9 @@ export function useObjectInstance({ props, functions }: ObjectInstanceOptions): 
  * @typedef {object} ObjectInstanceFunctions
  * @property {(args: { object: object }) => Promise<boolean>} create - Called to turn the current object into a new object on the server.
  * @property {() => Promise<boolean>} retrieve - Called to retrieve the current object by pk from the server.
- * @property {(args: { object: CrudObject }) => Promise<boolean>} update - Called to update the current object on the server.
+ * @property {(args: { object: ExistingCrudObject }) => Promise<boolean>} update - Called to update the current object on the server.
  * @property {() => Promise<boolean>} delete - Called to delete the current object on the server.
- * @property {(args: { partialObject: CrudObject }) => Promise<boolean>} patch - Called to patch the current object on the server.
+ * @property {(args: { partialObject: ExistingCrudObject }) => Promise<boolean>} patch - Called to patch the current object on the server.
  * @property {import('./loadingError.js').ClearErrorFn} clearError - Called to clear the error state.
  * @property {() => void} clear - Called to clear the object state.
  */
@@ -150,10 +166,14 @@ export const objectInstanceFunctions: string[];
 /**
  * The object being managed by the instance. Empty object is the default.
  */
-export type CrudObject = {
+export type ExistingCrudObject = {
     pkKey: string;
     [key: string]: any;
-} | {};
+};
+export type NewCrudObject = {
+    [key: string]: any;
+};
+export type CrudObject = ExistingCrudObject | NewCrudObject;
 /**
  * Arguments to be passed to the object instance.
  */
@@ -188,6 +208,36 @@ export type ObjectInstanceRawProps = {
      */
     crudArgs: import("../config/objectCrud.js").ObjectCrudArgs;
 };
+export type ObjectInstanceRawStateCrud = {
+    /**
+     * - The arguments to be passed to the crud functions.
+     */
+    args: import("vue").Reactive<import("../config/objectCrud.js").ObjectCrudArgsArgs | {}>;
+    /**
+     * - The create function.
+     */
+    create: import("../config/objectCrud.js").CrudCreateFn;
+    /**
+     * - The retrieve function.
+     */
+    retrieve: import("../config/objectCrud.js").CrudRetrieveFn;
+    /**
+     * - The update function.
+     */
+    update: import("../config/objectCrud.js").CrudUpdateFn;
+    /**
+     * - The patch function.
+     */
+    patch: import("../config/objectCrud.js").CrudPatchFn;
+    /**
+     * - The delete function.
+     */
+    delete: import("../config/objectCrud.js").CrudDeleteFn;
+    /**
+     * - The subscribe function.
+     */
+    subscribe: import("../config/objectCrud.js").CrudSubscribeFn;
+};
 /**
  * The raw state of the object instance.
  */
@@ -195,23 +245,25 @@ export type ObjectInstanceRawState = {
     /**
      * - The crud functions.
      */
-    crud: import("../config/objectCrud.js").ObjectCrudArgs;
+    crud: import("vue").ShallowReactive<ObjectInstanceRawStateCrud>;
     /**
      * - The pk of the object.
      */
-    pk: string;
+    pk: import("vue").Ref<string | undefined>;
     /**
      * - The pk key of the object.
      */
-    pkKey: string;
+    pkKey: import("vue").Ref<string | undefined>;
     /**
      * - The arguments to be passed to the retrieve function.
      */
-    retrieveArgs: object;
+    retrieveArgs: import("vue").Ref<{
+        [key: string]: any;
+    }>;
     /**
      * - The object.
      */
-    object: CrudObject;
+    object: import("vue").Reactive<CrudObject>;
     /**
      * - Whether the object is loading.
      */
@@ -227,13 +279,13 @@ export type ObjectInstanceRawState = {
     /**
      * - Whether the object is deleted.
      */
-    deleted: Readonly<import("vue").Ref<boolean>>;
+    deleted: boolean;
 };
 /**
  * Manages a reactive state of an object including its CRUD status, loading states, and any operational errors.
  * Reactivity ensures that any changes in state immediately reflect in the UI components that depend on this state.
  */
-export type ObjectInstanceState = import("vue").UnwrapNestedRefs<ObjectInstanceRawState>;
+export type ObjectInstanceState = import("vue").Reactive<ObjectInstanceRawState>;
 /**
  * The functions available on the object instance.
  */
@@ -252,7 +304,7 @@ export type ObjectInstanceFunctions = {
      * - Called to update the current object on the server.
      */
     update: (args: {
-        object: CrudObject;
+        object: ExistingCrudObject;
     }) => Promise<boolean>;
     /**
      * - Called to delete the current object on the server.
@@ -262,7 +314,7 @@ export type ObjectInstanceFunctions = {
      * - Called to patch the current object on the server.
      */
     patch: (args: {
-        partialObject: CrudObject;
+        partialObject: ExistingCrudObject;
     }) => Promise<boolean>;
     /**
      * - Called to clear the error state.

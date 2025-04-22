@@ -86,7 +86,7 @@ const defaultCrud = {
  */
 
 /**
- * @typedef {(ExecuteActionFnArgs)=>Promise<import('./objectCrud.js').ResponseData|false> & { cancel: () => Promise<void>|void }} ExecuteActionFn - The function to execute a certain action on a list of items, returning the response data or false.
+ * @typedef {(ExecuteActionFnArgs)=>Promise<import('./objectCrud.js').CrudResponse|false> & { cancel: () => Promise<void>|void }} ExecuteActionFn - The function to execute a certain action on a list of items, returning the response data or false.
  */
 
 /**

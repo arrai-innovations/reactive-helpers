@@ -32,7 +32,9 @@ describe("config/objectCrud.js", () => {
              *      import('../../../config/objectCrud.js').ObjectCrudArgs
              *  >}
              */
-            const retrievedCrud = reactive({});
+            const retrievedCrud = reactive({
+                args: {},
+            });
             expect(() => getObjectCrud(retrievedCrud)).not.toThrow();
             expect(new Set(Object.keys(retrievedCrud))).toEqual(
                 new Set(["retrieve", "create", "update", "patch", "delete", "subscribe", "args"])

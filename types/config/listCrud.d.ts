@@ -123,7 +123,7 @@ export type SubscribeFn = (SubscribeFnArgs: any) => Promise<boolean> & {
 /**
  * - The function to execute a certain action on a list of items, returning the response data or false.
  */
-export type ExecuteActionFn = (ExecuteActionFnArgs: any) => Promise<import("./objectCrud.js").ResponseData | false> & {
+export type ExecuteActionFn = (ExecuteActionFnArgs: any) => Promise<import("./objectCrud.js").CrudResponse | false> & {
     cancel: () => Promise<void> | void;
 };
 export type ListCrudFunctions = {
