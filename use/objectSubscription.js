@@ -305,11 +305,7 @@ export function useObjectSubscription({ objectInstance, props, functions }) {
                     loadingError.clearLoading();
                 }),
             cancelSubscription
-<<<<<<< Updated upstream
-        )
-=======
         );
->>>>>>> Stashed changes
     }
 
     function publicUnsubscribe() {
