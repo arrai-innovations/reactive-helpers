@@ -953,6 +953,7 @@ await awaitNot3.promise;
     $ npm test
     ```
 4. Run tests with coverage output:
+
     ```bash
     $ npm run coverage
     ```
