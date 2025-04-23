@@ -124,7 +124,7 @@ describe("config/objectCrud.js", () => {
                     args: { test: "test" },
                     unknown: () => 7,
                 })
-            ).toThrow("Unknown key(s) passed to setObjectCrud: unknown");
+            ).toThrow('Unknown key "unknown" passed to setObjectCrud');
         });
 
         it("should throw if passed functions object that has values that are not functions", () => {
@@ -140,7 +140,7 @@ describe("config/objectCrud.js", () => {
                         subscribe: () => 6,
                     },
                 })
-            ).toThrow('Invalid function "update" for getObjectCrud: invalid key or not a function.');
+            ).toThrow('Function "update" is not actually a function');
         });
         it("should throw if passed unexpected functions", () => {
             const retrievedCrud = reactive({});
@@ -156,7 +156,7 @@ describe("config/objectCrud.js", () => {
                         unknown: () => 7,
                     },
                 })
-            ).toThrow('Invalid function "unknown" for getObjectCrud: invalid key or not a function.');
+            ).toThrow('Invalid function key "unknown" passed to assignCrud');
         });
     });
 });

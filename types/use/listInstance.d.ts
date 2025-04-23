@@ -13,13 +13,13 @@
  * @typedef {object} ListInstanceOptions
  * @property {import('vue').UnwrapNestedRefs<ListInstanceProps>} props - The props for the list instance.
  * @property {object} [functions] - Default implementation are used as set by `setListCrud`.
- * @property {import('../config/listCrud.js').ListFn} [functions.list] - Provide the implementation for the list
+ * @property {import('../config/listCrud.js').CrudListFn} [functions.list] - Provide the implementation for the list
  *  function.
- *  @property {import('../config/listCrud.js').BulkDeleteFn} [functions.bulkDelete] - Provide the implementation for the bulkDelete
+ *  @property {import('../config/listCrud.js').CrudBulkDeleteFn} [functions.bulkDelete] - Provide the implementation for the bulkDelete
  *  function.
- *   @property {import('../config/listCrud.js').ExecuteActionFn} [functions.executeAction] - Provide the implementation for the executeAction
+ *   @property {import('../config/listCrud.js').CrudExecuteActionFn} [functions.executeAction] - Provide the implementation for the executeAction
  *  function.
- * @property {import('../config/listCrud.js').SubscribeFn} [functions.subscribe] - Provide the implementation for the
+ * @property {import('../config/listCrud.js').CrudListSubscribeFn} [functions.subscribe] - Provide the implementation for the
  *  subscribe function.
  * @property {boolean} keepOldPages - If true, pages will not be cleared when defaultPageCallback is called.
  */
@@ -211,10 +211,10 @@ export type ListInstanceOptions = {
      * - Default implementation are used as set by `setListCrud`.
      */
     functions?: {
-        list?: import("../config/listCrud.js").ListFn;
-        bulkDelete?: import("../config/listCrud.js").BulkDeleteFn;
-        executeAction?: import("../config/listCrud.js").ExecuteActionFn;
-        subscribe?: import("../config/listCrud.js").SubscribeFn;
+        list?: import("../config/listCrud.js").CrudListFn;
+        bulkDelete?: import("../config/listCrud.js").CrudBulkDeleteFn;
+        executeAction?: import("../config/listCrud.js").CrudExecuteActionFn;
+        subscribe?: import("../config/listCrud.js").CrudListSubscribeFn;
     };
     /**
      * - If true, pages will not be cleared when defaultPageCallback is called.

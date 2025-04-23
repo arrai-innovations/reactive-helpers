@@ -102,13 +102,13 @@ export function useObjectInstance({ props, functions }: ObjectInstanceOptions): 
  * @property {import('../config/objectCrud.js').CrudUpdateFn} update - The update function.
  * @property {import('../config/objectCrud.js').CrudPatchFn} patch - The patch function.
  * @property {import('../config/objectCrud.js').CrudDeleteFn} delete - The delete function.
- * @property {import('../config/objectCrud.js').CrudSubscribeFn} subscribe - The subscribe function.
+ * @property {import('../config/objectCrud.js').CrudObjectSubscribeFn} subscribe - The subscribe function.
  */
 /**
  * The raw state of the object instance.
  *
  * @typedef {object} ObjectInstanceRawState
- * @property {import('vue').ShallowReactive<ObjectInstanceRawStateCrud>} crud - The crud functions.
+ * @property {import('vue').Reactive<ObjectInstanceRawStateCrud>} crud - The crud functions.
  * @property {import('vue').Ref<string|undefined>} pk - The pk of the object.
  * @property {import('vue').Ref<string|undefined>} pkKey - The pk key of the object.
  * @property {import('vue').Ref<{[key:string]: any}>} retrieveArgs - The arguments to be passed to the retrieve function.
@@ -236,7 +236,7 @@ export type ObjectInstanceRawStateCrud = {
     /**
      * - The subscribe function.
      */
-    subscribe: import("../config/objectCrud.js").CrudSubscribeFn;
+    subscribe: import("../config/objectCrud.js").CrudObjectSubscribeFn;
 };
 /**
  * The raw state of the object instance.
@@ -245,7 +245,7 @@ export type ObjectInstanceRawState = {
     /**
      * - The crud functions.
      */
-    crud: import("vue").ShallowReactive<ObjectInstanceRawStateCrud>;
+    crud: import("vue").Reactive<ObjectInstanceRawStateCrud>;
     /**
      * - The pk of the object.
      */

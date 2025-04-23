@@ -834,7 +834,7 @@ describe("use/listInstance.spec.js", function () {
             crudListReject(rejected);
             await flushPromises();
 
-            await expect(liListResolve).resolves.toBe(false);
+            await expect(liListResolve).resolves.toBe(null);
 
             expect(listInstance.state.error).toBe(rejected);
             expect(listInstance.state.errored).toBe(true);
@@ -1110,7 +1110,9 @@ describe("use/listInstance.spec.js", function () {
                 });
             });
             const listInstance = useListInstance({
-                props: {},
+                props: {
+                    pkKey: "pk",
+                },
                 functions: {
                     list: myListFn,
                 },

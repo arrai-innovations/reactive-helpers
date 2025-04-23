@@ -1,21 +1,12 @@
-import { addOrUpdateReactiveObject } from "../utils/assignReactiveObject.js";
+import { assignCrud, createDefaultCrud } from "./commonCrud.js";
 import cloneDeep from "lodash-es/cloneDeep.js";
-import isFunction from "lodash-es/isFunction.js";
-import { isReactive, toRef } from "vue";
+import { readonly } from "vue";
 
 /**
  * Configuration for the default list crud functions.
  *
  * @module config/listCrud.js
  */
-
-const defaultCrud = {
-    args: {},
-    list: undefined,
-    bulkDelete: undefined,
-    subscribe: undefined,
-    executeAction: undefined,
-};
 
 /**
  * @typedef {object} PaginateInfo
@@ -32,7 +23,7 @@ const defaultCrud = {
  */
 
 /**
- * @typedef {object} ListFnArgs
+ * @typedef {object} ListArgs
  * @property {object} crudArgs - The arguments to be passed to the crud functions.
  * @property {string} pkKey - The key name of the primary key.
  * @property {object} retrieveArgs - The arguments to be passed to the retrieve function.
@@ -43,10 +34,12 @@ const defaultCrud = {
  */
 
 /**
- * @typedef {object} DeleteFnArgs
+ * @typedef {object} BulkDeleteArgs
  * @property {object} crudArgs - The arguments to be passed to the crud functions.
  * @property {string[]} pks - The ids of the objects to be deleted.
  * @property {string} pkKey - The key name of the primary key.
+ * @property {Readonly<import('vue').Ref<boolean>>} isCancelled - A ref to a boolean indicating whether the request has
+ *  been cancelled.
  */
 
 /**
@@ -57,50 +50,76 @@ const defaultCrud = {
  */
 
 /**
- * @typedef {object} SubscribeFnArgs
+ * @typedef {object} ListSubscribeArgs
  * @property {object} crudArgs - The arguments to be passed to the crud functions.
  * @property {string} pkKey - The key name of the primary key.
  * @property {object} retrieveArgs - The arguments to be passed to the retrieve function.
  * @property {object} listArgs - The arguments to be passed for list crud functions.
  * @property {SubscriptionEventCallback} subscriptionEventCallback - The method to call when new data is received.
+ * @property {Readonly<import('vue').Ref<boolean>>} isCancelled - A ref to a boolean indicating whether the request has
+ *  been cancelled.
  */
 
 /**
- * @typedef {object} ExecuteActionFnArgs
+ * @typedef {object} ExecuteActionArgs
  * @property {object} crudArgs - The arguments to be passed to the crud functions.
  * @property {string[]} pks - The ids of the objects to be acted upon.
  * @property {string} pkKey - The key name of the primary key.
  * @property {string} action - The action to execute.
+ * @property {Readonly<import('vue').Ref<boolean>>} isCancelled - A ref to a boolean indicating whether the request has
+ *  been cancelled.
  */
 
 /**
- * @typedef {(ListFnArgs)=>Promise<boolean> & { cancel: () => Promise<void>|void }} ListFn - The list function to get a list of items, returning a boolean indicating success.
+ * @callback CrudListFn
+ * @param {ListArgs} args - The arguments to be passed to the crud functions.
+ * @returns {import('../utils/cancellablePromise.js').MaybeCancellablePromise<void>} - A promise that resolves to a boolean indicating success.
  */
 
 /**
- * @typedef {(DeleteFnArgs)=>Promise<boolean> & { cancel: () => Promise<void>|void }} BulkDeleteFn - The delete function to bulk delete a list of items.
+ * @callback CrudBulkDeleteFn
+ * @param {BulkDeleteArgs} args - The arguments to be passed to the crud functions.
+ * @returns {import('../utils/cancellablePromise.js').MaybeCancellablePromise<void>} - A promise that resolves to a boolean indicating success.
  */
 
 /**
- * @typedef {(SubscribeFnArgs)=>Promise<boolean> & { cancel: () => Promise<void>|void }} SubscribeFn - The subscribe function to set up a subscription to a list of items.
+ * @callback CrudListSubscribeFn
+ * @param {ListSubscribeArgs} args - The arguments to be passed to the crud functions.
+ * @returns {import('../utils/cancellablePromise.js').CancellablePromise<void>} - A promise that resolves to a boolean indicating success.
  */
 
 /**
- * @typedef {(ExecuteActionFnArgs)=>Promise<import('./objectCrud.js').CrudResponse|false> & { cancel: () => Promise<void>|void }} ExecuteActionFn - The function to execute a certain action on a list of items, returning the response data or false.
+ * @callback CrudExecuteActionFn
+ * @param {ExecuteActionArgs} args - The arguments to be passed to the crud functions.
+ * @returns {import('../utils/cancellablePromise.js').MaybeCancellablePromise<object|string|null>} - A promise that resolves the result of the action, returned to the executor.
  */
 
 /**
  * @typedef {object} ListCrudFunctions
- * @property {ListFn} [list] - The list function to get a list of items.
- * @property {BulkDeleteFn} [bulkDelete] - The delete function to bulk delete a list of items.
- * @property {ExecuteActionFn} [executeAction] - The  function to execute a certain action on a list of items.
- * @property {SubscribeFn} [subscribe] - The subscribe function to get a subscription to a list of items.
+ * @property {CrudListFn} [list] - The list function to get a list of items.
+ * @property {CrudBulkDeleteFn} [bulkDelete] - The delete function to bulk delete a list of items.
+ * @property {CrudExecuteActionFn} [executeAction] - The  function to execute a certain action on a list of items.
+ * @property {CrudListSubscribeFn} [subscribe] - The subscribe function to get a subscription to a list of items.
  */
 
 /**
  * @typedef {object} ListCrudArgs
- * @property {object} [args={}] - The default arguments for the crud functions.
+ * @property {object} args - The default arguments for the crud functions.
  */
+
+/**
+ * @typedef {object} ListCrudArgsOption
+ * @property {object} [crudArgs={}] - The default arguments for the crud functions.
+ */
+
+const _defaultCrud = createDefaultCrud(["list", "bulkDelete", "executeAction", "subscribe"], new Set(["subscribe"]));
+
+/**
+ * The default list crud functions.
+ *
+ * @type {Readonly<ListCrudFunctions>}
+ */
+export const defaultListCrud = readonly(_defaultCrud);
 
 /**
  * Set the list and subscribe functions for the default crud.
@@ -109,43 +128,25 @@ const defaultCrud = {
  * @throws {Error} - If unknown keys are passed.
  * @returns {void}
  */
-export const setListCrud = ({ list, bulkDelete, subscribe, executeAction, args = {}, ...rest }) => {
-    defaultCrud.list = list;
-    defaultCrud.subscribe = subscribe;
-    defaultCrud.bulkDelete = bulkDelete;
-    defaultCrud.executeAction = executeAction;
-    Object.assign(defaultCrud.args, cloneDeep(args));
-    if (Object.keys(rest).length) {
-        throw new Error(`Unknown key(s) passed to setListCrud: ${Object.keys(rest).join(", ")}`);
+export const setListCrud = ({ args = {}, ...rest }) => {
+    Object.assign(_defaultCrud.args, cloneDeep(args));
+    for (const [key, value] of Object.entries(rest)) {
+        if (!(key in _defaultCrud)) {
+            throw new Error(`Unknown key "${key}" passed to setListCrud`);
+        }
+        _defaultCrud[key] = value ?? _defaultCrud[key];
     }
 };
 
 /**
  * Get the previously set list and subscribe functions for the default crud.
  *
- * @param {import("vue").UnwrapNestedRefs<ListCrudFunctions & ListCrudArgs>} reactiveCrud - The reactive crud object, which will be mutated.
+ * @param {import("vue").UnwrapNestedRefs<ListCrudFunctions & ListCrudArgs>} target - The reactive crud object, which will be mutated.
  * @param {object} options - The options for the default crud.
- * @param {import("vue").UnwrapNestedRefs<{
- *     crudArgs: object|undefined,
- * }>} [options.props] - The props to set for the crud.
- * @param {ListCrudFunctions & ListCrudArgs} [options.functions] - The functions to set for the crud.
+ * @param {import("vue").UnwrapNestedRefs<ListCrudArgsOption>} [options.props] - The props to set for the crud.
+ * @param {ListCrudFunctions} [options.functions] - The functions to set for the crud.
+ * @throws {Error} - If an invalid function is passed, or if the function is not a function.
  */
-export const getListCrud = (reactiveCrud, { props, functions } = {}) => {
-    // don't mutate the default crud
-    Object.assign(reactiveCrud, cloneDeep(defaultCrud));
-    if (props?.crudArgs) {
-        addOrUpdateReactiveObject(reactiveCrud.args, props.crudArgs);
-    }
-    if (functions) {
-        for (const [key, value] of Object.entries(functions)) {
-            if (isFunction(value) && key in reactiveCrud) {
-                reactiveCrud[key] = isReactive(functions)
-                    ? // @ts-ignore - this is a valid key...
-                      toRef(functions, key)
-                    : value;
-            } else {
-                throw Error(`Invalid function "${key}" for getListCrud: invalid key or not a function.`);
-            }
-        }
-    }
+export const getListCrud = (target, options) => {
+    assignCrud(target, _defaultCrud, options);
 };

@@ -1,14 +1,11 @@
-export const defaultCrud: {
-    readonly args: {};
-    readonly retrieve: (...args: any[]) => import("../utils/cancellablePromise.js").MaybeCancellablePromise<any>;
-    readonly create: (...args: any[]) => import("../utils/cancellablePromise.js").MaybeCancellablePromise<any>;
-    readonly update: (...args: any[]) => import("../utils/cancellablePromise.js").MaybeCancellablePromise<any>;
-    readonly patch: (...args: any[]) => import("../utils/cancellablePromise.js").MaybeCancellablePromise<any>;
-    readonly delete: (...args: any[]) => import("../utils/cancellablePromise.js").MaybeCancellablePromise<any>;
-    readonly subscribe: (...args: any[]) => CancellablePromise<any>;
-};
-export function setObjectCrud({ retrieve, create, update, patch, delete: deleteFn, subscribe, args, ...rest }: ObjectCrudArgs): void;
-export function getObjectCrud(reactiveCrud: import("vue").UnwrapNestedRefs<ObjectCrudArgsProperties>, { props, functions }?: {
+/**
+ * The default object crud functions.
+ *
+ * @type {Readonly<ObjectCrudFunctions>}
+ */
+export const defaultObjectCrud: Readonly<ObjectCrudFunctions>;
+export function setObjectCrud({ args, ...rest }: ObjectCrudArgs): void;
+export function getObjectCrud(target: import("vue").UnwrapNestedRefs<ObjectCrudArgsProperties>, options: {
     props?: import("vue").UnwrapNestedRefs<ObjectCrudArgsOption>;
     functions?: ObjectCrudFunctions;
 }): void;
@@ -30,7 +27,7 @@ export type ObjectCrudArgsOption = {
      */
     crudArgs?: ObjectCrudArgsArgs;
 };
-export type CreateDetailArgs = {
+export type CreateArgs = {
     /**
      * - The arguments to be passed to the crud functions.
      */
@@ -58,7 +55,7 @@ export type CreateDetailArgs = {
      */
     isCancelled: Readonly<import("vue").Ref<boolean>>;
 };
-export type RetrieveDetailArgs = {
+export type RetrieveArgs = {
     /**
      * - The arguments to be passed to the crud functions.
      */
@@ -84,7 +81,7 @@ export type RetrieveDetailArgs = {
      */
     isCancelled: Readonly<import("vue").Ref<boolean>>;
 };
-export type UpdateDetailArgs = {
+export type UpdateArgs = {
     /**
      * - The arguments to be passed to the crud functions.
      */
@@ -110,7 +107,7 @@ export type UpdateDetailArgs = {
      */
     isCancelled: Readonly<import("vue").Ref<boolean>>;
 };
-export type DeleteDetailArgs = {
+export type DeleteArgs = {
     /**
      * - The arguments to be passed to the crud functions.
      */
@@ -130,7 +127,7 @@ export type DeleteDetailArgs = {
      */
     isCancelled: Readonly<import("vue").Ref<boolean>>;
 };
-export type PartialDetailArgs = {
+export type PartialArgs = {
     /**
      * - The arguments to be passed to the crud functions.
      */
@@ -163,7 +160,7 @@ export type PartialDetailArgs = {
     isCancelled: Readonly<import("vue").Ref<boolean>>;
 };
 export type CrudSubscribeCallback = (data: import("../use/objectInstance.js").ExistingCrudObject, action: string) => any;
-export type SubscribeArgs = {
+export type ObjectSubscribeArgs = {
     /**
      * - The arguments to be passed to the crud functions.
      */
@@ -194,12 +191,12 @@ export type SubscribeArgs = {
     isCancelled: Readonly<import("vue").Ref<boolean>>;
 };
 export type CrudResponse = import("../utils/cancellablePromise.js").MaybeCancellablePromise<object | string>;
-export type CrudCreateFn = (args: CreateDetailArgs) => CrudResponse;
-export type CrudRetrieveFn = (args: RetrieveDetailArgs) => CrudResponse;
-export type CrudUpdateFn = (args: UpdateDetailArgs) => CrudResponse;
-export type CrudPatchFn = (args: PartialDetailArgs) => CrudResponse;
-export type CrudDeleteFn = (args: DeleteDetailArgs) => CrudResponse;
-export type CrudSubscribeFn = (args: SubscribeArgs) => import("../utils/cancellablePromise.js").CancellablePromise<void>;
+export type CrudCreateFn = (args: CreateArgs) => CrudResponse;
+export type CrudRetrieveFn = (args: RetrieveArgs) => CrudResponse;
+export type CrudUpdateFn = (args: UpdateArgs) => CrudResponse;
+export type CrudPatchFn = (args: PartialArgs) => CrudResponse;
+export type CrudDeleteFn = (args: DeleteArgs) => CrudResponse;
+export type CrudObjectSubscribeFn = (args: ObjectSubscribeArgs) => import("../utils/cancellablePromise.js").CancellablePromise<void>;
 /**
  * Defines the CRUD-related functions and additional utilities provided by the object instance.
  */
@@ -227,11 +224,10 @@ export type ObjectCrudFunctions = {
     /**
      * - A function to be used instead of the default crud subscribe function.
      */
-    subscribe?: CrudSubscribeFn;
+    subscribe?: CrudObjectSubscribeFn;
 };
 /**
  * The CRUD arguments.
  */
 export type ObjectCrudArgs = ObjectCrudArgsProperties & ObjectCrudFunctions;
-import { CancellablePromise } from "../utils/cancellablePromise.js";
 //# sourceMappingURL=objectCrud.d.ts.map

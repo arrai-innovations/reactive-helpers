@@ -26,9 +26,51 @@ The parent state.
 
 ###### crud
 
-> **crud**: `ShallowReactive`\<[`ObjectInstanceRawStateCrud`](objectInstance.md#objectinstancerawstatecrud)\>
+> **crud**: `object`
 
 The crud functions.
+
+###### crud.args
+
+> **args**: `Reactive`\<\{\} \| [`ObjectCrudArgsArgs`](../config/objectCrud.md#objectcrudargsargs)\>
+
+The arguments to be passed to the crud functions.
+
+###### crud.create
+
+> **create**: [`CrudCreateFn`](../config/objectCrud.md#crudcreatefn)
+
+The create function.
+
+###### crud.delete
+
+> **delete**: [`CrudDeleteFn`](../config/objectCrud.md#cruddeletefn)
+
+The delete function.
+
+###### crud.patch
+
+> **patch**: [`CrudPatchFn`](../config/objectCrud.md#crudpatchfn)
+
+The patch function.
+
+###### crud.retrieve
+
+> **retrieve**: [`CrudRetrieveFn`](../config/objectCrud.md#crudretrievefn)
+
+The retrieve function.
+
+###### crud.subscribe
+
+> **subscribe**: [`CrudObjectSubscribeFn`](../config/objectCrud.md#crudobjectsubscribefn)
+
+The subscribe function.
+
+###### crud.update
+
+> **update**: [`CrudUpdateFn`](../config/objectCrud.md#crudupdatefn)
+
+The update function.
 
 ###### deleted
 
@@ -126,9 +168,51 @@ The state of the object related instance.
 
 ###### crud
 
-> **crud**: `ShallowReactive`\<[`ObjectInstanceRawStateCrud`](objectInstance.md#objectinstancerawstatecrud)\>
+> **crud**: `object`
 
 The crud functions.
+
+###### crud.args
+
+> **args**: `Reactive`\<\{\} \| [`ObjectCrudArgsArgs`](../config/objectCrud.md#objectcrudargsargs)\>
+
+The arguments to be passed to the crud functions.
+
+###### crud.create
+
+> **create**: [`CrudCreateFn`](../config/objectCrud.md#crudcreatefn)
+
+The create function.
+
+###### crud.delete
+
+> **delete**: [`CrudDeleteFn`](../config/objectCrud.md#cruddeletefn)
+
+The delete function.
+
+###### crud.patch
+
+> **patch**: [`CrudPatchFn`](../config/objectCrud.md#crudpatchfn)
+
+The patch function.
+
+###### crud.retrieve
+
+> **retrieve**: [`CrudRetrieveFn`](../config/objectCrud.md#crudretrievefn)
+
+The retrieve function.
+
+###### crud.subscribe
+
+> **subscribe**: [`CrudObjectSubscribeFn`](../config/objectCrud.md#crudobjectsubscribefn)
+
+The subscribe function.
+
+###### crud.update
+
+> **update**: [`CrudUpdateFn`](../config/objectCrud.md#crudupdatefn)
+
+The update function.
 
 ###### deleted
 

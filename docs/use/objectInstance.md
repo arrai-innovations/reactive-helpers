@@ -213,7 +213,7 @@ A function to be used instead of the default crud retrieve function.
 
 ###### crudArgs.subscribe?
 
-> `optional` **subscribe**: [`CrudSubscribeFn`](../config/objectCrud.md#crudsubscribefn)
+> `optional` **subscribe**: [`CrudObjectSubscribeFn`](../config/objectCrud.md#crudobjectsubscribefn)
 
 A function to be used instead of the default crud subscribe function.
 
@@ -255,9 +255,51 @@ The state of the object instance.
 
 ###### crud
 
-> **crud**: `ShallowReactive`\<[`ObjectInstanceRawStateCrud`](objectInstance.md#objectinstancerawstatecrud)\>
+> **crud**: `object`
 
 The crud functions.
+
+###### crud.args
+
+> **args**: `Reactive`\<\{\} \| [`ObjectCrudArgsArgs`](../config/objectCrud.md#objectcrudargsargs)\>
+
+The arguments to be passed to the crud functions.
+
+###### crud.create
+
+> **create**: [`CrudCreateFn`](../config/objectCrud.md#crudcreatefn)
+
+The create function.
+
+###### crud.delete
+
+> **delete**: [`CrudDeleteFn`](../config/objectCrud.md#cruddeletefn)
+
+The delete function.
+
+###### crud.patch
+
+> **patch**: [`CrudPatchFn`](../config/objectCrud.md#crudpatchfn)
+
+The patch function.
+
+###### crud.retrieve
+
+> **retrieve**: [`CrudRetrieveFn`](../config/objectCrud.md#crudretrievefn)
+
+The retrieve function.
+
+###### crud.subscribe
+
+> **subscribe**: [`CrudObjectSubscribeFn`](../config/objectCrud.md#crudobjectsubscribefn)
+
+The subscribe function.
+
+###### crud.update
+
+> **update**: [`CrudUpdateFn`](../config/objectCrud.md#crudupdatefn)
+
+The update function.
 
 ###### deleted
 
@@ -349,9 +391,51 @@ The arguments to be passed to the retrieve function.
 
 ##### crud
 
-> **crud**: `ShallowReactive`\<[`ObjectInstanceRawStateCrud`](objectInstance.md#objectinstancerawstatecrud)\>
+> **crud**: `object`
 
 The crud functions.
+
+###### args
+
+> **args**: `Reactive`\<\{\} \| [`ObjectCrudArgsArgs`](../config/objectCrud.md#objectcrudargsargs)\>
+
+The arguments to be passed to the crud functions.
+
+###### create
+
+> **create**: [`CrudCreateFn`](../config/objectCrud.md#crudcreatefn)
+
+The create function.
+
+###### delete
+
+> **delete**: [`CrudDeleteFn`](../config/objectCrud.md#cruddeletefn)
+
+The delete function.
+
+###### patch
+
+> **patch**: [`CrudPatchFn`](../config/objectCrud.md#crudpatchfn)
+
+The patch function.
+
+###### retrieve
+
+> **retrieve**: [`CrudRetrieveFn`](../config/objectCrud.md#crudretrievefn)
+
+The retrieve function.
+
+###### subscribe
+
+> **subscribe**: [`CrudObjectSubscribeFn`](../config/objectCrud.md#crudobjectsubscribefn)
+
+The subscribe function.
+
+###### update
+
+> **update**: [`CrudUpdateFn`](../config/objectCrud.md#crudupdatefn)
+
+The update function.
 
 ##### deleted
 
@@ -439,7 +523,7 @@ The retrieve function.
 
 ##### subscribe
 
-> **subscribe**: [`CrudSubscribeFn`](../config/objectCrud.md#crudsubscribefn)
+> **subscribe**: [`CrudObjectSubscribeFn`](../config/objectCrud.md#crudobjectsubscribefn)
 
 The subscribe function.
 

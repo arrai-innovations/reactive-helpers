@@ -6,6 +6,7 @@
 
 ## Modules
 
+- [config/commonCrud](config/commonCrud.md)
 - [config/listCrud](config/listCrud.md)
 - [config/objectCrud](config/objectCrud.md)
 - [use/cancellableIntent](use/cancellableIntent.md)
@@ -42,7 +43,9 @@
 - [utils/keyDiff](utils/keyDiff.md)
 - [utils/loadingCombine](utils/loadingCombine.md)
 - [utils/proxyRunning](utils/proxyRunning.md)
+- [utils/refIfReactive](utils/refIfReactive.md)
 - [utils/relatedCalculatedHelpers](utils/relatedCalculatedHelpers.md)
 - [utils/set](utils/set.md)
 - [utils/transformWalk](utils/transformWalk.md)
+- [utils/unwrapNested](utils/unwrapNested.md)
 - [utils/watches](utils/watches.md)

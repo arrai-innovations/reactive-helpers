@@ -211,28 +211,28 @@ Default implementation are used as set by `setListCrud`.
 
 ###### bulkDelete?
 
-> `optional` **bulkDelete**: [`BulkDeleteFn`](../config/listCrud.md#bulkdeletefn)
+> `optional` **bulkDelete**: [`CrudBulkDeleteFn`](../config/listCrud.md#crudbulkdeletefn)
 
 Provide the implementation for the bulkDelete
  function.
 
 ###### executeAction?
 
-> `optional` **executeAction**: [`ExecuteActionFn`](../config/listCrud.md#executeactionfn)
+> `optional` **executeAction**: [`CrudExecuteActionFn`](../config/listCrud.md#crudexecuteactionfn)
 
 Provide the implementation for the executeAction
  function.
 
 ###### list?
 
-> `optional` **list**: [`ListFn`](../config/listCrud.md#listfn)
+> `optional` **list**: [`CrudListFn`](../config/listCrud.md#crudlistfn)
 
 Provide the implementation for the list
  function.
 
 ###### subscribe?
 
-> `optional` **subscribe**: [`SubscribeFn`](../config/listCrud.md#subscribefn)
+> `optional` **subscribe**: [`CrudListSubscribeFn`](../config/listCrud.md#crudlistsubscribefn)
 
 Provide the implementation for the
  subscribe function.

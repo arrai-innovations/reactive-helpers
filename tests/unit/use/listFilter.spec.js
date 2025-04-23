@@ -172,7 +172,7 @@ describe("use/listFilter", () => {
                 props: {
                     crudArgs: { stream: "test_streamA" },
                     listArgs: { user: 1 },
-                    pkKey: "id",
+                    pkKey: "pk",
                     retrieveArgs: {
                         fields,
                     },
@@ -183,6 +183,7 @@ describe("use/listFilter", () => {
                 props: {
                     crudArgs: { stream: "test_streamB" },
                     listArgs: { user: 2 },
+                    pkKey: "pk",
                     retrieveArgs: {
                         fields,
                     },

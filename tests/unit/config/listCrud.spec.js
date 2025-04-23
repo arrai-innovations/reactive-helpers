@@ -28,7 +28,9 @@ describe("config/listCrud.js", () => {
              *      import('../../../config/listCrud.js').ListCrudArgs
              *  >}
              */
-            const retrievedCrud = reactive({});
+            const retrievedCrud = reactive({
+                args: {},
+            });
             expect(() => getListCrud(retrievedCrud)).not.toThrow();
             expect(new Set(Object.keys(retrievedCrud))).toEqual(
                 new Set(["list", "bulkDelete", "executeAction", "subscribe", "args"])
@@ -49,12 +51,14 @@ describe("config/listCrud.js", () => {
         it("should die if an unknown function is passed", () => {
             expect(() =>
                 setListCrud({ list: () => 1, subscribe: () => 2, args: { test: "test" }, unknown: () => 3 })
-            ).toThrow("Unknown key(s) passed to setListCrud: unknown");
+            ).toThrow('Unknown key "unknown" passed to setListCrud');
         });
         it("should customize via getListCrud", () => {
             const defaultCrud = {
                 list: () => 1,
                 subscribe: () => 2,
+                bulkDelete: () => 3,
+                executeAction: () => 4,
                 args: {
                     test: "test",
                 },
@@ -68,11 +72,15 @@ describe("config/listCrud.js", () => {
                 functions: {
                     list: () => 3,
                     subscribe: () => 4,
+                    bulkDelete: () => 5,
+                    executeAction: () => 6,
                 },
             };
             const expectedCustomCrud = {
                 list: customCrudArgs.functions.list,
                 subscribe: customCrudArgs.functions.subscribe,
+                bulkDelete: customCrudArgs.functions.bulkDelete,
+                executeAction: customCrudArgs.functions.executeAction,
                 args: customCrudArgs.props.crudArgs,
             };
             expect(() => setListCrud(defaultCrud)).not.toThrow();
@@ -96,7 +104,7 @@ describe("config/listCrud.js", () => {
                         subscribe: true,
                     },
                 })
-            ).toThrow('Invalid function "subscribe" for getListCrud: invalid key or not a function.');
+            ).toThrow('Function "subscribe" is not actually a function');
         });
         it("should throw if passed unexpected functions", () => {
             const retrievedCrud = reactive({});
@@ -108,7 +116,7 @@ describe("config/listCrud.js", () => {
                         unknown: () => 3,
                     },
                 })
-            ).toThrow('Invalid function "unknown" for getListCrud: invalid key or not a function.');
+            ).toThrow('Invalid function key "unknown" passed to assignCrud');
         });
     });
 });

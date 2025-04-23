@@ -1,41 +1,12 @@
-import { addOrUpdateReactiveObject } from "../utils/assignReactiveObject.js";
+import { assignCrud, createDefaultCrud } from "./commonCrud.js";
 import cloneDeep from "lodash-es/cloneDeep.js";
-import isFunction from "lodash-es/isFunction.js";
-import { isReactive, readonly, toRef } from "vue";
-import { CancellablePromise } from "../utils/cancellablePromise.js";
+import { readonly } from "vue";
 
 /**
  * Configuration for the default object crud functions.
  *
  * @module config/objectCrud.js
  */
-
-/**
- * @template T
- * @param {string} name - The name of the method.
- * @returns {(...args:any[]) => import('../utils/cancellablePromise.js')
- *                               .MaybeCancellablePromise<T>} - A function that returns a rejected promise with an error message.
- */
-const missingMethod = (name) => () => {
-    return CancellablePromise.reject(new Error(`Crud method "${name}" is not implemented.`));
-};
-
-/**
- * @template T
- * @param {string} name - The name of the method.
- * @returns {(...args:any[]) => import('../utils/cancellablePromise.js')
- *                               .CancellablePromise<T>} - A function that returns a rejected promise with an error message.
- */
-const requiredCancelMissingMethod = (name) => () => {
-    return CancellablePromise(
-        new Promise(() => {
-            return Promise.reject(new Error(`Crud method "${name}" is not implemented.`));
-        }),
-        () => {
-            // do nothing
-        }
-    );
-};
 
 /**
  * @typedef {{[key:string]: any}} ObjectCrudArgsArgs
@@ -54,7 +25,7 @@ const requiredCancelMissingMethod = (name) => () => {
  */
 
 /**
- * @typedef {object} CreateDetailArgs
+ * @typedef {object} CreateArgs
  * @property {{[key:string]: any}} crudArgs - The arguments to be passed to the crud functions.
  * @property {{[key:string]: any}} object - The data to be acted upon.
  * @property {{[key:string]: any}} retrieveArgs - The arguments to be passed to the retrieve function.
@@ -63,7 +34,7 @@ const requiredCancelMissingMethod = (name) => () => {
  */
 
 /**
- * @typedef {object} RetrieveDetailArgs
+ * @typedef {object} RetrieveArgs
  * @property {{[key:string]: any}} crudArgs - The arguments to be passed to the crud functions.
  * @property {string} pk - The pk of the object to be acted upon.
  * @property {string} pkKey - The key name of the primary key.
@@ -72,7 +43,7 @@ const requiredCancelMissingMethod = (name) => () => {
  */
 
 /**
- * @typedef {object} UpdateDetailArgs
+ * @typedef {object} UpdateArgs
  * @property {{[key:string]: any}} crudArgs - The arguments to be passed to the crud functions.
  * @property {import('../use/objectInstance.js').ExistingCrudObject} object - The data to be acted upon.
  * @property {{[key:string]: any}} retrieveArgs - The arguments to be passed to the retrieve function.
@@ -81,7 +52,7 @@ const requiredCancelMissingMethod = (name) => () => {
  */
 
 /**
- * @typedef {object} DeleteDetailArgs
+ * @typedef {object} DeleteArgs
  * @property {{[key:string]: any}} crudArgs - The arguments to be passed to the crud functions.
  * @property {string} pk - The pk of the object to be acted upon.
  * @property {string} pkKey - The key name of the primary key.
@@ -89,7 +60,7 @@ const requiredCancelMissingMethod = (name) => () => {
  */
 
 /**
- * @typedef {object} PartialDetailArgs
+ * @typedef {object} PartialArgs
  * @property {{[key:string]: any}} crudArgs - The arguments to be passed to the crud functions.
  * @property {string} pk - The pk of the object to be acted upon.
  * @property {string} pkKey - The key name of the primary key.
@@ -105,7 +76,7 @@ const requiredCancelMissingMethod = (name) => () => {
  */
 
 /**
- * @typedef {object} SubscribeArgs
+ * @typedef {object} ObjectSubscribeArgs
  * @property {{[key:string]: any}} crudArgs - The arguments to be passed to the crud functions.
  * @property {string} pk - The pk of the object to be acted upon.
  * @property {string} pkKey - The key name of the primary key.
@@ -120,37 +91,37 @@ const requiredCancelMissingMethod = (name) => () => {
 
 /**
  * @callback CrudCreateFn
- * @param {CreateDetailArgs} args - The arguments to be passed to the create function.
+ * @param {CreateArgs} args - The arguments to be passed to the create function.
  * @returns {CrudResponse} - The response data from the create function.
  */
 
 /**
  * @callback CrudRetrieveFn
- * @param {RetrieveDetailArgs} args - The arguments to be passed to the retrieve function.
+ * @param {RetrieveArgs} args - The arguments to be passed to the retrieve function.
  * @returns {CrudResponse} - The response data from the retrieve function.
  */
 
 /**
  * @callback CrudUpdateFn
- * @param {UpdateDetailArgs} args - The arguments to be passed to the update function.
+ * @param {UpdateArgs} args - The arguments to be passed to the update function.
  * @returns {CrudResponse} - The response data from the update function.
  */
 
 /**
  * @callback CrudPatchFn
- * @param {PartialDetailArgs} args - The arguments to be passed to the patch function.
+ * @param {PartialArgs} args - The arguments to be passed to the patch function.
  * @returns {CrudResponse} - The response data from the patch function.
  */
 
 /**
  * @callback CrudDeleteFn
- * @param {DeleteDetailArgs} args - The arguments to be passed to the delete function.
+ * @param {DeleteArgs} args - The arguments to be passed to the delete function.
  * @returns {CrudResponse} - The response data from the delete function.
  */
 
 /**
- * @callback CrudSubscribeFn
- * @param {SubscribeArgs} args - The arguments to be passed to the subscribe function.
+ * @callback CrudObjectSubscribeFn
+ * @param {ObjectSubscribeArgs} args - The arguments to be passed to the subscribe function.
  * @returns {import('../utils/cancellablePromise.js').CancellablePromise<void>} - The cancellable promise.
  */
 
@@ -163,7 +134,7 @@ const requiredCancelMissingMethod = (name) => () => {
  * @property {CrudUpdateFn} [update] - A function to be used instead of the default crud update function.
  * @property {CrudDeleteFn} [delete] - A function to be used instead of the default crud delete function.
  * @property {CrudPatchFn} [patch] - A function to be used instead of the default crud patch function.
- * @property {CrudSubscribeFn} [subscribe] - A function to be used instead of the default crud subscribe function.
+ * @property {CrudObjectSubscribeFn} [subscribe] - A function to be used instead of the default crud subscribe function.
  */
 
 /**
@@ -173,17 +144,17 @@ const requiredCancelMissingMethod = (name) => () => {
  *
  */
 
-const _defaultCrud = {
-    args: {},
-    retrieve: /** @type {CrudRetrieveFn} */ missingMethod("retrieve"),
-    create: /** @type {CrudCreateFn} */ missingMethod("create"),
-    update: /** @type {CrudUpdateFn} */ missingMethod("update"),
-    patch: /** @type {CrudPatchFn} */ missingMethod("patch"),
-    delete: /** @type {CrudDeleteFn} */ missingMethod("delete"),
-    subscribe: /** @type {CrudSubscribeFn} */ requiredCancelMissingMethod("subscribe"),
-};
+const _defaultCrud = createDefaultCrud(
+    ["retrieve", "create", "update", "patch", "delete", "subscribe"],
+    new Set(["subscribe"])
+);
 
-export const defaultCrud = readonly(_defaultCrud);
+/**
+ * The default object crud functions.
+ *
+ * @type {Readonly<ObjectCrudFunctions>}
+ */
+export const defaultObjectCrud = readonly(_defaultCrud);
 
 /**
  * Set the object crud functions.
@@ -191,45 +162,25 @@ export const defaultCrud = readonly(_defaultCrud);
  * @param {ObjectCrudArgs} options - The options for the object crud functions.
  * @throws {Error} - if unknown keys are passed.
  */
-export const setObjectCrud = ({ retrieve, create, update, patch, delete: deleteFn, subscribe, args = {}, ...rest }) => {
-    _defaultCrud.retrieve = retrieve ?? missingMethod("retrieve");
-    _defaultCrud.create = create ?? missingMethod("create");
-    _defaultCrud.update = update ?? missingMethod("update");
-    _defaultCrud.patch = patch ?? missingMethod("patch");
-    _defaultCrud.delete = deleteFn ?? missingMethod("delete");
-    _defaultCrud.subscribe = subscribe ?? requiredCancelMissingMethod("subscribe");
-    // defensive cloning
+export const setObjectCrud = ({ args = {}, ...rest }) => {
     Object.assign(_defaultCrud.args, cloneDeep(args));
-    if (Object.keys(rest).length) {
-        throw new Error(`Unknown key(s) passed to setObjectCrud: ${Object.keys(rest).join(", ")}`);
+    for (const [key, value] of Object.entries(rest)) {
+        if (!(key in _defaultCrud)) {
+            throw new Error(`Unknown key "${key}" passed to setObjectCrud`);
+        }
+        _defaultCrud[key] = value ?? _defaultCrud[key];
     }
 };
 
 /**
  * Get the previously set object crud functions.
  *
- * @param {import("vue").UnwrapNestedRefs<ObjectCrudArgsProperties>} reactiveCrud - The reactive object you want to add the resulting crud to.
+ * @param {import("vue").UnwrapNestedRefs<ObjectCrudArgsProperties>} target - The reactive object you want to add the resulting crud to.
  * @param {object} options - The options for the reactive crud object.
  * @param {import("vue").UnwrapNestedRefs<ObjectCrudArgsOption>} [options.props] - The props with any passed crudArgs.
  * @param {ObjectCrudFunctions} [options.functions] - Any functions to override the default crud functions.
  * @throws {Error} - If an invalid function is passed, or if the function is not a function.
  */
-export const getObjectCrud = (reactiveCrud, { props, functions } = {}) => {
-    // don't mutate the default crud
-    Object.assign(reactiveCrud, cloneDeep(_defaultCrud));
-    if (props?.crudArgs) {
-        addOrUpdateReactiveObject(reactiveCrud.args, props.crudArgs);
-    }
-    if (functions) {
-        for (const [key, value] of Object.entries(functions)) {
-            if (isFunction(value) && key in reactiveCrud) {
-                reactiveCrud[key] = isReactive(functions)
-                    ? // @ts-ignore - key is a keyof ObjectCrudFunctions...
-                      toRef(functions, key)
-                    : value;
-            } else {
-                throw Error(`Invalid function "${key}" for getObjectCrud: invalid key or not a function.`);
-            }
-        }
-    }
+export const getObjectCrud = (target, options) => {
+    assignCrud(target, _defaultCrud, options);
 };

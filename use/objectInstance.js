@@ -1,8 +1,9 @@
-import { defaultCrud, getObjectCrud } from "../config/objectCrud.js";
+import { defaultObjectCrud, getObjectCrud } from "../config/objectCrud.js";
 import { assignReactiveObject } from "../utils/assignReactiveObject.js";
 import { useLoadingError } from "./loadingError.js";
-import { reactive, readonly, ref, shallowReactive, toRef } from "vue";
+import { reactive, readonly, ref, shallowReactive } from "vue";
 import { wrapMaybeCancellable } from "../utils/cancellablePromise.js";
+import { refIfReactive } from "../utils/refIfReactive.js";
 
 /**
  * A composition function to manage create, retrieve, update, delete, and patch operations.
@@ -50,14 +51,14 @@ import { wrapMaybeCancellable } from "../utils/cancellablePromise.js";
  * @property {import('../config/objectCrud.js').CrudUpdateFn} update - The update function.
  * @property {import('../config/objectCrud.js').CrudPatchFn} patch - The patch function.
  * @property {import('../config/objectCrud.js').CrudDeleteFn} delete - The delete function.
- * @property {import('../config/objectCrud.js').CrudSubscribeFn} subscribe - The subscribe function.
+ * @property {import('../config/objectCrud.js').CrudObjectSubscribeFn} subscribe - The subscribe function.
  */
 
 /**
  * The raw state of the object instance.
  *
  * @typedef {object} ObjectInstanceRawState
- * @property {import('vue').ShallowReactive<ObjectInstanceRawStateCrud>} crud - The crud functions.
+ * @property {import('vue').Reactive<ObjectInstanceRawStateCrud>} crud - The crud functions.
  * @property {import('vue').Ref<string|undefined>} pk - The pk of the object.
  * @property {import('vue').Ref<string|undefined>} pkKey - The pk key of the object.
  * @property {import('vue').Ref<{[key:string]: any}>} retrieveArgs - The arguments to be passed to the retrieve function.
@@ -211,23 +212,22 @@ export function useObjectInstance({ props, functions = {} }) {
     const state = reactive(
         /** @type {ObjectInstanceRawState} */
         {
-            // function typing support is a lot nicer with shallow reactive
             crud: shallowReactive(
                 /** @type {ObjectInstanceRawStateCrud} */
                 {
                     args: reactive({}),
-                    create: defaultCrud.create,
-                    retrieve: defaultCrud.retrieve,
-                    update: defaultCrud.update,
-                    delete: defaultCrud.delete,
-                    patch: defaultCrud.patch,
-                    subscribe: defaultCrud.subscribe,
+                    create: defaultObjectCrud.create,
+                    retrieve: defaultObjectCrud.retrieve,
+                    update: defaultObjectCrud.update,
+                    delete: defaultObjectCrud.delete,
+                    patch: defaultObjectCrud.patch,
+                    subscribe: defaultObjectCrud.subscribe,
                 }
             ),
             object: reactive({}),
-            pk: toRef(props, "pk"),
-            pkKey: toRef(props, "pkKey"),
-            retrieveArgs: toRef(props, "retrieveArgs"),
+            pk: refIfReactive(props, "pk", null),
+            pkKey: refIfReactive(props, "pkKey"),
+            retrieveArgs: refIfReactive(props, "retrieveArgs", {}),
             loading: loadingError.loading,
             errored: loadingError.errored,
             error: loadingError.error,

@@ -1,9 +1,13 @@
-export function setListCrud({ list, bulkDelete, subscribe, executeAction, args, ...rest }: ListCrudFunctions & Partial<ListCrudArgs>): void;
-export function getListCrud(reactiveCrud: import("vue").UnwrapNestedRefs<ListCrudFunctions & ListCrudArgs>, { props, functions }?: {
-    props?: import("vue").UnwrapNestedRefs<{
-        crudArgs: object | undefined;
-    }>;
-    functions?: ListCrudFunctions & ListCrudArgs;
+/**
+ * The default list crud functions.
+ *
+ * @type {Readonly<ListCrudFunctions>}
+ */
+export const defaultListCrud: Readonly<ListCrudFunctions>;
+export function setListCrud({ args, ...rest }: ListCrudFunctions & Partial<ListCrudArgs>): void;
+export function getListCrud(target: import("vue").UnwrapNestedRefs<ListCrudFunctions & ListCrudArgs>, options: {
+    props?: import("vue").UnwrapNestedRefs<ListCrudArgsOption>;
+    functions?: ListCrudFunctions;
 }): void;
 export type PaginateInfo = {
     /**
@@ -20,7 +24,7 @@ export type PaginateInfo = {
     perPage: number;
 };
 export type PageCallback = (newObjects: import("../use/listInstance.js").ListObject, paginationInfo: PaginateInfo | undefined) => void;
-export type ListFnArgs = {
+export type ListArgs = {
     /**
      * - The arguments to be passed to the crud functions.
      */
@@ -47,7 +51,7 @@ export type ListFnArgs = {
      */
     isCancelled: Readonly<import("vue").Ref<boolean>>;
 };
-export type DeleteFnArgs = {
+export type BulkDeleteArgs = {
     /**
      * - The arguments to be passed to the crud functions.
      */
@@ -60,9 +64,14 @@ export type DeleteFnArgs = {
      * - The key name of the primary key.
      */
     pkKey: string;
+    /**
+     * - A ref to a boolean indicating whether the request has
+     * been cancelled.
+     */
+    isCancelled: Readonly<import("vue").Ref<boolean>>;
 };
 export type SubscriptionEventCallback = (newOrUpdatedOrDeleteObject: import("../use/listInstance.js").ListObject | string, action: "create" | "update" | "delete") => void;
-export type SubscribeFnArgs = {
+export type ListSubscribeArgs = {
     /**
      * - The arguments to be passed to the crud functions.
      */
@@ -83,8 +92,13 @@ export type SubscribeFnArgs = {
      * - The method to call when new data is received.
      */
     subscriptionEventCallback: SubscriptionEventCallback;
+    /**
+     * - A ref to a boolean indicating whether the request has
+     * been cancelled.
+     */
+    isCancelled: Readonly<import("vue").Ref<boolean>>;
 };
-export type ExecuteActionFnArgs = {
+export type ExecuteActionArgs = {
     /**
      * - The arguments to be passed to the crud functions.
      */
@@ -101,53 +115,44 @@ export type ExecuteActionFnArgs = {
      * - The action to execute.
      */
     action: string;
+    /**
+     * - A ref to a boolean indicating whether the request has
+     * been cancelled.
+     */
+    isCancelled: Readonly<import("vue").Ref<boolean>>;
 };
-/**
- * - The list function to get a list of items, returning a boolean indicating success.
- */
-export type ListFn = (ListFnArgs: any) => Promise<boolean> & {
-    cancel: () => Promise<void> | void;
-};
-/**
- * - The delete function to bulk delete a list of items.
- */
-export type BulkDeleteFn = (DeleteFnArgs: any) => Promise<boolean> & {
-    cancel: () => Promise<void> | void;
-};
-/**
- * - The subscribe function to set up a subscription to a list of items.
- */
-export type SubscribeFn = (SubscribeFnArgs: any) => Promise<boolean> & {
-    cancel: () => Promise<void> | void;
-};
-/**
- * - The function to execute a certain action on a list of items, returning the response data or false.
- */
-export type ExecuteActionFn = (ExecuteActionFnArgs: any) => Promise<import("./objectCrud.js").CrudResponse | false> & {
-    cancel: () => Promise<void> | void;
-};
+export type CrudListFn = (args: ListArgs) => import("../utils/cancellablePromise.js").MaybeCancellablePromise<void>;
+export type CrudBulkDeleteFn = (args: BulkDeleteArgs) => import("../utils/cancellablePromise.js").MaybeCancellablePromise<void>;
+export type CrudListSubscribeFn = (args: ListSubscribeArgs) => import("../utils/cancellablePromise.js").CancellablePromise<void>;
+export type CrudExecuteActionFn = (args: ExecuteActionArgs) => import("../utils/cancellablePromise.js").MaybeCancellablePromise<object | string | null>;
 export type ListCrudFunctions = {
     /**
      * - The list function to get a list of items.
      */
-    list?: ListFn;
+    list?: CrudListFn;
     /**
      * - The delete function to bulk delete a list of items.
      */
-    bulkDelete?: BulkDeleteFn;
+    bulkDelete?: CrudBulkDeleteFn;
     /**
      * - The  function to execute a certain action on a list of items.
      */
-    executeAction?: ExecuteActionFn;
+    executeAction?: CrudExecuteActionFn;
     /**
      * - The subscribe function to get a subscription to a list of items.
      */
-    subscribe?: SubscribeFn;
+    subscribe?: CrudListSubscribeFn;
 };
 export type ListCrudArgs = {
     /**
      * - The default arguments for the crud functions.
      */
-    args?: object;
+    args: object;
+};
+export type ListCrudArgsOption = {
+    /**
+     * - The default arguments for the crud functions.
+     */
+    crudArgs?: object;
 };
 //# sourceMappingURL=listCrud.d.ts.map

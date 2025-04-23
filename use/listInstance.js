@@ -1,10 +1,11 @@
-import { getListCrud } from "../config/listCrud.js";
+import { defaultListCrud, getListCrud } from "../config/listCrud.js";
 import { assignReactiveObject } from "../utils/assignReactiveObject.js";
 import { getFakePk } from "../utils/getFakePk.js";
 import { useLoadingError } from "./loadingError.js";
 import inspect from "browser-util-inspect";
-import { computed, effectScope, nextTick, reactive, readonly, ref, toRef, unref, watch } from "vue";
+import { computed, effectScope, nextTick, reactive, readonly, ref, shallowReactive, toRef, unref, watch } from "vue";
 import { CancellablePromise, wrapMaybeCancellable } from "../utils/cancellablePromise.js";
+import { refIfReactive } from "../utils/refIfReactive.js";
 
 /**
  * A composable function for managing a list of objects.
@@ -53,13 +54,13 @@ export class ListInstanceError extends Error {
  * @typedef {object} ListInstanceOptions
  * @property {import('vue').UnwrapNestedRefs<ListInstanceProps>} props - The props for the list instance.
  * @property {object} [functions] - Default implementation are used as set by `setListCrud`.
- * @property {import('../config/listCrud.js').ListFn} [functions.list] - Provide the implementation for the list
+ * @property {import('../config/listCrud.js').CrudListFn} [functions.list] - Provide the implementation for the list
  *  function.
- *  @property {import('../config/listCrud.js').BulkDeleteFn} [functions.bulkDelete] - Provide the implementation for the bulkDelete
+ *  @property {import('../config/listCrud.js').CrudBulkDeleteFn} [functions.bulkDelete] - Provide the implementation for the bulkDelete
  *  function.
- *   @property {import('../config/listCrud.js').ExecuteActionFn} [functions.executeAction] - Provide the implementation for the executeAction
+ *   @property {import('../config/listCrud.js').CrudExecuteActionFn} [functions.executeAction] - Provide the implementation for the executeAction
  *  function.
- * @property {import('../config/listCrud.js').SubscribeFn} [functions.subscribe] - Provide the implementation for the
+ * @property {import('../config/listCrud.js').CrudListSubscribeFn} [functions.subscribe] - Provide the implementation for the
  *  subscribe function.
  * @property {boolean} keepOldPages - If true, pages will not be cleared when defaultPageCallback is called.
  */
@@ -207,16 +208,22 @@ export function useListInstances(listInstanceArgs) {
  */
 export function useListInstance({ props, functions = {}, keepOldPages }) {
     if (!props) {
-        throw new ListInstanceError(`useListInstance requires props`, "missing-props");
+        throw new ListInstanceError("useListInstance requires props", "missing-props");
     }
     if (keepOldPages === undefined) {
-        throw new ListInstanceError(`useListInstance requires keepOldPages`, "missing-keepOldPages");
+        throw new ListInstanceError("useListInstance requires keepOldPages", "missing-keepOldPages");
     }
+    if (!props.pkKey) {
+        throw new ListInstanceError("useListInstance requires pkKey.", "missing-pkKey");
+    }
+
+    const es = effectScope();
 
     // ### touching the _objectsMap or _objectsProxy directly will not trigger reactivity ###
     const _objectsMap = new Map(); // maps are ordered, if you don't clear lists, you need to insert pages in order.
 
     // ### touching the _objectsMap or _objectsProxy directly will not trigger reactivity ###
+    // noinspection JSValidateTypes
     /** @type {{[key: string]: ListObject}} */
     // @ts-ignore - we are using a proxy to make this map behave like an object for reactivity
     const _objectsProxy = new Proxy(_objectsMap, {
@@ -251,7 +258,7 @@ export function useListInstance({ props, functions = {}, keepOldPages }) {
                   }
                 : Reflect.getOwnPropertyDescriptor(target, p); // we can't report target properties as non-existent re: proxy invariants
         },
-        // things introspect us thing we are a map, we need to pretend to be a object
+        // things introspect us thing we are a map, we need to pretend to be an object
         getPrototypeOf() {
             return Object.prototype;
         },
@@ -263,27 +270,24 @@ export function useListInstance({ props, functions = {}, keepOldPages }) {
 
     // ### touching the _objectsMap or _objectsProxy directly will not trigger reactivity ###
     const state = reactive({
-        crud: {
-            args: {},
-            list: undefined,
-            bulkDelete: undefined,
-            executeAction: undefined,
-        },
-        pkKey: toRef(props, "pkKey"),
-        retrieveArgs: toRef(props, "retrieveArgs"),
-        listArgs: toRef(props, "listArgs"),
+        crud: shallowReactive({
+            args: reactive({}),
+            list: defaultListCrud.list,
+            bulkDelete: defaultListCrud.bulkDelete,
+            executeAction: defaultListCrud.executeAction,
+        }),
+        pkKey: refIfReactive(props, "pkKey"),
+        retrieveArgs: refIfReactive(props, "retrieveArgs", {}),
+        listArgs: refIfReactive(props, "listArgs", {}),
         /** @type {{[key: string]: ListObject}} */
         objects: /** @type {{[key: string]: ListObject}} */ _objectsProxy,
         running: false,
         loading: loadingError.loading,
         errored: loadingError.errored,
         error: loadingError.error,
-        /** @type {import('vue').ComputedRef<string[]>|undefined} */
-        order: undefined,
-        /** @type {import('vue').ComputedRef<ListObject[]>|undefined} */
-        objectsInOrder: undefined,
+        order: es.run(() => computed(() => Object.keys(state.objects))),
+        objectsInOrder: es.run(() => computed(() => objectsInOrderRefs.value.map((ref) => unref(ref)))),
     });
-    const es = effectScope();
 
     getListCrud(state.crud, { props, functions });
 
@@ -345,13 +349,13 @@ export function useListInstance({ props, functions = {}, keepOldPages }) {
                 pks: Object.keys(state.objects).map(Number),
                 pkKey: state.pkKey,
             })
-            .then((/** @type {any} */ responseData) => {
+            .then((/** @type {object|string} */ responseData) => {
                 loadingError.clearError();
                 return Promise.resolve(responseData);
             })
             .catch((/** @type {Error} */ error) => {
                 loadingError.setError(error);
-                return Promise.resolve(false);
+                return Promise.resolve(null);
             })
             .finally(() => {
                 loadingError.clearLoading();
@@ -489,10 +493,6 @@ export function useListInstance({ props, functions = {}, keepOldPages }) {
                 deep: true,
             }
         );
-        // @ts-ignore - we want the computed in the explicit effect scope, tsc is mad that we are 'changing' the type
-        state.objectsInOrder = computed(() => objectsInOrderRefs.value.map((ref) => unref(ref)));
-        // @ts-ignore - we want the computed in the explicit effect scope, tsc is mad that we are 'changing' the type
-        state.order = computed(() => Object.keys(state.objects));
     });
 
     // This isn't a direct return because we want the live returnedObject.pageCallback in list()
