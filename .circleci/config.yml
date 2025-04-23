@@ -4,6 +4,27 @@ orbs:
     prettier: arrai/prettier@5.10.0
     npm: arrai/npm@3.1.0
     github: arrai/github@5.0.0
+executors:
+    lts:
+        environment:
+            LANG: en_US.UTF-8
+        docker:
+            - image: cimg/node:lts
+jobs:
+    check-generated:
+        executor: lts
+        working_directory: ~/project
+        steps:
+            - checkout
+            - run:
+                  name: Install dependencies
+                  command: npm ci
+            - run:
+                  name: Generate types and docs
+                  command: npm run docs
+            - run:
+                  name: Check generated types/docs are in sync
+                  command: npm run docs:check
 workflows:
     test:
         jobs:
@@ -14,6 +35,13 @@ workflows:
                       branches:
                           only:
                               - main
+            - check-generated:
+                  name: main-docs-and-types
+                  requires:
+                      - tests
+                  filters:
+                      branches:
+                          only: main
             - npm/coverage:
                   name: tests-no-badge
                   context: arrai-global
@@ -24,11 +52,21 @@ workflows:
                       branches:
                           ignore:
                               - main
+            - check-generated:
+                  name: non-main-docs-and-types
+                  requires:
+                      - tests-no-badge
+                  filters:
+                      tags:
+                          only: /.*/
+                      branches:
+                          ignore:
+                              - main
             - npm/publish:
                   name: publish
                   context: arrai-private-package-publishing
                   requires:
-                      - tests-no-badge
+                      - non-main-docs-and-types
                   filters:
                       tags:
                           only: /.*/
@@ -38,7 +76,7 @@ workflows:
                   name: release_on_github
                   context: arrai-global
                   requires:
-                      - tests-no-badge
+                      - non-main-docs-and-types
                   filters:
                       tags:
                           only: /.*/

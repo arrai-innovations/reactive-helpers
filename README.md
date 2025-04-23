@@ -948,11 +948,16 @@ await awaitNot3.promise;
     ```bash
     $ npm ci
     ```
-3. Run tests via jest:
+3. Run tests via vitest:
     ```bash
     $ npm test
     ```
 4. Run tests with coverage output:
     ```bash
     $ npm run coverage
+    ```
+
+5. Generate types and typedocs:
+    ```bash
+    $ npm run docs
     ```
