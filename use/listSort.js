@@ -180,7 +180,6 @@ export function useListSorts(listSortArgs) {
  *     crudArgs: {},
  *     listArgs: {},
  *     pkKey: 'id',
- *     retrieveArgs: {},
  *     intendToList: true,
  * });
  * const listInstance = useListInstance(listInstanceProps);

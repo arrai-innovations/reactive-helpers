@@ -161,7 +161,6 @@ export function useListCalculateds(listCalculatedArgs) {
  *     crudArgs: {},
  *     listArgs: {},
  *     pkKey: "pk",
- *     retrieveArgs: {},
  *     intendToList: true,
  * });
  * const listSubscription = useListSubscription(listSubscriptionProps);

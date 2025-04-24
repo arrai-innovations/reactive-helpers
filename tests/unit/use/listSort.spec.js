@@ -59,10 +59,9 @@ describe("use/useListSort", () => {
             props: {
                 crudArgs: {},
                 pkKey: "id",
-                retrieveArgs: {
+                listArgs: {
                     fields: ["id", "lexical_name", "organization", "relatedObjects"],
                 },
-                listArgs: {},
             },
             keepOldPages: false,
         });
@@ -172,21 +171,15 @@ describe("use/useListSort", () => {
             props: {
                 crudArgs: { stream: "test_streamA" },
                 pkKey: "id",
-                listArgs: { user: 1 },
-                retrieveArgs: {
-                    fields,
-                },
+                listArgs: { user: 1, fields },
             },
             keepOldPages: false,
         });
         const listInstanceB = useListInstance({
             props: {
                 crudArgs: { stream: "test_streamB" },
-                listArgs: { user: 2 },
+                listArgs: { user: 2, fields },
                 pkKey: "id",
-                retrieveArgs: {
-                    fields,
-                },
             },
             keepOldPages: false,
         });
@@ -202,10 +195,7 @@ describe("use/useListSort", () => {
             A: {
                 props: {
                     crudArgs: { stream: "test_streamA" },
-                    listArgs: { user: 1 },
-                    retrieveArgs: {
-                        fields,
-                    },
+                    listArgs: { user: 1, fields },
                     pkKey: "id",
                 },
                 keepOldPages: false,
@@ -213,10 +203,7 @@ describe("use/useListSort", () => {
             B: {
                 props: {
                     crudArgs: { stream: "test_streamB" },
-                    listArgs: { user: 2 },
-                    retrieveArgs: {
-                        fields,
-                    },
+                    listArgs: { user: 2, fields },
                     pkKey: "id",
                 },
                 keepOldPages: false,
@@ -241,22 +228,16 @@ describe("use/useListSort", () => {
         const listInstance = useListInstance({
             props: reactive({
                 crudArgs: { stream: "test_stream" },
-                listArgs: { user: 1 },
+                listArgs: { user: 1, fields: ["id", "__str__", "name", "relatedItem", "calculatedItem"] },
                 pkKey: "id",
-                retrieveArgs: {
-                    fields: ["id", "__str__", "name", "relatedItem", "calculatedItem"],
-                },
             }),
             keepOldPages: false,
         });
         const relatedListInstance = useListInstance({
             props: reactive({
                 crudArgs: { stream: "test_related_stream" },
-                listArgs: { user: 1 },
+                listArgs: { user: 1, fields: ["id", "__str__", "name"] },
                 pkKey: "id",
-                retrieveArgs: {
-                    fields: ["id", "__str__", "name"],
-                },
             }),
             keepOldPages: false,
         });

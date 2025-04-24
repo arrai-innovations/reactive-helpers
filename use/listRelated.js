@@ -192,9 +192,6 @@ export function useListRelateds(listRelatedArgs) {
  *         someListFilter: toRef(props, "someListFilter"),
  *     },
  *     pkKey: 'id',
- *     retrieveArgs: {
- *         // whatever arguments are required for your configured list function to get items back looking as expected
- *     },
  *     intendToList: false,
  * });
  * listInstanceProps.intendToList = computed(()=> !!props.someListFilter);

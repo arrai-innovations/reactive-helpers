@@ -26,7 +26,6 @@ import { readonly } from "vue";
  * @typedef {object} ListArgs
  * @property {object} crudArgs - The arguments to be passed to the crud functions.
  * @property {string} pkKey - The key name of the primary key.
- * @property {object} retrieveArgs - The arguments to be passed to the retrieve function.
  * @property {object} listArgs - The arguments to be passed for list crud functions.
  * @property {PageCallback} pageCallback - The method to call with new page(s) of data received.
  * @property {Readonly<import('vue').Ref<boolean>>} isCancelled - A ref to a boolean indicating whether the request has
@@ -53,7 +52,6 @@ import { readonly } from "vue";
  * @typedef {object} ListSubscribeArgs
  * @property {object} crudArgs - The arguments to be passed to the crud functions.
  * @property {string} pkKey - The key name of the primary key.
- * @property {object} retrieveArgs - The arguments to be passed to the retrieve function.
  * @property {object} listArgs - The arguments to be passed for list crud functions.
  * @property {SubscriptionEventCallback} subscriptionEventCallback - The method to call when new data is received.
  * @property {Readonly<import('vue').Ref<boolean>>} isCancelled - A ref to a boolean indicating whether the request has

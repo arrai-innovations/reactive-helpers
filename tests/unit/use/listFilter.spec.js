@@ -171,22 +171,22 @@ describe("use/listFilter", () => {
             const listInstanceA = useListInstance({
                 props: {
                     crudArgs: { stream: "test_streamA" },
-                    listArgs: { user: 1 },
-                    pkKey: "pk",
-                    retrieveArgs: {
+                    listArgs: {
+                        user: 1,
                         fields,
                     },
+                    pkKey: "pk",
                 },
                 keepOldPages: false,
             });
             const listInstanceB = useListInstance({
                 props: {
                     crudArgs: { stream: "test_streamB" },
-                    listArgs: { user: 2 },
-                    pkKey: "pk",
-                    retrieveArgs: {
+                    listArgs: {
+                        user: 2,
                         fields,
                     },
+                    pkKey: "pk",
                 },
                 keepOldPages: false,
             });

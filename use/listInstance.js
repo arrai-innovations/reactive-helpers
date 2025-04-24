@@ -43,7 +43,6 @@ export class ListInstanceError extends Error {
  *
  * @typedef {object} ListInstanceProps
  * @property {string} pkKey - The primary key field for the list objects.
- * @property {object} retrieveArgs - The arguments passed to the server.
  * @property {object} listArgs - The arguments passed to the server.
  * @property {object} crudArgs - Implementation specific arguments.
  */
@@ -91,7 +90,6 @@ export class ListInstanceError extends Error {
  * @property {object} crud.args - Arguments for the CRUD functions.
  * @property {Function} [crud.list] - Function to list objects.
  * @property {string} pkKey - The primary key field for the list objects.
- * @property {object} retrieveArgs - Arguments passed to the server for retrieval operations.
  * @property {object} listArgs - Arguments passed to the server for listing operations.
  * @property {ObjectsByPk} objects - The list objects stored by their pks.
  * @property {boolean} running - Indicates if there are ongoing reactive updates.
@@ -176,9 +174,6 @@ export function useListInstances(listInstanceArgs) {
  *     listArgs: {
  *         // whatever arguments are required for your configured list function to get the right list
  *         someListFilter: toRef(props, "someListFilter"),
- *     },
- *     retrieveArgs: {
- *         // whatever arguments are required for your configured list function to get items back looking as expected
  *     },
  * });
  * const listInstance = useListInstance({ props: listInstanceProps });
@@ -277,7 +272,6 @@ export function useListInstance({ props, functions = {}, keepOldPages }) {
             executeAction: defaultListCrud.executeAction,
         }),
         pkKey: refIfReactive(props, "pkKey"),
-        retrieveArgs: refIfReactive(props, "retrieveArgs", {}),
         listArgs: refIfReactive(props, "listArgs", {}),
         /** @type {{[key: string]: ListObject}} */
         objects: /** @type {{[key: string]: ListObject}} */ _objectsProxy,
@@ -383,7 +377,6 @@ export function useListInstance({ props, functions = {}, keepOldPages }) {
         const listPromise = state.crud.list({
             crudArgs: state.crud.args,
             pkKey: state.pkKey,
-            retrieveArgs: state.retrieveArgs,
             listArgs: state.listArgs,
             pageCallback: returnedObject.pageCallback,
             isCancelled: readonly(isCancelled),

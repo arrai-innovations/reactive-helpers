@@ -49,7 +49,6 @@ export class ListError extends Error {
  * @typedef {object} ListRawProps
  * @property {object} listArgs - The arguments to pass to the registered list crud functions, related to the list itself.
  * @property {string} pkKey - The primary key for the list items.
- * @property {object} retrieveArgs - The arguments to pass to the registered list crud functions, related to the items.
  * @property {object} crudArgs - General arguments to pass to the registered list crud functions, often related to endpoints.
  * @property {boolean} intendToList - Indicates whether the list should be fetched immediately.
  * @property {boolean} intendToSubscribe - Indicates whether changes to the list should be subscribed to.
@@ -203,9 +202,6 @@ export const useList = ({
 
     if (!("listArgs" in props)) {
         console.error("listArgs not set, must be true for intendToList or intendToSubscribe to work.");
-    }
-    if (!("retrieveArgs" in props)) {
-        console.error("retrieveArgs not set, must be true for intendToList or intendToSubscribe to work.");
     }
 
     const es = effectScope();

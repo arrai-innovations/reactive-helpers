@@ -70,11 +70,11 @@ The container for your list of objects, providing loading or error status.
 import { setListCrud } from "@arrai-innovations/reactive-helpers";
 
 setListCrud({
-    list: async function listCrudAdaptor({ crudArgs, retrieveArgs, listArgs, pageCallback }) {
+    list: async function listCrudAdaptor({ crudArgs, listArgs, pageCallback }) {
         // todo: your implemenation here.
-        const listOfObjects = await talkToServer(crudArgs, retrieveArgs, listArgs);
+        const listOfObjects = await talkToServer(crudArgs, listArgs);
         pageCallback(listOfObjects);
-        const nextListOfObjects = await talkToServerAgain(crudArgs, retrieveArgs, listArgs);
+        const nextListOfObjects = await talkToServerAgain(crudArgs, listArgs);
         pageCallback(nextListOfObjects);
     },
 });
@@ -91,9 +91,6 @@ const listProps = reactive({
         stream: "contacts",
     },
     pkKey: "id",
-    retrieveArgs: {
-        fields: ["id", "has_name", "lexical_name", "organization", "phone"],
-    },
     listArgs,
 });
 const contacts = useListInstance({
@@ -110,7 +107,7 @@ console.log(contacts.error);
 console.log(contacts.objects);
 // { contacts keyed by 'id' }
 // change list or retrieve args directly
-contacts.state.retrieveArgs.fields.push("message_count");
+contacts.state.listArgs.fields.push("message_count");
 await contacts.list();
 console.log(contacts.objects);
 // { contacts keyed by 'id' with message_count  }
@@ -130,7 +127,7 @@ Adds functionality to a list instance to receive updates from the server.
 import { setListCrud } from "@arrai-innovations/reactive-helpers";
 setListCrud({
     ..., // in addition to the list crud adaptor above
-    subscribe: function subscribeCrudAdaptor({ crudArgs, retrieveArgs, listArgs, eventCallback }) {
+    subscribe: function subscribeCrudAdaptor({ crudArgs, listArgs, eventCallback }) {
         // todo: your implemenation here.
         const subscription = talkToServer(function (data, action) {
             eventCallback(data, action);
@@ -158,11 +155,9 @@ const listProps = reactive({
         unsubscribeAction: "unsubscribe_contacts",
     },
     pkKey: "id",
-    retrieveArgs: {
-        fields: ["id", "has_name", "lexical_name", "organization", "phone"],
-    },
     listArgs: {
         has_organization: true,
+        fields: ["id", "has_name", "lexical_name", "organization", "phone"],
     },
 });
 const contacts = useListInstance({
@@ -179,7 +174,7 @@ contactsSubscription.subscribe();
 // stop getting updates.
 contactsSubscription.unsubscribe();
 // re-retreive the list of existing contacts including another field.
-contacts.retrieveArgs.fields.push("message_count");
+contacts.listArgs.fields.push("message_count");
 // re-retreive the list of all existing contacts.
 delete contacts.listArgs.has_organization;
 ```
@@ -197,10 +192,8 @@ const listProps = reactive({
         subscribeAction: "subscribe_contacts",
         unsubscribeAction: "unsubscribe_contacts",
     },
-    retrieveArgs: {
-        fields: ["id", "has_name", "lexical_name", "organization", "phone"],
-    },
     listArgs: {
+        fields: ["id", "has_name", "lexical_name", "organization", "phone"],
         has_organization: true,
     },
 });
@@ -221,7 +214,7 @@ import { reactive, toRef } from "vue";
 
 const organizationsProps = reactive({
     pkKey: "id",
-    retrieveArgs: {
+    listArgs: {
         fields: ["id", "name"],
     },
 });
@@ -230,7 +223,7 @@ const organizations = useListInstance({
 });
 const contactsProps = reactive({
     pkKey: "id",
-    retrieveArgs: {
+    listArgs: {
         fields: ["id", "lexical_name", "organization"],
     },
 });
@@ -306,7 +299,7 @@ import { nextTick, reactive } from "vue";
 
 const contactsProps = reactive({
     pkKey: "id",
-    retrieveArgs: {
+    listArgs: {
         fields: ["id", "has_name", "has_billing", "lexical_name", "organization"],
     },
 });
@@ -361,7 +354,7 @@ import { reactive, ref } from "vue";
 
 const contactsProps = reactive({
     pkKey: "id",
-    retrieveArgs: {
+    listArgs: {
         fields: ["id", "has_name", "has_billing", "lexical_name", "organization"],
     },
 });
@@ -406,7 +399,7 @@ import { reactive } from "vue";
 
 const contactsProps = reactive({
     pkKey: "id",
-    retrieveArgs: {
+    listArgs: {
         fields: ["id", "has_name", "has_billing", "lexical_name", "organization"],
     },
 });
@@ -451,7 +444,7 @@ import { reactive } from "vue";
 
 const contactsProps = reactive({
     pkKey: "id",
-    retrieveArgs: {
+    listArgs: {
         fields: ["id", "has_name", "lexical_name", "organization"],
     },
 });
@@ -496,11 +489,9 @@ const managedListProps = reactive({
         unsubscribeAction: "unsubscribe_contacts",
     },
     pkKey: "id",
-    retrieveArgs: {
-        fields: ["id", "has_name", "lexical_name", "organization", "phone"],
-    },
     listArgs: {
         has_organization: true,
+        fields: ["id", "has_name", "lexical_name", "organization", "phone"],
     },
     relatedObjectsRules: {
         organization: {

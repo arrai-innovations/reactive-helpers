@@ -141,10 +141,7 @@ describe("use/listSearch", () => {
                 props: {
                     crudArgs: { stream: "test_streamA" },
                     pkKey: "id",
-                    listArgs: { user: 1 },
-                    retrieveArgs: {
-                        fields,
-                    },
+                    listArgs: { user: 1, fields },
                 },
                 keepOldPages: false,
             });
@@ -152,10 +149,7 @@ describe("use/listSearch", () => {
                 props: {
                     crudArgs: { stream: "test_streamB" },
                     pkKey: "id",
-                    listArgs: { user: 2 },
-                    retrieveArgs: {
-                        fields,
-                    },
+                    listArgs: { user: 2, fields },
                 },
                 keepOldPages: false,
             });

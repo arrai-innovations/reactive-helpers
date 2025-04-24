@@ -1,7 +1,6 @@
 export const listInstanceStateKeys = [
     "crud",
     "pkKey",
-    "retrieveArgs",
     "listArgs",
     "objects",
     "loading",

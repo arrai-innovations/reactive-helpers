@@ -130,9 +130,6 @@ export function useListSubscriptions(listSubscriptionArgs) {
  *         // whatever arguments are required for your configured list function to get the right list
  *         someListFilter: toRef(props, "someListFilter"),
  *     },
- *     retrieveArgs: {
- *         // whatever arguments are required for your configured list function to get items back looking as expected
- *     },
  *     intendToList: false,
  *     intendToSubscribe: false,
  * });
@@ -184,9 +181,6 @@ export function useListSubscription({ listInstance, props, functions, keepOldPag
     if (!listInstance) {
         if (!("listArgs" in props)) {
             console.error("listArgs not set, must be true for intendToList or intendToSubscribe to work.");
-        }
-        if (!("retrieveArgs" in props)) {
-            console.error("retrieveArgs not set, must be true for intendToList or intendToSubscribe to work.");
         }
         listInstance = useListInstance({ props, functions, keepOldPages });
     } else {
@@ -385,7 +379,6 @@ export function useListSubscription({ listInstance, props, functions, keepOldPag
                     crudArgs: cloneDeep(parentState.crud.args),
                     pkKey: parentState.pkKey,
                     listArgs: cloneDeep(parentState.listArgs),
-                    retrieveArgs: cloneDeep(parentState.retrieveArgs),
                     subscriptionEventCallback,
                 });
                 // catching makes a new promise, we need to make sure the cancel method lives on.
@@ -399,7 +392,6 @@ export function useListSubscription({ listInstance, props, functions, keepOldPag
             watchArguments: reactive({
                 intendToSubscribe: toRef(state, "intendToSubscribe"),
                 listArgs: toRef(parentState, "listArgs"),
-                retrieveArgs: toRef(parentState, "retrieveArgs"),
             }),
             clearActiveOnResolved: false,
         });
@@ -417,7 +409,6 @@ export function useListSubscription({ listInstance, props, functions, keepOldPag
             watchArguments: reactive({
                 intendToList: toRef(state, "intendToList"),
                 listArgs: toRef(parentState, "listArgs"),
-                retrieveArgs: toRef(parentState, "retrieveArgs"),
             }),
             // delay triggering a list until the last list has finished/cancelled
             // cancel can still be triggered
