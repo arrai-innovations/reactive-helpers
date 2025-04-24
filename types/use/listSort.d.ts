@@ -108,10 +108,9 @@ export function useListSorts(listSortArgs: {
  * import { reactive, computed } from 'vue';
  * import { useListSort, useListInstance } from '@arrai-innovations/reactive-helpers';
  * const listInstanceProps = reactive({
- *     crudArgs: {},
- *     listArgs: {},
+ *     target: {},
+ *     params: {},
  *     pkKey: 'id',
- *     retrieveArgs: {},
  *     intendToList: true,
  * });
  * const listInstance = useListInstance(listInstanceProps);

@@ -1,16 +1,16 @@
 /**
- * Assigns the default CRUD functions to the target object.
+ * Assigns the default CRUD handlers to the target object.
  *
  * @param {object} target - The reactive object to assign to.
  * @param {object} defaultCrud - The default CRUD definition (usually created by `createDefaultCrud`).
  * @param {object} [options] - The options object.
  * @param {object} [options.props] - The props object.
- * @param {object} [options.functions] - The functions to assign.
- * @param {Set<string>} [options.validKeys] - The valid keys for the functions.
+ * @param {object} [options.handlers] - The functions to assign.
+ * @param {Set<string>} [options.validKeys] - The valid keys for the handlers.
  */
-export function assignCrud(target: object, defaultCrud: object, { props, functions, validKeys }?: {
+export function assignCrud(target: object, defaultCrud: object, { props, handlers, validKeys }?: {
     props?: object;
-    functions?: object;
+    handlers?: object;
     validKeys?: Set<string>;
 }): void;
 export function missingMethod(name: string): (...args: any[]) => import("../utils/cancellablePromise.js").MaybeCancellablePromise<any>;

@@ -1,37 +1,37 @@
 /**
- * The default object crud functions.
+ * The default object crud handlers.
  *
- * @type {Readonly<ObjectCrudFunctions>}
+ * @type {Readonly<ObjectCrudHandlers>}
  */
-export const defaultObjectCrud: Readonly<ObjectCrudFunctions>;
-export function setObjectCrud({ args, ...rest }: ObjectCrudArgs): void;
-export function getObjectCrud(target: import("vue").UnwrapNestedRefs<ObjectCrudArgsProperties>, options: {
-    props?: import("vue").UnwrapNestedRefs<ObjectCrudArgsOption>;
-    functions?: ObjectCrudFunctions;
+export const defaultObjectCrud: Readonly<ObjectCrudHandlers>;
+export function setObjectCrud({ args, ...rest }: ObjectTarget): void;
+export function getObjectCrud(target: import("vue").UnwrapNestedRefs<ObjectTargetProperties>, options: {
+    props?: import("vue").UnwrapNestedRefs<ObjectTargetOption>;
+    handlers?: ObjectCrudHandlers;
 }): void;
-export type ObjectCrudArgsArgs = {
+export type ObjectTargetArgs = {
     [key: string]: any;
 };
 /**
- * Defines the CRUD-related functions and additional utilities provided by the object instance.
+ * Defines the CRUD-related handlers and additional utilities provided by the object instance.
  */
-export type ObjectCrudArgsProperties = {
+export type ObjectTargetProperties = {
     /**
-     * - The arguments to be passed to the crud functions.
+     * - The arguments to be passed to the crud handlers.
      */
-    args: ObjectCrudArgsArgs;
+    args: ObjectTargetArgs;
 };
-export type ObjectCrudArgsOption = {
+export type ObjectTargetOption = {
     /**
-     * - The arguments to be passed to the crud functions.
+     * - The arguments to be passed to the crud handlers.
      */
-    crudArgs?: ObjectCrudArgsArgs;
+    target?: ObjectTargetArgs;
 };
 export type CreateArgs = {
     /**
-     * - The arguments to be passed to the crud functions.
+     * - The arguments to be passed to the crud handlers.
      */
-    crudArgs: {
+    target: {
         [key: string]: any;
     };
     /**
@@ -43,7 +43,7 @@ export type CreateArgs = {
     /**
      * - The arguments to be passed to the retrieve function.
      */
-    retrieveArgs: {
+    params: {
         [key: string]: any;
     };
     /**
@@ -57,9 +57,9 @@ export type CreateArgs = {
 };
 export type RetrieveArgs = {
     /**
-     * - The arguments to be passed to the crud functions.
+     * - The arguments to be passed to the crud handlers.
      */
-    crudArgs: {
+    target: {
         [key: string]: any;
     };
     /**
@@ -73,7 +73,7 @@ export type RetrieveArgs = {
     /**
      * - The arguments to be passed to the retrieve function.
      */
-    retrieveArgs: {
+    params: {
         [key: string]: any;
     };
     /**
@@ -83,9 +83,9 @@ export type RetrieveArgs = {
 };
 export type UpdateArgs = {
     /**
-     * - The arguments to be passed to the crud functions.
+     * - The arguments to be passed to the crud handlers.
      */
-    crudArgs: {
+    target: {
         [key: string]: any;
     };
     /**
@@ -95,7 +95,7 @@ export type UpdateArgs = {
     /**
      * - The arguments to be passed to the retrieve function.
      */
-    retrieveArgs: {
+    params: {
         [key: string]: any;
     };
     /**
@@ -109,9 +109,9 @@ export type UpdateArgs = {
 };
 export type DeleteArgs = {
     /**
-     * - The arguments to be passed to the crud functions.
+     * - The arguments to be passed to the crud handlers.
      */
-    crudArgs: {
+    target: {
         [key: string]: any;
     };
     /**
@@ -129,9 +129,9 @@ export type DeleteArgs = {
 };
 export type PartialArgs = {
     /**
-     * - The arguments to be passed to the crud functions.
+     * - The arguments to be passed to the crud handlers.
      */
-    crudArgs: {
+    target: {
         [key: string]: any;
     };
     /**
@@ -151,7 +151,7 @@ export type PartialArgs = {
     /**
      * - The arguments to be passed to the retrieve function.
      */
-    retrieveArgs: {
+    params: {
         [key: string]: any;
     };
     /**
@@ -162,9 +162,9 @@ export type PartialArgs = {
 export type CrudSubscribeCallback = (data: import("../use/objectInstance.js").ExistingCrudObject, action: string) => any;
 export type ObjectSubscribeArgs = {
     /**
-     * - The arguments to be passed to the crud functions.
+     * - The arguments to be passed to the crud handlers.
      */
-    crudArgs: {
+    target: {
         [key: string]: any;
     };
     /**
@@ -178,7 +178,7 @@ export type ObjectSubscribeArgs = {
     /**
      * - The arguments to be passed to the retrieve function.
      */
-    retrieveArgs: {
+    params: {
         [key: string]: any;
     };
     /**
@@ -198,9 +198,9 @@ export type CrudPatchFn = (args: PartialArgs) => CrudResponse;
 export type CrudDeleteFn = (args: DeleteArgs) => CrudResponse;
 export type CrudObjectSubscribeFn = (args: ObjectSubscribeArgs) => import("../utils/cancellablePromise.js").CancellablePromise<void>;
 /**
- * Defines the CRUD-related functions and additional utilities provided by the object instance.
+ * Defines the CRUD-related handlers and additional utilities provided by the object instance.
  */
-export type ObjectCrudFunctions = {
+export type ObjectCrudHandlers = {
     /**
      * - A function to be used instead of the default crud create function.
      */
@@ -229,5 +229,5 @@ export type ObjectCrudFunctions = {
 /**
  * The CRUD arguments.
  */
-export type ObjectCrudArgs = ObjectCrudArgsProperties & ObjectCrudFunctions;
+export type ObjectTarget = ObjectTargetProperties & ObjectCrudHandlers;
 //# sourceMappingURL=objectCrud.d.ts.map

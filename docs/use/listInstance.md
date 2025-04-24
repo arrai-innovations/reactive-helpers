@@ -203,9 +203,9 @@ Updates an object in the list.
 
 #### Properties
 
-##### functions?
+##### handlers?
 
-> `optional` **functions**: `object`
+> `optional` **handlers**: `object`
 
 Default implementation are used as set by `setListCrud`.
 
@@ -249,15 +249,9 @@ If true, pages will not be cleared when defaultPageCallback is called.
 
 The props for the list instance.
 
-###### crudArgs
+###### params
 
-> **crudArgs**: `any`
-
-Implementation specific arguments.
-
-###### listArgs
-
-> **listArgs**: `any`
+> **params**: `any`
 
 The arguments passed to the server.
 
@@ -267,11 +261,11 @@ The arguments passed to the server.
 
 The primary key field for the list objects.
 
-###### retrieveArgs
+###### target
 
-> **retrieveArgs**: `any`
+> **target**: `any`
 
-The arguments passed to the server.
+Implementation specific arguments.
 
 ***
 
@@ -279,15 +273,9 @@ The arguments passed to the server.
 
 #### Properties
 
-##### crudArgs
+##### params
 
-> **crudArgs**: `any`
-
-Implementation specific arguments.
-
-##### listArgs
-
-> **listArgs**: `any`
+> **params**: `any`
 
 The arguments passed to the server.
 
@@ -297,11 +285,11 @@ The arguments passed to the server.
 
 The primary key field for the list objects.
 
-##### retrieveArgs
+##### target
 
-> **retrieveArgs**: `any`
+> **target**: `any`
 
-The arguments passed to the server.
+Implementation specific arguments.
 
 ***
 
@@ -313,13 +301,13 @@ The arguments passed to the server.
 
 > **crud**: `object`
 
-CRUD functions and their configurations for the list.
+CRUD handlers and their configurations for the list.
 
 ###### args
 
 > **args**: `any`
 
-Arguments for the CRUD functions.
+Arguments for the CRUD handlers.
 
 ###### list?
 
@@ -338,12 +326,6 @@ The last error encountered.
 > **errored**: `Readonly`\<`Ref`\<`boolean`, `boolean`\>\>
 
 Indicates if an error occurred during the last operation.
-
-##### listArgs
-
-> **listArgs**: `any`
-
-Arguments passed to the server for listing operations.
 
 ##### loading?
 
@@ -369,17 +351,17 @@ The objects in the order specified by the list.
 
 The order of objects in the list.
 
+##### params
+
+> **params**: `any`
+
+Arguments passed to the server for listing operations.
+
 ##### pkKey
 
 > **pkKey**: `string`
 
 The primary key field for the list objects.
-
-##### retrieveArgs
-
-> **retrieveArgs**: `any`
-
-Arguments passed to the server for retrieval operations.
 
 ##### running
 
@@ -503,15 +485,12 @@ const props = defineProps({
 });
 
 const listInstanceProps = reactive({
-    crudArgs: {
+    target: {
         // whatever arguments are required for your configured list crud function to get the right endpoint
     },
-    listArgs: {
+    params: {
         // whatever arguments are required for your configured list function to get the right list
         someListFilter: toRef(props, "someListFilter"),
-    },
-    retrieveArgs: {
-        // whatever arguments are required for your configured list function to get items back looking as expected
     },
 });
 const listInstance = useListInstance({ props: listInstanceProps });

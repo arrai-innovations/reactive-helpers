@@ -96,11 +96,11 @@ Represents the final reactive state in the list processing chain.
 
 Indicates whether the list should be cleared when the list intent is triggered.
 
-##### functions
+##### handlers
 
-> **functions**: [`ListCrudFunctions`](../config/listCrud.md#listcrudfunctions)
+> **handlers**: [`ListCrudHandlers`](../config/listCrud.md#listcrudhandlers)
 
-Additional functions to be included in the list manager.
+Additional handlers to be included in the list manager.
 
 ##### keepOldPages
 
@@ -156,12 +156,6 @@ Function or rule to determine if an item should be included based on inclusion c
 
 Defines rules for dynamically calculating properties of list items.
 
-##### crudArgs
-
-> **crudArgs**: `any`
-
-General arguments to pass to the registered list crud functions, often related to endpoints.
-
 ##### customDocumentOptions
 
 > **customDocumentOptions**: `any`
@@ -192,17 +186,17 @@ Indicates whether the list should be fetched immediately.
 
 Indicates whether changes to the list should be subscribed to.
 
-##### listArgs
-
-> **listArgs**: `any`
-
-The arguments to pass to the registered list crud functions, related to the list itself.
-
 ##### orderByRules
 
 > **orderByRules**: [`OrderByRule`](listSort.md#orderbyrule)[]
 
 Sorting rules that define the order of list items.
+
+##### params
+
+> **params**: `any`
+
+The arguments to pass to the registered list crud handlers, related to the list itself.
 
 ##### pkKey
 
@@ -220,11 +214,11 @@ Defines rules for associating related objects with list items.
 
 \[`rule`: `string`\]: [`ListRelatedRule`](listRelated.md#listrelatedrule)
 
-##### retrieveArgs
+##### target
 
-> **retrieveArgs**: `any`
+> **target**: `any`
 
-The arguments to pass to the registered list crud functions, related to the items.
+General arguments to pass to the registered list crud handlers, often related to endpoints.
 
 ##### textSearchRules
 

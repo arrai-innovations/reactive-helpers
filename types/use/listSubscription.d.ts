@@ -79,15 +79,12 @@ export function useListSubscriptions(listSubscriptionArgs: {
  * });
  *
  * const listSubscriptionProps = reactive({
- *     crudArgs: {
+ *     target: {
  *         // whatever arguments are required for your configured list crud function to get the right endpoint
  *     },
- *     listArgs: {
+ *     params: {
  *         // whatever arguments are required for your configured list function to get the right list
  *         someListFilter: toRef(props, "someListFilter"),
- *     },
- *     retrieveArgs: {
- *         // whatever arguments are required for your configured list function to get items back looking as expected
  *     },
  *     intendToList: false,
  *     intendToSubscribe: false,
@@ -112,7 +109,7 @@ export function useListSubscriptions(listSubscriptionArgs: {
  * passed. Also thrown if clearListOnListIntentTriggered is not passed or if neither listInstance
  * nor keepOldPages are passed.
  */
-export function useListSubscription({ listInstance, props, functions, keepOldPages, clearListOnListIntentTriggered }: ListSubscriptionOptions): ListSubscription;
+export function useListSubscription({ listInstance, props, handlers, keepOldPages, clearListOnListIntentTriggered }: ListSubscriptionOptions): ListSubscription;
 /**
  * A composable function for managing a list subscription.
  *

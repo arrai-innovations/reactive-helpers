@@ -24,13 +24,13 @@ The state.
 
 > **crud**: `object`
 
-CRUD functions and their configurations for the list.
+CRUD handlers and their configurations for the list.
 
 ###### crud.args
 
 > **args**: `any`
 
-Arguments for the CRUD functions.
+Arguments for the CRUD handlers.
 
 ###### crud.list?
 
@@ -49,12 +49,6 @@ The last error encountered.
 > **errored**: `boolean`
 
 Indicates if an error occurred during the last operation.
-
-###### listArgs
-
-> **listArgs**: `any`
-
-Arguments passed to the server for listing operations.
 
 ###### loading?
 
@@ -80,17 +74,17 @@ The objects in the order specified by the list.
 
 The order of objects in the list.
 
+###### params
+
+> **params**: `any`
+
+Arguments passed to the server for listing operations.
+
 ###### pkKey
 
 > **pkKey**: `string`
 
 The primary key field for the list objects.
-
-###### retrieveArgs
-
-> **retrieveArgs**: `any`
-
-Arguments passed to the server for retrieval operations.
 
 ###### running
 

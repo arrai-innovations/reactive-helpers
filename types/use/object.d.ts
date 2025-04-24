@@ -3,7 +3,7 @@ export function useObjects(objectArgs: {
 }): {
     [key: string]: ObjectManager;
 };
-export function useObject({ props, functions }: ObjectManagerOptions): ObjectManager;
+export function useObject({ props, handlers }: ObjectManagerOptions): ObjectManager;
 /**
  * Defines the raw reactive properties that can be passed to an object instance.
  */
@@ -13,7 +13,7 @@ export type ObjectManagerRawProps = (import("./objectInstance.js").ObjectInstanc
  */
 export type ObjectManagerProps = import("vue").UnwrapNestedRefs<ObjectManagerRawProps>;
 /**
- * Defines the non-reactive functions that can be passed to an object instance.
+ * Defines the non-reactive handlers that can be passed to an object instance.
  */
 export type ObjectManagerOptions = {
     /**
@@ -21,9 +21,9 @@ export type ObjectManagerOptions = {
      */
     props: ObjectManagerProps;
     /**
-     * - The non-reactive functions to be passed to the object instance.
+     * - The non-reactive handlers to be passed to the object instance.
      */
-    functions: import("../config/objectCrud.js").ObjectCrudFunctions;
+    handlers: import("../config/objectCrud.js").ObjectCrudHandlers;
 };
 /**
  * Defines the raw state of the object manager.

@@ -24,27 +24,23 @@ export function useLists(listOptions: {
 }): {
     [key: string]: ListManager;
 };
-export function useList({ props, functions, paged, keepOldPages, clearListOnListIntentTriggered, searchThrottle, sortThrottleWait, searchShowAllWhenEmpty, }: ListOptions): ListManager;
+export function useList({ props, handlers, paged, keepOldPages, clearListOnListIntentTriggered, searchThrottle, sortThrottleWait, searchShowAllWhenEmpty, }: ListOptions): ListManager;
 /**
  * Defines properties for configuring the list management system.
  */
 export type ListRawProps = {
     /**
-     * - The arguments to pass to the registered list crud functions, related to the list itself.
+     * - The arguments to pass to the registered list crud handlers, related to the list itself.
      */
-    listArgs: object;
+    params: object;
     /**
      * - The primary key for the list items.
      */
     pkKey: string;
     /**
-     * - The arguments to pass to the registered list crud functions, related to the items.
+     * - General arguments to pass to the registered list crud handlers, often related to endpoints.
      */
-    retrieveArgs: object;
-    /**
-     * - General arguments to pass to the registered list crud functions, often related to endpoints.
-     */
-    crudArgs: object;
+    target: object;
     /**
      * - Indicates whether the list should be fetched immediately.
      */
@@ -96,9 +92,9 @@ export type ListOptions = {
      */
     props: ListRawProps;
     /**
-     * - Additional functions to be included in the list manager.
+     * - Additional handlers to be included in the list manager.
      */
-    functions: import("../config/listCrud.js").ListCrudFunctions;
+    handlers: import("../config/listCrud.js").ListCrudHandlers;
     /**
      * - Indicates whether the list should be paginated.
      */

@@ -139,17 +139,17 @@ describe("use/listSearch", () => {
             const fields = ["id", "__str__", "name"];
             const listInstanceA = useListInstance({
                 props: {
-                    crudArgs: { stream: "test_streamA" },
+                    target: { stream: "test_streamA" },
                     pkKey: "id",
-                    listArgs: { user: 1, fields },
+                    params: { user: 1, fields },
                 },
                 keepOldPages: false,
             });
             const listInstanceB = useListInstance({
                 props: {
-                    crudArgs: { stream: "test_streamB" },
+                    target: { stream: "test_streamB" },
                     pkKey: "id",
-                    listArgs: { user: 2, fields },
+                    params: { user: 2, fields },
                 },
                 keepOldPages: false,
             });

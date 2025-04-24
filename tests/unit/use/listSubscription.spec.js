@@ -66,14 +66,14 @@ describe("use/listSubscription.spec.js", function () {
     const fields = ["id", "__str__", "name"];
     describe("lifecycle", function () {
         it("success", async function () {
-            const listArgs = reactive({
+            const params = reactive({
                 user: 1,
                 fields,
             });
             const listSubscription = useListSubscription({
                 props: {
                     pkKey: "id",
-                    listArgs,
+                    params,
                 },
                 keepOldPages: false,
                 clearListOnListIntentTriggered: false,
@@ -82,9 +82,9 @@ describe("use/listSubscription.spec.js", function () {
             await nextTick();
             await flushPromises();
             expect(crudSubscribe).toHaveBeenCalledWith({
-                crudArgs: { stream: "test_stream" },
+                target: { stream: "test_stream" },
                 pkKey: "id",
-                listArgs: { user: 1, fields },
+                params: { user: 1, fields },
                 subscriptionEventCallback: expect.any(Function),
             });
             expect(crudSubscribe).toHaveBeenCalledTimes(1);
@@ -148,12 +148,12 @@ describe("use/listSubscription.spec.js", function () {
             expect(listSubscription.state.subscribed).toBe(false);
         });
         it("missing data", async function () {
-            const listArgs = reactive({
+            const params = reactive({
                 user: 1,
                 fields,
             });
             const listSubscription = useListSubscription({
-                props: { pkKey: "id", listArgs },
+                props: { pkKey: "id", params },
                 keepOldPages: false,
                 clearListOnListIntentTriggered: false,
             });
@@ -161,9 +161,9 @@ describe("use/listSubscription.spec.js", function () {
             crudSubscribeResolvable[0].resolve();
             await poll(() => listSubscription.state.subscribed);
             expect(crudSubscribe).toHaveBeenCalledWith({
-                crudArgs: { stream: "test_stream" },
+                target: { stream: "test_stream" },
                 pkKey: "id",
-                listArgs: { user: 1, fields },
+                params: { user: 1, fields },
                 subscriptionEventCallback: expect.any(Function),
             });
             expect(crudSubscribe).toHaveBeenCalledTimes(1);
@@ -292,14 +292,14 @@ describe("use/listSubscription.spec.js", function () {
             expect(listSubscription.state.subscribed).toBe(false);
         });
         it("unsubscribe false", async function () {
-            const listArgs = reactive({
+            const params = reactive({
                 user: 1,
                 fields,
             });
             const listSubscription = useListSubscription({
                 props: {
                     pkKey: "id",
-                    listArgs,
+                    params,
                 },
                 keepOldPages: false,
                 clearListOnListIntentTriggered: false,
@@ -309,9 +309,9 @@ describe("use/listSubscription.spec.js", function () {
             crudSubscribeResolvable[0].resolve();
             await poll(() => listSubscription.state.subscribed);
             expect(crudSubscribe).toHaveBeenCalledWith({
-                crudArgs: { stream: "test_stream" },
+                target: { stream: "test_stream" },
                 pkKey: "id",
-                listArgs: { user: 1, fields },
+                params: { user: 1, fields },
                 subscriptionEventCallback: expect.any(Function),
             });
             expect(crudSubscribe).toHaveBeenCalledTimes(1);
@@ -327,13 +327,13 @@ describe("use/listSubscription.spec.js", function () {
         });
         it("just unsubscribe", async function () {
             crudSubscribeResolvable[0].promise.cancel.mockImplementation(() => Promise.resolve(false));
-            const listArgs = reactive({
+            const params = reactive({
                 user: 1,
                 fields,
             });
             const listSubscriptionProps = reactive({
                 pkKey: "id",
-                listArgs,
+                params,
             });
             const listSubscription = useListSubscription({
                 props: listSubscriptionProps,
@@ -348,14 +348,14 @@ describe("use/listSubscription.spec.js", function () {
         });
         it("double subscribe", async function () {
             crudSubscribeResolvable[0].promise.cancel.mockImplementation(() => Promise.resolve(true));
-            const listArgs = reactive({
+            const params = reactive({
                 user: 1,
                 fields,
             });
             const listSubscription = useListSubscription({
                 props: {
                     pkKey: "id",
-                    listArgs,
+                    params,
                 },
                 keepOldPages: false,
                 clearListOnListIntentTriggered: false,
@@ -365,9 +365,9 @@ describe("use/listSubscription.spec.js", function () {
             await nextTick();
             await flushPromises();
             expect(crudSubscribe).toHaveBeenCalledWith({
-                crudArgs: { stream: "test_stream" },
+                target: { stream: "test_stream" },
                 pkKey: "id",
-                listArgs: { user: 1, fields },
+                params: { user: 1, fields },
                 subscriptionEventCallback: expect.any(Function),
             });
             expect(crudSubscribe).toHaveBeenCalledTimes(1);
@@ -385,12 +385,12 @@ describe("use/listSubscription.spec.js", function () {
         });
         it("manual list instance", async function () {
             crudSubscribeResolvable[0].promise.cancel.mockImplementation(() => Promise.resolve(true));
-            const listArgs = reactive({
+            const params = reactive({
                 user: 1,
                 fields,
             });
             const listInstance = useListInstance({
-                props: { pkKey: "id", listArgs },
+                props: { pkKey: "id", params },
                 keepOldPages: false,
             });
             const listSubscription = useListSubscription({
@@ -402,9 +402,9 @@ describe("use/listSubscription.spec.js", function () {
             await nextTick();
             await flushPromises();
             expect(crudSubscribe).toHaveBeenCalledWith({
-                crudArgs: { stream: "test_stream" },
+                target: { stream: "test_stream" },
                 pkKey: "id",
-                listArgs: { user: 1, fields },
+                params: { user: 1, fields },
                 subscriptionEventCallback: expect.any(Function),
             });
             expect(crudSubscribe).toHaveBeenCalledTimes(1);
@@ -455,16 +455,16 @@ describe("use/listSubscription.spec.js", function () {
             expect(returnValue).toBe(true);
             expect(listSubscription.state.subscribed).toBe(false);
         });
-        it("subscribe resubscribes when listArgs change", async function () {
+        it("subscribe resubscribes when params change", async function () {
             crudSubscribeResolvable[0].promise.cancel.mockImplementation(() => Promise.resolve(true));
-            const listArgs = reactive({
+            const params = reactive({
                 user: 1,
                 fields,
             });
             const listSubscription = useListSubscription({
                 props: reactive({
                     pkKey: "id",
-                    listArgs,
+                    params,
                 }),
                 keepOldPages: false,
                 clearListOnListIntentTriggered: false,
@@ -472,9 +472,9 @@ describe("use/listSubscription.spec.js", function () {
             listSubscription.subscribe();
             await poll(() => listSubscription.state.subscribed);
             expect(crudSubscribe).toHaveBeenCalledWith({
-                crudArgs: { stream: "test_stream" },
+                target: { stream: "test_stream" },
                 pkKey: "id",
-                listArgs: { user: 1, fields },
+                params: { user: 1, fields },
                 subscriptionEventCallback: expect.any(Function),
             });
             expect(crudSubscribe).toHaveBeenCalledTimes(1);
@@ -484,8 +484,8 @@ describe("use/listSubscription.spec.js", function () {
             await crudSubscribeResolvable[0].resolve();
             await crudListResolvable[0].resolve();
             await poll(() => listSubscription.state.subscribed);
-            listArgs.user = 2;
-            listArgs.fields = ["name"];
+            params.user = 2;
+            params.fields = ["name"];
             await nextTick();
             await poll(() => crudSubscribeResolvable[0].promise.cancel.mock.calls.length === 1);
             await crudSubscribeResolvable[0].cancel.resolve(true);
@@ -494,8 +494,8 @@ describe("use/listSubscription.spec.js", function () {
             await poll(() => crudSubscribeResolvable.length === 2);
             await crudSubscribeResolvable[1].resolve();
             expect(crudSubscribe).toHaveBeenCalledWith({
-                crudArgs: { stream: "test_stream" },
-                listArgs: { user: 2, fields: ["name"] },
+                target: { stream: "test_stream" },
+                params: { user: 2, fields: ["name"] },
                 pkKey: "id",
                 subscriptionEventCallback: expect.any(Function),
             });
@@ -519,32 +519,32 @@ describe("use/listSubscription.spec.js", function () {
     describe("useListSubscription", function () {
         it("throw error when missing list instance and props", async function () {
             expect(() => useListSubscription({})).toThrow(
-                "useListSubscription should be passed listInstance or props and functions."
+                "useListSubscription should be passed listInstance or props and handlers."
             );
         });
         it("throw error when both listInstance and props passed in", async function () {
             crudSubscribeResolvable[0].promise.cancel.mockImplementation(() => Promise.resolve(true));
-            const listArgs = reactive({
+            const params = reactive({
                 user: 1,
                 fields,
             });
             const listInstance = useListInstance({
-                props: { pkKey: "id", listArgs },
+                props: { pkKey: "id", params },
                 keepOldPages: false,
             });
-            const props = { pkKey: "id", listArgs };
+            const props = { pkKey: "id", params };
             expect(() => useListSubscription({ listInstance, props })).toThrow(
-                "useListSubscription should be passed listInstance or props and functions, not both."
+                "useListSubscription should be passed listInstance or props and handlers, not both."
             );
         });
         it("throw error when missing clearListOnListIntentTriggered", async function () {
             crudSubscribeResolvable[0].promise.cancel.mockImplementation(() => Promise.resolve(true));
-            const listArgs = reactive({
+            const params = reactive({
                 user: 1,
                 fields,
             });
             const listInstance = useListInstance({
-                props: { pkKey: "id", listArgs },
+                props: { pkKey: "id", params },
                 keepOldPages: false,
             });
             expect(() => useListSubscription({ listInstance })).toThrow(
@@ -553,11 +553,11 @@ describe("use/listSubscription.spec.js", function () {
         });
         it("throw error when missing keepOldPages and instance", async function () {
             crudSubscribeResolvable[0].promise.cancel.mockImplementation(() => Promise.resolve(true));
-            const listArgs = reactive({
+            const params = reactive({
                 user: 1,
                 fields,
             });
-            const props = { pkKey: "id", listArgs, keepOldPages: false };
+            const props = { pkKey: "id", params, keepOldPages: false };
             expect(() => useListSubscription({ props, clearListOnListIntentTriggered: false })).toThrow(
                 "useListSubscription should be passed listInstance or keepOldPages."
             );
@@ -566,18 +566,18 @@ describe("use/listSubscription.spec.js", function () {
     it("useListSubscriptions", async function () {
         const listSubscriptionA = useListSubscription({
             props: {
-                crudArgs: { stream: "test_streamA" },
+                target: { stream: "test_streamA" },
                 pkKey: "id",
-                listArgs: { user: 1, fields },
+                params: { user: 1, fields },
             },
             keepOldPages: false,
             clearListOnListIntentTriggered: false,
         });
         const listSubscriptionB = useListSubscription({
             props: {
-                crudArgs: { stream: "test_streamB" },
+                target: { stream: "test_streamB" },
                 pkKey: "id",
-                listArgs: { user: 2, fields },
+                params: { user: 2, fields },
             },
             keepOldPages: false,
             clearListOnListIntentTriggered: false,
@@ -585,18 +585,18 @@ describe("use/listSubscription.spec.js", function () {
         const listSubscription = useListSubscriptions({
             A: {
                 props: {
-                    crudArgs: { stream: "test_streamA" },
+                    target: { stream: "test_streamA" },
                     pkKey: "id",
-                    listArgs: { user: 1, fields },
+                    params: { user: 1, fields },
                 },
                 keepOldPages: false,
                 clearListOnListIntentTriggered: false,
             },
             B: {
                 props: {
-                    crudArgs: { stream: "test_streamB" },
+                    target: { stream: "test_streamB" },
                     pkKey: "id",
-                    listArgs: { user: 2, fields },
+                    params: { user: 2, fields },
                 },
                 keepOldPages: false,
                 clearListOnListIntentTriggered: false,
@@ -608,17 +608,17 @@ describe("use/listSubscription.spec.js", function () {
     it("useListSubscriptions & useListInstances", async function () {
         const listInstanceA = useListInstance({
             props: {
-                crudArgs: { stream: "test_streamA" },
+                target: { stream: "test_streamA" },
                 pkKey: "id",
-                listArgs: { user: 1, fields },
+                params: { user: 1, fields },
             },
             keepOldPages: false,
         });
         const listInstanceB = useListInstance({
             props: {
-                crudArgs: { stream: "test_streamB" },
+                target: { stream: "test_streamB" },
                 pkKey: "id",
-                listArgs: { user: 2, fields },
+                params: { user: 2, fields },
             },
             keepOldPages: false,
         });
@@ -634,18 +634,18 @@ describe("use/listSubscription.spec.js", function () {
             A: {
                 listInstance: listInstanceA,
                 props: {
-                    crudArgs: { stream: "test_streamA" },
+                    target: { stream: "test_streamA" },
                     pkKey: "id",
-                    listArgs: { user: 1, fields },
+                    params: { user: 1, fields },
                 },
                 keepOldPages: false,
             },
             B: {
                 listInstance: listInstanceB,
                 props: {
-                    crudArgs: { stream: "test_streamB" },
+                    target: { stream: "test_streamB" },
                     pkKey: "id",
-                    listArgs: { user: 2, fields },
+                    params: { user: 2, fields },
                 },
                 keepOldPages: false,
             },
@@ -669,14 +669,14 @@ describe("use/listSubscription.spec.js", function () {
         expect(deepUnref(listSubscription.B.state)).toEqual(deepUnref(listSubscriptionB.state));
     });
     it("custom pkKey", async function () {
-        const listArgs = reactive({
+        const params = reactive({
             user: 1,
             fields,
         });
         const listSubscription = useListSubscription({
             props: {
                 pkKey: "hash",
-                listArgs,
+                params,
             },
             keepOldPages: false,
             clearListOnListIntentTriggered: false,
@@ -685,9 +685,9 @@ describe("use/listSubscription.spec.js", function () {
         await nextTick();
         await flushPromises();
         expect(crudSubscribe).toHaveBeenCalledWith({
-            crudArgs: { stream: "test_stream" },
+            target: { stream: "test_stream" },
             pkKey: "hash",
-            listArgs: { user: 1, fields },
+            params: { user: 1, fields },
             subscriptionEventCallback: expect.any(Function),
         });
         expect(crudSubscribe).toHaveBeenCalledTimes(1);
@@ -735,12 +735,12 @@ describe("use/listSubscription.spec.js", function () {
     describe("clearListOnListIntentTriggered true", function () {
         it("on true", async function () {
             crudSubscribeResolvable[0].promise.cancel.mockImplementation(() => Promise.resolve(true));
-            const listArgs = reactive({
+            const params = reactive({
                 user: 1,
                 fields,
             });
             const listInstance = useListInstance({
-                props: { pkKey: "id", listArgs },
+                props: { pkKey: "id", params },
                 keepOldPages: false,
             });
             listInstance.clearList = vi.fn().mockImplementationOnce(() => undefined);
@@ -751,19 +751,19 @@ describe("use/listSubscription.spec.js", function () {
             listSubscription.subscribe();
             await nextTick();
             await flushPromises();
-            listArgs.user = 2;
+            params.user = 2;
             expect(listInstance.clearList).toHaveBeenCalledTimes(1);
         });
     });
     describe("clearListOnListIntentTriggered false", function () {
         it("on true", async function () {
             crudSubscribeResolvable[0].promise.cancel.mockImplementation(() => Promise.resolve(true));
-            const listArgs = reactive({
+            const params = reactive({
                 user: 1,
                 fields,
             });
             const listInstance = useListInstance({
-                props: { pkKey: "id", listArgs },
+                props: { pkKey: "id", params },
                 keepOldPages: false,
             });
             listInstance.clearList = vi.fn().mockImplementationOnce(() => undefined);
@@ -774,7 +774,7 @@ describe("use/listSubscription.spec.js", function () {
             listSubscription.subscribe();
             await nextTick();
             await flushPromises();
-            listArgs.user = 2;
+            params.user = 2;
             expect(listInstance.clearList).toHaveBeenCalledTimes(0);
         });
     });

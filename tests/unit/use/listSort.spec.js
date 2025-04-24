@@ -57,9 +57,9 @@ describe("use/useListSort", () => {
         ];
         listInstance = useListInstance({
             props: {
-                crudArgs: {},
+                target: {},
                 pkKey: "id",
-                listArgs: {
+                params: {
                     fields: ["id", "lexical_name", "organization", "relatedObjects"],
                 },
             },
@@ -169,16 +169,16 @@ describe("use/useListSort", () => {
         const orderByRules = [{ key: "name", desc: true, localeCompare: true }];
         const listInstanceA = useListInstance({
             props: {
-                crudArgs: { stream: "test_streamA" },
+                target: { stream: "test_streamA" },
                 pkKey: "id",
-                listArgs: { user: 1, fields },
+                params: { user: 1, fields },
             },
             keepOldPages: false,
         });
         const listInstanceB = useListInstance({
             props: {
-                crudArgs: { stream: "test_streamB" },
-                listArgs: { user: 2, fields },
+                target: { stream: "test_streamB" },
+                params: { user: 2, fields },
                 pkKey: "id",
             },
             keepOldPages: false,
@@ -194,16 +194,16 @@ describe("use/useListSort", () => {
         const listInstances = useListInstances({
             A: {
                 props: {
-                    crudArgs: { stream: "test_streamA" },
-                    listArgs: { user: 1, fields },
+                    target: { stream: "test_streamA" },
+                    params: { user: 1, fields },
                     pkKey: "id",
                 },
                 keepOldPages: false,
             },
             B: {
                 props: {
-                    crudArgs: { stream: "test_streamB" },
-                    listArgs: { user: 2, fields },
+                    target: { stream: "test_streamB" },
+                    params: { user: 2, fields },
                     pkKey: "id",
                 },
                 keepOldPages: false,
@@ -227,16 +227,16 @@ describe("use/useListSort", () => {
     it("orderByRules can refer to relatedItem or calculatedItem", async () => {
         const listInstance = useListInstance({
             props: reactive({
-                crudArgs: { stream: "test_stream" },
-                listArgs: { user: 1, fields: ["id", "__str__", "name", "relatedItem", "calculatedItem"] },
+                target: { stream: "test_stream" },
+                params: { user: 1, fields: ["id", "__str__", "name", "relatedItem", "calculatedItem"] },
                 pkKey: "id",
             }),
             keepOldPages: false,
         });
         const relatedListInstance = useListInstance({
             props: reactive({
-                crudArgs: { stream: "test_related_stream" },
-                listArgs: { user: 1, fields: ["id", "__str__", "name"] },
+                target: { stream: "test_related_stream" },
+                params: { user: 1, fields: ["id", "__str__", "name"] },
                 pkKey: "id",
             }),
             keepOldPages: false,

@@ -28,13 +28,13 @@ The parent state.
 
 > **crud**: `object`
 
-The crud functions.
+The crud handlers.
 
 ###### crud.args
 
-> **args**: `Reactive`\<\{\} \| [`ObjectCrudArgsArgs`](../config/objectCrud.md#objectcrudargsargs)\>
+> **args**: `Reactive`\<\{\} \| [`ObjectTargetArgs`](../config/objectCrud.md#objecttargetargs)\>
 
-The arguments to be passed to the crud functions.
+The arguments to be passed to the crud handlers.
 
 ###### crud.create
 
@@ -114,6 +114,16 @@ Whether the object is loading.
 
 The object.
 
+###### params
+
+> **params**: `object`
+
+The arguments to be passed to the retrieve function.
+
+###### Index Signature
+
+\[`key`: `string`\]: `any`
+
 ###### pk
 
 > **pk**: `string`
@@ -125,16 +135,6 @@ The pk of the object.
 > **pkKey**: `string`
 
 The pk key of the object.
-
-###### retrieveArgs
-
-> **retrieveArgs**: `object`
-
-The arguments to be passed to the retrieve function.
-
-###### Index Signature
-
-\[`key`: `string`\]: `any`
 
 ###### subscribed?
 
@@ -170,13 +170,13 @@ The state of the object related instance.
 
 > **crud**: `object`
 
-The crud functions.
+The crud handlers.
 
 ###### crud.args
 
-> **args**: `Reactive`\<\{\} \| [`ObjectCrudArgsArgs`](../config/objectCrud.md#objectcrudargsargs)\>
+> **args**: `Reactive`\<\{\} \| [`ObjectTargetArgs`](../config/objectCrud.md#objecttargetargs)\>
 
-The arguments to be passed to the crud functions.
+The arguments to be passed to the crud handlers.
 
 ###### crud.create
 
@@ -255,6 +255,16 @@ Whether the object is loading.
 > **object**: [`NewCrudObject`](objectInstance.md#newcrudobject) \| \{ `[key: string]`: `any`;  `pkKey`: `string`; \}
 
 The object.
+
+###### params
+
+> **params**: `object`
+
+The arguments to be passed to the retrieve function.
+
+###### Index Signature
+
+\[`key`: `string`\]: `any`
 
 ###### parentStateObjectWatchRunning
 
@@ -301,16 +311,6 @@ Whether the related object watch is running.
 > **relatedRunning**: `boolean`
 
 Whether the related objects are loading.
-
-###### retrieveArgs
-
-> **retrieveArgs**: `object`
-
-The arguments to be passed to the retrieve function.
-
-###### Index Signature
-
-\[`key`: `string`\]: `any`
 
 ###### running
 
@@ -544,8 +544,8 @@ const someOtherObjectsSource = reactive({
     },
 });
 const objectSubscriptionProps = reactive({
-    crudArgs: { app: 'foo', model: 'bar'},
-    retrieveArgs: {},
+    target: { app: 'foo', model: 'bar'},
+    params: {},
     pk: '99',
     pkKey: 'id',
     intendToSubscribe: true,

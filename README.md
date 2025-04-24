@@ -70,11 +70,11 @@ The container for your list of objects, providing loading or error status.
 import { setListCrud } from "@arrai-innovations/reactive-helpers";
 
 setListCrud({
-    list: async function listCrudAdaptor({ crudArgs, listArgs, pageCallback }) {
+    list: async function listCrudAdaptor({ target, params, pageCallback }) {
         // todo: your implemenation here.
-        const listOfObjects = await talkToServer(crudArgs, listArgs);
+        const listOfObjects = await talkToServer(target, params);
         pageCallback(listOfObjects);
-        const nextListOfObjects = await talkToServerAgain(crudArgs, listArgs);
+        const nextListOfObjects = await talkToServerAgain(target, params);
         pageCallback(nextListOfObjects);
     },
 });
@@ -86,12 +86,12 @@ import { useListInstance } from "@arrai-innovations/reactive-helpers";
 import { reactive } from "vue";
 
 const listProps = reactive({
-    // crudArgs are implementation specific to your crud functions.
-    crudArgs: {
+    // target are implementation specific to your crud handlers.
+    target: {
         stream: "contacts",
     },
     pkKey: "id",
-    listArgs,
+    params,
 });
 const contacts = useListInstance({
     props: listProps,
@@ -107,12 +107,12 @@ console.log(contacts.error);
 console.log(contacts.objects);
 // { contacts keyed by 'id' }
 // change list or retrieve args directly
-contacts.state.listArgs.fields.push("message_count");
+contacts.state.params.fields.push("message_count");
 await contacts.list();
 console.log(contacts.objects);
 // { contacts keyed by 'id' with message_count  }
 // change list or retrieve args indirectly
-listProps.listArgs.has_organization = false;
+listProps.params.has_organization = false;
 await contacts.list();
 console.log(contacts.objects);
 // { contacts keyed by 'id' with organizationless contacts  }
@@ -127,7 +127,7 @@ Adds functionality to a list instance to receive updates from the server.
 import { setListCrud } from "@arrai-innovations/reactive-helpers";
 setListCrud({
     ..., // in addition to the list crud adaptor above
-    subscribe: function subscribeCrudAdaptor({ crudArgs, listArgs, eventCallback }) {
+    subscribe: function subscribeCrudAdaptor({ target, params, eventCallback }) {
         // todo: your implemenation here.
         const subscription = talkToServer(function (data, action) {
             eventCallback(data, action);
@@ -147,15 +147,15 @@ import { useListInstance, useListSubscription } from "@arrai-innovations/reactiv
 import { reactive } from "vue";
 
 const listProps = reactive({
-    // crudArgs are implementation specific to your crud functions.
-    crudArgs: {
+    // target are implementation specific to your crud handlers.
+    target: {
         stream: "contacts",
         includeCreateEvents: true,
         subscribeAction: "subscribe_contacts",
         unsubscribeAction: "unsubscribe_contacts",
     },
     pkKey: "id",
-    listArgs: {
+    params: {
         has_organization: true,
         fields: ["id", "has_name", "lexical_name", "organization", "phone"],
     },
@@ -174,9 +174,9 @@ contactsSubscription.subscribe();
 // stop getting updates.
 contactsSubscription.unsubscribe();
 // re-retreive the list of existing contacts including another field.
-contacts.listArgs.fields.push("message_count");
+contacts.params.fields.push("message_count");
 // re-retreive the list of all existing contacts.
-delete contacts.listArgs.has_organization;
+delete contacts.params.has_organization;
 ```
 
 ```js
@@ -185,14 +185,14 @@ import { useListSubscription } from "@arrai-innovations/reactive-helpers";
 import { reactive } from "vue";
 
 const listProps = reactive({
-    // crudArgs are implementation specific to your crud functions.
-    crudArgs: {
+    // target are implementation specific to your crud handlers.
+    target: {
         stream: "contacts",
         includeCreateEvents: true,
         subscribeAction: "subscribe_contacts",
         unsubscribeAction: "unsubscribe_contacts",
     },
-    listArgs: {
+    params: {
         fields: ["id", "has_name", "lexical_name", "organization", "phone"],
         has_organization: true,
     },
@@ -214,7 +214,7 @@ import { reactive, toRef } from "vue";
 
 const organizationsProps = reactive({
     pkKey: "id",
-    listArgs: {
+    params: {
         fields: ["id", "name"],
     },
 });
@@ -223,7 +223,7 @@ const organizations = useListInstance({
 });
 const contactsProps = reactive({
     pkKey: "id",
-    listArgs: {
+    params: {
         fields: ["id", "lexical_name", "organization"],
     },
 });
@@ -299,7 +299,7 @@ import { nextTick, reactive } from "vue";
 
 const contactsProps = reactive({
     pkKey: "id",
-    listArgs: {
+    params: {
         fields: ["id", "has_name", "has_billing", "lexical_name", "organization"],
     },
 });
@@ -354,7 +354,7 @@ import { reactive, ref } from "vue";
 
 const contactsProps = reactive({
     pkKey: "id",
-    listArgs: {
+    params: {
         fields: ["id", "has_name", "has_billing", "lexical_name", "organization"],
     },
 });
@@ -399,7 +399,7 @@ import { reactive } from "vue";
 
 const contactsProps = reactive({
     pkKey: "id",
-    listArgs: {
+    params: {
         fields: ["id", "has_name", "has_billing", "lexical_name", "organization"],
     },
 });
@@ -444,7 +444,7 @@ import { reactive } from "vue";
 
 const contactsProps = reactive({
     pkKey: "id",
-    listArgs: {
+    params: {
         fields: ["id", "has_name", "lexical_name", "organization"],
     },
 });
@@ -481,15 +481,15 @@ import { useList } from "@arrai-innovations/reactive-helpers";
 import { reactive, toRef } from "vue";
 
 const managedListProps = reactive({
-    // crudArgs are implementation specific to your crud functions.
-    crudArgs: {
+    // target are implementation specific to your crud handlers.
+    target: {
         stream: "contacts",
         includeCreateEvents: true,
         subscribeAction: "subscribe_contacts",
         unsubscribeAction: "unsubscribe_contacts",
     },
     pkKey: "id",
-    listArgs: {
+    params: {
         has_organization: true,
         fields: ["id", "has_name", "lexical_name", "organization", "phone"],
     },
@@ -515,7 +515,7 @@ const managedListProps = reactive({
 });
 const managedList = useList({
     props: managedListProps,
-    functions: {
+    handlers: {
         list: customListFunction,
         subscribe: customSubscribeFunction,
     },
@@ -544,31 +544,31 @@ console.log(managedList.managed);
 import { setObjectCrud } from "@arrai-innovations/reactive-helpers";
 
 setObjectCrud({
-    create: async function createCrudAdaptor({ crudArgs, retrieveArgs, object }) {
+    create: async function createCrudAdaptor({ target, params, object }) {
         // todo: your implemenation here.
         const newObject = await talkToServer(object);
         return newObject;
     },
-    retrieve: async function retrieveCrudAdaptor({ crudArgs, retrieveArgs, id }) {
+    retrieve: async function retrieveCrudAdaptor({ target, params, id }) {
         // todo: your implemenation here.
         const retrievedObject = await talkToServer(id);
         return retrievedObject;
     },
-    update: async function updateCrudAdaptor({ crudArgs, retrieveArgs, object }) {
+    update: async function updateCrudAdaptor({ target, params, object }) {
         // todo: your implemenation here.
         const updatedObject = await talkToServer(object);
         return updatedObject;
     },
-    delete: async function deleteCrudAdaptor({ crudArgs, id }) {
+    delete: async function deleteCrudAdaptor({ target, id }) {
         // todo: your implemenation here.
         await talkToServer(id);
     },
-    patch: async function patchCrudAdaptor({ crudArgs, retrieveArgs, id, partialObject }) {
+    patch: async function patchCrudAdaptor({ target, params, id, partialObject }) {
         // todo: your implemenation here.
         const patchedObject = await talkToServer(object);
         return patchedObject; // still return the full object.
     },
-    subscribe: function subscribeCrudAdaptor({ crudArgs, retrieveArgs, listArgs, eventCallback }) {
+    subscribe: function subscribeCrudAdaptor({ target, params, params, eventCallback }) {
         // todo: your implemenation here.
         const subscription = talkToServer(function (data, action) {
             eventCallback(data, action);
@@ -593,10 +593,10 @@ import {
 
 const contactObject = useObjectInstance({
     props: {
-        crudArgs: {
+        target: {
             stream: "contacts",
         },
-        retrieveArgs: {
+        params: {
             fields: ["id", "has_name", "lexical_name", "organization", "phone"],
         },
         id: contactId,
@@ -609,10 +609,10 @@ const contactSubscription = useObjectSubscription({
 // or
 const contactSubscription = useObjectSubscription({
     props: {
-        crudArgs: {
+        target: {
             stream: "contacts",
         },
-        retrieveArgs: {
+        params: {
             fields: ["id", "has_name", "lexical_name", "organization", "phone"],
         },
         id: contactId,
@@ -621,10 +621,10 @@ const contactSubscription = useObjectSubscription({
 console.log(contactSubscription.state.object);
 const organizations = useList({
     props: {
-        crudArgs: {
+        target: {
             stream: "organizations",
         },
-        retrieveArgs: {
+        params: {
             fields: ["id", "name"],
         },
     },
@@ -658,10 +658,10 @@ import { useObject } from "@arrai-innovations/reactive-helpers";
 import { reactive } from "vue";
 
 const managedObjectProps = reactive({
-    crudArgs: {
+    target: {
         stream: "contacts",
     },
-    retrieveArgs: {
+    params: {
         fields: ["id", "has_name", "lexical_name", "organization", "phone"],
     },
     pk: contactId,
@@ -681,7 +681,7 @@ const managedObjectProps = reactive({
 });
 const managedObject = useObject({
     props: managedObjectProps,
-    functions: {
+    handlers: {
         retrieve: customRetrieveFunction,
         subscribe: customSubscribeFunction,
     },

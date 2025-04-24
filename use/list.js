@@ -47,9 +47,9 @@ export class ListError extends Error {
  * Defines properties for configuring the list management system.
  *
  * @typedef {object} ListRawProps
- * @property {object} listArgs - The arguments to pass to the registered list crud functions, related to the list itself.
+ * @property {object} params - The arguments to pass to the registered list crud handlers, related to the list itself.
  * @property {string} pkKey - The primary key for the list items.
- * @property {object} crudArgs - General arguments to pass to the registered list crud functions, often related to endpoints.
+ * @property {object} target - General arguments to pass to the registered list crud handlers, often related to endpoints.
  * @property {boolean} intendToList - Indicates whether the list should be fetched immediately.
  * @property {boolean} intendToSubscribe - Indicates whether changes to the list should be subscribed to.
  * @property {import('./listRelated.js').ListRelatedRules} relatedObjectsRules - Defines rules for associating related objects with list items.
@@ -66,7 +66,7 @@ export class ListError extends Error {
 /**
  * @typedef {object} ListOptions
  * @property {ListRawProps} props - The properties for configuring the list.
- * @property {import('../config/listCrud.js').ListCrudFunctions} functions - Additional functions to be included in the list manager.
+ * @property {import('../config/listCrud.js').ListCrudHandlers} handlers - Additional handlers to be included in the list manager.
  * @property {boolean} paged - Indicates whether the list should be paginated.
  * @property {boolean} keepOldPages - Indicates whether old pages should be kept when paginating.
  * @property {boolean} clearListOnListIntentTriggered - Indicates whether the list should be cleared when the list intent is triggered.
@@ -176,7 +176,7 @@ export const useLists = (listOptions) => {
  */
 export const useList = ({
     props,
-    functions = {},
+    handlers = {},
     paged,
     keepOldPages,
     clearListOnListIntentTriggered,
@@ -200,8 +200,8 @@ export const useList = ({
         );
     }
 
-    if (!("listArgs" in props)) {
-        console.error("listArgs not set, must be true for intendToList or intendToSubscribe to work.");
+    if (!("params" in props)) {
+        console.error("params not set, must be true for intendToList or intendToSubscribe to work.");
     }
 
     const es = effectScope();
@@ -209,7 +209,7 @@ export const useList = ({
     es.run(() => {
         managed.listInstance = (paged ? usePagedListInstance : useListInstance)({
             props,
-            functions,
+            handlers,
             keepOldPages,
         });
 

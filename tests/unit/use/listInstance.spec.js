@@ -119,12 +119,12 @@ describe("use/listInstance.spec.js", function () {
     const crudListResolvedObjectsNonStandardPK = keyBy(crudListResolvedPageNonStandardPK, "unique");
     describe("list", function () {
         it("success", async function () {
-            const listArgs = reactive({
+            const params = reactive({
                 user: 1,
                 fields,
             });
             const listInstance = useListInstance({
-                props: { pkKey: "id", listArgs },
+                props: { pkKey: "id", params },
                 keepOldPages: false,
             });
             let crudListResolve;
@@ -177,21 +177,21 @@ describe("use/listInstance.spec.js", function () {
             expect(listInstance.state.loading).toBe(false);
             expect({ ...listInstance.state.objects }).toEqual(crudListResolvedObjects2);
             expect(globalList).toHaveBeenCalledWith({
-                crudArgs: { stream: "test_stream" },
+                target: { stream: "test_stream" },
                 pkKey: "id",
-                listArgs: { user: 1, fields },
+                params: { user: 1, fields },
                 pageCallback: passedPageCallback,
                 isCancelled: expect.any(Object), // ref
             });
             expect(globalList).toHaveBeenCalledTimes(1);
         });
         it("success with non-standard primary key", async function () {
-            const listArgs = reactive({
+            const params = reactive({
                 user: 1,
                 fields,
             });
             const listInstance = useListInstance({
-                props: { pkKey: "unique", listArgs },
+                props: { pkKey: "unique", params },
                 keepOldPages: false,
             });
             let crudListResolve;
@@ -226,21 +226,21 @@ describe("use/listInstance.spec.js", function () {
             expect(listInstance.state.loading).toBe(true);
             expect({ ...listInstance.state.objects }).toEqual(crudListResolvedObjectsNonStandardPK);
             expect(globalList).toHaveBeenCalledWith({
-                crudArgs: { stream: "test_stream" },
+                target: { stream: "test_stream" },
                 pkKey: "unique",
-                listArgs: { user: 1, fields },
+                params: { user: 1, fields },
                 pageCallback: passedPageCallback,
                 isCancelled: expect.any(Object), // ref
             });
             expect(globalList).toHaveBeenCalledTimes(1);
         });
         it("already retrieving", async function () {
-            const listArgs = reactive({
+            const params = reactive({
                 user: 1,
                 fields,
             });
             const listInstance = useListInstance({
-                props: { pkKey: "id", listArgs, keepOldPages: false },
+                props: { pkKey: "id", params, keepOldPages: false },
                 keepOldPages: false,
             });
             expectErrorToBeNull(listInstance.state.error);
@@ -253,9 +253,9 @@ describe("use/listInstance.spec.js", function () {
             expect(listInstance.list()).toBe(firstPromise);
 
             expect(globalList).toHaveBeenCalledWith({
-                crudArgs: { stream: "test_stream" },
+                target: { stream: "test_stream" },
                 pkKey: "id",
-                listArgs: { user: 1, fields },
+                params: { user: 1, fields },
                 pageCallback: expect.any(Function),
                 isCancelled: expect.any(Object), // ref
             });
@@ -266,9 +266,9 @@ describe("use/listInstance.spec.js", function () {
             expect({ ...listInstance.state.objects }).toEqual({});
         });
         it("already loading", async function () {
-            const listArgs = reactive({ user: 1, fields });
+            const params = reactive({ user: 1, fields });
             const listInstance = useListInstance({
-                props: { pkKey: "id", listArgs },
+                props: { pkKey: "id", params },
                 keepOldPages: false,
             });
 
@@ -299,12 +299,12 @@ describe("use/listInstance.spec.js", function () {
             expect(listInstance.state.loading).toBe(false);
         });
         it("errored", async function () {
-            const listArgs = reactive({
+            const params = reactive({
                 user: 1,
                 fields,
             });
             const listInstance = useListInstance({
-                props: { pkKey: "id", listArgs },
+                props: { pkKey: "id", params },
                 keepOldPages: false,
             });
             let crudListReject;
@@ -343,21 +343,21 @@ describe("use/listInstance.spec.js", function () {
             expect(listInstance.state.loading).toBe(false);
             expect({ ...listInstance.state.objects }).toEqual({});
             expect(globalList).toHaveBeenCalledWith({
-                crudArgs: { stream: "test_stream" },
+                target: { stream: "test_stream" },
                 pkKey: "id",
-                listArgs: { user: 1, fields },
+                params: { user: 1, fields },
                 pageCallback: passedPageCallback,
                 isCancelled: expect.any(Object), // ref
             });
             expect(globalList).toHaveBeenCalledTimes(1);
         });
         it("success (custom stream)", async function () {
-            const listArgs = reactive({
+            const params = reactive({
                 user: 1,
                 fields,
             });
             const listInstance = useListInstance({
-                props: { pkKey: "id", listArgs, crudArgs: { stream: "custom_stream" } },
+                props: { pkKey: "id", params, target: { stream: "custom_stream" } },
                 keepOldPages: false,
             });
             let crudListResolve;
@@ -411,22 +411,22 @@ describe("use/listInstance.spec.js", function () {
             expect(listInstance.state.loading).toBe(false);
             expect({ ...listInstance.state.objects }).toEqual(crudListResolvedObjects2);
             expect(globalList).toHaveBeenCalledWith({
-                crudArgs: { stream: "custom_stream" },
+                target: { stream: "custom_stream" },
                 pkKey: "id",
-                listArgs: { user: 1, fields },
+                params: { user: 1, fields },
                 pageCallback: passedPageCallback,
                 isCancelled: expect.any(Object), // ref
             });
             expect(globalList).toHaveBeenCalledTimes(1);
         });
         it("clearList should empty the list", async function () {
-            const listArgs = reactive({
+            const params = reactive({
                 user: 1,
                 fields,
             });
             const listInstance = useListInstance({
                 props: {
-                    listArgs,
+                    params,
                     pkKey: "id",
                 },
                 keepOldPages: false,
@@ -460,9 +460,9 @@ describe("use/listInstance.spec.js", function () {
             expect(listInstance.state.order).toEqual(Object.keys(crudListResolvedObjects2));
             expect(listInstance.state.objectsInOrder).toEqual(Object.values(crudListResolvedObjects2));
             expect(globalList).toHaveBeenCalledWith({
-                crudArgs: { stream: "test_stream" },
+                target: { stream: "test_stream" },
                 pkKey: "id",
-                listArgs: { user: 1, fields },
+                params: { user: 1, fields },
                 pageCallback: passedPageCallback,
                 isCancelled: expect.any(Object), // ref
             });
@@ -481,10 +481,10 @@ describe("use/listInstance.spec.js", function () {
     it("useListInstances", async function () {
         const listInstanceA = useListInstance({
             props: {
-                crudArgs: { stream: "test_streamA" },
+                target: { stream: "test_streamA" },
                 pk: 1,
                 pkKey: "id",
-                listArgs: {
+                params: {
                     fields,
                 },
             },
@@ -492,10 +492,10 @@ describe("use/listInstance.spec.js", function () {
         });
         const listInstanceB = useListInstance({
             props: {
-                crudArgs: { stream: "test_streamB" },
+                target: { stream: "test_streamB" },
                 pk: 2,
                 pkKey: "id",
-                listArgs: {
+                params: {
                     fields,
                 },
             },
@@ -504,10 +504,10 @@ describe("use/listInstance.spec.js", function () {
         const listInstances = useListInstances({
             A: {
                 props: {
-                    crudArgs: { stream: "test_streamA" },
+                    target: { stream: "test_streamA" },
                     pk: 1,
                     pkKey: "id",
-                    listArgs: {
+                    params: {
                         fields,
                     },
                 },
@@ -515,10 +515,10 @@ describe("use/listInstance.spec.js", function () {
             },
             B: {
                 props: {
-                    crudArgs: { stream: "test_streamB" },
+                    target: { stream: "test_streamB" },
                     pk: 2,
                     pkKey: "id",
-                    listArgs: {
+                    params: {
                         fields,
                     },
                 },
@@ -654,12 +654,12 @@ describe("use/listInstance.spec.js", function () {
     });
     describe("executeAction", function () {
         it("succeeds", async function () {
-            const listArgs = reactive({
+            const params = reactive({
                 user: 1,
                 fields,
             });
             const listInstance = useListInstance({
-                props: { pkKey: "id", listArgs },
+                props: { pkKey: "id", params },
                 keepOldPages: false,
             });
             let crudListResolve;
@@ -686,7 +686,7 @@ describe("use/listInstance.spec.js", function () {
             expect(listInstance.state.errored).toBe(false);
             expect(listInstance.state.loading).toBe(true);
             expect(globalExecuteAction).toHaveBeenCalledWith({
-                crudArgs: { stream: "test_stream" },
+                target: { stream: "test_stream" },
                 pkKey: "id",
                 pks: Object.keys(crudListResolvedObjects2).map(Number),
             });
@@ -700,12 +700,12 @@ describe("use/listInstance.spec.js", function () {
             expect({ ...listInstance.state.objects }).toEqual(crudListResolvedObjects2);
         });
         it("succeeds with non-standard primary key", async function () {
-            const listArgs = reactive({
+            const params = reactive({
                 user: 1,
                 fields,
             });
             const listInstance = useListInstance({
-                props: { pkKey: "unique", listArgs },
+                props: { pkKey: "unique", params },
                 keepOldPages: false,
             });
             let crudListResolve;
@@ -732,7 +732,7 @@ describe("use/listInstance.spec.js", function () {
             expect(listInstance.state.errored).toBe(false);
             expect(listInstance.state.loading).toBe(true);
             expect(globalExecuteAction).toHaveBeenCalledWith({
-                crudArgs: { stream: "test_stream" },
+                target: { stream: "test_stream" },
                 pkKey: "unique",
                 pks: Object.keys(crudListResolvedObjectsNonStandardPK).map(Number),
             });
@@ -746,12 +746,12 @@ describe("use/listInstance.spec.js", function () {
             expect({ ...listInstance.state.objects }).toEqual(crudListResolvedObjectsNonStandardPK);
         });
         it("already loading", async function () {
-            const listArgs = reactive({
+            const params = reactive({
                 user: 1,
                 fields,
             });
             const listInstance = useListInstance({
-                props: { pkKey: "id", listArgs },
+                props: { pkKey: "id", params },
                 keepOldPages: false,
             });
             expectErrorToBeNull(listInstance.state.error);
@@ -769,12 +769,12 @@ describe("use/listInstance.spec.js", function () {
             expect(listInstance.state.loading).toBe(true);
         });
         it("errored", async function () {
-            const listArgs = reactive({
+            const params = reactive({
                 user: 1,
                 fields,
             });
             const listInstance = useListInstance({
-                props: { pkKey: "id", listArgs },
+                props: { pkKey: "id", params },
                 keepOldPages: false,
             });
             let crudListReject;
@@ -813,7 +813,7 @@ describe("use/listInstance.spec.js", function () {
             expect(listInstance.state.loading).toBe(false);
             expect({ ...listInstance.state.objects }).toEqual({});
             expect(globalExecuteAction).toHaveBeenCalledWith({
-                crudArgs: { stream: "test_stream" },
+                target: { stream: "test_stream" },
                 pkKey: "id",
                 pks: [],
             });
@@ -822,12 +822,12 @@ describe("use/listInstance.spec.js", function () {
     });
     describe("bulkDelete", function () {
         it("succeeds", async function () {
-            const listArgs = reactive({
+            const params = reactive({
                 user: 1,
                 fields,
             });
             const listInstance = useListInstance({
-                props: { pkKey: "id", listArgs },
+                props: { pkKey: "id", params },
                 keepOldPages: false,
             });
             let crudListResolve;
@@ -854,7 +854,7 @@ describe("use/listInstance.spec.js", function () {
             expect(listInstance.state.errored).toBe(false);
             expect(listInstance.state.loading).toBe(true);
             expect(globalBulkDelete).toHaveBeenCalledWith({
-                crudArgs: { stream: "test_stream" },
+                target: { stream: "test_stream" },
                 pkKey: "id",
                 pks: Object.keys(crudListResolvedObjects2).map(Number),
             });
@@ -868,12 +868,12 @@ describe("use/listInstance.spec.js", function () {
             expect({ ...listInstance.state.objects }).toEqual({});
         });
         it("succeeds with non-standard primary key", async function () {
-            const listArgs = reactive({
+            const params = reactive({
                 user: 1,
                 fields,
             });
             const listInstance = useListInstance({
-                props: { pkKey: "unique", listArgs },
+                props: { pkKey: "unique", params },
                 keepOldPages: false,
             });
             let crudListResolve;
@@ -900,7 +900,7 @@ describe("use/listInstance.spec.js", function () {
             expect(listInstance.state.errored).toBe(false);
             expect(listInstance.state.loading).toBe(true);
             expect(globalBulkDelete).toHaveBeenCalledWith({
-                crudArgs: { stream: "test_stream" },
+                target: { stream: "test_stream" },
                 pkKey: "unique",
                 pks: Object.keys(crudListResolvedObjectsNonStandardPK).map(Number),
             });
@@ -914,12 +914,12 @@ describe("use/listInstance.spec.js", function () {
             expect({ ...listInstance.state.objects }).toEqual({});
         });
         it("already loading", async function () {
-            const listArgs = reactive({
+            const params = reactive({
                 user: 1,
                 fields,
             });
             const listInstance = useListInstance({
-                props: { pkKey: "id", listArgs },
+                props: { pkKey: "id", params },
                 keepOldPages: false,
             });
             expectErrorToBeNull(listInstance.state.error);
@@ -940,12 +940,12 @@ describe("use/listInstance.spec.js", function () {
             expect(listInstance.state.loading).toBe(true);
         });
         it("errored", async function () {
-            const listArgs = reactive({
+            const params = reactive({
                 user: 1,
                 fields,
             });
             const listInstance = useListInstance({
-                props: { pkKey: "id", listArgs },
+                props: { pkKey: "id", params },
                 keepOldPages: false,
             });
             let crudListReject;
@@ -984,7 +984,7 @@ describe("use/listInstance.spec.js", function () {
             expect(listInstance.state.loading).toBe(false);
             expect({ ...listInstance.state.objects }).toEqual({});
             expect(globalBulkDelete).toHaveBeenCalledWith({
-                crudArgs: { stream: "test_stream" },
+                target: { stream: "test_stream" },
                 pkKey: "id",
                 pks: [],
             });
@@ -1023,7 +1023,7 @@ describe("use/listInstance.spec.js", function () {
             name: "yiuo",
         };
         const listInstance = useListInstance({
-            props: { pkKey: "id", listArgs: { user: 1, fields } },
+            props: { pkKey: "id", params: { user: 1, fields } },
             keepOldPages: false,
         });
         let crudListResolve;
@@ -1062,22 +1062,22 @@ describe("use/listInstance.spec.js", function () {
     });
     describe("list promise cancellation", function () {
         it("cancels and sets isCancelled", async function () {
-            let myListFnCancelResolve, passedIsCancelled;
+            let cancelPromiseResolve, passedIsCancelled;
+
+            const cancelPromise = new Promise((resolve) => {
+                cancelPromiseResolve = resolve;
+            });
+
             const myListFn = vi.fn().mockImplementation(({ isCancelled }) => {
                 passedIsCancelled = isCancelled;
-                return CancellablePromise(new Promise(() => {}), () => {
-                    myListFnCancelResolve = () => {
-                        return new Promise((resolve) => {
-                            myListFnCancelResolve = resolve;
-                        });
-                    };
-                });
+                return CancellablePromise(new Promise(() => {}), () => cancelPromise);
             });
+
             const listInstance = useListInstance({
                 props: {
                     pkKey: "pk",
                 },
-                functions: {
+                handlers: {
                     list: myListFn,
                 },
                 keepOldPages: false,
@@ -1093,10 +1093,10 @@ describe("use/listInstance.spec.js", function () {
             expect(cancelablePromise.cancel).toBeTruthy();
             expect(listInstance.state.loading).toBe(true);
 
-            const cancelPromise = cancelablePromise.cancel();
-            // @ts-ignore - this should be set this in the promise
-            myListFnCancelResolve();
-            await cancelPromise;
+            const cancelResult = cancelablePromise.cancel();
+            // @ts-ignore
+            cancelPromiseResolve();
+            await cancelResult;
 
             // @ts-ignore: we already asserted that passedIsCancelled is truthy and a ref, so it won't be undefined
             expect(passedIsCancelled.value).toBe(true);
@@ -1105,13 +1105,13 @@ describe("use/listInstance.spec.js", function () {
     });
     describe("useListInstance", function () {
         it("throw error when missing keepOldPages", async function () {
-            const listArgs = reactive({
+            const params = reactive({
                 user: 1,
                 fields,
             });
             expect(() =>
                 useListInstance({
-                    props: { pkKey: "id", listArgs },
+                    props: { pkKey: "id", params },
                     keepOldPages: false,
                 }).toThrow("useListInstance requires keepOldPages.")
             );

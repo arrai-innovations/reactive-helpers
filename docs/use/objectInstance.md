@@ -163,11 +163,11 @@ Called to update the current object on the server.
 
 #### Properties
 
-##### functions?
+##### handlers?
 
-> `optional` **functions**: [`ObjectCrudFunctions`](../config/objectCrud.md#objectcrudfunctions)
+> `optional` **handlers**: [`ObjectCrudHandlers`](../config/objectCrud.md#objectcrudhandlers)
 
-An object of custom crud functions to use instead of the defaults.
+An object of custom crud handlers to use instead of the defaults.
 
 ##### props
 
@@ -175,53 +175,11 @@ An object of custom crud functions to use instead of the defaults.
 
 The reactive configuration object.
 
-###### crudArgs
+###### params
 
-> **crudArgs**: `object`
+> **params**: `any`
 
-The arguments to be passed to the crud functions.
-
-###### crudArgs.args
-
-> **args**: [`ObjectCrudArgsArgs`](../config/objectCrud.md#objectcrudargsargs)
-
-The arguments to be passed to the crud functions.
-
-###### crudArgs.create?
-
-> `optional` **create**: [`CrudCreateFn`](../config/objectCrud.md#crudcreatefn)
-
-A function to be used instead of the default crud create function.
-
-###### crudArgs.delete?
-
-> `optional` **delete**: [`CrudDeleteFn`](../config/objectCrud.md#cruddeletefn)
-
-A function to be used instead of the default crud delete function.
-
-###### crudArgs.patch?
-
-> `optional` **patch**: [`CrudPatchFn`](../config/objectCrud.md#crudpatchfn)
-
-A function to be used instead of the default crud patch function.
-
-###### crudArgs.retrieve?
-
-> `optional` **retrieve**: [`CrudRetrieveFn`](../config/objectCrud.md#crudretrievefn)
-
-A function to be used instead of the default crud retrieve function.
-
-###### crudArgs.subscribe?
-
-> `optional` **subscribe**: [`CrudObjectSubscribeFn`](../config/objectCrud.md#crudobjectsubscribefn)
-
-A function to be used instead of the default crud subscribe function.
-
-###### crudArgs.update?
-
-> `optional` **update**: [`CrudUpdateFn`](../config/objectCrud.md#crudupdatefn)
-
-A function to be used instead of the default crud update function.
+The arguments to be passed to the retrieve function.
 
 ###### pk?
 
@@ -235,11 +193,53 @@ The pk of the object, optional to support creating new objects.
 
 The pk key of the object.
 
-###### retrieveArgs
+###### target
 
-> **retrieveArgs**: `any`
+> **target**: `object`
 
-The arguments to be passed to the retrieve function.
+The arguments to be passed to the crud handlers.
+
+###### target.args
+
+> **args**: [`ObjectTargetArgs`](../config/objectCrud.md#objecttargetargs)
+
+The arguments to be passed to the crud handlers.
+
+###### target.create?
+
+> `optional` **create**: [`CrudCreateFn`](../config/objectCrud.md#crudcreatefn)
+
+A function to be used instead of the default crud create function.
+
+###### target.delete?
+
+> `optional` **delete**: [`CrudDeleteFn`](../config/objectCrud.md#cruddeletefn)
+
+A function to be used instead of the default crud delete function.
+
+###### target.patch?
+
+> `optional` **patch**: [`CrudPatchFn`](../config/objectCrud.md#crudpatchfn)
+
+A function to be used instead of the default crud patch function.
+
+###### target.retrieve?
+
+> `optional` **retrieve**: [`CrudRetrieveFn`](../config/objectCrud.md#crudretrievefn)
+
+A function to be used instead of the default crud retrieve function.
+
+###### target.subscribe?
+
+> `optional` **subscribe**: [`CrudObjectSubscribeFn`](../config/objectCrud.md#crudobjectsubscribefn)
+
+A function to be used instead of the default crud subscribe function.
+
+###### target.update?
+
+> `optional` **update**: [`CrudUpdateFn`](../config/objectCrud.md#crudupdatefn)
+
+A function to be used instead of the default crud update function.
 
 ***
 
@@ -257,13 +257,13 @@ The state of the object instance.
 
 > **crud**: `object`
 
-The crud functions.
+The crud handlers.
 
 ###### crud.args
 
-> **args**: `Reactive`\<\{\} \| [`ObjectCrudArgsArgs`](../config/objectCrud.md#objectcrudargsargs)\>
+> **args**: `Reactive`\<\{\} \| [`ObjectTargetArgs`](../config/objectCrud.md#objecttargetargs)\>
 
-The arguments to be passed to the crud functions.
+The arguments to be passed to the crud handlers.
 
 ###### crud.create
 
@@ -331,6 +331,16 @@ Whether the object is loading.
 
 The object.
 
+###### params
+
+> **params**: `object`
+
+The arguments to be passed to the retrieve function.
+
+###### Index Signature
+
+\[`key`: `string`\]: `any`
+
 ###### pk
 
 > **pk**: `string`
@@ -343,27 +353,17 @@ The pk of the object.
 
 The pk key of the object.
 
-###### retrieveArgs
-
-> **retrieveArgs**: `object`
-
-The arguments to be passed to the retrieve function.
-
-###### Index Signature
-
-\[`key`: `string`\]: `any`
-
 ***
 
 ### ObjectInstanceRawProps
 
 #### Properties
 
-##### crudArgs
+##### params
 
-> **crudArgs**: [`ObjectCrudArgs`](../config/objectCrud.md#objectcrudargs)
+> **params**: `any`
 
-The arguments to be passed to the crud functions.
+The arguments to be passed to the retrieve function.
 
 ##### pk?
 
@@ -377,11 +377,11 @@ The pk of the object, optional to support creating new objects.
 
 The pk key of the object.
 
-##### retrieveArgs
+##### target
 
-> **retrieveArgs**: `any`
+> **target**: [`ObjectTarget`](../config/objectCrud.md#objecttarget)
 
-The arguments to be passed to the retrieve function.
+The arguments to be passed to the crud handlers.
 
 ***
 
@@ -393,13 +393,13 @@ The arguments to be passed to the retrieve function.
 
 > **crud**: `object`
 
-The crud functions.
+The crud handlers.
 
 ###### args
 
-> **args**: `Reactive`\<\{\} \| [`ObjectCrudArgsArgs`](../config/objectCrud.md#objectcrudargsargs)\>
+> **args**: `Reactive`\<\{\} \| [`ObjectTargetArgs`](../config/objectCrud.md#objecttargetargs)\>
 
-The arguments to be passed to the crud functions.
+The arguments to be passed to the crud handlers.
 
 ###### create
 
@@ -467,6 +467,12 @@ Whether the object is loading.
 
 The object.
 
+##### params
+
+> **params**: `Ref`\<\{\}, \{\}\>
+
+The arguments to be passed to the retrieve function.
+
 ##### pk
 
 > **pk**: `Ref`\<`string`, `string`\>
@@ -479,12 +485,6 @@ The pk of the object.
 
 The pk key of the object.
 
-##### retrieveArgs
-
-> **retrieveArgs**: `Ref`\<\{\}, \{\}\>
-
-The arguments to be passed to the retrieve function.
-
 ***
 
 ### ObjectInstanceRawStateCrud
@@ -493,9 +493,9 @@ The arguments to be passed to the retrieve function.
 
 ##### args
 
-> **args**: `Reactive`\<\{\} \| [`ObjectCrudArgsArgs`](../config/objectCrud.md#objectcrudargsargs)\>
+> **args**: `Reactive`\<\{\} \| [`ObjectTargetArgs`](../config/objectCrud.md#objecttargetargs)\>
 
-The arguments to be passed to the crud functions.
+The arguments to be passed to the crud handlers.
 
 ##### create
 
@@ -606,7 +606,7 @@ The update function.
 > **useObjectInstance**(`options`): [`ObjectInstance`](objectInstance.md#objectinstance)
 
 Initializes an object instance to manage CRUD operations. This setup includes reactive state management
-and functions to perform create, retrieve, update, delete, and patch operations based on provided CRUD
+and handlers to perform create, retrieve, update, delete, and patch operations based on provided CRUD
 configurations and arguments.
 
 #### Parameters
@@ -649,11 +649,11 @@ const pkRef = toRef(props, 'pk');
 const objectInstanceProps = reactive({
   pk: pkRef,
   pkKey: 'id',
-  crudArgs: {
+  target: {
       app: toRef(props, "app"),
       model: toRef(props, "model"),
   },
-  retrieveArgs: {},
+  params: {},
 });
 const objectInstance = useObjectInstance(objectInstanceProps);
 watch(pkRef, (newValue, oldValue) => {

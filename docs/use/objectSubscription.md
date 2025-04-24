@@ -168,13 +168,13 @@ The object instance properties.
 
 > **crud**: `object`
 
-The crud functions.
+The crud handlers.
 
 ###### crud.args
 
-> **args**: `Reactive`\<\{\} \| [`ObjectCrudArgsArgs`](../config/objectCrud.md#objectcrudargsargs)\>
+> **args**: `Reactive`\<\{\} \| [`ObjectTargetArgs`](../config/objectCrud.md#objecttargetargs)\>
 
-The arguments to be passed to the crud functions.
+The arguments to be passed to the crud handlers.
 
 ###### crud.create
 
@@ -254,6 +254,16 @@ Whether the object is loading.
 
 The object.
 
+###### params
+
+> **params**: `object`
+
+The arguments to be passed to the retrieve function.
+
+###### Index Signature
+
+\[`key`: `string`\]: `any`
+
 ###### pk
 
 > **pk**: `string`
@@ -265,16 +275,6 @@ The pk of the object.
 > **pkKey**: `string`
 
 The pk key of the object.
-
-###### retrieveArgs
-
-> **retrieveArgs**: `object`
-
-The arguments to be passed to the retrieve function.
-
-###### Index Signature
-
-\[`key`: `string`\]: `any`
 
 ###### subscribed
 
@@ -422,7 +422,7 @@ Options for initializing the object subscription.
 
 [`ObjectSubscription`](objectSubscription.md#objectsubscription)
 
-- An object containing the subscription state, properties, and functions.
+- An object containing the subscription state, properties, and handlers.
 
 #### Example
 
@@ -439,13 +439,13 @@ const props = defineProps({
 });
 
 const objectSubscriptionProps = reactive({
-    crudArgs: {
+    target: {
         app: toRef(props, "app"),
         model: toRef(props, "model"),
     },
     pk: toRef(props, "pk"),
     pkKey: pkKey,
-    retrieveArgs: {
+    params: {
         fields: ['foo', 'bar'],
     },
     intendToRetrieve: false,

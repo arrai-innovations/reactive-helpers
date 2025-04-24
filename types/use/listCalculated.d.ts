@@ -49,10 +49,9 @@ export function useListCalculateds(listCalculatedArgs: {
  *
  * const listSubscriptionProps = reactive({
  *     // whatever props you need to get the list to work with your crud implementation
- *     crudArgs: {},
- *     listArgs: {},
+ *     target: {},
+ *     params: {},
  *     pkKey: "pk",
- *     retrieveArgs: {},
  *     intendToList: true,
  * });
  * const listSubscription = useListSubscription(listSubscriptionProps);

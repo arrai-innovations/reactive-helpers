@@ -1,13 +1,13 @@
 /**
- * The default list crud functions.
+ * The default list crud handlers.
  *
- * @type {Readonly<ListCrudFunctions>}
+ * @type {Readonly<ListCrudHandlers>}
  */
-export const defaultListCrud: Readonly<ListCrudFunctions>;
-export function setListCrud({ args, ...rest }: ListCrudFunctions & Partial<ListCrudArgs>): void;
-export function getListCrud(target: import("vue").UnwrapNestedRefs<ListCrudFunctions & ListCrudArgs>, options: {
-    props?: import("vue").UnwrapNestedRefs<ListCrudArgsOption>;
-    functions?: ListCrudFunctions;
+export const defaultListCrud: Readonly<ListCrudHandlers>;
+export function setListCrud({ args, ...rest }: ListCrudHandlers & Partial<ListTarget>): void;
+export function getListCrud(target: import("vue").UnwrapNestedRefs<ListCrudHandlers & ListTarget>, options: {
+    props?: import("vue").UnwrapNestedRefs<ListTargetOption>;
+    handlers?: ListCrudHandlers;
 }): void;
 export type PaginateInfo = {
     /**
@@ -26,21 +26,17 @@ export type PaginateInfo = {
 export type PageCallback = (newObjects: import("../use/listInstance.js").ListObject, paginationInfo: PaginateInfo | undefined) => void;
 export type ListArgs = {
     /**
-     * - The arguments to be passed to the crud functions.
+     * - The arguments to be passed to the crud handlers.
      */
-    crudArgs: object;
+    target: object;
     /**
      * - The key name of the primary key.
      */
     pkKey: string;
     /**
-     * - The arguments to be passed to the retrieve function.
+     * - The arguments to be passed for list crud handlers.
      */
-    retrieveArgs: object;
-    /**
-     * - The arguments to be passed for list crud functions.
-     */
-    listArgs: object;
+    params: object;
     /**
      * - The method to call with new page(s) of data received.
      */
@@ -53,9 +49,9 @@ export type ListArgs = {
 };
 export type BulkDeleteArgs = {
     /**
-     * - The arguments to be passed to the crud functions.
+     * - The arguments to be passed to the crud handlers.
      */
-    crudArgs: object;
+    target: object;
     /**
      * - The ids of the objects to be deleted.
      */
@@ -73,21 +69,17 @@ export type BulkDeleteArgs = {
 export type SubscriptionEventCallback = (newOrUpdatedOrDeleteObject: import("../use/listInstance.js").ListObject | string, action: "create" | "update" | "delete") => void;
 export type ListSubscribeArgs = {
     /**
-     * - The arguments to be passed to the crud functions.
+     * - The arguments to be passed to the crud handlers.
      */
-    crudArgs: object;
+    target: object;
     /**
      * - The key name of the primary key.
      */
     pkKey: string;
     /**
-     * - The arguments to be passed to the retrieve function.
+     * - The arguments to be passed for list crud handlers.
      */
-    retrieveArgs: object;
-    /**
-     * - The arguments to be passed for list crud functions.
-     */
-    listArgs: object;
+    params: object;
     /**
      * - The method to call when new data is received.
      */
@@ -100,9 +92,9 @@ export type ListSubscribeArgs = {
 };
 export type ExecuteActionArgs = {
     /**
-     * - The arguments to be passed to the crud functions.
+     * - The arguments to be passed to the crud handlers.
      */
-    crudArgs: object;
+    target: object;
     /**
      * - The ids of the objects to be acted upon.
      */
@@ -125,7 +117,7 @@ export type CrudListFn = (args: ListArgs) => import("../utils/cancellablePromise
 export type CrudBulkDeleteFn = (args: BulkDeleteArgs) => import("../utils/cancellablePromise.js").MaybeCancellablePromise<void>;
 export type CrudListSubscribeFn = (args: ListSubscribeArgs) => import("../utils/cancellablePromise.js").CancellablePromise<void>;
 export type CrudExecuteActionFn = (args: ExecuteActionArgs) => import("../utils/cancellablePromise.js").MaybeCancellablePromise<object | string | null>;
-export type ListCrudFunctions = {
+export type ListCrudHandlers = {
     /**
      * - The list function to get a list of items.
      */
@@ -143,16 +135,16 @@ export type ListCrudFunctions = {
      */
     subscribe?: CrudListSubscribeFn;
 };
-export type ListCrudArgs = {
+export type ListTarget = {
     /**
-     * - The default arguments for the crud functions.
+     * - The default arguments for the crud handlers.
      */
     args: object;
 };
-export type ListCrudArgsOption = {
+export type ListTargetOption = {
     /**
-     * - The default arguments for the crud functions.
+     * - The default arguments for the crud handlers.
      */
-    crudArgs?: object;
+    target?: object;
 };
 //# sourceMappingURL=listCrud.d.ts.map

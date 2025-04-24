@@ -12,12 +12,6 @@
 
 #### Properties
 
-##### crudArgs
-
-> **crudArgs**: `any`
-
-The arguments to be passed to the crud functions.
-
 ##### isCancelled
 
 > **isCancelled**: `Readonly`\<`Ref`\<`boolean`, `boolean`\>\>
@@ -37,6 +31,12 @@ The key name of the primary key.
 
 The ids of the objects to be deleted.
 
+##### target
+
+> **target**: `any`
+
+The arguments to be passed to the crud handlers.
+
 ***
 
 ### ExecuteActionArgs
@@ -48,12 +48,6 @@ The ids of the objects to be deleted.
 > **action**: `string`
 
 The action to execute.
-
-##### crudArgs
-
-> **crudArgs**: `any`
-
-The arguments to be passed to the crud functions.
 
 ##### isCancelled
 
@@ -74,17 +68,17 @@ The key name of the primary key.
 
 The ids of the objects to be acted upon.
 
+##### target
+
+> **target**: `any`
+
+The arguments to be passed to the crud handlers.
+
 ***
 
 ### ListArgs
 
 #### Properties
-
-##### crudArgs
-
-> **crudArgs**: `any`
-
-The arguments to be passed to the crud functions.
 
 ##### isCancelled
 
@@ -93,17 +87,17 @@ The arguments to be passed to the crud functions.
 A ref to a boolean indicating whether the request has
  been cancelled.
 
-##### listArgs
-
-> **listArgs**: `any`
-
-The arguments to be passed for list crud functions.
-
 ##### pageCallback
 
 > **pageCallback**: [`PageCallback`](listCrud.md#pagecallback-1)
 
 The method to call with new page(s) of data received.
+
+##### params
+
+> **params**: `any`
+
+The arguments to be passed for list crud handlers.
 
 ##### pkKey
 
@@ -111,39 +105,15 @@ The method to call with new page(s) of data received.
 
 The key name of the primary key.
 
-##### retrieveArgs
+##### target
 
-> **retrieveArgs**: `any`
+> **target**: `any`
 
-The arguments to be passed to the retrieve function.
-
-***
-
-### ListCrudArgs
-
-#### Properties
-
-##### args
-
-> **args**: `any`
-
-The default arguments for the crud functions.
+The arguments to be passed to the crud handlers.
 
 ***
 
-### ListCrudArgsOption
-
-#### Properties
-
-##### crudArgs?
-
-> `optional` **crudArgs**: `any`
-
-The default arguments for the crud functions.
-
-***
-
-### ListCrudFunctions
+### ListCrudHandlers
 
 #### Properties
 
@@ -177,12 +147,6 @@ The subscribe function to get a subscription to a list of items.
 
 #### Properties
 
-##### crudArgs
-
-> **crudArgs**: `any`
-
-The arguments to be passed to the crud functions.
-
 ##### isCancelled
 
 > **isCancelled**: `Readonly`\<`Ref`\<`boolean`, `boolean`\>\>
@@ -190,11 +154,11 @@ The arguments to be passed to the crud functions.
 A ref to a boolean indicating whether the request has
  been cancelled.
 
-##### listArgs
+##### params
 
-> **listArgs**: `any`
+> **params**: `any`
 
-The arguments to be passed for list crud functions.
+The arguments to be passed for list crud handlers.
 
 ##### pkKey
 
@@ -202,17 +166,41 @@ The arguments to be passed for list crud functions.
 
 The key name of the primary key.
 
-##### retrieveArgs
-
-> **retrieveArgs**: `any`
-
-The arguments to be passed to the retrieve function.
-
 ##### subscriptionEventCallback
 
 > **subscriptionEventCallback**: [`SubscriptionEventCallback`](listCrud.md#subscriptioneventcallback-1)
 
 The method to call when new data is received.
+
+##### target
+
+> **target**: `any`
+
+The arguments to be passed to the crud handlers.
+
+***
+
+### ListTarget
+
+#### Properties
+
+##### args
+
+> **args**: `any`
+
+The default arguments for the crud handlers.
+
+***
+
+### ListTargetOption
+
+#### Properties
+
+##### target?
+
+> `optional` **target**: `any`
+
+The default arguments for the crud handlers.
 
 ***
 
@@ -252,7 +240,7 @@ The total records.
 
 [`BulkDeleteArgs`](listCrud.md#bulkdeleteargs)
 
-The arguments to be passed to the crud functions.
+The arguments to be passed to the crud handlers.
 
 #### Returns
 
@@ -272,7 +260,7 @@ The arguments to be passed to the crud functions.
 
 [`ExecuteActionArgs`](listCrud.md#executeactionargs)
 
-The arguments to be passed to the crud functions.
+The arguments to be passed to the crud handlers.
 
 #### Returns
 
@@ -292,7 +280,7 @@ The arguments to be passed to the crud functions.
 
 [`ListArgs`](listCrud.md#listargs)
 
-The arguments to be passed to the crud functions.
+The arguments to be passed to the crud handlers.
 
 #### Returns
 
@@ -312,7 +300,7 @@ The arguments to be passed to the crud functions.
 
 [`ListSubscribeArgs`](listCrud.md#listsubscribeargs)
 
-The arguments to be passed to the crud functions.
+The arguments to be passed to the crud handlers.
 
 #### Returns
 
@@ -366,9 +354,9 @@ The arguments to be passed to the crud functions.
 
 ### defaultListCrud
 
-> `const` **defaultListCrud**: `Readonly`\<[`ListCrudFunctions`](listCrud.md#listcrudfunctions)\>
+> `const` **defaultListCrud**: `Readonly`\<[`ListCrudHandlers`](listCrud.md#listcrudhandlers)\>
 
-The default list crud functions.
+The default list crud handlers.
 
 ## Functions
 
@@ -376,7 +364,7 @@ The default list crud functions.
 
 > **getListCrud**(`target`, `options`): `void`
 
-Get the previously set list and subscribe functions for the default crud.
+Get the previously set list and subscribe handlers for the default crud.
 
 #### Parameters
 
@@ -388,7 +376,7 @@ The reactive crud object, which will be mutated.
 
 `any`
 
-The default arguments for the crud functions.
+The default arguments for the crud handlers.
 
 ###### bulkDelete?
 
@@ -418,23 +406,23 @@ The subscribe function to get a subscription to a list of items.
 
 The options for the default crud.
 
-###### functions?
+###### handlers?
 
-[`ListCrudFunctions`](listCrud.md#listcrudfunctions)
+[`ListCrudHandlers`](listCrud.md#listcrudhandlers)
 
 The functions to set for the crud.
 
 ###### props?
 
-\{ `crudArgs`: `any`; \}
+\{ `target`: `any`; \}
 
 The props to set for the crud.
 
-###### props.crudArgs?
+###### props.target?
 
 `any`
 
-The default arguments for the crud functions.
+The default arguments for the crud handlers.
 
 #### Returns
 
@@ -450,13 +438,13 @@ The default arguments for the crud functions.
 
 > **setListCrud**(`options`): `void`
 
-Set the list and subscribe functions for the default crud.
+Set the list and subscribe handlers for the default crud.
 
 #### Parameters
 
 ##### options
 
-[`ListCrudFunctions`](listCrud.md#listcrudfunctions) & `Partial`\<[`ListCrudArgs`](listCrud.md#listcrudargs)\>
+[`ListCrudHandlers`](listCrud.md#listcrudhandlers) & `Partial`\<[`ListTarget`](listCrud.md#listtarget)\>
 
 The options for the default crud.
 

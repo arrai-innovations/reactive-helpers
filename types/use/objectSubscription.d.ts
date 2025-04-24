@@ -56,14 +56,14 @@
  * @property {boolean|undefined} intendToSubscribe - Whether the object intends to subscribe.
  */
 /**
- * Options for initializing an object subscription, including reactive props and non-reactive functions.
+ * Options for initializing an object subscription, including reactive props and non-reactive handlers.
  *
  * @typedef {object & import('./objectInstance.js').ObjectInstanceOptions} ObjectSubscriptionOptions
  * @property {import('./objectInstance.js').ObjectInstance} [objectInstance] - An object instance to use instead of creating a new one.
  * @property {import('vue').UnwrapNestedRefs<(
  *     ObjectSubscriptionRawProps & import('./objectInstance.js').ObjectInstanceRawProps
  * )>} props - The reactive args to be passed to useObjectInstance.
- * @property {import('./objectInstance.js').ObjectInstanceFunctions} [functions] - The functions to be passed to useObjectInstance.
+ * @property {import('./objectInstance.js').ObjectInstanceHandlers} [handlers] - The handlers to be passed to useObjectInstance.
  */
 /**
  * Initializes multiple object subscriptions based on provided arguments.
@@ -93,13 +93,13 @@ export function useObjectSubscriptions(subscriptionArgs: {
  * });
  *
  * const objectSubscriptionProps = reactive({
- *     crudArgs: {
+ *     target: {
  *         app: toRef(props, "app"),
  *         model: toRef(props, "model"),
  *     },
  *     pk: toRef(props, "pk"),
  *     pkKey: pkKey,
- *     retrieveArgs: {
+ *     params: {
  *         fields: ['foo', 'bar'],
  *     },
  *     intendToRetrieve: false,
@@ -117,9 +117,9 @@ export function useObjectSubscriptions(subscriptionArgs: {
  * ```
  *
  * @param {ObjectSubscriptionOptions} options - Options for initializing the object subscription.
- * @returns {ObjectSubscription} - An object containing the subscription state, properties, and functions.
+ * @returns {ObjectSubscription} - An object containing the subscription state, properties, and handlers.
  */
-export function useObjectSubscription({ objectInstance, props, functions }: ObjectSubscriptionOptions): ObjectSubscription;
+export function useObjectSubscription({ objectInstance, props, handlers }: ObjectSubscriptionOptions): ObjectSubscription;
 /**
  * A composition function for managing object subscriptions, including subscription status, errors, and reactivity.
  *
@@ -247,7 +247,7 @@ export type ObjectSubscriptionRawProps = {
     intendToSubscribe: boolean | undefined;
 };
 /**
- * Options for initializing an object subscription, including reactive props and non-reactive functions.
+ * Options for initializing an object subscription, including reactive props and non-reactive handlers.
  */
 export type ObjectSubscriptionOptions = object & import("./objectInstance.js").ObjectInstanceOptions;
 //# sourceMappingURL=objectSubscription.d.ts.map

@@ -184,10 +184,10 @@ export function useListRelateds(listRelatedArgs) {
  * });
  *
  * const listInstanceProps = reactive({
- *     crudArgs: {
+ *     target: {
  *         // whatever arguments are required for your configured list crud function to get the right endpoint
  *     },
- *     listArgs: {
+ *     params: {
  *         // whatever arguments are required for your configured list function to get the right list
  *         someListFilter: toRef(props, "someListFilter"),
  *     },

@@ -110,14 +110,14 @@ export const objectSubscriptionFunctions = [
  */
 
 /**
- * Options for initializing an object subscription, including reactive props and non-reactive functions.
+ * Options for initializing an object subscription, including reactive props and non-reactive handlers.
  *
  * @typedef {object & import('./objectInstance.js').ObjectInstanceOptions} ObjectSubscriptionOptions
  * @property {import('./objectInstance.js').ObjectInstance} [objectInstance] - An object instance to use instead of creating a new one.
  * @property {import('vue').UnwrapNestedRefs<(
  *     ObjectSubscriptionRawProps & import('./objectInstance.js').ObjectInstanceRawProps
  * )>} props - The reactive args to be passed to useObjectInstance.
- * @property {import('./objectInstance.js').ObjectInstanceFunctions} [functions] - The functions to be passed to useObjectInstance.
+ * @property {import('./objectInstance.js').ObjectInstanceHandlers} [handlers] - The handlers to be passed to useObjectInstance.
  */
 
 /**
@@ -152,13 +152,13 @@ export function useObjectSubscriptions(subscriptionArgs) {
  * });
  *
  * const objectSubscriptionProps = reactive({
- *     crudArgs: {
+ *     target: {
  *         app: toRef(props, "app"),
  *         model: toRef(props, "model"),
  *     },
  *     pk: toRef(props, "pk"),
  *     pkKey: pkKey,
- *     retrieveArgs: {
+ *     params: {
  *         fields: ['foo', 'bar'],
  *     },
  *     intendToRetrieve: false,
@@ -176,11 +176,11 @@ export function useObjectSubscriptions(subscriptionArgs) {
  * ```
  *
  * @param {ObjectSubscriptionOptions} options - Options for initializing the object subscription.
- * @returns {ObjectSubscription} - An object containing the subscription state, properties, and functions.
+ * @returns {ObjectSubscription} - An object containing the subscription state, properties, and handlers.
  */
-export function useObjectSubscription({ objectInstance, props, functions }) {
+export function useObjectSubscription({ objectInstance, props, handlers }) {
     if (!objectInstance) {
-        objectInstance = useObjectInstance({ props, functions });
+        objectInstance = useObjectInstance({ props, handlers });
     } else {
         // pkKey is required for objectInstances, so we don't need to check for it here
         if (!("pk" in props)) {
@@ -191,18 +191,18 @@ export function useObjectSubscription({ objectInstance, props, functions }) {
                 "missing-pk"
             );
         }
-        if (!("retrieveArgs" in props)) {
+        if (!("params" in props)) {
             // falsely values are fine, especially when loading, but your going to have a bad time if you
             //  don't have something to react to.
             throw new ObjectSubscriptionError(
-                "retrieveArgs not in props, must be truthy for intendToRetrieve or intendToSubscribe to work.",
-                "missing-retrieveArgs"
+                "params not in props, must be truthy for intendToRetrieve or intendToSubscribe to work.",
+                "missing-params"
             );
         }
-        if (functions) {
+        if (handlers) {
             console.error(
                 // warn doesn't provide a stack trace, which is useful for finding the source of this issue
-                "functions passed to useObjectSubscription, but objectInstance was passed. functions ignored."
+                "handlers passed to useObjectSubscription, but objectInstance was passed. handlers ignored."
             );
         }
     }
@@ -214,7 +214,7 @@ export function useObjectSubscription({ objectInstance, props, functions }) {
         crud: parentCrud,
         pk: parentPk,
         pkKey: parentPkKey,
-        retrieveArgs: parentRetrieveArgs,
+        params: parentParams,
         object: parentObject,
         deleted: parentDeleted,
     } = toRefs(parentState);
@@ -223,7 +223,7 @@ export function useObjectSubscription({ objectInstance, props, functions }) {
         crud: parentCrud,
         pk: parentPk,
         pkKey: parentPkKey,
-        retrieveArgs: parentRetrieveArgs,
+        params: parentParams,
         object: parentObject,
         deleted: parentDeleted,
         subscriptionLoading: loadingError.loading,
@@ -284,10 +284,10 @@ export function useObjectSubscription({ objectInstance, props, functions }) {
             }
         };
         const subscribePromise = parentState.crud.subscribe({
-            crudArgs: parentState.crud.args,
+            target: parentState.crud.args,
             pk: parentState.pk,
             pkKey: parentState.pkKey,
-            retrieveArgs: state.retrieveArgs,
+            params: state.params,
             callback: subscribeCallback,
             isCancelled,
         });
@@ -345,7 +345,7 @@ export function useObjectSubscription({ objectInstance, props, functions }) {
                 intendToSubscribe: toRef(state, "intendToSubscribe"),
                 pk: toRef(parentState, "pk"),
                 pkKey: toRef(parentState, "pkKey"),
-                retrieveArgs: toRef(parentState, "retrieveArgs"),
+                params: toRef(parentState, "params"),
             }),
             clearActiveOnResolved: false,
         });
@@ -356,7 +356,7 @@ export function useObjectSubscription({ objectInstance, props, functions }) {
                 intendToRetrieve: toRef(state, "intendToRetrieve"),
                 pk: toRef(parentState, "pk"),
                 pkKey: toRef(parentState, "pkKey"),
-                retrieveArgs: toRef(parentState, "retrieveArgs"),
+                params: toRef(parentState, "params"),
             }),
             // delay triggering a retrieve until the last retrieve has finished/cancelled.
             // cancel can still be triggered

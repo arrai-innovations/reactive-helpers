@@ -24,8 +24,8 @@ describe("config/listCrud.js", () => {
             expect(() => setListCrud(crud)).not.toThrow();
 
             /** @type {import("vue").UnwrapNestedRefs<
-             *      import('../../../config/listCrud.js').ListCrudFunctions &
-             *      import('../../../config/listCrud.js').ListCrudArgs
+             *      import('../../../config/listCrud.js').ListCrudHandlers &
+             *      import('../../../config/listCrud.js').ListTarget
              *  >}
              */
             const retrievedCrud = reactive({
@@ -63,13 +63,13 @@ describe("config/listCrud.js", () => {
                     test: "test",
                 },
             };
-            const customCrudArgs = {
+            const customTarget = {
                 props: reactive({
-                    crudArgs: {
+                    target: {
                         test: "test2",
                     },
                 }),
-                functions: {
+                handlers: {
                     list: () => 3,
                     subscribe: () => 4,
                     bulkDelete: () => 5,
@@ -77,11 +77,11 @@ describe("config/listCrud.js", () => {
                 },
             };
             const expectedCustomCrud = {
-                list: customCrudArgs.functions.list,
-                subscribe: customCrudArgs.functions.subscribe,
-                bulkDelete: customCrudArgs.functions.bulkDelete,
-                executeAction: customCrudArgs.functions.executeAction,
-                args: customCrudArgs.props.crudArgs,
+                list: customTarget.handlers.list,
+                subscribe: customTarget.handlers.subscribe,
+                bulkDelete: customTarget.handlers.bulkDelete,
+                executeAction: customTarget.handlers.executeAction,
+                args: customTarget.props.target,
             };
             expect(() => setListCrud(defaultCrud)).not.toThrow();
             const defaultRetrievedCrud = reactive({});
@@ -89,28 +89,28 @@ describe("config/listCrud.js", () => {
             expect(defaultRetrievedCrud).toEqual(defaultCrud);
             expect(defaultRetrievedCrud).not.toEqual(expectedCustomCrud);
             const customRetrievedCrud = reactive({});
-            getListCrud(customRetrievedCrud, customCrudArgs);
+            getListCrud(customRetrievedCrud, customTarget);
             expect(customRetrievedCrud).toEqual(expectedCustomCrud);
             expect(customRetrievedCrud).not.toEqual(defaultCrud);
             expect(defaultRetrievedCrud).toEqual(defaultCrud);
             expect(defaultRetrievedCrud).not.toEqual(expectedCustomCrud);
         });
-        it("should throw if passed functions object that has values that are not functions", () => {
+        it("should throw if passed handlers object that has values that are not handlers", () => {
             const retrievedCrud = reactive({});
             expect(() =>
                 getListCrud(retrievedCrud, {
-                    functions: {
+                    handlers: {
                         list: () => 1,
                         subscribe: true,
                     },
                 })
             ).toThrow('Function "subscribe" is not actually a function');
         });
-        it("should throw if passed unexpected functions", () => {
+        it("should throw if passed unexpected handlers", () => {
             const retrievedCrud = reactive({});
             expect(() =>
                 getListCrud(retrievedCrud, {
-                    functions: {
+                    handlers: {
                         list: () => 1,
                         subscribe: () => 2,
                         unknown: () => 3,

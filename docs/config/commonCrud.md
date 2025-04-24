@@ -12,7 +12,7 @@
 
 > **assignCrud**(`target`, `defaultCrud`, `options`?): `void`
 
-Assigns the default CRUD functions to the target object.
+Assigns the default CRUD handlers to the target object.
 
 #### Parameters
 
@@ -32,7 +32,7 @@ The default CRUD definition (usually created by `createDefaultCrud`).
 
 The options object.
 
-###### functions?
+###### handlers?
 
 `any`
 
@@ -48,7 +48,7 @@ The props object.
 
 `Set`\<`string`\> = `...`
 
-The valid keys for the functions.
+The valid keys for the handlers.
 
 #### Returns
 

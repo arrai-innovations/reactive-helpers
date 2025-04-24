@@ -138,8 +138,8 @@ export function useObjectCalculateds(objectCalculatedArgs) {
  *
  * const objectSubscriptionProps = reactive({
  *     // whatever object subscription props you need to work with your crud implementation
- *     crudArgs: {},
- *     retrieveArgs: {},
+ *     target: {},
+ *     params: {},
  *     pk: '1',
  *     pkKey: 'id',
  *     intendToRetrieve: true,

@@ -28,8 +28,8 @@ describe("config/objectCrud.js", () => {
             expect(() => setObjectCrud(crud)).not.toThrow();
 
             /** @type {import("vue").UnwrapNestedRefs<
-             *      import('../../../config/objectCrud.js').ObjectCrudFunctions &
-             *      import('../../../config/objectCrud.js').ObjectCrudArgs
+             *      import('../../../config/objectCrud.js').ObjectCrudHandlers &
+             *      import('../../../config/objectCrud.js').ObjectTarget
              *  >}
              */
             const retrievedCrud = reactive({
@@ -76,13 +76,13 @@ describe("config/objectCrud.js", () => {
                     test: "test",
                 },
             };
-            const customCrudArgs = {
+            const customTarget = {
                 props: reactive({
-                    crudArgs: {
+                    target: {
                         test: "test2",
                     },
                 }),
-                functions: {
+                handlers: {
                     retrieve: () => 7,
                     create: () => 8,
                     update: () => 9,
@@ -92,13 +92,13 @@ describe("config/objectCrud.js", () => {
                 },
             };
             const expectedCustomCrud = {
-                retrieve: customCrudArgs.functions.retrieve,
-                create: customCrudArgs.functions.create,
-                update: customCrudArgs.functions.update,
-                patch: customCrudArgs.functions.patch,
-                delete: customCrudArgs.functions.delete,
-                subscribe: customCrudArgs.functions.subscribe,
-                args: customCrudArgs.props.crudArgs,
+                retrieve: customTarget.handlers.retrieve,
+                create: customTarget.handlers.create,
+                update: customTarget.handlers.update,
+                patch: customTarget.handlers.patch,
+                delete: customTarget.handlers.delete,
+                subscribe: customTarget.handlers.subscribe,
+                args: customTarget.props.target,
             };
             expect(() => setObjectCrud(defaultCrud)).not.toThrow();
             const defaultRetrievedCrud = reactive({});
@@ -106,7 +106,7 @@ describe("config/objectCrud.js", () => {
             expect(defaultRetrievedCrud).toEqual(defaultCrud);
             expect(defaultRetrievedCrud).not.toEqual(expectedCustomCrud);
             const customRetrievedCrud = reactive({});
-            getObjectCrud(customRetrievedCrud, customCrudArgs);
+            getObjectCrud(customRetrievedCrud, customTarget);
             expect(customRetrievedCrud).toEqual(expectedCustomCrud);
             expect(customRetrievedCrud).not.toEqual(defaultCrud);
             expect(defaultRetrievedCrud).toEqual(defaultCrud);
@@ -127,11 +127,11 @@ describe("config/objectCrud.js", () => {
             ).toThrow('Unknown key "unknown" passed to setObjectCrud');
         });
 
-        it("should throw if passed functions object that has values that are not functions", () => {
+        it("should throw if passed handlers object that has values that are not handlers", () => {
             const retrievedCrud = reactive({});
             expect(() =>
                 getObjectCrud(retrievedCrud, {
-                    functions: {
+                    handlers: {
                         retrieve: () => 1,
                         create: () => 2,
                         update: 3,
@@ -142,11 +142,11 @@ describe("config/objectCrud.js", () => {
                 })
             ).toThrow('Function "update" is not actually a function');
         });
-        it("should throw if passed unexpected functions", () => {
+        it("should throw if passed unexpected handlers", () => {
             const retrievedCrud = reactive({});
             expect(() =>
                 getObjectCrud(retrievedCrud, {
-                    functions: {
+                    handlers: {
                         retrieve: () => 1,
                         create: () => 2,
                         update: () => 3,

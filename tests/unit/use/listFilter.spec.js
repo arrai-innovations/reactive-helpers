@@ -170,8 +170,8 @@ describe("use/listFilter", () => {
             const fields = ["id", "__str__", "name"];
             const listInstanceA = useListInstance({
                 props: {
-                    crudArgs: { stream: "test_streamA" },
-                    listArgs: {
+                    target: { stream: "test_streamA" },
+                    params: {
                         user: 1,
                         fields,
                     },
@@ -181,8 +181,8 @@ describe("use/listFilter", () => {
             });
             const listInstanceB = useListInstance({
                 props: {
-                    crudArgs: { stream: "test_streamB" },
-                    listArgs: {
+                    target: { stream: "test_streamB" },
+                    params: {
                         user: 2,
                         fields,
                     },

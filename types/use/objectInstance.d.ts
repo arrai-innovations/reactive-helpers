@@ -11,7 +11,7 @@ export function useObjectInstances(instanceArgs: {
 };
 /**
  * Initializes an object instance to manage CRUD operations. This setup includes reactive state management
- * and functions to perform create, retrieve, update, delete, and patch operations based on provided CRUD
+ * and handlers to perform create, retrieve, update, delete, and patch operations based on provided CRUD
  * configurations and arguments.
  *
  * @example
@@ -39,11 +39,11 @@ export function useObjectInstances(instanceArgs: {
  * const objectInstanceProps = reactive({
  *   pk: pkRef,
  *   pkKey: 'id',
- *   crudArgs: {
+ *   target: {
  *       app: toRef(props, "app"),
  *       model: toRef(props, "model"),
  *   },
- *   retrieveArgs: {},
+ *   params: {},
  * });
  * const objectInstance = useObjectInstance(objectInstanceProps);
  * watch(pkRef, (newValue, oldValue) => {
@@ -61,7 +61,7 @@ export function useObjectInstances(instanceArgs: {
  * @param {ObjectInstanceOptions} options - The options to be passed to useObjectInstance.
  * @returns {ObjectInstance} - An object used to manage create, retrieve, update, delete, and patch operations.
  */
-export function useObjectInstance({ props, functions }: ObjectInstanceOptions): ObjectInstance;
+export function useObjectInstance({ props, handlers }: ObjectInstanceOptions): ObjectInstance;
 /**
  * A composition function to manage create, retrieve, update, delete, and patch operations.
  *
@@ -83,7 +83,7 @@ export function useObjectInstance({ props, functions }: ObjectInstanceOptions): 
  *
  * @typedef {object} ObjectInstanceOptions
  * @property {import('vue').UnwrapNestedRefs<ObjectInstanceRawProps>} props - The reactive configuration object.
- * @property {import('../config/objectCrud.js').ObjectCrudFunctions} [functions] - An object of custom crud functions to use instead of the defaults.
+ * @property {import('../config/objectCrud.js').ObjectCrudHandlers} [handlers] - An object of custom crud handlers to use instead of the defaults.
  */
 /**
  * Reactive arguments to be passed to the object instance.
@@ -91,12 +91,12 @@ export function useObjectInstance({ props, functions }: ObjectInstanceOptions): 
  * @typedef {object} ObjectInstanceRawProps
  * @property {string} [pk] - The pk of the object, optional to support creating new objects.
  * @property {string} pkKey - The pk key of the object.
- * @property {object} retrieveArgs - The arguments to be passed to the retrieve function.
- * @property {import('../config/objectCrud.js').ObjectCrudArgs} crudArgs - The arguments to be passed to the crud functions.
+ * @property {object} params - The arguments to be passed to the retrieve function.
+ * @property {import('../config/objectCrud.js').ObjectTarget} target - The arguments to be passed to the crud handlers.
  */
 /**
  * @typedef {object} ObjectInstanceRawStateCrud
- * @property {import('vue').Reactive<import('../config/objectCrud.js').ObjectCrudArgsArgs|{}>} args - The arguments to be passed to the crud functions.
+ * @property {import('vue').Reactive<import('../config/objectCrud.js').ObjectTargetArgs|{}>} args - The arguments to be passed to the crud handlers.
  * @property {import('../config/objectCrud.js').CrudCreateFn} create - The create function.
  * @property {import('../config/objectCrud.js').CrudRetrieveFn} retrieve - The retrieve function.
  * @property {import('../config/objectCrud.js').CrudUpdateFn} update - The update function.
@@ -108,10 +108,10 @@ export function useObjectInstance({ props, functions }: ObjectInstanceOptions): 
  * The raw state of the object instance.
  *
  * @typedef {object} ObjectInstanceRawState
- * @property {import('vue').Reactive<ObjectInstanceRawStateCrud>} crud - The crud functions.
+ * @property {import('vue').Reactive<ObjectInstanceRawStateCrud>} crud - The crud handlers.
  * @property {import('vue').Ref<string|undefined>} pk - The pk of the object.
  * @property {import('vue').Ref<string|undefined>} pkKey - The pk key of the object.
- * @property {import('vue').Ref<{[key:string]: any}>} retrieveArgs - The arguments to be passed to the retrieve function.
+ * @property {import('vue').Ref<{[key:string]: any}>} params - The arguments to be passed to the retrieve function.
  * @property {import('vue').Reactive<CrudObject>} object - The object.
  * @property {Readonly<import('vue').Ref<boolean>>} loading - Whether the object is loading.
  * @property {Readonly<import('vue').Ref<boolean>>} errored - Whether the object errored.
@@ -183,9 +183,9 @@ export type ObjectInstanceOptions = {
      */
     props: import("vue").UnwrapNestedRefs<ObjectInstanceRawProps>;
     /**
-     * - An object of custom crud functions to use instead of the defaults.
+     * - An object of custom crud handlers to use instead of the defaults.
      */
-    functions?: import("../config/objectCrud.js").ObjectCrudFunctions;
+    handlers?: import("../config/objectCrud.js").ObjectCrudHandlers;
 };
 /**
  * Reactive arguments to be passed to the object instance.
@@ -202,17 +202,17 @@ export type ObjectInstanceRawProps = {
     /**
      * - The arguments to be passed to the retrieve function.
      */
-    retrieveArgs: object;
+    params: object;
     /**
-     * - The arguments to be passed to the crud functions.
+     * - The arguments to be passed to the crud handlers.
      */
-    crudArgs: import("../config/objectCrud.js").ObjectCrudArgs;
+    target: import("../config/objectCrud.js").ObjectTarget;
 };
 export type ObjectInstanceRawStateCrud = {
     /**
-     * - The arguments to be passed to the crud functions.
+     * - The arguments to be passed to the crud handlers.
      */
-    args: import("vue").Reactive<import("../config/objectCrud.js").ObjectCrudArgsArgs | {}>;
+    args: import("vue").Reactive<import("../config/objectCrud.js").ObjectTargetArgs | {}>;
     /**
      * - The create function.
      */
@@ -243,7 +243,7 @@ export type ObjectInstanceRawStateCrud = {
  */
 export type ObjectInstanceRawState = {
     /**
-     * - The crud functions.
+     * - The crud handlers.
      */
     crud: import("vue").Reactive<ObjectInstanceRawStateCrud>;
     /**
@@ -257,7 +257,7 @@ export type ObjectInstanceRawState = {
     /**
      * - The arguments to be passed to the retrieve function.
      */
-    retrieveArgs: import("vue").Ref<{
+    params: import("vue").Ref<{
         [key: string]: any;
     }>;
     /**

@@ -72,13 +72,13 @@ Whether the calculated properties are running.
 
 > **crud**: `object`
 
-CRUD functions and their configurations for the list.
+CRUD handlers and their configurations for the list.
 
 ###### crud.args
 
 > **args**: `any`
 
-Arguments for the CRUD functions.
+Arguments for the CRUD handlers.
 
 ###### crud.list?
 
@@ -144,12 +144,6 @@ If this is true, the list should be fetched, or re-fetched if arguments change.
 
 If this is true, the subscription should start or restart if arguments change.
 
-###### listArgs
-
-> **listArgs**: `any`
-
-Arguments passed to the server for listing operations.
-
 ###### loading?
 
 > `optional` **loading**: `boolean`
@@ -202,6 +196,12 @@ The order of objects in the list.
 
 Flag indicating if the order watch is active.
 
+###### params
+
+> **params**: `any`
+
+Arguments passed to the server for listing operations.
+
 ###### pkKey
 
 > **pkKey**: `string`
@@ -251,12 +251,6 @@ Signals whether any computations related to object relationships are currently i
 > `optional` **resultsWatchRunning**: `boolean`
 
 Flag indicating if the results watch is active.
-
-###### retrieveArgs
-
-> **retrieveArgs**: `any`
-
-Arguments passed to the server for retrieval operations.
 
 ###### running
 
@@ -379,13 +373,13 @@ Whether the calculated properties are running.
 
 > **crud**: `object`
 
-CRUD functions and their configurations for the list.
+CRUD handlers and their configurations for the list.
 
 ###### crud.args
 
 > **args**: `any`
 
-Arguments for the CRUD functions.
+Arguments for the CRUD handlers.
 
 ###### crud.list?
 
@@ -451,12 +445,6 @@ If this is true, the list should be fetched, or re-fetched if arguments change.
 
 If this is true, the subscription should start or restart if arguments change.
 
-###### listArgs
-
-> **listArgs**: `any`
-
-Arguments passed to the server for listing operations.
-
 ###### loading?
 
 > `optional` **loading**: `boolean`
@@ -509,6 +497,12 @@ The order of objects in the list.
 
 Flag indicating if the order watch is active.
 
+###### params
+
+> **params**: `any`
+
+Arguments passed to the server for listing operations.
+
 ###### pkKey
 
 > **pkKey**: `string`
@@ -558,12 +552,6 @@ Signals whether any computations related to object relationships are currently i
 > `optional` **resultsWatchRunning**: `boolean`
 
 Flag indicating if the results watch is active.
-
-###### retrieveArgs
-
-> **retrieveArgs**: `any`
-
-Arguments passed to the server for retrieval operations.
 
 ###### running
 
@@ -668,13 +656,13 @@ Whether the calculated properties are running.
 
 > **crud**: `object`
 
-CRUD functions and their configurations for the list.
+CRUD handlers and their configurations for the list.
 
 ###### crud.args
 
 > **args**: `any`
 
-Arguments for the CRUD functions.
+Arguments for the CRUD handlers.
 
 ###### crud.list?
 
@@ -739,12 +727,6 @@ If this is true, the list should be fetched, or re-fetched if arguments change.
 > `optional` **intendToSubscribe**: `boolean`
 
 If this is true, the subscription should start or restart if arguments change.
-
-###### listArgs
-
-> **listArgs**: `any`
-
-Arguments passed to the server for listing operations.
 
 ###### loading?
 
@@ -816,6 +798,12 @@ Flag indicating if the order watch is active.
 
 Flag to indicate if there are pending reactive effects needing resolution.
 
+###### params
+
+> **params**: `any`
+
+Arguments passed to the server for listing operations.
+
 ###### pkKey
 
 > **pkKey**: `string`
@@ -865,12 +853,6 @@ Signals whether any computations related to object relationships are currently i
 > `optional` **resultsWatchRunning**: `boolean`
 
 Flag indicating if the results watch is active.
-
-###### retrieveArgs
-
-> **retrieveArgs**: `any`
-
-Arguments passed to the server for retrieval operations.
 
 ###### running
 
@@ -1124,10 +1106,9 @@ The initialized list sort instance, including reactive state and utilities to ma
 import { reactive, computed } from 'vue';
 import { useListSort, useListInstance } from '@arrai-innovations/reactive-helpers';
 const listInstanceProps = reactive({
-    crudArgs: {},
-    listArgs: {},
+    target: {},
+    params: {},
     pkKey: 'id',
-    retrieveArgs: {},
     intendToList: true,
 });
 const listInstance = useListInstance(listInstanceProps);

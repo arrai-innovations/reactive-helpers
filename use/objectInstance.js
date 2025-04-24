@@ -30,7 +30,7 @@ import { refIfReactive } from "../utils/refIfReactive.js";
  *
  * @typedef {object} ObjectInstanceOptions
  * @property {import('vue').UnwrapNestedRefs<ObjectInstanceRawProps>} props - The reactive configuration object.
- * @property {import('../config/objectCrud.js').ObjectCrudFunctions} [functions] - An object of custom crud functions to use instead of the defaults.
+ * @property {import('../config/objectCrud.js').ObjectCrudHandlers} [handlers] - An object of custom crud handlers to use instead of the defaults.
  */
 
 /**
@@ -39,13 +39,13 @@ import { refIfReactive } from "../utils/refIfReactive.js";
  * @typedef {object} ObjectInstanceRawProps
  * @property {string} [pk] - The pk of the object, optional to support creating new objects.
  * @property {string} pkKey - The pk key of the object.
- * @property {object} retrieveArgs - The arguments to be passed to the retrieve function.
- * @property {import('../config/objectCrud.js').ObjectCrudArgs} crudArgs - The arguments to be passed to the crud functions.
+ * @property {object} params - The arguments to be passed to the retrieve function.
+ * @property {import('../config/objectCrud.js').ObjectTarget} target - The arguments to be passed to the crud handlers.
  */
 
 /**
  * @typedef {object} ObjectInstanceRawStateCrud
- * @property {import('vue').Reactive<import('../config/objectCrud.js').ObjectCrudArgsArgs|{}>} args - The arguments to be passed to the crud functions.
+ * @property {import('vue').Reactive<import('../config/objectCrud.js').ObjectTargetArgs|{}>} args - The arguments to be passed to the crud handlers.
  * @property {import('../config/objectCrud.js').CrudCreateFn} create - The create function.
  * @property {import('../config/objectCrud.js').CrudRetrieveFn} retrieve - The retrieve function.
  * @property {import('../config/objectCrud.js').CrudUpdateFn} update - The update function.
@@ -58,10 +58,10 @@ import { refIfReactive } from "../utils/refIfReactive.js";
  * The raw state of the object instance.
  *
  * @typedef {object} ObjectInstanceRawState
- * @property {import('vue').Reactive<ObjectInstanceRawStateCrud>} crud - The crud functions.
+ * @property {import('vue').Reactive<ObjectInstanceRawStateCrud>} crud - The crud handlers.
  * @property {import('vue').Ref<string|undefined>} pk - The pk of the object.
  * @property {import('vue').Ref<string|undefined>} pkKey - The pk key of the object.
- * @property {import('vue').Ref<{[key:string]: any}>} retrieveArgs - The arguments to be passed to the retrieve function.
+ * @property {import('vue').Ref<{[key:string]: any}>} params - The arguments to be passed to the retrieve function.
  * @property {import('vue').Reactive<CrudObject>} object - The object.
  * @property {Readonly<import('vue').Ref<boolean>>} loading - Whether the object is loading.
  * @property {Readonly<import('vue').Ref<boolean>>} errored - Whether the object errored.
@@ -124,7 +124,7 @@ export const objectInstanceStateKeys = [
     "crud",
     "pk",
     "pkKey",
-    "retrieveArgs",
+    "params",
     "object",
     "loading",
     "errored",
@@ -151,7 +151,7 @@ export function useObjectInstances(instanceArgs) {
 
 /**
  * Initializes an object instance to manage CRUD operations. This setup includes reactive state management
- * and functions to perform create, retrieve, update, delete, and patch operations based on provided CRUD
+ * and handlers to perform create, retrieve, update, delete, and patch operations based on provided CRUD
  * configurations and arguments.
  *
  * @example
@@ -179,11 +179,11 @@ export function useObjectInstances(instanceArgs) {
  * const objectInstanceProps = reactive({
  *   pk: pkRef,
  *   pkKey: 'id',
- *   crudArgs: {
+ *   target: {
  *       app: toRef(props, "app"),
  *       model: toRef(props, "model"),
  *   },
- *   retrieveArgs: {},
+ *   params: {},
  * });
  * const objectInstance = useObjectInstance(objectInstanceProps);
  * watch(pkRef, (newValue, oldValue) => {
@@ -201,7 +201,7 @@ export function useObjectInstances(instanceArgs) {
  * @param {ObjectInstanceOptions} options - The options to be passed to useObjectInstance.
  * @returns {ObjectInstance} - An object used to manage create, retrieve, update, delete, and patch operations.
  */
-export function useObjectInstance({ props, functions = {} }) {
+export function useObjectInstance({ props, handlers = {} }) {
     // missing pk is fine, to support creating new objects
     // however, pkKey is required
     if (!props.pkKey) {
@@ -227,7 +227,7 @@ export function useObjectInstance({ props, functions = {} }) {
             object: reactive({}),
             pk: refIfReactive(props, "pk", null),
             pkKey: refIfReactive(props, "pkKey"),
-            retrieveArgs: refIfReactive(props, "retrieveArgs", {}),
+            params: refIfReactive(props, "params", {}),
             loading: loadingError.loading,
             errored: loadingError.errored,
             error: loadingError.error,
@@ -235,7 +235,7 @@ export function useObjectInstance({ props, functions = {} }) {
         }
     );
 
-    getObjectCrud(state.crud, { props, functions });
+    getObjectCrud(state.crud, { props, handlers });
 
     // due to retrieve being called by `useCancelleableIntent`, if called manually then by the watch,
     //  it will run into the loading check. Instead, return the current retrieve promise if it exists.
@@ -262,9 +262,9 @@ export function useObjectInstance({ props, functions = {} }) {
         loadingError.clearError();
         const isCancelled = ref(false);
         const retrievePromise = state.crud.retrieve({
-            crudArgs: state.crud.args,
+            target: state.crud.args,
             pk: state.pk,
-            retrieveArgs: state.retrieveArgs,
+            params: state.params,
             pkKey: state.pkKey,
             isCancelled: readonly(isCancelled),
         });
@@ -306,9 +306,9 @@ export function useObjectInstance({ props, functions = {} }) {
         loadingError.clearError();
         const isCancelled = ref(false);
         const createPromise = state.crud.create({
-            crudArgs: state.crud.args,
+            target: state.crud.args,
             object,
-            retrieveArgs: state.retrieveArgs,
+            params: state.params,
             pkKey: state.pkKey,
             isCancelled: readonly(isCancelled),
         });
@@ -347,9 +347,9 @@ export function useObjectInstance({ props, functions = {} }) {
         loadingError.clearError();
         const isCancelled = ref(false);
         const updatePromise = state.crud.update({
-            crudArgs: state.crud.args,
+            target: state.crud.args,
             object,
-            retrieveArgs: state.retrieveArgs,
+            params: state.params,
             pkKey: state.pkKey,
             isCancelled: readonly(isCancelled),
         });
@@ -387,11 +387,11 @@ export function useObjectInstance({ props, functions = {} }) {
         loadingError.clearError();
         const isCancelled = ref(false);
         const patchPromise = state.crud.patch({
-            crudArgs: state.crud.args,
+            target: state.crud.args,
             pk: state.pk,
             pkKey: state.pkKey,
             partialObject,
-            retrieveArgs: state.retrieveArgs,
+            params: state.params,
             isCancelled: readonly(isCancelled),
         });
         return wrapMaybeCancellable(
@@ -428,7 +428,7 @@ export function useObjectInstance({ props, functions = {} }) {
         loadingError.clearError();
         const isCancelled = ref(false);
         const deletePromise = state.crud.delete({
-            crudArgs: state.crud.args,
+            target: state.crud.args,
             pk: state.pk,
             pkKey: state.pkKey,
             isCancelled: readonly(isCancelled),

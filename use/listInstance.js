@@ -43,8 +43,8 @@ export class ListInstanceError extends Error {
  *
  * @typedef {object} ListInstanceProps
  * @property {string} pkKey - The primary key field for the list objects.
- * @property {object} listArgs - The arguments passed to the server.
- * @property {object} crudArgs - Implementation specific arguments.
+ * @property {object} params - The arguments passed to the server.
+ * @property {object} target - Implementation specific arguments.
  */
 
 /**
@@ -52,14 +52,14 @@ export class ListInstanceError extends Error {
  *
  * @typedef {object} ListInstanceOptions
  * @property {import('vue').UnwrapNestedRefs<ListInstanceProps>} props - The props for the list instance.
- * @property {object} [functions] - Default implementation are used as set by `setListCrud`.
- * @property {import('../config/listCrud.js').CrudListFn} [functions.list] - Provide the implementation for the list
+ * @property {object} [handlers] - Default implementation are used as set by `setListCrud`.
+ * @property {import('../config/listCrud.js').CrudListFn} [handlers.list] - Provide the implementation for the list
  *  function.
- *  @property {import('../config/listCrud.js').CrudBulkDeleteFn} [functions.bulkDelete] - Provide the implementation for the bulkDelete
+ *  @property {import('../config/listCrud.js').CrudBulkDeleteFn} [handlers.bulkDelete] - Provide the implementation for the bulkDelete
  *  function.
- *   @property {import('../config/listCrud.js').CrudExecuteActionFn} [functions.executeAction] - Provide the implementation for the executeAction
+ *   @property {import('../config/listCrud.js').CrudExecuteActionFn} [handlers.executeAction] - Provide the implementation for the executeAction
  *  function.
- * @property {import('../config/listCrud.js').CrudListSubscribeFn} [functions.subscribe] - Provide the implementation for the
+ * @property {import('../config/listCrud.js').CrudListSubscribeFn} [handlers.subscribe] - Provide the implementation for the
  *  subscribe function.
  * @property {boolean} keepOldPages - If true, pages will not be cleared when defaultPageCallback is called.
  */
@@ -86,11 +86,11 @@ export class ListInstanceError extends Error {
  * The raw state object for the list instance, defining the reactive properties and their types.
  *
  * @typedef {object} ListInstanceRawState
- * @property {object} crud - CRUD functions and their configurations for the list.
- * @property {object} crud.args - Arguments for the CRUD functions.
+ * @property {object} crud - CRUD handlers and their configurations for the list.
+ * @property {object} crud.args - Arguments for the CRUD handlers.
  * @property {Function} [crud.list] - Function to list objects.
  * @property {string} pkKey - The primary key field for the list objects.
- * @property {object} listArgs - Arguments passed to the server for listing operations.
+ * @property {object} params - Arguments passed to the server for listing operations.
  * @property {ObjectsByPk} objects - The list objects stored by their pks.
  * @property {boolean} running - Indicates if there are ongoing reactive updates.
  * @property {Readonly<import('vue').Ref<boolean>>} [loading] - Indicates if the list is currently loading.
@@ -168,10 +168,10 @@ export function useListInstances(listInstanceArgs) {
  * });
  *
  * const listInstanceProps = reactive({
- *     crudArgs: {
+ *     target: {
  *         // whatever arguments are required for your configured list crud function to get the right endpoint
  *     },
- *     listArgs: {
+ *     params: {
  *         // whatever arguments are required for your configured list function to get the right list
  *         someListFilter: toRef(props, "someListFilter"),
  *     },
@@ -201,7 +201,7 @@ export function useListInstances(listInstanceArgs) {
  * @returns {ListInstance} The list instance.
  * @throws {ListInstanceError} If the props or keepOldPages are missing.
  */
-export function useListInstance({ props, functions = {}, keepOldPages }) {
+export function useListInstance({ props, handlers = {}, keepOldPages }) {
     if (!props) {
         throw new ListInstanceError("useListInstance requires props", "missing-props");
     }
@@ -272,7 +272,7 @@ export function useListInstance({ props, functions = {}, keepOldPages }) {
             executeAction: defaultListCrud.executeAction,
         }),
         pkKey: refIfReactive(props, "pkKey"),
-        listArgs: refIfReactive(props, "listArgs", {}),
+        params: refIfReactive(props, "params", {}),
         /** @type {{[key: string]: ListObject}} */
         objects: /** @type {{[key: string]: ListObject}} */ _objectsProxy,
         running: false,
@@ -283,7 +283,7 @@ export function useListInstance({ props, functions = {}, keepOldPages }) {
         objectsInOrder: es.run(() => computed(() => objectsInOrderRefs.value.map((ref) => unref(ref)))),
     });
 
-    getListCrud(state.crud, { props, functions });
+    getListCrud(state.crud, { props, handlers });
 
     const defaultPageCallback = (/** @type {ListObject[]} */ newObjects) => {
         // with keepOldPages, you are responsible for clearing the list as needed
@@ -313,7 +313,7 @@ export function useListInstance({ props, functions = {}, keepOldPages }) {
         loadingError.clearError();
         return state.crud
             .bulkDelete({
-                crudArgs: state.crud.args,
+                target: state.crud.args,
                 pks: Object.keys(state.objects).map(Number),
                 pkKey: state.pkKey,
             })
@@ -339,7 +339,7 @@ export function useListInstance({ props, functions = {}, keepOldPages }) {
         loadingError.clearError();
         return state.crud
             .executeAction({
-                crudArgs: state.crud.args,
+                target: state.crud.args,
                 pks: Object.keys(state.objects).map(Number),
                 pkKey: state.pkKey,
             })
@@ -375,9 +375,9 @@ export function useListInstance({ props, functions = {}, keepOldPages }) {
         loadingError.setLoading();
         const isCancelled = ref(false);
         const listPromise = state.crud.list({
-            crudArgs: state.crud.args,
+            target: state.crud.args,
             pkKey: state.pkKey,
-            listArgs: state.listArgs,
+            params: state.params,
             pageCallback: returnedObject.pageCallback,
             isCancelled: readonly(isCancelled),
         });

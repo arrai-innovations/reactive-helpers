@@ -12,16 +12,6 @@
 
 #### Properties
 
-##### crudArgs
-
-> **crudArgs**: `object`
-
-The arguments to be passed to the crud functions.
-
-###### Index Signature
-
-\[`key`: `string`\]: `any`
-
 ##### isCancelled
 
 > **isCancelled**: `Readonly`\<`Ref`\<`boolean`, `boolean`\>\>
@@ -38,17 +28,27 @@ The data to be acted upon.
 
 \[`key`: `string`\]: `any`
 
+##### params
+
+> **params**: `object`
+
+The arguments to be passed to the retrieve function.
+
+###### Index Signature
+
+\[`key`: `string`\]: `any`
+
 ##### pkKey
 
 > **pkKey**: `string`
 
 The key name of the primary key.
 
-##### retrieveArgs
+##### target
 
-> **retrieveArgs**: `object`
+> **target**: `object`
 
-The arguments to be passed to the retrieve function.
+The arguments to be passed to the crud handlers.
 
 ###### Index Signature
 
@@ -59,16 +59,6 @@ The arguments to be passed to the retrieve function.
 ### DeleteArgs
 
 #### Properties
-
-##### crudArgs
-
-> **crudArgs**: `object`
-
-The arguments to be passed to the crud functions.
-
-###### Index Signature
-
-\[`key`: `string`\]: `any`
 
 ##### isCancelled
 
@@ -88,33 +78,19 @@ The pk of the object to be acted upon.
 
 The key name of the primary key.
 
-***
+##### target
 
-### ObjectCrudArgsOption
+> **target**: `object`
 
-#### Properties
+The arguments to be passed to the crud handlers.
 
-##### crudArgs?
+###### Index Signature
 
-> `optional` **crudArgs**: [`ObjectCrudArgsArgs`](objectCrud.md#objectcrudargsargs)
-
-The arguments to be passed to the crud functions.
+\[`key`: `string`\]: `any`
 
 ***
 
-### ObjectCrudArgsProperties
-
-#### Properties
-
-##### args
-
-> **args**: [`ObjectCrudArgsArgs`](objectCrud.md#objectcrudargsargs)
-
-The arguments to be passed to the crud functions.
-
-***
-
-### ObjectCrudFunctions
+### ObjectCrudHandlers
 
 #### Properties
 
@@ -166,21 +142,21 @@ A function to be used instead of the default crud update function.
 
 The callback to be called when the object is updated.
 
-##### crudArgs
-
-> **crudArgs**: `object`
-
-The arguments to be passed to the crud functions.
-
-###### Index Signature
-
-\[`key`: `string`\]: `any`
-
 ##### isCancelled
 
 > **isCancelled**: `Readonly`\<`Ref`\<`boolean`, `boolean`\>\>
 
 A ref to indicate if the request was cancelled.
+
+##### params
+
+> **params**: `object`
+
+The arguments to be passed to the retrieve function.
+
+###### Index Signature
+
+\[`key`: `string`\]: `any`
 
 ##### pk
 
@@ -194,11 +170,11 @@ The pk of the object to be acted upon.
 
 The key name of the primary key.
 
-##### retrieveArgs
+##### target
 
-> **retrieveArgs**: `object`
+> **target**: `object`
 
-The arguments to be passed to the retrieve function.
+The arguments to be passed to the crud handlers.
 
 ###### Index Signature
 
@@ -206,25 +182,49 @@ The arguments to be passed to the retrieve function.
 
 ***
 
-### PartialArgs
+### ObjectTargetOption
 
 #### Properties
 
-##### crudArgs
+##### target?
 
-> **crudArgs**: `object`
+> `optional` **target**: [`ObjectTargetArgs`](objectCrud.md#objecttargetargs)
 
-The arguments to be passed to the crud functions.
+The arguments to be passed to the crud handlers.
 
-###### Index Signature
+***
 
-\[`key`: `string`\]: `any`
+### ObjectTargetProperties
+
+#### Properties
+
+##### args
+
+> **args**: [`ObjectTargetArgs`](objectCrud.md#objecttargetargs)
+
+The arguments to be passed to the crud handlers.
+
+***
+
+### PartialArgs
+
+#### Properties
 
 ##### isCancelled
 
 > **isCancelled**: `Readonly`\<`Ref`\<`boolean`, `boolean`\>\>
 
 A ref to indicate if the request was cancelled.
+
+##### params
+
+> **params**: `object`
+
+The arguments to be passed to the retrieve function.
+
+###### Index Signature
+
+\[`key`: `string`\]: `any`
 
 ##### partialObject
 
@@ -248,11 +248,11 @@ The pk of the object to be acted upon.
 
 The key name of the primary key.
 
-##### retrieveArgs
+##### target
 
-> **retrieveArgs**: `object`
+> **target**: `object`
 
-The arguments to be passed to the retrieve function.
+The arguments to be passed to the crud handlers.
 
 ###### Index Signature
 
@@ -264,21 +264,21 @@ The arguments to be passed to the retrieve function.
 
 #### Properties
 
-##### crudArgs
-
-> **crudArgs**: `object`
-
-The arguments to be passed to the crud functions.
-
-###### Index Signature
-
-\[`key`: `string`\]: `any`
-
 ##### isCancelled
 
 > **isCancelled**: `Readonly`\<`Ref`\<`boolean`, `boolean`\>\>
 
 A ref to indicate if the request was cancelled.
+
+##### params
+
+> **params**: `object`
+
+The arguments to be passed to the retrieve function.
+
+###### Index Signature
+
+\[`key`: `string`\]: `any`
 
 ##### pk
 
@@ -292,11 +292,11 @@ The pk of the object to be acted upon.
 
 The key name of the primary key.
 
-##### retrieveArgs
+##### target
 
-> **retrieveArgs**: `object`
+> **target**: `object`
 
-The arguments to be passed to the retrieve function.
+The arguments to be passed to the crud handlers.
 
 ###### Index Signature
 
@@ -307,16 +307,6 @@ The arguments to be passed to the retrieve function.
 ### UpdateArgs
 
 #### Properties
-
-##### crudArgs
-
-> **crudArgs**: `object`
-
-The arguments to be passed to the crud functions.
-
-###### Index Signature
-
-\[`key`: `string`\]: `any`
 
 ##### isCancelled
 
@@ -330,17 +320,27 @@ A ref to indicate if the request was cancelled.
 
 The data to be acted upon.
 
+##### params
+
+> **params**: `object`
+
+The arguments to be passed to the retrieve function.
+
+###### Index Signature
+
+\[`key`: `string`\]: `any`
+
 ##### pkKey
 
 > **pkKey**: `string`
 
 The key name of the primary key.
 
-##### retrieveArgs
+##### target
 
-> **retrieveArgs**: `object`
+> **target**: `object`
 
-The arguments to be passed to the retrieve function.
+The arguments to be passed to the crud handlers.
 
 ###### Index Signature
 
@@ -446,7 +446,7 @@ The arguments to be passed to the patch function.
 
 ##### args
 
-[`RetrieveArgs`](objectCrud.md#retrieveargs-3)
+[`RetrieveArgs`](objectCrud.md#retrieveargs)
 
 The arguments to be passed to the retrieve function.
 
@@ -502,17 +502,17 @@ The arguments to be passed to the update function.
 
 ***
 
-### ObjectCrudArgs
+### ObjectTarget
 
-> **ObjectCrudArgs**\<\>: [`ObjectCrudArgsProperties`](objectCrud.md#objectcrudargsproperties) & [`ObjectCrudFunctions`](objectCrud.md#objectcrudfunctions)
+> **ObjectTarget**\<\>: [`ObjectTargetProperties`](objectCrud.md#objecttargetproperties) & [`ObjectCrudHandlers`](objectCrud.md#objectcrudhandlers)
 
 #### Type Parameters
 
 ***
 
-### ObjectCrudArgsArgs
+### ObjectTargetArgs
 
-> **ObjectCrudArgsArgs**\<\>: `object`
+> **ObjectTargetArgs**\<\>: `object`
 
 #### Type Parameters
 
@@ -524,9 +524,9 @@ The arguments to be passed to the update function.
 
 ### defaultObjectCrud
 
-> `const` **defaultObjectCrud**: `Readonly`\<[`ObjectCrudFunctions`](objectCrud.md#objectcrudfunctions)\>
+> `const` **defaultObjectCrud**: `Readonly`\<[`ObjectCrudHandlers`](objectCrud.md#objectcrudhandlers)\>
 
-The default object crud functions.
+The default object crud handlers.
 
 ## Functions
 
@@ -534,7 +534,7 @@ The default object crud functions.
 
 > **getObjectCrud**(`target`, `options`): `void`
 
-Get the previously set object crud functions.
+Get the previously set object crud handlers.
 
 #### Parameters
 
@@ -544,31 +544,31 @@ The reactive object you want to add the resulting crud to.
 
 ###### args
 
-[`ObjectCrudArgsArgs`](objectCrud.md#objectcrudargsargs)
+[`ObjectTargetArgs`](objectCrud.md#objecttargetargs)
 
-The arguments to be passed to the crud functions.
+The arguments to be passed to the crud handlers.
 
 ##### options
 
 The options for the reactive crud object.
 
-###### functions?
+###### handlers?
 
-[`ObjectCrudFunctions`](objectCrud.md#objectcrudfunctions)
+[`ObjectCrudHandlers`](objectCrud.md#objectcrudhandlers)
 
 Any functions to override the default crud functions.
 
 ###### props?
 
-\{ `crudArgs`: [`ObjectCrudArgsArgs`](objectCrud.md#objectcrudargsargs); \}
+\{ `target`: [`ObjectTargetArgs`](objectCrud.md#objecttargetargs); \}
 
-The props with any passed crudArgs.
+The props with any passed target.
 
-###### props.crudArgs?
+###### props.target?
 
-[`ObjectCrudArgsArgs`](objectCrud.md#objectcrudargsargs)
+[`ObjectTargetArgs`](objectCrud.md#objecttargetargs)
 
-The arguments to be passed to the crud functions.
+The arguments to be passed to the crud handlers.
 
 #### Returns
 
@@ -584,15 +584,15 @@ The arguments to be passed to the crud functions.
 
 > **setObjectCrud**(`options`): `void`
 
-Set the object crud functions.
+Set the object crud handlers.
 
 #### Parameters
 
 ##### options
 
-[`ObjectCrudArgs`](objectCrud.md#objectcrudargs)
+[`ObjectTarget`](objectCrud.md#objecttarget)
 
-The options for the object crud functions.
+The options for the object crud handlers.
 
 #### Returns
 

@@ -123,10 +123,10 @@ export function useListSubscriptions(listSubscriptionArgs) {
  * });
  *
  * const listSubscriptionProps = reactive({
- *     crudArgs: {
+ *     target: {
  *         // whatever arguments are required for your configured list crud function to get the right endpoint
  *     },
- *     listArgs: {
+ *     params: {
  *         // whatever arguments are required for your configured list function to get the right list
  *         someListFilter: toRef(props, "someListFilter"),
  *     },
@@ -153,16 +153,16 @@ export function useListSubscriptions(listSubscriptionArgs) {
  * passed. Also thrown if clearListOnListIntentTriggered is not passed or if neither listInstance
  * nor keepOldPages are passed.
  */
-export function useListSubscription({ listInstance, props, functions, keepOldPages, clearListOnListIntentTriggered }) {
+export function useListSubscription({ listInstance, props, handlers, keepOldPages, clearListOnListIntentTriggered }) {
     if (!listInstance && !props) {
         throw new ListSubscriptionError(
-            "useListSubscription should be passed listInstance or props and functions.",
+            "useListSubscription should be passed listInstance or props and handlers.",
             "missing-arguments"
         );
     }
     if (listInstance && props) {
         throw new ListSubscriptionError(
-            "useListSubscription should be passed listInstance or props and functions, not both.",
+            "useListSubscription should be passed listInstance or props and handlers, not both.",
             "too-many-arguments"
         );
     }
@@ -179,13 +179,13 @@ export function useListSubscription({ listInstance, props, functions, keepOldPag
         );
     }
     if (!listInstance) {
-        if (!("listArgs" in props)) {
-            console.error("listArgs not set, must be true for intendToList or intendToSubscribe to work.");
+        if (!("params" in props)) {
+            console.error("params not set, must be true for intendToList or intendToSubscribe to work.");
         }
-        listInstance = useListInstance({ props, functions, keepOldPages });
+        listInstance = useListInstance({ props, handlers, keepOldPages });
     } else {
-        if (functions) {
-            console.error("functions passed to useListSubscription, but listInstance was passed. functions ignored.");
+        if (handlers) {
+            console.error("handlers passed to useListSubscription, but listInstance was passed. handlers ignored.");
         }
     }
 
@@ -376,9 +376,9 @@ export function useListSubscription({ listInstance, props, functions, keepOldPag
             awaitableWithCancel: () => {
                 // this function cannot be async, or the resulting promise will lose its .cancel() method
                 const subscribePromise = parentState.crud.subscribe({
-                    crudArgs: cloneDeep(parentState.crud.args),
+                    target: cloneDeep(parentState.crud.args),
                     pkKey: parentState.pkKey,
-                    listArgs: cloneDeep(parentState.listArgs),
+                    params: cloneDeep(parentState.params),
                     subscriptionEventCallback,
                 });
                 // catching makes a new promise, we need to make sure the cancel method lives on.
@@ -391,7 +391,7 @@ export function useListSubscription({ listInstance, props, functions, keepOldPag
             },
             watchArguments: reactive({
                 intendToSubscribe: toRef(state, "intendToSubscribe"),
-                listArgs: toRef(parentState, "listArgs"),
+                params: toRef(parentState, "params"),
             }),
             clearActiveOnResolved: false,
         });
@@ -408,7 +408,7 @@ export function useListSubscription({ listInstance, props, functions, keepOldPag
             },
             watchArguments: reactive({
                 intendToList: toRef(state, "intendToList"),
-                listArgs: toRef(parentState, "listArgs"),
+                params: toRef(parentState, "params"),
             }),
             // delay triggering a list until the last list has finished/cancelled
             // cancel can still be triggered

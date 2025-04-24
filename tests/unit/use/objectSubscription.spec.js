@@ -64,7 +64,7 @@ describe("use/objectSubscription.js", function () {
             props: {
                 pk: 1,
                 pkKey: "id",
-                retrieveArgs: cloneDeep({ fields }),
+                params: cloneDeep({ fields }),
             },
         });
     });
@@ -154,10 +154,10 @@ describe("use/objectSubscription.js", function () {
             await flushPromises();
 
             expect(globalRetrieve).toHaveBeenCalledWith({
-                crudArgs: { stream: "test_stream" },
+                target: { stream: "test_stream" },
                 pk: 1,
                 pkKey: "id",
-                retrieveArgs: {
+                params: {
                     fields,
                 },
                 isCancelled: expect.any(Object),
@@ -166,10 +166,10 @@ describe("use/objectSubscription.js", function () {
             expect(isRef(globalRetrieve.mock.calls[0][0].isCancelled)).toBe(true);
             expect(unref(globalRetrieve.mock.calls[0][0].isCancelled)).toBe(false);
             expect(globalSubscribe).toHaveBeenCalledWith({
-                crudArgs: { stream: "test_stream" },
+                target: { stream: "test_stream" },
                 pk: 1,
                 pkKey: "id",
-                retrieveArgs: {
+                params: {
                     fields,
                 },
                 callback: expect.any(Function),
@@ -238,10 +238,10 @@ describe("use/objectSubscription.js", function () {
 
             expect(globalRetrieve).toHaveBeenCalledTimes(0);
             expect(globalSubscribe).toHaveBeenNthCalledWith(1, {
-                crudArgs: { stream: "test_stream" },
+                target: { stream: "test_stream" },
                 pk: 1,
                 pkKey: "id",
-                retrieveArgs: {
+                params: {
                     fields,
                 },
                 callback: expect.any(Function),
@@ -252,7 +252,7 @@ describe("use/objectSubscription.js", function () {
             expect(unref(globalSubscribe.mock.calls[0][0].isCancelled)).toBe(false);
         });
         it("delayed success", async function () {
-            objectSubscription.objectInstance.state.retrieveArgs = ref(false);
+            objectSubscription.objectInstance.state.params = ref(false);
 
             expect(objectSubscription.state.loading).toBeUndefined();
             expect(objectSubscription.state.errored).toBe(false);
@@ -277,7 +277,7 @@ describe("use/objectSubscription.js", function () {
             expect(objectSubscription.state.intendToRetrieve).toBe(true);
             expect(objectSubscription.state.object).toEqual({});
 
-            objectSubscription.objectInstance.state.retrieveArgs = { fields };
+            objectSubscription.objectInstance.state.params = { fields };
             await nextTick();
 
             expect(objectSubscription.state.loading).toBe(true);
@@ -304,10 +304,10 @@ describe("use/objectSubscription.js", function () {
             await nextTick();
 
             expect(globalRetrieve).toHaveBeenNthCalledWith(1, {
-                crudArgs: { stream: "test_stream" },
+                target: { stream: "test_stream" },
                 pk: 1,
                 pkKey: "id",
-                retrieveArgs: {
+                params: {
                     fields,
                 },
                 isCancelled: expect.any(Object),
@@ -316,10 +316,10 @@ describe("use/objectSubscription.js", function () {
             expect(isRef(globalRetrieve.mock.calls[0][0].isCancelled)).toBe(true);
             expect(unref(globalRetrieve.mock.calls[0][0].isCancelled)).toBe(false);
             expect(globalSubscribe).toHaveBeenNthCalledWith(1, {
-                crudArgs: { stream: "test_stream" },
+                target: { stream: "test_stream" },
                 pk: 1,
                 pkKey: "id",
-                retrieveArgs: {
+                params: {
                     fields,
                 },
                 callback: expect.any(Function),
@@ -369,10 +369,10 @@ describe("use/objectSubscription.js", function () {
             await nextTick();
 
             expect(globalRetrieve).toHaveBeenCalledWith({
-                crudArgs: { stream: "test_stream" },
+                target: { stream: "test_stream" },
                 pk: 1,
                 pkKey: "id",
-                retrieveArgs: {
+                params: {
                     fields,
                 },
                 isCancelled: expect.any(Object),
@@ -381,10 +381,10 @@ describe("use/objectSubscription.js", function () {
             expect(isRef(globalRetrieve.mock.calls[0][0].isCancelled)).toBe(true);
             expect(unref(globalRetrieve.mock.calls[0][0].isCancelled)).toBe(false);
             expect(globalSubscribe).toHaveBeenCalledWith({
-                crudArgs: { stream: "test_stream" },
+                target: { stream: "test_stream" },
                 pk: 1,
                 pkKey: "id",
-                retrieveArgs: {
+                params: {
                     fields,
                 },
                 callback: expect.any(Function),
@@ -436,10 +436,10 @@ describe("use/objectSubscription.js", function () {
             await nextTick();
 
             expect(globalRetrieve).toHaveBeenCalledWith({
-                crudArgs: { stream: "test_stream" },
+                target: { stream: "test_stream" },
                 pk: 1,
                 pkKey: "id",
-                retrieveArgs: {
+                params: {
                     fields,
                 },
                 isCancelled: expect.any(Object),
@@ -448,10 +448,10 @@ describe("use/objectSubscription.js", function () {
             expect(isRef(globalRetrieve.mock.calls[0][0].isCancelled)).toBe(true);
             expect(unref(globalRetrieve.mock.calls[0][0].isCancelled)).toBe(false);
             expect(globalSubscribe).toHaveBeenCalledWith({
-                crudArgs: { stream: "test_stream" },
+                target: { stream: "test_stream" },
                 pk: 1,
                 pkKey: "id",
-                retrieveArgs: {
+                params: {
                     fields,
                 },
                 callback: expect.any(Function),
@@ -610,10 +610,10 @@ describe("use/objectSubscription.js", function () {
 
             const objectSubscription = useObjectSubscription({
                 props: {
-                    crudArgs: { stream: "test_stream2" },
+                    target: { stream: "test_stream2" },
                     pk: 1,
                     pkKey: "id",
-                    retrieveArgs: {
+                    params: {
                         fields,
                     },
                 },
@@ -627,10 +627,10 @@ describe("use/objectSubscription.js", function () {
             await flushPromises();
 
             expect(globalRetrieve).toHaveBeenCalledWith({
-                crudArgs: { stream: "test_stream2" },
+                target: { stream: "test_stream2" },
                 pk: 1,
                 pkKey: "id",
-                retrieveArgs: {
+                params: {
                     fields,
                 },
                 isCancelled: expect.any(Object),
@@ -639,10 +639,10 @@ describe("use/objectSubscription.js", function () {
             expect(isRef(globalRetrieve.mock.calls[0][0].isCancelled)).toBe(true);
             expect(unref(globalRetrieve.mock.calls[0][0].isCancelled)).toBe(false);
             expect(globalSubscribe).toHaveBeenCalledWith({
-                crudArgs: { stream: "test_stream2" },
+                target: { stream: "test_stream2" },
                 pk: 1,
                 pkKey: "id",
-                retrieveArgs: {
+                params: {
                     fields,
                 },
                 callback: expect.any(Function),
@@ -675,7 +675,7 @@ describe("use/objectSubscription.js", function () {
                 props: {
                     pk: 1,
                     pkKey: "id",
-                    retrieveArgs: {
+                    params: {
                         fields,
                     },
                 },
@@ -694,10 +694,10 @@ describe("use/objectSubscription.js", function () {
             expect(globalRetrieve).toHaveBeenCalledTimes(0);
             expect(globalSubscribe).toHaveBeenCalledTimes(0);
             expect(customCrudRetrieve).toHaveBeenCalledWith({
-                crudArgs: { stream: "test_stream" },
+                target: { stream: "test_stream" },
                 pk: 1,
                 pkKey: "id",
-                retrieveArgs: {
+                params: {
                     fields,
                 },
                 isCancelled: expect.any(Object),
@@ -706,10 +706,10 @@ describe("use/objectSubscription.js", function () {
             expect(isRef(customCrudRetrieve.mock.calls[0][0].isCancelled)).toBe(true);
             expect(unref(customCrudRetrieve.mock.calls[0][0].isCancelled)).toBe(false);
             expect(customCrudSubscribe).toHaveBeenCalledWith({
-                crudArgs: { stream: "test_stream" },
+                target: { stream: "test_stream" },
                 pk: 1,
                 pkKey: "id",
-                retrieveArgs: {
+                params: {
                     fields,
                 },
                 callback: expect.any(Function),
@@ -738,10 +738,10 @@ describe("use/objectSubscription.js", function () {
 
             const objectSubscription = useObjectSubscription({
                 props: {
-                    crudArgs: { stream: "test_streamA" },
+                    target: { stream: "test_streamA" },
                     pk: 1,
                     pkKey: "hash",
-                    retrieveArgs: {
+                    params: {
                         fields,
                     },
                 },
@@ -755,10 +755,10 @@ describe("use/objectSubscription.js", function () {
             await flushPromises();
 
             expect(globalRetrieve).toHaveBeenCalledWith({
-                crudArgs: { stream: "test_streamA" },
+                target: { stream: "test_streamA" },
                 pk: 1,
                 pkKey: "hash",
-                retrieveArgs: {
+                params: {
                     fields,
                 },
                 isCancelled: expect.any(Object),
@@ -767,10 +767,10 @@ describe("use/objectSubscription.js", function () {
             expect(isRef(globalRetrieve.mock.calls[0][0].isCancelled)).toBe(true);
             expect(unref(globalRetrieve.mock.calls[0][0].isCancelled)).toBe(false);
             expect(globalSubscribe).toHaveBeenCalledWith({
-                crudArgs: { stream: "test_streamA" },
+                target: { stream: "test_streamA" },
                 pk: 1,
                 pkKey: "hash",
-                retrieveArgs: {
+                params: {
                     fields,
                 },
                 callback: expect.any(Function),
@@ -787,7 +787,7 @@ describe("use/objectSubscription.js", function () {
                 props: {
                     pk: 1,
                     pkKey: "id",
-                    retrieveArgs: { fields },
+                    params: { fields },
                 },
             });
 
@@ -814,10 +814,10 @@ describe("use/objectSubscription.js", function () {
         it("error when missing pk", async function () {
             objectInstance = useObjectInstance({
                 props: {
-                    crudArgs: { stream: "test_stream" },
+                    target: { stream: "test_stream" },
                     pk: 1,
                     pkKey: "id",
-                    retrieveArgs: {
+                    params: {
                         fields,
                     },
                 },
@@ -827,20 +827,20 @@ describe("use/objectSubscription.js", function () {
                 useObjectSubscription({
                     objectInstance,
                     props: {
-                        retrieveArgs: {
+                        params: {
                             fields,
                         },
                     },
                 });
             }).toThrow("pk not in props, must be truthy for intendToRetrieve or intendToSubscribe to work.");
         });
-        it("error when missing retrieveArgs", async function () {
+        it("error when missing params", async function () {
             objectInstance = useObjectInstance({
                 props: {
-                    crudArgs: { stream: "test_stream" },
+                    target: { stream: "test_stream" },
                     pk: 1,
                     pkKey: "id",
-                    retrieveArgs: {
+                    params: {
                         fields,
                     },
                 },
@@ -848,26 +848,26 @@ describe("use/objectSubscription.js", function () {
             expect(() => {
                 // @ts-ignore - we're testing the error case
                 useObjectSubscription({ objectInstance, props: { pk: 1 } });
-            }).toThrow("retrieveArgs not in props, must be truthy for intendToRetrieve or intendToSubscribe to work.");
+            }).toThrow("params not in props, must be truthy for intendToRetrieve or intendToSubscribe to work.");
         });
     });
     it("useObjectSubscriptions", async function () {
         const objectSubscriptionA = useObjectSubscription({
             props: {
-                crudArgs: { stream: "test_streamA" },
+                target: { stream: "test_streamA" },
                 pk: 1,
                 pkKey: "id",
-                retrieveArgs: {
+                params: {
                     fields,
                 },
             },
         });
         const objectSubscriptionB = useObjectSubscription({
             props: {
-                crudArgs: { stream: "test_streamB" },
+                target: { stream: "test_streamB" },
                 pk: 2,
                 pkKey: "id",
-                retrieveArgs: {
+                params: {
                     fields,
                 },
             },
@@ -875,20 +875,20 @@ describe("use/objectSubscription.js", function () {
         const objSubs = useObjectSubscriptions({
             A: {
                 props: {
-                    crudArgs: { stream: "test_streamA" },
+                    target: { stream: "test_streamA" },
                     pk: 1,
                     pkKey: "id",
-                    retrieveArgs: {
+                    params: {
                         fields,
                     },
                 },
             },
             B: {
                 props: {
-                    crudArgs: { stream: "test_streamB" },
+                    target: { stream: "test_streamB" },
                     pk: 2,
                     pkKey: "id",
-                    retrieveArgs: {
+                    params: {
                         fields,
                     },
                 },

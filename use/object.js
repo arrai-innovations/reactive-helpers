@@ -31,11 +31,11 @@ import { effectScope, reactive, shallowReactive, shallowReadonly, toRef } from "
  */
 
 /**
- * Defines the non-reactive functions that can be passed to an object instance.
+ * Defines the non-reactive handlers that can be passed to an object instance.
  *
  * @typedef {object} ObjectManagerOptions
  * @property {ObjectManagerProps} props - The reactive properties to be passed to the object instance.
- * @property {import('../config/objectCrud.js').ObjectCrudFunctions} functions - The non-reactive functions to be passed to the object instance.
+ * @property {import('../config/objectCrud.js').ObjectCrudHandlers} handlers - The non-reactive handlers to be passed to the object instance.
  */
 
 /**
@@ -143,13 +143,13 @@ export const useObjects = (objectArgs) => {
  * });
  *
  * const objectProps = reactive({
- *     crudArgs: {
+ *     target: {
  *         app: toRef(props, "app"),
  *         model: toRef(props, "model"),
  *     },
  *     pk: toRef(props, "pk"),
  *     pkKey: 'id',
- *     retrieveArgs: {
+ *     params: {
  *         fields: ['foo', 'bar'],
  *     },
  *     relatedObjectRules: {
@@ -211,7 +211,7 @@ export const useObjects = (objectArgs) => {
  * @param {ObjectManagerOptions} options - The options to be passed to useObjectInstance, useObjectSubscription, useObjectRelated, and useObjectCalculated.
  * @returns {ObjectManager} - An object managing a chain of useObject* instances.
  */
-export const useObject = ({ props, functions }) => {
+export const useObject = ({ props, handlers }) => {
     const managed = shallowReactive({
         objectInstance: null,
         objectSubscription: null,
@@ -224,7 +224,7 @@ export const useObject = ({ props, functions }) => {
     es.run(() => {
         managed.objectInstance = useObjectInstance({
             props,
-            functions,
+            handlers,
         });
         managed.objectSubscription = useObjectSubscription({
             objectInstance: managed.objectInstance,

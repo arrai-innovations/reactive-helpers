@@ -28,13 +28,13 @@ The parent state.
 
 > **crud**: `object`
 
-The crud functions.
+The crud handlers.
 
 ###### crud.args
 
-> **args**: `Reactive`\<\{\} \| [`ObjectCrudArgsArgs`](../config/objectCrud.md#objectcrudargsargs)\>
+> **args**: `Reactive`\<\{\} \| [`ObjectTargetArgs`](../config/objectCrud.md#objecttargetargs)\>
 
-The arguments to be passed to the crud functions.
+The arguments to be passed to the crud handlers.
 
 ###### crud.create
 
@@ -114,6 +114,16 @@ Whether the object is loading.
 
 The object.
 
+###### params
+
+> **params**: `object`
+
+The arguments to be passed to the retrieve function.
+
+###### Index Signature
+
+\[`key`: `string`\]: `any`
+
 ###### parentStateObjectWatchRunning?
 
 > `optional` **parentStateObjectWatchRunning**: `boolean`
@@ -159,16 +169,6 @@ Whether the related object watch is running.
 > `optional` **relatedRunning**: `boolean`
 
 Whether the related objects are loading.
-
-###### retrieveArgs
-
-> **retrieveArgs**: `object`
-
-The arguments to be passed to the retrieve function.
-
-###### Index Signature
-
-\[`key`: `string`\]: `any`
 
 ###### running?
 
@@ -238,13 +238,13 @@ Whether the calculated is running.
 
 > **crud**: `object`
 
-The crud functions.
+The crud handlers.
 
 ###### crud.args
 
-> **args**: `Reactive`\<\{\} \| [`ObjectCrudArgsArgs`](../config/objectCrud.md#objectcrudargsargs)\>
+> **args**: `Reactive`\<\{\} \| [`ObjectTargetArgs`](../config/objectCrud.md#objecttargetargs)\>
 
-The arguments to be passed to the crud functions.
+The arguments to be passed to the crud handlers.
 
 ###### crud.create
 
@@ -324,6 +324,16 @@ Whether the object is loading.
 
 The object.
 
+###### params
+
+> **params**: `object`
+
+The arguments to be passed to the retrieve function.
+
+###### Index Signature
+
+\[`key`: `string`\]: `any`
+
 ###### parentStateObjectWatchRunning
 
 > **parentStateObjectWatchRunning**: `boolean`
@@ -369,16 +379,6 @@ Whether the related object watch is running.
 > `optional` **relatedRunning**: `boolean`
 
 Whether the related objects are loading.
-
-###### retrieveArgs
-
-> **retrieveArgs**: `object`
-
-The arguments to be passed to the retrieve function.
-
-###### Index Signature
-
-\[`key`: `string`\]: `any`
 
 ###### running
 
@@ -579,8 +579,8 @@ import { ref, reactive } from "vue";
 
 const objectSubscriptionProps = reactive({
     // whatever object subscription props you need to work with your crud implementation
-    crudArgs: {},
-    retrieveArgs: {},
+    target: {},
+    params: {},
     pk: '1',
     pkKey: 'id',
     intendToRetrieve: true,

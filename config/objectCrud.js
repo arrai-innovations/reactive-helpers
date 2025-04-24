@@ -3,57 +3,57 @@ import cloneDeep from "lodash-es/cloneDeep.js";
 import { readonly } from "vue";
 
 /**
- * Configuration for the default object crud functions.
+ * Configuration for the default object crud handlers.
  *
  * @module config/objectCrud.js
  */
 
 /**
- * @typedef {{[key:string]: any}} ObjectCrudArgsArgs
+ * @typedef {{[key:string]: any}} ObjectTargetArgs
  */
 
 /**
- * Defines the CRUD-related functions and additional utilities provided by the object instance.
+ * Defines the CRUD-related handlers and additional utilities provided by the object instance.
  *
- * @typedef {object} ObjectCrudArgsProperties
- * @property {ObjectCrudArgsArgs} args - The arguments to be passed to the crud functions.
+ * @typedef {object} ObjectTargetProperties
+ * @property {ObjectTargetArgs} args - The arguments to be passed to the crud handlers.
  */
 
 /**
- * @typedef {object} ObjectCrudArgsOption
- * @property {ObjectCrudArgsArgs} [crudArgs={}] - The arguments to be passed to the crud functions.
+ * @typedef {object} ObjectTargetOption
+ * @property {ObjectTargetArgs} [target={}] - The arguments to be passed to the crud handlers.
  */
 
 /**
  * @typedef {object} CreateArgs
- * @property {{[key:string]: any}} crudArgs - The arguments to be passed to the crud functions.
+ * @property {{[key:string]: any}} target - The arguments to be passed to the crud handlers.
  * @property {{[key:string]: any}} object - The data to be acted upon.
- * @property {{[key:string]: any}} retrieveArgs - The arguments to be passed to the retrieve function.
+ * @property {{[key:string]: any}} params - The arguments to be passed to the retrieve function.
  * @property {string} pkKey - The key name of the primary key.
  * @property {Readonly<import('vue').Ref<boolean>>} isCancelled - A ref to indicate if the request was cancelled.
  */
 
 /**
  * @typedef {object} RetrieveArgs
- * @property {{[key:string]: any}} crudArgs - The arguments to be passed to the crud functions.
+ * @property {{[key:string]: any}} target - The arguments to be passed to the crud handlers.
  * @property {string} pk - The pk of the object to be acted upon.
  * @property {string} pkKey - The key name of the primary key.
- * @property {{[key:string]: any}} retrieveArgs - The arguments to be passed to the retrieve function.
+ * @property {{[key:string]: any}} params - The arguments to be passed to the retrieve function.
  * @property {Readonly<import('vue').Ref<boolean>>} isCancelled - A ref to indicate if the request was cancelled.
  */
 
 /**
  * @typedef {object} UpdateArgs
- * @property {{[key:string]: any}} crudArgs - The arguments to be passed to the crud functions.
+ * @property {{[key:string]: any}} target - The arguments to be passed to the crud handlers.
  * @property {import('../use/objectInstance.js').ExistingCrudObject} object - The data to be acted upon.
- * @property {{[key:string]: any}} retrieveArgs - The arguments to be passed to the retrieve function.
+ * @property {{[key:string]: any}} params - The arguments to be passed to the retrieve function.
  * @property {string} pkKey - The key name of the primary key.
  * @property {Readonly<import('vue').Ref<boolean>>} isCancelled - A ref to indicate if the request was cancelled.
  */
 
 /**
  * @typedef {object} DeleteArgs
- * @property {{[key:string]: any}} crudArgs - The arguments to be passed to the crud functions.
+ * @property {{[key:string]: any}} target - The arguments to be passed to the crud handlers.
  * @property {string} pk - The pk of the object to be acted upon.
  * @property {string} pkKey - The key name of the primary key.
  * @property {Readonly<import('vue').Ref<boolean>>} isCancelled - A ref to indicate if the request was cancelled.
@@ -61,11 +61,11 @@ import { readonly } from "vue";
 
 /**
  * @typedef {object} PartialArgs
- * @property {{[key:string]: any}} crudArgs - The arguments to be passed to the crud functions.
+ * @property {{[key:string]: any}} target - The arguments to be passed to the crud handlers.
  * @property {string} pk - The pk of the object to be acted upon.
  * @property {string} pkKey - The key name of the primary key.
  * @property {{[key:string]: any}} partialObject - The data to be acted upon.
- * @property {{[key:string]: any}} retrieveArgs - The arguments to be passed to the retrieve function.
+ * @property {{[key:string]: any}} params - The arguments to be passed to the retrieve function.
  * @property {Readonly<import('vue').Ref<boolean>>} isCancelled - A ref to indicate if the request was cancelled.
  */
 
@@ -77,10 +77,10 @@ import { readonly } from "vue";
 
 /**
  * @typedef {object} ObjectSubscribeArgs
- * @property {{[key:string]: any}} crudArgs - The arguments to be passed to the crud functions.
+ * @property {{[key:string]: any}} target - The arguments to be passed to the crud handlers.
  * @property {string} pk - The pk of the object to be acted upon.
  * @property {string} pkKey - The key name of the primary key.
- * @property {{[key:string]: any}} retrieveArgs - The arguments to be passed to the retrieve function.
+ * @property {{[key:string]: any}} params - The arguments to be passed to the retrieve function.
  * @property {CrudSubscribeCallback} callback - The callback to be called when the object is updated.
  * @property {Readonly<import('vue').Ref<boolean>>} isCancelled - A ref to indicate if the request was cancelled.
  */
@@ -126,9 +126,9 @@ import { readonly } from "vue";
  */
 
 /**
- * Defines the CRUD-related functions and additional utilities provided by the object instance.
+ * Defines the CRUD-related handlers and additional utilities provided by the object instance.
  *
- * @typedef {object} ObjectCrudFunctions
+ * @typedef {object} ObjectCrudHandlers
  * @property {CrudCreateFn} [create] - A function to be used instead of the default crud create function.
  * @property {CrudRetrieveFn} [retrieve] - A function to be used instead of the default crud retrieve function.
  * @property {CrudUpdateFn} [update] - A function to be used instead of the default crud update function.
@@ -140,7 +140,7 @@ import { readonly } from "vue";
 /**
  * The CRUD arguments.
  *
- * @typedef {ObjectCrudArgsProperties & ObjectCrudFunctions} ObjectCrudArgs
+ * @typedef {ObjectTargetProperties & ObjectCrudHandlers} ObjectTarget
  *
  */
 
@@ -150,16 +150,16 @@ const _defaultCrud = createDefaultCrud(
 );
 
 /**
- * The default object crud functions.
+ * The default object crud handlers.
  *
- * @type {Readonly<ObjectCrudFunctions>}
+ * @type {Readonly<ObjectCrudHandlers>}
  */
 export const defaultObjectCrud = readonly(_defaultCrud);
 
 /**
- * Set the object crud functions.
+ * Set the object crud handlers.
  *
- * @param {ObjectCrudArgs} options - The options for the object crud functions.
+ * @param {ObjectTarget} options - The options for the object crud handlers.
  * @throws {Error} - if unknown keys are passed.
  */
 export const setObjectCrud = ({ args = {}, ...rest }) => {
@@ -173,12 +173,12 @@ export const setObjectCrud = ({ args = {}, ...rest }) => {
 };
 
 /**
- * Get the previously set object crud functions.
+ * Get the previously set object crud handlers.
  *
- * @param {import("vue").UnwrapNestedRefs<ObjectCrudArgsProperties>} target - The reactive object you want to add the resulting crud to.
+ * @param {import("vue").UnwrapNestedRefs<ObjectTargetProperties>} target - The reactive object you want to add the resulting crud to.
  * @param {object} options - The options for the reactive crud object.
- * @param {import("vue").UnwrapNestedRefs<ObjectCrudArgsOption>} [options.props] - The props with any passed crudArgs.
- * @param {ObjectCrudFunctions} [options.functions] - Any functions to override the default crud functions.
+ * @param {import("vue").UnwrapNestedRefs<ObjectTargetOption>} [options.props] - The props with any passed target.
+ * @param {ObjectCrudHandlers} [options.handlers] - Any functions to override the default crud functions.
  * @throws {Error} - If an invalid function is passed, or if the function is not a function.
  */
 export const getObjectCrud = (target, options) => {

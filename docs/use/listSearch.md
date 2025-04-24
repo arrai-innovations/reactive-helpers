@@ -98,13 +98,13 @@ Whether the calculated properties are running.
 
 > **crud**: `object`
 
-CRUD functions and their configurations for the list.
+CRUD handlers and their configurations for the list.
 
 ###### crud.args
 
 > **args**: `any`
 
-Arguments for the CRUD functions.
+Arguments for the CRUD handlers.
 
 ###### crud.list?
 
@@ -158,12 +158,6 @@ If this is true, the list should be fetched, or re-fetched if arguments change.
 
 If this is true, the subscription should start or restart if arguments change.
 
-###### listArgs
-
-> **listArgs**: `any`
-
-Arguments passed to the server for listing operations.
-
 ###### loading?
 
 > `optional` **loading**: `boolean`
@@ -209,6 +203,12 @@ The order of objects in the list.
 > `optional` **orderWatchRunning**: `boolean`
 
 Flag indicating if the order watch is active.
+
+###### params
+
+> **params**: `any`
+
+Arguments passed to the server for listing operations.
 
 ###### pkKey
 
@@ -259,12 +259,6 @@ Signals whether any computations related to object relationships are currently i
 > `optional` **resultsWatchRunning**: `boolean`
 
 Flag indicating if the results watch is active.
-
-###### retrieveArgs
-
-> **retrieveArgs**: `any`
-
-Arguments passed to the server for retrieval operations.
 
 ###### running
 
@@ -410,13 +404,13 @@ Whether the calculated properties are running.
 
 > **crud**: `object`
 
-CRUD functions and their configurations for the list.
+CRUD handlers and their configurations for the list.
 
 ###### crud.args
 
 > **args**: `any`
 
-Arguments for the CRUD functions.
+Arguments for the CRUD handlers.
 
 ###### crud.list?
 
@@ -482,12 +476,6 @@ If this is true, the list should be fetched, or re-fetched if arguments change.
 
 If this is true, the subscription should start or restart if arguments change.
 
-###### listArgs
-
-> **listArgs**: `any`
-
-Arguments passed to the server for listing operations.
-
 ###### loading?
 
 > `optional` **loading**: `boolean`
@@ -540,6 +528,12 @@ The current sort order of object pks after search have been applied.
 
 Flag indicating if the order watch is active.
 
+###### params
+
+> **params**: `any`
+
+Arguments passed to the server for listing operations.
+
 ###### pkKey
 
 > **pkKey**: `string`
@@ -589,12 +583,6 @@ Signals whether any computations related to object relationships are currently i
 > `optional` **resultsWatchRunning**: `boolean`
 
 Flag indicating if the results watch is active.
-
-###### retrieveArgs
-
-> **retrieveArgs**: `any`
-
-Arguments passed to the server for retrieval operations.
 
 ###### running
 

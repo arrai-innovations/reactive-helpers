@@ -137,13 +137,13 @@ describe("use/objectInstance.js", function () {
     describe("retrieve", function () {
         it("success", async function () {
             const id = ref(1);
-            const retrieveArgs = reactive({ fields });
+            const params = reactive({ fields });
             const objectInstance = useObjectInstance({
                 props: {
-                    crudArgs: { stream: "test_stream" },
+                    target: { stream: "test_stream" },
                     pk: id,
                     pkKey: "id",
-                    retrieveArgs,
+                    params,
                 },
             });
             objectInstance.state.crud.retrieve = vi.fn();
@@ -171,10 +171,10 @@ describe("use/objectInstance.js", function () {
             expect(objectInstance.state.loading).toBe(false);
             expect({ ...objectInstance.state.object }).toEqual(crudRetrieveResolved);
             expect(objectInstance.state.crud.retrieve).toHaveBeenCalledWith({
-                crudArgs: { stream: "test_stream" },
+                target: { stream: "test_stream" },
                 pk: 1,
                 pkKey: "id",
-                retrieveArgs: { fields: ["id", "__str__", "name"] },
+                params: { fields: ["id", "__str__", "name"] },
                 isCancelled: expect.any(Object),
             });
             expect(objectInstance.state.crud.retrieve).toHaveBeenCalledTimes(1);
@@ -185,13 +185,13 @@ describe("use/objectInstance.js", function () {
         });
         it("success with non-standard pk", async function () {
             const id = ref(1);
-            const retrieveArgs = reactive({ fields });
+            const params = reactive({ fields });
             const objectInstance = useObjectInstance({
                 props: {
-                    crudArgs: { stream: "test_stream" },
+                    target: { stream: "test_stream" },
                     pk: id,
                     pkKey: "unique",
-                    retrieveArgs,
+                    params,
                 },
             });
             objectInstance.state.crud.retrieve = vi.fn();
@@ -219,10 +219,10 @@ describe("use/objectInstance.js", function () {
             expect(objectInstance.state.loading).toBe(false);
             expect({ ...objectInstance.state.object }).toEqual(crudRetrieveResolvedNonStandardPrimaryKey);
             expect(objectInstance.state.crud.retrieve).toHaveBeenCalledWith({
-                crudArgs: { stream: "test_stream" },
+                target: { stream: "test_stream" },
                 pk: 1,
                 pkKey: "unique",
-                retrieveArgs: { fields: ["id", "__str__", "name"] },
+                params: { fields: ["id", "__str__", "name"] },
                 isCancelled: expect.any(Object),
             });
             expect(objectInstance.state.crud.retrieve).toHaveBeenCalledTimes(1);
@@ -231,15 +231,15 @@ describe("use/objectInstance.js", function () {
             await nextTick();
             await expect(oiRetrieveResolve).resolves.toBe(true);
         });
-        it("success (retrieveArgs)", async function () {
+        it("success (params)", async function () {
             const pk = ref(1);
-            const retrieveArgs = reactive({ fields });
+            const params = reactive({ fields });
             const objectInstance = useObjectInstance({
                 props: {
-                    crudArgs: { stream: "test_stream" },
+                    target: { stream: "test_stream" },
                     pk,
                     pkKey: "id",
-                    retrieveArgs,
+                    params,
                 },
             });
             objectInstance.state.crud.retrieve = vi.fn();
@@ -265,10 +265,10 @@ describe("use/objectInstance.js", function () {
             expect(objectInstance.state.loading).toBe(false);
             expect({ ...objectInstance.state.object }).toEqual(crudRetrieveResolved);
             expect(objectInstance.state.crud.retrieve).toHaveBeenCalledWith({
-                crudArgs: { stream: "test_stream" },
+                target: { stream: "test_stream" },
                 pk: 1,
                 pkKey: "id",
-                retrieveArgs: { fields: ["id", "__str__", "name"] },
+                params: { fields: ["id", "__str__", "name"] },
                 isCancelled: expect.any(Object),
             });
             expect(objectInstance.state.crud.retrieve).toHaveBeenCalledTimes(1);
@@ -277,13 +277,13 @@ describe("use/objectInstance.js", function () {
         });
         it("errored", async function () {
             const pk = ref(1);
-            const retrieveArgs = reactive({ fields });
+            const params = reactive({ fields });
             const objectInstance = useObjectInstance({
                 props: {
-                    crudArgs: { stream: "test_stream" },
+                    target: { stream: "test_stream" },
                     pk,
                     pkKey: "id",
-                    retrieveArgs,
+                    params,
                 },
             });
             objectInstance.state.crud.retrieve = vi.fn();
@@ -309,10 +309,10 @@ describe("use/objectInstance.js", function () {
             expect(objectInstance.state.loading).toBe(false);
             expect({ ...objectInstance.state.object }).toEqual({});
             expect(objectInstance.state.crud.retrieve).toHaveBeenCalledWith({
-                crudArgs: { stream: "test_stream" },
+                target: { stream: "test_stream" },
                 pk: 1,
                 pkKey: "id",
-                retrieveArgs: { fields: ["id", "__str__", "name"] },
+                params: { fields: ["id", "__str__", "name"] },
                 isCancelled: expect.any(Object),
             });
             expect(objectInstance.state.crud.retrieve).toHaveBeenCalledTimes(1);
@@ -323,13 +323,13 @@ describe("use/objectInstance.js", function () {
         });
         it("errored with non-matching pkKey", async function () {
             const pk = ref(1);
-            const retrieveArgs = reactive({ fields });
+            const params = reactive({ fields });
             const objectInstance = useObjectInstance({
                 props: {
-                    crudArgs: { stream: "test_stream" },
+                    target: { stream: "test_stream" },
                     pk,
                     pkKey: "pk",
-                    retrieveArgs,
+                    params,
                 },
             });
             objectInstance.state.crud.retrieve = vi.fn();
@@ -355,10 +355,10 @@ describe("use/objectInstance.js", function () {
             expect(objectInstance.state.loading).toBe(false);
             expect({ ...objectInstance.state.object }).toEqual({});
             expect(objectInstance.state.crud.retrieve).toHaveBeenCalledWith({
-                crudArgs: { stream: "test_stream" },
+                target: { stream: "test_stream" },
                 pk: 1,
                 pkKey: "pk",
-                retrieveArgs: { fields: ["id", "__str__", "name"] },
+                params: { fields: ["id", "__str__", "name"] },
                 isCancelled: expect.any(Object),
             });
             expect(objectInstance.state.crud.retrieve).toHaveBeenCalledTimes(1);
@@ -369,13 +369,13 @@ describe("use/objectInstance.js", function () {
         });
         it("already loading", async function () {
             const pk = ref(1);
-            const retrieveArgs = reactive({ fields });
+            const params = reactive({ fields });
             const objectInstance = useObjectInstance({
                 props: {
-                    crudArgs: { stream: "test_stream" },
+                    target: { stream: "test_stream" },
                     pk,
                     pkKey: "id",
-                    retrieveArgs,
+                    params,
                 },
             });
             objectInstance.state.crud.create = vi.fn();
@@ -401,13 +401,13 @@ describe("use/objectInstance.js", function () {
         });
         it("double retrieve gets the same promise", async function () {
             const pk = ref(1);
-            const retrieveArgs = reactive({ fields });
+            const params = reactive({ fields });
             const objectInstance = useObjectInstance({
                 props: {
-                    crudArgs: { stream: "test_stream" },
+                    target: { stream: "test_stream" },
                     pk,
                     pkKey: "id",
-                    retrieveArgs,
+                    params,
                 },
             });
             objectInstance.state.crud.retrieve = vi.fn();
@@ -420,10 +420,10 @@ describe("use/objectInstance.js", function () {
             const secondPromise = objectInstance.retrieve();
             expect(firstPromise).toBe(secondPromise);
             expect(objectInstance.state.crud.retrieve).toHaveBeenCalledWith({
-                crudArgs: { stream: "test_stream" },
+                target: { stream: "test_stream" },
                 pk: 1,
                 pkKey: "id",
-                retrieveArgs: { fields: ["id", "__str__", "name"] },
+                params: { fields: ["id", "__str__", "name"] },
                 isCancelled: expect.any(Object),
             });
             expect(objectInstance.state.crud.retrieve).toHaveBeenCalledTimes(1);
@@ -437,10 +437,10 @@ describe("use/objectInstance.js", function () {
         it("cancel", async () => {
             const objectInstance = useObjectInstance({
                 props: {
-                    crudArgs: { stream: "test_stream" },
+                    target: { stream: "test_stream" },
                     pk: 1,
                     pkKey: "id",
-                    retrieveArgs: { fields },
+                    params: { fields },
                 },
             });
 
@@ -465,13 +465,13 @@ describe("use/objectInstance.js", function () {
     describe("create", function () {
         it("success", async function () {
             const id = ref(1);
-            const retrieveArgs = reactive({ fields });
+            const params = reactive({ fields });
             const objectInstance = useObjectInstance({
                 props: {
-                    crudArgs: { stream: "test_stream" },
+                    target: { stream: "test_stream" },
                     pk: id,
                     pkKey: "id",
-                    retrieveArgs,
+                    params,
                 },
             });
             objectInstance.state.crud.create = vi.fn();
@@ -503,14 +503,14 @@ describe("use/objectInstance.js", function () {
             expect(objectInstance.state.loading).toBe(false);
             expect({ ...objectInstance.state.object }).toEqual(crudCreateResolved);
             expect(objectInstance.state.crud.create).toHaveBeenCalledWith({
-                crudArgs: {
+                target: {
                     stream: "test_stream",
                 },
                 object: {
                     name: "qwer",
                 },
                 pkKey: "id",
-                retrieveArgs: { fields: ["id", "__str__", "name"] },
+                params: { fields: ["id", "__str__", "name"] },
                 isCancelled: expect.any(Object),
             });
             expect(objectInstance.state.crud.create).toHaveBeenCalledTimes(1);
@@ -519,15 +519,15 @@ describe("use/objectInstance.js", function () {
             await nextTick();
             await expect(oiCreateResolve).resolves.toBe(true);
         });
-        it("success (retrieveArgs)", async function () {
+        it("success (params)", async function () {
             const id = ref(undefined);
-            const retrieveArgs = reactive({ fields });
+            const params = reactive({ fields });
             const objectInstance = useObjectInstance({
                 props: {
-                    crudArgs: { stream: "test_stream" },
+                    target: { stream: "test_stream" },
                     pk: id,
                     pkKey: "id",
-                    retrieveArgs,
+                    params,
                 },
             });
             objectInstance.state.crud.create = vi.fn();
@@ -557,14 +557,14 @@ describe("use/objectInstance.js", function () {
             expect(objectInstance.state.loading).toBe(false);
             expect({ ...objectInstance.state.object }).toEqual(crudCreateResolved);
             expect(objectInstance.state.crud.create).toHaveBeenCalledWith({
-                crudArgs: {
+                target: {
                     stream: "test_stream",
                 },
                 pkKey: "id",
                 object: {
                     name: "qwer",
                 },
-                retrieveArgs: { fields: ["id", "__str__", "name"] },
+                params: { fields: ["id", "__str__", "name"] },
                 isCancelled: expect.any(Object),
             });
             expect(objectInstance.state.crud.create).toHaveBeenCalledTimes(1);
@@ -575,13 +575,13 @@ describe("use/objectInstance.js", function () {
         });
         it("success with non-standard pk", async function () {
             const id = ref(1);
-            const retrieveArgs = reactive({ fields });
+            const params = reactive({ fields });
             const objectInstance = useObjectInstance({
                 props: {
-                    crudArgs: { stream: "test_stream" },
+                    target: { stream: "test_stream" },
                     pk: id,
                     pkKey: "unique",
-                    retrieveArgs,
+                    params,
                 },
             });
             objectInstance.state.crud.create = vi.fn();
@@ -613,14 +613,14 @@ describe("use/objectInstance.js", function () {
             expect(objectInstance.state.loading).toBe(false);
             expect({ ...objectInstance.state.object }).toEqual(crudCreateResolvedNonStandardPK);
             expect(objectInstance.state.crud.create).toHaveBeenCalledWith({
-                crudArgs: {
+                target: {
                     stream: "test_stream",
                 },
                 object: {
                     name: "qwer",
                 },
                 pkKey: "unique",
-                retrieveArgs: { fields: ["id", "__str__", "name"] },
+                params: { fields: ["id", "__str__", "name"] },
                 isCancelled: expect.any(Object),
             });
             expect(objectInstance.state.crud.create).toHaveBeenCalledTimes(1);
@@ -631,13 +631,13 @@ describe("use/objectInstance.js", function () {
         });
         it("errored", async function () {
             const id = ref(undefined);
-            const retrieveArgs = reactive({ fields });
+            const params = reactive({ fields });
             const objectInstance = useObjectInstance({
                 props: {
-                    crudArgs: { stream: "test_stream" },
+                    target: { stream: "test_stream" },
                     pk: id,
                     pkKey: "id",
-                    retrieveArgs,
+                    params,
                 },
             });
             objectInstance.state.crud.create = vi.fn();
@@ -668,14 +668,14 @@ describe("use/objectInstance.js", function () {
             expect(objectInstance.state.loading).toBe(false);
             expect({ ...objectInstance.state.object }).toEqual({});
             expect(objectInstance.state.crud.create).toHaveBeenCalledWith({
-                crudArgs: {
+                target: {
                     stream: "test_stream",
                 },
                 pkKey: "id",
                 object: {
                     name: "qwer",
                 },
-                retrieveArgs: { fields: ["id", "__str__", "name"] },
+                params: { fields: ["id", "__str__", "name"] },
                 isCancelled: expect.any(Object),
             });
             expect(objectInstance.state.crud.create).toHaveBeenCalledTimes(1);
@@ -686,13 +686,13 @@ describe("use/objectInstance.js", function () {
         });
         it("errored with non-matching pkKey", async function () {
             const id = ref(undefined);
-            const retrieveArgs = reactive({ fields });
+            const params = reactive({ fields });
             const objectInstance = useObjectInstance({
                 props: {
-                    crudArgs: { stream: "test_stream" },
+                    target: { stream: "test_stream" },
                     pk: id,
                     pkKey: "pk",
-                    retrieveArgs,
+                    params,
                 },
             });
             objectInstance.state.crud.create = vi.fn();
@@ -723,14 +723,14 @@ describe("use/objectInstance.js", function () {
             expect(objectInstance.state.loading).toBe(false);
             expect({ ...objectInstance.state.object }).toEqual({});
             expect(objectInstance.state.crud.create).toHaveBeenCalledWith({
-                crudArgs: {
+                target: {
                     stream: "test_stream",
                 },
                 pkKey: "pk",
                 object: {
                     name: "qwer",
                 },
-                retrieveArgs: { fields: ["id", "__str__", "name"] },
+                params: { fields: ["id", "__str__", "name"] },
                 isCancelled: expect.any(Object),
             });
             expect(objectInstance.state.crud.create).toHaveBeenCalledTimes(1);
@@ -741,13 +741,13 @@ describe("use/objectInstance.js", function () {
         });
         it("already loading", async function () {
             const id = ref(1);
-            const retrieveArgs = reactive({ fields });
+            const params = reactive({ fields });
             const objectInstance = useObjectInstance({
                 props: {
-                    crudArgs: { stream: "test_stream" },
+                    target: { stream: "test_stream" },
                     pk: id,
                     pkKey: "id",
-                    retrieveArgs,
+                    params,
                 },
             });
             objectInstance.state.crud.create = vi.fn();
@@ -770,14 +770,14 @@ describe("use/objectInstance.js", function () {
                 })
             ).toThrow(new ObjectError("already loading.", "already-loading"));
             expect(objectInstance.state.crud.create).toHaveBeenCalledWith({
-                crudArgs: {
+                target: {
                     stream: "test_stream",
                 },
                 pkKey: "id",
                 object: {
                     name: "qwer",
                 },
-                retrieveArgs: { fields: ["id", "__str__", "name"] },
+                params: { fields: ["id", "__str__", "name"] },
                 isCancelled: expect.any(Object),
             });
             expect(objectInstance.state.crud.create).toHaveBeenCalledTimes(1);
@@ -791,10 +791,10 @@ describe("use/objectInstance.js", function () {
         it("cancel", async () => {
             const objectInstance = useObjectInstance({
                 props: {
-                    crudArgs: { stream: "test_stream" },
+                    target: { stream: "test_stream" },
                     pk: 1,
                     pkKey: "id",
-                    retrieveArgs: { fields },
+                    params: { fields },
                 },
             });
 
@@ -821,13 +821,13 @@ describe("use/objectInstance.js", function () {
     describe("update", function () {
         it("success", async function () {
             const id = ref(1);
-            const retrieveArgs = reactive({ fields });
+            const params = reactive({ fields });
             const objectInstance = useObjectInstance({
                 props: {
-                    crudArgs: { stream: "test_stream" },
+                    target: { stream: "test_stream" },
                     pk: id,
                     pkKey: "id",
-                    retrieveArgs,
+                    params,
                 },
             });
             let crudUpdateResolve;
@@ -861,7 +861,7 @@ describe("use/objectInstance.js", function () {
             await nextTick();
             await expect(oiUpdatePromise).resolves.toBe(true);
             expect(objectInstance.state.crud.update).toHaveBeenCalledWith({
-                crudArgs: {
+                target: {
                     stream: "test_stream",
                 },
                 pkKey: "id",
@@ -869,22 +869,22 @@ describe("use/objectInstance.js", function () {
                     id: 1,
                     name: "zxcv!",
                 },
-                retrieveArgs: { fields: ["id", "__str__", "name"] },
+                params: { fields: ["id", "__str__", "name"] },
                 isCancelled: expect.any(Object),
             });
             expect(objectInstance.state.crud.update).toHaveBeenCalledTimes(1);
             expect(isRef(objectInstance.state.crud.update.mock.calls[0][0].isCancelled)).toBe(true);
             expect(unref(objectInstance.state.crud.update.mock.calls[0][0].isCancelled)).toBe(false);
         });
-        it("success (retrieveArgs)", async function () {
+        it("success (params)", async function () {
             const id = ref(1);
-            const retrieveArgs = reactive({ fields });
+            const params = reactive({ fields });
             const objectInstance = useObjectInstance({
                 props: {
-                    crudArgs: { stream: "test_stream" },
+                    target: { stream: "test_stream" },
                     pk: id,
                     pkKey: "id",
-                    retrieveArgs,
+                    params,
                 },
             });
             let crudUpdateResolve;
@@ -916,7 +916,7 @@ describe("use/objectInstance.js", function () {
             expect({ ...objectInstance.state.object }).toEqual(crudUpdateResolved);
             await expect(oiUpdatePromise).resolves.toBe(true);
             expect(objectInstance.state.crud.update).toHaveBeenCalledWith({
-                crudArgs: {
+                target: {
                     stream: "test_stream",
                 },
                 pkKey: "id",
@@ -924,7 +924,7 @@ describe("use/objectInstance.js", function () {
                     id: 1,
                     name: "zxcv!",
                 },
-                retrieveArgs: { fields: ["id", "__str__", "name"] },
+                params: { fields: ["id", "__str__", "name"] },
                 isCancelled: expect.any(Object),
             });
             expect(objectInstance.state.crud.update).toHaveBeenCalledTimes(1);
@@ -933,13 +933,13 @@ describe("use/objectInstance.js", function () {
         });
         it("success with non-standard pk", async function () {
             const id = ref(1);
-            const retrieveArgs = reactive({ fields });
+            const params = reactive({ fields });
             const objectInstance = useObjectInstance({
                 props: {
-                    crudArgs: { stream: "test_stream" },
+                    target: { stream: "test_stream" },
                     pk: id,
                     pkKey: "unique",
-                    retrieveArgs,
+                    params,
                 },
             });
             let crudUpdateResolve;
@@ -971,7 +971,7 @@ describe("use/objectInstance.js", function () {
             expect({ ...objectInstance.state.object }).toEqual(crudUpdateResolvedWithNonStandardPk);
             await expect(oiUpdatePromise).resolves.toBe(true);
             expect(objectInstance.state.crud.update).toHaveBeenCalledWith({
-                crudArgs: {
+                target: {
                     stream: "test_stream",
                 },
                 pkKey: "unique",
@@ -979,7 +979,7 @@ describe("use/objectInstance.js", function () {
                     unique: 1,
                     name: "zxcv!",
                 },
-                retrieveArgs: { fields: ["id", "__str__", "name"] },
+                params: { fields: ["id", "__str__", "name"] },
                 isCancelled: expect.any(Object),
             });
             expect(objectInstance.state.crud.update).toHaveBeenCalledTimes(1);
@@ -988,13 +988,13 @@ describe("use/objectInstance.js", function () {
         });
         it("errored", async function () {
             const id = ref(1);
-            const retrieveArgs = reactive({ fields });
+            const params = reactive({ fields });
             const objectInstance = useObjectInstance({
                 props: {
-                    crudArgs: { stream: "test_stream" },
+                    target: { stream: "test_stream" },
                     pk: id,
                     pkKey: "id",
-                    retrieveArgs,
+                    params,
                 },
             });
             let crudUpdateReject;
@@ -1026,7 +1026,7 @@ describe("use/objectInstance.js", function () {
             expect({ ...objectInstance.state.object }).toEqual({});
             await expect(oiUpdatePromise).resolves.toBe(false);
             expect(objectInstance.state.crud.update).toHaveBeenCalledWith({
-                crudArgs: {
+                target: {
                     stream: "test_stream",
                 },
                 pkKey: "id",
@@ -1034,7 +1034,7 @@ describe("use/objectInstance.js", function () {
                     id: 1,
                     name: "zxcv!",
                 },
-                retrieveArgs: { fields: ["id", "__str__", "name"] },
+                params: { fields: ["id", "__str__", "name"] },
                 isCancelled: expect.any(Object),
             });
             expect(objectInstance.state.crud.update).toHaveBeenCalledTimes(1);
@@ -1043,13 +1043,13 @@ describe("use/objectInstance.js", function () {
         });
         it("errored with non-matching pkKey", async function () {
             const id = ref(1);
-            const retrieveArgs = reactive({ fields });
+            const params = reactive({ fields });
             const objectInstance = useObjectInstance({
                 props: {
-                    crudArgs: { stream: "test_stream" },
+                    target: { stream: "test_stream" },
                     pk: id,
                     pkKey: "id",
-                    retrieveArgs,
+                    params,
                 },
             });
             let crudUpdateReject;
@@ -1081,7 +1081,7 @@ describe("use/objectInstance.js", function () {
             expect({ ...objectInstance.state.object }).toEqual({});
             await expect(oiUpdatePromise).resolves.toBe(false);
             expect(objectInstance.state.crud.update).toHaveBeenCalledWith({
-                crudArgs: {
+                target: {
                     stream: "test_stream",
                 },
                 pkKey: "id",
@@ -1089,7 +1089,7 @@ describe("use/objectInstance.js", function () {
                     id: 1,
                     name: "zxcv!",
                 },
-                retrieveArgs: { fields: ["id", "__str__", "name"] },
+                params: { fields: ["id", "__str__", "name"] },
                 isCancelled: expect.any(Object),
             });
             expect(objectInstance.state.crud.update).toHaveBeenCalledTimes(1);
@@ -1098,13 +1098,13 @@ describe("use/objectInstance.js", function () {
         });
         it("already loading", async function () {
             const id = ref(1);
-            const retrieveArgs = reactive({ fields });
+            const params = reactive({ fields });
             const objectInstance = useObjectInstance({
                 props: {
-                    crudArgs: { stream: "test_stream" },
+                    target: { stream: "test_stream" },
                     pk: id,
                     pkKey: "id",
-                    retrieveArgs,
+                    params,
                 },
             });
             const crudUpdatePromise = new Promise(() => {});
@@ -1133,7 +1133,7 @@ describe("use/objectInstance.js", function () {
             expect(objectInstance.state.loading).toBe(true);
             expect({ ...objectInstance.state.object }).toEqual({});
             expect(objectInstance.state.crud.update).toHaveBeenCalledWith({
-                crudArgs: {
+                target: {
                     stream: "test_stream",
                 },
                 pkKey: "id",
@@ -1141,7 +1141,7 @@ describe("use/objectInstance.js", function () {
                     id: 1,
                     name: "zxcv!",
                 },
-                retrieveArgs: { fields: ["id", "__str__", "name"] },
+                params: { fields: ["id", "__str__", "name"] },
                 isCancelled: expect.any(Object),
             });
             expect(objectInstance.state.crud.update).toHaveBeenCalledTimes(1);
@@ -1151,10 +1151,10 @@ describe("use/objectInstance.js", function () {
         it("cancel", async () => {
             const objectInstance = useObjectInstance({
                 props: {
-                    crudArgs: { stream: "test_stream" },
+                    target: { stream: "test_stream" },
                     pk: 1,
                     pkKey: "id",
-                    retrieveArgs: { fields },
+                    params: { fields },
                 },
             });
 
@@ -1182,13 +1182,13 @@ describe("use/objectInstance.js", function () {
     describe("patch", function () {
         it("success", async function () {
             const id = ref(1);
-            const retrieveArgs = reactive({ fields });
+            const params = reactive({ fields });
             const objectInstance = useObjectInstance({
                 props: {
-                    crudArgs: { stream: "test_stream" },
+                    target: { stream: "test_stream" },
                     pk: id,
                     pkKey: "id",
-                    retrieveArgs,
+                    params,
                 },
             });
             let crudPatchResolve;
@@ -1222,7 +1222,7 @@ describe("use/objectInstance.js", function () {
             await nextTick();
             await expect(oiPatchPromise).resolves.toBe(true);
             expect(objectInstance.state.crud.patch).toHaveBeenCalledWith({
-                crudArgs: {
+                target: {
                     stream: "test_stream",
                 },
                 pk: 1,
@@ -1231,7 +1231,7 @@ describe("use/objectInstance.js", function () {
                     id: 1,
                     name: "zxcv!",
                 },
-                retrieveArgs: { fields: ["id", "__str__", "name"] },
+                params: { fields: ["id", "__str__", "name"] },
                 isCancelled: expect.any(Object),
             });
             expect(objectInstance.state.crud.patch).toHaveBeenCalledTimes(1);
@@ -1240,13 +1240,13 @@ describe("use/objectInstance.js", function () {
         });
         it("success with non-standard pk", async function () {
             const id = ref(1);
-            const retrieveArgs = reactive({ fields });
+            const params = reactive({ fields });
             const objectInstance = useObjectInstance({
                 props: {
-                    crudArgs: { stream: "test_stream" },
+                    target: { stream: "test_stream" },
                     pk: id,
                     pkKey: "unique",
-                    retrieveArgs,
+                    params,
                 },
             });
             let crudPatchResolve;
@@ -1280,7 +1280,7 @@ describe("use/objectInstance.js", function () {
             await nextTick();
             await expect(oiPatchPromise).resolves.toBe(true);
             expect(objectInstance.state.crud.patch).toHaveBeenCalledWith({
-                crudArgs: {
+                target: {
                     stream: "test_stream",
                 },
                 pk: 1,
@@ -1289,7 +1289,7 @@ describe("use/objectInstance.js", function () {
                     unique: 1,
                     name: "zxcv!",
                 },
-                retrieveArgs: { fields: ["id", "__str__", "name"] },
+                params: { fields: ["id", "__str__", "name"] },
                 isCancelled: expect.any(Object),
             });
             expect(objectInstance.state.crud.patch).toHaveBeenCalledTimes(1);
@@ -1298,13 +1298,13 @@ describe("use/objectInstance.js", function () {
         });
         it("errored", async function () {
             const id = ref(1);
-            const retrieveArgs = reactive({ fields });
+            const params = reactive({ fields });
             const objectInstance = useObjectInstance({
                 props: {
-                    crudArgs: { stream: "test_stream" },
+                    target: { stream: "test_stream" },
                     pk: id,
                     pkKey: "id",
-                    retrieveArgs,
+                    params,
                 },
             });
             let crudPatchReject;
@@ -1336,7 +1336,7 @@ describe("use/objectInstance.js", function () {
             expect({ ...objectInstance.state.object }).toEqual({});
             await expect(oiPatchPromise).resolves.toBe(false);
             expect(objectInstance.state.crud.patch).toHaveBeenCalledWith({
-                crudArgs: {
+                target: {
                     stream: "test_stream",
                 },
                 pk: 1,
@@ -1345,7 +1345,7 @@ describe("use/objectInstance.js", function () {
                     id: 1,
                     name: "zxcv!",
                 },
-                retrieveArgs: { fields: ["id", "__str__", "name"] },
+                params: { fields: ["id", "__str__", "name"] },
                 isCancelled: expect.any(Object),
             });
             expect(objectInstance.state.crud.patch).toHaveBeenCalledTimes(1);
@@ -1354,13 +1354,13 @@ describe("use/objectInstance.js", function () {
         });
         it("errored with non-matching pkKey", async function () {
             const id = ref(1);
-            const retrieveArgs = reactive({ fields });
+            const params = reactive({ fields });
             const objectInstance = useObjectInstance({
                 props: {
-                    crudArgs: { stream: "test_stream" },
+                    target: { stream: "test_stream" },
                     pk: id,
                     pkKey: "pk",
-                    retrieveArgs,
+                    params,
                 },
             });
             let crudPatchReject;
@@ -1392,7 +1392,7 @@ describe("use/objectInstance.js", function () {
             expect({ ...objectInstance.state.object }).toEqual({});
             await expect(oiPatchPromise).resolves.toBe(false);
             expect(objectInstance.state.crud.patch).toHaveBeenCalledWith({
-                crudArgs: {
+                target: {
                     stream: "test_stream",
                 },
                 pk: 1,
@@ -1401,7 +1401,7 @@ describe("use/objectInstance.js", function () {
                     id: 1,
                     name: "zxcv!",
                 },
-                retrieveArgs: { fields: ["id", "__str__", "name"] },
+                params: { fields: ["id", "__str__", "name"] },
                 isCancelled: expect.any(Object),
             });
             expect(objectInstance.state.crud.patch).toHaveBeenCalledTimes(1);
@@ -1410,13 +1410,13 @@ describe("use/objectInstance.js", function () {
         });
         it("already loading", async function () {
             const pk = ref(1);
-            const retrieveArgs = reactive({ fields });
+            const params = reactive({ fields });
             const objectInstance = useObjectInstance({
                 props: {
-                    crudArgs: { stream: "test_stream" },
+                    target: { stream: "test_stream" },
                     pk,
                     pkKey: "id",
-                    retrieveArgs,
+                    params,
                 },
             });
             const crudPatchPromise = new Promise(() => {});
@@ -1437,7 +1437,7 @@ describe("use/objectInstance.js", function () {
                 })
             ).toThrow(new ObjectError("already loading.", "already-loading"));
             expect(objectInstance.state.crud.patch).toHaveBeenCalledWith({
-                crudArgs: {
+                target: {
                     stream: "test_stream",
                 },
                 pk: 1,
@@ -1446,7 +1446,7 @@ describe("use/objectInstance.js", function () {
                     id: 1,
                     name: "zxcv!",
                 },
-                retrieveArgs: { fields: ["id", "__str__", "name"] },
+                params: { fields: ["id", "__str__", "name"] },
                 isCancelled: expect.any(Object),
             });
             expect(objectInstance.state.crud.patch).toHaveBeenCalledTimes(1);
@@ -1456,10 +1456,10 @@ describe("use/objectInstance.js", function () {
         it("cancel", async () => {
             const objectInstance = useObjectInstance({
                 props: {
-                    crudArgs: { stream: "test_stream" },
+                    target: { stream: "test_stream" },
                     pk: 1,
                     pkKey: "id",
-                    retrieveArgs: { fields },
+                    params: { fields },
                 },
             });
 
@@ -1487,13 +1487,13 @@ describe("use/objectInstance.js", function () {
     describe("delete", function () {
         it("success", async function () {
             const pk = ref(1);
-            const retrieveArgs = reactive({ fields });
+            const params = reactive({ fields });
             const objectInstance = useObjectInstance({
                 props: {
-                    crudArgs: { stream: "test_stream" },
+                    target: { stream: "test_stream" },
                     pk,
                     pkKey: "unique",
-                    retrieveArgs,
+                    params,
                 },
             });
             assignReactiveObject(objectInstance.state.object, crudRetrieveResolvedNonStandardPrimaryKey);
@@ -1532,7 +1532,7 @@ describe("use/objectInstance.js", function () {
 
             await expect(returnsPromise).resolves.toBe(true);
             expect(objectInstance.state.crud.delete).toHaveBeenCalledWith({
-                crudArgs: { stream: "test_stream" },
+                target: { stream: "test_stream" },
                 pk: 1,
                 pkKey: "unique",
                 isCancelled: expect.any(Object),
@@ -1543,13 +1543,13 @@ describe("use/objectInstance.js", function () {
         });
         it("errored", async function () {
             const pk = ref(1);
-            const retrieveArgs = reactive({ fields });
+            const params = reactive({ fields });
             const objectInstance = useObjectInstance({
                 props: {
-                    crudArgs: { stream: "test_stream" },
+                    target: { stream: "test_stream" },
                     pk,
                     pkKey: "id",
-                    retrieveArgs,
+                    params,
                 },
             });
             assignReactiveObject(objectInstance.state.object, crudRetrieveResolved);
@@ -1588,7 +1588,7 @@ describe("use/objectInstance.js", function () {
 
             await expect(returnsPromise).resolves.toBe(false);
             expect(objectInstance.state.crud.delete).toHaveBeenCalledWith({
-                crudArgs: { stream: "test_stream" },
+                target: { stream: "test_stream" },
                 pk: 1,
                 pkKey: "id",
                 isCancelled: expect.any(Object),
@@ -1599,13 +1599,13 @@ describe("use/objectInstance.js", function () {
         });
         it("errored with non-matching pkKey", async function () {
             const pk = ref(1);
-            const retrieveArgs = reactive({ fields });
+            const params = reactive({ fields });
             const objectInstance = useObjectInstance({
                 props: {
-                    crudArgs: { stream: "test_stream" },
+                    target: { stream: "test_stream" },
                     pk,
                     pkKey: "unique",
-                    retrieveArgs,
+                    params,
                 },
             });
             assignReactiveObject(objectInstance.state.object, crudRetrieveResolved);
@@ -1644,7 +1644,7 @@ describe("use/objectInstance.js", function () {
 
             await expect(returnsPromise).resolves.toBe(false);
             expect(objectInstance.state.crud.delete).toHaveBeenCalledWith({
-                crudArgs: { stream: "test_stream" },
+                target: { stream: "test_stream" },
                 pk: 1,
                 pkKey: "unique",
                 isCancelled: expect.any(Object),
@@ -1655,13 +1655,13 @@ describe("use/objectInstance.js", function () {
         });
         it("already loading", async function () {
             const pk = ref(1);
-            const retrieveArgs = reactive({ fields });
+            const params = reactive({ fields });
             const objectInstance = useObjectInstance({
                 props: {
-                    crudArgs: { stream: "test_stream" },
+                    target: { stream: "test_stream" },
                     pk,
                     pkKey: "id",
-                    retrieveArgs,
+                    params,
                 },
             });
             const deletePromise = new Promise(() => {});
@@ -1670,7 +1670,7 @@ describe("use/objectInstance.js", function () {
             objectInstance.delete(1);
             expect(() => objectInstance.delete()).toThrow(new ObjectError("already loading.", "already-loading"));
             expect(objectInstance.state.crud.delete).toHaveBeenCalledWith({
-                crudArgs: { stream: "test_stream" },
+                target: { stream: "test_stream" },
                 pk: 1,
                 pkKey: "id",
                 isCancelled: expect.any(Object),
@@ -1682,10 +1682,10 @@ describe("use/objectInstance.js", function () {
         it("cancel", async () => {
             const objectInstance = useObjectInstance({
                 props: {
-                    crudArgs: { stream: "test_stream" },
+                    target: { stream: "test_stream" },
                     pk: 1,
                     pkKey: "id",
-                    retrieveArgs: { fields },
+                    params: { fields },
                 },
             });
 
@@ -1699,7 +1699,7 @@ describe("use/objectInstance.js", function () {
 
             const result = objectInstance.delete();
             expect(objectInstance.state.crud.delete).toHaveBeenCalledWith({
-                crudArgs: { stream: "test_stream" },
+                target: { stream: "test_stream" },
                 pk: 1,
                 pkKey: "id",
                 isCancelled: expect.any(Object),
@@ -1718,10 +1718,10 @@ describe("use/objectInstance.js", function () {
         it("resets object and error state", async () => {
             const objectInstance = useObjectInstance({
                 props: {
-                    crudArgs: { stream: "test_stream" },
+                    target: { stream: "test_stream" },
                     pk: 1,
                     pkKey: "id",
-                    retrieveArgs: { fields },
+                    params: { fields },
                 },
             });
 
@@ -1740,20 +1740,20 @@ describe("use/objectInstance.js", function () {
     it("useObjectSubscriptions", async function () {
         const objectInstanceA = useObjectInstance({
             props: {
-                crudArgs: { stream: "test_streamA" },
+                target: { stream: "test_streamA" },
                 pk: 1,
                 pkKey: "id",
-                retrieveArgs: {
+                params: {
                     fields,
                 },
             },
         });
         const objectInstanceB = useObjectInstance({
             props: {
-                crudArgs: { stream: "test_streamB" },
+                target: { stream: "test_streamB" },
                 pk: 2,
                 pkKey: "id",
-                retrieveArgs: {
+                params: {
                     fields,
                 },
             },
@@ -1761,20 +1761,20 @@ describe("use/objectInstance.js", function () {
         const objInstances = useObjectInstances({
             A: {
                 props: {
-                    crudArgs: { stream: "test_streamA" },
+                    target: { stream: "test_streamA" },
                     pk: 1,
                     pkKey: "id",
-                    retrieveArgs: {
+                    params: {
                         fields,
                     },
                 },
             },
             B: {
                 props: {
-                    crudArgs: { stream: "test_streamB" },
+                    target: { stream: "test_streamB" },
                     pk: 2,
                     pkKey: "id",
-                    retrieveArgs: {
+                    params: {
                         fields,
                     },
                 },
@@ -1785,9 +1785,9 @@ describe("use/objectInstance.js", function () {
     });
     it("useObjectInstance missing pkKey", async function () {
         const objectInstanceProps = {
-            crudArgs: { stream: "test_streamA" },
+            target: { stream: "test_streamA" },
             pk: 1,
-            retrieveArgs: {
+            params: {
                 fields,
             },
         };

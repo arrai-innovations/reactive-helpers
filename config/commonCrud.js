@@ -43,33 +43,33 @@ export const createDefaultCrud = (keys, cancellableKeys = new Set()) => {
 };
 
 /**
- * Assigns the default CRUD functions to the target object.
+ * Assigns the default CRUD handlers to the target object.
  *
  * @param {object} target - The reactive object to assign to.
  * @param {object} defaultCrud - The default CRUD definition (usually created by `createDefaultCrud`).
  * @param {object} [options] - The options object.
  * @param {object} [options.props] - The props object.
- * @param {object} [options.functions] - The functions to assign.
- * @param {Set<string>} [options.validKeys] - The valid keys for the functions.
+ * @param {object} [options.handlers] - The functions to assign.
+ * @param {Set<string>} [options.validKeys] - The valid keys for the handlers.
  */
 export function assignCrud(
     target,
     defaultCrud,
-    { props, functions, validKeys = new Set(Object.keys(defaultCrud).filter((k) => k !== "args")) } = {}
+    { props, handlers, validKeys = new Set(Object.keys(defaultCrud).filter((k) => k !== "args")) } = {}
 ) {
     Object.assign(target, cloneDeep(defaultCrud));
-    if (props?.crudArgs) {
-        addOrUpdateReactiveObject(target.args, props.crudArgs);
+    if (props?.target) {
+        addOrUpdateReactiveObject(target.args, props.target);
     }
-    if (functions) {
-        for (const [key, fn] of Object.entries(functions)) {
+    if (handlers) {
+        for (const [key, fn] of Object.entries(handlers)) {
             if (!validKeys.has(key)) {
                 throw new Error(`Invalid function key "${key}" passed to assignCrud`);
             }
             if (!isFunction(fn)) {
                 throw new Error(`Function "${key}" is not actually a function`);
             }
-            target[key] = refIfReactive(functions, key, fn);
+            target[key] = refIfReactive(handlers, key, fn);
         }
     }
 }

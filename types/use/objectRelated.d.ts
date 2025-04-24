@@ -62,8 +62,8 @@ export function useObjectRelateds(objectRelatedArgs: {
  *     },
  * });
  * const objectSubscriptionProps = reactive({
- *     crudArgs: { app: 'foo', model: 'bar'},
- *     retrieveArgs: {},
+ *     target: { app: 'foo', model: 'bar'},
+ *     params: {},
  *     pk: '99',
  *     pkKey: 'id',
  *     intendToSubscribe: true,
