@@ -80,12 +80,12 @@ export class ListError extends Error {
  * This interface aggregates the raw state from multiple list management functionalities.
  *
  * @typedef {(
- *     import('./listInstance.js').ListInstanceRawState |
- *     import('./listSubscription.js').ListSubscriptionRawState |
- *     import('./listRelated.js').ListRelatedRawState |
- *     import('./listCalculated.js').ListCalculatedRawState |
- *     import('./listFilter.js').ListFilterRawState |
- *     import('./listSearch.js').ListSearchRawState |
+ *     import('./listInstance.js').ListInstanceRawState &
+ *     import('./listSubscription.js').ListSubscriptionRawState &
+ *     import('./listRelated.js').ListRelatedRawState &
+ *     import('./listCalculated.js').ListCalculatedRawState &
+ *     import('./listFilter.js').ListFilterRawState &
+ *     import('./listSearch.js').ListSearchRawState &
  *     import('./listSort.js').ListSortRawState
  * )} ListRawState
  */
@@ -255,9 +255,9 @@ export const useList = ({
         });
     });
 
-    const clearError = (error) => {
-        managed.listSubscription.clearError(error);
-        managed.listInstance.clearError(error);
+    const clearError = () => {
+        managed.listSubscription.clearError();
+        managed.listInstance.clearError();
     };
 
     /** @type {ListManager} */

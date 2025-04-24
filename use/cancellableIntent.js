@@ -10,14 +10,18 @@ import { tryOnActivated, tryOnDeactivated } from "../utils/keepAliveTry.js";
  */
 
 /**
- * @typedef {import("vue").UnwrapNestedRefs<object>} CancellableIntentState - The state of the cancellable intent.
- * @property {number} activeCount - The number of active intents.
- * @property {boolean} active - Whether there are active intents.
- * @property {number} resolvingCount - The number of resolving intents.
- * @property {boolean} resolving - Whether there are resolving intents.
+ * @typedef {object} CancellableIntentRawState - The raw state of the cancellable intent.
+ * @property {number|undefined} activeCount - The number of active intents.
+ * @property {boolean|undefined} active - Whether there are active intents.
+ * @property {number|undefined} resolvingCount - The number of resolving intents.
+ * @property {boolean|undefined} resolving - Whether there are resolving intents.
  * @property {boolean} errored - Whether there was an error.
- * @property {Error} error - The error that occurred.
+ * @property {Error|null} error - The error that occurred.
  * @property {boolean} clearActiveOnResolved - Whether to clear the active state when the promise resolves.
+ */
+
+/**
+ * @typedef {import("vue").UnwrapNestedRefs<CancellableIntentRawState>} CancellableIntentState - The state of the cancellable intent.
  */
 
 /**
@@ -87,15 +91,18 @@ export function useCancellableIntent({
     if (typeof awaitableWithCancel !== "function") {
         throw new Error("awaitableWithCancel must be a function");
     }
-    const state = reactive({
-        activeCount: undefined, // the active count doesn't mean much when not using clearActiveOnResolved
-        active: undefined,
-        resolvingCount: undefined,
-        resolving: undefined,
-        errored: false,
-        error: null,
-        clearActiveOnResolved,
-    });
+    const state = reactive(
+        /** @type {CancellableIntentRawState} */
+        {
+            activeCount: undefined, // the active count doesn't mean much when not using clearActiveOnResolved
+            active: undefined,
+            resolvingCount: undefined,
+            resolving: undefined,
+            errored: false,
+            error: null,
+            clearActiveOnResolved,
+        }
+    );
     let previousWatchValues = null,
         cancelFunction = null;
 
@@ -106,7 +113,7 @@ export function useCancellableIntent({
         es.stop();
     }
 
-    async function cancel(reason) {
+    async function cancel(/** @type {any} */ reason) {
         if (cancelFunction) {
             return cancelFunction(reason)
                 .catch(console.error)
@@ -244,6 +251,7 @@ export function useCancellableIntent({
             state.activeCount = 0;
             state.resolvingCount = 0;
             // trigger the intent watch manually to get current watch values
+            // noinspection JSIgnoredPromiseFromCall
             intentWatch();
         });
         tryOnDeactivated(cleanup);

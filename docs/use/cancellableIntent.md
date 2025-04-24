@@ -28,9 +28,51 @@ The guard arguments.
 
 ##### state
 
-> **state**: `any`
+> **state**: `object`
 
 The state of the cancellable intent.
+
+###### active
+
+> **active**: `boolean`
+
+Whether there are active intents.
+
+###### activeCount
+
+> **activeCount**: `number`
+
+The number of active intents.
+
+###### clearActiveOnResolved
+
+> **clearActiveOnResolved**: `boolean`
+
+Whether to clear the active state when the promise resolves.
+
+###### error
+
+> **error**: `Error`
+
+The error that occurred.
+
+###### errored
+
+> **errored**: `boolean`
+
+Whether there was an error.
+
+###### resolving
+
+> **resolving**: `boolean`
+
+Whether there are resolving intents.
+
+###### resolvingCount
+
+> **resolvingCount**: `number`
+
+The number of resolving intents.
 
 ##### stop
 
@@ -79,6 +121,56 @@ The reactive object to watch for truthiness before running the intent.
 > `optional` **watchArguments**: `any`
 
 The reactive object to watch for changes.
+
+***
+
+### CancellableIntentRawState
+
+The raw state of the cancellable intent.
+
+#### Properties
+
+##### active
+
+> **active**: `boolean`
+
+Whether there are active intents.
+
+##### activeCount
+
+> **activeCount**: `number`
+
+The number of active intents.
+
+##### clearActiveOnResolved
+
+> **clearActiveOnResolved**: `boolean`
+
+Whether to clear the active state when the promise resolves.
+
+##### error
+
+> **error**: `Error`
+
+The error that occurred.
+
+##### errored
+
+> **errored**: `boolean`
+
+Whether there was an error.
+
+##### resolving
+
+> **resolving**: `boolean`
+
+Whether there are resolving intents.
+
+##### resolvingCount
+
+> **resolvingCount**: `number`
+
+The number of resolving intents.
 
 ## Type Aliases
 

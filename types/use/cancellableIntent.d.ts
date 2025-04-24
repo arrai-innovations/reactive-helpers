@@ -2,14 +2,17 @@
  * @module use/cancellableIntent.js - A composable function for handling cancellable intents.
  */
 /**
- * @typedef {import("vue").UnwrapNestedRefs<object>} CancellableIntentState - The state of the cancellable intent.
- * @property {number} activeCount - The number of active intents.
- * @property {boolean} active - Whether there are active intents.
- * @property {number} resolvingCount - The number of resolving intents.
- * @property {boolean} resolving - Whether there are resolving intents.
+ * @typedef {object} CancellableIntentRawState - The raw state of the cancellable intent.
+ * @property {number|undefined} activeCount - The number of active intents.
+ * @property {boolean|undefined} active - Whether there are active intents.
+ * @property {number|undefined} resolvingCount - The number of resolving intents.
+ * @property {boolean|undefined} resolving - Whether there are resolving intents.
  * @property {boolean} errored - Whether there was an error.
- * @property {Error} error - The error that occurred.
+ * @property {Error|null} error - The error that occurred.
  * @property {boolean} clearActiveOnResolved - Whether to clear the active state when the promise resolves.
+ */
+/**
+ * @typedef {import("vue").UnwrapNestedRefs<CancellableIntentRawState>} CancellableIntentState - The state of the cancellable intent.
  */
 /**
  * @typedef {object} CancellableIntentOptions - The options for the cancellable intent.
@@ -66,9 +69,42 @@
  */
 export function useCancellableIntent({ awaitableWithCancel, watchArguments, guardArguments, clearActiveOnResolved, }: CancellableIntentOptions): CancellableIntent;
 /**
+ * - The raw state of the cancellable intent.
+ */
+export type CancellableIntentRawState = {
+    /**
+     * - The number of active intents.
+     */
+    activeCount: number | undefined;
+    /**
+     * - Whether there are active intents.
+     */
+    active: boolean | undefined;
+    /**
+     * - The number of resolving intents.
+     */
+    resolvingCount: number | undefined;
+    /**
+     * - Whether there are resolving intents.
+     */
+    resolving: boolean | undefined;
+    /**
+     * - Whether there was an error.
+     */
+    errored: boolean;
+    /**
+     * - The error that occurred.
+     */
+    error: Error | null;
+    /**
+     * - Whether to clear the active state when the promise resolves.
+     */
+    clearActiveOnResolved: boolean;
+};
+/**
  * - The state of the cancellable intent.
  */
-export type CancellableIntentState = import("vue").UnwrapNestedRefs<object>;
+export type CancellableIntentState = import("vue").UnwrapNestedRefs<CancellableIntentRawState>;
 /**
  * - The options for the cancellable intent.
  */
