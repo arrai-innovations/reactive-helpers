@@ -10,7 +10,7 @@
 
 ### refIfReactive()
 
-> **refIfReactive**\<`T`, `K`\>(`source`, `property`, `defaultValue`?): `T`\[`K`\] \| `Ref`\<`T`\[`K`\], `T`\[`K`\]\>
+> **refIfReactive**\<`T`, `K`\>(`source`, `property`, `defaultValue`?): `ComputedRef`\<`T`\[`K`\]\> \| `Ref`\<`T`\[`K`\], `T`\[`K`\]\>
 
 Returns a ref to a property if the source is reactive, otherwise returns the unrefed value.
 
@@ -42,6 +42,6 @@ The default value to use if source or property is missing.
 
 #### Returns
 
-`T`\[`K`\] \| `Ref`\<`T`\[`K`\], `T`\[`K`\]\>
+`ComputedRef`\<`T`\[`K`\]\> \| `Ref`\<`T`\[`K`\], `T`\[`K`\]\>
 
 The ref to the property if the source is reactive, otherwise the unrefed value.
