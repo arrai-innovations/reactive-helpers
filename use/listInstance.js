@@ -3,7 +3,7 @@ import { assignReactiveObject } from "../utils/assignReactiveObject.js";
 import { getFakePk } from "../utils/getFakePk.js";
 import { useLoadingError } from "./loadingError.js";
 import inspect from "browser-util-inspect";
-import { computed, effectScope, nextTick, reactive, readonly, ref, shallowReactive, toRef, unref, watch } from "vue";
+import { computed, effectScope, nextTick, reactive, readonly, ref, toRef, unref, watch } from "vue";
 import { CancellablePromise, wrapMaybeCancellable } from "../utils/cancellablePromise.js";
 import { refIfReactive } from "../utils/refIfReactive.js";
 
@@ -265,12 +265,12 @@ export function useListInstance({ props, handlers = {}, keepOldPages }) {
 
     // ### touching the _objectsMap or _objectsProxy directly will not trigger reactivity ###
     const state = reactive({
-        crud: shallowReactive({
-            args: reactive({}),
+        crud: {
+            args: {},
             list: defaultListCrud.list,
             bulkDelete: defaultListCrud.bulkDelete,
             executeAction: defaultListCrud.executeAction,
-        }),
+        },
         pkKey: refIfReactive(props, "pkKey"),
         params: refIfReactive(props, "params", {}),
         /** @type {{[key: string]: ListObject}} */

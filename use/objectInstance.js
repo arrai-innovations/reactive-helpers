@@ -1,7 +1,7 @@
 import { defaultObjectCrud, getObjectCrud } from "../config/objectCrud.js";
 import { assignReactiveObject } from "../utils/assignReactiveObject.js";
 import { useLoadingError } from "./loadingError.js";
-import { reactive, readonly, ref, shallowReactive } from "vue";
+import { reactive, readonly, ref } from "vue";
 import { wrapMaybeCancellable } from "../utils/cancellablePromise.js";
 import { refIfReactive } from "../utils/refIfReactive.js";
 
@@ -212,19 +212,18 @@ export function useObjectInstance({ props, handlers = {} }) {
     const state = reactive(
         /** @type {ObjectInstanceRawState} */
         {
-            crud: shallowReactive(
+            crud:
                 /** @type {ObjectInstanceRawStateCrud} */
                 {
-                    args: reactive({}),
+                    args: {},
                     create: defaultObjectCrud.create,
                     retrieve: defaultObjectCrud.retrieve,
                     update: defaultObjectCrud.update,
                     delete: defaultObjectCrud.delete,
                     patch: defaultObjectCrud.patch,
                     subscribe: defaultObjectCrud.subscribe,
-                }
-            ),
-            object: reactive({}),
+                },
+            object: {},
             pk: refIfReactive(props, "pk", null),
             pkKey: refIfReactive(props, "pkKey"),
             params: refIfReactive(props, "params", {}),
