@@ -32,10 +32,11 @@ import { reactive, toRefs } from "vue";
  */
 
 /**
- * @typedef {import('vue').reactive<(
- *     import('./listInstance.js').ListInstanceRawState &
- *     PagedListInstanceStateExtension
- * )>} PagedListInstanceState
+ * @typedef {import('./listInstance.js').ListInstanceRawState & PagedListInstanceStateExtension} PagedListInstanceRawState
+ */
+
+/**
+ * @typedef {import('vue').reactive<PagedListInstanceRawState>} PagedListInstanceState
  */
 
 /**
@@ -82,6 +83,7 @@ export function usePagedListInstance({ keepOldPages, ...useListInstanceArgs }) {
         paginatedState.totalRecords = 0;
         paginatedState.totalPages = 0;
         paginatedState.perPage = 0;
+        paginatedState.pageToIds.clear();
     };
     if (keepOldPages === undefined) {
         throw new Error("keepOldPages is required");

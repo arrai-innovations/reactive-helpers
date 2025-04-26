@@ -47,6 +47,7 @@ export type PagedListInstanceStateExtension = {
      */
     pageToIds: import("vue").Ref<Map<number, string[]>>;
 };
+export type PagedListInstanceRawState = import("./listInstance.js").ListInstanceRawState & PagedListInstanceStateExtension;
 export type PagedListInstanceState = typeof reactive;
 export type PagedListRawInstance = {
     /**

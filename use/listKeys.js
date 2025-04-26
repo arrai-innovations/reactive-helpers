@@ -14,6 +14,7 @@ export const listInstanceStateKeys = [
     "totalRecords",
     "totalPages",
     "perPage",
+    "pageToIds",
 ];
 export const listInstanceFunctions = [
     "list",

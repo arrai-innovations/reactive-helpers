@@ -80,7 +80,10 @@ export class ListError extends Error {
  * This interface aggregates the raw state from multiple list management functionalities.
  *
  * @typedef {(
- *     import('./listInstance.js').ListInstanceRawState &
+ *     (
+ *         import('./listInstance.js').ListInstanceRawState |
+ *         import('./paginatedListInstance.js').PagedListInstanceRawState
+ *     ) &
  *     import('./listSubscription.js').ListSubscriptionRawState &
  *     import('./listRelated.js').ListRelatedRawState &
  *     import('./listCalculated.js').ListCalculatedRawState &
@@ -101,7 +104,7 @@ export class ListError extends Error {
  * Holds references to instances of all list-related composables, facilitating direct access and management.
  *
  * @typedef {{
- *     listInstance: import('./listInstance.js').ListInstance,
+ *     listInstance: import('./listInstance.js').ListInstance | import('./paginatedListInstance.js').PagedListInstance,
  *     listSubscription: import('./listSubscription.js').ListSubscription,
  *     listRelated: import('./listRelated.js').ListRelated,
  *     listCalculated: import('./listCalculated.js').ListCalculated,

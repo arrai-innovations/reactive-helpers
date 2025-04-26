@@ -132,6 +132,14 @@ The total records.
 
 ***
 
+### PagedListInstanceRawState
+
+> **PagedListInstanceRawState**\<\>: [`ListInstanceRawState`](listInstance.md#listinstancerawstate) & [`PagedListInstanceStateExtension`](paginatedListInstance.md#pagedlistinstancestateextension)
+
+#### Type Parameters
+
+***
+
 ### PagedListInstanceState
 
 > **PagedListInstanceState**\<\>: [`__type`](paginatedListInstance.md)

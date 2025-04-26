@@ -124,7 +124,7 @@ export type ListOptions = {
  * Represents the combined state definitions for all list-related components.
  * This interface aggregates the raw state from multiple list management functionalities.
  */
-export type ListRawState = (import("./listInstance.js").ListInstanceRawState & import("./listSubscription.js").ListSubscriptionRawState & import("./listRelated.js").ListRelatedRawState & import("./listCalculated.js").ListCalculatedRawState & import("./listFilter.js").ListFilterRawState & import("./listSearch.js").ListSearchRawState & import("./listSort.js").ListSortRawState);
+export type ListRawState = ((import("./listInstance.js").ListInstanceRawState | import("./paginatedListInstance.js").PagedListInstanceRawState) & import("./listSubscription.js").ListSubscriptionRawState & import("./listRelated.js").ListRelatedRawState & import("./listCalculated.js").ListCalculatedRawState & import("./listFilter.js").ListFilterRawState & import("./listSearch.js").ListSearchRawState & import("./listSort.js").ListSortRawState);
 /**
  * Represents the reactive state derived from aggregating states of various list-related components.
  * This state is typically used within Vue components for reactivity and access to updated list properties.
@@ -134,7 +134,7 @@ export type ListState = import("vue").UnwrapNestedRefs<ListRawState>;
  * Holds references to instances of all list-related composables, facilitating direct access and management.
  */
 export type ListManaged = {
-    listInstance: import("./listInstance.js").ListInstance;
+    listInstance: import("./listInstance.js").ListInstance | import("./paginatedListInstance.js").PagedListInstance;
     listSubscription: import("./listSubscription.js").ListSubscription;
     listRelated: import("./listRelated.js").ListRelated;
     listCalculated: import("./listCalculated.js").ListCalculated;
