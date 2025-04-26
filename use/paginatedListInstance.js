@@ -1,4 +1,5 @@
 import { useListInstance } from "./listInstance.js";
+import { reactive, toRefs } from "vue";
 
 /**
  * @module use/paginatedListInstance.js
@@ -11,16 +12,50 @@ import { useListInstance } from "./listInstance.js";
  */
 
 /**
- * @typedef {object} PagedListInstanceState
+ * @typedef {object} PaginatedRawState
  * @property {number} totalRecords - The total records.
  * @property {number} totalPages - The total pages.
  * @property {number} perPage - The per page.
+ * @property {Map<number, string[]>} pageToIds - The page to ids map.
  */
 
 /**
- * @typedef {object} PagedListInstance
- * @property {import('./listInstance.js').ListInstanceState & PagedListInstanceState} state - The state.
+ * @typedef {import('vue').UnwrapNestedRefs<PaginatedRawState>} PaginatedState
  */
+
+/**
+ * @typedef {object} PagedListInstanceStateExtension
+ * @property {import('vue').Ref<number>} totalRecords - The total records.
+ * @property {import('vue').Ref<number>} totalPages - The total pages.
+ * @property {import('vue').Ref<number>} perPage - The per page.
+ * @property {import('vue').Ref<Map<number, string[]>>} pageToIds - The page to ids map.
+ */
+
+/**
+ * @typedef {import('vue').reactive<(
+ *     import('./listInstance.js').ListInstanceRawState &
+ *     PagedListInstanceStateExtension
+ * )>} PagedListInstanceState
+ */
+
+/**
+ * @typedef {object} PagedListRawInstance
+ * @property {PagedListInstanceState} state - The state.
+ */
+
+/**
+ * @typedef {import('./listInstance.js').ListInstance & PagedListRawInstance} PagedListInstance
+ */
+
+/**
+ * @param {import('./listInstance.js').ListInstance} listInstance - The list instance.
+ * @param {PaginatedState} paginatedState - The paginated state.
+ * @returns {PagedListInstance} - The paged list instance.
+ */
+function makePagedListInstance(listInstance, paginatedState) {
+    Object.assign(listInstance.state, toRefs(paginatedState));
+    return /** @type {PagedListInstance} */ (listInstance);
+}
 
 /**
  *
@@ -28,48 +63,62 @@ import { useListInstance } from "./listInstance.js";
  * @returns {PagedListInstance} - The paged list instance.
  */
 export function usePagedListInstance({ keepOldPages, ...useListInstanceArgs }) {
-    const listInstance = /** @type {PagedListInstance & import('./listInstance.js').ListInstance} */ (
-        /** @type {unknown} */ (useListInstance({ keepOldPages, ...useListInstanceArgs }))
+    /** @type {PaginatedState} */
+    const paginatedState = reactive({
+        totalRecords: 0,
+        totalPages: 0,
+        perPage: 0,
+        pageToIds: new Map(),
+    });
+
+    const paginatedListInstance = makePagedListInstance(
+        useListInstance({ keepOldPages, ...useListInstanceArgs }),
+        paginatedState
     );
 
-    listInstance.state.totalRecords = 0;
-    listInstance.state.totalPages = 0;
-    listInstance.state.perPage = 0;
-
-    const superClearList = listInstance.clearList;
-    listInstance.clearList = () => {
+    const superClearList = paginatedListInstance.clearList;
+    paginatedListInstance.clearList = () => {
         superClearList();
-        listInstance.state.totalRecords = 0;
-        listInstance.state.totalPages = 0;
-        listInstance.state.perPage = 0;
+        paginatedState.totalRecords = 0;
+        paginatedState.totalPages = 0;
+        paginatedState.perPage = 0;
     };
     if (keepOldPages === undefined) {
         throw new Error("keepOldPages is required");
     }
 
-    listInstance.pageCallback = (newObjects, { totalRecords, totalPages, perPage }) => {
+    paginatedListInstance.pageCallback = (
+        /** @type {import('./listInstance.js').ListObject[]} */ newObjects,
+        /** @type {import('../config/listCrud.js').PaginateInfo} */ { page, totalRecords, totalPages, perPage }
+    ) => {
         // with keepOldPages, you are responsible for clearing the list as needed
         if (!keepOldPages) {
             // display one page at a time, clear the list
-            listInstance.clearList();
+            paginatedListInstance.clearList();
         }
         newObjects.forEach((newObject) => {
-            if (newObject[listInstance.state.pkKey] in listInstance.state.objects) {
-                listInstance.updateListObject(newObject);
+            if (newObject[paginatedListInstance.state.pkKey] in paginatedListInstance.state.objects) {
+                paginatedListInstance.updateListObject(newObject);
             } else {
-                listInstance.addListObject(newObject);
+                paginatedListInstance.addListObject(newObject);
             }
         });
+        if (keepOldPages && page !== undefined) {
+            const pageIds = newObjects.map((obj) => obj[paginatedListInstance.state.pkKey] + "");
+            // webstorm being crazy
+            // noinspection JSUnresolvedReference
+            paginatedState.pageToIds.set(page, pageIds);
+        }
         if (totalRecords !== undefined) {
-            listInstance.state.totalRecords = totalRecords;
+            paginatedState.totalRecords = totalRecords;
         }
         if (totalPages !== undefined) {
-            listInstance.state.totalPages = totalPages;
+            paginatedState.totalPages = totalPages;
         }
         if (perPage !== undefined) {
-            listInstance.state.perPage = perPage;
+            paginatedState.perPage = perPage;
         }
     };
 
-    return listInstance;
+    return paginatedListInstance;
 }

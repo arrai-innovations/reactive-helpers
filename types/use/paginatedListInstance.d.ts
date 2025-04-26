@@ -1,22 +1,4 @@
 /**
- * @module use/paginatedListInstance.js
- *
- */
-/**
- * @typedef {object} PagedListListanceOptions
- * @property {boolean} keepOldPages - Whether to keep old pages.
- */
-/**
- * @typedef {object} PagedListInstanceState
- * @property {number} totalRecords - The total records.
- * @property {number} totalPages - The total pages.
- * @property {number} perPage - The per page.
- */
-/**
- * @typedef {object} PagedListInstance
- * @property {import('./listInstance.js').ListInstanceState & PagedListInstanceState} state - The state.
- */
-/**
  *
  * @param {PagedListListanceOptions & import('./listInstance.js').ListInstanceOptions} options - The options.
  * @returns {PagedListInstance} - The paged list instance.
@@ -28,7 +10,7 @@ export type PagedListListanceOptions = {
      */
     keepOldPages: boolean;
 };
-export type PagedListInstanceState = {
+export type PaginatedRawState = {
     /**
      * - The total records.
      */
@@ -41,11 +23,37 @@ export type PagedListInstanceState = {
      * - The per page.
      */
     perPage: number;
+    /**
+     * - The page to ids map.
+     */
+    pageToIds: Map<number, string[]>;
 };
-export type PagedListInstance = {
+export type PaginatedState = import("vue").UnwrapNestedRefs<PaginatedRawState>;
+export type PagedListInstanceStateExtension = {
+    /**
+     * - The total records.
+     */
+    totalRecords: import("vue").Ref<number>;
+    /**
+     * - The total pages.
+     */
+    totalPages: import("vue").Ref<number>;
+    /**
+     * - The per page.
+     */
+    perPage: import("vue").Ref<number>;
+    /**
+     * - The page to ids map.
+     */
+    pageToIds: import("vue").Ref<Map<number, string[]>>;
+};
+export type PagedListInstanceState = typeof reactive;
+export type PagedListRawInstance = {
     /**
      * - The state.
      */
-    state: import("./listInstance.js").ListInstanceState & PagedListInstanceState;
+    state: PagedListInstanceState;
 };
+export type PagedListInstance = import("./listInstance.js").ListInstance & PagedListRawInstance;
+import { reactive } from "vue";
 //# sourceMappingURL=paginatedListInstance.d.ts.map

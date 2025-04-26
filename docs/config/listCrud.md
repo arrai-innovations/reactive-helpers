@@ -208,21 +208,27 @@ The default arguments for the crud handlers.
 
 #### Properties
 
-##### perPage
+##### page?
 
-> **perPage**: `number`
+> `optional` **page**: `number`
+
+The page you are giving us results for.
+
+##### perPage?
+
+> `optional` **perPage**: `number`
 
 The per page.
 
-##### totalPages
+##### totalPages?
 
-> **totalPages**: `number`
+> `optional` **totalPages**: `number`
 
 The total pages.
 
-##### totalRecords
+##### totalRecords?
 
-> **totalRecords**: `number`
+> `optional` **totalRecords**: `number`
 
 The total records.
 
@@ -310,7 +316,7 @@ The arguments to be passed to the crud handlers.
 
 ### PageCallback()
 
-> **PageCallback**\<\>: (`newObjects`, `paginationInfo`) => `void`
+> **PageCallback**\<\>: (`newObjects`, `paginationInfo`?) => `void`
 
 #### Type Parameters
 
@@ -320,9 +326,9 @@ The arguments to be passed to the crud handlers.
 
 [`ListObject`](../use/listInstance.md#listobject)
 
-##### paginationInfo
+##### paginationInfo?
 
-[`PaginateInfo`](listCrud.md#paginateinfo) | `undefined`
+[`PaginateInfo`](listCrud.md#paginateinfo)
 
 #### Returns
 

@@ -13,17 +13,21 @@ export type PaginateInfo = {
     /**
      * - The total records.
      */
-    totalRecords: number;
+    totalRecords?: number;
     /**
      * - The total pages.
      */
-    totalPages: number;
+    totalPages?: number;
     /**
      * - The per page.
      */
-    perPage: number;
+    perPage?: number;
+    /**
+     * - The page you are giving us results for.
+     */
+    page?: number;
 };
-export type PageCallback = (newObjects: import("../use/listInstance.js").ListObject, paginationInfo: PaginateInfo | undefined) => void;
+export type PageCallback = (newObjects: import("../use/listInstance.js").ListObject, paginationInfo?: PaginateInfo) => void;
 export type ListArgs = {
     /**
      * - The arguments to be passed to the crud handlers.

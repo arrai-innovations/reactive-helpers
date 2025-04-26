@@ -8,95 +8,101 @@
 
 ## Interfaces
 
-### PagedListInstance
+### PagedListInstanceStateExtension
 
 #### Properties
 
-##### state
+##### pageToIds
 
-> **state**: `object` & [`PagedListInstanceState`](paginatedListInstance.md#pagedlistinstancestate)
+> **pageToIds**: `Ref`\<`Map`\<`number`, `string`[]\>, `Map`\<`number`, `string`[]\>\>
 
-The state.
+The page to ids map.
 
-###### Type declaration
+##### perPage
 
-###### crud
+> **perPage**: `Ref`\<`number`, `number`\>
 
-> **crud**: `object`
+The per page.
 
-CRUD handlers and their configurations for the list.
+##### totalPages
 
-###### crud.args
+> **totalPages**: `Ref`\<`number`, `number`\>
 
-> **args**: `any`
+The total pages.
 
-Arguments for the CRUD handlers.
+##### totalRecords
 
-###### crud.list?
+> **totalRecords**: `Ref`\<`number`, `number`\>
 
-> `optional` **list**: `Function`
-
-Function to list objects.
-
-###### error
-
-> **error**: `Error`
-
-The last error encountered.
-
-###### errored
-
-> **errored**: `boolean`
-
-Indicates if an error occurred during the last operation.
-
-###### loading?
-
-> `optional` **loading**: `boolean`
-
-Indicates if the list is currently loading.
-
-###### objects
-
-> **objects**: [`ObjectsByPk`](listInstance.md#objectsbypk)
-
-The list objects stored by their pks.
-
-###### objectsInOrder
-
-> **objectsInOrder**: [`ListObject`](listInstance.md#listobject)[]
-
-The objects in the order specified by the list.
-
-###### order
-
-> **order**: `string`[]
-
-The order of objects in the list.
-
-###### params
-
-> **params**: `any`
-
-Arguments passed to the server for listing operations.
-
-###### pkKey
-
-> **pkKey**: `string`
-
-The primary key field for the list objects.
-
-###### running
-
-> **running**: `boolean`
-
-Indicates if there are ongoing reactive updates.
+The total records.
 
 ***
 
-### PagedListInstanceState
+### PagedListListanceOptions
 
 #### Properties
+
+##### keepOldPages
+
+> **keepOldPages**: `boolean`
+
+Whether to keep old pages.
+
+***
+
+### PagedListRawInstance
+
+#### Properties
+
+##### state()
+
+> **state**: \<`T`\>(`target`) => `Reactive`\<`T`\>
+
+The state.
+
+Returns a reactive proxy of the object.
+
+The reactive conversion is "deep": it affects all nested properties. A
+reactive object also deeply unwraps any properties that are refs while
+maintaining reactivity.
+
+###### Type Parameters
+
+• **T** *extends* `object`
+
+###### Parameters
+
+###### target
+
+`T`
+
+The source object.
+
+###### Returns
+
+`Reactive`\<`T`\>
+
+###### Example
+
+```js
+const obj = reactive({ count: 0 })
+```
+
+###### See
+
+[https://vuejs.org/api/reactivity-core.html#reactive](https://vuejs.org/api/reactivity-core.html#reactive)
+
+***
+
+### PaginatedRawState
+
+#### Properties
+
+##### pageToIds
+
+> **pageToIds**: `Map`\<`number`, `string`[]\>
+
+The page to ids map.
 
 ##### perPage
 
@@ -116,17 +122,29 @@ The total pages.
 
 The total records.
 
+## Type Aliases
+
+### PagedListInstance
+
+> **PagedListInstance**\<\>: [`ListInstance`](listInstance.md#listinstance) & [`PagedListRawInstance`](paginatedListInstance.md#pagedlistrawinstance)
+
+#### Type Parameters
+
 ***
 
-### PagedListListanceOptions
+### PagedListInstanceState
 
-#### Properties
+> **PagedListInstanceState**\<\>: [`__type`](paginatedListInstance.md)
 
-##### keepOldPages
+#### Type Parameters
 
-> **keepOldPages**: `boolean`
+***
 
-Whether to keep old pages.
+### PaginatedState
+
+> **PaginatedState**\<\>: `UnwrapNestedRefs`
+
+#### Type Parameters
 
 ## Functions
 

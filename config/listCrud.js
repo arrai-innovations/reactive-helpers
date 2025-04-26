@@ -10,15 +10,16 @@ import { readonly } from "vue";
 
 /**
  * @typedef {object} PaginateInfo
- * @property {number} totalRecords - The total records.
- * @property {number} totalPages - The total pages.
- * @property {number} perPage - The per page.
+ * @property {number} [totalRecords] - The total records.
+ * @property {number} [totalPages] - The total pages.
+ * @property {number} [perPage] - The per page.
+ * @property {number} [page] - The page you are giving us results for.
  */
 
 /**
  * @typedef {(
  *     newObjects:import('../use/listInstance.js').ListObject,
- *     paginationInfo: PaginateInfo|undefined
+ *     paginationInfo?: PaginateInfo,
  * )=>void} PageCallback
  */
 
