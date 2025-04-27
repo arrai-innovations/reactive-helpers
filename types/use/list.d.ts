@@ -102,7 +102,7 @@ export type ListOptions = {
     /**
      * - Indicates whether old pages should be kept when paginating.
      */
-    keepOldPages: boolean;
+    keepOldPages: import("vue").Ref<boolean> | boolean;
     /**
      * - Indicates whether the list should be cleared when the list intent is triggered.
      */

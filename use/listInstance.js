@@ -61,7 +61,7 @@ export class ListInstanceError extends Error {
  *  function.
  * @property {import('../config/listCrud.js').CrudListSubscribeFn} [handlers.subscribe] - Provide the implementation for the
  *  subscribe function.
- * @property {boolean} keepOldPages - If true, pages will not be cleared when defaultPageCallback is called.
+ * @property {import('vue').Ref<boolean>|boolean} keepOldPages - If true, pages will not be cleared when defaultPageCallback is called.
  */
 
 /**
@@ -287,7 +287,7 @@ export function useListInstance({ props, handlers = {}, keepOldPages }) {
 
     const defaultPageCallback = (/** @type {ListObject[]} */ newObjects) => {
         // with keepOldPages, you are responsible for clearing the list as needed
-        if (!keepOldPages) {
+        if (!unref(keepOldPages)) {
             // display one page at a time, clear the list
             clearList();
         }

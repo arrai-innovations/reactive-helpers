@@ -20,7 +20,7 @@
  *  function.
  * @property {import('../config/listCrud.js').CrudListSubscribeFn} [handlers.subscribe] - Provide the implementation for the
  *  subscribe function.
- * @property {boolean} keepOldPages - If true, pages will not be cleared when defaultPageCallback is called.
+ * @property {import('vue').Ref<boolean>|boolean} keepOldPages - If true, pages will not be cleared when defaultPageCallback is called.
  */
 /**
  * The objects by pk.
@@ -210,7 +210,7 @@ export type ListInstanceOptions = {
     /**
      * - If true, pages will not be cleared when defaultPageCallback is called.
      */
-    keepOldPages: boolean;
+    keepOldPages: import("vue").Ref<boolean> | boolean;
 };
 /**
  * The objects by pk.

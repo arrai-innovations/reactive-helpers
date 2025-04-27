@@ -68,7 +68,7 @@ export class ListError extends Error {
  * @property {ListRawProps} props - The properties for configuring the list.
  * @property {import('../config/listCrud.js').ListCrudHandlers} handlers - Additional handlers to be included in the list manager.
  * @property {boolean} paged - Indicates whether the list should be paginated.
- * @property {boolean} keepOldPages - Indicates whether old pages should be kept when paginating.
+ * @property {import('vue').Ref<boolean>|boolean} keepOldPages - Indicates whether old pages should be kept when paginating.
  * @property {boolean} clearListOnListIntentTriggered - Indicates whether the list should be cleared when the list intent is triggered.
  * @property {number} searchThrottle - The throttle time for text search.
  * @property {number} sortThrottleWait - The throttle time for sorting.

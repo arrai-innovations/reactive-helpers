@@ -1,5 +1,5 @@
 import { useListInstance } from "./listInstance.js";
-import { reactive, toRefs } from "vue";
+import { reactive, toRefs, unref } from "vue";
 
 /**
  * @module use/paginatedListInstance.js
@@ -8,7 +8,7 @@ import { reactive, toRefs } from "vue";
 
 /**
  * @typedef {object} PagedListListanceOptions
- * @property {boolean} keepOldPages - Whether to keep old pages.
+ * @property {import('vue').Ref<boolean>|boolean} keepOldPages - Whether to keep old pages.
  */
 
 /**
@@ -94,7 +94,7 @@ export function usePagedListInstance({ keepOldPages, ...useListInstanceArgs }) {
         /** @type {import('../config/listCrud.js').PaginateInfo} */ { page, totalRecords, totalPages, perPage }
     ) => {
         // with keepOldPages, you are responsible for clearing the list as needed
-        if (!keepOldPages) {
+        if (!unref(keepOldPages)) {
             // display one page at a time, clear the list
             paginatedListInstance.clearList();
         }

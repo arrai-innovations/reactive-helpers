@@ -44,7 +44,7 @@ The total records.
 
 ##### keepOldPages
 
-> **keepOldPages**: `boolean`
+> **keepOldPages**: `boolean` \| `Ref`\<`boolean`, `boolean`\>
 
 Whether to keep old pages.
 

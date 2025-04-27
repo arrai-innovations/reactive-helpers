@@ -239,7 +239,7 @@ Provide the implementation for the
 
 ##### keepOldPages
 
-> **keepOldPages**: `boolean`
+> **keepOldPages**: `boolean` \| `Ref`\<`boolean`, `boolean`\>
 
 If true, pages will not be cleared when defaultPageCallback is called.
 

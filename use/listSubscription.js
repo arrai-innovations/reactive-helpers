@@ -86,7 +86,7 @@ export class ListSubscriptionError extends Error {
  * @typedef {object & import("./listInstance.js").ListInstanceOptions} ListSubscriptionOptions
  * @property {import("./listInstance.js").ListInstance} listInstance - A list instance to use instead of creating one.
  * @property {boolean} clearListOnListIntentTriggered - If true, the list will be cleared when the list intent is triggered. Default is false.
- * @property {boolean} keepOldPages - If true, pages will not be cleared when defaultPageCallback is called.
+ * @property {import('vue').Ref<boolean>|boolean} keepOldPages - If true, pages will not be cleared when defaultPageCallback is called.
  */
 
 /**

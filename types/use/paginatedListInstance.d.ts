@@ -8,7 +8,7 @@ export type PagedListListanceOptions = {
     /**
      * - Whether to keep old pages.
      */
-    keepOldPages: boolean;
+    keepOldPages: import("vue").Ref<boolean> | boolean;
 };
 export type PaginatedRawState = {
     /**

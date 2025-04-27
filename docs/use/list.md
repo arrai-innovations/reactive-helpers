@@ -104,7 +104,7 @@ Additional handlers to be included in the list manager.
 
 ##### keepOldPages
 
-> **keepOldPages**: `boolean`
+> **keepOldPages**: `boolean` \| `Ref`\<`boolean`, `boolean`\>
 
 Indicates whether old pages should be kept when paginating.
 
