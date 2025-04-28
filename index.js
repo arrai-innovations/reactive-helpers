@@ -30,6 +30,7 @@ export * from "./utils/compact.js";
 export * from "./utils/deepUnref.js";
 export * from "./utils/deleteKey.js";
 export * from "./utils/flattenPaths.js";
+export * from "./utils/flattenPathsWithValues.js";
 export * from "./utils/getFakePk.js";
 export * from "./utils/keepAliveTry.js";
 export * from "./utils/keyDiff.js";
