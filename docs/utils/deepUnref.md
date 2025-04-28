@@ -16,20 +16,28 @@
 
 • **T**
 
-## Variables
+## Functions
 
-### deepUnref
+### deepUnref()
 
-> `const` **deepUnref**: `any` = `_deepUnref`
+> **deepUnref**\<`T`\>(`val`): `T` \| [`DeepUnwrap`](deepUnref.md#deepunwrapt)\<`T`\>
 
 Safe, recursively-typed deep unref.
 
-#### Template
+#### Type Parameters
 
-#### Param
+• **T**
+
+#### Parameters
+
+##### val
+
+`T`
 
 The value to deeply unwrap.
 
 #### Returns
+
+`T` \| [`DeepUnwrap`](deepUnref.md#deepunwrapt)\<`T`\>
 
 - The deeply unwrapped value.

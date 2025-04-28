@@ -23,6 +23,19 @@ import { deepUnref as _deepUnref } from "vue-deepunref";
  *
  * @template T
  * @param {T} val - The value to deeply unwrap.
- * @returns {DeepUnwrap<T>} - The deeply unwrapped value.
+ * @returns {DeepUnwrap<T>|T} - The deeply unwrapped value.
  */
-export const deepUnref = _deepUnref;
+export const deepUnref = (val) => {
+    if (
+        val instanceof Date ||
+        val instanceof RegExp ||
+        val instanceof Map ||
+        val instanceof Set ||
+        val instanceof WeakMap ||
+        val instanceof WeakSet
+    ) {
+        return val;
+    }
+
+    return _deepUnref(val);
+};
