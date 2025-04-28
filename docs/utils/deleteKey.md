@@ -10,7 +10,7 @@
 
 ### del()
 
-> **del**(`obj`, `path`): `void`
+> **del**(`obj`, `path`): `boolean`
 
 Delete a key from an object. Lodash-like delete function, as companion for get/set.
 
@@ -30,7 +30,9 @@ The key to delete.
 
 #### Returns
 
-`void`
+`boolean`
+
+Returns true if the key was deleted, false otherwise.
 
 ***
 

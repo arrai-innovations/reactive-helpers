@@ -44,10 +44,11 @@ export function lodashLikePathSplit(string, object) {
  *
  * @param {object} obj - The object to modify.
  * @param {string} path - The key to delete.
+ * @returns {boolean} Returns true if the key was deleted, false otherwise.
  */
 export function del(obj, path) {
     if (!obj) {
-        return;
+        return false;
     }
     const pathArray = lodashLikePathSplit(path, obj);
     let index = 0;
@@ -57,7 +58,8 @@ export function del(obj, path) {
         obj = obj[toKey(pathArray[index++])];
     }
     if (!obj) {
-        return;
+        return false;
     }
     delete obj[toKey(pathArray[index])];
+    return true;
 }

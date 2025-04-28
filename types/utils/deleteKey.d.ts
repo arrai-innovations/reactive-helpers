@@ -11,6 +11,7 @@ export function lodashLikePathSplit(string: string, object: object): string[];
  *
  * @param {object} obj - The object to modify.
  * @param {string} path - The key to delete.
+ * @returns {boolean} Returns true if the key was deleted, false otherwise.
  */
-export function del(obj: object, path: string): void;
+export function del(obj: object, path: string): boolean;
 //# sourceMappingURL=deleteKey.d.ts.map
