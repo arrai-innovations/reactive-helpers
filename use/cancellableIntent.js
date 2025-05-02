@@ -2,7 +2,6 @@ import identity from "lodash-es/identity.js";
 import isEmpty from "lodash-es/isEmpty.js";
 import isEqual from "lodash-es/isEqual.js";
 import { computed, effectScope, nextTick, onScopeDispose, reactive, readonly, watch } from "vue";
-import { deepUnref } from "../utils/deepUnref.js";
 import { tryOnActivated, tryOnDeactivated } from "../utils/keepAliveTry.js";
 
 /**
@@ -10,33 +9,52 @@ import { tryOnActivated, tryOnDeactivated } from "../utils/keepAliveTry.js";
  */
 
 /**
- * @typedef {object} CancellableIntentRawState - The raw state of the cancellable intent.
- * @property {number|undefined} activeCount - The number of active intents.
- * @property {boolean|undefined} active - Whether there are active intents.
- * @property {number|undefined} resolvingCount - The number of resolving intents.
- * @property {boolean|undefined} resolving - Whether there are resolving intents.
- * @property {boolean} errored - Whether there was an error.
- * @property {Error|null} error - The error that occurred.
- * @property {boolean} clearActiveOnResolved - Whether to clear the active state when the promise resolves.
+ * @typedef {number} RunId - A unique identifier for a single execution ("run") of an intent.
+ * This is incremented each time `watchArguments` change and the intent re-triggers.
+ * Enables distinguishing results or effects from overlapping async runs.
  */
 
 /**
- * @typedef {import("vue").UnwrapNestedRefs<CancellableIntentRawState>} CancellableIntentState - The state of the cancellable intent.
+ * @typedef {object} CancellableIntentRawState - The raw state of the cancellable intent.
+ * @property {number|undefined} activeCount - The number of active intents.
+ * @property {import('vue').ComputedRef<boolean>|undefined} active - Whether there are active intents.
+ * @property {number|undefined} resolvingCount - The number of resolving intents.
+ * @property {import('vue').ComputedRef<boolean>|undefined} resolving - Whether there are resolving intents.
+ * @property {boolean} errored - Whether there was an error.
+ * @property {Error|null} error - The error that occurred.
+ * @property {boolean} clearActiveOnResolved - Whether to clear the active state when the promise resolves.
+ * @property {RunId|null} lastRunId - The most recent run ID issued for a triggered intent. Useful for associating async results with their originating trigger.
+ * @property {import('vue').DeepReadonly<object>} watchArguments - The watch arguments.
+ * @property {import('vue').DeepReadonly<object>} guardArguments - The guard arguments.
+ */
+
+/**
+ * @typedef {import("vue").Reactive<CancellableIntentRawState>} CancellableIntentState - The state of the cancellable intent.
+ */
+
+/**
+ * @typedef {() => boolean} IsCurrentRunFn - A function that checks if the current run ID matches the last run ID.
+ */
+
+/**
+ * @typedef {(runId: RunId, isCurrentRun: IsCurrentRunFn) => import('../utils/cancellablePromise.js').MaybeCancellablePromise<void>} AwaitableWithCancel - A function that returns a promise that can be cancelled.
+ */
+
+/**
+ * @typedef {import("vue").UnwrapNestedRefs<object>|{[key: string]: import('vue').Ref<any>}} WatchGuardArguments - The reactive object to watch for changes.
  */
 
 /**
  * @typedef {object} CancellableIntentOptions - The options for the cancellable intent.
- * @property {() => import('../utils/cancellablePromise.js').MaybeCancellablePromise<void>} awaitableWithCancel - The function that returns a promise that can be cancelled.
- * @property {import("vue").UnwrapNestedRefs<object>} [watchArguments={}] - The reactive object to watch for changes.
- * @property {import("vue").UnwrapNestedRefs<object>} [guardArguments={}] - The reactive object to watch for truthiness before running the intent.
+ * @property {AwaitableWithCancel} awaitableWithCancel - The function that returns a promise that can be cancelled. Receives the run ID as an argument.
+ * @property {WatchGuardArguments} [watchArguments={}] - The reactive object to watch for changes.
+ * @property {WatchGuardArguments} [guardArguments={}] - The reactive object to watch for truthiness before running the intent.
  * @property {boolean} [clearActiveOnResolved=true] - Whether to clear the active state when the promise resolves.
  */
 
 /**
  * @typedef {object} CancellableIntent - The instance of the cancellable intent.
  * @property {CancellableIntentState} state - The state of the cancellable intent.
- * @property {import('vue').UnwrapNestedRefs<object>} watchArguments - The watch arguments.
- * @property {import('vue').UnwrapNestedRefs<object>} guardArguments - The guard arguments.
  * @property {Function} stop - Stop the cancellable intent.
  * @property {Function} cancel - Cancel the cancellable intent.
  */
@@ -91,22 +109,41 @@ export function useCancellableIntent({
     if (typeof awaitableWithCancel !== "function") {
         throw new Error("awaitableWithCancel must be a function");
     }
-    const state = reactive(
-        /** @type {CancellableIntentRawState} */
-        {
-            activeCount: undefined, // the active count doesn't mean much when not using clearActiveOnResolved
-            active: undefined,
-            resolvingCount: undefined,
-            resolving: undefined,
-            errored: false,
-            error: null,
-            clearActiveOnResolved,
-        }
-    );
+    const es = effectScope();
+    let myRunId = 0; // each intent has its own namespace of intention session ids
+    const internalState = reactive({
+        watchArguments,
+        guardArguments,
+    });
+    /** @type {CancellableIntentState} */
+    const state = reactive({
+        activeCount: undefined, // the active count doesn't mean much when not using clearActiveOnResolved
+        active: es.run(() =>
+            computed(() => {
+                if (state.activeCount === undefined) {
+                    return undefined;
+                }
+                return state.activeCount > 0;
+            })
+        ),
+        resolvingCount: undefined,
+        resolving: es.run(() =>
+            computed(() => {
+                if (state.resolvingCount === undefined) {
+                    return undefined;
+                }
+                return state.resolvingCount > 0;
+            })
+        ),
+        errored: false,
+        error: null,
+        clearActiveOnResolved,
+        lastRunId: null,
+        watchArguments: readonly(internalState.watchArguments),
+        guardArguments: readonly(internalState.guardArguments),
+    });
     let previousWatchValues = null,
         cancelFunction = null;
-
-    const es = effectScope();
 
     function stop() {
         // effect scopes are stopped automatically in onUnmounted / a parent onScopeDispose; this is for other use cases
@@ -138,19 +175,22 @@ export function useCancellableIntent({
             state.resolvingCount = 0;
         }
         state.resolvingCount += 1;
-        let awaitablePromise = awaitableWithCancel();
+        let thisRunId = ++myRunId;
+        state.lastRunId = thisRunId;
+        const isCurrentRun = () => thisRunId === state.lastRunId;
+        let awaitablePromise = awaitableWithCancel(thisRunId, isCurrentRun);
 
         if (awaitablePromise.cancel) {
             cancelFunction = awaitablePromise.cancel.bind(awaitablePromise);
+        } else {
+            cancelFunction = null;
         }
         // we don't want to await this, because we want to be able to cancel it
         awaitablePromise
             .catch(async (err) => {
                 await cancel("Error in awaitableWithCancel");
-                console.error(err);
                 state.errored = true;
                 state.error = err;
-                throw err;
             })
             .finally(() => {
                 state.resolvingCount--;
@@ -171,17 +211,17 @@ export function useCancellableIntent({
         runningIntentWatch = true;
         // this locked section is to deal with multiple intentWatches running while waiting for cancel to resolve
         try {
-            let newWatchValues = deepUnref(Object.values(watchArguments));
+            let newWatchValues = Object.values(internalState.watchArguments);
             if (isEqual(newWatchValues, previousWatchValues)) {
                 return;
             }
             await cancel("Intent watch cancelled"); // this can take time so guards and watches can change!
-            newWatchValues = deepUnref(Object.values(watchArguments));
+            newWatchValues = Object.values(internalState.watchArguments);
             if (isEqual(newWatchValues, previousWatchValues)) {
                 return;
             }
             previousWatchValues = newWatchValues;
-            const guardValues = deepUnref(Object.values(guardArguments));
+            const guardValues = Object.values(internalState.guardArguments);
             if (Object.values(newWatchValues).every(identity)) {
                 // if any guards are true, delay the watch.
                 if (guardValues && !isEmpty(guardValues) && guardValues.some(identity)) {
@@ -224,25 +264,12 @@ export function useCancellableIntent({
     };
 
     es.run(() => {
-        state.active = computed(() => {
-            if (state.activeCount === undefined) {
-                return undefined;
-            }
-            return state.activeCount > 0;
-        });
-        state.resolving = computed(() => {
-            if (state.resolvingCount === undefined) {
-                return undefined;
-            }
-            return state.resolvingCount > 0;
-        });
-
-        watch(() => Object.values(watchArguments), intentWatch, {
+        watch(() => Object.values(internalState.watchArguments), intentWatch, {
             // this can't be immediate because subscribe wants to look at our state, which won't exist yet.
             deep: true,
         });
 
-        watch(() => Object.values(guardArguments), guardWatch, {
+        watch(() => Object.values(internalState.guardArguments), guardWatch, {
             // we can't possibly have a delayed watch immediately
             deep: true,
         });
@@ -257,12 +284,12 @@ export function useCancellableIntent({
         tryOnDeactivated(cleanup);
         onScopeDispose(cleanup);
 
+        // intentWatch can't be immediate because subscribe wants to look at our state, which won't exist yet.
+        // but we do want to run immediately-ish
         nextTick().then(intentWatch);
     });
     return {
         state,
-        watchArguments: readonly(watchArguments),
-        guardArguments: readonly(guardArguments),
         stop,
         cancel,
     };

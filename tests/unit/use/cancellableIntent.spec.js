@@ -1,8 +1,9 @@
 import { useCancellableIntent } from "../../../use/cancellableIntent.js";
 import { CancellableResolvable } from "../crudPromise.js";
 import flushPromises from "flush-promises";
-import { nextTick, reactive, ref } from "vue";
+import { reactive, ref } from "vue";
 import { scopedIt } from "../scopedIt.js";
+import { CancellablePromise } from "../../../utils/cancellablePromise.js";
 
 describe("use/cancellableIntent", () => {
     let mockAwaitableWithCancel, cancellableResolvable;
@@ -39,7 +40,6 @@ describe("use/cancellableIntent", () => {
                         testArg: 1,
                     },
                 });
-                await nextTick();
                 await flushPromises();
                 expect(mockAwaitableWithCancel).toHaveBeenCalledTimes(1);
                 expect(subscribeIntent.state.active).toBe(true);
@@ -47,7 +47,6 @@ describe("use/cancellableIntent", () => {
 
                 cancellableResolvable.resolve(true);
 
-                await nextTick();
                 await flushPromises();
 
                 expect(subscribeIntent.state.active).toBe(false);
@@ -66,21 +65,18 @@ describe("use/cancellableIntent", () => {
                 }),
                 clearActiveOnResolved: true,
             });
-            await nextTick();
             await flushPromises();
             expect(mockAwaitableWithCancel).toHaveBeenCalledTimes(1);
             expect(subscribeIntent.state.active).toBe(true);
             expect(subscribeIntent.state.resolving).toBe(true);
             testArgRef.value = 2;
 
-            await nextTick();
             await flushPromises();
             expect(cancellableResolvable.promise.cancel).toHaveBeenCalledTimes(1);
             expect(subscribeIntent.state.active).toBe(true);
             expect(subscribeIntent.state.resolving).toBe(true);
 
             cancellableResolvable.resolve(true);
-            await nextTick();
             await flushPromises();
             expect(subscribeIntent.state.active).toBe(false);
             expect(subscribeIntent.state.resolving).toBe(false);
@@ -105,14 +101,12 @@ describe("use/cancellableIntent", () => {
             expect(subscribeIntent.state.resolvingCount).toBeUndefined();
 
             testGuardRef.value = false;
-            await nextTick();
             await flushPromises();
             expect(mockAwaitableWithCancel).toHaveBeenCalled();
             expect(subscribeIntent.state.active).toBe(true);
             expect(subscribeIntent.state.resolving).toBe(true);
 
             cancellableResolvable.resolve(true);
-            await nextTick();
             await flushPromises();
             expect(subscribeIntent.state.active).toBe(false);
             expect(subscribeIntent.state.resolving).toBe(false);
@@ -120,21 +114,18 @@ describe("use/cancellableIntent", () => {
     });
     describe("Rejection", () => {
         //error is not being caught
-        it.skip("errored", async () => {
-            const consoleErrorMock = vi.spyOn(console, "error").mockImplementation(() => {});
+        scopedIt("errored", async () => {
             const subscribeIntent = useCancellableIntent({
                 awaitableWithCancel: mockAwaitableWithCancel,
                 watchArguments: {
                     testArg: 1,
                 },
             });
-            await nextTick();
             await flushPromises();
 
             const mockError = new Error("rejected");
             cancellableResolvable.reject(mockError);
 
-            await nextTick();
             await flushPromises();
 
             expect(cancellableResolvable.promise.cancel).toHaveBeenCalledTimes(1);
@@ -142,15 +133,96 @@ describe("use/cancellableIntent", () => {
             expect(subscribeIntent.state.resolving).toBe(true);
 
             await cancellableResolvable.cancel.resolve(true);
-            await nextTick();
             await flushPromises();
 
-            await expect(cancellableResolvable.promise).rejects.toThrow(mockError);
-            expect(consoleErrorMock).toHaveBeenCalledWith(mockError);
             expect(subscribeIntent.state.active).toBe(false);
             expect(subscribeIntent.state.resolving).toBe(false);
             expect(subscribeIntent.state.errored).toBe(true);
             expect(subscribeIntent.state.error).toBe(mockError);
+        });
+    });
+    describe("Run ID tracking", () => {
+        scopedIt("increments runId on each new watchArguments change", async () => {
+            const refVal = ref(1);
+            const seen = [];
+
+            useCancellableIntent({
+                watchArguments: { refVal },
+                awaitableWithCancel: (runId) => {
+                    seen.push(runId);
+                    return CancellablePromise(
+                        new Promise(() => {}),
+                        vi.fn(() => Promise.resolve())
+                    );
+                },
+            });
+
+            // we don't get to use nextTick, because cancellableIntents use nextTick on the regular
+            await flushPromises();
+            refVal.value = 2;
+            await flushPromises();
+            refVal.value = 3;
+            await flushPromises();
+            expect(seen).toEqual([1, 2, 3]);
+        });
+        scopedIt("marks only the latest run as current via isCurrentRun", async () => {
+            const refVal = ref(1);
+            const status = [];
+
+            const defers = [];
+
+            useCancellableIntent({
+                watchArguments: { refVal },
+                awaitableWithCancel: (runId, isCurrentRun) => {
+                    let resolve;
+                    const p = CancellablePromise(
+                        new Promise((res) => {
+                            resolve = () => {
+                                status.push({ runId, current: isCurrentRun() });
+                                res();
+                            };
+                        }),
+                        vi.fn(() => Promise.resolve())
+                    );
+                    defers.push(resolve);
+                    return p;
+                },
+            });
+
+            await flushPromises(); // runId 1
+            refVal.value = 2;
+            await flushPromises(); // runId 2
+
+            defers[0](); // resolve runId 1
+            await flushPromises();
+
+            defers[1](); // resolve runId 2
+            await flushPromises();
+
+            expect(status).toEqual([
+                { runId: 1, current: false },
+                { runId: 2, current: true },
+            ]);
+        });
+        scopedIt("tracks lastRunId correctly on each run", async () => {
+            const refVal = ref(1);
+
+            const intent = useCancellableIntent({
+                watchArguments: { refVal },
+                awaitableWithCancel: () =>
+                    CancellablePromise(
+                        new Promise(() => {}),
+                        vi.fn(() => Promise.resolve())
+                    ),
+            });
+
+            await flushPromises();
+            const first = intent.state.lastRunId;
+
+            refVal.value++;
+            await flushPromises();
+
+            expect(intent.state.lastRunId).toBeGreaterThan(first);
         });
     });
 });

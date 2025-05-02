@@ -20,12 +20,6 @@ The instance of the cancellable intent.
 
 Cancel the cancellable intent.
 
-##### guardArguments
-
-> **guardArguments**: `any`
-
-The guard arguments.
-
 ##### state
 
 > **state**: `object`
@@ -62,6 +56,18 @@ The error that occurred.
 
 Whether there was an error.
 
+###### guardArguments
+
+> **guardArguments**: `any`
+
+The guard arguments.
+
+###### lastRunId
+
+> **lastRunId**: `number`
+
+The most recent run ID issued for a triggered intent. Useful for associating async results with their originating trigger.
+
 ###### resolving
 
 > **resolving**: `boolean`
@@ -74,17 +80,17 @@ Whether there are resolving intents.
 
 The number of resolving intents.
 
+###### watchArguments
+
+> **watchArguments**: `any`
+
+The watch arguments.
+
 ##### stop
 
 > **stop**: `Function`
 
 Stop the cancellable intent.
-
-##### watchArguments
-
-> **watchArguments**: `any`
-
-The watch arguments.
 
 ***
 
@@ -94,15 +100,11 @@ The options for the cancellable intent.
 
 #### Properties
 
-##### awaitableWithCancel()
+##### awaitableWithCancel
 
-> **awaitableWithCancel**: () => [`MaybeCancellablePromise`](../utils/cancellablePromise.md#maybecancellablepromiset)\<`void`\>
+> **awaitableWithCancel**: [`AwaitableWithCancel`](cancellableIntent.md#awaitablewithcancel-1)
 
-The function that returns a promise that can be cancelled.
-
-###### Returns
-
-[`MaybeCancellablePromise`](../utils/cancellablePromise.md#maybecancellablepromiset)\<`void`\>
+The function that returns a promise that can be cancelled. Receives the run ID as an argument.
 
 ##### clearActiveOnResolved?
 
@@ -132,7 +134,7 @@ The raw state of the cancellable intent.
 
 ##### active
 
-> **active**: `boolean`
+> **active**: `ComputedRef`\<`boolean`\>
 
 Whether there are active intents.
 
@@ -160,9 +162,21 @@ The error that occurred.
 
 Whether there was an error.
 
+##### guardArguments
+
+> **guardArguments**: `any`
+
+The guard arguments.
+
+##### lastRunId
+
+> **lastRunId**: `number`
+
+The most recent run ID issued for a triggered intent. Useful for associating async results with their originating trigger.
+
 ##### resolving
 
-> **resolving**: `boolean`
+> **resolving**: `ComputedRef`\<`boolean`\>
 
 Whether there are resolving intents.
 
@@ -172,13 +186,79 @@ Whether there are resolving intents.
 
 The number of resolving intents.
 
+##### watchArguments
+
+> **watchArguments**: `any`
+
+The watch arguments.
+
 ## Type Aliases
+
+### AwaitableWithCancel()
+
+> **AwaitableWithCancel**\<\>: (`runId`, `isCurrentRun`) => [`MaybeCancellablePromise`](../utils/cancellablePromise.md#maybecancellablepromiset)
+
+A function that returns a promise that can be cancelled.
+
+#### Type Parameters
+
+#### Parameters
+
+##### runId
+
+[`RunId`](cancellableIntent.md#runid)
+
+##### isCurrentRun
+
+[`IsCurrentRunFn`](cancellableIntent.md#iscurrentrunfn)
+
+#### Returns
+
+[`MaybeCancellablePromise`](../utils/cancellablePromise.md#maybecancellablepromiset)
+
+***
 
 ### CancellableIntentState
 
-> **CancellableIntentState**\<\>: `UnwrapNestedRefs`
+> **CancellableIntentState**\<\>: `Reactive`
 
 The state of the cancellable intent.
+
+#### Type Parameters
+
+***
+
+### IsCurrentRunFn()
+
+> **IsCurrentRunFn**\<\>: () => `boolean`
+
+A function that checks if the current run ID matches the last run ID.
+
+#### Type Parameters
+
+#### Returns
+
+`boolean`
+
+***
+
+### RunId
+
+> **RunId**\<\>: `number`
+
+A unique identifier for a single execution ("run") of an intent.
+This is incremented each time `watchArguments` change and the intent re-triggers.
+Enables distinguishing results or effects from overlapping async runs.
+
+#### Type Parameters
+
+***
+
+### WatchGuardArguments
+
+> **WatchGuardArguments**\<\>: `UnwrapNestedRefs` \| \{\}
+
+The reactive object to watch for changes.
 
 #### Type Parameters
 
