@@ -1,5 +1,6 @@
 import { doAwaitNot } from "../../../utils/watches.js";
 import { reactive } from "vue";
+import { scopedIt } from "../scopedIt.js";
 
 describe("use/search", () => {
     let useSearch;
@@ -7,7 +8,7 @@ describe("use/search", () => {
         const searchModule = await import("../../../use/search.js");
         useSearch = searchModule.useSearch;
     });
-    it("should allow adding items to the index", async () => {
+    scopedIt("should allow adding items to the index", async () => {
         const search = useSearch({
             props: reactive({
                 customDocumentOptions: {
@@ -47,7 +48,7 @@ describe("use/search", () => {
         });
         expect(Object.keys(search.state.results)).toEqual(["1", "2", "3"]);
     });
-    it("should allow removing items from the index", async () => {
+    scopedIt("should allow removing items from the index", async () => {
         const search = useSearch({
             props: reactive({
                 customDocumentOptions: {
@@ -89,7 +90,7 @@ describe("use/search", () => {
         });
         expect(Object.keys(search.state.results)).toEqual(["1", "3"]);
     });
-    it("should allow updating items in the index", async () => {
+    scopedIt("should allow updating items in the index", async () => {
         const search = useSearch({
             props: reactive({
                 customDocumentOptions: {
@@ -140,7 +141,7 @@ describe("use/search", () => {
         });
         expect(Object.keys(search.state.results)).toEqual(["2"]);
     });
-    it("should allow clearing all items from the index", async () => {
+    scopedIt("should allow clearing all items from the index", async () => {
         const search = useSearch({
             props: reactive({
                 customDocumentOptions: {
@@ -177,7 +178,7 @@ describe("use/search", () => {
         search.clearIndex();
         expect(Object.keys(search.state.results)).toEqual([]);
     });
-    it("should allow changing the index fields", async () => {
+    scopedIt("should allow changing the index fields", async () => {
         const searchProps = reactive({
             customDocumentOptions: {
                 tokenize: "forward",

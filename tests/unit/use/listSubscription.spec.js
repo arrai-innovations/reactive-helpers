@@ -4,6 +4,7 @@ import { poll } from "../poll.js";
 import flushPromises from "flush-promises";
 import { nextTick, reactive } from "vue";
 import { deepUnref } from "../../../utils/deepUnref.js";
+import { scopedIt } from "../scopedIt.js";
 
 describe("use/listSubscription.spec.js", function () {
     let useListSubscription,
@@ -65,7 +66,7 @@ describe("use/listSubscription.spec.js", function () {
     });
     const fields = ["id", "__str__", "name"];
     describe("lifecycle", function () {
-        it("success", async function () {
+        scopedIt("success", async function () {
             const params = reactive({
                 user: 1,
                 fields,
@@ -147,7 +148,7 @@ describe("use/listSubscription.spec.js", function () {
 
             expect(listSubscription.state.subscribed).toBe(false);
         });
-        it("missing data", async function () {
+        scopedIt("missing data", async function () {
             const params = reactive({
                 user: 1,
                 fields,
@@ -291,7 +292,7 @@ describe("use/listSubscription.spec.js", function () {
             expect(returnValue).toBe(true);
             expect(listSubscription.state.subscribed).toBe(false);
         });
-        it("unsubscribe false", async function () {
+        scopedIt("unsubscribe false", async function () {
             const params = reactive({
                 user: 1,
                 fields,
@@ -325,7 +326,7 @@ describe("use/listSubscription.spec.js", function () {
             expect(listSubscription.state.subscribed).toBe(false);
             expect(listSubscription.unsubscribe()).toBe(false);
         });
-        it("just unsubscribe", async function () {
+        scopedIt("just unsubscribe", async function () {
             crudSubscribeResolvable[0].promise.cancel.mockImplementation(() => Promise.resolve(false));
             const params = reactive({
                 user: 1,
@@ -346,7 +347,7 @@ describe("use/listSubscription.spec.js", function () {
             expect(returnValue).toBe(false);
             expect(listSubscription.state.subscribed).toBeUndefined();
         });
-        it("double subscribe", async function () {
+        scopedIt("double subscribe", async function () {
             crudSubscribeResolvable[0].promise.cancel.mockImplementation(() => Promise.resolve(true));
             const params = reactive({
                 user: 1,
@@ -383,7 +384,7 @@ describe("use/listSubscription.spec.js", function () {
             expect(returnValue).toBe(true);
             expect(listSubscription.state.subscribed).toBe(false);
         });
-        it("manual list instance", async function () {
+        scopedIt("manual list instance", async function () {
             crudSubscribeResolvable[0].promise.cancel.mockImplementation(() => Promise.resolve(true));
             const params = reactive({
                 user: 1,
@@ -455,7 +456,7 @@ describe("use/listSubscription.spec.js", function () {
             expect(returnValue).toBe(true);
             expect(listSubscription.state.subscribed).toBe(false);
         });
-        it("subscribe resubscribes when params change", async function () {
+        scopedIt("subscribe resubscribes when params change", async function () {
             crudSubscribeResolvable[0].promise.cancel.mockImplementation(() => Promise.resolve(true));
             const params = reactive({
                 user: 1,
@@ -517,12 +518,12 @@ describe("use/listSubscription.spec.js", function () {
         });
     });
     describe("useListSubscription", function () {
-        it("throw error when missing list instance and props", async function () {
+        scopedIt("throw error when missing list instance and props", async function () {
             expect(() => useListSubscription({})).toThrow(
                 "useListSubscription should be passed listInstance or props and handlers."
             );
         });
-        it("throw error when both listInstance and props passed in", async function () {
+        scopedIt("throw error when both listInstance and props passed in", async function () {
             crudSubscribeResolvable[0].promise.cancel.mockImplementation(() => Promise.resolve(true));
             const params = reactive({
                 user: 1,
@@ -537,7 +538,7 @@ describe("use/listSubscription.spec.js", function () {
                 "useListSubscription should be passed listInstance or props and handlers, not both."
             );
         });
-        it("throw error when missing clearListOnListIntentTriggered", async function () {
+        scopedIt("throw error when missing clearListOnListIntentTriggered", async function () {
             crudSubscribeResolvable[0].promise.cancel.mockImplementation(() => Promise.resolve(true));
             const params = reactive({
                 user: 1,
@@ -551,7 +552,7 @@ describe("use/listSubscription.spec.js", function () {
                 "useListSubscription should be passed clearListOnListIntentTriggered."
             );
         });
-        it("throw error when missing keepOldPages and instance", async function () {
+        scopedIt("throw error when missing keepOldPages and instance", async function () {
             crudSubscribeResolvable[0].promise.cancel.mockImplementation(() => Promise.resolve(true));
             const params = reactive({
                 user: 1,
@@ -563,7 +564,7 @@ describe("use/listSubscription.spec.js", function () {
             );
         });
     });
-    it("useListSubscriptions", async function () {
+    scopedIt("useListSubscriptions", async function () {
         const listSubscriptionA = useListSubscription({
             props: {
                 target: { stream: "test_streamA" },
@@ -605,7 +606,7 @@ describe("use/listSubscription.spec.js", function () {
         expect(deepUnref(listSubscription.A.state)).toEqual(deepUnref(listSubscriptionA.state));
         expect(deepUnref(listSubscription.B.state)).toEqual(deepUnref(listSubscriptionB.state));
     });
-    it("useListSubscriptions & useListInstances", async function () {
+    scopedIt("useListSubscriptions & useListInstances", async function () {
         const listInstanceA = useListInstance({
             props: {
                 target: { stream: "test_streamA" },
@@ -668,7 +669,7 @@ describe("use/listSubscription.spec.js", function () {
         expect(deepUnref(listSubscription.A.state)).toEqual(deepUnref(listSubscriptionA.state));
         expect(deepUnref(listSubscription.B.state)).toEqual(deepUnref(listSubscriptionB.state));
     });
-    it("custom pkKey", async function () {
+    scopedIt("custom pkKey", async function () {
         const params = reactive({
             user: 1,
             fields,
@@ -733,7 +734,7 @@ describe("use/listSubscription.spec.js", function () {
     });
 
     describe("clearListOnListIntentTriggered true", function () {
-        it("on true", async function () {
+        scopedIt("on true", async function () {
             crudSubscribeResolvable[0].promise.cancel.mockImplementation(() => Promise.resolve(true));
             const params = reactive({
                 user: 1,
@@ -756,7 +757,7 @@ describe("use/listSubscription.spec.js", function () {
         });
     });
     describe("clearListOnListIntentTriggered false", function () {
-        it("on true", async function () {
+        scopedIt("on true", async function () {
             crudSubscribeResolvable[0].promise.cancel.mockImplementation(() => Promise.resolve(true));
             const params = reactive({
                 user: 1,

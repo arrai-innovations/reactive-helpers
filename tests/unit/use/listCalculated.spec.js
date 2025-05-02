@@ -1,5 +1,6 @@
 import { nextTick } from "vue";
 import { deepUnref } from "../../../utils/deepUnref.js";
+import { scopedIt } from "../scopedIt.js";
 
 describe("use/listCalculated", () => {
     let useListInstance, useListCalculated, useListRelated, AwaitNot;
@@ -14,7 +15,7 @@ describe("use/listCalculated", () => {
         const watchesModule = await import("../../../utils/watches.js");
         AwaitNot = watchesModule.AwaitNot;
     });
-    it("should return a list of calculated items", async () => {
+    scopedIt("should return a list of calculated items", async () => {
         const mainListInstance = useListInstance({ props: { pkKey: "id" }, keepOldPages: false });
         const calculatedListInstance = useListInstance({ props: { pkKey: "id" }, keepOldPages: false });
         mainListInstance.addListObject({
@@ -76,7 +77,7 @@ describe("use/listCalculated", () => {
             },
         });
     });
-    it("should allow calculated objects to return results based on related objects", async () => {
+    scopedIt("should allow calculated objects to return results based on related objects", async () => {
         const mainListInstance = useListInstance({ props: { pkKey: "id" }, keepOldPages: false });
         const relatedListInstance = useListInstance({ props: { pkKey: "id" }, keepOldPages: false });
         mainListInstance.addListObject({

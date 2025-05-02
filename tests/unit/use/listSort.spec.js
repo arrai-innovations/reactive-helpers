@@ -1,6 +1,7 @@
 import { doAwaitNot, doAwaitTimeout } from "../../../utils/watches.js";
 import { isReactive, isRef, nextTick, reactive, ref, toRef, watch } from "vue";
 import { deepUnref } from "../../../utils/deepUnref.js";
+import { scopedIt } from "../scopedIt.js";
 
 describe("use/useListSort", () => {
     let listInstance,
@@ -86,7 +87,7 @@ describe("use/useListSort", () => {
         });
     };
 
-    it("generates initial values from inputs", () => {
+    scopedIt("generates initial values from inputs", () => {
         const listSort = useListSort({ parentState: listInstance.state, orderByRules, sortThrottleWait });
         expect(listSort.state.orderByRules).toEqual(orderByRules);
         expect(listSort.state.order).toEqual([]);
@@ -95,7 +96,7 @@ describe("use/useListSort", () => {
         expect(listSort.state.orderByDesc).toEqual([true, false]);
     });
     describe("addSortCriteria and removeSortCriteria", () => {
-        it("triggers on watches updating state and sortCriteria", async () => {
+        scopedIt("triggers on watches updating state and sortCriteria", async () => {
             const addObject = {
                 id: 35,
                 lexical_name: "six, JWST",
@@ -131,7 +132,7 @@ describe("use/useListSort", () => {
         });
     });
     describe("sortWatch sifts various criteria", () => {
-        it("sorts with orderByObj.desc and x/yCriteria", async () => {
+        scopedIt("sorts with orderByObj.desc and x/yCriteria", async () => {
             const testOrder1 = [];
             const testOrder2 = ["9", "15", "12"];
             const testOrder3 = ["12", "15", "9"];
@@ -164,7 +165,7 @@ describe("use/useListSort", () => {
             expect(listSort.state.objectsInOrder).toEqual(testOrder2.map((id) => listInstance.state.objects[id]));
         });
     });
-    it("useListSorts & useListInstances", async function () {
+    scopedIt("useListSorts & useListInstances", async function () {
         const fields = ["id", "__str__", "name"];
         const orderByRules = [{ key: "name", desc: true, localeCompare: true }];
         const listInstanceA = useListInstance({
@@ -224,7 +225,7 @@ describe("use/useListSort", () => {
         expect(deepUnref(listSorts.A.state)).toEqual(deepUnref(listSortA.state));
         expect(deepUnref(listSorts.B.state)).toEqual(deepUnref(listSortB.state));
     });
-    it("orderByRules can refer to relatedItem or calculatedItem", async () => {
+    scopedIt("orderByRules can refer to relatedItem or calculatedItem", async () => {
         const listInstance = useListInstance({
             props: reactive({
                 target: { stream: "test_stream" },
@@ -292,7 +293,7 @@ describe("use/useListSort", () => {
         expect(listSort.state.objectsInOrder.map((obj) => obj.id)).toEqual([4, 3, 2, 1]);
     });
     describe("useListSort/sortThrottleWait", () => {
-        it("respects throttle time prior to triggering", async () => {
+        scopedIt("respects throttle time prior to triggering", async () => {
             setListSortDefaultOptions({
                 sortThrottleWait: 200,
             });
@@ -343,7 +344,7 @@ describe("use/useListSort", () => {
             expect(listSort.state.objectsInOrder).toEqual(testOrder4.map((id) => listInstance.state.objects[id]));
         });
     });
-    it("pass through correctly when parentState changes their order", async () => {
+    scopedIt("pass through correctly when parentState changes their order", async () => {
         const listInstance = useListInstance({
             props: reactive({ pkKey: "id" }),
             keepOldPages: false,

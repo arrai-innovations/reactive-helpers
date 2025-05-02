@@ -1,6 +1,7 @@
 import { doAwaitNot, doAwaitTimeout } from "../../../utils/watches.js";
 import { nextTick, reactive, ref, unref } from "vue";
 import { deepUnref } from "../../../utils/deepUnref.js";
+import { scopedIt } from "../scopedIt.js";
 
 describe("use/listSearch", () => {
     let useListInstance, useListSearch, useListSearches, useListSort, useListRelated, useListCalculated, useListFilter;
@@ -19,7 +20,7 @@ describe("use/listSearch", () => {
         const listFilterModule = await import("../../../use/listFilter.js");
         useListFilter = listFilterModule.useListFilter;
     });
-    it("should match by search term", async () => {
+    scopedIt("should match by search term", async () => {
         const textSearchValue = ref("one");
         // const textSearchValue = ref("");
         const list = useListInstance({ props: { pkKey: "id" }, keepOldPages: false });
@@ -78,7 +79,7 @@ describe("use/listSearch", () => {
             3: { id: 3, name: "three", has_things: true },
         });
     });
-    it("no args: returns objects unsearched", async () => {
+    scopedIt("no args: returns objects unsearched", async () => {
         const listInstance = useListInstance({ props: { pkKey: "id" }, keepOldPages: false });
         const listItems = [
             { id: 4, name: "four", has_things: true },
@@ -99,7 +100,7 @@ describe("use/listSearch", () => {
         expect(search.state.objects).toEqual(listInstance.state.objects);
     });
     describe("useListSearch operates on parentState modified by useListSort", () => {
-        it("computes state.order and state.objects in order", async () => {
+        scopedIt("computes state.order and state.objects in order", async () => {
             vi.resetAllMocks();
             const orderByRules = [{ key: "name", desc: true, localeCompare: false }];
             const sortThrottleWait = 0;
@@ -134,7 +135,7 @@ describe("use/listSearch", () => {
         });
     });
     describe("useListSearches accepts args and parentStates", () => {
-        it("looks the same as individual useListSearch instances", async () => {
+        scopedIt("looks the same as individual useListSearch instances", async () => {
             vi.resetAllMocks();
             const fields = ["id", "__str__", "name"];
             const listInstanceA = useListInstance({
@@ -238,7 +239,7 @@ describe("use/listSearch", () => {
         });
     });
     describe("useListSearch accepts relatedItem. and calculatedItem. rules", () => {
-        it("in textSearchRules", async () => {
+        scopedIt("in textSearchRules", async () => {
             const textSearchValue = ref("four");
             const list = useListInstance({ props: { pkKey: "id" }, keepOldPages: false });
             const relatedList = useListInstance({ props: { pkKey: "id" }, keepOldPages: false });
@@ -293,7 +294,7 @@ describe("use/listSearch", () => {
         });
     });
     describe("useListSearch updates index when", () => {
-        it("parentState.objects is updated", async () => {
+        scopedIt("parentState.objects is updated", async () => {
             const list = useListInstance({ props: { pkKey: "id" }, keepOldPages: false });
             const textSearchValue = ref("");
             const search = useListSearch({
@@ -335,7 +336,7 @@ describe("use/listSearch", () => {
                 2: { id: 2, name: "one" },
             });
         });
-        it("parentState.relatedObjects is updated", async () => {
+        scopedIt("parentState.relatedObjects is updated", async () => {
             const list = useListInstance({ props: { pkKey: "id" }, keepOldPages: false });
             const relatedList = useListInstance({ props: { pkKey: "id" }, keepOldPages: false });
             const related = useListRelated({
@@ -379,12 +380,12 @@ describe("use/listSearch", () => {
                 3: { id: 3, name: "three", has_things: true, related_id: 4 },
             });
         });
-        it("parentState.calculatedObjects is updated", async () => {
+        scopedIt("parentState.calculatedObjects is updated", async () => {
             const list = useListInstance({ props: { pkKey: "id" }, keepOldPages: false });
             const calculated = useListCalculated({
                 parentState: list.state,
                 calculatedObjectsRules: reactive({
-                    calculatedRuleName: (object) => object.basis.split("").join("z"),
+                    calculatedRuleName: (object) => object.basis.splscopedIt("").join("z"),
                 }),
             });
             const textSearchValue = ref("");
@@ -426,7 +427,7 @@ describe("use/listSearch", () => {
                 2: { id: 2, name: "two", basis: "one" },
             });
         });
-        it("textSearchRules is updated", async () => {
+        scopedIt("textSearchRules is updated", async () => {
             const list = useListInstance({ props: { pkKey: "id" }, keepOldPages: false });
             const textSearchValue = ref("");
             const searchProps = reactive({
@@ -474,7 +475,7 @@ describe("use/listSearch", () => {
             });
         });
     });
-    it("does not pass through when showAllWhenEmpty is false", async () => {
+    scopedIt("does not pass through when showAllWhenEmpty is false", async () => {
         const list = useListInstance({ props: { pkKey: "id" }, keepOldPages: false });
         const textSearchValue = ref("");
         const search = useListSearch({
@@ -504,7 +505,7 @@ describe("use/listSearch", () => {
             prop: "running",
         });
     });
-    it("should update when parentState is filtered in pass through mode.", async () => {
+    scopedIt("should update when parentState is filtered in pass through mode.", async () => {
         const listInstance = useListInstance({
             props: { pkKey: "id" },
             keepOldPages: false,

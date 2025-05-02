@@ -4,6 +4,7 @@ import flushPromises from "flush-promises";
 import { isRef, nextTick, reactive, ref, unref } from "vue";
 import { deepUnref } from "../../../utils/deepUnref.js";
 import { CancellablePromise } from "../../../utils/cancellablePromise.js";
+import { scopedIt } from "../scopedIt.js";
 
 afterAll(() => {
     vi.restoreAllMocks();
@@ -135,7 +136,7 @@ describe("use/objectInstance.js", function () {
     };
     const fields = ["id", "__str__", "name"];
     describe("retrieve", function () {
-        it("success", async function () {
+        scopedIt("success", async function () {
             const id = ref(1);
             const params = reactive({ fields });
             const objectInstance = useObjectInstance({
@@ -183,7 +184,7 @@ describe("use/objectInstance.js", function () {
             await nextTick();
             await expect(oiRetrieveResolve).resolves.toBe(true);
         });
-        it("success with non-standard pk", async function () {
+        scopedIt("success with non-standard pk", async function () {
             const id = ref(1);
             const params = reactive({ fields });
             const objectInstance = useObjectInstance({
@@ -231,7 +232,7 @@ describe("use/objectInstance.js", function () {
             await nextTick();
             await expect(oiRetrieveResolve).resolves.toBe(true);
         });
-        it("success (params)", async function () {
+        scopedIt("success (params)", async function () {
             const pk = ref(1);
             const params = reactive({ fields });
             const objectInstance = useObjectInstance({
@@ -275,7 +276,7 @@ describe("use/objectInstance.js", function () {
             const returnValue = await oiRetrieveResolve;
             expect(returnValue).toBe(true);
         });
-        it("errored", async function () {
+        scopedIt("errored", async function () {
             const pk = ref(1);
             const params = reactive({ fields });
             const objectInstance = useObjectInstance({
@@ -321,7 +322,7 @@ describe("use/objectInstance.js", function () {
             const returnValue = await oiRetrieveResolve;
             expect(returnValue).toBe(false);
         });
-        it("errored with non-matching pkKey", async function () {
+        scopedIt("errored with non-matching pkKey", async function () {
             const pk = ref(1);
             const params = reactive({ fields });
             const objectInstance = useObjectInstance({
@@ -367,7 +368,7 @@ describe("use/objectInstance.js", function () {
             const returnValue = await oiRetrieveResolve;
             expect(returnValue).toBe(false);
         });
-        it("already loading", async function () {
+        scopedIt("already loading", async function () {
             const pk = ref(1);
             const params = reactive({ fields });
             const objectInstance = useObjectInstance({
@@ -399,7 +400,7 @@ describe("use/objectInstance.js", function () {
             expect(objectInstance.state.loading).toBe(true);
             expect({ ...objectInstance.state.object }).toEqual({});
         });
-        it("double retrieve gets the same promise", async function () {
+        scopedIt("double retrieve gets the same promise", async function () {
             const pk = ref(1);
             const params = reactive({ fields });
             const objectInstance = useObjectInstance({
@@ -434,7 +435,7 @@ describe("use/objectInstance.js", function () {
             expect(objectInstance.state.loading).toBe(true);
             expect({ ...objectInstance.state.object }).toEqual({});
         });
-        it("cancel", async () => {
+        scopedIt("cancel", async () => {
             const objectInstance = useObjectInstance({
                 props: {
                     target: { stream: "test_stream" },
@@ -463,7 +464,7 @@ describe("use/objectInstance.js", function () {
         });
     });
     describe("create", function () {
-        it("success", async function () {
+        scopedIt("success", async function () {
             const id = ref(1);
             const params = reactive({ fields });
             const objectInstance = useObjectInstance({
@@ -519,7 +520,7 @@ describe("use/objectInstance.js", function () {
             await nextTick();
             await expect(oiCreateResolve).resolves.toBe(true);
         });
-        it("success (params)", async function () {
+        scopedIt("success (params)", async function () {
             const id = ref(undefined);
             const params = reactive({ fields });
             const objectInstance = useObjectInstance({
@@ -573,7 +574,7 @@ describe("use/objectInstance.js", function () {
             const returnValue = await oiCreateResolve;
             expect(returnValue).toBe(true);
         });
-        it("success with non-standard pk", async function () {
+        scopedIt("success with non-standard pk", async function () {
             const id = ref(1);
             const params = reactive({ fields });
             const objectInstance = useObjectInstance({
@@ -629,7 +630,7 @@ describe("use/objectInstance.js", function () {
             await nextTick();
             await expect(oiCreateResolve).resolves.toBe(true);
         });
-        it("errored", async function () {
+        scopedIt("errored", async function () {
             const id = ref(undefined);
             const params = reactive({ fields });
             const objectInstance = useObjectInstance({
@@ -684,7 +685,7 @@ describe("use/objectInstance.js", function () {
             const returnValue = await oiCreateResolve;
             expect(returnValue).toBe(false);
         });
-        it("errored with non-matching pkKey", async function () {
+        scopedIt("errored with non-matching pkKey", async function () {
             const id = ref(undefined);
             const params = reactive({ fields });
             const objectInstance = useObjectInstance({
@@ -739,7 +740,7 @@ describe("use/objectInstance.js", function () {
             const returnValue = await oiCreateResolve;
             expect(returnValue).toBe(false);
         });
-        it("already loading", async function () {
+        scopedIt("already loading", async function () {
             const id = ref(1);
             const params = reactive({ fields });
             const objectInstance = useObjectInstance({
@@ -788,7 +789,7 @@ describe("use/objectInstance.js", function () {
             expect(objectInstance.state.loading).toBe(true);
             expect({ ...objectInstance.state.object }).toEqual({});
         });
-        it("cancel", async () => {
+        scopedIt("cancel", async () => {
             const objectInstance = useObjectInstance({
                 props: {
                     target: { stream: "test_stream" },
@@ -819,7 +820,7 @@ describe("use/objectInstance.js", function () {
         });
     });
     describe("update", function () {
-        it("success", async function () {
+        scopedIt("success", async function () {
             const id = ref(1);
             const params = reactive({ fields });
             const objectInstance = useObjectInstance({
@@ -876,7 +877,7 @@ describe("use/objectInstance.js", function () {
             expect(isRef(objectInstance.state.crud.update.mock.calls[0][0].isCancelled)).toBe(true);
             expect(unref(objectInstance.state.crud.update.mock.calls[0][0].isCancelled)).toBe(false);
         });
-        it("success (params)", async function () {
+        scopedIt("success (params)", async function () {
             const id = ref(1);
             const params = reactive({ fields });
             const objectInstance = useObjectInstance({
@@ -931,7 +932,7 @@ describe("use/objectInstance.js", function () {
             expect(isRef(objectInstance.state.crud.update.mock.calls[0][0].isCancelled)).toBe(true);
             expect(unref(objectInstance.state.crud.update.mock.calls[0][0].isCancelled)).toBe(false);
         });
-        it("success with non-standard pk", async function () {
+        scopedIt("success with non-standard pk", async function () {
             const id = ref(1);
             const params = reactive({ fields });
             const objectInstance = useObjectInstance({
@@ -986,7 +987,7 @@ describe("use/objectInstance.js", function () {
             expect(isRef(objectInstance.state.crud.update.mock.calls[0][0].isCancelled)).toBe(true);
             expect(unref(objectInstance.state.crud.update.mock.calls[0][0].isCancelled)).toBe(false);
         });
-        it("errored", async function () {
+        scopedIt("errored", async function () {
             const id = ref(1);
             const params = reactive({ fields });
             const objectInstance = useObjectInstance({
@@ -1041,7 +1042,7 @@ describe("use/objectInstance.js", function () {
             expect(isRef(objectInstance.state.crud.update.mock.calls[0][0].isCancelled)).toBe(true);
             expect(unref(objectInstance.state.crud.update.mock.calls[0][0].isCancelled)).toBe(false);
         });
-        it("errored with non-matching pkKey", async function () {
+        scopedIt("errored with non-matching pkKey", async function () {
             const id = ref(1);
             const params = reactive({ fields });
             const objectInstance = useObjectInstance({
@@ -1096,7 +1097,7 @@ describe("use/objectInstance.js", function () {
             expect(isRef(objectInstance.state.crud.update.mock.calls[0][0].isCancelled)).toBe(true);
             expect(unref(objectInstance.state.crud.update.mock.calls[0][0].isCancelled)).toBe(false);
         });
-        it("already loading", async function () {
+        scopedIt("already loading", async function () {
             const id = ref(1);
             const params = reactive({ fields });
             const objectInstance = useObjectInstance({
@@ -1148,7 +1149,7 @@ describe("use/objectInstance.js", function () {
             expect(isRef(objectInstance.state.crud.update.mock.calls[0][0].isCancelled)).toBe(true);
             expect(unref(objectInstance.state.crud.update.mock.calls[0][0].isCancelled)).toBe(false);
         });
-        it("cancel", async () => {
+        scopedIt("cancel", async () => {
             const objectInstance = useObjectInstance({
                 props: {
                     target: { stream: "test_stream" },
@@ -1180,7 +1181,7 @@ describe("use/objectInstance.js", function () {
         });
     });
     describe("patch", function () {
-        it("success", async function () {
+        scopedIt("success", async function () {
             const id = ref(1);
             const params = reactive({ fields });
             const objectInstance = useObjectInstance({
@@ -1238,7 +1239,7 @@ describe("use/objectInstance.js", function () {
             expect(isRef(objectInstance.state.crud.patch.mock.calls[0][0].isCancelled)).toBe(true);
             expect(unref(objectInstance.state.crud.patch.mock.calls[0][0].isCancelled)).toBe(false);
         });
-        it("success with non-standard pk", async function () {
+        scopedIt("success with non-standard pk", async function () {
             const id = ref(1);
             const params = reactive({ fields });
             const objectInstance = useObjectInstance({
@@ -1296,7 +1297,7 @@ describe("use/objectInstance.js", function () {
             expect(isRef(objectInstance.state.crud.patch.mock.calls[0][0].isCancelled)).toBe(true);
             expect(unref(objectInstance.state.crud.patch.mock.calls[0][0].isCancelled)).toBe(false);
         });
-        it("errored", async function () {
+        scopedIt("errored", async function () {
             const id = ref(1);
             const params = reactive({ fields });
             const objectInstance = useObjectInstance({
@@ -1352,7 +1353,7 @@ describe("use/objectInstance.js", function () {
             expect(isRef(objectInstance.state.crud.patch.mock.calls[0][0].isCancelled)).toBe(true);
             expect(unref(objectInstance.state.crud.patch.mock.calls[0][0].isCancelled)).toBe(false);
         });
-        it("errored with non-matching pkKey", async function () {
+        scopedIt("errored with non-matching pkKey", async function () {
             const id = ref(1);
             const params = reactive({ fields });
             const objectInstance = useObjectInstance({
@@ -1408,7 +1409,7 @@ describe("use/objectInstance.js", function () {
             expect(isRef(objectInstance.state.crud.patch.mock.calls[0][0].isCancelled)).toBe(true);
             expect(unref(objectInstance.state.crud.patch.mock.calls[0][0].isCancelled)).toBe(false);
         });
-        it("already loading", async function () {
+        scopedIt("already loading", async function () {
             const pk = ref(1);
             const params = reactive({ fields });
             const objectInstance = useObjectInstance({
@@ -1453,7 +1454,7 @@ describe("use/objectInstance.js", function () {
             expect(isRef(objectInstance.state.crud.patch.mock.calls[0][0].isCancelled)).toBe(true);
             expect(unref(objectInstance.state.crud.patch.mock.calls[0][0].isCancelled)).toBe(false);
         });
-        it("cancel", async () => {
+        scopedIt("cancel", async () => {
             const objectInstance = useObjectInstance({
                 props: {
                     target: { stream: "test_stream" },
@@ -1485,7 +1486,7 @@ describe("use/objectInstance.js", function () {
         });
     });
     describe("delete", function () {
-        it("success", async function () {
+        scopedIt("success", async function () {
             const pk = ref(1);
             const params = reactive({ fields });
             const objectInstance = useObjectInstance({
@@ -1541,7 +1542,7 @@ describe("use/objectInstance.js", function () {
             expect(isRef(objectInstance.state.crud.delete.mock.calls[0][0].isCancelled)).toBe(true);
             expect(unref(objectInstance.state.crud.delete.mock.calls[0][0].isCancelled)).toBe(false);
         });
-        it("errored", async function () {
+        scopedIt("errored", async function () {
             const pk = ref(1);
             const params = reactive({ fields });
             const objectInstance = useObjectInstance({
@@ -1597,7 +1598,7 @@ describe("use/objectInstance.js", function () {
             expect(isRef(objectInstance.state.crud.delete.mock.calls[0][0].isCancelled)).toBe(true);
             expect(unref(objectInstance.state.crud.delete.mock.calls[0][0].isCancelled)).toBe(false);
         });
-        it("errored with non-matching pkKey", async function () {
+        scopedIt("errored with non-matching pkKey", async function () {
             const pk = ref(1);
             const params = reactive({ fields });
             const objectInstance = useObjectInstance({
@@ -1653,7 +1654,7 @@ describe("use/objectInstance.js", function () {
             expect(isRef(objectInstance.state.crud.delete.mock.calls[0][0].isCancelled)).toBe(true);
             expect(unref(objectInstance.state.crud.delete.mock.calls[0][0].isCancelled)).toBe(false);
         });
-        it("already loading", async function () {
+        scopedIt("already loading", async function () {
             const pk = ref(1);
             const params = reactive({ fields });
             const objectInstance = useObjectInstance({
@@ -1679,7 +1680,7 @@ describe("use/objectInstance.js", function () {
             expect(isRef(objectInstance.state.crud.delete.mock.calls[0][0].isCancelled)).toBe(true);
             expect(unref(objectInstance.state.crud.delete.mock.calls[0][0].isCancelled)).toBe(false);
         });
-        it("cancel", async () => {
+        scopedIt("cancel", async () => {
             const objectInstance = useObjectInstance({
                 props: {
                     target: { stream: "test_stream" },
@@ -1715,7 +1716,7 @@ describe("use/objectInstance.js", function () {
         });
     });
     describe("clear", () => {
-        it("resets object and error state", async () => {
+        scopedIt("resets object and error state", async () => {
             const objectInstance = useObjectInstance({
                 props: {
                     target: { stream: "test_stream" },
@@ -1737,7 +1738,7 @@ describe("use/objectInstance.js", function () {
             expect(objectInstance.state.errored).toBe(false);
         });
     });
-    it("useObjectSubscriptions", async function () {
+    scopedIt("useObjectSubscriptions", async function () {
         const objectInstanceA = useObjectInstance({
             props: {
                 target: { stream: "test_streamA" },
@@ -1783,7 +1784,7 @@ describe("use/objectInstance.js", function () {
         expect(deepUnref(objInstances.A.state)).toEqual(deepUnref(objectInstanceA.state));
         expect(deepUnref(objInstances.B.state)).toEqual(deepUnref(objectInstanceB.state));
     });
-    it("useObjectInstance missing pkKey", async function () {
+    scopedIt("useObjectInstance missing pkKey", async function () {
         const objectInstanceProps = {
             target: { stream: "test_streamA" },
             pk: 1,

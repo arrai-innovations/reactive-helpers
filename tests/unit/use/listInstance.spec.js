@@ -5,6 +5,7 @@ import keyBy from "lodash-es/keyBy.js";
 import { isReactive, nextTick, reactive, isRef, isReadonly } from "vue";
 import { deepUnref } from "../../../utils/deepUnref.js";
 import { CancellablePromise } from "../../../utils/cancellablePromise.js";
+import { scopedIt } from "../scopedIt.js";
 
 afterAll(() => {
     vi.restoreAllMocks();
@@ -118,7 +119,7 @@ describe("use/listInstance.spec.js", function () {
     const crudListResolvedObjects2 = keyBy(crudListResolvedPage2, "id");
     const crudListResolvedObjectsNonStandardPK = keyBy(crudListResolvedPageNonStandardPK, "unique");
     describe("list", function () {
-        it("success", async function () {
+        scopedIt("success", async function () {
             const params = reactive({
                 user: 1,
                 fields,
@@ -185,7 +186,7 @@ describe("use/listInstance.spec.js", function () {
             });
             expect(globalList).toHaveBeenCalledTimes(1);
         });
-        it("success with non-standard primary key", async function () {
+        scopedIt("success with non-standard primary key", async function () {
             const params = reactive({
                 user: 1,
                 fields,
@@ -234,7 +235,7 @@ describe("use/listInstance.spec.js", function () {
             });
             expect(globalList).toHaveBeenCalledTimes(1);
         });
-        it("already retrieving", async function () {
+        scopedIt("already retrieving", async function () {
             const params = reactive({
                 user: 1,
                 fields,
@@ -265,7 +266,7 @@ describe("use/listInstance.spec.js", function () {
             expect(listInstance.state.loading).toBe(true);
             expect({ ...listInstance.state.objects }).toEqual({});
         });
-        it("already loading", async function () {
+        scopedIt("already loading", async function () {
             const params = reactive({ user: 1, fields });
             const listInstance = useListInstance({
                 props: { pkKey: "id", params },
@@ -298,7 +299,7 @@ describe("use/listInstance.spec.js", function () {
             expect(listInstance.state.errored).toBe(false);
             expect(listInstance.state.loading).toBe(false);
         });
-        it("errored", async function () {
+        scopedIt("errored", async function () {
             const params = reactive({
                 user: 1,
                 fields,
@@ -351,7 +352,7 @@ describe("use/listInstance.spec.js", function () {
             });
             expect(globalList).toHaveBeenCalledTimes(1);
         });
-        it("success (custom stream)", async function () {
+        scopedIt("success (custom stream)", async function () {
             const params = reactive({
                 user: 1,
                 fields,
@@ -419,7 +420,7 @@ describe("use/listInstance.spec.js", function () {
             });
             expect(globalList).toHaveBeenCalledTimes(1);
         });
-        it("clearList should empty the list", async function () {
+        scopedIt("clearList should empty the list", async function () {
             const params = reactive({
                 user: 1,
                 fields,
@@ -478,7 +479,7 @@ describe("use/listInstance.spec.js", function () {
             expect(listInstance.state.objectsInOrder).toEqual([]);
         });
     });
-    it("useListInstances", async function () {
+    scopedIt("useListInstances", async function () {
         const listInstanceA = useListInstance({
             props: {
                 target: { stream: "test_streamA" },
@@ -529,14 +530,14 @@ describe("use/listInstance.spec.js", function () {
         expect(deepUnref(listInstances.B.state)).toEqual(deepUnref(listInstanceB.state));
     });
     describe("addListObject", function () {
-        it("errored", function () {
+        scopedIt("errored", function () {
             const listInstance = useListInstance({ props: { pkKey: "id" }, keepOldPages: false });
             expect(() => listInstance.addListObject({ listObject })).toThrowError(ListInstanceError);
             listObject.id = listInstance.getFakePk();
             listInstance.addListObject(listObject);
             expect(() => listInstance.addListObject({ listObject })).toThrowError(ListInstanceError);
         });
-        it("succeeded", async function () {
+        scopedIt("succeeded", async function () {
             const listInstance = useListInstance({ props: { pkKey: "id" }, keepOldPages: false });
             const newId = listInstance.getFakePk();
             listObject.id = newId;
@@ -559,14 +560,14 @@ describe("use/listInstance.spec.js", function () {
         });
     });
     describe("updateListObject", function () {
-        it("errors", function () {
+        scopedIt("errors", function () {
             const listInstance = useListInstance({ props: { pkKey: "id" }, keepOldPages: false });
             expect(() => listInstance.updateListObject({ listObject })).toThrowError(ListInstanceError);
             listObject.id = -50002000;
             listInstance.addListObject(listObject);
             expect(() => listInstance.updateListObject({ listObject })).toThrowError(ListInstanceError);
         });
-        it("succeeds", async function () {
+        scopedIt("succeeds", async function () {
             const listInstance = useListInstance({
                 props: { pkKey: "id" },
                 keepOldPages: false,
@@ -605,11 +606,11 @@ describe("use/listInstance.spec.js", function () {
         });
     });
     describe("deleteListObject", function () {
-        it("errors", function () {
+        scopedIt("errors", function () {
             const listInstance = useListInstance({ props: { pkKey: "id" }, keepOldPages: false });
             expect(() => listInstance.deleteListObject(-50002000)).toThrowError(ListInstanceError);
         });
-        it("succeeds", async function () {
+        scopedIt("succeeds", async function () {
             const listInstance = useListInstance({
                 props: { pkKey: "id" },
                 keepOldPages: false,
@@ -653,7 +654,7 @@ describe("use/listInstance.spec.js", function () {
         });
     });
     describe("executeAction", function () {
-        it("succeeds", async function () {
+        scopedIt("succeeds", async function () {
             const params = reactive({
                 user: 1,
                 fields,
@@ -699,7 +700,7 @@ describe("use/listInstance.spec.js", function () {
             await expect(executeActionResolve).resolves.toBe(true);
             expect({ ...listInstance.state.objects }).toEqual(crudListResolvedObjects2);
         });
-        it("succeeds with non-standard primary key", async function () {
+        scopedIt("succeeds with non-standard primary key", async function () {
             const params = reactive({
                 user: 1,
                 fields,
@@ -745,7 +746,7 @@ describe("use/listInstance.spec.js", function () {
             await expect(executeActionResolve).resolves.toBe(true);
             expect({ ...listInstance.state.objects }).toEqual(crudListResolvedObjectsNonStandardPK);
         });
-        it("already loading", async function () {
+        scopedIt("already loading", async function () {
             const params = reactive({
                 user: 1,
                 fields,
@@ -768,7 +769,7 @@ describe("use/listInstance.spec.js", function () {
             expect(listInstance.state.errored).toBe(false);
             expect(listInstance.state.loading).toBe(true);
         });
-        it("errored", async function () {
+        scopedIt("errored", async function () {
             const params = reactive({
                 user: 1,
                 fields,
@@ -821,7 +822,7 @@ describe("use/listInstance.spec.js", function () {
         });
     });
     describe("bulkDelete", function () {
-        it("succeeds", async function () {
+        scopedIt("succeeds", async function () {
             const params = reactive({
                 user: 1,
                 fields,
@@ -867,7 +868,7 @@ describe("use/listInstance.spec.js", function () {
             await expect(bulkDeleteResolve).resolves.toBe(true);
             expect({ ...listInstance.state.objects }).toEqual({});
         });
-        it("succeeds with non-standard primary key", async function () {
+        scopedIt("succeeds with non-standard primary key", async function () {
             const params = reactive({
                 user: 1,
                 fields,
@@ -913,7 +914,7 @@ describe("use/listInstance.spec.js", function () {
             await expect(bulkDeleteResolve).resolves.toBe(true);
             expect({ ...listInstance.state.objects }).toEqual({});
         });
-        it("already loading", async function () {
+        scopedIt("already loading", async function () {
             const params = reactive({
                 user: 1,
                 fields,
@@ -939,7 +940,7 @@ describe("use/listInstance.spec.js", function () {
             expect(listInstance.state.errored).toBe(false);
             expect(listInstance.state.loading).toBe(true);
         });
-        it("errored", async function () {
+        scopedIt("errored", async function () {
             const params = reactive({
                 user: 1,
                 fields,
@@ -992,13 +993,13 @@ describe("use/listInstance.spec.js", function () {
         });
     });
     describe("getFakePk", function () {
-        it("returns fakeId", function () {
+        scopedIt("returns fakeId", function () {
             const listInstance = useListInstance({ props: { pkKey: "id" }, keepOldPages: false });
             const fakeId = listInstance.getFakePk();
             expect(fakeId).toBeTruthy();
         });
     });
-    it("computes objectsInOrder and maintains state", async () => {
+    scopedIt("computes objectsInOrder and maintains state", async () => {
         const crudListResolvedPage3 = [
             {
                 id: 3,
@@ -1061,7 +1062,7 @@ describe("use/listInstance.spec.js", function () {
         expect(listInstance.state.objectsInOrder).toEqual(crudListResolvedPage3);
     });
     describe("list promise cancellation", function () {
-        it("cancels and sets isCancelled", async function () {
+        scopedIt("cancels and sets isCancelled", async function () {
             let cancelPromiseResolve, passedIsCancelled;
 
             const cancelPromise = new Promise((resolve) => {
@@ -1104,7 +1105,7 @@ describe("use/listInstance.spec.js", function () {
         });
     });
     describe("useListInstance", function () {
-        it("throw error when missing keepOldPages", async function () {
+        scopedIt("throw error when missing keepOldPages", async function () {
             const params = reactive({
                 user: 1,
                 fields,
@@ -1116,7 +1117,7 @@ describe("use/listInstance.spec.js", function () {
                 }).toThrow("useListInstance requires keepOldPages.")
             );
         });
-        it("throw error when missing props", async function () {
+        scopedIt("throw error when missing props", async function () {
             expect(() => useListInstance({}).toThrow("useListInstance requires props."));
         });
     });

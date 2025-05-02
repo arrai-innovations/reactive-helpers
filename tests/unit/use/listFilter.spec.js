@@ -1,6 +1,7 @@
 import { doAwaitNot } from "../../../utils/watches.js";
 import { reactive, ref, unref } from "vue";
 import { deepUnref } from "../../../utils/deepUnref.js";
+import { scopedIt } from "../scopedIt.js";
 
 describe("use/listFilter", () => {
     let useListInstance, useListFilter, useListCalculated, useListRelated, useListFilters, useListSort;
@@ -18,7 +19,7 @@ describe("use/listFilter", () => {
         useListSort = listSortModule.useListSort;
     });
 
-    it("should match an allowed filter function", async () => {
+    scopedIt("should match an allowed filter function", async () => {
         const list = useListInstance({ props: { pkKey: "id" }, keepOldPages: false });
         const filter = useListFilter({
             parentState: list.state,
@@ -64,7 +65,7 @@ describe("use/listFilter", () => {
             3: { id: 3, name: "three", has_things: true },
         });
     });
-    it("should match an excluded filter function", async () => {
+    scopedIt("should match an excluded filter function", async () => {
         const list = useListInstance({ props: { pkKey: "id" }, keepOldPages: false });
         const filter = useListFilter({
             parentState: list.state,
@@ -110,7 +111,7 @@ describe("use/listFilter", () => {
             3: { id: 3, name: "three", has_things: true },
         });
     });
-    it("no args: returns objects unfiltered", async () => {
+    scopedIt("no args: returns objects unfiltered", async () => {
         const listInstance = useListInstance({ props: { pkKey: "id" }, keepOldPages: false });
         const listItems = [
             { id: 4, name: "four", has_things: true },
@@ -131,7 +132,7 @@ describe("use/listFilter", () => {
         expect(filter.state.objects).toEqual(listInstance.state.objects);
     });
     describe("useListFilter operates on parentState modified by useListSort", () => {
-        it("computes state.order and state.objects in order", async () => {
+        scopedIt("computes state.order and state.objects in order", async () => {
             vi.resetAllMocks();
             const orderByRules = [{ key: "name", desc: true, localeCompare: false }];
             const sortThrottleWait = 0;
@@ -165,7 +166,7 @@ describe("use/listFilter", () => {
         });
     });
     describe("useListFilters accepts args and parentInstances", () => {
-        it("returns filtered objects", async () => {
+        scopedIt("returns filtered objects", async () => {
             vi.resetAllMocks();
             const fields = ["id", "__str__", "name"];
             const listInstanceA = useListInstance({
@@ -225,7 +226,7 @@ describe("use/listFilter", () => {
         });
     });
     describe("useListFilters updates index when", () => {
-        it("parentInstance.objects is updated", async () => {
+        scopedIt("parentInstance.objects is updated", async () => {
             const list = useListInstance({ props: { pkKey: "id" }, keepOldPages: false });
             const filter = useListFilter({
                 parentState: list.state,
@@ -266,7 +267,7 @@ describe("use/listFilter", () => {
                 2: { id: 2, name: "two", has_things: true, allowed: [true, true] },
             });
         });
-        it("parentInstance.relatedObjects is updated", async () => {
+        scopedIt("parentInstance.relatedObjects is updated", async () => {
             const list = useListInstance({ props: { pkKey: "id" }, keepOldPages: false });
             const relatedList = useListInstance({ props: { pkKey: "id" }, keepOldPages: false });
             const related = useListRelated({
@@ -322,7 +323,7 @@ describe("use/listFilter", () => {
                 3: { id: 3, name: "three", has_things: true, related_id: 4 },
             });
         });
-        it("parentInstance.calculatedObjects is updated", async () => {
+        scopedIt("parentInstance.calculatedObjects is updated", async () => {
             const list = useListInstance({ props: { pkKey: "id" }, keepOldPages: false });
             const calculated = useListCalculated({
                 parentState: list.state,
@@ -366,7 +367,7 @@ describe("use/listFilter", () => {
             });
         });
     });
-    it("you can use nested useListFilters", async () => {
+    scopedIt("you can use nested useListFilters", async () => {
         const list = useListInstance({ props: { pkKey: "id" }, keepOldPages: false });
 
         function filter1AllowedFilter(object) {

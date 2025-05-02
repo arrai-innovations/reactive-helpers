@@ -1,5 +1,6 @@
 import { nextTick } from "vue";
 import { deepUnref } from "../../../utils/deepUnref.js";
+import { scopedIt } from "../scopedIt.js";
 
 describe("use/listRelated", () => {
     let useListInstance, useListRelated, AwaitNot;
@@ -12,7 +13,7 @@ describe("use/listRelated", () => {
         const watchesModule = await import("../../../utils/watches.js");
         AwaitNot = watchesModule.AwaitNot;
     });
-    it("should return a list of related items", async () => {
+    scopedIt("should return a list of related items", async () => {
         const mainListInstance = useListInstance({ props: { pkKey: "id" }, keepOldPages: false });
         const relatedListInstance = useListInstance({ props: { pkKey: "id" }, keepOldPages: false });
         mainListInstance.addListObject({
@@ -80,181 +81,184 @@ describe("use/listRelated", () => {
             },
         });
     });
-    it('should allow related objects pkKey to be prefixed with "relatedItem." to reference previously related objects', async () => {
-        //
-        const mainListInstance = useListInstance({ props: { pkKey: "id" }, keepOldPages: false });
-        const intermediateListInstance = useListInstance({ props: { pkKey: "id" }, keepOldPages: false });
-        const relatedListInstance = useListInstance({ props: { pkKey: "id" }, keepOldPages: false });
-        mainListInstance.addListObject({
-            id: "1",
-            name: "main",
-            intermediate_ids: ["2", "3"],
-            intermediate_id: "2",
-        });
-        intermediateListInstance.addListObject({
-            id: "2",
-            name: "intermediate1",
-            related_ids: ["4", "5"],
-            related_id: "4",
-        });
-        intermediateListInstance.addListObject({
-            id: "3",
-            name: "intermediate2",
-            related_ids: ["6", "7"],
-            related_id: "6",
-        });
-        relatedListInstance.addListObject({
-            id: "4",
-            name: "related1",
-        });
-        relatedListInstance.addListObject({
-            id: "5",
-            name: "related2",
-        });
-        relatedListInstance.addListObject({
-            id: "6",
-            name: "related3",
-        });
-        relatedListInstance.addListObject({
-            id: "7",
-            name: "related4",
-        });
-        const listRelated = useListRelated({
-            parentState: mainListInstance.state,
-            relatedObjectsRules: {
-                intermediateItems: {
-                    objects: intermediateListInstance.state.objects,
-                    pkKey: "intermediate_ids",
+    scopedIt(
+        'should allow related objects pkKey to be prefixed with "relatedItem." to reference previously related objects',
+        async () => {
+            //
+            const mainListInstance = useListInstance({ props: { pkKey: "id" }, keepOldPages: false });
+            const intermediateListInstance = useListInstance({ props: { pkKey: "id" }, keepOldPages: false });
+            const relatedListInstance = useListInstance({ props: { pkKey: "id" }, keepOldPages: false });
+            mainListInstance.addListObject({
+                id: "1",
+                name: "main",
+                intermediate_ids: ["2", "3"],
+                intermediate_id: "2",
+            });
+            intermediateListInstance.addListObject({
+                id: "2",
+                name: "intermediate1",
+                related_ids: ["4", "5"],
+                related_id: "4",
+            });
+            intermediateListInstance.addListObject({
+                id: "3",
+                name: "intermediate2",
+                related_ids: ["6", "7"],
+                related_id: "6",
+            });
+            relatedListInstance.addListObject({
+                id: "4",
+                name: "related1",
+            });
+            relatedListInstance.addListObject({
+                id: "5",
+                name: "related2",
+            });
+            relatedListInstance.addListObject({
+                id: "6",
+                name: "related3",
+            });
+            relatedListInstance.addListObject({
+                id: "7",
+                name: "related4",
+            });
+            const listRelated = useListRelated({
+                parentState: mainListInstance.state,
+                relatedObjectsRules: {
+                    intermediateItems: {
+                        objects: intermediateListInstance.state.objects,
+                        pkKey: "intermediate_ids",
+                    },
+                    intermediateItem: {
+                        objects: intermediateListInstance.state.objects,
+                        pkKey: "intermediate_id",
+                    },
+                    relatedItems: {
+                        objects: relatedListInstance.state.objects,
+                        pkKey: "relatedItem.intermediateItems.related_ids",
+                    },
+                    relatedItem: {
+                        objects: relatedListInstance.state.objects,
+                        pkKey: "relatedItem.intermediateItem.related_id",
+                    },
                 },
-                intermediateItem: {
-                    objects: intermediateListInstance.state.objects,
-                    pkKey: "intermediate_id",
-                },
-                relatedItems: {
-                    objects: relatedListInstance.state.objects,
-                    pkKey: "relatedItem.intermediateItems.related_ids",
-                },
-                relatedItem: {
-                    objects: relatedListInstance.state.objects,
-                    pkKey: "relatedItem.intermediateItem.related_id",
-                },
-            },
-        });
-        const anr = new AwaitNot({
-            obj: listRelated.state,
-            prop: "running",
-        });
-        anr.start();
-        await anr.promise;
-        expect(deepUnref(listRelated.state.relatedObjects)).toEqual({
-            1: {
-                intermediateItems: [
-                    {
+            });
+            const anr = new AwaitNot({
+                obj: listRelated.state,
+                prop: "running",
+            });
+            anr.start();
+            await anr.promise;
+            expect(deepUnref(listRelated.state.relatedObjects)).toEqual({
+                1: {
+                    intermediateItems: [
+                        {
+                            id: "2",
+                            name: "intermediate1",
+                            related_ids: ["4", "5"],
+                            related_id: "4",
+                        },
+                        {
+                            id: "3",
+                            name: "intermediate2",
+                            related_ids: ["6", "7"],
+                            related_id: "6",
+                        },
+                    ],
+                    intermediateItem: {
                         id: "2",
                         name: "intermediate1",
                         related_ids: ["4", "5"],
                         related_id: "4",
                     },
-                    {
-                        id: "3",
-                        name: "intermediate2",
-                        related_ids: ["6", "7"],
-                        related_id: "6",
-                    },
-                ],
-                intermediateItem: {
-                    id: "2",
-                    name: "intermediate1",
-                    related_ids: ["4", "5"],
-                    related_id: "4",
-                },
-                relatedItems: [
-                    {
+                    relatedItems: [
+                        {
+                            id: "4",
+                            name: "related1",
+                        },
+                        {
+                            id: "5",
+                            name: "related2",
+                        },
+                        {
+                            id: "6",
+                            name: "related3",
+                        },
+                        {
+                            id: "7",
+                            name: "related4",
+                        },
+                    ],
+                    relatedItem: {
                         id: "4",
                         name: "related1",
                     },
-                    {
-                        id: "5",
-                        name: "related2",
-                    },
-                    {
-                        id: "6",
-                        name: "related3",
-                    },
-                    {
-                        id: "7",
-                        name: "related4",
-                    },
-                ],
-                relatedItem: {
-                    id: "4",
-                    name: "related1",
                 },
-            },
-        });
-        intermediateListInstance.state.objects[2].name = "intermediate1a";
-        intermediateListInstance.state.objects[2].related_id = "6";
-        intermediateListInstance.state.objects[2].related_ids = ["7", "8"];
-        intermediateListInstance.state.objects[3].name = "intermediate2a";
-        intermediateListInstance.state.objects[3].related_id = "4";
-        intermediateListInstance.state.objects[3].related_ids = ["5", "9"];
-        relatedListInstance.state.objects[4].name = "related1a";
-        relatedListInstance.state.objects[5].name = "related2a";
-        relatedListInstance.state.objects[6].name = "related3a";
-        relatedListInstance.state.objects[7].name = "related4a";
-        relatedListInstance.addListObject({
-            id: "8",
-            name: "related5",
-        });
-        relatedListInstance.addListObject({
-            id: "9",
-            name: "related6",
-        });
-        expect(deepUnref(listRelated.state.relatedObjects)).toEqual({
-            1: {
-                intermediateItems: [
-                    {
+            });
+            intermediateListInstance.state.objects[2].name = "intermediate1a";
+            intermediateListInstance.state.objects[2].related_id = "6";
+            intermediateListInstance.state.objects[2].related_ids = ["7", "8"];
+            intermediateListInstance.state.objects[3].name = "intermediate2a";
+            intermediateListInstance.state.objects[3].related_id = "4";
+            intermediateListInstance.state.objects[3].related_ids = ["5", "9"];
+            relatedListInstance.state.objects[4].name = "related1a";
+            relatedListInstance.state.objects[5].name = "related2a";
+            relatedListInstance.state.objects[6].name = "related3a";
+            relatedListInstance.state.objects[7].name = "related4a";
+            relatedListInstance.addListObject({
+                id: "8",
+                name: "related5",
+            });
+            relatedListInstance.addListObject({
+                id: "9",
+                name: "related6",
+            });
+            expect(deepUnref(listRelated.state.relatedObjects)).toEqual({
+                1: {
+                    intermediateItems: [
+                        {
+                            id: "2",
+                            name: "intermediate1a",
+                            related_ids: ["7", "8"],
+                            related_id: "6",
+                        },
+                        {
+                            id: "3",
+                            name: "intermediate2a",
+                            related_ids: ["5", "9"],
+                            related_id: "4",
+                        },
+                    ],
+                    intermediateItem: {
                         id: "2",
                         name: "intermediate1a",
                         related_ids: ["7", "8"],
                         related_id: "6",
                     },
-                    {
-                        id: "3",
-                        name: "intermediate2a",
-                        related_ids: ["5", "9"],
-                        related_id: "4",
+                    relatedItems: [
+                        {
+                            id: "7",
+                            name: "related4a",
+                        },
+                        {
+                            id: "8",
+                            name: "related5",
+                        },
+                        {
+                            id: "5",
+                            name: "related2a",
+                        },
+                        {
+                            id: "9",
+                            name: "related6",
+                        },
+                    ],
+                    relatedItem: {
+                        id: "6",
+                        name: "related3a",
                     },
-                ],
-                intermediateItem: {
-                    id: "2",
-                    name: "intermediate1a",
-                    related_ids: ["7", "8"],
-                    related_id: "6",
                 },
-                relatedItems: [
-                    {
-                        id: "7",
-                        name: "related4a",
-                    },
-                    {
-                        id: "8",
-                        name: "related5",
-                    },
-                    {
-                        id: "5",
-                        name: "related2a",
-                    },
-                    {
-                        id: "9",
-                        name: "related6",
-                    },
-                ],
-                relatedItem: {
-                    id: "6",
-                    name: "related3a",
-                },
-            },
-        });
-    });
+            });
+        }
+    );
 });

@@ -9,6 +9,7 @@ import { isRef, nextTick, ref, unref } from "vue";
 import { stringify } from "flatted";
 import { deepUnref } from "../../../utils/deepUnref.js";
 import { CancellablePromise } from "../../../utils/cancellablePromise.js";
+import { scopedIt } from "../scopedIt.js";
 
 // getMockOnUnmounted();
 
@@ -115,7 +116,7 @@ describe("use/objectSubscription.js", function () {
             );
             globalSubscribe.mockReturnValueOnce(crudSubscribePromise);
         });
-        it("success", async function () {
+        scopedIt("success", async function () {
             expect(objectSubscription.state.loading).toBeUndefined();
             expect(objectSubscription.state.errored).toBe(false);
             expectErrorToBeNull(objectSubscription.state.error);
@@ -179,7 +180,7 @@ describe("use/objectSubscription.js", function () {
             expect(isRef(globalSubscribe.mock.calls[0][0].isCancelled)).toBe(true);
             expect(unref(globalSubscribe.mock.calls[0][0].isCancelled)).toBe(false);
         });
-        it("subscribe callback", async function () {
+        scopedIt("subscribe callback", async function () {
             globalSubscribe.mockReset();
 
             let subscribeCallback;
@@ -219,7 +220,7 @@ describe("use/objectSubscription.js", function () {
             expect(objectSubscription.objectInstance.deleteFromSubscription).toHaveBeenNthCalledWith(1);
             expect(objectSubscription.objectInstance.deleteFromSubscription).toHaveBeenCalledTimes(1);
         });
-        it("intendToSubscribe but dont intendToRetrieve", async function () {
+        scopedIt("intendToSubscribe but dont intendToRetrieve", async function () {
             const returnValue = objectSubscription.subscribe({ retrieve: false });
             crudSubscribeResolve(crudSubscribeResolved);
             expect(returnValue).toBe(true);
@@ -251,7 +252,7 @@ describe("use/objectSubscription.js", function () {
             expect(isRef(globalSubscribe.mock.calls[0][0].isCancelled)).toBe(true);
             expect(unref(globalSubscribe.mock.calls[0][0].isCancelled)).toBe(false);
         });
-        it("delayed success", async function () {
+        scopedIt("delayed success", async function () {
             objectSubscription.objectInstance.state.params = ref(false);
 
             expect(objectSubscription.state.loading).toBeUndefined();
@@ -329,7 +330,7 @@ describe("use/objectSubscription.js", function () {
             expect(isRef(globalSubscribe.mock.calls[0][0].isCancelled)).toBe(true);
             expect(unref(globalSubscribe.mock.calls[0][0].isCancelled)).toBe(false);
         });
-        it("retrieve errored", async function () {
+        scopedIt("retrieve errored", async function () {
             expect(objectSubscription.state.loading).toBeUndefined();
             expect(objectSubscription.state.errored).toBe(false);
             expectErrorToBeNull(objectSubscription.state.error);
@@ -394,7 +395,7 @@ describe("use/objectSubscription.js", function () {
             expect(isRef(globalSubscribe.mock.calls[0][0].isCancelled)).toBe(true);
             expect(unref(globalSubscribe.mock.calls[0][0].isCancelled)).toBe(false);
         });
-        it("subscribe errored", async function () {
+        scopedIt("subscribe errored", async function () {
             expect(objectSubscription.state.loading).toBeUndefined();
             expect(objectSubscription.state.errored).toBe(false);
             expectErrorToBeNull(objectSubscription.state.error);
@@ -461,7 +462,7 @@ describe("use/objectSubscription.js", function () {
             expect(isRef(globalSubscribe.mock.calls[0][0].isCancelled)).toBe(true);
             expect(unref(globalSubscribe.mock.calls[0][0].isCancelled)).toBe(false);
         });
-        it("already subscribed", async function () {
+        scopedIt("already subscribed", async function () {
             expect(objectSubscription.state.loading).toBeUndefined();
             expect(objectSubscription.state.errored).toBe(false);
             expectErrorToBeNull(objectSubscription.state.error);
@@ -495,7 +496,7 @@ describe("use/objectSubscription.js", function () {
             crudSubscribePromise.cancel.mockReturnValueOnce(crudCancelPromise).mockResolvedValue(false);
             globalSubscribe.mockReturnValueOnce(crudSubscribePromise);
         });
-        it("success", async function () {
+        scopedIt("success", async function () {
             expect(objectSubscription.subscribe()).toBe(true);
             crudSubscribeResolve(crudSubscribeResolved);
             crudRetrieveResolve(crudRetrieveResolved);
@@ -539,7 +540,7 @@ describe("use/objectSubscription.js", function () {
             expect(objectSubscription.state.intendToRetrieve).toBe(false);
             expect(objectSubscription.state.object).toEqual(crudRetrieveResolved);
         });
-        it("errored", async function () {
+        scopedIt("errored", async function () {
             expect(objectSubscription.subscribe()).toBe(true);
             crudSubscribeResolve(crudSubscribeResolved);
             crudRetrieveResolve(crudRetrieveResolved);
@@ -580,7 +581,7 @@ describe("use/objectSubscription.js", function () {
             expect(objectSubscription.state.intendToRetrieve).toBe(false);
             expect(objectSubscription.state.object).toEqual(crudRetrieveResolved);
         });
-        it("already unsubscribed", async function () {
+        scopedIt("already unsubscribed", async function () {
             expect(objectSubscription.subscribe()).toBe(true);
             crudSubscribeResolve(crudSubscribeResolved);
             crudRetrieveResolve(crudRetrieveResolved);
@@ -588,12 +589,12 @@ describe("use/objectSubscription.js", function () {
             expect(objectSubscription.unsubscribe()).toBe(false);
         });
 
-        it("not subscribed", async function () {
+        scopedIt("not subscribed", async function () {
             expect(objectSubscription.unsubscribe()).toBe(false);
         });
     });
     describe("custom crud", function () {
-        it("custom crud args", async function () {
+        scopedIt("custom crud args", async function () {
             let crudRetrieveResolve, crudSubscribeResolve;
             const crudRetrievePromise = new Promise((resolve) => {
                 crudRetrieveResolve = resolve;
@@ -652,7 +653,7 @@ describe("use/objectSubscription.js", function () {
             expect(isRef(globalSubscribe.mock.calls[0][0].isCancelled)).toBe(true);
             expect(unref(globalSubscribe.mock.calls[0][0].isCancelled)).toBe(false);
         });
-        it("override subscribe", async function () {
+        scopedIt("override subscribe", async function () {
             let crudRetrieveResolve, crudSubscribeResolve;
 
             const customCrudRetrieve = vi.fn();
@@ -721,7 +722,7 @@ describe("use/objectSubscription.js", function () {
         });
     });
     describe("custom primary key", function () {
-        it("custom pkKeys", async function () {
+        scopedIt("custom pkKeys", async function () {
             let crudRetrieveResolve, crudSubscribeResolve;
             const crudRetrievePromise = new Promise((resolve) => {
                 crudRetrieveResolve = resolve;
@@ -782,7 +783,7 @@ describe("use/objectSubscription.js", function () {
         });
     });
     describe("clearError", () => {
-        it("propagates clearError to loadingError and objectInstance", () => {
+        scopedIt("propagates clearError to loadingError and objectInstance", () => {
             const objectSubscription = useObjectSubscription({
                 props: {
                     pk: 1,
@@ -811,7 +812,7 @@ describe("use/objectSubscription.js", function () {
             useObjectInstance = imported.useObjectInstance;
             ObjectError = imported.ObjectError;
         });
-        it("error when missing pk", async function () {
+        scopedIt("error when missing pk", async function () {
             objectInstance = useObjectInstance({
                 props: {
                     target: { stream: "test_stream" },
@@ -834,7 +835,7 @@ describe("use/objectSubscription.js", function () {
                 });
             }).toThrow("pk not in props, must be truthy for intendToRetrieve or intendToSubscribe to work.");
         });
-        it("error when missing params", async function () {
+        scopedIt("error when missing params", async function () {
             objectInstance = useObjectInstance({
                 props: {
                     target: { stream: "test_stream" },
@@ -851,7 +852,7 @@ describe("use/objectSubscription.js", function () {
             }).toThrow("params not in props, must be truthy for intendToRetrieve or intendToSubscribe to work.");
         });
     });
-    it("useObjectSubscriptions", async function () {
+    scopedIt("useObjectSubscriptions", async function () {
         const objectSubscriptionA = useObjectSubscription({
             props: {
                 target: { stream: "test_streamA" },
@@ -897,7 +898,7 @@ describe("use/objectSubscription.js", function () {
         expect(deepUnref(objSubs.A.state)).toEqual(deepUnref(objectSubscriptionA.state));
         expect(deepUnref(objSubs.B.state)).toEqual(deepUnref(objectSubscriptionB.state));
     });
-    it("updateFromSubscription", function () {
+    scopedIt("updateFromSubscription", function () {
         const objectSubscription = useObjectSubscription({
             stream: "test_stream",
             props: { pkKey: "id" },
@@ -912,7 +913,7 @@ describe("use/objectSubscription.js", function () {
         objectSubscription.updateFromSubscription({ id: 1, __str__: "zxcv" });
         expect({ ...objectSubscription.state.object }).toEqual({ id: 1, __str__: "zxcv" });
     });
-    it("deleteFromSubscription", function () {
+    scopedIt("deleteFromSubscription", function () {
         const objectSubscription = useObjectSubscription({
             stream: "test_stream",
             props: { pkKey: "id" },

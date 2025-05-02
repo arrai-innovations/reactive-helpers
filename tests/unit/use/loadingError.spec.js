@@ -1,6 +1,7 @@
 import { useLoadingError } from "../../../use/loadingError.js";
 import { ref } from "vue";
 import { describe, it, expect } from "vitest";
+import { scopedIt } from "../scopedIt.js";
 
 describe("useLoadingError", () => {
     let loadingError;
@@ -9,31 +10,31 @@ describe("useLoadingError", () => {
         loadingError = useLoadingError();
     });
 
-    it("should initialize with default states", () => {
+    scopedIt("should initialize with default states", () => {
         expect(loadingError.loading.value).toBe(undefined);
         expect(loadingError.error.value).toBe(null);
         expect(loadingError.errored.value).toBe(false);
     });
 
-    it("should set loading state", () => {
+    scopedIt("should set loading state", () => {
         loadingError.setLoading();
         expect(loadingError.loading.value).toBe(true);
     });
 
-    it("should clear loading state", () => {
+    scopedIt("should clear loading state", () => {
         loadingError.setLoading();
         loadingError.clearLoading();
         expect(loadingError.loading.value).toBe(false);
     });
 
-    it("should set error state and mark as errored", () => {
+    scopedIt("should set error state and mark as errored", () => {
         const error = new Error("Test Error");
         loadingError.setError(error);
         expect(loadingError.error.value).toBe(error);
         expect(loadingError.errored.value).toBe(true);
     });
 
-    it("should clear error state", () => {
+    scopedIt("should clear error state", () => {
         const error = new Error("Test Error");
         loadingError.setError(error);
         loadingError.clearError();
