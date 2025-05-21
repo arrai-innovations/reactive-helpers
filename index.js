@@ -23,7 +23,6 @@ export * from "./use/proxyError.js";
 export * from "./use/proxyLoadingError.js";
 export * from "./use/proxyLoading.js";
 export * from "./use/search.js";
-export * from "./use/watchesRunning.js";
 export * from "./utils/assignReactiveObject.js";
 export * from "./utils/cancellableFetch.js";
 export * from "./utils/cancellablePromise.js";

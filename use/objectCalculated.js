@@ -5,9 +5,7 @@ import { loadingCombine } from "../utils/loadingCombine.js";
 import { objectInstanceStateKeys } from "./objectInstance.js";
 import { objectRelatedStateKeys } from "./objectRelated.js";
 import { objectSubscriptionStateKeys } from "./objectSubscription.js";
-import { useWatchesRunning } from "./watchesRunning.js";
-import isEmpty from "lodash-es/isEmpty.js";
-import { computed, effectScope, onScopeDispose, reactive, ref, toRef, watch } from "vue";
+import { computed, effectScope, nextTick, onScopeDispose, reactive, ref, toRef, watch } from "vue";
 
 /**
  * Vue Composition API composable function for object calculated.
@@ -68,8 +66,7 @@ import { computed, effectScope, onScopeDispose, reactive, ref, toRef, watch } fr
  * @typedef {object} ObjectCalculatedProperties
  * @property {ObjectCalculatedParentState} parentState - The parent state.
  * @property {ObjectCalculatedState} state - The object calculated state.
- * @property {import('./watchesRunning.js').WatchesRunning} watchesRunning - The watches running rules.
- * @property {import('vue').EffectScope} effectScope - The effect scope.
+ * @property {() => void} stop - Stops composition's effects and cleans up resources.
  */
 
 // if we provided functions, we would add a typedef and mix them into ObjectCalculated
@@ -171,20 +168,24 @@ export function useObjectCalculateds(objectCalculatedArgs) {
  * @returns {ObjectCalculated} - The object calculated instance.
  */
 export function useObjectCalculated({ parentState, calculatedObjectRules }) {
+    const es = effectScope();
+    /** @type {import('vue').Ref<boolean|undefined>} */
+    const parentRunning = ref(undefined);
+    proxyRunning(parentState, "running", parentRunning);
     /** @type {ObjectCalculatedState} */
     // @ts-ignore - parent state keys and computeds with be added in the effect scope
     const state = reactive({
         calculatedObjectRules,
         calculatedObject: {},
-        parentStateObjectWatchRunning: false,
-        calculatedObjectWatchRunning: false,
+        parentStateObjectWatchRunning: true,
+        calculatedObjectWatchRunning: true,
+        calculatedRunning: computed(() =>
+            loadingCombine(state.parentStateObjectWatchRunning, state.calculatedObjectWatchRunning)
+        ),
+        running: computed(() => loadingCombine(state.calculatedRunning, parentRunning.value)),
     });
     const calculatedObjectEffectScopes = {};
     const calculatedObjectOriginalFunctions = {};
-
-    let watchesRunning = null;
-
-    const es = effectScope();
 
     es.run(() => {
         for (const key of objectInstanceStateKeys) {
@@ -200,66 +201,85 @@ export function useObjectCalculated({ parentState, calculatedObjectRules }) {
             state[key] = toRef(parentState, key);
         }
 
-        watch(
-            [() => state.calculatedObjectRules && Object.keys(state.calculatedObjectRules)],
-            () => {
+        function rulesWatch() {
+            /** @type {Set<string>|undefined} */
+            let addedKeys = undefined,
                 /** @type {Set<string>|undefined} */
-                let addedKeys = undefined,
-                    /** @type {Set<string>|undefined} */
-                    removedKeys = undefined,
-                    /** @type {Set<string>|undefined} */
-                    sameKeys = undefined;
-                if (!state.calculatedObjectRules) {
-                    removedKeys = new Set(Object.keys(calculatedObjectOriginalFunctions));
-                    addedKeys = new Set();
-                    sameKeys = new Set();
-                } else {
-                    ({ addedKeys, removedKeys, sameKeys } = keyDiff(
-                        Object.keys(state.calculatedObjectRules),
-                        Object.keys(calculatedObjectOriginalFunctions)
-                    ));
+                removedKeys = undefined,
+                /** @type {Set<string>|undefined} */
+                sameKeys = undefined;
+            if (!state.calculatedObjectRules) {
+                removedKeys = new Set(Object.keys(calculatedObjectOriginalFunctions));
+                addedKeys = new Set();
+                sameKeys = new Set();
+            } else {
+                ({ addedKeys, removedKeys, sameKeys } = keyDiff(
+                    Object.keys(state.calculatedObjectRules),
+                    Object.keys(calculatedObjectOriginalFunctions)
+                ));
+            }
+            for (const sameKey of sameKeys) {
+                if (calculatedObjectOriginalFunctions[sameKey] !== state.calculatedObjectRules[sameKey]) {
+                    removedKeys.add(sameKey);
+                    addedKeys.add(sameKey);
                 }
-                for (const sameKey of sameKeys) {
-                    if (calculatedObjectOriginalFunctions[sameKey] !== state.calculatedObjectRules[sameKey]) {
-                        removedKeys.add(sameKey);
-                        addedKeys.add(sameKey);
-                    }
+            }
+            for (const removedKey of removedKeys) {
+                delete calculatedObjectOriginalFunctions[removedKey];
+                delete state.calculatedObject[removedKey];
+                if (calculatedObjectEffectScopes[removedKey]) {
+                    calculatedObjectEffectScopes[removedKey].stop();
+                    delete calculatedObjectEffectScopes[removedKey];
                 }
-                for (const removedKey of removedKeys) {
-                    delete calculatedObjectOriginalFunctions[removedKey];
-                    delete state.calculatedObject[removedKey];
-                    if (calculatedObjectEffectScopes[removedKey]) {
-                        calculatedObjectEffectScopes[removedKey].stop();
-                        delete calculatedObjectEffectScopes[removedKey];
-                    }
-                }
-                for (const addedKey of addedKeys) {
-                    calculatedObjectOriginalFunctions[addedKey] = state.calculatedObjectRules[addedKey];
-                    calculatedObjectEffectScopes[addedKey] = effectScope();
-                    calculatedObjectEffectScopes[addedKey].run(() => {
-                        state.calculatedObject[addedKey] = computed(() =>
-                            calculatedObjectOriginalFunctions[addedKey](state.object, state.relatedObject)
-                        );
-                    });
-                }
+            }
+            for (const addedKey of addedKeys) {
+                calculatedObjectOriginalFunctions[addedKey] = state.calculatedObjectRules[addedKey];
+                calculatedObjectEffectScopes[addedKey] = effectScope();
+                calculatedObjectEffectScopes[addedKey].run(() => {
+                    state.calculatedObject[addedKey] = computed(() =>
+                        calculatedObjectOriginalFunctions[addedKey](state.object, state.relatedObject)
+                    );
+                });
+            }
+            nextTick(() => {
+                state.calculatedObjectWatchRunning = false;
+            });
+        }
+
+        watch([() => state.calculatedObjectRules && Object.keys(state.calculatedObjectRules)], rulesWatch, {
+            immediate: true,
+        });
+
+        watch(
+            () => parentState.object,
+            () => {
+                state.parentStateObjectWatchRunning = true;
+            },
+            { flush: "sync" }
+        );
+        watch(
+            () => parentState.object,
+            () => {
+                nextTick(() => {
+                    state.parentStateObjectWatchRunning = false;
+                });
             },
             { immediate: true }
         );
-
-        watchesRunning = useWatchesRunning({
-            triggerRefs: [computed(() => (!isEmpty(state.calculatedObjectRules) ? parentState.loading : false))],
-            watchSentinelRefs: [
-                toRef(state, "parentStateObjectWatchRunning"),
-                toRef(state, "calculatedObjectWatchRunning"),
-            ],
-        });
-
-        // @ts-ignore - assignment to UnwrapNestedRefs triggers tsc to mismatch on Ref vs non-Ref
-        state.calculatedRunning = toRef(watchesRunning.state, "running");
-        const parentRunning = ref(undefined);
-        proxyRunning(parentState, "running", parentRunning);
-        // @ts-ignore - assignment to UnwrapNestedRefs triggers tsc to mismatch on ComputedRef vs non
-        state.running = computed(() => loadingCombine(watchesRunning.state.running, parentRunning));
+        watch(
+            [() => state.calculatedObjectRules && Object.keys(state.calculatedObjectRules)],
+            () => {
+                state.calculatedObjectWatchRunning = true;
+            },
+            { flush: "sync" }
+        );
+        watch(
+            [() => state.calculatedObjectRules && Object.keys(state.calculatedObjectRules)],
+            () => {
+                rulesWatch();
+            },
+            { immediate: true }
+        );
 
         onScopeDispose(() => {
             for (const key in calculatedObjectEffectScopes) {
@@ -273,7 +293,14 @@ export function useObjectCalculated({ parentState, calculatedObjectRules }) {
     return {
         state,
         parentState,
-        watchesRunning,
-        effectScope: es,
+        stop: () => {
+            es.stop();
+            for (const key in calculatedObjectEffectScopes) {
+                calculatedObjectEffectScopes[key].stop();
+            }
+            for (const key in calculatedObjectOriginalFunctions) {
+                delete calculatedObjectOriginalFunctions[key];
+            }
+        },
     };
 }
