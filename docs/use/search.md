@@ -66,12 +66,6 @@ Add an index.
 
 Clear the index.
 
-##### effectScope
-
-> **effectScope**: `any`
-
-A Vue effect scope.
-
 ##### events
 
 > **events**: `EventTarget`
@@ -185,6 +179,12 @@ Whether the search has been performed.
 > **searching**: `boolean`
 
 Whether the search is currently running.
+
+##### stop
+
+> **stop**: `Function`
+
+Stop the effect scope.
 
 ##### updateIndex
 

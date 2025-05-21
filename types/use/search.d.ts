@@ -137,8 +137,8 @@ export type SearchInstance = {
      */
     events: EventTarget;
     /**
-     * - A Vue effect scope.
+     * - Stop the effect scope.
      */
-    effectScope: object;
+    stop: Function;
 };
 //# sourceMappingURL=search.d.ts.map
