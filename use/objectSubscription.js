@@ -217,34 +217,23 @@ export function useObjectSubscription({ objectInstance, props, handlers }) {
         object: parentObject,
         deleted: parentDeleted,
     } = toRefs(parentState);
-    /** @type {ObjectSubscriptionState} */
-    const state = reactive({
-        crud: parentCrud,
-        pk: parentPk,
-        pkKey: parentPkKey,
-        params: parentParams,
-        object: parentObject,
-        deleted: parentDeleted,
-        subscribed: undefined,
-        intendToRetrieve,
-        intendToSubscribe,
+    const retrieveGuardArgs = reactive({
         loading: undefined,
-        errored: proxyError.errored,
-        error: proxyError.error,
     });
     const retrieveIntent = useCancellableIntent({
         awaitableWithCancel: objectInstance.retrieve,
         watchArguments: {
-            intendToRetrieve: toRef(state, "intendToRetrieve"),
+            intendToRetrieve,
             pk: parentPk,
             pkKey: parentPkKey,
             params: parentParams,
         },
         // delay triggering a retrieve until the last retrieve has finished/cancelled.
         // cancel can still be triggered
-        guardArguments: {
-            loading: toRef(state.loading),
-        },
+        guardArguments: retrieveGuardArgs,
+    });
+    const subscribeGuardArgs = reactive({
+        loading: undefined,
     });
     const subscribeIntent = useCancellableIntent({
         awaitableWithCancel: ({ runId, isCurrentRun }) => {
@@ -272,16 +261,14 @@ export function useObjectSubscription({ objectInstance, props, handlers }) {
             });
         },
         watchArguments: {
-            intendToSubscribe: toRef(state, "intendToSubscribe"),
+            intendToSubscribe,
             pk: parentPk,
             pkKey: parentPkKey,
             params: parentParams,
         },
         // delay triggering a subscribe until the last subscribe has finished/cancelled.
         // cancel can still be triggered
-        guardArguments: {
-            loading: toRef(state.loading),
-        },
+        guardArguments: subscribeGuardArgs,
         // subscriptions persist until cancelled
         clearActiveOnResolved: false,
     });
@@ -295,13 +282,26 @@ export function useObjectSubscription({ objectInstance, props, handlers }) {
         errored: toRef(subscribeIntent.state, "errored"),
         clearError: subscribeIntent.clearError,
     });
-    // @ts-ignore - TS checks that the ref is the same type as the value, not that the ref's value has the same type
-    state.subscribed = toRef(subscribeIntent.state, "active");
-    // @ts-ignore - TS checks that the ref is the same type as the value, not that the ref's value has the same type
-    state.loading = computed(() =>
-        /** @type {boolean|undefined} */
-        loadingCombine(retrieveIntent.state.resolving, retrieveIntent.state.active, subscribeIntent.state.resolving)
-    );
+    /** @type {ObjectSubscriptionState} */
+    const state = reactive({
+        crud: parentCrud,
+        pk: parentPk,
+        pkKey: parentPkKey,
+        params: parentParams,
+        object: parentObject,
+        deleted: parentDeleted,
+        subscribed: computed(() => subscribeIntent.state.active),
+        intendToRetrieve,
+        intendToSubscribe,
+        loading: computed(() =>
+            /** @type {boolean|undefined} */
+            loadingCombine(retrieveIntent.state.resolving, retrieveIntent.state.active, subscribeIntent.state.resolving)
+        ),
+        errored: proxyError.errored,
+        error: proxyError.error,
+    });
+    retrieveGuardArgs.loading = state.loading;
+    subscribeGuardArgs.loading = state.loading;
     return {
         state,
         objectInstance,
