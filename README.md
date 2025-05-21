@@ -13,6 +13,7 @@ Vue.js 3 composition utilities to manage reactive lists, objects and other helpe
 
 - [Install](#install)
 - [Usage](#usage)
+- [Changelog](#changelog)
 - [Development](#development)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
@@ -46,6 +47,10 @@ console.log(contacts.state.objects);
 See [docs/README.md](./docs/README.md) for a full list of modules, composables, utilities, as well as, their arguments
 and properties.
 
+## Changelog
+
+Since v21.0.0, the changelog is available in the [CHANGELOG.md](./CHANGELOG.md) file.
+
 ## Development
 
 1. Checkout this repo:
@@ -73,6 +78,7 @@ and properties.
     ```
 
 5. Generate types and typedocs:
+
     ```bash
     $ npm run docs
     ```

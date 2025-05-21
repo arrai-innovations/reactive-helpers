@@ -2,8 +2,7 @@
  * @typedef {object} ObjectRelatedProperties
  * @property {ObjectRelatedState} state - The state of the object related instance.
  * @property {ObjectRelatedParentState} parentState - The parent state.
- * @property {import('./watchesRunning.js').WatchesRunning} watchesRunning - The watches running instance.
- * @property {import('vue').EffectScope} effectScope - The effect scope.
+ * @property {() => void} stop - Stops all effects of the object related instance.
  *
  */
 /**
@@ -180,13 +179,9 @@ export type ObjectRelatedProperties = {
      */
     parentState: ObjectRelatedParentState;
     /**
-     * - The watches running instance.
+     * - Stops all effects of the object related instance.
      */
-    watchesRunning: import("./watchesRunning.js").WatchesRunning;
-    /**
-     * - The effect scope.
-     */
-    effectScope: import("vue").EffectScope;
+    stop: () => void;
 };
 /**
  * An instance of an object related reactive object.

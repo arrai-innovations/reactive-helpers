@@ -32,7 +32,6 @@
 - [use/proxyLoading](use/proxyLoading.md)
 - [use/proxyLoadingError](use/proxyLoadingError.md)
 - [use/search](use/search.md)
-- [use/watchesRunning](use/watchesRunning.md)
 - [utils/assignReactiveObject](utils/assignReactiveObject.md)
 - [utils/cancellableFetch](utils/cancellableFetch.md)
 - [utils/cancellablePromise](utils/cancellablePromise.md)

@@ -12,12 +12,6 @@
 
 #### Properties
 
-##### effectScope
-
-> **effectScope**: `EffectScope`
-
-The effect scope.
-
 ##### parentState
 
 > **parentState**: `object`
@@ -306,11 +300,15 @@ Whether the related objects are loading or the parent state is loading.
 
 Whether the object is subscribed.
 
-##### watchesRunning
+##### stop()
 
-> **watchesRunning**: [`WatchesRunning`](watchesRunning.md#watchesrunning)
+> **stop**: () => `void`
 
-The watches running instance.
+Stops all effects of the object related instance.
+
+###### Returns
+
+`void`
 
 ***
 

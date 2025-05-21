@@ -110,8 +110,7 @@ export function useObjectCalculated({ parentState, calculatedObjectRules }: Obje
  * @typedef {object} ObjectCalculatedProperties
  * @property {ObjectCalculatedParentState} parentState - The parent state.
  * @property {ObjectCalculatedState} state - The object calculated state.
- * @property {import('./watchesRunning.js').WatchesRunning} watchesRunning - The watches running rules.
- * @property {import('vue').EffectScope} effectScope - The effect scope.
+ * @property {() => void} stop - Stops composition's effects and cleans up resources.
  */
 /**
  * The object calculated instance.
@@ -191,13 +190,9 @@ export type ObjectCalculatedProperties = {
      */
     state: ObjectCalculatedState;
     /**
-     * - The watches running rules.
+     * - Stops composition's effects and cleans up resources.
      */
-    watchesRunning: import("./watchesRunning.js").WatchesRunning;
-    /**
-     * - The effect scope.
-     */
-    effectScope: import("vue").EffectScope;
+    stop: () => void;
 };
 /**
  * The object calculated instance.

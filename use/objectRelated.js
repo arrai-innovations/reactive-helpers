@@ -5,13 +5,12 @@ import { proxyRunning } from "../utils/proxyRunning.js";
 import { getObjectRelatedByKey } from "../utils/relatedCalculatedHelpers.js";
 import { objectInstanceStateKeys } from "./objectInstance.js";
 import { objectSubscriptionStateKeys } from "./objectSubscription.js";
-import { useWatchesRunning } from "./watchesRunning.js";
 import get from "lodash-es/get.js";
 import identity from "lodash-es/identity.js";
 import isArray from "lodash-es/isArray.js";
 import isEmpty from "lodash-es/isEmpty.js";
 import isUndefined from "lodash-es/isUndefined.js";
-import { computed, effectScope, reactive, ref, toRef, unref, watch } from "vue";
+import { computed, effectScope, nextTick, reactive, ref, toRef, unref, watch } from "vue";
 
 /**
  * Vue Composition API composable function for handling reactive relations to other objects.
@@ -90,8 +89,7 @@ export const objectRelatedFunctions = [];
  * @typedef {object} ObjectRelatedProperties
  * @property {ObjectRelatedState} state - The state of the object related instance.
  * @property {ObjectRelatedParentState} parentState - The parent state.
- * @property {import('./watchesRunning.js').WatchesRunning} watchesRunning - The watches running instance.
- * @property {import('vue').EffectScope} effectScope - The effect scope.
+ * @property {() => void} stop - Stops all effects of the object related instance.
  *
  */
 
@@ -212,18 +210,22 @@ export function useObjectRelateds(objectRelatedArgs) {
  * @returns {ObjectRelated} - The object related reactive object.
  */
 export function useObjectRelated({ parentState, relatedObjectRules }) {
+    const es = effectScope();
+    /** @type {import('vue').Ref<boolean|undefined>} */
+    const parentRunning = ref(undefined);
+    proxyRunning(parentState, "running", parentRunning);
     /** @type {ObjectRelatedState} */
     // @ts-ignore - other keys are added in effectScope or as refs from elsewhere
     const state = reactive({
         relatedObjectRules,
         relatedObject: {},
-        parentStateObjectWatchRunning: false,
-        relatedObjectWatchRunning: false,
+        parentStateObjectWatchRunning: true,
+        relatedObjectWatchRunning: true,
+        relatedRunning: computed(() =>
+            loadingCombine(state.parentStateObjectWatchRunning, state.relatedObjectWatchRunning)
+        ),
+        running: computed(() => loadingCombine(state.relatedRunning, parentRunning.value)),
     });
-
-    let watchesRunning = null;
-
-    const es = effectScope();
 
     const internalState = reactive({
         /** @type {{[rule: string]: import('vue').ComputedRef<[obj:any, key:string]>}} */
@@ -304,6 +306,9 @@ export function useObjectRelated({ parentState, relatedObjectRules }) {
         for (const addedRuleKey of addedRuleKeys) {
             applyRule(addedRuleKey);
         }
+        nextTick(() => {
+            state.relatedObjectWatchRunning = false;
+        });
     }
 
     es.run(() => {
@@ -316,30 +321,43 @@ export function useObjectRelated({ parentState, relatedObjectRules }) {
             state[key] = toRef(parentState, key);
         }
 
-        watch([() => state.relatedObjectRules && Object.keys(state.relatedObjectRules)], watchRules, {
-            immediate: true,
-        });
-
-        watchesRunning = useWatchesRunning({
-            triggerRefs: [computed(() => (!isEmpty(state.relatedObjectRules) ? parentState.loading : false))],
-            watchSentinelRefs: [
-                toRef(state, "parentStateObjectWatchRunning"),
-                toRef(state, "relatedObjectWatchRunning"),
-            ],
-        });
-
-        // @ts-ignore - assignment to UnwrapNestedRefs triggers tsc to mismatch on Ref vs non-Ref
-        state.relatedRunning = toRef(watchesRunning.state, "running");
-        const parentRunning = ref(undefined);
-        proxyRunning(parentState, "running", parentRunning);
-        // @ts-ignore - assignment to UnwrapNestedRefs triggers tsc to mismatch on Ref vs non-Ref
-        state.running = computed(() => loadingCombine(watchesRunning.state.running, parentRunning));
+        watch(
+            () => parentState.object,
+            () => {
+                state.parentStateObjectWatchRunning = true;
+            },
+            { flush: "sync" }
+        );
+        watch(
+            () => parentState.object,
+            () => {
+                nextTick(() => {
+                    state.parentStateObjectWatchRunning = false;
+                });
+            },
+            { immediate: true }
+        );
+        watch(
+            [() => state.relatedObjectRules && Object.keys(state.relatedObjectRules)],
+            () => {
+                state.relatedObjectWatchRunning = true;
+            },
+            { flush: "sync" }
+        );
+        watch(
+            [() => state.relatedObjectRules && Object.keys(state.relatedObjectRules)],
+            () => {
+                watchRules();
+            },
+            { immediate: true }
+        );
     });
 
     return {
         state,
         parentState,
-        watchesRunning,
-        effectScope: es,
+        stop: () => {
+            es.stop();
+        },
     };
 }
