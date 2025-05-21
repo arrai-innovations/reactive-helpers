@@ -2,7 +2,6 @@ import { doAwaitNot } from "../../../utils/watches.js";
 import { nextTick, reactive, ref, unref } from "vue";
 import { deepUnref } from "../../../utils/deepUnref.js";
 import { scopedIt } from "../scopedIt.js";
-import { debugTimer } from "../timing.js";
 
 describe("use/listFilter", () => {
     let useListInstance, useListFilter, useListCalculated, useListRelated, useListFilters, useListSort;
