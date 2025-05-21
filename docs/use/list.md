@@ -84,9 +84,9 @@ Represents the final reactive state in the list processing chain.
 
 Function to determine if an item should be included based on custom logic.
 
-###### calculatedObjects
+###### calculatedObjects?
 
-> **calculatedObjects**: `object`
+> `optional` **calculatedObjects**: `object`
 
 The calculated objects.
 
@@ -94,27 +94,27 @@ The calculated objects.
 
 \[`pk`: `string`\]: `object`
 
-###### calculatedObjectsParentStateObjectsWatchRunning
+###### calculatedObjectsParentStateObjectsWatchRunning?
 
-> **calculatedObjectsParentStateObjectsWatchRunning**: `boolean`
+> `optional` **calculatedObjectsParentStateObjectsWatchRunning**: `boolean`
 
 Whether the parent state objects watch is running.
 
-###### calculatedObjectsRules
+###### calculatedObjectsRules?
 
-> **calculatedObjectsRules**: [`ListCalculatedRules`](listCalculated.md#listcalculatedrules)
+> `optional` **calculatedObjectsRules**: [`ListCalculatedRules`](listCalculated.md#listcalculatedrules)
 
 The rules for the calculated objects.
 
-###### calculatedObjectsWatchRunning
+###### calculatedObjectsWatchRunning?
 
-> **calculatedObjectsWatchRunning**: `boolean`
+> `optional` **calculatedObjectsWatchRunning**: `boolean`
 
 Whether the calculated objects watch is running.
 
-###### calculatedRunning
+###### calculatedRunning?
 
-> **calculatedRunning**: `boolean`
+> `optional` **calculatedRunning**: `boolean`
 
 Whether the calculated properties are running.
 
@@ -154,15 +154,15 @@ The list function.
 
 The subscribe function.
 
-###### customDocumentOptions
+###### customDocumentOptions?
 
-> **customDocumentOptions**: `any`
+> `optional` **customDocumentOptions**: `any`
 
 Configuration options for the search document, used by FlexSearch.
 
-###### customSearchOptions
+###### customSearchOptions?
 
-> **customSearchOptions**: `any`
+> `optional` **customSearchOptions**: `any`
 
 Additional search options for FlexSearch.
 
@@ -184,9 +184,9 @@ Whether an error has occurred.
 
 Function to determine if an item should be excluded based on custom logic.
 
-###### fkForPkAndRule
+###### fkForPkAndRule?
 
-> **fkForPkAndRule**: `object`
+> `optional` **fkForPkAndRule**: `object`
 
 Maintains computed references to the foreign keys for each object pk and rule, crucial for navigating complex data relationships.
 
@@ -194,15 +194,15 @@ Maintains computed references to the foreign keys for each object pk and rule, c
 
 \[`pk`: `string`\]: `object`
 
-###### intendToList
+###### intendToList?
 
-> **intendToList**: `boolean`
+> `optional` **intendToList**: `boolean`
 
 If this is true, the list should be fetched, or re-fetched if arguments change.
 
-###### intendToSubscribe
+###### intendToSubscribe?
 
-> **intendToSubscribe**: `boolean`
+> `optional` **intendToSubscribe**: `boolean`
 
 If this is true, the subscription should start or restart if arguments change.
 
@@ -212,9 +212,9 @@ If this is true, the subscription should start or restart if arguments change.
 
 Whether the component is loading.
 
-###### objAndKeyForPkAndRule
+###### objAndKeyForPkAndRule?
 
-> **objAndKeyForPkAndRule**: `object`
+> `optional` **objAndKeyForPkAndRule**: `object`
 
 Maps each object pk and rule to a tuple consisting of the related object and its respective key, facilitating direct data manipulation.
 
@@ -222,9 +222,9 @@ Maps each object pk and rule to a tuple consisting of the related object and its
 
 \[`pk`: `string`\]: `object`
 
-###### objectIndexes
+###### objectIndexes?
 
-> **objectIndexes**: `any`
+> `optional` **objectIndexes**: `any`
 
 Indexes built for quick search across objects based on rules.
 
@@ -276,9 +276,9 @@ Arguments passed to the server for listing operations.
 
 The primary key field for the list objects.
 
-###### relatedObjects
+###### relatedObjects?
 
-> **relatedObjects**: `object`
+> `optional` **relatedObjects**: `object`
 
 Stores computed references to related objects, allowing for dynamic access based on object pk and specific rules.
 
@@ -286,58 +286,58 @@ Stores computed references to related objects, allowing for dynamic access based
 
 \[`pk`: `string`\]: `object`
 
-###### relatedObjectsParentStateObjectsWatchRunning
+###### relatedObjectsParentStateObjectsWatchRunning?
 
-> **relatedObjectsParentStateObjectsWatchRunning**: `boolean`
+> `optional` **relatedObjectsParentStateObjectsWatchRunning**: `boolean`
 
 Flags whether the watch on parent state objects is currently active, ensuring updates trigger as needed.
 
-###### relatedObjectsRules
+###### relatedObjectsRules?
 
-> **relatedObjectsRules**: [`ListRelatedRules`](listRelated.md#listrelatedrules)
+> `optional` **relatedObjectsRules**: [`ListRelatedRules`](listRelated.md#listrelatedrules)
 
 Defines the rules for establishing relationships, such as foreign key links and sorting orders.
 
-###### relatedObjectsWatchRunning
+###### relatedObjectsWatchRunning?
 
-> **relatedObjectsWatchRunning**: `boolean`
+> `optional` **relatedObjectsWatchRunning**: `boolean`
 
 Indicates if watches on the related objects themselves are active, managing updates efficiently.
 
-###### relatedRunning
+###### relatedRunning?
 
-> **relatedRunning**: `boolean`
+> `optional` **relatedRunning**: `boolean`
 
 Signals whether any computations related to object relationships are currently in progress.
 
-###### running
+###### running?
 
-> **running**: `boolean`
+> `optional` **running**: `boolean`
 
 General flag that indicates if the list-related logic is processing, used to manage UI feedback or prevent concurrent operations.
 
-###### searched
+###### searched?
 
-> **searched**: `boolean`
+> `optional` **searched**: `boolean`
 
 Flag indicating if a search has been performed.
 
-###### subscribed
+###### subscribed?
 
-> **subscribed**: `boolean`
+> `optional` **subscribed**: `boolean`
 
 Whether the subscription is active.
 
-###### textSearchRules
+###### textSearchRules?
 
-> **textSearchRules**: `any`
+> `optional` **textSearchRules**: `any`
 
 Rules defining how text search should be applied on list items. Each rule
  specifies a key and a function to extract the searchable text.
 
-###### textSearchValue
+###### textSearchValue?
 
-> **textSearchValue**: `string`
+> `optional` **textSearchValue**: `string`
 
 The current value used for searching.
 
@@ -528,22 +528,6 @@ Current text query used for filtering the list.
 ### ListManager
 
 > **ListManager**\<\>: [`ListFunctions`](list.md#listfunctions) & [`ListManagerProperties`](list.md#listmanagerproperties)
-
-#### Type Parameters
-
-***
-
-### ListRawState
-
-> **ListRawState**\<\>: [`ListInstanceRawState`](listInstance.md#listinstancerawstate) & [`ListSubscriptionRawState`](listSubscription.md#listsubscriptionrawstate) & [`ListRelatedRawState`](listRelated.md#listrelatedrawstate) & [`ListCalculatedRawState`](listCalculated.md#listcalculatedrawstate) & [`ListFilterRawState`](listFilter.md#listfilterrawstate) & [`ListSearchRawState`](listSearch.md#listsearchrawstate) & [`ListSortRawState`](listSort.md#listsortrawstate)
-
-#### Type Parameters
-
-***
-
-### ListState
-
-> **ListState**\<\>: `UnwrapNestedRefs`
 
 #### Type Parameters
 

@@ -62,89 +62,9 @@ The error code.
 
 ## Interfaces
 
-### ObjectSubscriptionFunctions
+### ObjectSubscriptionContext
 
 #### Properties
-
-##### clearError()
-
-> **clearError**: () => `void`
-
-Clears any errors related to the subscription, and resets the loading state.
-
-###### Returns
-
-`void`
-
-##### deleteFromSubscription()
-
-> **deleteFromSubscription**: () => `void`
-
-Delete the object from a subscription.
-
-###### Returns
-
-`void`
-
-##### subscribe()
-
-> **subscribe**: (`options`?) => `boolean`
-
-Subscribes to updates from an object, managing subscription state and handling errors internally.
- Ensures that only one active subscription can exist at a time to prevent duplicate calls. Returns a promise that
- resolves to true if the subscription was successful, and false if it failed.
-
-###### Parameters
-
-###### options?
-
-###### retrieve?
-
-`boolean`
-
-###### Returns
-
-`boolean`
-
-##### unsubscribe()
-
-> **unsubscribe**: () => `boolean`
-
-Unsubscribes from the object, resetting related state flags. Returns
- true if the object was unsubscribed, and false if it was not subscribed.
-
-###### Returns
-
-`boolean`
-
-##### updateFromSubscription()
-
-> **updateFromSubscription**: (`data`) => `void`
-
-Update the
- object from a subscription.
-
-###### Parameters
-
-###### data
-
-[`ExistingCrudObject`](objectInstance.md#existingcrudobject)
-
-###### Returns
-
-`void`
-
-***
-
-### ObjectSubscriptionProperties
-
-#### Properties
-
-##### effectScope
-
-> **effectScope**: `EffectScope`
-
-The effect scope.
 
 ##### objectInstance
 
@@ -162,7 +82,7 @@ The retrieve intent.
 
 > **state**: `object`
 
-The object instance properties.
+The object subscription state.
 
 ###### crud
 
@@ -172,7 +92,7 @@ The crud handlers.
 
 ###### crud.args
 
-> **args**: `Reactive`\<\{\} \| [`ObjectTargetArgs`](../config/objectCrud.md#objecttargetargs)\>
+> **args**: `Reactive`\<\{\} \| [`TargetArgs`](../config/objectCrud.md#targetargs)\>
 
 The arguments to be passed to the crud handlers.
 
@@ -222,13 +142,13 @@ Whether the object is deleted.
 
 > **error**: `Error`
 
-The error.
+The error that occurred.
 
 ###### errored
 
 > **errored**: `boolean`
 
-Whether the object errored.
+Whether an error has occurred.
 
 ###### intendToRetrieve
 
@@ -246,11 +166,11 @@ Whether the object intends to subscribe.
 
 > **loading**: `boolean`
 
-Whether the object is loading.
+Whether the component is loading.
 
 ###### object
 
-> **object**: [`NewCrudObject`](objectInstance.md#newcrudobject) \| \{ `[key: string]`: `any`;  `pkKey`: `string`; \}
+> **object**: `Reactive`\<[`CrudObject`](objectInstance.md#crudobject)\>
 
 The object.
 
@@ -282,23 +202,179 @@ The pk key of the object.
 
 Whether the object is subscribed.
 
-###### subscriptionError
+##### subscribeIntent
 
-> **subscriptionError**: `Error`
+> **subscribeIntent**: [`CancellableIntent`](cancellableIntent.md#cancellableintent)
+
+The subscribe intent.
+
+***
+
+### ObjectSubscriptionFunctions
+
+#### Properties
+
+##### clearError()
+
+> **clearError**: () => `void`
+
+Clears any errors related to the subscription, and resets the loading state.
+
+###### Returns
+
+`void`
+
+***
+
+### ObjectSubscriptionProperties
+
+#### Properties
+
+##### objectInstance
+
+> **objectInstance**: [`ObjectInstance`](objectInstance.md#objectinstance)
+
+The object instance.
+
+##### retrieveIntent
+
+> **retrieveIntent**: [`CancellableIntent`](cancellableIntent.md#cancellableintent)
+
+The retrieve intent.
+
+##### state
+
+> **state**: `object`
+
+The object instance properties.
+
+###### crud
+
+> **crud**: `object`
+
+The crud handlers.
+
+###### crud.args
+
+> **args**: `Reactive`\<\{\} \| [`TargetArgs`](../config/objectCrud.md#targetargs)\>
+
+The arguments to be passed to the crud handlers.
+
+###### crud.create
+
+> **create**: [`CrudCreateFn`](../config/objectCrud.md#crudcreatefn)
+
+The create function.
+
+###### crud.delete
+
+> **delete**: [`CrudDeleteFn`](../config/objectCrud.md#cruddeletefn)
+
+The delete function.
+
+###### crud.patch
+
+> **patch**: [`CrudPatchFn`](../config/objectCrud.md#crudpatchfn)
+
+The patch function.
+
+###### crud.retrieve
+
+> **retrieve**: [`CrudRetrieveFn`](../config/objectCrud.md#crudretrievefn)
+
+The retrieve function.
+
+###### crud.subscribe
+
+> **subscribe**: [`CrudObjectSubscribeFn`](../config/objectCrud.md#crudobjectsubscribefn)
+
+The subscribe function.
+
+###### crud.update
+
+> **update**: [`CrudUpdateFn`](../config/objectCrud.md#crudupdatefn)
+
+The update function.
+
+###### deleted
+
+> **deleted**: `boolean`
+
+Whether the object is deleted.
+
+###### error
+
+> **error**: `Error`
 
 The error that occurred.
 
-###### subscriptionErrored
+###### errored
 
-> **subscriptionErrored**: `boolean`
+> **errored**: `boolean`
 
-Whether the subscription has errored.
+Whether an error has occurred.
 
-###### subscriptionLoading
+###### intendToRetrieve
 
-> **subscriptionLoading**: `boolean`
+> **intendToRetrieve**: `boolean`
 
-Whether the subscription is loading.
+Whether the object intends to retrieve.
+
+###### intendToSubscribe
+
+> **intendToSubscribe**: `boolean`
+
+Whether the object intends to subscribe.
+
+###### loading
+
+> **loading**: `boolean`
+
+Whether the component is loading.
+
+###### object
+
+> **object**: `Reactive`\<[`CrudObject`](objectInstance.md#crudobject)\>
+
+The object.
+
+###### params
+
+> **params**: `object`
+
+The arguments to be passed to the retrieve function.
+
+###### Index Signature
+
+\[`key`: `string`\]: `any`
+
+###### pk
+
+> **pk**: `string`
+
+The pk of the object.
+
+###### pkKey
+
+> **pkKey**: `string`
+
+The pk key of the object.
+
+###### subscribed
+
+> **subscribed**: `boolean`
+
+Whether the object is subscribed.
+
+##### stop()
+
+> **stop**: () => `void`
+
+Stops the subscription reactive effects.
+
+###### Returns
+
+`void`
 
 ##### subscribeIntent
 
@@ -347,24 +423,6 @@ Whether the object intends to subscribe.
 > **subscribed**: `Ref`\<`boolean`, `boolean`\>
 
 Whether the object is subscribed.
-
-##### subscriptionError
-
-> **subscriptionError**: `Readonly`\<`Ref`\<`Error`, `Error`\>\>
-
-The error that occurred.
-
-##### subscriptionErrored
-
-> **subscriptionErrored**: `Readonly`\<`Ref`\<`boolean`, `boolean`\>\>
-
-Whether the subscription has errored.
-
-##### subscriptionLoading
-
-> **subscriptionLoading**: `Readonly`\<`Ref`\<`boolean`, `boolean`\>\>
-
-Whether the subscription is loading.
 
 ## Type Aliases
 

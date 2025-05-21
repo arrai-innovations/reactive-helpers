@@ -134,10 +134,7 @@ describe("utils/classes.js", () => {
             const classObj = reactive({ test: true, test2: true });
             const negatingObj = reactive({ test2: false, test3: true, test4: false });
 
-            const computedResult = computed(() => {
-                console.log("running computed, with changes:", classObj, negatingObj);
-                return combineClasses(classObj, negatingObj);
-            });
+            const computedResult = computed(() => combineClasses(classObj, negatingObj));
 
             expect(computedResult.value).toStrictEqual({
                 test: true,

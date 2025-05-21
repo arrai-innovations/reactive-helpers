@@ -74,7 +74,7 @@ The arguments to be passed to the crud handlers.
 
 ###### target.args
 
-> **args**: [`ObjectTargetArgs`](../config/objectCrud.md#objecttargetargs)
+> **args**: [`TargetArgs`](../config/objectCrud.md#targetargs)
 
 The arguments to be passed to the crud handlers.
 
@@ -119,12 +119,6 @@ A function to be used instead of the default crud update function.
 ### ObjectManagerProperties
 
 #### Properties
-
-##### effectScope
-
-> **effectScope**: `EffectScope`
-
-The effect scope of the managed object.
 
 ##### managed
 
@@ -174,7 +168,7 @@ The crud handlers.
 
 ###### crud.args
 
-> **args**: `Reactive`\<\{\} \| [`ObjectTargetArgs`](../config/objectCrud.md#objecttargetargs)\>
+> **args**: `Reactive`\<\{\} \| [`TargetArgs`](../config/objectCrud.md#targetargs)\>
 
 The arguments to be passed to the crud handlers.
 
@@ -224,23 +218,23 @@ Whether the object is deleted.
 
 > **error**: `Error`
 
-The error.
+The error that occurred.
 
 ###### errored
 
 > **errored**: `boolean`
 
-Whether the object errored.
+Whether an error has occurred.
 
-###### intendToRetrieve
+###### intendToRetrieve?
 
-> **intendToRetrieve**: `boolean`
+> `optional` **intendToRetrieve**: `boolean`
 
 Whether the object intends to retrieve.
 
-###### intendToSubscribe
+###### intendToSubscribe?
 
-> **intendToSubscribe**: `boolean`
+> `optional` **intendToSubscribe**: `boolean`
 
 Whether the object intends to subscribe.
 
@@ -248,11 +242,11 @@ Whether the object intends to subscribe.
 
 > **loading**: `boolean`
 
-Whether the object is loading.
+Whether the component is loading.
 
 ###### object
 
-> **object**: [`NewCrudObject`](objectInstance.md#newcrudobject) \| \{ `[key: string]`: `any`;  `pkKey`: `string`; \}
+> **object**: `Reactive`\<[`CrudObject`](objectInstance.md#crudobject)\>
 
 The object.
 
@@ -284,9 +278,9 @@ The pk of the object.
 
 The pk key of the object.
 
-###### relatedObject
+###### relatedObject?
 
-> **relatedObject**: `object`
+> `optional` **relatedObject**: `object`
 
 The related objects, indexed by the key in the related object.
 
@@ -294,21 +288,21 @@ The related objects, indexed by the key in the related object.
 
 \[`rule`: `string`\]: `ComputedRef`\<`any`\>
 
-###### relatedObjectRules
+###### relatedObjectRules?
 
-> **relatedObjectRules**: [`ObjectRelatedRawRules`](objectRelated.md#objectrelatedrawrules)
+> `optional` **relatedObjectRules**: [`ObjectRelatedRawRules`](objectRelated.md#objectrelatedrawrules)
 
 The rules for defining relationships for the managed object to other collections of objects.
 
-###### relatedObjectWatchRunning
+###### relatedObjectWatchRunning?
 
-> **relatedObjectWatchRunning**: `boolean`
+> `optional` **relatedObjectWatchRunning**: `boolean`
 
 Whether the related object watch is running.
 
-###### relatedRunning
+###### relatedRunning?
 
-> **relatedRunning**: `boolean`
+> `optional` **relatedRunning**: `boolean`
 
 Whether the related objects are loading.
 
@@ -318,29 +312,21 @@ Whether the related objects are loading.
 
 Whether the related objects are loading or the parent state is loading.
 
-###### subscribed
+###### subscribed?
 
-> **subscribed**: `boolean`
+> `optional` **subscribed**: `boolean`
 
 Whether the object is subscribed.
 
-###### subscriptionError
+##### stop()
 
-> **subscriptionError**: `Error`
+> **stop**: () => `void`
 
-The error that occurred.
+Stop the effect scope of the managed object.
 
-###### subscriptionErrored
+###### Returns
 
-> **subscriptionErrored**: `boolean`
-
-Whether the subscription has errored.
-
-###### subscriptionLoading
-
-> **subscriptionLoading**: `boolean`
-
-Whether the subscription is loading.
+`void`
 
 ## Type Aliases
 
@@ -397,22 +383,6 @@ Whether the subscription is loading.
 ### ObjectManagerRawProps
 
 > **ObjectManagerRawProps**\<\>: [`ObjectInstanceRawProps`](objectInstance.md#objectinstancerawprops) & [`ObjectSubscriptionRawProps`](objectSubscription.md#objectsubscriptionrawprops) & [`ObjectRelatedRawProps`](objectRelated.md#objectrelatedrawprops) & [`ObjectCalculatedRawProps`](objectCalculated.md#objectcalculatedrawprops)
-
-#### Type Parameters
-
-***
-
-### ObjectManagerRawState
-
-> **ObjectManagerRawState**\<\>: [`ObjectInstanceRawState`](objectInstance.md#objectinstancerawstate) & [`ObjectSubscriptionRawState`](objectSubscription.md#objectsubscriptionrawstate) & [`ObjectRelatedRawState`](objectRelated.md#objectrelatedrawstate) & [`ObjectCalculatedRawState`](objectCalculated.md#objectcalculatedrawstate)
-
-#### Type Parameters
-
-***
-
-### ObjectManagerState
-
-> **ObjectManagerState**\<\>: `UnwrapNestedRefs`
 
 #### Type Parameters
 
