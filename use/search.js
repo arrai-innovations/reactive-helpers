@@ -54,7 +54,7 @@ const unionReduce = (accumulator, currentValue) => {
  * @property {Function} removeIndex - Remove an index.
  * @property {Function} clearIndex - Clear the index.
  * @property {EventTarget} events - An event target.
- * @property {object} effectScope - A Vue effect scope.
+ * @property {Function} stop - Stop the effect scope.
  */
 
 const defaultDocumentOptions = {
@@ -215,6 +215,8 @@ export function useSearch({ props, throttle = 500 }) {
         removeIndex,
         clearIndex,
         events,
-        effectScope: es,
+        stop: () => {
+            es.stop();
+        },
     };
 }
