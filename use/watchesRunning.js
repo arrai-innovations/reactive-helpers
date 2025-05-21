@@ -38,32 +38,29 @@ import { computed, effectScope, reactive, unref, watch } from "vue";
  * @returns {WatchesRunning} - The watches running.
  */
 export function useWatchesRunning({ triggerRefs, watchSentinelRefs }) {
-    const state = reactive({
-        running: undefined,
-    });
-
     const es = effectScope();
 
-    es.run(() => {
-        watch(
-            triggerRefs,
-            (values) => {
-                if (values.every((value) => unref(value))) {
-                    watchSentinelRefs.forEach((ref) => {
-                        ref.value = true;
-                    });
-                }
-            },
-            {
-                immediate: true,
-                deep: true,
-            }
-        );
-        state.running = computed(() => loadingCombine(...watchSentinelRefs.map((ref) => unref(ref))));
-    });
-
     return {
-        state,
+        state: reactive({
+            running: es.run(() => {
+                watch(
+                    triggerRefs,
+                    (values) => {
+                        if (values.every((value) => unref(value))) {
+                            watchSentinelRefs.forEach((ref) => {
+                                ref.value = true;
+                            });
+                        }
+                    },
+                    {
+                        flush: "sync",
+                        immediate: true,
+                        deep: true,
+                    }
+                );
+                return computed(() => loadingCombine(...watchSentinelRefs.map((ref) => unref(ref))));
+            }),
+        }),
         effectScope: es,
     };
 }
