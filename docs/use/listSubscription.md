@@ -62,39 +62,33 @@ The error code.
 
 ## Interfaces
 
-### ListSubscriptionFunctions
+### ListSubscriptionMyState
 
 #### Properties
 
-##### clearError
+##### intendToList
 
-> **clearError**: `Function`
+> **intendToList**: `boolean` \| `Ref`\<`boolean`, `boolean`\>
 
-Clear the subscription error and the underlying list instance error.
+If this is true, the list should be fetched, or re-fetched if arguments change.
 
-##### subscribe
+##### intendToSubscribe
 
-> **subscribe**: `Function`
+> **intendToSubscribe**: `boolean` \| `Ref`\<`boolean`, `boolean`\>
 
-Trigger a subscription to the list.
+If this is true, the subscription should start or restart if arguments change.
 
-##### unsubscribe
+##### subscribed
 
-> **unsubscribe**: `Function`
+> **subscribed**: `Ref`\<`boolean`, `boolean`\>
 
-Unsubscribe from the list.
+Whether the subscription is active.
 
 ***
 
 ### ListSubscriptionProperties
 
 #### Properties
-
-##### effectScope
-
-> **effectScope**: `EffectScope`
-
-The effect scope of the list subscription.
 
 ##### listInstance
 
@@ -122,27 +116,45 @@ CRUD handlers and their configurations for the list.
 
 ###### crud.args
 
-> **args**: `any`
+> **args**: `Reactive`\<\{\} \| [`TargetArgs`](../config/objectCrud.md#targetargs)\>
 
-Arguments for the CRUD handlers.
+The arguments to be passed to the crud handlers.
 
-###### crud.list?
+###### crud.bulkDelete
 
-> `optional` **list**: `Function`
+> **bulkDelete**: [`CrudBulkDeleteFn`](../config/listCrud.md#crudbulkdeletefn)
 
-Function to list objects.
+The bulk delete function.
+
+###### crud.executeAction
+
+> **executeAction**: [`CrudExecuteActionFn`](../config/listCrud.md#crudexecuteactionfn)
+
+The execute action function.
+
+###### crud.list
+
+> **list**: [`CrudListFn`](../config/listCrud.md#crudlistfn)
+
+The list function.
+
+###### crud.subscribe
+
+> **subscribe**: [`CrudListSubscribeFn`](../config/listCrud.md#crudlistsubscribefn)
+
+The subscribe function.
 
 ###### error
 
 > **error**: `Error`
 
-The last error encountered.
+The error that occurred.
 
 ###### errored
 
 > **errored**: `boolean`
 
-Indicates if an error occurred during the last operation.
+Whether an error has occurred.
 
 ###### intendToList
 
@@ -156,11 +168,11 @@ If this is true, the list should be fetched, or re-fetched if arguments change.
 
 If this is true, the subscription should start or restart if arguments change.
 
-###### loading?
+###### loading
 
-> `optional` **loading**: `boolean`
+> **loading**: `boolean`
 
-Indicates if the list is currently loading.
+Whether the component is loading.
 
 ###### objects
 
@@ -170,9 +182,15 @@ The list objects stored by their pks.
 
 ###### objectsInOrder
 
-> **objectsInOrder**: [`ListObject`](listInstance.md#listobject)[]
+> **objectsInOrder**: [`ExistingCrudObject`](objectInstance.md#existingcrudobject)[]
 
 The objects in the order specified by the list.
+
+###### objectsMap
+
+> **objectsMap**: `Map`\<`string`, [`ExistingCrudObject`](objectInstance.md#existingcrudobject)\> & `Omit`\<[`ObjectsMap`](listInstance.md#objectsmap-1), keyof `Map`\<`any`, `any`\>\>
+
+The map of objects stored by their pks.
 
 ###### order
 
@@ -192,35 +210,11 @@ Arguments passed to the server for listing operations.
 
 The primary key field for the list objects.
 
-###### running
-
-> **running**: `boolean`
-
-Indicates if there are ongoing reactive updates.
-
 ###### subscribed
 
 > **subscribed**: `boolean`
 
 Whether the subscription is active.
-
-###### subscriptionError
-
-> **subscriptionError**: `Error`
-
-The error that occurred.
-
-###### subscriptionErrored
-
-> **subscriptionErrored**: `boolean`
-
-Whether the subscription has errored.
-
-###### subscriptionLoading
-
-> **subscriptionLoading**: `boolean`
-
-Whether the subscription is loading.
 
 ##### subscribeIntent
 
@@ -228,53 +222,49 @@ Whether the subscription is loading.
 
 The `CancellableIntent` instance managing if the subscription should be (un)subscribed.
 
-***
-
-### ListSubscriptionRawState
-
-#### Properties
-
-##### intendToList
-
-> **intendToList**: `boolean`
-
-If this is true, the list should be fetched, or re-fetched if arguments change.
-
-##### intendToSubscribe
-
-> **intendToSubscribe**: `boolean`
-
-If this is true, the subscription should start or restart if arguments change.
-
-##### subscribed
-
-> **subscribed**: `boolean`
-
-Whether the subscription is active.
-
-##### subscriptionError
-
-> **subscriptionError**: `Readonly`\<`Ref`\<`Error`, `Error`\>\>
-
-The error that occurred.
-
-##### subscriptionErrored
-
-> **subscriptionErrored**: `Readonly`\<`Ref`\<`boolean`, `boolean`\>\>
-
-Whether the subscription has errored.
-
-##### subscriptionLoading
-
-> **subscriptionLoading**: `Readonly`\<`Ref`\<`boolean`, `boolean`\>\>
-
-Whether the subscription is loading.
-
 ## Type Aliases
+
+### ListInstanceStateRefs
+
+> **ListInstanceStateRefs**\<\>: `ToRefs`
+
+#### Type Parameters
+
+***
 
 ### ListSubscription
 
 > **ListSubscription**\<\>: [`ListSubscriptionFunctions`](listSubscription.md#listsubscriptionfunctions) & [`ListSubscriptionProperties`](listSubscription.md#listsubscriptionproperties)
+
+#### Type Parameters
+
+***
+
+### ListSubscriptionContext
+
+> **ListSubscriptionContext**\<\>: `object`
+
+#### Type Parameters
+
+#### Type declaration
+
+##### listInstance
+
+> **listInstance**: [`ListInstance`](listInstance.md#listinstance)
+
+##### loadingError
+
+> **loadingError**: [`LoadingErrorStatus`](loadingError.md#loadingerrorstatus)
+
+##### state
+
+> **state**: [`ListSubscriptionState`](listSubscription.md#listsubscriptionstate)
+
+***
+
+### ListSubscriptionFunctions
+
+> **ListSubscriptionFunctions**\<\>: `Pick`\<[`LoadingErrorStatus`](loadingError.md#loadingerrorstatus), `"clearError"`\>
 
 #### Type Parameters
 
@@ -288,9 +278,17 @@ Whether the subscription is loading.
 
 ***
 
+### ListSubscriptionRawState
+
+> **ListSubscriptionRawState**\<\>: [`ListSubscriptionMyState`](listSubscription.md#listsubscriptionmystate) & `Pick`\<[`LoadingErrorStatus`](loadingError.md#loadingerrorstatus), `"loading"` \| `"error"` \| `"errored"`\> & [`ListInstanceStateRefs`](listSubscription.md#listinstancestaterefs)
+
+#### Type Parameters
+
+***
+
 ### ListSubscriptionState
 
-> **ListSubscriptionState**\<\>: `UnwrapNestedRefs`
+> **ListSubscriptionState**\<\>: `Reactive`
 
 #### Type Parameters
 
@@ -359,9 +357,7 @@ const listSubscription = useListSubscription({ props: listSubscriptionProps });
 
 #### Throws
 
-- If both listInstance and props are passed, or if neither are
-passed. Also thrown if clearListOnListIntentTriggered is not passed or if neither listInstance
-nor keepOldPages are passed.
+- If the list instance is not set and no props are passed.
 
 ***
 

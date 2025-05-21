@@ -64,7 +64,6 @@ describe("use/useListSort", () => {
                     fields: ["id", "lexical_name", "organization", "relatedObjects"],
                 },
             },
-            keepOldPages: false,
         });
         useListSort = importedSortModule.useListSort;
         useListSorts = importedSortModule.useListSorts;
@@ -79,20 +78,20 @@ describe("use/useListSort", () => {
     });
 
     const waitForListSort = async (listSort) => {
-        await doAwaitNot({
-            obj: listSort.state,
-            prop: "running",
-            timeout: 2000,
-            couldAlreadyBeFalse: false,
-        });
+        // await doAwaitNot({
+        //     obj: listSort.state,
+        //     prop: "running",
+        //     timeout: 2000,
+        //     couldAlreadyBeFalse: false,
+        // });
+        await nextTick();
     };
 
-    scopedIt("generates initial values from inputs", () => {
+    scopedIt("generates initial values from inputs", async () => {
         const listSort = useListSort({ parentState: listInstance.state, orderByRules, sortThrottleWait });
         expect(listSort.state.orderByRules).toEqual(orderByRules);
         expect(listSort.state.order).toEqual([]);
         expect(listSort.state.objectsInOrder).toEqual([]);
-        expect(listSort.state.sortCriteria).toEqual({});
         expect(listSort.state.orderByDesc).toEqual([true, false]);
     });
     describe("addSortCriteria and removeSortCriteria", () => {
@@ -105,35 +104,30 @@ describe("use/useListSort", () => {
                     organization: { id: 67, name: "NASA" },
                 },
             };
-            const testOrder1 = [];
+            const testOrder1 = ["12", "15", "9"];
             const testOrder2 = ["35", "12", "15", "9"];
             const testOrder3 = ["35", "15", "9"];
 
             for (const contact of contactsResolved) {
                 listInstance.addListObject(contact);
             }
-            await doAwaitNot({
-                obj: listInstance.state,
-                prop: "running",
-            });
             const listSort = useListSort({ parentState: listInstance.state, orderByRules });
             // sorts immediately
             expect(listSort.state.order).toEqual(testOrder1);
             expect(listSort.state.objectsInOrder).toEqual(testOrder1.map((id) => listInstance.state.objects[id]));
-            await waitForListSort(listSort);
             listInstance.addListObject(addObject);
-            await waitForListSort(listSort);
+            await nextTick();
             expect(listSort.state.order).toEqual(testOrder2);
             expect(listSort.state.objectsInOrder).toEqual(testOrder2.map((id) => listInstance.state.objects[id]));
             listInstance.deleteListObject(12);
-            await waitForListSort(listSort);
+            await nextTick();
             expect(listSort.state.order).toEqual(testOrder3);
             expect(listSort.state.objectsInOrder).toEqual(testOrder3.map((id) => listInstance.state.objects[id]));
         });
     });
     describe("sortWatch sifts various criteria", () => {
         scopedIt("sorts with orderByObj.desc and x/yCriteria", async () => {
-            const testOrder1 = [];
+            const testOrder1 = ["12", "15", "9"];
             const testOrder2 = ["9", "15", "12"];
             const testOrder3 = ["12", "15", "9"];
             const testOrder4 = ["15", "12", "9"];
@@ -143,24 +137,24 @@ describe("use/useListSort", () => {
             }
 
             const listSort = useListSort({ parentState: listInstance.state, orderByRules, sortThrottleWait });
+            expect(listSort.state.order).toEqual(testOrder1);
+            expect(listSort.state.objectsInOrder).toEqual(testOrder1.map((id) => listInstance.state.objects[id]));
             listSort.state.orderByRules.pop();
             listSort.state.orderByRules.pop();
             listSort.state.orderByRules.push({ key: "lexical_name", desc: false, localeCompare: true });
-            expect(listSort.state.order).toEqual(testOrder1);
-            expect(listSort.state.objectsInOrder).toEqual(testOrder1.map((id) => listInstance.state.objects[id]));
-            await waitForListSort(listSort);
+            await nextTick();
             expect(listSort.state.order).toEqual(testOrder2);
             listSort.state.orderByRules.pop();
             listSort.state.orderByRules.push({ key: "organization", desc: true, localeCompare: true });
-            await waitForListSort(listSort);
+            await nextTick();
             expect(listSort.state.order).toEqual(testOrder3);
             expect(listSort.state.objectsInOrder).toEqual(testOrder3.map((id) => listInstance.state.objects[id]));
             listSort.state.orderByRules.pop();
-            await waitForListSort(listSort);
+            await nextTick();
             expect(listSort.state.order).toEqual(testOrder4);
             expect(listSort.state.objectsInOrder).toEqual(testOrder4.map((id) => listInstance.state.objects[id]));
             listSort.state.orderByRules.push({ key: "organization", desc: false, localeCompare: false });
-            await waitForListSort(listSort);
+            await nextTick();
             expect(listSort.state.order).toEqual(testOrder2);
             expect(listSort.state.objectsInOrder).toEqual(testOrder2.map((id) => listInstance.state.objects[id]));
         });
@@ -174,7 +168,6 @@ describe("use/useListSort", () => {
                 pkKey: "id",
                 params: { user: 1, fields },
             },
-            keepOldPages: false,
         });
         const listInstanceB = useListInstance({
             props: {
@@ -182,7 +175,6 @@ describe("use/useListSort", () => {
                 params: { user: 2, fields },
                 pkKey: "id",
             },
-            keepOldPages: false,
         });
         const listSortA = useListSort({
             parentState: listInstanceA.state,
@@ -199,7 +191,6 @@ describe("use/useListSort", () => {
                     params: { user: 1, fields },
                     pkKey: "id",
                 },
-                keepOldPages: false,
             },
             B: {
                 props: {
@@ -207,7 +198,6 @@ describe("use/useListSort", () => {
                     params: { user: 2, fields },
                     pkKey: "id",
                 },
-                keepOldPages: false,
             },
         });
         const listSorts = useListSorts({
@@ -232,7 +222,6 @@ describe("use/useListSort", () => {
                 params: { user: 1, fields: ["id", "__str__", "name", "relatedItem", "calculatedItem"] },
                 pkKey: "id",
             }),
-            keepOldPages: false,
         });
         const relatedListInstance = useListInstance({
             props: reactive({
@@ -240,7 +229,6 @@ describe("use/useListSort", () => {
                 params: { user: 1, fields: ["id", "__str__", "name"] },
                 pkKey: "id",
             }),
-            keepOldPages: false,
         });
         const listRelated = useListRelated({
             parentState: listInstance.state,
@@ -279,16 +267,16 @@ describe("use/useListSort", () => {
                 oppositeOrder: 5 - i,
             });
         }
-        await waitForListSort(listSort);
+        await nextTick();
         expect(listSort.state.order).toEqual(["4", "3", "2", "1"]);
         expect(listSort.state.objectsInOrder.map((obj) => obj.id)).toEqual([4, 3, 2, 1]);
         orderByRules[0].key = "relatedItemName.name";
-        await waitForListSort(listSort);
+        await nextTick();
         expect(listSort.state.order).toEqual(["1", "2", "3", "4"]);
         expect(listSort.state.objectsInOrder.map((obj) => obj.id)).toEqual([1, 2, 3, 4]);
         orderByRules[0].key = "relatedItemName.sameValue";
         orderByRules[1] = { key: "calculatedItem.calculatedItemName", desc: false, localeCompare: false };
-        await waitForListSort(listSort);
+        await nextTick();
         expect(listSort.state.order).toEqual(["4", "3", "2", "1"]);
         expect(listSort.state.objectsInOrder.map((obj) => obj.id)).toEqual([4, 3, 2, 1]);
     });
@@ -309,12 +297,13 @@ describe("use/useListSort", () => {
                 listInstance.addListObject(contact);
             }
 
-            const testOrder1 = [];
+            const testOrder1 = ["12", "15", "9"];
             const testOrder2 = ["12", "15", "9"];
             const testOrder3 = ["35", "12", "15", "9"];
             const testOrder4 = ["35", "15", "9"];
 
             const listSort = useListSort({ parentState: listInstance.state, orderByRules, sortThrottleWait });
+            // sort is immediate
             expect(listSort.state.order).toEqual(testOrder1);
             expect(listSort.state.objectsInOrder).toEqual(testOrder1.map((id) => listInstance.state.objects[id]));
 
@@ -324,6 +313,7 @@ describe("use/useListSort", () => {
             expect(listSort.state.order).toEqual(testOrder2);
             expect(listSort.state.objectsInOrder).toEqual(testOrder2.map((id) => listInstance.state.objects[id]));
             listInstance.addListObject(addObject);
+
             expect(listSort.state.order).toEqual(testOrder2);
             expect(listSort.state.objectsInOrder).toEqual(testOrder2.map((id) => listInstance.state.objects[id]));
             // trigger the leading edge of the throttle
@@ -347,7 +337,6 @@ describe("use/useListSort", () => {
     scopedIt("pass through correctly when parentState changes their order", async () => {
         const listInstance = useListInstance({
             props: reactive({ pkKey: "id" }),
-            keepOldPages: false,
         });
         const allowedFilter = ref((obj) => obj.name !== "two");
         const listFilter = useListFilter({
@@ -359,11 +348,7 @@ describe("use/useListSort", () => {
             parentState: listFilter.state,
             orderByRules,
         });
-        await doAwaitNot({
-            obj: listFilter.state,
-            prop: "running",
-        });
-        await waitForListSort(listSort);
+        let running = 0;
         expect(listFilter.state.order).toEqual([]);
         expect(listFilter.state.objectsInOrder.map((obj) => obj.id)).toEqual([]);
         expect(listSort.state.order).toEqual([]);
@@ -371,29 +356,17 @@ describe("use/useListSort", () => {
         listInstance.addListObject({ id: 1, name: "one" });
         listInstance.addListObject({ id: 2, name: "two" });
         listInstance.addListObject({ id: 3, name: "three" });
-        await doAwaitNot({
-            obj: listFilter.state,
-            prop: "running",
-        });
-        await waitForListSort(listSort);
         expect(listFilter.state.order).toEqual(["1", "3"]);
         expect(listFilter.state.objectsInOrder.map((obj) => obj.id)).toEqual([1, 3]);
+        await nextTick();
         expect(listSort.state.order).toEqual(["1", "3"]);
         expect(listSort.state.objectsInOrder.map((obj) => obj.id)).toEqual([1, 3]);
         listInstance.updateListObject({ id: 2, name: "twotwo" });
-        await doAwaitNot({
-            obj: listFilter.state,
-            prop: "running",
-        });
-        await waitForListSort(listSort);
+        await nextTick();
         expect(listSort.state.order).toEqual(["1", "2", "3"]);
         expect(listSort.state.objectsInOrder.map((obj) => obj.id)).toEqual([1, 2, 3]);
         listInstance.updateListObject({ id: 2, name: "two" });
-        await doAwaitNot({
-            obj: listFilter.state,
-            prop: "running",
-        });
-        await waitForListSort(listSort);
+        await nextTick();
         expect(listSort.state.order).toEqual(["1", "3"]);
         expect(listSort.state.objectsInOrder.map((obj) => obj.id)).toEqual([1, 3]);
     });

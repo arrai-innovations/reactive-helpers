@@ -24,7 +24,7 @@ export function useLists(listOptions: {
 }): {
     [key: string]: ListManager;
 };
-export function useList({ props, handlers, paged, keepOldPages, clearListOnListIntentTriggered, searchThrottle, sortThrottleWait, searchShowAllWhenEmpty, }: ListOptions): ListManager;
+export function useList({ props, handlers, searchThrottle, sortThrottleWait, searchShowAllWhenEmpty }: ListOptions): ListManager;
 /**
  * Defines properties for configuring the list management system.
  */
@@ -94,37 +94,25 @@ export type ListOptions = {
     /**
      * - Additional handlers to be included in the list manager.
      */
-    handlers: import("../config/listCrud.js").ListCrudHandlers;
-    /**
-     * - Indicates whether the list should be paginated.
-     */
-    paged: boolean;
-    /**
-     * - Indicates whether old pages should be kept when paginating.
-     */
-    keepOldPages: import("vue").Ref<boolean> | boolean;
-    /**
-     * - Indicates whether the list should be cleared when the list intent is triggered.
-     */
-    clearListOnListIntentTriggered: boolean;
+    handlers?: import("../config/listCrud.js").ListCrudHandlers;
     /**
      * - The throttle time for text search.
      */
-    searchThrottle: number;
+    searchThrottle?: number;
     /**
      * - The throttle time for sorting.
      */
-    sortThrottleWait: number;
+    sortThrottleWait?: number;
     /**
      * - Indicates whether all items should be shown when the search query is empty.
      */
-    searchShowAllWhenEmpty: boolean;
+    searchShowAllWhenEmpty?: boolean;
 };
 /**
  * Represents the combined state definitions for all list-related components.
  * This interface aggregates the raw state from multiple list management functionalities.
  */
-export type ListRawState = ((import("./listInstance.js").ListInstanceRawState | import("./paginatedListInstance.js").PagedListInstanceRawState) & import("./listSubscription.js").ListSubscriptionRawState & import("./listRelated.js").ListRelatedRawState & import("./listCalculated.js").ListCalculatedRawState & import("./listFilter.js").ListFilterRawState & import("./listSearch.js").ListSearchRawState & import("./listSort.js").ListSortRawState);
+export type ListRawState = (import("./listInstance.js").ListInstanceRawState & import("./listSubscription.js").ListSubscriptionRawState & import("./listRelated.js").ListRelatedRawState & import("./listCalculated.js").ListCalculatedRawState & import("./listFilter.js").ListFilterRawState & import("./listSearch.js").ListSearchRawState & import("./listSort.js").ListSortRawState);
 /**
  * Represents the reactive state derived from aggregating states of various list-related components.
  * This state is typically used within Vue components for reactivity and access to updated list properties.
@@ -134,7 +122,7 @@ export type ListState = import("vue").UnwrapNestedRefs<ListRawState>;
  * Holds references to instances of all list-related composables, facilitating direct access and management.
  */
 export type ListManaged = {
-    listInstance: import("./listInstance.js").ListInstance | import("./paginatedListInstance.js").PagedListInstance;
+    listInstance: import("./listInstance.js").ListInstance;
     listSubscription: import("./listSubscription.js").ListSubscription;
     listRelated: import("./listRelated.js").ListRelated;
     listCalculated: import("./listCalculated.js").ListCalculated;
@@ -160,9 +148,9 @@ export type ListManagerProperties = {
      */
     state: ListState;
     /**
-     * - Encapsulates all reactive effects related to the list hooks.
+     * - A function to stop the effect scope and clean up resources.
      */
-    effectScope: import("vue").EffectScope;
+    stop: () => void;
 };
 /**
  * Combines functionality and properties to represent a fully managed list instance,

@@ -1,18 +1,5 @@
-import { difference } from "../utils/set.js";
-import { loadingCombine } from "../utils/loadingCombine.js";
 import { keyDiff } from "../utils/keyDiff.js";
-import { proxyRunning } from "../utils/proxyRunning.js";
-import {
-    listCalculatedStateKeys,
-    listFilterStateKeys,
-    listInstanceStateKeys,
-    listRelatedStateKeys,
-    listSearchStateKeys,
-    listSortStateKeys,
-    listSubscriptionStateKeys,
-} from "./listKeys.js";
-import { computed, effectScope, nextTick, reactive, ref, toRef, unref, watch } from "vue";
-import { assignReactiveObject } from "../utils/assignReactiveObject.js";
+import { computed, effectScope, isRef, reactive, toRef, toRefs, unref, watch } from "vue";
 
 /**
  * Provides reactive filtering functionality for lists within a Vue application. This composable
@@ -23,20 +10,8 @@ import { assignReactiveObject } from "../utils/assignReactiveObject.js";
  * @module use/listFilter.js
  */
 
-const parentStateKeys = difference(
-    new Set([
-        ...listInstanceStateKeys,
-        ...listSubscriptionStateKeys,
-        ...listRelatedStateKeys,
-        ...listCalculatedStateKeys,
-        ...listSortStateKeys,
-        ...listSearchStateKeys,
-    ]),
-    new Set(listFilterStateKeys)
-);
-
 /**
- * @typedef {import('vue').Ref<import('./listInstance.js').ListObject>[]} ObjectsInOrderRefs
+ * @typedef {import('vue').Ref<import('../use/objectInstance.js').ExistingCrudObject>[]} ObjectsInOrderRefs
  */
 
 /**
@@ -54,11 +29,6 @@ const parentStateKeys = difference(
  * @typedef {object} ListFilterRawState
  * @property {ListFilterAllowedFilter} [allowedFilter] - Function to determine if an item should be included based on custom logic.
  * @property {ListFilterExcludedFilter} [excludedFilter] - Function to determine if an item should be excluded based on custom logic.
- * @property {object} inResults - A map of items to boolean values indicating filter results.
- * @property {boolean} objectsWatchRunning - Flag indicating if the object watch is active.
- * @property {boolean} resultsWatchRunning - Flag indicating if the results watch is active.
- * @property {boolean} running - Flag indicating if any part of the filter logic is currently processing.
- * @property {boolean} orderWatchRunning - Flag indicating if the order watch is active.
  */
 
 /**
@@ -104,7 +74,7 @@ const parentStateKeys = difference(
  * @typedef {object} ListFilterProperties
  * @property {ListFilterState} state - The reactive state managing the filter logic and results.
  * @property {ListFilterParentState} parentState - The state of the list being filtered.
- * @property {import('vue').EffectScope} effectScope - Scoped reactivity for this filter instance.
+ * @property {() => void} stop - A function to stop the effect scope and clean up resources.
  */
 
 // if we provided functions, we would add a typedef and mix them into ListFilter
@@ -130,19 +100,6 @@ export function useListFilters(listFilterArgs) {
     }
     return filters;
 }
-
-const inResults = (state, object, relatedObject, calculatedObject) => {
-    const unrefObject = unref(object);
-    const unrefRelatedObject = unref(relatedObject);
-    const unrefCalculatedObject = unref(calculatedObject);
-    if (!unrefObject) {
-        return false;
-    }
-    return !(
-        (state.allowedFilter && !state.allowedFilter(unrefObject, unrefRelatedObject, unrefCalculatedObject)) ||
-        (state.excludedFilter && state.excludedFilter(unrefObject, unrefRelatedObject, unrefCalculatedObject))
-    );
-};
 
 /**
  * Initializes and manages a list filter instance, setting up reactive states and dependencies
@@ -176,162 +133,110 @@ const inResults = (state, object, relatedObject, calculatedObject) => {
  * @returns {ListFilter} A fully configured list filter instance, providing reactive filtered results.
  */
 export function useListFilter({ parentState, allowedFilter, excludedFilter }) {
-    const internalState = reactive({
-        /** @type {ObjectsInOrderRefs} */
-        objectsInOrderRefs: [],
-    });
-    /** @type {ListFilterState} */
-    // @ts-ignore - parentState will be mixed in and computeds setup in the effect scope
-    const state = reactive(
-        /** @type {ListFilterRawState} */ {
-            allowedFilter,
-            excludedFilter,
-            inResults: {},
-            /** @type {import('./listInstance.js').ObjectsByPk} */
-            objects: {},
-            // @ts-ignore - objectsInOrder will become a computed in the effect scope
-            objectsInOrder: [],
-            objectsWatchRunning: undefined,
-            order: [],
-            resultsWatchRunning: undefined,
-            running: undefined,
-            orderWatchRunning: undefined,
-        }
-    );
-
     const es = effectScope();
 
-    const makeComputed = (key) => {
-        const object = toRef(parentState.objects, key);
-        // @ts-ignore - relatedObjects exists on ListRelatedParentState, so not sure why this is an error
-        const relatedObject = toRef(parentState.relatedObjects, key);
-        // @ts-ignore - calculatedObjects exists on ListCalculatedParentState, so not sure why this is an error
-        const calculatedObject = toRef(parentState.calculatedObjects, key);
-        return computed(() => inResults(state, object, relatedObject, calculatedObject));
-    };
+    const getAllowed = () => (isRef(allowedFilter) ? allowedFilter.value : allowedFilter);
+    const getExcluded = () => (isRef(excludedFilter) ? excludedFilter.value : excludedFilter);
 
-    let previousAllowedFilter = null,
-        previousExcludedFilter = null;
+    const includeMap = reactive({});
 
-    const objectsWatch = () => {
-        state.objectsWatchRunning = true;
-        const allowedOrExcludedFilterChanged =
-            allowedFilter !== previousAllowedFilter || excludedFilter !== previousExcludedFilter;
-        if (!state.allowedFilter && !state.excludedFilter) {
-            assignReactiveObject(state.inResults, {});
-            assignReactiveObject(state.objects, parentState.objects);
-        } else if (allowedOrExcludedFilterChanged) {
-            // recreate all the computeds
-            assignReactiveObject(state.inResults, {});
-            for (const key of Object.keys(parentState.objects)) {
-                state.inResults[key] = makeComputed(key);
-            }
-        } else {
-            // we just need to make sure all the computeds exist that should exist
-            const { addedKeys, removedKeys } = keyDiff(Object.keys(parentState.objects), Object.keys(state.inResults), {
-                sameKeys: false,
+    function ensureIncludeComputed(pk) {
+        if (!includeMap[pk]) {
+            const child = es.run(() => effectScope());
+            const include = child.run(() => {
+                const objRef = toRef(parentState.objects, pk);
+                const relatedRef = parentState.relatedObjects
+                    ? toRef(parentState.relatedObjects, pk)
+                    : { value: undefined };
+                const calcRef = parentState.calculatedObjects
+                    ? toRef(parentState.calculatedObjects, pk)
+                    : { value: undefined };
+
+                return computed(() => {
+                    const obj = unref(objRef);
+                    if (!obj) {
+                        return false;
+                    }
+
+                    const allowed = getAllowed();
+                    if (allowed && !allowed(obj, unref(relatedRef), unref(calcRef))) {
+                        return false;
+                    }
+
+                    const excluded = getExcluded();
+                    return !(excluded && excluded(obj, unref(relatedRef), unref(calcRef)));
+                });
             });
-            for (const addedKey of addedKeys) {
-                state.inResults[addedKey] = makeComputed(addedKey);
-            }
-            for (const removedKey of removedKeys) {
-                delete state.inResults[removedKey];
-            }
-        }
-        previousAllowedFilter = allowedFilter;
-        previousExcludedFilter = excludedFilter;
-        nextTick().then(() => {
-            state.objectsWatchRunning = false;
-        });
-    };
 
-    const resultsWatch = async () => {
-        state.resultsWatchRunning = true;
-        if (state.allowedFilter || state.excludedFilter) {
-            assignReactiveObject(
-                state.objects,
-                Object.fromEntries(
-                    Object.entries(state.inResults)
-                        .filter(([, value]) => !!value)
-                        .map(([pk]) => [pk, toRef(parentState.objects, pk)])
-                )
-            );
+            includeMap[pk] = { scope: child, include };
         }
-        await nextTick();
-        // the watches don't necessarily run in the order we expect, or at all
-        orderWatch();
-        await nextTick();
-        state.resultsWatchRunning = false;
-    };
+        return includeMap[pk].include;
+    }
 
-    const orderWatch = () => {
-        state.orderWatchRunning = true;
-        let desiredOrder = parentState.order.filter((pk) => !!state.objects[pk]);
-        if (!state.allowedFilter && !state.excludedFilter) {
-            desiredOrder = parentState.order;
+    function disposeIncludeComputed(pk) {
+        const entry = includeMap[pk];
+        if (entry) {
+            entry.scope.stop();
+            delete includeMap[pk];
         }
-        // order is primitives, references to the parent state order doesn't make sense
-        const entries = Object.entries(desiredOrder);
-        entries.reverse();
-        if (entries.length !== state.order.length) {
-            state.order.length = entries.length;
-            internalState.objectsInOrderRefs.length = entries.length;
-        }
-        for (const [index, pk] of entries) {
-            if (state.order[index] !== pk) {
-                state.order[index] = pk;
-            }
-            // @ts-ignore - objectsInOrderRefs is a reactive array of refs
-            if (unref(toRef(internalState.objectsInOrderRefs, index)) !== unref(toRef(state.objects, pk))) {
-                internalState.objectsInOrderRefs[index] = toRef(state.objects, pk);
-            }
-        }
-        assignReactiveObject(
-            internalState.objectsInOrderRefs,
-            desiredOrder.map((pk) => toRef(state.objects, pk))
-        );
-        nextTick().then(() => {
-            state.orderWatchRunning = false;
-        });
-    };
+    }
 
     es.run(() => {
-        for (const key of parentStateKeys) {
-            state[key] = toRef(parentState, key);
-        }
-
-        const parentRunning = ref(undefined);
-        proxyRunning(parentState, "running", parentRunning);
-        // @ts-ignore - assignment here so the computed is in the effect scope
-        state.running = computed(() =>
-            loadingCombine(
-                parentRunning.value,
-                state.objectsWatchRunning,
-                state.resultsWatchRunning,
-                state.orderWatchRunning
-            )
-        );
-
-        watch(toRef(state, "inResults"), resultsWatch, { deep: true });
-
-        watch(toRef(parentState, "order"), orderWatch, { deep: true, immediate: true });
-        // @ts-ignore - assignment here so the computed is in the effect scope
-        state.objectsInOrder = computed(() => internalState.objectsInOrderRefs.map((e) => unref(e)));
-
         watch(
-            [
-                toRef(parentState, "objects"),
-                toRef(state, "allowedFilter"),
-                toRef(state, "excludedFilter"),
-                toRef(parentState, "running"),
-            ],
-            objectsWatch,
-            { immediate: true, deep: true }
+            () => Object.keys(parentState.objects),
+            (newVal) => {
+                const { addedKeys, removedKeys } = keyDiff(newVal, Object.keys(includeMap));
+                for (const pk of removedKeys) {
+                    disposeIncludeComputed(pk);
+                }
+                for (const pk of addedKeys) {
+                    ensureIncludeComputed(pk);
+                }
+            },
+            { deep: true, immediate: true, flush: "sync" }
         );
     });
+
+    /** @type {import('vue').ComputedRef<import('./listInstance.js').ObjectsByPk>} */
+    const objects = computed(() => {
+        /** @type {import('./listInstance.js').ObjectsByPk} */
+        const out = {};
+        for (const [pk, o] of Object.entries(parentState.objects)) {
+            const inc = includeMap[pk]?.include;
+            if (inc) out[pk] = o;
+        }
+        return out;
+    });
+
+    /** @type {import('vue').ComputedRef<string[]>} */
+    const order = computed(() => parentState.order.filter((pk) => includeMap[pk]?.include));
+
+    /** @type {import('vue').ComputedRef<import('./listInstance.js').ObjectsByPk[]>} */
+    const objectsInOrder = computed(() => order.value.map((pk) => parentState.objects[pk]));
+
+    /** @type {ListFilterState} */
+    const state = reactive({
+        ...toRefs(parentState),
+        allowedFilter,
+        excludedFilter,
+
+        objects,
+        order,
+        objectsInOrder,
+
+        loading: toRef(parentState, "loading"),
+        errored: toRef(parentState, "errored"),
+        error: toRef(parentState, "error"),
+    });
+
     return {
         state,
         parentState,
-        effectScope: es,
+        stop: () => {
+            es.stop();
+            for (const pk of Object.keys(includeMap)) {
+                delete includeMap[pk];
+            }
+        },
     };
 }

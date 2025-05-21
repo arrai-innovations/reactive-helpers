@@ -20,17 +20,16 @@
  *  function.
  * @property {import('../config/listCrud.js').CrudListSubscribeFn} [handlers.subscribe] - Provide the implementation for the
  *  subscribe function.
- * @property {import('vue').Ref<boolean>|boolean} keepOldPages - If true, pages will not be cleared when defaultPageCallback is called.
  */
 /**
  * The objects by pk.
  *
- * @typedef {{[pk: string]: ListObject}} ObjectsByPk
+ * @typedef {{[pk: string]: import('../use/objectInstance.js').ExistingCrudObject}} ObjectsByPk
  */
 /**
  * The objects in order, based on .order & .objects.
  *
- * @typedef {import('vue').ComputedRef<ListObject[]>} ObjectsInOrder
+ * @typedef {import('vue').ComputedRef<import('../use/objectInstance.js').ExistingCrudObject[]>} ObjectsInOrder
  */
 /**
  * The order of the objects in the list.
@@ -38,21 +37,30 @@
  * @typedef {import('vue').ComputedRef<string[]>} ListOrder
  */
 /**
+ * @typedef {object} ListInstanceRawStateCrud
+ * @property {import('vue').Reactive<import('../config/objectCrud.js').TargetArgs|{}>} args - The arguments to be passed to the crud handlers.
+ * @property {import('../config/listCrud.js').CrudListFn} list - The list function.
+ * @property {import('../config/listCrud.js').CrudListSubscribeFn} subscribe - The subscribe function.
+ * @property {import('../config/listCrud.js').CrudBulkDeleteFn} bulkDelete - The bulk delete function.
+ * @property {import('../config/listCrud.js').CrudExecuteActionFn} executeAction - The execute action function.
+ */
+/**
+ * @typedef {Map<string, import('vue').Reactive<import('../use/objectInstance.js').ExistingCrudObject>>} ObjectsMap
+ */
+/**
  * The raw state object for the list instance, defining the reactive properties and their types.
  *
- * @typedef {object} ListInstanceRawState
- * @property {object} crud - CRUD handlers and their configurations for the list.
- * @property {object} crud.args - Arguments for the CRUD handlers.
- * @property {Function} [crud.list] - Function to list objects.
+ * @typedef {object} ListInstanceRawMyState
+ * @property {import('vue').Reactive<ListInstanceRawStateCrud>} crud - CRUD handlers and their configurations for the list.
  * @property {string} pkKey - The primary key field for the list objects.
  * @property {object} params - Arguments passed to the server for listing operations.
+ * @property {ObjectsMap} objectsMap - The map of objects stored by their pks.
  * @property {ObjectsByPk} objects - The list objects stored by their pks.
- * @property {boolean} running - Indicates if there are ongoing reactive updates.
- * @property {Readonly<import('vue').Ref<boolean>>} [loading] - Indicates if the list is currently loading.
- * @property {Readonly<import('vue').Ref<boolean>>} errored - Indicates if an error occurred during the last operation.
- * @property {Readonly<import('vue').Ref<Error|null>>} error - The last error encountered.
  * @property {ListOrder} order - The order of objects in the list.
  * @property {ObjectsInOrder} objectsInOrder - The objects in the order specified by the list.
+ */
+/**
+ * @typedef {ListInstanceRawMyState & Pick<import('./loadingError.js').LoadingErrorStatus, "loading" | "error" | "errored">} ListInstanceRawState
  */
 /**
  * Defines the reactive state used by the list instance.
@@ -60,19 +68,27 @@
  * @typedef {import('vue').UnwrapNestedRefs<ListInstanceRawState>} ListInstanceState
  */
 /**
+ * @typedef {(newObjects: import('../use/objectInstance.js').ExistingCrudObject[]) => void} PushObjectsFn
+ */
+/**
+ * @typedef {() => void} ClearListFn
+ */
+/**
  * Defines the methods provided by the list instance for managing objects in the list.
  *
- * @typedef {object} ListInstanceFunctions
- * @property {(newObjects: ListObject[]) => void} defaultPageCallback - Handles new or updated objects, respecting the keepOldPages setting.
- * @property {(newObjects: ListObject[]) => void} pageCallback - Customizable callback for handling new objects per page.
- * @property {(object: ListObject) => void} addListObject - Adds an object to the list.
- * @property {(object: ListObject) => void} updateListObject - Updates an object in the list.
+ * @typedef {object} ListInstanceMyFunctions
+ * @property {PushObjectsFn} pushObjects - Customizable callback for handling new objects per page.
+ * @property {(object: import('../use/objectInstance.js').ExistingCrudObject) => void} addListObject - Adds an object to the list.
+ * @property {(object: import('../use/objectInstance.js').ExistingCrudObject) => void} updateListObject - Updates an object in the list.
  * @property {(objectId: string) => void} deleteListObject - Deletes an object from the list by pk.
  * @property {() => void} clearList - Clears all objects and errors from the list.
  * @property {() => string} getFakePk - Generates a unique fake pk for use within the list.
  * @property {() => import('../utils/cancellablePromise.js').MaybeCancellablePromise<boolean|never>} list - Initiates a fetch to retrieve objects according to the CRUD configuration, returning a promise to a boolean indicating success.
- * @property {() => Promise<boolean>} bulkDelete - Initiates a bulk delete operation on all objects in the list, returning a promise to a boolean indicating success.
+ * @property {(args: {pks?: string[]}) => Promise<boolean>} bulkDelete - Deletes objects from the list by pk, returning a promise to a boolean indicating success.
  * @property {() => Promise<object|string|false>} executeAction - Initiates an action on all objects in the list, returning the response, or false if the action failed.
+ */
+/**
+ * @typedef {ListInstanceMyFunctions & Pick<import('./loadingError.js').LoadingErrorStatus, "clearError">} ListInstanceFunctions
  */
 /**
  * Helper type to facilitate the combination of state and functions into a single type.
@@ -145,19 +161,13 @@ export function useListInstances(listInstanceArgs: {
  * @param {ListInstanceOptions} options - Specifies the configuration options for creating a list instance, including
  *  properties for CRUD operations and UI behaviors like page persistence.
  * @returns {ListInstance} The list instance.
- * @throws {ListInstanceError} If the props or keepOldPages are missing.
+ * @throws {ListInstanceError} If the props are missing.
  */
-export function useListInstance({ props, handlers, keepOldPages }: ListInstanceOptions): ListInstance;
+export function useListInstance({ props, handlers }: ListInstanceOptions): ListInstance;
 /**
  * A composable function for managing a list of objects.
  *
  * @module use/listInstance.js
- */
-/**
- * Defines the structure for the objects stored within the list, each identified by a unique pk and capable of
- *  holding various key-value pairs.
- *
- * @typedef {{pk: string, [key: string]: any}} ListObject
  */
 /**
  * Defines a custom error class specific to list instance operations, encapsulating details about errors that occur
@@ -207,36 +217,52 @@ export type ListInstanceOptions = {
         executeAction?: import("../config/listCrud.js").CrudExecuteActionFn;
         subscribe?: import("../config/listCrud.js").CrudListSubscribeFn;
     };
-    /**
-     * - If true, pages will not be cleared when defaultPageCallback is called.
-     */
-    keepOldPages: import("vue").Ref<boolean> | boolean;
 };
 /**
  * The objects by pk.
  */
 export type ObjectsByPk = {
-    [pk: string]: ListObject;
+    [pk: string]: import("../use/objectInstance.js").ExistingCrudObject;
 };
 /**
  * The objects in order, based on .order & .objects.
  */
-export type ObjectsInOrder = import("vue").ComputedRef<ListObject[]>;
+export type ObjectsInOrder = import("vue").ComputedRef<import("../use/objectInstance.js").ExistingCrudObject[]>;
 /**
  * The order of the objects in the list.
  */
 export type ListOrder = import("vue").ComputedRef<string[]>;
+export type ListInstanceRawStateCrud = {
+    /**
+     * - The arguments to be passed to the crud handlers.
+     */
+    args: import("vue").Reactive<import("../config/objectCrud.js").TargetArgs | {}>;
+    /**
+     * - The list function.
+     */
+    list: import("../config/listCrud.js").CrudListFn;
+    /**
+     * - The subscribe function.
+     */
+    subscribe: import("../config/listCrud.js").CrudListSubscribeFn;
+    /**
+     * - The bulk delete function.
+     */
+    bulkDelete: import("../config/listCrud.js").CrudBulkDeleteFn;
+    /**
+     * - The execute action function.
+     */
+    executeAction: import("../config/listCrud.js").CrudExecuteActionFn;
+};
+export type ObjectsMap = Map<string, import("vue").Reactive<import("../use/objectInstance.js").ExistingCrudObject>>;
 /**
  * The raw state object for the list instance, defining the reactive properties and their types.
  */
-export type ListInstanceRawState = {
+export type ListInstanceRawMyState = {
     /**
      * - CRUD handlers and their configurations for the list.
      */
-    crud: {
-        args: object;
-        list?: Function;
-    };
+    crud: import("vue").Reactive<ListInstanceRawStateCrud>;
     /**
      * - The primary key field for the list objects.
      */
@@ -246,25 +272,13 @@ export type ListInstanceRawState = {
      */
     params: object;
     /**
+     * - The map of objects stored by their pks.
+     */
+    objectsMap: ObjectsMap;
+    /**
      * - The list objects stored by their pks.
      */
     objects: ObjectsByPk;
-    /**
-     * - Indicates if there are ongoing reactive updates.
-     */
-    running: boolean;
-    /**
-     * - Indicates if the list is currently loading.
-     */
-    loading?: Readonly<import("vue").Ref<boolean>>;
-    /**
-     * - Indicates if an error occurred during the last operation.
-     */
-    errored: Readonly<import("vue").Ref<boolean>>;
-    /**
-     * - The last error encountered.
-     */
-    error: Readonly<import("vue").Ref<Error | null>>;
     /**
      * - The order of objects in the list.
      */
@@ -274,30 +288,29 @@ export type ListInstanceRawState = {
      */
     objectsInOrder: ObjectsInOrder;
 };
+export type ListInstanceRawState = ListInstanceRawMyState & Pick<import("./loadingError.js").LoadingErrorStatus, "loading" | "error" | "errored">;
 /**
  * Defines the reactive state used by the list instance.
  */
 export type ListInstanceState = import("vue").UnwrapNestedRefs<ListInstanceRawState>;
+export type PushObjectsFn = (newObjects: import("../use/objectInstance.js").ExistingCrudObject[]) => void;
+export type ClearListFn = () => void;
 /**
  * Defines the methods provided by the list instance for managing objects in the list.
  */
-export type ListInstanceFunctions = {
-    /**
-     * - Handles new or updated objects, respecting the keepOldPages setting.
-     */
-    defaultPageCallback: (newObjects: ListObject[]) => void;
+export type ListInstanceMyFunctions = {
     /**
      * - Customizable callback for handling new objects per page.
      */
-    pageCallback: (newObjects: ListObject[]) => void;
+    pushObjects: PushObjectsFn;
     /**
      * - Adds an object to the list.
      */
-    addListObject: (object: ListObject) => void;
+    addListObject: (object: import("../use/objectInstance.js").ExistingCrudObject) => void;
     /**
      * - Updates an object in the list.
      */
-    updateListObject: (object: ListObject) => void;
+    updateListObject: (object: import("../use/objectInstance.js").ExistingCrudObject) => void;
     /**
      * - Deletes an object from the list by pk.
      */
@@ -315,14 +328,17 @@ export type ListInstanceFunctions = {
      */
     list: () => import("../utils/cancellablePromise.js").MaybeCancellablePromise<boolean | never>;
     /**
-     * - Initiates a bulk delete operation on all objects in the list, returning a promise to a boolean indicating success.
+     * - Deletes objects from the list by pk, returning a promise to a boolean indicating success.
      */
-    bulkDelete: () => Promise<boolean>;
+    bulkDelete: (args: {
+        pks?: string[];
+    }) => Promise<boolean>;
     /**
      * - Initiates an action on all objects in the list, returning the response, or false if the action failed.
      */
     executeAction: () => Promise<object | string | false>;
 };
+export type ListInstanceFunctions = ListInstanceMyFunctions & Pick<import("./loadingError.js").LoadingErrorStatus, "clearError">;
 /**
  * Helper type to facilitate the combination of state and functions into a single type.
  */
@@ -333,12 +349,4 @@ export type ListInstanceStateMixIn = {
  * The list instance, combining state management and functional operations for managing a list of objects.
  */
 export type ListInstance = ListInstanceStateMixIn & ListInstanceFunctions;
-/**
- * Defines the structure for the objects stored within the list, each identified by a unique pk and capable of
- *  holding various key-value pairs.
- */
-export type ListObject = {
-    pk: string;
-    [key: string]: any;
-};
 //# sourceMappingURL=listInstance.d.ts.map

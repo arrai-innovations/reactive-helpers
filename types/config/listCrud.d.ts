@@ -27,12 +27,12 @@ export type PaginateInfo = {
      */
     page?: number;
 };
-export type PageCallback = (newObjects: import("../use/listInstance.js").ListObject, paginationInfo?: PaginateInfo) => void;
-export type ListArgs = {
+export type ClearObjectsFn = import("../use/listInstance.js").ClearListFn;
+export type ListArgsRaw = {
     /**
      * - The arguments to be passed to the crud handlers.
      */
-    target: object;
+    target: import("../config/objectCrud.js").TargetArgs;
     /**
      * - The key name of the primary key.
      */
@@ -44,18 +44,23 @@ export type ListArgs = {
     /**
      * - The method to call with new page(s) of data received.
      */
-    pageCallback: PageCallback;
+    pushObjects: import("../use/listInstance.js").PushObjectsFn;
+    /**
+     * - The method to call to clear the objects.
+     */
+    clearObjects: ClearObjectsFn;
     /**
      * - A ref to a boolean indicating whether the request has
      * been cancelled.
      */
     isCancelled: Readonly<import("vue").Ref<boolean>>;
 };
+export type ListArgs = ListArgsRaw & Partial<import("../use/cancellableIntent.js").CommonRunTracking>;
 export type BulkDeleteArgs = {
     /**
      * - The arguments to be passed to the crud handlers.
      */
-    target: object;
+    target: import("../config/objectCrud.js").TargetArgs;
     /**
      * - The ids of the objects to be deleted.
      */
@@ -64,18 +69,13 @@ export type BulkDeleteArgs = {
      * - The key name of the primary key.
      */
     pkKey: string;
-    /**
-     * - A ref to a boolean indicating whether the request has
-     * been cancelled.
-     */
-    isCancelled: Readonly<import("vue").Ref<boolean>>;
 };
-export type SubscriptionEventCallback = (newOrUpdatedOrDeleteObject: import("../use/listInstance.js").ListObject | string, action: "create" | "update" | "delete") => void;
-export type ListSubscribeArgs = {
+export type applyObjectEvent = (newOrUpdatedOrDeleteObject: import("../use/objectInstance.js").ExistingCrudObject | string, action: "create" | "update" | "delete") => void;
+export type ListSubscribeArgsRaw = {
     /**
      * - The arguments to be passed to the crud handlers.
      */
-    target: object;
+    target: import("../config/objectCrud.js").TargetArgs;
     /**
      * - The key name of the primary key.
      */
@@ -87,18 +87,19 @@ export type ListSubscribeArgs = {
     /**
      * - The method to call when new data is received.
      */
-    subscriptionEventCallback: SubscriptionEventCallback;
+    applyObjectEvent: applyObjectEvent;
     /**
      * - A ref to a boolean indicating whether the request has
      * been cancelled.
      */
     isCancelled: Readonly<import("vue").Ref<boolean>>;
 };
+export type ListSubscribeArgs = ListSubscribeArgsRaw & Partial<import("../use/cancellableIntent.js").CommonRunTracking>;
 export type ExecuteActionArgs = {
     /**
      * - The arguments to be passed to the crud handlers.
      */
-    target: object;
+    target: import("../config/objectCrud.js").TargetArgs;
     /**
      * - The ids of the objects to be acted upon.
      */
@@ -111,16 +112,11 @@ export type ExecuteActionArgs = {
      * - The action to execute.
      */
     action: string;
-    /**
-     * - A ref to a boolean indicating whether the request has
-     * been cancelled.
-     */
-    isCancelled: Readonly<import("vue").Ref<boolean>>;
 };
 export type CrudListFn = (args: ListArgs) => import("../utils/cancellablePromise.js").MaybeCancellablePromise<void>;
-export type CrudBulkDeleteFn = (args: BulkDeleteArgs) => import("../utils/cancellablePromise.js").MaybeCancellablePromise<void>;
+export type CrudBulkDeleteFn = (args: BulkDeleteArgs) => Promise<boolean>;
 export type CrudListSubscribeFn = (args: ListSubscribeArgs) => import("../utils/cancellablePromise.js").CancellablePromise<void>;
-export type CrudExecuteActionFn = (args: ExecuteActionArgs) => import("../utils/cancellablePromise.js").MaybeCancellablePromise<object | string | null>;
+export type CrudExecuteActionFn = (args: ExecuteActionArgs) => Promise<object | string | null>;
 export type ListCrudHandlers = {
     /**
      * - The list function to get a list of items.

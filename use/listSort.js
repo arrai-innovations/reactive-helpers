@@ -1,27 +1,8 @@
-import { assignReactiveObject } from "../utils/assignReactiveObject.js";
-import { difference } from "../utils/set.js";
 import { keyDiff } from "../utils/keyDiff.js";
-import { loadingCombine } from "../utils/loadingCombine.js";
-import { proxyRunning } from "../utils/proxyRunning.js";
-import {
-    listCalculatedStateKeys,
-    listFilterStateKeys,
-    listInstanceStateKeys,
-    listRelatedStateKeys,
-    listSearchStateKeys,
-    listSortStateKeys,
-    listSubscriptionStateKeys,
-} from "./listKeys.js";
-import { useWatchesRunning } from "./watchesRunning.js";
 import get from "lodash-es/get.js";
 import identity from "lodash-es/identity.js";
-import isEmpty from "lodash-es/isEmpty.js";
-import isEqual from "lodash-es/isEqual.js";
-import isNull from "lodash-es/isNull.js";
-import isUndefined from "lodash-es/isUndefined.js";
 import throttle from "lodash-es/throttle.js";
-import zip from "lodash-es/zip.js";
-import { computed, effectScope, reactive, ref, toRef, unref, watch } from "vue";
+import { computed, effectScope, reactive, ref, toRef, toRefs, unref, watch } from "vue";
 
 /**
  * Provides a Vue 3 composable for sorting lists based on dynamic and customizable rules. This module integrates
@@ -39,18 +20,6 @@ const defaultSortThrottleWait = Symbol("defaultSortThrottleWait");
 const defaultOptions = {
     sortThrottleWait: 100,
 };
-
-const parentStateKeys = difference(
-    new Set([
-        ...listInstanceStateKeys,
-        ...listSubscriptionStateKeys,
-        ...listRelatedStateKeys,
-        ...listCalculatedStateKeys,
-        ...listFilterStateKeys,
-        ...listSearchStateKeys,
-    ]),
-    new Set(listSortStateKeys)
-);
 
 /**
  * Sets default configuration options for all list sorting operations within the application. This function allows
@@ -84,12 +53,7 @@ export function setListSortDefaultOptions({ sortThrottleWait }) {
  *
  * @typedef {object} ListSortRawState
  * @property {OrderByRule[]} orderByRules - Current sorting rules applied to the list.
- * @property {string[]} order - Array of IDs representing the current sort order of the list.
- * @property {object} sortCriteria - Computed sort criteria used for dynamically sorting the list.
  * @property {boolean[]} orderByDesc - Flags indicating whether each sort criterion is in descending order.
- * @property {boolean} sortCriteriaWatchRunning - Flag to indicate if sorting criteria computations are actively updating.
- * @property {boolean} sortWatchRunning - Flag to indicate if the sort operation is actively processing.
- * @property {boolean} outstandingEffects - Flag to indicate if there are pending reactive effects needing resolution.
  */
 
 /**
@@ -134,8 +98,7 @@ export function setListSortDefaultOptions({ sortThrottleWait }) {
  * @typedef {object} ListSortProperties
  * @property {ListSortState} state - The reactive state for the list sort.
  * @property {ListSortParentState} parentState - The parent state.
- * @property {import('vue').EffectScope} effectScope - The effect scope for the list sort.
- * @property {import('./watchesRunning.js').WatchesRunning} watchesRunning - The watches running instance.
+ * @property {() => void} stop - A function to stop the effect scope and clean up resources.
  */
 
 // if we provided functions, we would add a typedef and mix them into ListSort
@@ -212,224 +175,143 @@ export function useListSort({ parentState, orderByRules, sortThrottleWait = defa
         }
         return Number(sortThrottleWait);
     })();
-
-    const sortCriteriaEffectScopes = {};
-
-    const internalState = reactive({
-        /** @type {import('./listFilter.js').ObjectsInOrderRefs} */
-        objectsInOrderRefs: [],
-    });
-    /** @type {ListSortState} */
-    // @ts-ignore - parentState will be merged and computeds set up inside the effect scope
-    const state = reactive(
-        /** @type {ListSortRawState} */ {
-            orderByRules,
-            order: [],
-            objectsInOrder: [],
-            sortCriteria: {},
-            orderByDesc: [],
-            sortCriteriaWatchRunning: false,
-            sortWatchRunning: false,
-            outstandingEffects: false,
-        }
-    );
     const es = effectScope();
 
-    function removeSortCriteria(removedKey) {
-        const oldScope = sortCriteriaEffectScopes[removedKey];
-        if (oldScope) {
-            oldScope.stop();
-            delete sortCriteriaEffectScopes[removedKey];
+    const internalState = reactive({
+        orderByRules,
+        orderByDesc: computed(() => internalState.orderByRules.map((r) => r.desc || false)),
+    });
+
+    const criteriaMap = reactive({});
+
+    function ensureCriteria(pk) {
+        if (criteriaMap[pk]) {
+            return criteriaMap[pk];
         }
-        delete state.sortCriteria[removedKey];
-    }
-
-    function addSortCriteria(object, relatedObject, calculatedObject, key) {
-        const oldScope = sortCriteriaEffectScopes[key];
-        if (oldScope) {
-            oldScope.stop();
-        }
-        const newScope = effectScope();
-        newScope.run(() => {
-            if (!state.sortCriteria[key]) {
-                state.sortCriteria[key] = [];
-            }
-            watch(
-                [object, relatedObject, calculatedObject, toRef(state, "orderByRules")],
-                () => {
-                    const obj = unref(object);
-                    const relatedObj = unref(relatedObject);
-                    const calculatedObj = unref(calculatedObject);
-                    const newSearchCriteria = [];
-                    for (const orderByObj of state.orderByRules.filter(identity)) {
-                        let newItem;
-                        if (orderByObj.keyFn) {
-                            newItem = orderByObj.keyFn(obj, state);
-                        } else {
-                            if (orderByObj.key.startsWith("relatedItem.")) {
-                                newItem = get(relatedObj, orderByObj.key.slice(12));
-                            } else if (orderByObj.key.startsWith("calculatedItem.")) {
-                                newItem = get(calculatedObj, orderByObj.key.slice(15));
-                            } else {
-                                newItem = get(obj, orderByObj.key);
-                            }
-                        }
-                        newSearchCriteria.push(newItem);
-                    }
-                    if (isEqual(newSearchCriteria, state.sortCriteria[key])) {
-                        return;
-                    }
-                    assignReactiveObject(state.sortCriteria[key], newSearchCriteria);
-                    if (!state.outstandingEffects) {
-                        state.outstandingEffects = true;
-                    }
-                },
-                {
-                    deep: true,
-                    immediate: true,
+        const scope = es.run(() => effectScope());
+        const crit = scope.run(() =>
+            computed(() => {
+                const obj = parentState.objects[pk];
+                if (!obj) {
+                    return [];
                 }
-            );
-        });
-        sortCriteriaEffectScopes[key] = newScope;
-    }
-
-    function sortCriteriaWatch() {
-        try {
-            if (!state.orderByRules?.length || !state.orderByRules.filter(identity).length) {
-                if (!isEmpty(state.sortCriteria)) {
-                    for (const removedKey of Object.keys(state.sortCriteria)) {
-                        removeSortCriteria(removedKey);
-                    }
-                }
-                state.order = [...parentState.order];
-                assignReactiveObject(
-                    internalState.objectsInOrderRefs,
-                    state.order.map((e) => toRef(parentState.objects, e))
-                );
-                return;
-            }
-            const { removedKeys, addedKeys } = keyDiff(
-                Object.keys(parentState.objects),
-                Object.keys(state.sortCriteria)
-            );
-            for (const removedKey of removedKeys) {
-                removeSortCriteria(removedKey);
-            }
-
-            es.run(() => {
-                for (const addedKey of addedKeys) {
-                    const object = toRef(parentState.objects, addedKey);
-                    const relatedObj = toRef(parentState.relatedObjects, addedKey);
-                    const calculatedObj = toRef(parentState.calculatedObjects, addedKey);
-                    addSortCriteria(object, relatedObj, calculatedObj, addedKey);
-                }
-            });
-            assignReactiveObject(
-                state.orderByDesc,
-                state.orderByRules.filter(identity).map((e) => e.desc || false)
-            );
-        } finally {
-            state.sortCriteriaWatchRunning = false;
-        }
-    }
-
-    function sortWatch() {
-        try {
-            if (!state.orderByRules?.length) {
-                state.order = [...parentState.order];
-                assignReactiveObject(
-                    internalState.objectsInOrderRefs,
-                    state.order.map((e) => toRef(parentState.objects, e))
-                );
-                return;
-            }
-            let idList = [...parentState.order];
-            idList.sort((xKey, yKey) => {
-                const xCriteria = state.sortCriteria[xKey];
-                const yCriteria = state.sortCriteria[yKey];
-                for (let [x, y, orderByObj] of zip(xCriteria, yCriteria, state.orderByRules)) {
-                    if (!orderByObj) {
-                        continue;
-                    }
-                    if (orderByObj.desc) {
-                        [x, y] = [y, x];
-                    }
-                    const isUndefinedX = isUndefined(x) || isNull(x);
-                    const isUndefinedY = isUndefined(y) || isNull(y);
-                    if (isUndefinedX && isUndefinedY) {
-                        continue;
-                    } else if (isUndefinedX) {
-                        return -1;
-                    } else if (isUndefinedY) {
-                        return 1;
-                    }
-                    if (orderByObj.localeCompare) {
-                        const strComp = collator.compare(x, y);
-                        if (strComp) {
-                            return strComp;
+                return internalState.orderByRules
+                    .filter((r) => r && r.key)
+                    .map((r) => {
+                        if (!r) {
+                            return undefined;
                         }
-                    } else {
-                        if (x < y) {
-                            return -1;
+                        if (r.keyFn) {
+                            return r.keyFn(obj, parentState);
                         }
-                        if (x > y) {
-                            return 1;
+                        if (r.key.startsWith("relatedItem.")) {
+                            return get(parentState.relatedObjects?.[pk], r.key.slice(12));
                         }
-                    }
-                }
-                return 0;
-            });
-            state.order = idList;
-            assignReactiveObject(
-                internalState.objectsInOrderRefs,
-                idList.map((e) => toRef(parentState.objects, e))
-            );
-        } finally {
-            state.sortWatchRunning = false;
-            state.outstandingEffects = false;
-        }
+                        if (r.key.startsWith("calculatedItem.")) {
+                            return get(parentState.calculatedObjects?.[pk], r.key.slice(15));
+                        }
+                        return get(obj, r.key);
+                    });
+            })
+        );
+        criteriaMap[pk] = { scope, crit };
+        return crit;
     }
-
-    const throttledSortWatch = throttle(sortWatch, sortThrottleWaitNumber);
-
-    /** @type {import('./watchesRunning.js').WatchesRunning} */
-    let watchesRunning = null;
 
     es.run(() => {
-        for (const key of parentStateKeys) {
-            state[key] = toRef(parentState, key);
-        }
-        // this watch must come first or be immediate.
-        watch([toRef(state, "orderByDesc"), toRef(state, "sortCriteria")], throttledSortWatch, {
-            deep: true,
-        });
-        watch([toRef(state, "orderByRules"), toRef(parentState, "order")], sortCriteriaWatch, {
-            deep: true,
-            immediate: true,
-        });
-        watchesRunning = useWatchesRunning({
-            triggerRefs: [
-                computed(() => (state.orderByRules && !isEmpty(state.orderByRules) ? parentState.loading : false)),
-            ],
-            watchSentinelRefs: [toRef(state, "sortCriteriaWatchRunning"), toRef(state, "sortWatchRunning")],
-        });
-
-        // @ts-ignore - assignment here so the computed is in the effect scope
-        state.objectsInOrder = computed(() => internalState.objectsInOrderRefs.map((e) => unref(e)));
-        // @ts-ignore - assignment here so the computed is in the effect scope
-        state.sortRunning = computed(() => loadingCombine(watchesRunning.state.running, state.outstandingEffects));
-        const parentRunning = ref(undefined);
-        proxyRunning(parentState, "running", parentRunning);
-        // @ts-ignore - assignment here so the computed is in the effect scope
-        state.running = computed(() =>
-            loadingCombine(watchesRunning.state.running, state.outstandingEffects, parentRunning.value)
+        watch(
+            () => Object.keys(parentState.objects),
+            (newKeys) => {
+                const { addedKeys, removedKeys } = keyDiff(newKeys, Object.keys(criteriaMap));
+                for (const pk of removedKeys) {
+                    criteriaMap[pk].scope.stop();
+                    delete criteriaMap[pk];
+                }
+                for (const pk of addedKeys) {
+                    ensureCriteria(pk);
+                }
+            },
+            { immediate: true, flush: "sync" }
         );
     });
 
+    const rawOrder = computed(() => {
+        const arr = [...unref(toRef(parentState, "order"))];
+        const rulesArr = internalState.orderByRules.filter(identity);
+        return arr.sort((a, b) => {
+            const aCrit = criteriaMap[a].crit ?? [];
+            const bCrit = criteriaMap[b].crit ?? [];
+            for (let i = 0; i < rulesArr.length; i++) {
+                const rule = rulesArr[i];
+                let x = aCrit[i],
+                    y = bCrit[i];
+                if (rule.desc) {
+                    [x, y] = [y, x];
+                }
+                if (x == null && y == null) {
+                    continue;
+                }
+                if (x == null) {
+                    return -1;
+                }
+                if (y == null) {
+                    return 1;
+                }
+                if (rule.localeCompare && typeof x === "string" && typeof y === "string") {
+                    const cmp = collator.compare(x, y);
+                    if (cmp !== 0) {
+                        return cmp;
+                    }
+                } else if (x < y) {
+                    return -1;
+                } else if (x > y) {
+                    return 1;
+                }
+            }
+            return 0;
+        });
+    });
+
+    const objects = computed(() => {
+        /** @type {import('./listInstance.js').ObjectsByPk} */
+        const out = {};
+        for (const [pk, o] of Object.entries(parentState.objects)) {
+            const inc = criteriaMap[pk]?.crit;
+            if (inc) out[pk] = o;
+        }
+        return out;
+    });
+
+    const order = ref([]);
+    const assignOrder =
+        sortThrottleWaitNumber > 0
+            ? throttle((v) => {
+                  order.value = v;
+              }, sortThrottleWaitNumber)
+            : (v) => {
+                  order.value = v;
+              };
+
+    watch(rawOrder, (v) => assignOrder(v), { immediate: true });
+
+    // 6) objectsInOrder just follows that
+    const objectsInOrder = computed(() => order.value.map((pk) => parentState.objects[pk]));
+
     return {
-        state,
+        state: reactive({
+            ...toRefs(parentState),
+            orderByRules: toRef(internalState, "orderByRules"),
+            orderByDesc: toRef(internalState, "orderByDesc"),
+            objects,
+            order,
+            objectsInOrder,
+        }),
         parentState,
-        effectScope: es,
-        watchesRunning,
+        stop: () => {
+            es.stop();
+            for (const key of Object.keys(criteriaMap)) {
+                delete criteriaMap[key];
+            }
+        },
     };
 }

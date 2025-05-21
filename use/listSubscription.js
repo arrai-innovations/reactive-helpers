@@ -1,13 +1,13 @@
-import { loadingCombine } from "../utils/loadingCombine.js";
 import { useCancellableIntent } from "./cancellableIntent.js";
 import { useListInstance } from "./listInstance.js";
-import { listInstanceStateKeys } from "./listKeys.js";
 import { useLoadingError } from "./loadingError.js";
 import inspect from "browser-util-inspect";
 import cloneDeep from "lodash-es/cloneDeep.js";
 import isEmpty from "lodash-es/isEmpty.js";
 import isObject from "lodash-es/isObject.js";
-import { computed, effectScope, reactive, toRef } from "vue";
+import { reactive, toRef, toRefs } from "vue";
+import { useProxyLoadingError } from "./proxyLoadingError.js";
+import { refIfReactive } from "../utils/refIfReactive.js";
 
 /**
  * A composable function for managing a list subscription.
@@ -35,31 +35,42 @@ export class ListSubscriptionError extends Error {
 /**
  * The raw state of a list subscription.
  *
- * @typedef {object} ListSubscriptionRawState
- * @property {Readonly<import('vue').Ref<boolean>>} subscriptionLoading - Whether the subscription is loading.
- * @property {Readonly<import('vue').Ref<boolean>>} subscriptionErrored - Whether the subscription has errored.
- * @property {Readonly<import('vue').Ref<Error>>} subscriptionError - The error that occurred.
- * @property {boolean} intendToList - If this is true, the list should be fetched, or re-fetched if arguments change.
- * @property {boolean} intendToSubscribe - If this is true, the subscription should start or restart if arguments change.
- * @property {boolean} subscribed - Whether the subscription is active.
+ * @typedef {object} ListSubscriptionMyState
+ * @property {import('vue').Ref<boolean>|boolean} intendToList - If this is true, the list should be fetched, or re-fetched if arguments change.
+ * @property {import('vue').Ref<boolean>|boolean} intendToSubscribe - If this is true, the subscription should start or restart if arguments change.
+ * @property {import('vue').Ref<boolean>} subscribed - Whether the subscription is active.
+ */
+
+/**
+ * @typedef {import('vue').ToRefs<import('./listInstance.js').ListInstanceState>} ListInstanceStateRefs
+ */
+
+/**
+ * The raw state of a list subscription, including the state from the list instance.
+ *
+ * @typedef {ListSubscriptionMyState & (
+ *     Pick<import('./loadingError.js').LoadingErrorStatus, "loading" | "error" | "errored">
+ * ) & ListInstanceStateRefs} ListSubscriptionRawState
  */
 
 /**
  * A reactive object that manages a list of objects, as returned by `useListInstance`.
  *
- * @typedef {import('vue').UnwrapNestedRefs<
- *     ListSubscriptionRawState &
- *     import('./listInstance.js').ListInstanceRawState
- * >} ListSubscriptionState
+ * @typedef {import('vue').Reactive<ListSubscriptionRawState>} ListSubscriptionState
  */
 
 /**
  * The methods available on a list subscription.
  *
- * @typedef {object} ListSubscriptionFunctions
- * @property {Function} subscribe - Trigger a subscription to the list.
- * @property {Function} unsubscribe - Unsubscribe from the list.
- * @property {Function} clearError - Clear the subscription error and the underlying list instance error.
+ * @typedef {Pick<import('./loadingError.js').LoadingErrorStatus, "clearError">} ListSubscriptionFunctions
+ */
+
+/**
+ * @typedef {{
+ *     state: ListSubscriptionState,
+ *     listInstance: import('./listInstance.js').ListInstance,
+ *     loadingError: import('./loadingError.js').LoadingErrorStatus,
+ * }} ListSubscriptionContext
  */
 
 /**
@@ -70,7 +81,6 @@ export class ListSubscriptionError extends Error {
  * @property {import('./listInstance.js').ListInstance} listInstance - The list instance used by the subscription.
  * @property {import('./cancellableIntent.js').CancellableIntent} listIntent - The `CancellableIntent` instance managing if the list should be (re)fetched.
  * @property {import('./cancellableIntent.js').CancellableIntent} subscribeIntent - The `CancellableIntent` instance managing if the subscription should be (un)subscribed.
- * @property {import('vue').EffectScope} effectScope - The effect scope of the list subscription.
  */
 
 /**
@@ -85,8 +95,6 @@ export class ListSubscriptionError extends Error {
  *
  * @typedef {object & import("./listInstance.js").ListInstanceOptions} ListSubscriptionOptions
  * @property {import("./listInstance.js").ListInstance} listInstance - A list instance to use instead of creating one.
- * @property {boolean} clearListOnListIntentTriggered - If true, the list will be cleared when the list intent is triggered. Default is false.
- * @property {import('vue').Ref<boolean>|boolean} keepOldPages - If true, pages will not be cleared when defaultPageCallback is called.
  */
 
 /**
@@ -149,273 +157,175 @@ export function useListSubscriptions(listSubscriptionArgs) {
  * @param {ListSubscriptionOptions} options - The options for the list subscription.
  * @returns {ListSubscription} - Returns a robust list subscription object that manages a list instance with
  *  capabilities to subscribe and unsubscribe to data sources, alongside handling real-time data updates.
- * @throws {ListSubscriptionError} - If both listInstance and props are passed, or if neither are
- * passed. Also thrown if clearListOnListIntentTriggered is not passed or if neither listInstance
- * nor keepOldPages are passed.
+ * @throws {ListSubscriptionError} - If the list instance is not set and no props are passed.
  */
-export function useListSubscription({ listInstance, props, handlers, keepOldPages, clearListOnListIntentTriggered }) {
-    if (!listInstance && !props) {
-        throw new ListSubscriptionError(
-            "useListSubscription should be passed listInstance or props and handlers.",
-            "missing-arguments"
-        );
+export function useListSubscription({ listInstance, props, handlers }) {
+    if (!props) {
+        // `props` must always be passed so that reactivity (e.g., `params`, `intendToList`, `intendToSubscribe`) can be observed.
+        throw new ListSubscriptionError("`props` is required.", "missing-props");
+    } else {
+        if (!("params" in props)) {
+            // `params` is required to make the list and subscription intents reactive. Without it, the system won't know when to trigger fetches.
+            throw new ListSubscriptionError("`props.params` must be defined.", "missing-params");
+        }
     }
-    if (listInstance && props) {
+    if (listInstance && handlers) {
+        // The provided `listInstance` already encapsulates the logic. Passing `handlers` is ambiguous and would be ignored.
         throw new ListSubscriptionError(
-            "useListSubscription should be passed listInstance or props and handlers, not both.",
-            "too-many-arguments"
-        );
-    }
-    if (clearListOnListIntentTriggered === undefined) {
-        throw new ListSubscriptionError(
-            "useListSubscription should be passed clearListOnListIntentTriggered.",
-            "missing-arguments"
-        );
-    }
-    if (!listInstance && keepOldPages === undefined) {
-        throw new ListSubscriptionError(
-            "useListSubscription should be passed listInstance or keepOldPages.",
-            "missing-arguments"
+            "`handlers` must not be passed when `listInstance` is used.",
+            "handlers-ignored"
         );
     }
     if (!listInstance) {
-        if (!("params" in props)) {
-            console.error("params not set, must be true for intendToList or intendToSubscribe to work.");
-        }
-        listInstance = useListInstance({ props, handlers, keepOldPages });
-    } else {
-        if (handlers) {
-            console.error("handlers passed to useListSubscription, but listInstance was passed. handlers ignored.");
-        }
+        listInstance = useListInstance({ props, handlers });
     }
-
     const parentState = listInstance.state;
 
-    let subscribeIntent, listIntent;
     const loadingError = useLoadingError();
-    /** @type {ListSubscriptionState} */
-    // @ts-ignore - we're going to assign the remaining properties in an effect scope
-    const state = reactive(
-        /** @type {import('./listInstance.js').ListInstanceRawState & ListSubscriptionRawState} */ {
-            subscriptionLoading: loadingError.loading,
-            subscriptionErrored: loadingError.errored,
-            subscriptionError: loadingError.error,
-            intendToList: false,
-            intendToSubscribe: false,
-        }
-    );
-
-    /**
-     * Trigger a subscription to the list, by setting intendToSubscribe to true.
-     *  Optionally set intendToList to true as well.
-     *
-     * @name subscribe
-     * @memberof ListSubscription
-     * @param {object} [options] - Options for the subscription.
-     * @param {boolean} [options.list=true] - If true, set intendToList to true as well.
-     * @returns {boolean} - Returns true if the subscription was started, otherwise false.
-     */
-    function publicSubscribe({ list = true } = {}) {
-        let didSubscribe = false;
-        if (!state.intendToSubscribe) {
-            state.intendToSubscribe = true;
-            didSubscribe = true;
-        }
-        if (list) {
-            if (!state.intendToList) {
-                state.intendToList = true;
-                didSubscribe = true;
-            }
-        }
-        return didSubscribe;
-    }
-
-    function subscriptionEventCallback(data, action) {
-        if (!data || (isObject(data) && isEmpty(data))) {
-            throw new ListSubscriptionError(
-                `got update with no data (${inspect(data)}), action: ${action}`,
-                "empty-data"
-            );
-        } else if (action === "delete") {
-            deleteFromSubscription(data);
-        } else if (action === "create") {
-            addFromSubscription(data);
-        } else if (action === "update") {
-            updateFromSubscription(data);
-        } else {
-            throw new ListSubscriptionError(
-                `got update for unknown action: ${action}\n${inspect(data)}`,
-                "unknown-action"
-            );
-        }
-    }
-
-    /**
-     * Unsubscribe from the list, by setting intendToSubscribe and intendToList to false.
-     *
-     * @name unsubscribe
-     * @memberof ListSubscription
-     * @returns {boolean} - Returns true if the subscription was stopped, otherwise false.
-     */
-    function publicUnsubscribe() {
-        let didUnsubscribe = false;
-        if (state.intendToSubscribe) {
-            state.intendToSubscribe = false;
-            didUnsubscribe = true;
-        }
-        if (state.intendToList) {
-            state.intendToList = false;
-            didUnsubscribe = true;
-        }
-        return didUnsubscribe;
-    }
-
-    /**
-     * Add an object to the list from a subscription event.
-     *
-     * @memberof ListSubscription
-     * @param {object} data - The object to add.
-     * @param {string} [pkKey="id"] - The primary key field.
-     * @throws {ListSubscriptionError} - If data is missing a pk.
-     * @throws {ListInstanceError} - If the object is already in the list.
-     * @returns {void}
-     */
-    function addFromSubscription(data, pkKey = parentState.pkKey) {
-        if (!data[pkKey]) {
-            throw new ListSubscriptionError(
-                `addFromSubscription: data missing pk(${pkKey}).\n${inspect(data)}`,
-                "missing-pk"
-            );
-        }
-        try {
-            listInstance.addListObject(data);
-        } catch (err) {
-            if (err.name === "ListInstanceError" && err.code === "duplicate-pk") {
-                console.warn(`addFromSubscription: add for pk(${pkKey}) already in objects (${data[pkKey]}).`);
-                return;
-            }
-            throw err;
-        }
-    }
-
-    /**
-     * Update an object in the list from a subscription event.
-     *
-     * @memberof ListSubscription
-     * @param {object} data - The object to update.
-     * @param {string} [pkKey="id"] - The primary key field.
-     * @throws {ListSubscriptionError} - If data is missing an pk.
-     * @throws {ListInstanceError} - If the object is not in the list.
-     * @returns {void}
-     */
-    function updateFromSubscription(data, pkKey = parentState.pkKey) {
-        if (!data[pkKey]) {
-            throw new ListSubscriptionError(
-                `updateFromSubscription: data missing pk(${pkKey}).\n${inspect(data)}`,
-                "missing-pk"
-            );
-        }
-        try {
-            listInstance.updateListObject(data);
-        } catch (err) {
-            if (err.name === "ListInstanceError" && err.code === "missing-object") {
-                console.warn(`updateFromSubscription: update for pk(${pkKey}) not in objects (${data[pkKey]}).`);
-                return;
-            }
-            throw err;
-        }
-    }
-
-    /**
-     * Delete an object from the list from a subscription event.
-     *
-     * @memberof ListSubscription
-     * @param {string} pk - The pk of the object to delete.
-     * @param {string} [pkKey="id"] - The primary key field, used in error messages.
-     * @throws {ListInstanceError} - If the object is not in the list.
-     * @returns {void}
-     */
-    function deleteFromSubscription(pk, pkKey = parentState.pkKey) {
-        try {
-            listInstance.deleteListObject(pk);
-        } catch (err) {
-            if (err.name === "ListInstanceError" && err.code === "missing-object") {
-                console.warn(`deleteFromSubscription: delete for pk(${pkKey}) not in objects (${inspect(pk)}).`);
-                return;
-            }
-            throw err;
-        }
-    }
-
-    /**
-     * Clear the subscription error and the underlying list instance error.
-     *
-     * @memberof ListSubscription
-     * @returns {void}
-     */
-    function clearError() {
-        loadingError.clearError();
-        listInstance.clearError();
-    }
-
-    const es = effectScope();
-
-    es.run(() => {
-        // @ts-ignore - assign properties that ts already expects to be unref'd
-        state.loading = computed(() => loadingCombine(parentState.loading, state.subscriptionLoading));
-        // @ts-ignore - assign properties that ts already expects to be unref'd
-        state.errored = computed(() => parentState.errored || state.subscriptionErrored);
-        // @ts-ignore - assign properties that ts already expects to be unref'd
-        state.error = computed(() => parentState.error || state.subscriptionError);
-
-        for (const key of listInstanceStateKeys.filter((key) => !["loading", "errored", "error"].includes(key))) {
-            state[key] = toRef(parentState, key);
-        }
-
-        subscribeIntent = useCancellableIntent({
-            awaitableWithCancel: () => {
-                // this function cannot be async, or the resulting promise will lose its .cancel() method
-                const subscribePromise = parentState.crud.subscribe({
+    const proxyLoadingError = useProxyLoadingError([loadingError, parentState]);
+    // stand alone in order to avoid circular dependency between state & intents.
+    const intendToList = refIfReactive(props, "intendToList", false);
+    const intendToSubscribe = refIfReactive(props, "intendToSubscribe", false);
+    const parentParams = refIfReactive(props, "params", {});
+    const intentGuardArgs = reactive({
+        loading: proxyLoadingError.loading,
+    });
+    const listIntentWatchArgs = reactive({
+        params: parentParams,
+        intendToList,
+    });
+    const listIntent = useCancellableIntent({
+        awaitableWithCancel: listInstance.list,
+        watchArguments: listIntentWatchArgs,
+        // delay triggering a list until the last list has finished/cancelled,
+        // cancel can still be triggered
+        guardArguments: intentGuardArgs,
+    });
+    const subscribeIntentWatchArgs = reactive({
+        params: parentParams,
+        intendToSubscribe,
+    });
+    const subscribeIntent = useCancellableIntent({
+        awaitableWithCancel: ({ runId, isCurrentRun }) => {
+            // this function cannot be async, or the resulting promise will lose its .cancel() method
+            loadingError.setLoading();
+            let subscribePromise, catchPromise;
+            try {
+                subscribePromise = parentState.crud.subscribe({
+                    runId,
+                    isCurrentRun,
                     target: cloneDeep(parentState.crud.args),
                     pkKey: parentState.pkKey,
                     params: cloneDeep(parentState.params),
-                    subscriptionEventCallback,
+                    applyObjectEvent: (
+                        /** @type {import('./objectInstance.js').ExistingCrudObject} */ data,
+                        /** @type {"create"|"update"|"delete"} */ action
+                    ) => {
+                        if (!data || (isObject(data) && isEmpty(data))) {
+                            throw new ListSubscriptionError(
+                                `got update with no data (${inspect(data)}), action: ${action}`,
+                                "empty-data"
+                            );
+                        }
+                        switch (action) {
+                            case "delete":
+                                try {
+                                    listInstance.deleteListObject(data);
+                                } catch (err) {
+                                    if (err.name === "ListInstanceError" && err.code === "missing-object") {
+                                        console.warn(
+                                            `deleteFromSubscription: delete for pk(${listInstance.state.pkKey}) not in objects (${inspect(data)}).`
+                                        );
+                                        return;
+                                    }
+                                    throw err;
+                                }
+                                break;
+                            case "create":
+                                if (!data[listInstance.state.pkKey]) {
+                                    throw new ListSubscriptionError(
+                                        `addFromSubscription: data missing pk(${listInstance.state.pkKey}).\n${inspect(data)}`,
+                                        "missing-pk"
+                                    );
+                                }
+                                try {
+                                    listInstance.addListObject(data);
+                                } catch (err) {
+                                    if (err.name === "ListInstanceError" && err.code === "duplicate-pk") {
+                                        console.warn(
+                                            `addFromSubscription: add for pk(${listInstance.state.pkKey}) already in objects (${data[listInstance.state.pkKey]}).`
+                                        );
+                                        return;
+                                    }
+                                    throw err;
+                                }
+                                break;
+                            case "update":
+                                if (!data[listInstance.state.pkKey]) {
+                                    throw new ListSubscriptionError(
+                                        `updateFromSubscription: data missing pk(${listInstance.state.pkKey}).\n${inspect(data)}`,
+                                        "missing-pk"
+                                    );
+                                }
+                                try {
+                                    listInstance.updateListObject(data);
+                                } catch (err) {
+                                    if (err.name === "ListInstanceError" && err.code === "missing-object") {
+                                        console.warn(
+                                            `updateFromSubscription: update for pk(${listInstance.state.pkKey}) not in objects (${data[listInstance.state.pkKey]}).`
+                                        );
+                                        return;
+                                    }
+                                    throw err;
+                                }
+                                break;
+                            default:
+                                throw new ListSubscriptionError(
+                                    `got update for unknown action: ${action}\n${inspect(data)}`,
+                                    "unknown-action"
+                                );
+                        }
+                    },
                 });
                 // catching makes a new promise, we need to make sure the cancel method lives on.
-                const catchPromise = subscribePromise.catch((err) => {
-                    console.error(err);
-                    loadingError.setError(err);
-                });
+                catchPromise = subscribePromise
+                    .catch((/** @type {Error} */ err) => {
+                        console.error(err);
+                        loadingError.setError(err);
+                    })
+                    .finally(() => {
+                        loadingError.clearLoading();
+                    });
                 catchPromise.cancel = subscribePromise.cancel.bind(subscribePromise);
                 return catchPromise;
-            },
-            watchArguments: reactive({
-                intendToSubscribe: toRef(state, "intendToSubscribe"),
-                params: toRef(parentState, "params"),
-            }),
-            clearActiveOnResolved: false,
-        });
-
-        // @ts-ignore - assign properties that ts already expects to be unref'd
-        state.subscribed = toRef(subscribeIntent.state, "active");
-
-        listIntent = useCancellableIntent({
-            awaitableWithCancel: () => {
-                if (clearListOnListIntentTriggered) {
-                    listInstance.clearList();
+            } catch (err) {
+                console.error(err);
+                loadingError.setError(err);
+            } finally {
+                if (!subscribePromise) {
+                    // no finally() will run if we died in the first line of the try block
+                    loadingError.clearLoading();
                 }
-                return listInstance.list();
-            },
-            watchArguments: reactive({
-                intendToList: toRef(state, "intendToList"),
-                params: toRef(parentState, "params"),
-            }),
-            // delay triggering a list until the last list has finished/cancelled
-            // cancel can still be triggered
-            guardArguments: reactive({
-                loading: toRef(parentState, "loading"),
-            }),
-        });
+            }
+        },
+        watchArguments: subscribeIntentWatchArgs,
+        // delay triggering a subscription until the last subscription has finished/cancelled,
+        // cancel can still be triggered
+        guardArguments: intentGuardArgs,
+        clearActiveOnResolved: false,
+    });
+
+    /** @type {ListSubscriptionState} */
+    const state = reactive({
+        .../** @type {ListInstanceStateRefs} */ (toRefs(parentState)),
+        loading: proxyLoadingError.loading,
+        errored: proxyLoadingError.errored,
+        error: proxyLoadingError.error,
+        ...{
+            intendToList,
+            intendToSubscribe,
+            subscribed: toRef(subscribeIntent.state, "active"),
+        },
     });
 
     return {
@@ -423,9 +333,6 @@ export function useListSubscription({ listInstance, props, handlers, keepOldPage
         listInstance,
         listIntent,
         subscribeIntent,
-        subscribe: publicSubscribe,
-        unsubscribe: publicUnsubscribe,
-        clearError,
-        effectScope: es,
+        clearError: proxyLoadingError.clearError,
     };
 }

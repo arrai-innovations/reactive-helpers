@@ -18,5 +18,5 @@
         "declarationMap": true,
         "noErrorTruncation": true
     },
-    "include": ["config/**/*.js", "use/**/*.js", "utils/**/*.js", "tests/**/*.js", "index.js"]
+    "include": ["config/**/*.js", "use/**/*.js", "utils/**/*.js", "tests/**/*.js", "tests/unit/setup.d.ts", "index.js"]
 }

@@ -2,23 +2,12 @@ import { keyDiff } from "../utils/keyDiff.js";
 import { loadingCombine } from "../utils/loadingCombine.js";
 import { proxyRunning } from "../utils/proxyRunning.js";
 import { getObjectRelatedByKey } from "../utils/relatedCalculatedHelpers.js";
-import { difference } from "../utils/set.js";
-import {
-    listCalculatedStateKeys,
-    listFilterStateKeys,
-    listInstanceStateKeys,
-    listRelatedStateKeys,
-    listSearchStateKeys,
-    listSortStateKeys,
-    listSubscriptionStateKeys,
-} from "./listKeys.js";
-import { useWatchesRunning } from "./watchesRunning.js";
 import get from "lodash-es/get.js";
 import identity from "lodash-es/identity.js";
 import isArray from "lodash-es/isArray.js";
 import isEmpty from "lodash-es/isEmpty.js";
 import isUndefined from "lodash-es/isUndefined.js";
-import { computed, effectScope, onScopeDispose, reactive, ref, toRef, unref, watch } from "vue";
+import { computed, effectScope, nextTick, onScopeDispose, reactive, ref, toRef, toRefs, unref, watch } from "vue";
 
 /**
  * Vue Composition API composable function for managing relationships among objects in a list.
@@ -41,9 +30,9 @@ import { computed, effectScope, onScopeDispose, reactive, ref, toRef, unref, wat
 /**
  * The rules for defining relationships among objects in a list.
  *
- * @typedef {import('vue').UnwrapNestedRefs<{
+ * @typedef {{
  *     [rule: string]: ListRelatedRule,
- * }>} ListRelatedRules
+ * }} ListRelatedRules
  */
 
 /**
@@ -97,18 +86,6 @@ import { computed, effectScope, onScopeDispose, reactive, ref, toRef, unref, wat
  * >} ListRelatedState
  */
 
-const parentStateKeys = difference(
-    new Set([
-        ...listInstanceStateKeys,
-        ...listSubscriptionStateKeys,
-        ...listCalculatedStateKeys,
-        ...listFilterStateKeys,
-        ...listSortStateKeys,
-        ...listSearchStateKeys,
-    ]),
-    new Set(listRelatedStateKeys)
-);
-
 /**
  * The options for the list related composition function.
  *
@@ -123,8 +100,7 @@ const parentStateKeys = difference(
  * @typedef {object} ListRelatedProperties
  * @property {ListRelatedState} state - The state for the list related property.
  * @property {ListRelatedParentState} parentState - The parent state object.
- * @property {import('./watchesRunning.js').WatchesRunning} watchesRunning - The watches running instance.
- * @property {import('vue').EffectScope} effectScope - The effect scope for the list related property.
+ * @property {() => void} stop - Stops all effects of the list related property.
  */
 
 // if we provided functions, we would add a typedef and mix them into ListRelated
@@ -229,16 +205,24 @@ export function useListRelateds(listRelatedArgs) {
  * maintaining the integrity of object relationships as per the specified rules.
  */
 export function useListRelated({ parentState, relatedObjectsRules }) {
+    const es = effectScope();
+    /** @type {import('vue').Ref<boolean|undefined>} */
+    const parentRunning = ref(undefined);
+    proxyRunning(parentState, "running", parentRunning);
     /** @type {ListRelatedState} */
-    // @ts-ignore - we'll add the missing properties later, taking refs from parentState
     const state = reactive(
         /** @type {ListRelatedRawState} */ {
+            ...toRefs(parentState),
             relatedObjectsRules,
             relatedObjects: {},
             objAndKeyForPkAndRule: {},
             fkForPkAndRule: {},
-            relatedObjectsParentStateObjectsWatchRunning: false,
-            relatedObjectsWatchRunning: false,
+            relatedObjectsParentStateObjectsWatchRunning: true,
+            relatedObjectsWatchRunning: true,
+            relatedRunning: computed(() =>
+                loadingCombine(state.relatedObjectsParentStateObjectsWatchRunning, state.relatedObjectsWatchRunning)
+            ),
+            running: computed(() => loadingCombine(state.relatedRunning, parentRunning.value)),
         }
     );
     const relatedObjectsEffectScopes = {};
@@ -253,7 +237,7 @@ export function useListRelated({ parentState, relatedObjectsRules }) {
             delete state.objAndKeyForPkAndRule[removedId];
             delete state.fkForPkAndRule[removedId];
             if (relatedObjectsEffectScopes[removedId]) {
-                relatedObjectsEffectScopes[removedId].stop();
+                relatedObjectsEffectScopes[removedId].objectScope.stop();
                 delete relatedObjectsEffectScopes[removedId];
             }
         }
@@ -262,7 +246,9 @@ export function useListRelated({ parentState, relatedObjectsRules }) {
             state.objAndKeyForPkAndRule[addedId] = {};
             state.fkForPkAndRule[addedId] = {};
         }
-        state.relatedObjectsParentStateObjectsWatchRunning = false;
+        nextTick(() => {
+            state.relatedObjectsParentStateObjectsWatchRunning = false;
+        });
     }
 
     function applyRuleToObject(objectKey, ruleKey, originalObjectRef, relatedObjectRef) {
@@ -331,25 +317,28 @@ export function useListRelated({ parentState, relatedObjectsRules }) {
                 addedRuleKeys = new Set();
             }
             for (const removedRuleKey of removedRuleKeys) {
-                // @ts-ignore - this is an unofficial api, effect is internal
-                state.relatedObjects[objectKey][removedRuleKey]?.effect?.stop?.();
+                relatedObjectsEffectScopes[objectKey].ruleScopes[removedRuleKey].stop();
+                delete relatedObjectsEffectScopes[objectKey].ruleScopes[removedRuleKey];
                 delete state.relatedObjects[objectKey][removedRuleKey];
-                // @ts-ignore - this is an unofficial api, effect is internal
-                state.objAndKeyForPkAndRule[objectKey][removedRuleKey]?.effect?.stop?.();
                 delete state.objAndKeyForPkAndRule[objectKey][removedRuleKey];
-                // @ts-ignore - this is an unofficial api, effect is internal
-                state.fkForPkAndRule[objectKey][removedRuleKey]?.effect?.stop?.();
                 delete state.fkForPkAndRule[objectKey][removedRuleKey];
             }
             if (addedRuleKeys.size) {
                 if (!relatedObjectsEffectScopes[objectKey]) {
-                    relatedObjectsEffectScopes[objectKey] = effectScope();
+                    relatedObjectsEffectScopes[objectKey] = {
+                        objectScope: es.run(() => effectScope()),
+                        ruleScopes: {},
+                    };
                 }
                 const originalObjectRef = toRef(parentState.objects, objectKey);
                 const relatedObjectRef = toRef(state.relatedObjects, objectKey);
-                relatedObjectsEffectScopes[objectKey].run(() => {
+                relatedObjectsEffectScopes[objectKey].objectScope.run(() => {
                     for (const addedRuleKey of addedRuleKeys) {
-                        applyRuleToObject(objectKey, addedRuleKey, originalObjectRef, relatedObjectRef);
+                        const ruleScope = effectScope();
+                        relatedObjectsEffectScopes[objectKey].ruleScopes[addedRuleKey] = ruleScope;
+                        ruleScope.run(() =>
+                            applyRuleToObject(objectKey, addedRuleKey, originalObjectRef, relatedObjectRef)
+                        );
                     }
                 });
             }
@@ -357,51 +346,42 @@ export function useListRelated({ parentState, relatedObjectsRules }) {
         state.relatedObjectsWatchRunning = false;
     }
 
-    let watchesRunning = null;
-
-    const es = effectScope();
-
     es.run(() => {
-        for (const key of parentStateKeys) {
-            state[key] = toRef(parentState, key);
-        }
-
+        watch(
+            () => Object.keys(parentState.objects),
+            () => {
+                state.relatedObjectsParentStateObjectsWatchRunning = true;
+            },
+            { flush: "sync" }
+        );
         watch(() => Object.keys(parentState.objects), parentStateObjectsWatch, { immediate: true });
+        watch(
+            [() => Object.keys(state.relatedObjects), () => Object.keys(state.relatedObjectsRules || {})],
+            () => {
+                state.relatedObjectsWatchRunning = true;
+            },
+            { flush: "sync" }
+        );
         watch(
             [() => Object.keys(state.relatedObjects), () => Object.keys(state.relatedObjectsRules || {})],
             relatedObjectsWatch,
             { immediate: true }
         );
 
-        watchesRunning = useWatchesRunning({
-            triggerRefs: [
-                computed(() =>
-                    state.relatedObjectsRules && !isEmpty(state.relatedObjectsRules) ? parentState.loading : false
-                ),
-            ],
-            watchSentinelRefs: [
-                toRef(state, "relatedObjectsParentStateObjectsWatchRunning"),
-                toRef(state, "relatedObjectsWatchRunning"),
-            ],
-        });
-
-        // @ts-ignore - proxy the running property
-        state.relatedRunning = toRef(watchesRunning.state, "running");
-        const parentRunning = ref(undefined);
-        proxyRunning(parentState, "running", parentRunning);
-        // @ts-ignore - combine the running properties
-        state.running = computed(() => loadingCombine(watchesRunning.state.running, parentRunning.value));
-
         onScopeDispose(() => {
             for (const objectKey of Object.keys(relatedObjectsEffectScopes)) {
-                relatedObjectsEffectScopes[objectKey].stop();
+                delete relatedObjectsEffectScopes[objectKey];
             }
         });
     });
     return {
         state,
         parentState,
-        watchesRunning,
-        effectScope: es,
+        stop: () => {
+            es.stop();
+            for (const objectKey of Object.keys(relatedObjectsEffectScopes)) {
+                delete relatedObjectsEffectScopes[objectKey];
+            }
+        },
     };
 }

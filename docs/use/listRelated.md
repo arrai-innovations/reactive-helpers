@@ -26,27 +26,45 @@ CRUD handlers and their configurations for the list.
 
 ###### crud.args
 
-> **args**: `any`
+> **args**: `Reactive`\<\{\} \| [`TargetArgs`](../config/objectCrud.md#targetargs)\>
 
-Arguments for the CRUD handlers.
+The arguments to be passed to the crud handlers.
 
-###### crud.list?
+###### crud.bulkDelete
 
-> `optional` **list**: `Function`
+> **bulkDelete**: [`CrudBulkDeleteFn`](../config/listCrud.md#crudbulkdeletefn)
 
-Function to list objects.
+The bulk delete function.
+
+###### crud.executeAction
+
+> **executeAction**: [`CrudExecuteActionFn`](../config/listCrud.md#crudexecuteactionfn)
+
+The execute action function.
+
+###### crud.list
+
+> **list**: [`CrudListFn`](../config/listCrud.md#crudlistfn)
+
+The list function.
+
+###### crud.subscribe
+
+> **subscribe**: [`CrudListSubscribeFn`](../config/listCrud.md#crudlistsubscribefn)
+
+The subscribe function.
 
 ###### error
 
 > **error**: `Error`
 
-The last error encountered.
+The error that occurred.
 
 ###### errored
 
 > **errored**: `boolean`
 
-Indicates if an error occurred during the last operation.
+Whether an error has occurred.
 
 ###### intendToList?
 
@@ -60,11 +78,11 @@ If this is true, the list should be fetched, or re-fetched if arguments change.
 
 If this is true, the subscription should start or restart if arguments change.
 
-###### loading?
+###### loading
 
-> `optional` **loading**: `boolean`
+> **loading**: `boolean`
 
-Indicates if the list is currently loading.
+Whether the component is loading.
 
 ###### objects
 
@@ -74,9 +92,15 @@ The list objects stored by their pks.
 
 ###### objectsInOrder
 
-> **objectsInOrder**: [`ListObject`](listInstance.md#listobject)[]
+> **objectsInOrder**: [`ExistingCrudObject`](objectInstance.md#existingcrudobject)[]
 
 The objects in the order specified by the list.
+
+###### objectsMap
+
+> **objectsMap**: `Map`\<`string`, [`ExistingCrudObject`](objectInstance.md#existingcrudobject)\> & `Omit`\<[`ObjectsMap`](listInstance.md#objectsmap-1), keyof `Map`\<`any`, `any`\>\>
+
+The map of objects stored by their pks.
 
 ###### order
 
@@ -96,39 +120,15 @@ Arguments passed to the server for listing operations.
 
 The primary key field for the list objects.
 
-###### running
-
-> **running**: `boolean`
-
-Indicates if there are ongoing reactive updates.
-
 ###### subscribed?
 
 > `optional` **subscribed**: `boolean`
 
 Whether the subscription is active.
 
-###### subscriptionError?
-
-> `optional` **subscriptionError**: `Error`
-
-The error that occurred.
-
-###### subscriptionErrored?
-
-> `optional` **subscriptionErrored**: `boolean`
-
-Whether the subscription has errored.
-
-###### subscriptionLoading?
-
-> `optional` **subscriptionLoading**: `boolean`
-
-Whether the subscription is loading.
-
 ##### relatedObjectsRules
 
-> **relatedObjectsRules**: `Ref`\<\{\}, \{\}\>
+> **relatedObjectsRules**: `Ref`\<[`ListRelatedRules`](listRelated.md#listrelatedrules), [`ListRelatedRules`](listRelated.md#listrelatedrules)\>
 
 The rules for the related objects.
 
@@ -137,12 +137,6 @@ The rules for the related objects.
 ### ListRelatedProperties
 
 #### Properties
-
-##### effectScope
-
-> **effectScope**: `EffectScope`
-
-The effect scope for the list related property.
 
 ##### parentState
 
@@ -158,27 +152,45 @@ CRUD handlers and their configurations for the list.
 
 ###### crud.args
 
-> **args**: `any`
+> **args**: `Reactive`\<\{\} \| [`TargetArgs`](../config/objectCrud.md#targetargs)\>
 
-Arguments for the CRUD handlers.
+The arguments to be passed to the crud handlers.
 
-###### crud.list?
+###### crud.bulkDelete
 
-> `optional` **list**: `Function`
+> **bulkDelete**: [`CrudBulkDeleteFn`](../config/listCrud.md#crudbulkdeletefn)
 
-Function to list objects.
+The bulk delete function.
+
+###### crud.executeAction
+
+> **executeAction**: [`CrudExecuteActionFn`](../config/listCrud.md#crudexecuteactionfn)
+
+The execute action function.
+
+###### crud.list
+
+> **list**: [`CrudListFn`](../config/listCrud.md#crudlistfn)
+
+The list function.
+
+###### crud.subscribe
+
+> **subscribe**: [`CrudListSubscribeFn`](../config/listCrud.md#crudlistsubscribefn)
+
+The subscribe function.
 
 ###### error
 
 > **error**: `Error`
 
-The last error encountered.
+The error that occurred.
 
 ###### errored
 
 > **errored**: `boolean`
 
-Indicates if an error occurred during the last operation.
+Whether an error has occurred.
 
 ###### intendToList?
 
@@ -192,11 +204,11 @@ If this is true, the list should be fetched, or re-fetched if arguments change.
 
 If this is true, the subscription should start or restart if arguments change.
 
-###### loading?
+###### loading
 
-> `optional` **loading**: `boolean`
+> **loading**: `boolean`
 
-Indicates if the list is currently loading.
+Whether the component is loading.
 
 ###### objects
 
@@ -206,9 +218,15 @@ The list objects stored by their pks.
 
 ###### objectsInOrder
 
-> **objectsInOrder**: [`ListObject`](listInstance.md#listobject)[]
+> **objectsInOrder**: [`ExistingCrudObject`](objectInstance.md#existingcrudobject)[]
 
 The objects in the order specified by the list.
+
+###### objectsMap
+
+> **objectsMap**: `Map`\<`string`, [`ExistingCrudObject`](objectInstance.md#existingcrudobject)\> & `Omit`\<[`ObjectsMap`](listInstance.md#objectsmap-1), keyof `Map`\<`any`, `any`\>\>
+
+The map of objects stored by their pks.
 
 ###### order
 
@@ -228,35 +246,11 @@ Arguments passed to the server for listing operations.
 
 The primary key field for the list objects.
 
-###### running
-
-> **running**: `boolean`
-
-Indicates if there are ongoing reactive updates.
-
 ###### subscribed?
 
 > `optional` **subscribed**: `boolean`
 
 Whether the subscription is active.
-
-###### subscriptionError?
-
-> `optional` **subscriptionError**: `Error`
-
-The error that occurred.
-
-###### subscriptionErrored?
-
-> `optional` **subscriptionErrored**: `boolean`
-
-Whether the subscription has errored.
-
-###### subscriptionLoading?
-
-> `optional` **subscriptionLoading**: `boolean`
-
-Whether the subscription is loading.
 
 ##### state
 
@@ -272,27 +266,45 @@ CRUD handlers and their configurations for the list.
 
 ###### crud.args
 
-> **args**: `any`
+> **args**: `Reactive`\<\{\} \| [`TargetArgs`](../config/objectCrud.md#targetargs)\>
 
-Arguments for the CRUD handlers.
+The arguments to be passed to the crud handlers.
 
-###### crud.list?
+###### crud.bulkDelete
 
-> `optional` **list**: `Function`
+> **bulkDelete**: [`CrudBulkDeleteFn`](../config/listCrud.md#crudbulkdeletefn)
 
-Function to list objects.
+The bulk delete function.
+
+###### crud.executeAction
+
+> **executeAction**: [`CrudExecuteActionFn`](../config/listCrud.md#crudexecuteactionfn)
+
+The execute action function.
+
+###### crud.list
+
+> **list**: [`CrudListFn`](../config/listCrud.md#crudlistfn)
+
+The list function.
+
+###### crud.subscribe
+
+> **subscribe**: [`CrudListSubscribeFn`](../config/listCrud.md#crudlistsubscribefn)
+
+The subscribe function.
 
 ###### error
 
 > **error**: `Error`
 
-The last error encountered.
+The error that occurred.
 
 ###### errored
 
 > **errored**: `boolean`
 
-Indicates if an error occurred during the last operation.
+Whether an error has occurred.
 
 ###### fkForPkAndRule
 
@@ -316,11 +328,11 @@ If this is true, the list should be fetched, or re-fetched if arguments change.
 
 If this is true, the subscription should start or restart if arguments change.
 
-###### loading?
+###### loading
 
-> `optional` **loading**: `boolean`
+> **loading**: `boolean`
 
-Indicates if the list is currently loading.
+Whether the component is loading.
 
 ###### objAndKeyForPkAndRule
 
@@ -340,9 +352,15 @@ The list objects stored by their pks.
 
 ###### objectsInOrder
 
-> **objectsInOrder**: [`ListObject`](listInstance.md#listobject)[]
+> **objectsInOrder**: [`ExistingCrudObject`](objectInstance.md#existingcrudobject)[]
 
 The objects in the order specified by the list.
+
+###### objectsMap
+
+> **objectsMap**: `Map`\<`string`, [`ExistingCrudObject`](objectInstance.md#existingcrudobject)\> & `Omit`\<[`ObjectsMap`](listInstance.md#objectsmap-1), keyof `Map`\<`any`, `any`\>\>
+
+The map of objects stored by their pks.
 
 ###### order
 
@@ -380,13 +398,9 @@ Flags whether the watch on parent state objects is currently active, ensuring up
 
 ###### relatedObjectsRules
 
-> **relatedObjectsRules**: `object`
+> **relatedObjectsRules**: [`ListRelatedRules`](listRelated.md#listrelatedrules)
 
 Defines the rules for establishing relationships, such as foreign key links and sorting orders.
-
-###### Index Signature
-
-\[`rule`: `string`\]: [`ListRelatedRule`](listRelated.md#listrelatedrule)
 
 ###### relatedObjectsWatchRunning
 
@@ -404,7 +418,7 @@ Signals whether any computations related to object relationships are currently i
 
 > **running**: `boolean`
 
-Indicates if there are ongoing reactive updates.
+General flag that indicates if the list-related logic is processing, used to manage UI feedback or prevent concurrent operations.
 
 ###### subscribed?
 
@@ -412,29 +426,15 @@ Indicates if there are ongoing reactive updates.
 
 Whether the subscription is active.
 
-###### subscriptionError?
+##### stop()
 
-> `optional` **subscriptionError**: `Error`
+> **stop**: () => `void`
 
-The error that occurred.
+Stops all effects of the list related property.
 
-###### subscriptionErrored?
+###### Returns
 
-> `optional` **subscriptionErrored**: `boolean`
-
-Whether the subscription has errored.
-
-###### subscriptionLoading?
-
-> `optional` **subscriptionLoading**: `boolean`
-
-Whether the subscription is loading.
-
-##### watchesRunning
-
-> **watchesRunning**: [`WatchesRunning`](watchesRunning.md#watchesrunning)
-
-The watches running instance.
+`void`
 
 ***
 
@@ -480,13 +480,9 @@ Flags whether the watch on parent state objects is currently active, ensuring up
 
 ##### relatedObjectsRules
 
-> **relatedObjectsRules**: `object`
+> **relatedObjectsRules**: [`ListRelatedRules`](listRelated.md#listrelatedrules)
 
 Defines the rules for establishing relationships, such as foreign key links and sorting orders.
-
-###### Index Signature
-
-\[`rule`: `string`\]: [`ListRelatedRule`](listRelated.md#listrelatedrule)
 
 ##### relatedObjectsWatchRunning
 
@@ -559,9 +555,13 @@ Specifies the foreign key used to link objects across lists. Planned to be renam
 
 ### ListRelatedRules
 
-> **ListRelatedRules**\<\>: `UnwrapNestedRefs`
+> **ListRelatedRules**\<\>: `object`
 
 #### Type Parameters
+
+#### Index Signature
+
+\[`rule`: `string`\]: [`ListRelatedRule`](listRelated.md#listrelatedrule)
 
 ***
 

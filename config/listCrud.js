@@ -17,56 +17,58 @@ import { readonly } from "vue";
  */
 
 /**
- * @typedef {(
- *     newObjects:import('../use/listInstance.js').ListObject,
- *     paginationInfo?: PaginateInfo,
- * )=>void} PageCallback
+ * @typedef {import("../use/listInstance.js").ClearListFn} ClearObjectsFn
  */
 
 /**
- * @typedef {object} ListArgs
- * @property {object} target - The arguments to be passed to the crud handlers.
+ * @typedef {object} ListArgsRaw
+ * @property {import('../config/objectCrud.js').TargetArgs} target - The arguments to be passed to the crud handlers.
  * @property {string} pkKey - The key name of the primary key.
  * @property {object} params - The arguments to be passed for list crud handlers.
- * @property {PageCallback} pageCallback - The method to call with new page(s) of data received.
+ * @property {import("../use/listInstance.js").PushObjectsFn} pushObjects - The method to call with new page(s) of data received.
+ * @property {ClearObjectsFn} clearObjects - The method to call to clear the objects.
  * @property {Readonly<import('vue').Ref<boolean>>} isCancelled - A ref to a boolean indicating whether the request has
  *  been cancelled.
+ */
+
+/**
+ * @typedef {ListArgsRaw & Partial<import('../use/cancellableIntent.js').CommonRunTracking>} ListArgs
  */
 
 /**
  * @typedef {object} BulkDeleteArgs
- * @property {object} target - The arguments to be passed to the crud handlers.
+ * @property {import('../config/objectCrud.js').TargetArgs} target - The arguments to be passed to the crud handlers.
  * @property {string[]} pks - The ids of the objects to be deleted.
  * @property {string} pkKey - The key name of the primary key.
- * @property {Readonly<import('vue').Ref<boolean>>} isCancelled - A ref to a boolean indicating whether the request has
- *  been cancelled.
  */
 
 /**
  * @typedef {(
- *     newOrUpdatedOrDeleteObject:import('../use/listInstance.js').ListObject|string,
+ *     newOrUpdatedOrDeleteObject:import('../use/objectInstance.js').ExistingCrudObject|string,
  *     action: 'create'|'update'|'delete'
- * )=>void} SubscriptionEventCallback
+ * )=>void} applyObjectEvent
  */
 
 /**
- * @typedef {object} ListSubscribeArgs
- * @property {object} target - The arguments to be passed to the crud handlers.
+ * @typedef {object} ListSubscribeArgsRaw
+ * @property {import('../config/objectCrud.js').TargetArgs} target - The arguments to be passed to the crud handlers.
  * @property {string} pkKey - The key name of the primary key.
  * @property {object} params - The arguments to be passed for list crud handlers.
- * @property {SubscriptionEventCallback} subscriptionEventCallback - The method to call when new data is received.
+ * @property {applyObjectEvent} applyObjectEvent - The method to call when new data is received.
  * @property {Readonly<import('vue').Ref<boolean>>} isCancelled - A ref to a boolean indicating whether the request has
  *  been cancelled.
+ */
+
+/**
+ * @typedef {ListSubscribeArgsRaw & Partial<import('../use/cancellableIntent.js').CommonRunTracking>} ListSubscribeArgs
  */
 
 /**
  * @typedef {object} ExecuteActionArgs
- * @property {object} target - The arguments to be passed to the crud handlers.
+ * @property {import('../config/objectCrud.js').TargetArgs} target - The arguments to be passed to the crud handlers.
  * @property {string[]} pks - The ids of the objects to be acted upon.
  * @property {string} pkKey - The key name of the primary key.
  * @property {string} action - The action to execute.
- * @property {Readonly<import('vue').Ref<boolean>>} isCancelled - A ref to a boolean indicating whether the request has
- *  been cancelled.
  */
 
 /**
@@ -78,7 +80,7 @@ import { readonly } from "vue";
 /**
  * @callback CrudBulkDeleteFn
  * @param {BulkDeleteArgs} args - The arguments to be passed to the crud handlers.
- * @returns {import('../utils/cancellablePromise.js').MaybeCancellablePromise<void>} - A promise that resolves to a boolean indicating success.
+ * @returns {Promise<boolean>} - A promise that resolves to a boolean indicating success.
  */
 
 /**
@@ -90,7 +92,7 @@ import { readonly } from "vue";
 /**
  * @callback CrudExecuteActionFn
  * @param {ExecuteActionArgs} args - The arguments to be passed to the crud handlers.
- * @returns {import('../utils/cancellablePromise.js').MaybeCancellablePromise<object|string|null>} - A promise that resolves the result of the action, returned to the executor.
+ * @returns {Promise<object|string|null>} - A promise that resolves the result of the action, returned to the executor.
  */
 
 /**

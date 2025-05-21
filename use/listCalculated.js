@@ -1,19 +1,8 @@
-import { difference } from "../utils/set.js";
 import { keyDiff } from "../utils/keyDiff.js";
 import { loadingCombine } from "../utils/loadingCombine.js";
 import { proxyRunning } from "../utils/proxyRunning.js";
-import {
-    listCalculatedStateKeys,
-    listFilterStateKeys,
-    listInstanceStateKeys,
-    listRelatedStateKeys,
-    listSearchStateKeys,
-    listSortStateKeys,
-    listSubscriptionStateKeys,
-} from "./listKeys.js";
-import { useWatchesRunning } from "./watchesRunning.js";
 import isEmpty from "lodash-es/isEmpty.js";
-import { computed, effectScope, onScopeDispose, reactive, ref, toRef, unref, watch } from "vue";
+import { computed, effectScope, nextTick, reactive, ref, toRef, toRefs, unref, watch } from "vue";
 
 /**
  * This module provides a Vue Composition API composable function for dynamically calculating properties in lists
@@ -29,9 +18,9 @@ import { computed, effectScope, onScopeDispose, reactive, ref, toRef, unref, wat
  *  object from the list, optionally its related objects, and previously calculated properties to compute a new
  *  property. These functions are reactive and re-evaluate when underlying dependencies change.
  *
- * @typedef {import('vue').Ref<{
+ * @typedef {{
  *     [rule: string]: (
- *         object: import('./listInstance.js').ListObject,
+ *         object: import('../use/objectInstance.js').ExistingCrudObject,
  *         relatedObject: {
  *             [rule: string]: any,
  *         },
@@ -39,8 +28,7 @@ import { computed, effectScope, onScopeDispose, reactive, ref, toRef, unref, wat
  *             [rule: string]: import('vue').ComputedRef<any>,
  *         }
  *     ) => any,
- * }>}  ListCalculatedRules
- *
+ * }}  ListCalculatedRules
  */
 
 /**
@@ -51,8 +39,8 @@ import { computed, effectScope, onScopeDispose, reactive, ref, toRef, unref, wat
  * @property {ListCalculatedRules} calculatedObjectsRules - The rules for the calculated objects.
  * @property {boolean} calculatedObjectsParentStateObjectsWatchRunning - Whether the parent state objects watch is running.
  * @property {boolean} calculatedObjectsWatchRunning - Whether the calculated objects watch is running.
- * @property {boolean} calculatedRunning - Whether the calculated properties are running.
- * @property {import('vue').Ref<boolean>} running - Whether the list is running.
+ * @property {import('vue').ComputedRef<boolean>} calculatedRunning - Whether the calculated properties are running.
+ * @property {import('vue').ComputedRef<boolean>} running - Whether the list is running.
  * @private
  */
 
@@ -86,24 +74,12 @@ import { computed, effectScope, onScopeDispose, reactive, ref, toRef, unref, wat
  * )>} ListCalculatedParentState
  */
 
-const parentStateKeys = difference(
-    new Set([
-        ...listInstanceStateKeys,
-        ...listSubscriptionStateKeys,
-        ...listRelatedStateKeys,
-        ...listFilterStateKeys,
-        ...listSortStateKeys,
-        ...listSearchStateKeys,
-    ]),
-    new Set(listCalculatedStateKeys)
-);
-
 /**
  * The options to create a list calculated composition function.
  *
  * @typedef {object} ListCalculatedOptions - Options to configure the behavior of the list calculated properties.
  * @property {ListCalculatedParentState} parentState - The parent state that interacts with the calculated objects.
- * @property {ListCalculatedRules} calculatedObjectsRules - A reactive reference to rules used for dynamic calculations
+ * @property {import('vue').Ref<ListCalculatedRules>} calculatedObjectsRules - A reactive reference to rules used for dynamic calculations
  *  within list objects. Proper setup of this reference ensures that updates are managed reactively, including deep
  *  property changes.
  */
@@ -114,8 +90,7 @@ const parentStateKeys = difference(
  * @typedef {object} ListCalculatedProperties
  * @property {ListCalculatedState} state - The state for the list calculated property.
  * @property {ListCalculatedParentState} parentState - The parent state object.
- * @property {import('./watchesRunning.js').WatchesRunning} watchesRunning - The watches running.
- * @property {import('vue').EffectScope} effectScope - The effect scope for the list calculated property.
+ * @property {() => void} stop - Stops composition's effects and cleans up resources.
  */
 
 // if we provided functions, we would add a typedef and mix them into ListCalculated
@@ -199,13 +174,22 @@ export function useListCalculateds(listCalculatedArgs) {
  *  list, facilitating real-time updates and complex dependency management across multiple components.
  */
 export function useListCalculated({ parentState, calculatedObjectsRules }) {
+    const es = effectScope();
+    const parentRefs = toRefs(parentState);
+    /** @type {import('vue').Ref<boolean|undefined>} */
+    const parentRunning = ref(undefined);
+    proxyRunning(parentState, "running", parentRunning);
     /** @type {ListCalculatedState} */
-    // @ts-ignore - The rest of the properties are added in the effect scope.
     const state = reactive({
+        ...parentRefs,
         calculatedObjectsRules,
         calculatedObjects: {},
-        calculatedObjectsParentStateObjectsWatchRunning: false,
-        calculatedObjectsWatchRunning: false,
+        calculatedObjectsParentStateObjectsWatchRunning: true,
+        calculatedObjectsWatchRunning: true,
+        calculatedRunning: computed(() =>
+            loadingCombine(state.calculatedObjectsParentStateObjectsWatchRunning, state.calculatedObjectsWatchRunning)
+        ),
+        running: computed(() => loadingCombine(state.calculatedRunning, parentRunning.value)),
     });
     const calculatedObjectsEffectScopes = {};
 
@@ -217,14 +201,16 @@ export function useListCalculated({ parentState, calculatedObjectsRules }) {
         for (const removedKey of removedKeys) {
             delete state.calculatedObjects[removedKey];
             if (calculatedObjectsEffectScopes[removedKey]) {
-                calculatedObjectsEffectScopes[removedKey].stop();
+                calculatedObjectsEffectScopes[removedKey].objectScope.stop();
                 delete calculatedObjectsEffectScopes[removedKey];
             }
         }
         for (const addedKey of addedKeys) {
             state.calculatedObjects[addedKey] = {};
         }
-        state.calculatedObjectsParentStateObjectsWatchRunning = false;
+        nextTick(() => {
+            state.calculatedObjectsParentStateObjectsWatchRunning = false;
+        });
     }
 
     function calculatedObjectsWatch() {
@@ -248,84 +234,75 @@ export function useListCalculated({ parentState, calculatedObjectsRules }) {
                 addedRuleKeys = [];
             }
             for (const removedRuleKey of removedRuleKeys) {
-                // @ts-ignore - this is an unofficial api, effect is internal
-                calculatedObjectsObject[removedRuleKey]?.effect?.stop?.();
-                delete calculatedObjectsObject[removedRuleKey];
+                if (calculatedObjectsEffectScopes[objectKey]?.ruleScopes?.[removedRuleKey]) {
+                    calculatedObjectsEffectScopes[objectKey].ruleScopes[removedRuleKey].stop();
+                    delete calculatedObjectsEffectScopes[objectKey].ruleScopes[removedRuleKey];
+                }
             }
             if (!calculatedObjectsEffectScopes[objectKey]) {
-                calculatedObjectsEffectScopes[objectKey] = effectScope();
+                calculatedObjectsEffectScopes[objectKey] = {
+                    objectScope: es.run(() => effectScope()),
+                    ruleScopes: {},
+                };
             }
             const originalObjectRef = toRef(parentState.objects, objectKey);
             const relatedObjectRef = parentState.relatedObjects
                 ? toRef(parentState.relatedObjects, objectKey)
                 : ref(undefined);
-            calculatedObjectsEffectScopes[objectKey].run(() => {
+            calculatedObjectsEffectScopes[objectKey].objectScope.run(() => {
                 for (const addedRuleKey of addedRuleKeys) {
-                    calculatedObjectsObject[addedRuleKey] = computed(() =>
-                        state.calculatedObjectsRules?.[addedRuleKey]?.(
-                            unref(originalObjectRef),
-                            unref(relatedObjectRef),
-                            calculatedObjectsObject
+                    const addedRuleScope = effectScope();
+                    calculatedObjectsObject[addedRuleKey] = addedRuleScope.run(() =>
+                        computed(() =>
+                            state.calculatedObjectsRules?.[addedRuleKey]?.(
+                                unref(originalObjectRef),
+                                unref(relatedObjectRef),
+                                calculatedObjectsObject
+                            )
                         )
                     );
+                    calculatedObjectsEffectScopes[objectKey].ruleScopes[addedRuleKey] = addedRuleScope;
                 }
             });
         }
-        state.calculatedObjectsWatchRunning = false;
+        nextTick(() => {
+            state.calculatedObjectsWatchRunning = false;
+        });
     }
 
-    let watchesRunning = null;
-
-    const es = effectScope();
-
-    es.run(() => {
-        for (const key of parentStateKeys) {
-            state[key] = toRef(parentState, key);
-        }
-
-        watch(() => Object.keys(parentState.objects), parentStateObjectsWatch, { immediate: true });
-        watch(
-            [
-                () => Object.keys(state.calculatedObjects),
-                () =>
-                    state.calculatedObjectsRules
-                        ? Object.keys(state.calculatedObjectsRules)
-                        : state.calculatedObjectsRules,
-            ],
-            calculatedObjectsWatch,
-            { immediate: true }
-        );
-
-        watchesRunning = useWatchesRunning({
-            triggerRefs: [
-                computed(() =>
-                    state.calculatedObjectsRules && !isEmpty(state.calculatedObjectsRules) ? parentState.loading : false
-                ),
-            ],
-            watchSentinelRefs: [
-                toRef(state, "calculatedObjectsParentStateObjectsWatchRunning"),
-                toRef(state, "calculatedObjectsWatchRunning"),
-            ],
-        });
-
-        // @ts-ignore - proxy the running property
-        state.calculatedRunning = toRef(watchesRunning.state, "running");
-        const parentRunning = ref(undefined);
-        proxyRunning(parentState, "running", parentRunning);
-        // @ts-ignore - combine the running properties
-        state.running = computed(() => loadingCombine(watchesRunning.state.running, parentRunning.value));
-
-        onScopeDispose(() => {
-            for (const objectKey of Object.keys(calculatedObjectsEffectScopes)) {
-                calculatedObjectsEffectScopes[objectKey].stop();
-            }
-        });
-    });
+    watch(
+        () => Object.keys(parentState.objects),
+        () => {
+            state.calculatedObjectsParentStateObjectsWatchRunning = true;
+        },
+        { flush: "sync" }
+    );
+    watch(() => Object.keys(parentState.objects), parentStateObjectsWatch, { immediate: true });
+    watch(
+        () => Object.keys(state.calculatedObjects),
+        () => {
+            state.calculatedObjectsWatchRunning = true;
+        },
+        { flush: "sync" }
+    );
+    watch(
+        [
+            () => Object.keys(state.calculatedObjects),
+            () =>
+                state.calculatedObjectsRules ? Object.keys(state.calculatedObjectsRules) : state.calculatedObjectsRules,
+        ],
+        calculatedObjectsWatch,
+        { immediate: true }
+    );
 
     return {
         state,
         parentState,
-        watchesRunning,
-        effectScope: es,
+        stop: () => {
+            es.stop();
+            for (const key of Object.keys(calculatedObjectsEffectScopes)) {
+                delete calculatedObjectsEffectScopes[key];
+            }
+        },
     };
 }

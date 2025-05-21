@@ -1,9 +1,73 @@
 /**
+ * This module provides a Vue Composition API composable function for dynamically calculating properties in lists
+ * based on complex business logic. It integrates with list management systems to apply user-defined rules
+ * that calculate new properties based on changes in list items or related data. This is particularly useful for
+ * applications that need to display derived data without altering the original source objects in the list.
+ *
+ * @module use/listCalculated.js
+ */
+/**
+ * Defines rules for dynamically calculating new properties for objects in a list. Each rule is a function that takes an
+ *  object from the list, optionally its related objects, and previously calculated properties to compute a new
+ *  property. These functions are reactive and re-evaluate when underlying dependencies change.
+ *
+ * @typedef {{
+ *     [rule: string]: (
+ *         object: import('../use/objectInstance.js').ExistingCrudObject,
+ *         relatedObject: {
+ *             [rule: string]: any,
+ *         },
+ *         calculatedObjects: {
+ *             [rule: string]: import('vue').ComputedRef<any>,
+ *         }
+ *     ) => any,
+ * }}  ListCalculatedRules
+ */
+/**
+ * The raw state for a list calculated.
+ *
+ * @typedef {object} ListCalculatedRawState - The raw state for a list calculated property.
+ * @property {{[pk: string]: {[rule: string]: import('vue').ComputedRef<any>}}} calculatedObjects - The calculated objects.
+ * @property {ListCalculatedRules} calculatedObjectsRules - The rules for the calculated objects.
+ * @property {boolean} calculatedObjectsParentStateObjectsWatchRunning - Whether the parent state objects watch is running.
+ * @property {boolean} calculatedObjectsWatchRunning - Whether the calculated objects watch is running.
+ * @property {import('vue').ComputedRef<boolean>} calculatedRunning - Whether the calculated properties are running.
+ * @property {import('vue').ComputedRef<boolean>} running - Whether the list is running.
+ * @private
+ */
+/**
+ * The raw parent state for a list calculated.
+ *
+ * @typedef {(
+ *     import('./listInstance.js').ListInstanceRawState &
+ *     Partial<import('./listSubscription.js').ListSubscriptionRawState> &
+ *     Partial<import('./listRelated.js').ListRelatedRawState>
+ * )} ListCalculatedParentRawState
+ */
+/**
+ * The state for a list calculated property.
+ *
+ * @typedef {import('vue').UnwrapNestedRefs<
+ *     ListCalculatedParentRawState &
+ *     ListCalculatedRawState
+ * >} ListCalculatedState
+ */
+/**
+ * Represents a combined reactive state that includes properties from list related,
+ *  subscription, and instance modules.
+ *
+ * @typedef {import('vue').UnwrapNestedRefs<(
+ *     import('./listInstance.js').ListInstanceRawState &
+ *     Partial<import('./listSubscription.js').ListSubscriptionRawState> &
+ *     Partial<import('./listRelated.js').ListRelatedRawState>
+ * )>} ListCalculatedParentState
+ */
+/**
  * The options to create a list calculated composition function.
  *
  * @typedef {object} ListCalculatedOptions - Options to configure the behavior of the list calculated properties.
  * @property {ListCalculatedParentState} parentState - The parent state that interacts with the calculated objects.
- * @property {ListCalculatedRules} calculatedObjectsRules - A reactive reference to rules used for dynamic calculations
+ * @property {import('vue').Ref<ListCalculatedRules>} calculatedObjectsRules - A reactive reference to rules used for dynamic calculations
  *  within list objects. Proper setup of this reference ensures that updates are managed reactively, including deep
  *  property changes.
  */
@@ -13,8 +77,7 @@
  * @typedef {object} ListCalculatedProperties
  * @property {ListCalculatedState} state - The state for the list calculated property.
  * @property {ListCalculatedParentState} parentState - The parent state object.
- * @property {import('./watchesRunning.js').WatchesRunning} watchesRunning - The watches running.
- * @property {import('vue').EffectScope} effectScope - The effect scope for the list calculated property.
+ * @property {() => void} stop - Stops composition's effects and cleans up resources.
  */
 /**
  * The instance of `useListCalculated`.
@@ -91,57 +154,17 @@ export function useListCalculateds(listCalculatedArgs: {
  */
 export function useListCalculated({ parentState, calculatedObjectsRules }: ListCalculatedOptions): ListCalculated;
 /**
- * - Options to configure the behavior of the list calculated properties.
- */
-export type ListCalculatedOptions = {
-    /**
-     * - The parent state that interacts with the calculated objects.
-     */
-    parentState: ListCalculatedParentState;
-    /**
-     * - A reactive reference to rules used for dynamic calculations
-     * within list objects. Proper setup of this reference ensures that updates are managed reactively, including deep
-     * property changes.
-     */
-    calculatedObjectsRules: ListCalculatedRules;
-};
-/**
- * The properties for the list computed composition function.
- */
-export type ListCalculatedProperties = {
-    /**
-     * - The state for the list calculated property.
-     */
-    state: ListCalculatedState;
-    /**
-     * - The parent state object.
-     */
-    parentState: ListCalculatedParentState;
-    /**
-     * - The watches running.
-     */
-    watchesRunning: import("./watchesRunning.js").WatchesRunning;
-    /**
-     * - The effect scope for the list calculated property.
-     */
-    effectScope: import("vue").EffectScope;
-};
-/**
- * The instance of `useListCalculated`.
- */
-export type ListCalculated = ListCalculatedProperties;
-/**
  * Defines rules for dynamically calculating new properties for objects in a list. Each rule is a function that takes an
  *  object from the list, optionally its related objects, and previously calculated properties to compute a new
  *  property. These functions are reactive and re-evaluate when underlying dependencies change.
  */
-export type ListCalculatedRules = import("vue").Ref<{
-    [rule: string]: (object: import("./listInstance.js").ListObject, relatedObject: {
+export type ListCalculatedRules = {
+    [rule: string]: (object: import("../use/objectInstance.js").ExistingCrudObject, relatedObject: {
         [rule: string]: any;
     }, calculatedObjects: {
         [rule: string]: import("vue").ComputedRef<any>;
     }) => any;
-}>;
+};
 /**
  * - The raw state for a list calculated property.
  */
@@ -169,11 +192,11 @@ export type ListCalculatedRawState = {
     /**
      * - Whether the calculated properties are running.
      */
-    calculatedRunning: boolean;
+    calculatedRunning: import("vue").ComputedRef<boolean>;
     /**
      * - Whether the list is running.
      */
-    running: import("vue").Ref<boolean>;
+    running: import("vue").ComputedRef<boolean>;
 };
 /**
  * The raw parent state for a list calculated.
@@ -188,4 +211,40 @@ export type ListCalculatedState = import("vue").UnwrapNestedRefs<ListCalculatedP
  *  subscription, and instance modules.
  */
 export type ListCalculatedParentState = import("vue").UnwrapNestedRefs<(import("./listInstance.js").ListInstanceRawState & Partial<import("./listSubscription.js").ListSubscriptionRawState> & Partial<import("./listRelated.js").ListRelatedRawState>)>;
+/**
+ * - Options to configure the behavior of the list calculated properties.
+ */
+export type ListCalculatedOptions = {
+    /**
+     * - The parent state that interacts with the calculated objects.
+     */
+    parentState: ListCalculatedParentState;
+    /**
+     * - A reactive reference to rules used for dynamic calculations
+     * within list objects. Proper setup of this reference ensures that updates are managed reactively, including deep
+     * property changes.
+     */
+    calculatedObjectsRules: import("vue").Ref<ListCalculatedRules>;
+};
+/**
+ * The properties for the list computed composition function.
+ */
+export type ListCalculatedProperties = {
+    /**
+     * - The state for the list calculated property.
+     */
+    state: ListCalculatedState;
+    /**
+     * - The parent state object.
+     */
+    parentState: ListCalculatedParentState;
+    /**
+     * - Stops composition's effects and cleans up resources.
+     */
+    stop: () => void;
+};
+/**
+ * The instance of `useListCalculated`.
+ */
+export type ListCalculated = ListCalculatedProperties;
 //# sourceMappingURL=listCalculated.d.ts.map

@@ -12,13 +12,6 @@
 
 #### Properties
 
-##### isCancelled
-
-> **isCancelled**: `Readonly`\<`Ref`\<`boolean`, `boolean`\>\>
-
-A ref to a boolean indicating whether the request has
- been cancelled.
-
 ##### pkKey
 
 > **pkKey**: `string`
@@ -33,7 +26,7 @@ The ids of the objects to be deleted.
 
 ##### target
 
-> **target**: `any`
+> **target**: [`TargetArgs`](objectCrud.md#targetargs)
 
 The arguments to be passed to the crud handlers.
 
@@ -49,13 +42,6 @@ The arguments to be passed to the crud handlers.
 
 The action to execute.
 
-##### isCancelled
-
-> **isCancelled**: `Readonly`\<`Ref`\<`boolean`, `boolean`\>\>
-
-A ref to a boolean indicating whether the request has
- been cancelled.
-
 ##### pkKey
 
 > **pkKey**: `string`
@@ -70,15 +56,21 @@ The ids of the objects to be acted upon.
 
 ##### target
 
-> **target**: `any`
+> **target**: [`TargetArgs`](objectCrud.md#targetargs)
 
 The arguments to be passed to the crud handlers.
 
 ***
 
-### ListArgs
+### ListArgsRaw
 
 #### Properties
+
+##### clearObjects
+
+> **clearObjects**: [`ClearObjectsFn`](listCrud.md#clearobjectsfn)
+
+The method to call to clear the objects.
 
 ##### isCancelled
 
@@ -86,12 +78,6 @@ The arguments to be passed to the crud handlers.
 
 A ref to a boolean indicating whether the request has
  been cancelled.
-
-##### pageCallback
-
-> **pageCallback**: [`PageCallback`](listCrud.md#pagecallback-1)
-
-The method to call with new page(s) of data received.
 
 ##### params
 
@@ -105,9 +91,15 @@ The arguments to be passed for list crud handlers.
 
 The key name of the primary key.
 
+##### pushObjects
+
+> **pushObjects**: [`PushObjectsFn`](../use/listInstance.md#pushobjectsfn)
+
+The method to call with new page(s) of data received.
+
 ##### target
 
-> **target**: `any`
+> **target**: [`TargetArgs`](objectCrud.md#targetargs)
 
 The arguments to be passed to the crud handlers.
 
@@ -143,9 +135,15 @@ The subscribe function to get a subscription to a list of items.
 
 ***
 
-### ListSubscribeArgs
+### ListSubscribeArgsRaw
 
 #### Properties
+
+##### applyObjectEvent
+
+> **applyObjectEvent**: [`applyObjectEvent`](listCrud.md#applyobjectevent-1)
+
+The method to call when new data is received.
 
 ##### isCancelled
 
@@ -166,15 +164,9 @@ The arguments to be passed for list crud handlers.
 
 The key name of the primary key.
 
-##### subscriptionEventCallback
-
-> **subscriptionEventCallback**: [`SubscriptionEventCallback`](listCrud.md#subscriptioneventcallback-1)
-
-The method to call when new data is received.
-
 ##### target
 
-> **target**: `any`
+> **target**: [`TargetArgs`](objectCrud.md#targetargs)
 
 The arguments to be passed to the crud handlers.
 
@@ -234,9 +226,43 @@ The total records.
 
 ## Type Aliases
 
+### applyObjectEvent()
+
+> **applyObjectEvent**\<\>: (`newOrUpdatedOrDeleteObject`, `action`) => `void`
+
+#### Type Parameters
+
+#### Parameters
+
+##### newOrUpdatedOrDeleteObject
+
+[`ExistingCrudObject`](../use/objectInstance.md#existingcrudobject) | `string`
+
+##### action
+
+`"create"` | `"update"` | `"delete"`
+
+#### Returns
+
+`void`
+
+***
+
+### ClearObjectsFn()
+
+> **ClearObjectsFn**\<\>: () => `void`
+
+#### Type Parameters
+
+#### Returns
+
+`void`
+
+***
+
 ### CrudBulkDeleteFn()
 
-> **CrudBulkDeleteFn**\<\>: (`args`) => [`MaybeCancellablePromise`](../utils/cancellablePromise.md#maybecancellablepromiset)
+> **CrudBulkDeleteFn**\<\>: (`args`) => `Promise`\<`boolean`\>
 
 #### Type Parameters
 
@@ -250,13 +276,13 @@ The arguments to be passed to the crud handlers.
 
 #### Returns
 
-[`MaybeCancellablePromise`](../utils/cancellablePromise.md#maybecancellablepromiset)
+`Promise`\<`boolean`\>
 
 ***
 
 ### CrudExecuteActionFn()
 
-> **CrudExecuteActionFn**\<\>: (`args`) => [`MaybeCancellablePromise`](../utils/cancellablePromise.md#maybecancellablepromiset)
+> **CrudExecuteActionFn**\<\>: (`args`) => `Promise`\<`object` \| `string` \| `null`\>
 
 #### Type Parameters
 
@@ -270,7 +296,7 @@ The arguments to be passed to the crud handlers.
 
 #### Returns
 
-[`MaybeCancellablePromise`](../utils/cancellablePromise.md#maybecancellablepromiset)
+`Promise`\<`object` \| `string` \| `null`\>
 
 ***
 
@@ -314,47 +340,19 @@ The arguments to be passed to the crud handlers.
 
 ***
 
-### PageCallback()
+### ListArgs
 
-> **PageCallback**\<\>: (`newObjects`, `paginationInfo`?) => `void`
+> **ListArgs**\<\>: [`ListArgsRaw`](listCrud.md#listargsraw) & `Partial`\<[`CommonRunTracking`](../use/cancellableIntent.md#commonruntracking)\>
 
 #### Type Parameters
-
-#### Parameters
-
-##### newObjects
-
-[`ListObject`](../use/listInstance.md#listobject)
-
-##### paginationInfo?
-
-[`PaginateInfo`](listCrud.md#paginateinfo)
-
-#### Returns
-
-`void`
 
 ***
 
-### SubscriptionEventCallback()
+### ListSubscribeArgs
 
-> **SubscriptionEventCallback**\<\>: (`newOrUpdatedOrDeleteObject`, `action`) => `void`
+> **ListSubscribeArgs**\<\>: [`ListSubscribeArgsRaw`](listCrud.md#listsubscribeargsraw) & `Partial`\<[`CommonRunTracking`](../use/cancellableIntent.md#commonruntracking)\>
 
 #### Type Parameters
-
-#### Parameters
-
-##### newOrUpdatedOrDeleteObject
-
-[`ListObject`](../use/listInstance.md#listobject) | `string`
-
-##### action
-
-`"create"` | `"update"` | `"delete"`
-
-#### Returns
-
-`void`
 
 ## Variables
 

@@ -8,6 +8,7 @@ export default defineConfig({
         coverage: {
             reporter: ["text", "json-summary", "html"],
             exclude: [
+                "index.js",
                 "**/*.config.js",
                 ".prettierrc.cjs",
                 "check_type_doc.js",
@@ -17,5 +18,6 @@ export default defineConfig({
                 "types",
             ],
         },
+        setupFiles: ["./tests/unit/setup.js"],
     },
 });
