@@ -13,6 +13,7 @@ export default defineConfig({
                 ".prettierrc.cjs",
                 "check_type_doc.js",
                 "make_type_doc.js",
+                "clean_type_doc.js",
                 "tests",
                 "typedoc-local-plugins",
                 "types",
