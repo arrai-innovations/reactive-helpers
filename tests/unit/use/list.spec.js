@@ -114,9 +114,8 @@ describe("use/list.js", () => {
         expect(useListInstance).toHaveBeenCalledWith({ props, handlers: {} });
         expect(useListSubscription).toHaveBeenCalledWith({
             listInstance: fakeInstance,
+            props,
         });
-        expect(fakeSubscription.state.intendToList).toBeDefined();
-        expect(fakeSubscription.state.intendToSubscribe).toBeDefined();
         expect(useListRelated).toHaveBeenCalledWith({
             parentState: fakeSubscription.state,
             relatedObjectsRules: toRef(props, "relatedObjectsRules"),

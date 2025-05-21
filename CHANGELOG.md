@@ -2,21 +2,25 @@
 
 _Actions potentially required by implementers are marked with italics._
 
-## v21.0.0 (2025-05-20)
+## v21.0.0 (2025-05-21)
 
 ### TL;DR
 
-> Massive refactor and cleanup of the list framework internals.
+> Massive refactor and cleanup of the list and object framework internals.
 
-- Pagination is now manual - implement using `pushObjects()` / `clearObjects()` in your CRUD adapter.
+- Pagination is now manual  implement using `pushObjects()` / `clearObjects()` in your CRUD adapter.
 
-- All internal tracking now uses computed state + `stop()` - no more `watchesRunning`, `effectScope`, or mutating internal flags.
+- All internal tracking now uses computed state + `stop()`  no more `watchesRunning`, `effectScope`, or mutating internal flags.
 
-- CRUD adapter signatures changed - `list()` and `subscribe()` now receive a structured config object.
+- CRUD adapter signatures changed  `list()` and `subscribe()` now receive a structured config object.
 
-- All list utilities (`sort`, `filter`, `search`, etc.) are now reactive-by-default - all support teardown via `stop()`.
+- All list and object utilities (`sort`, `filter`, `search`, `retrieve`, `subscribe`, etc.) are reactive-by-default  all support teardown via `stop()`.
 
-- Loading and error state is now modular and composable - `useLoading`, `useError`, `useProxyLoadingError`, etc.
+- Loading and error state is now modular and composable  `useLoading`, `useError`, `useProxyLoadingError`, etc.
+
+- Object CRUD internals (`useObjectInstance`, `useObject`) now support `{ runId, isCurrentRun }` for race-safe tracking, and fully integrate cancellable logic with `useCancellableIntent`.
+
+- `useObject`, `useObjectInstance`, and `useObjectSubscription` expose consistent teardown (`stop()`), dynamic function merging (`mergeFns()`), and unified error state via `useProxyError`.
 
 ### Breaking Changes
 
@@ -247,6 +251,62 @@ _Actions potentially required by implementers are marked with italics._
 
 - Dot-path and function-based key access (e.g. `relatedItem.name`, `calculatedItem.value`) works seamlessly when used with `useListRelated` or `useListCalculated`.
 
+#### `useObjectInstance`
+
+- `retrieve()` now supports structured `{ runId, isCurrentRun }` arguments, aligning with `useCancellableIntent` usage patterns.
+
+- Introduced proper type-safe support for `{object}` and `{partialObject}` inputs to `create`, `update`, and `patch`, improving TS DX.
+
+- CRUD operations now internally use `wrapMaybeCancellable()` and properly handle `cancel()` cleanup logic.
+
+- Internal loading/error state unified under `useLoadingError()`.
+
+- `clearError()` is exposed directly on the instance.
+
+#### `useObjectSubscription`
+
+- **Refactored** internal usage of `useCancellableIntent()` for both retrieve and subscribe flows to match list framework conventions.
+  _This simplifies logic and improves lifecycle management and cancelability._
+
+- Subscriptions and retrievals now unify their error and loading state under `useProxyError`, providing a consistent `state.error` and `state.errored` surface across the full object lifecycle.
+
+- The `state.subscribed` flag is now reactive and directly reflects the current subscription intent.
+
+- Subscription events now use standardized `"create"`, `"update"`, and `"delete"` actions, applied automatically via internal callback handling.
+
+- Public methods `subscribe()`, `unsubscribe()`, `updateFromSubscription()`, and `deleteFromSubscription()` were **removed**.
+  _Use `state.intendToRetrieve`, `state.intendToSubscribe`, and `clearError()` instead._
+
+- Fully reactive teardown now available via the new `stop()` method, consistent with other composables.
+
+#### `useObject`
+
+- All function references (`retrieve`, `create`, etc.) are now dynamically merged using a shared `mergeFns()` utility.
+
+- The return shape now includes a `stop()` method for scoped cleanup.
+
+### `objectCrud`
+
+- All `Args` typedefs now use shared `TargetArgs` instead of repeating `{[key: string]: any}`.
+
+- `RetrieveArgs` and `ObjectSubscribeArgs` extended to include `CommonRunTracking`.
+
+- `CrudSubscribeCallback` action field is now narrowed to `"create" | "update" | "delete"`.
+
+#### `useCancellableIntent`
+
+- Introduced `CommonRunTracking` typedef and standardized support for `runId` and `isCurrentRun` in intent handlers.
+
+- Exposed `state.resolving`, which reflects active resolution count.
+
+- `cancel()` now accepts an optional `forceClearActive` boolean.
+
+- Integrated `useLoadingError()` directly into cancellable intents for unified loading/error state management.
+
+- Improved fallback handling for synchronous throws and non-thenable returns.
+
+- New `CancellableIntentError` class introduced for structured error signaling.
+
 #### Loading & Error Utilities
 
 - Introduced modular state composables for loading and error handling:
@@ -337,3 +397,11 @@ _Actions potentially required by implementers are marked with italics._
 - Function merging is now dynamic via `mergeFns()`.
 
 - Improved warning when `props.params` is omitted.
+
+#### `useObject`
+
+- Now use normalized `mergeFns()` to simplify return shaping and avoid redundancy.
+
+#### `useObjectInstance`, `useObjectSubscription`
+
+- Type annotations were clarified and reorganized for better developer experience.

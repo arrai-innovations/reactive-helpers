@@ -1,12 +1,31 @@
 import identity from "lodash-es/identity.js";
 import isEmpty from "lodash-es/isEmpty.js";
 import isEqual from "lodash-es/isEqual.js";
-import { computed, effectScope, nextTick, onScopeDispose, reactive, readonly, watch } from "vue";
+import { computed, effectScope, nextTick, onScopeDispose, reactive, readonly, toRef, watch } from "vue";
 import { tryOnActivated, tryOnDeactivated } from "../utils/keepAliveTry.js";
+import { deepUnref } from "vue-deepunref";
+import { useLoadingError } from "./loadingError.js";
 
 /**
  * @module use/cancellableIntent.js - A composable function for handling cancellable intents.
  */
+
+/**
+ * Custom error class for list subscription errors.
+ */
+export class CancellableIntentError extends Error {
+    /**
+     * Creates a new CancellableIntentError.
+     *
+     * @param {string} message - The error message.
+     * @param {string} code - The error code.
+     */
+    constructor(message, code) {
+        super(message);
+        this.name = "CancellableIntentError";
+        this.code = code;
+    }
+}
 
 /**
  * @typedef {number} RunId - A unique identifier for a single execution ("run") of an intent.
@@ -16,12 +35,8 @@ import { tryOnActivated, tryOnDeactivated } from "../utils/keepAliveTry.js";
 
 /**
  * @typedef {object} CancellableIntentRawState - The raw state of the cancellable intent.
- * @property {number|undefined} activeCount - The number of active intents.
  * @property {import('vue').ComputedRef<boolean>|undefined} active - Whether there are active intents.
- * @property {number|undefined} resolvingCount - The number of resolving intents.
  * @property {import('vue').ComputedRef<boolean>|undefined} resolving - Whether there are resolving intents.
- * @property {boolean} errored - Whether there was an error.
- * @property {Error|null} error - The error that occurred.
  * @property {boolean} clearActiveOnResolved - Whether to clear the active state when the promise resolves.
  * @property {RunId|null} lastRunId - The most recent run ID issued for a triggered intent. Useful for associating async results with their originating trigger.
  * @property {import('vue').DeepReadonly<object>} watchArguments - The watch arguments.
@@ -29,7 +44,10 @@ import { tryOnActivated, tryOnDeactivated } from "../utils/keepAliveTry.js";
  */
 
 /**
- * @typedef {import("vue").Reactive<CancellableIntentRawState>} CancellableIntentState - The state of the cancellable intent.
+ * @typedef {import("vue").Reactive<
+ *     CancellableIntentRawState &
+ *     Pick<import('./error.js').ErrorStatus, 'error' | 'errored'>
+ * >} CancellableIntentState - The state of the cancellable intent.
  */
 
 /**
@@ -37,7 +55,15 @@ import { tryOnActivated, tryOnDeactivated } from "../utils/keepAliveTry.js";
  */
 
 /**
- * @typedef {(runId: RunId, isCurrentRun: IsCurrentRunFn) => import('../utils/cancellablePromise.js').MaybeCancellablePromise<void>} AwaitableWithCancel - A function that returns a promise that can be cancelled.
+ * The common run tracking arguments.
+ *
+ * @typedef {object} CommonRunTracking
+ * @property {RunId} runId - The unique identifier for your run.
+ * @property {IsCurrentRunFn} isCurrentRun - A function that checks if the current run ID matches your run ID.
+ */
+
+/**
+ * @typedef {(runTracking: CommonRunTracking) => import('../utils/cancellablePromise.js').MaybeCancellablePromise<void>} AwaitableWithCancel - A function that returns a promise that can be cancelled.
  */
 
 /**
@@ -53,10 +79,23 @@ import { tryOnActivated, tryOnDeactivated } from "../utils/keepAliveTry.js";
  */
 
 /**
- * @typedef {object} CancellableIntent - The instance of the cancellable intent.
+ * Cancel function signature for cancellable intent.
+ *
+ * @typedef {Function} CancelFn
+ * @param {any} reason - The reason for cancellation.
+ * @param {boolean} [forceClearActive=false] - Whether to force clear the active state.
+ * @returns {Promise<void>} - A promise that resolves when the cancellation is complete.
+ */
+
+/**
+ * @typedef {object} MyCancellableIntent - The instance of the cancellable intent.
  * @property {CancellableIntentState} state - The state of the cancellable intent.
- * @property {Function} stop - Stop the cancellable intent.
- * @property {Function} cancel - Cancel the cancellable intent.
+ * @property {() => void} stop - Stop the cancellable intent.
+ * @property {CancelFn} cancel - Cancel the cancellable intent.
+ */
+
+/**
+ * @typedef {MyCancellableIntent & Pick<import('./error.js').ErrorStatus, "clearError">} CancellableIntent - The instance of the cancellable intent.
  */
 
 /**
@@ -114,29 +153,30 @@ export function useCancellableIntent({
     const internalState = reactive({
         watchArguments,
         guardArguments,
+        activeCount: undefined, // the active count doesn't mean much when not using clearActiveOnResolved
+        resolvingCount: undefined,
     });
+    const loadingError = es.run(() => useLoadingError());
     /** @type {CancellableIntentState} */
     const state = reactive({
-        activeCount: undefined, // the active count doesn't mean much when not using clearActiveOnResolved
         active: es.run(() =>
             computed(() => {
-                if (state.activeCount === undefined) {
+                if (internalState.activeCount === undefined) {
                     return undefined;
                 }
-                return state.activeCount > 0;
+                return internalState.activeCount > 0;
             })
         ),
-        resolvingCount: undefined,
         resolving: es.run(() =>
             computed(() => {
-                if (state.resolvingCount === undefined) {
+                if (internalState.resolvingCount === undefined) {
                     return undefined;
                 }
-                return state.resolvingCount > 0;
+                return internalState.resolvingCount > 0;
             })
         ),
-        errored: false,
-        error: null,
+        errored: loadingError.errored,
+        error: loadingError.error,
         clearActiveOnResolved,
         lastRunId: null,
         watchArguments: readonly(internalState.watchArguments),
@@ -145,40 +185,42 @@ export function useCancellableIntent({
     let previousWatchValues = null,
         cancelFunction = null;
 
-    function stop() {
-        // effect scopes are stopped automatically in onUnmounted / a parent onScopeDispose; this is for other use cases
-        es.stop();
-    }
-
-    async function cancel(/** @type {any} */ reason) {
-        if (cancelFunction) {
-            return cancelFunction(reason)
-                .catch(console.error)
-                .finally(() => {
-                    if (!state.clearActiveOnResolved) {
-                        cancelFunction = null;
-                        state.activeCount--;
-                    }
-                });
-        }
-        return false;
-    }
-
     const doIntentWatch = () => {
-        state.errored = false;
-        state.error = null;
-        if (state.activeCount === undefined) {
-            state.activeCount = 0;
+        loadingError.clearError();
+        if (internalState.activeCount === undefined) {
+            internalState.activeCount = 0;
         }
-        state.activeCount += 1;
-        if (state.resolvingCount === undefined) {
-            state.resolvingCount = 0;
+        internalState.activeCount += 1;
+        if (internalState.resolvingCount === undefined) {
+            internalState.resolvingCount = 0;
         }
-        state.resolvingCount += 1;
+        internalState.resolvingCount += 1;
         let thisRunId = ++myRunId;
         state.lastRunId = thisRunId;
-        const isCurrentRun = () => thisRunId === state.lastRunId;
-        let awaitablePromise = awaitableWithCancel(thisRunId, isCurrentRun);
+        let awaitablePromise;
+        try {
+            awaitablePromise = awaitableWithCancel({
+                runId: thisRunId,
+                isCurrentRun: () => thisRunId === state.lastRunId,
+            });
+        } catch (error) {
+            // no need to cancel if we throw even before we get a promise
+            loadingError.setError(error);
+            internalState.resolvingCount--;
+            // even if you don't clear active on resolved, we didn't resolve
+            internalState.activeCount--;
+            return;
+        }
+
+        if (!awaitablePromise || typeof awaitablePromise.then !== "function") {
+            loadingError.setError(
+                new CancellableIntentError(
+                    "awaitableWithCancel must return a thenable (Promise-like) object",
+                    "invalid-promise"
+                )
+            );
+            return;
+        }
 
         if (awaitablePromise.cancel) {
             cancelFunction = awaitablePromise.cancel.bind(awaitablePromise);
@@ -187,17 +229,19 @@ export function useCancellableIntent({
         }
         // we don't want to await this, because we want to be able to cancel it
         awaitablePromise
-            .catch(async (err) => {
-                await cancel("Error in awaitableWithCancel");
-                state.errored = true;
-                state.error = err;
-            })
-            .finally(() => {
-                state.resolvingCount--;
+            .then(() => {
                 if (state.clearActiveOnResolved) {
                     cancelFunction = null;
-                    state.activeCount--;
+                    internalState.activeCount--;
                 }
+            })
+            .catch(async (err) => {
+                const cancelPromise = instance.cancel("Error in awaitableWithCancel", true);
+                loadingError.setError(err);
+                await cancelPromise;
+            })
+            .finally(() => {
+                internalState.resolvingCount--;
             });
     };
 
@@ -211,18 +255,18 @@ export function useCancellableIntent({
         runningIntentWatch = true;
         // this locked section is to deal with multiple intentWatches running while waiting for cancel to resolve
         try {
-            let newWatchValues = Object.values(internalState.watchArguments);
+            let newWatchValues = Object.values(deepUnref(internalState.watchArguments));
             if (isEqual(newWatchValues, previousWatchValues)) {
                 return;
             }
-            await cancel("Intent watch cancelled"); // this can take time so guards and watches can change!
-            newWatchValues = Object.values(internalState.watchArguments);
+            await instance.cancel("Intent watch cancelled"); // this can take time so guards and watches can change!
+            newWatchValues = Object.values(deepUnref(internalState.watchArguments));
             if (isEqual(newWatchValues, previousWatchValues)) {
                 return;
             }
             previousWatchValues = newWatchValues;
-            const guardValues = Object.values(internalState.guardArguments);
-            if (Object.values(newWatchValues).every(identity)) {
+            const guardValues = Object.values(deepUnref(internalState.guardArguments));
+            if (newWatchValues.every(identity)) {
                 // if any guards are true, delay the watch.
                 if (guardValues && !isEmpty(guardValues) && guardValues.some(identity)) {
                     delayedWatch = doIntentWatch;
@@ -243,7 +287,7 @@ export function useCancellableIntent({
     const guardWatch = () => {
         if (delayedWatch) {
             // if all guards are false, run the watch
-            if (Object.values(guardArguments).every((x) => !x)) {
+            if (!Object.values(deepUnref(guardArguments)).some(identity)) {
                 const myDelayedWatch = delayedWatch;
                 delayedWatch = null;
                 myDelayedWatch();
@@ -254,7 +298,7 @@ export function useCancellableIntent({
     const cleanup = () => {
         // cancel the intent when the component is deactivated
         // noinspection JSIgnoredPromiseFromCall
-        cancel("Component deactivated");
+        instance.cancel("Component deactivated");
         if (state.clearActiveOnResolved) {
             // otherwise it clears when resolved
             cancelFunction = null;
@@ -263,20 +307,38 @@ export function useCancellableIntent({
         previousWatchValues = null;
     };
 
+    /** @type {CancellableIntent} */
+    const instance = {
+        state,
+        // effect scopes are stopped automatically in onUnmounted / a parent onScopeDispose; this is for other use cases
+        stop: () => es.stop(),
+        cancel: async (/** @type {any} */ reason, forceClearActive = false) => {
+            if (cancelFunction) {
+                const toCancel = cancelFunction;
+                cancelFunction = null;
+                if (!state.clearActiveOnResolved || forceClearActive) {
+                    internalState.activeCount--;
+                }
+                return toCancel(reason).catch(console.error);
+            }
+            return false;
+        },
+        clearError: loadingError.clearError,
+    };
     es.run(() => {
-        watch(() => Object.values(internalState.watchArguments), intentWatch, {
+        watch(toRef(internalState, "watchArguments"), intentWatch, {
             // this can't be immediate because subscribe wants to look at our state, which won't exist yet.
             deep: true,
         });
 
-        watch(() => Object.values(internalState.guardArguments), guardWatch, {
+        watch(toRef(internalState, "guardArguments"), guardWatch, {
             // we can't possibly have a delayed watch immediately
             deep: true,
         });
 
         tryOnActivated(() => {
-            state.activeCount = 0;
-            state.resolvingCount = 0;
+            internalState.activeCount = 0;
+            internalState.resolvingCount = 0;
             // trigger the intent watch manually to get current watch values
             // noinspection JSIgnoredPromiseFromCall
             intentWatch();
@@ -288,9 +350,5 @@ export function useCancellableIntent({
         // but we do want to run immediately-ish
         nextTick().then(intentWatch);
     });
-    return {
-        state,
-        stop,
-        cancel,
-    };
+    return instance;
 }

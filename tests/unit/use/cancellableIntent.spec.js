@@ -97,8 +97,8 @@ describe("use/cancellableIntent", () => {
             });
 
             expect(mockAwaitableWithCancel).not.toHaveBeenCalled();
-            expect(subscribeIntent.state.activeCount).toBeUndefined();
-            expect(subscribeIntent.state.resolvingCount).toBeUndefined();
+            expect(subscribeIntent.state.active).toBeUndefined();
+            expect(subscribeIntent.state.resolving).toBeUndefined();
 
             testGuardRef.value = false;
             await flushPromises();
@@ -129,8 +129,10 @@ describe("use/cancellableIntent", () => {
             await flushPromises();
 
             expect(cancellableResolvable.promise.cancel).toHaveBeenCalledTimes(1);
-            expect(subscribeIntent.state.active).toBe(true);
+            expect(subscribeIntent.state.active).toBe(false);
             expect(subscribeIntent.state.resolving).toBe(true);
+            expect(subscribeIntent.state.errored).toBe(true);
+            expect(subscribeIntent.state.error).toBe(mockError);
 
             await cancellableResolvable.cancel.resolve(true);
             await flushPromises();
@@ -148,7 +150,7 @@ describe("use/cancellableIntent", () => {
 
             useCancellableIntent({
                 watchArguments: { refVal },
-                awaitableWithCancel: (runId) => {
+                awaitableWithCancel: ({ runId }) => {
                     seen.push(runId);
                     return CancellablePromise(
                         new Promise(() => {}),
@@ -173,7 +175,7 @@ describe("use/cancellableIntent", () => {
 
             useCancellableIntent({
                 watchArguments: { refVal },
-                awaitableWithCancel: (runId, isCurrentRun) => {
+                awaitableWithCancel: ({ runId, isCurrentRun }) => {
                     let resolve;
                     const p = CancellablePromise(
                         new Promise((res) => {

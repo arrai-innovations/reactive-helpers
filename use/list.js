@@ -5,7 +5,7 @@ import { useListRelated } from "./listRelated.js";
 import { useListSearch } from "./listSearch.js";
 import { useListSort } from "./listSort.js";
 import { useListSubscription } from "./listSubscription.js";
-import { effectScope, reactive, shallowReactive, shallowReadonly, toRef } from "vue";
+import { effectScope, shallowReactive, shallowReadonly, toRef } from "vue";
 
 /**
  * Provides a comprehensive Vue 3 composable function for managing a list of objects. This module orchestrates several
@@ -63,28 +63,6 @@ export class ListError extends Error {
  */
 
 /**
- * Represents the combined state definitions for all list-related components.
- * This interface aggregates the raw state from multiple list management functionalities.
- *
- * @typedef {(
- *     import('./listInstance.js').ListInstanceRawState &
- *     import('./listSubscription.js').ListSubscriptionRawState &
- *     import('./listRelated.js').ListRelatedRawState &
- *     import('./listCalculated.js').ListCalculatedRawState &
- *     import('./listFilter.js').ListFilterRawState &
- *     import('./listSearch.js').ListSearchRawState &
- *     import('./listSort.js').ListSortRawState
- * )} ListRawState
- */
-
-/**
- * Represents the reactive state derived from aggregating states of various list-related components.
- * This state is typically used within Vue components for reactivity and access to updated list properties.
- *
- * @typedef {import('vue').UnwrapNestedRefs<ListRawState>} ListState
- */
-
-/**
  * Holds references to instances of all list-related composables, facilitating direct access and management.
  *
  * @typedef {{
@@ -107,19 +85,13 @@ export class ListError extends Error {
  * )} ListFunctions
  */
 
-// & import('./listRelated.js').ListRelatedFunctions
-// & import('./listCalculated.js').ListCalculatedFunctions
-// & import('./listFilter.js').ListFilterFunctions
-// & import('./listSearch.js').ListSearchFunctions
-// & import('./listSort.js').ListSortFunctions
-
 /**
  * Encapsulates properties relevant to the overall management of list-related hooks, including state, direct access to hooks,
  * and scoped effects.
  *
  * @typedef {object} ListManagerProperties
  * @property {ListManaged} managed - A readonly reference to the managed list hooks.
- * @property {ListState} state - Represents the final reactive state in the list processing chain.
+ * @property {import('./listSort.js').ListSortState} state - Represents the final reactive state in the list processing chain.
  * @property {() => void} stop - A function to stop the effect scope and clean up resources.
  */
 
@@ -132,11 +104,13 @@ export class ListError extends Error {
 
 /* eslint-disable jsdoc/valid-types */
 /**
- * Extracts all function properties from the given object.
+ * Extract function properties from a source object, excluding `stop`.
  *
- * @template {{string: any}} T - The source object type.
- * @param {T} source - The source object to extract functions from.
- * @returns {Partial<{ [K in keyof T]: T[K] extends Function ? T[K] : never }>} An object containing only the function-valued properties of `source`, excluding `"stop"`.
+ * @template {object} T
+ * @param {T} source - The source object from which to extract function properties.
+ * @returns {{
+ *   [K in keyof T as K extends "stop" ? never : T[K] extends (...args: any[]) => any ? K : never]: T[K]
+ * }} - An object containing only the function properties of the source object, excluding `stop`.
  */
 function mergeFns(source) {
     const returnedFns = {};
@@ -148,6 +122,7 @@ function mergeFns(source) {
             }
         }
     }
+    // @ts-ignore
     return returnedFns;
 }
 /* eslint-enable jsdoc/valid-types */
@@ -184,6 +159,7 @@ export const useLists = (listOptions) => {
  * @throws {ListError} - If required options are not provided.
  */
 export const useList = ({ props, handlers = {}, searchThrottle = 500, sortThrottleWait, searchShowAllWhenEmpty }) => {
+    /** @type {ListManaged} */
     const managed = shallowReactive({
         listInstance: null,
         listSubscription: null,
@@ -208,9 +184,8 @@ export const useList = ({ props, handlers = {}, searchThrottle = 500, sortThrott
 
         managed.listSubscription = useListSubscription({
             listInstance: managed.listInstance,
+            props,
         });
-        managed.listSubscription.state.intendToList = toRef(props, "intendToList");
-        managed.listSubscription.state.intendToSubscribe = toRef(props, "intendToSubscribe");
 
         managed.listRelated = useListRelated({
             parentState: managed.listSubscription.state,
@@ -230,12 +205,7 @@ export const useList = ({ props, handlers = {}, searchThrottle = 500, sortThrott
 
         managed.listSearch = useListSearch({
             parentState: managed.listFilter.state,
-            props: reactive({
-                textSearchRules: toRef(props, "textSearchRules"),
-                textSearchValue: toRef(props, "textSearchValue"),
-                customDocumentOptions: toRef(props, "customDocumentOptions"),
-                customSearchOptions: toRef(props, "customSearchOptions"),
-            }),
+            props,
             throttle: searchThrottle,
             showAllWhenEmpty: searchShowAllWhenEmpty,
         });
@@ -247,8 +217,8 @@ export const useList = ({ props, handlers = {}, searchThrottle = 500, sortThrott
         });
     });
 
+    // noinspection UnnecessaryLocalVariableJS
     /** @type {ListManager} */
-    // @ts-ignore
     const manager = {
         managed: shallowReadonly(managed),
         state: managed.listSort.state,
