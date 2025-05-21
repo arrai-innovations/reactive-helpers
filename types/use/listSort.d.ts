@@ -130,7 +130,7 @@ export function useListSorts(listSortArgs: {
  * @param {ListSortOptions} options - The configuration options for initializing the list sort instance.
  * @returns {ListSort} The initialized list sort instance, including reactive state and utilities to manage list sorting.
  */
-export function useListSort({ parentState, orderByRules, sortThrottleWait, }: ListSortOptions): ListSort;
+export function useListSort({ parentState, orderByRules, sortThrottleWait }: ListSortOptions): ListSort;
 /**
  * Describes a rule for ordering elements in a list. Each rule can directly reference a property of the list items,
  * or define a function to compute the value used for sorting. Rules can be configured to sort in ascending or descending
