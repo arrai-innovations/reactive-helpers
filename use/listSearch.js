@@ -194,8 +194,7 @@ export function useListSearch({ parentState, props, throttle = 500, showAllWhenE
     // @ts-ignore
     const state = reactive(
         /** @type {ListSearchRawState} */ {
-            .../** @type {ListSearchParentStateToRefs} */
-            toRefs(parentState),
+            .../** @type {ListSearchParentStateToRefs} */ toRefs(parentState),
             objects: {},
             objectsInOrder: computed(() => internalState.objectsInOrderRefs.map((ref) => unref(ref))),
             order: [],
