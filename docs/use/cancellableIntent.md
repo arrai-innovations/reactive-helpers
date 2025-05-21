@@ -6,93 +6,61 @@
 
 # use/cancellableIntent
 
-## Interfaces
+## Classes
 
-### CancellableIntent
+### CancellableIntentError
 
-The instance of the cancellable intent.
+Custom error class for list subscription errors.
+
+#### Extends
+
+- `Error`
+
+#### Constructors
+
+##### new CancellableIntentError()
+
+> **new CancellableIntentError**(`message`, `code`): [`CancellableIntentError`](cancellableIntent.md#cancellableintenterror)
+
+Creates a new CancellableIntentError.
+
+###### Parameters
+
+###### message
+
+`string`
+
+The error message.
+
+###### code
+
+`string`
+
+The error code.
+
+###### Returns
+
+[`CancellableIntentError`](cancellableIntent.md#cancellableintenterror)
+
+###### Overrides
+
+`Error.constructor`
 
 #### Properties
 
-##### cancel
+##### code
 
-> **cancel**: `Function`
+> **code**: `string`
 
-Cancel the cancellable intent.
+##### name
 
-##### state
+> **name**: `string`
 
-> **state**: `object`
+###### Inherited from
 
-The state of the cancellable intent.
+`Error.name`
 
-###### active
-
-> **active**: `boolean`
-
-Whether there are active intents.
-
-###### activeCount
-
-> **activeCount**: `number`
-
-The number of active intents.
-
-###### clearActiveOnResolved
-
-> **clearActiveOnResolved**: `boolean`
-
-Whether to clear the active state when the promise resolves.
-
-###### error
-
-> **error**: `Error`
-
-The error that occurred.
-
-###### errored
-
-> **errored**: `boolean`
-
-Whether there was an error.
-
-###### guardArguments
-
-> **guardArguments**: `any`
-
-The guard arguments.
-
-###### lastRunId
-
-> **lastRunId**: `number`
-
-The most recent run ID issued for a triggered intent. Useful for associating async results with their originating trigger.
-
-###### resolving
-
-> **resolving**: `boolean`
-
-Whether there are resolving intents.
-
-###### resolvingCount
-
-> **resolvingCount**: `number`
-
-The number of resolving intents.
-
-###### watchArguments
-
-> **watchArguments**: `any`
-
-The watch arguments.
-
-##### stop
-
-> **stop**: `Function`
-
-Stop the cancellable intent.
-
-***
+## Interfaces
 
 ### CancellableIntentOptions
 
@@ -138,29 +106,11 @@ The raw state of the cancellable intent.
 
 Whether there are active intents.
 
-##### activeCount
-
-> **activeCount**: `number`
-
-The number of active intents.
-
 ##### clearActiveOnResolved
 
 > **clearActiveOnResolved**: `boolean`
 
 Whether to clear the active state when the promise resolves.
-
-##### error
-
-> **error**: `Error`
-
-The error that occurred.
-
-##### errored
-
-> **errored**: `boolean`
-
-Whether there was an error.
 
 ##### guardArguments
 
@@ -180,23 +130,113 @@ The most recent run ID issued for a triggered intent. Useful for associating asy
 
 Whether there are resolving intents.
 
-##### resolvingCount
-
-> **resolvingCount**: `number`
-
-The number of resolving intents.
-
 ##### watchArguments
 
 > **watchArguments**: `any`
 
 The watch arguments.
 
+***
+
+### CommonRunTracking
+
+#### Properties
+
+##### isCurrentRun
+
+> **isCurrentRun**: [`IsCurrentRunFn`](cancellableIntent.md#iscurrentrunfn)
+
+A function that checks if the current run ID matches your run ID.
+
+##### runId
+
+> **runId**: `number`
+
+The unique identifier for your run.
+
+***
+
+### MyCancellableIntent
+
+The instance of the cancellable intent.
+
+#### Properties
+
+##### cancel
+
+> **cancel**: `Function`
+
+Cancel the cancellable intent.
+
+##### state
+
+> **state**: `object`
+
+The state of the cancellable intent.
+
+###### active
+
+> **active**: `boolean`
+
+Whether there are active intents.
+
+###### clearActiveOnResolved
+
+> **clearActiveOnResolved**: `boolean`
+
+Whether to clear the active state when the promise resolves.
+
+###### error
+
+> **error**: `Error`
+
+The error that occurred.
+
+###### errored
+
+> **errored**: `boolean`
+
+Whether an error has occurred.
+
+###### guardArguments
+
+> **guardArguments**: `any`
+
+The guard arguments.
+
+###### lastRunId
+
+> **lastRunId**: `number`
+
+The most recent run ID issued for a triggered intent. Useful for associating async results with their originating trigger.
+
+###### resolving
+
+> **resolving**: `boolean`
+
+Whether there are resolving intents.
+
+###### watchArguments
+
+> **watchArguments**: `any`
+
+The watch arguments.
+
+##### stop()
+
+> **stop**: () => `void`
+
+Stop the cancellable intent.
+
+###### Returns
+
+`void`
+
 ## Type Aliases
 
 ### AwaitableWithCancel()
 
-> **AwaitableWithCancel**\<\>: (`runId`, `isCurrentRun`) => [`MaybeCancellablePromise`](../utils/cancellablePromise.md#maybecancellablepromiset)
+> **AwaitableWithCancel**\<\>: (`runTracking`) => [`MaybeCancellablePromise`](../utils/cancellablePromise.md#maybecancellablepromiset)
 
 A function that returns a promise that can be cancelled.
 
@@ -204,17 +244,31 @@ A function that returns a promise that can be cancelled.
 
 #### Parameters
 
-##### runId
+##### runTracking
 
-[`RunId`](cancellableIntent.md#runid)
-
-##### isCurrentRun
-
-[`IsCurrentRunFn`](cancellableIntent.md#iscurrentrunfn)
+[`CommonRunTracking`](cancellableIntent.md#commonruntracking)
 
 #### Returns
 
 [`MaybeCancellablePromise`](../utils/cancellablePromise.md#maybecancellablepromiset)
+
+***
+
+### CancelFn
+
+> **CancelFn**\<\>: `Function`
+
+#### Type Parameters
+
+***
+
+### CancellableIntent
+
+> **CancellableIntent**\<\>: [`MyCancellableIntent`](cancellableIntent.md#mycancellableintent) & `Pick`\<[`ErrorStatus`](error.md#errorstatus), `"clearError"`\>
+
+The instance of the cancellable intent.
+
+#### Type Parameters
 
 ***
 

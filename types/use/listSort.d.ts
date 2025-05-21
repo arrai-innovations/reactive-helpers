@@ -28,12 +28,7 @@ export function setListSortDefaultOptions({ sortThrottleWait }: {
  *
  * @typedef {object} ListSortRawState
  * @property {OrderByRule[]} orderByRules - Current sorting rules applied to the list.
- * @property {string[]} order - Array of IDs representing the current sort order of the list.
- * @property {object} sortCriteria - Computed sort criteria used for dynamically sorting the list.
  * @property {boolean[]} orderByDesc - Flags indicating whether each sort criterion is in descending order.
- * @property {boolean} sortCriteriaWatchRunning - Flag to indicate if sorting criteria computations are actively updating.
- * @property {boolean} sortWatchRunning - Flag to indicate if the sort operation is actively processing.
- * @property {boolean} outstandingEffects - Flag to indicate if there are pending reactive effects needing resolution.
  */
 /**
  *
@@ -73,8 +68,7 @@ export function setListSortDefaultOptions({ sortThrottleWait }: {
  * @typedef {object} ListSortProperties
  * @property {ListSortState} state - The reactive state for the list sort.
  * @property {ListSortParentState} parentState - The parent state.
- * @property {import('vue').EffectScope} effectScope - The effect scope for the list sort.
- * @property {import('./watchesRunning.js').WatchesRunning} watchesRunning - The watches running instance.
+ * @property {() => void} stop - A function to stop the effect scope and clean up resources.
  */
 /**
  * The list sort instance, including reactive state and utilities to manage list sorting operations.
@@ -158,29 +152,9 @@ export type ListSortRawState = {
      */
     orderByRules: OrderByRule[];
     /**
-     * - Array of IDs representing the current sort order of the list.
-     */
-    order: string[];
-    /**
-     * - Computed sort criteria used for dynamically sorting the list.
-     */
-    sortCriteria: object;
-    /**
      * - Flags indicating whether each sort criterion is in descending order.
      */
     orderByDesc: boolean[];
-    /**
-     * - Flag to indicate if sorting criteria computations are actively updating.
-     */
-    sortCriteriaWatchRunning: boolean;
-    /**
-     * - Flag to indicate if the sort operation is actively processing.
-     */
-    sortWatchRunning: boolean;
-    /**
-     * - Flag to indicate if there are pending reactive effects needing resolution.
-     */
-    outstandingEffects: boolean;
 };
 export type ListSortParentRawState = (import("./listInstance.js").ListInstanceRawState & Partial<import("./listSubscription.js").ListSubscriptionRawState> & Partial<import("./listRelated.js").ListRelatedRawState> & Partial<import("./listCalculated.js").ListCalculatedRawState> & Partial<import("./listFilter.js").ListFilterRawState> & Partial<import("./listSearch.js").ListSearchRawState>);
 export type ListSortParentState = import("vue").UnwrapNestedRefs<ListSortParentRawState>;
@@ -219,13 +193,9 @@ export type ListSortProperties = {
      */
     parentState: ListSortParentState;
     /**
-     * - The effect scope for the list sort.
+     * - A function to stop the effect scope and clean up resources.
      */
-    effectScope: import("vue").EffectScope;
-    /**
-     * - The watches running instance.
-     */
-    watchesRunning: import("./watchesRunning.js").WatchesRunning;
+    stop: () => void;
 };
 /**
  * The list sort instance, including reactive state and utilities to manage list sorting operations.

@@ -26,14 +26,6 @@ export type ObjectManagerOptions = {
     handlers: import("../config/objectCrud.js").ObjectCrudHandlers;
 };
 /**
- * Defines the raw state of the object manager.
- */
-export type ObjectManagerRawState = (import("./objectInstance.js").ObjectInstanceRawState & import("./objectSubscription.js").ObjectSubscriptionRawState & import("./objectRelated.js").ObjectRelatedRawState & import("./objectCalculated.js").ObjectCalculatedRawState);
-/**
- * Defines the state of the object manager.
- */
-export type ObjectManagerState = import("vue").UnwrapNestedRefs<ObjectManagerRawState>;
-/**
  * Defines the managed object, containing the managed object instance, subscription, related objects, and calculated objects.
  */
 export type ObjectManaged = {
@@ -57,11 +49,11 @@ export type ObjectManagerProperties = {
     /**
      * - The state of the managed object.
      */
-    state: ObjectManagerState;
+    state: import("./objectCalculated.js").ObjectCalculatedState;
     /**
-     * - The effect scope of the managed object.
+     * - Stop the effect scope of the managed object.
      */
-    effectScope: import("vue").EffectScope;
+    stop: () => void;
 };
 export type ObjectManager = ObjectManagerProperties & ObjectManagerFunctions;
 //# sourceMappingURL=object.d.ts.map

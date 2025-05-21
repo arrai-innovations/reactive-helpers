@@ -31,7 +31,8 @@
         "coverage": "npm test -- run --coverage=true",
         "prepare": "npx --no-install husky",
         "docs": "node make_type_doc.js",
-        "docs:check": "node check_type_doc.js"
+        "docs:check": "node check_type_doc.js",
+        "docs:clean": "node clean_type_doc.js"
     },
     "repository": {
         "type": "git",

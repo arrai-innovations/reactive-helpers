@@ -70,12 +70,12 @@ The container for your list of objects, providing loading or error status.
 import { setListCrud } from "@arrai-innovations/reactive-helpers";
 
 setListCrud({
-    list: async function listCrudAdaptor({ target, params, pageCallback }) {
+    list: async function listCrudAdaptor({ target, params, pushObjects }) {
         // todo: your implemenation here.
         const listOfObjects = await talkToServer(target, params);
-        pageCallback(listOfObjects);
+        pushObjects(listOfObjects);
         const nextListOfObjects = await talkToServerAgain(target, params);
-        pageCallback(nextListOfObjects);
+        pushObjects(nextListOfObjects);
     },
 });
 ```

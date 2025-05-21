@@ -68,11 +68,14 @@ export function useObjectInstance({ props, handlers }: ObjectInstanceOptions): O
  * @module use/objectInstance.js
  */
 /**
- * The object being managed by the instance. Empty object is the default.
+ * The object being managed by the instance. It must include a primary key field as identifying property, matching
+ * the name provided to the object/list's `pkKey` value, which is not known statically.
  *
- * @typedef {{pkKey: string, [key: string]: any}} ExistingCrudObject
+ * @typedef {{[key: string]: any}} ExistingCrudObject
  */
 /**
+ * The object you would like an object instance to create for you.
+ *
  * @typedef {{[key: string]: any}} NewCrudObject
  */
 /**
@@ -96,7 +99,7 @@ export function useObjectInstance({ props, handlers }: ObjectInstanceOptions): O
  */
 /**
  * @typedef {object} ObjectInstanceRawStateCrud
- * @property {import('vue').Reactive<import('../config/objectCrud.js').ObjectTargetArgs|{}>} args - The arguments to be passed to the crud handlers.
+ * @property {import('vue').Reactive<import('../config/objectCrud.js').TargetArgs|{}>} args - The arguments to be passed to the crud handlers.
  * @property {import('../config/objectCrud.js').CrudCreateFn} create - The create function.
  * @property {import('../config/objectCrud.js').CrudRetrieveFn} retrieve - The retrieve function.
  * @property {import('../config/objectCrud.js').CrudUpdateFn} update - The update function.
@@ -107,16 +110,18 @@ export function useObjectInstance({ props, handlers }: ObjectInstanceOptions): O
 /**
  * The raw state of the object instance.
  *
- * @typedef {object} ObjectInstanceRawState
+ * @typedef {object} ObjectInstanceRawMyState
  * @property {import('vue').Reactive<ObjectInstanceRawStateCrud>} crud - The crud handlers.
  * @property {import('vue').Ref<string|undefined>} pk - The pk of the object.
  * @property {import('vue').Ref<string|undefined>} pkKey - The pk key of the object.
  * @property {import('vue').Ref<{[key:string]: any}>} params - The arguments to be passed to the retrieve function.
  * @property {import('vue').Reactive<CrudObject>} object - The object.
- * @property {Readonly<import('vue').Ref<boolean>>} loading - Whether the object is loading.
- * @property {Readonly<import('vue').Ref<boolean>>} errored - Whether the object errored.
- * @property {Readonly<import('vue').Ref<Error|null>>} error - The error.
  * @property {boolean} deleted - Whether the object is deleted.
+ */
+/**
+ * The raw state of the object instance.
+ *
+ * @typedef {ObjectInstanceRawMyState & Pick<import('./loadingError.js').LoadingErrorStatus, "loading" | "error" | "errored">} ObjectInstanceRawState
  */
 /**
  * Manages a reactive state of an object including its CRUD status, loading states, and any operational errors.
@@ -124,17 +129,27 @@ export function useObjectInstance({ props, handlers }: ObjectInstanceOptions): O
  *
  * @typedef {import('vue').Reactive<ObjectInstanceRawState>} ObjectInstanceState
  */
+/** @typedef {{ object: NewCrudObject }} ObjectInstanceCreateArgs */
+/** @typedef {{ object: ExistingCrudObject }} ObjectInstanceUpdateArgs */
+/** @typedef {{ partialObject: ExistingCrudObject }} ObjectInstancePatchArgs */
 /**
  * The functions available on the object instance.
  *
- * @typedef {object} ObjectInstanceFunctions
- * @property {(args: { object: object }) => import('../utils/cancellablePromise.js').MaybeCancellablePromise<boolean>} create - Called to turn the current object into a new object on the server.
- * @property {() => import('../utils/cancellablePromise.js').MaybeCancellablePromise<boolean>} retrieve - Called to retrieve the current object by pk from the server.
- * @property {(args: { object: ExistingCrudObject }) => import('../utils/cancellablePromise.js').MaybeCancellablePromise<boolean>} update - Called to update the current object on the server.
- * @property {() => import('../utils/cancellablePromise.js').MaybeCancellablePromise<boolean>} delete - Called to delete the current object on the server.
- * @property {(args: { partialObject: ExistingCrudObject }) => import('../utils/cancellablePromise.js').MaybeCancellablePromise<boolean>} patch - Called to patch the current object on the server.
- * @property {import('./loadingError.js').ClearErrorFn} clearError - Called to clear the error state.
+ * @typedef {object} ObjectInstanceMyFunctions
+ * @property {(args: ObjectInstanceCreateArgs) => import('../utils/cancellablePromise.js').MaybeCancellablePromise<boolean|never>} create - Called to turn the current object into a new object on the server.
+ * @property {(args?: import('./cancellableIntent.js').CommonRunTracking) => import('../utils/cancellablePromise.js').MaybeCancellablePromise<boolean|never>} retrieve - Called to retrieve the current object by pk from the server.
+ * @property {(args: ObjectInstanceUpdateArgs) => import('../utils/cancellablePromise.js').MaybeCancellablePromise<boolean|never>} update - Called to update the current object on the server.
+ * @property {() => import('../utils/cancellablePromise.js').MaybeCancellablePromise<boolean|never>} delete - Called to delete the current object on the server.
+ * @property {(args: ObjectInstancePatchArgs) => import('../utils/cancellablePromise.js').MaybeCancellablePromise<boolean|never>} patch - Called to patch the current object on the server.
  * @property {() => void} clear - Called to clear the object state.
+ */
+/**
+ * The functions available on the object instance, including the ability to clear LoadingError errors.
+ *
+ * @typedef {(
+ *     Pick<import('./loadingError.js').LoadingErrorStatus, "clearError"> &
+ *     ObjectInstanceMyFunctions
+ * )} ObjectInstanceFunctions
  */
 /**
  * The properties of the object instance.
@@ -164,12 +179,15 @@ export class ObjectError extends Error {
 export const objectInstanceStateKeys: string[];
 export const objectInstanceFunctions: string[];
 /**
- * The object being managed by the instance. Empty object is the default.
+ * The object being managed by the instance. It must include a primary key field as identifying property, matching
+ * the name provided to the object/list's `pkKey` value, which is not known statically.
  */
 export type ExistingCrudObject = {
-    pkKey: string;
     [key: string]: any;
 };
+/**
+ * The object you would like an object instance to create for you.
+ */
 export type NewCrudObject = {
     [key: string]: any;
 };
@@ -212,7 +230,7 @@ export type ObjectInstanceRawStateCrud = {
     /**
      * - The arguments to be passed to the crud handlers.
      */
-    args: import("vue").Reactive<import("../config/objectCrud.js").ObjectTargetArgs | {}>;
+    args: import("vue").Reactive<import("../config/objectCrud.js").TargetArgs | {}>;
     /**
      * - The create function.
      */
@@ -241,7 +259,7 @@ export type ObjectInstanceRawStateCrud = {
 /**
  * The raw state of the object instance.
  */
-export type ObjectInstanceRawState = {
+export type ObjectInstanceRawMyState = {
     /**
      * - The crud handlers.
      */
@@ -265,66 +283,61 @@ export type ObjectInstanceRawState = {
      */
     object: import("vue").Reactive<CrudObject>;
     /**
-     * - Whether the object is loading.
-     */
-    loading: Readonly<import("vue").Ref<boolean>>;
-    /**
-     * - Whether the object errored.
-     */
-    errored: Readonly<import("vue").Ref<boolean>>;
-    /**
-     * - The error.
-     */
-    error: Readonly<import("vue").Ref<Error | null>>;
-    /**
      * - Whether the object is deleted.
      */
     deleted: boolean;
 };
 /**
+ * The raw state of the object instance.
+ */
+export type ObjectInstanceRawState = ObjectInstanceRawMyState & Pick<import("./loadingError.js").LoadingErrorStatus, "loading" | "error" | "errored">;
+/**
  * Manages a reactive state of an object including its CRUD status, loading states, and any operational errors.
  * Reactivity ensures that any changes in state immediately reflect in the UI components that depend on this state.
  */
 export type ObjectInstanceState = import("vue").Reactive<ObjectInstanceRawState>;
+export type ObjectInstanceCreateArgs = {
+    object: NewCrudObject;
+};
+export type ObjectInstanceUpdateArgs = {
+    object: ExistingCrudObject;
+};
+export type ObjectInstancePatchArgs = {
+    partialObject: ExistingCrudObject;
+};
 /**
  * The functions available on the object instance.
  */
-export type ObjectInstanceFunctions = {
+export type ObjectInstanceMyFunctions = {
     /**
      * - Called to turn the current object into a new object on the server.
      */
-    create: (args: {
-        object: object;
-    }) => import("../utils/cancellablePromise.js").MaybeCancellablePromise<boolean>;
+    create: (args: ObjectInstanceCreateArgs) => import("../utils/cancellablePromise.js").MaybeCancellablePromise<boolean | never>;
     /**
      * - Called to retrieve the current object by pk from the server.
      */
-    retrieve: () => import("../utils/cancellablePromise.js").MaybeCancellablePromise<boolean>;
+    retrieve: (args?: import("./cancellableIntent.js").CommonRunTracking) => import("../utils/cancellablePromise.js").MaybeCancellablePromise<boolean | never>;
     /**
      * - Called to update the current object on the server.
      */
-    update: (args: {
-        object: ExistingCrudObject;
-    }) => import("../utils/cancellablePromise.js").MaybeCancellablePromise<boolean>;
+    update: (args: ObjectInstanceUpdateArgs) => import("../utils/cancellablePromise.js").MaybeCancellablePromise<boolean | never>;
     /**
      * - Called to delete the current object on the server.
      */
-    delete: () => import("../utils/cancellablePromise.js").MaybeCancellablePromise<boolean>;
+    delete: () => import("../utils/cancellablePromise.js").MaybeCancellablePromise<boolean | never>;
     /**
      * - Called to patch the current object on the server.
      */
-    patch: (args: {
-        partialObject: ExistingCrudObject;
-    }) => import("../utils/cancellablePromise.js").MaybeCancellablePromise<boolean>;
-    /**
-     * - Called to clear the error state.
-     */
-    clearError: import("./loadingError.js").ClearErrorFn;
+    patch: (args: ObjectInstancePatchArgs) => import("../utils/cancellablePromise.js").MaybeCancellablePromise<boolean | never>;
     /**
      * - Called to clear the object state.
      */
     clear: () => void;
 };
+/**
+ * The functions available on the object instance, including the ability to clear LoadingError errors.
+ */
+export type ObjectInstanceFunctions = (Pick<import("./loadingError.js").LoadingErrorStatus, "clearError"> & ObjectInstanceMyFunctions);
 /**
  * The properties of the object instance.
  */

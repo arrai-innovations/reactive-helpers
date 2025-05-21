@@ -23,7 +23,7 @@ describe("use/listSearch", () => {
     scopedIt("should match by search term", async () => {
         const textSearchValue = ref("one");
         // const textSearchValue = ref("");
-        const list = useListInstance({ props: { pkKey: "id" }, keepOldPages: false });
+        const list = useListInstance({ props: { pkKey: "id" } });
         const search = useListSearch({
             parentState: list.state,
             props: reactive({
@@ -80,7 +80,7 @@ describe("use/listSearch", () => {
         });
     });
     scopedIt("no args: returns objects unsearched", async () => {
-        const listInstance = useListInstance({ props: { pkKey: "id" }, keepOldPages: false });
+        const listInstance = useListInstance({ props: { pkKey: "id" } });
         const listItems = [
             { id: 4, name: "four", has_things: true },
             { id: 2, name: "two", has_things: true },
@@ -104,7 +104,7 @@ describe("use/listSearch", () => {
             vi.resetAllMocks();
             const orderByRules = [{ key: "name", desc: true, localeCompare: false }];
             const sortThrottleWait = 0;
-            const listInstance = useListInstance({ props: { pkKey: "id" }, keepOldPages: false });
+            const listInstance = useListInstance({ props: { pkKey: "id" } });
             const listItems = [
                 { id: 4, name: "four", has_things: true },
                 { id: 2, name: "two", has_things: true },
@@ -144,7 +144,6 @@ describe("use/listSearch", () => {
                     pkKey: "id",
                     params: { user: 1, fields },
                 },
-                keepOldPages: false,
             });
             const listInstanceB = useListInstance({
                 props: {
@@ -152,7 +151,6 @@ describe("use/listSearch", () => {
                     pkKey: "id",
                     params: { user: 2, fields },
                 },
-                keepOldPages: false,
             });
 
             const textSearchValueMarkerA = { marker: "A" };
@@ -241,8 +239,8 @@ describe("use/listSearch", () => {
     describe("useListSearch accepts relatedItem. and calculatedItem. rules", () => {
         scopedIt("in textSearchRules", async () => {
             const textSearchValue = ref("four");
-            const list = useListInstance({ props: { pkKey: "id" }, keepOldPages: false });
-            const relatedList = useListInstance({ props: { pkKey: "id" }, keepOldPages: false });
+            const list = useListInstance({ props: { pkKey: "id" } });
+            const relatedList = useListInstance({ props: { pkKey: "id" } });
             const related = useListRelated({
                 parentState: list.state,
                 relatedObjectsRules: {
@@ -295,7 +293,7 @@ describe("use/listSearch", () => {
     });
     describe("useListSearch updates index when", () => {
         scopedIt("parentState.objects is updated", async () => {
-            const list = useListInstance({ props: { pkKey: "id" }, keepOldPages: false });
+            const list = useListInstance({ props: { pkKey: "id" } });
             const textSearchValue = ref("");
             const search = useListSearch({
                 parentState: list.state,
@@ -337,8 +335,8 @@ describe("use/listSearch", () => {
             });
         });
         scopedIt("parentState.relatedObjects is updated", async () => {
-            const list = useListInstance({ props: { pkKey: "id" }, keepOldPages: false });
-            const relatedList = useListInstance({ props: { pkKey: "id" }, keepOldPages: false });
+            const list = useListInstance({ props: { pkKey: "id" } });
+            const relatedList = useListInstance({ props: { pkKey: "id" } });
             const related = useListRelated({
                 parentState: list.state,
                 relatedObjectsRules: reactive({
@@ -381,11 +379,11 @@ describe("use/listSearch", () => {
             });
         });
         scopedIt("parentState.calculatedObjects is updated", async () => {
-            const list = useListInstance({ props: { pkKey: "id" }, keepOldPages: false });
+            const list = useListInstance({ props: { pkKey: "id" } });
             const calculated = useListCalculated({
                 parentState: list.state,
                 calculatedObjectsRules: reactive({
-                    calculatedRuleName: (object) => object.basis.splscopedIt("").join("z"),
+                    calculatedRuleName: (object) => object.basis.split("").join("z"),
                 }),
             });
             const textSearchValue = ref("");
@@ -428,7 +426,7 @@ describe("use/listSearch", () => {
             });
         });
         scopedIt("textSearchRules is updated", async () => {
-            const list = useListInstance({ props: { pkKey: "id" }, keepOldPages: false });
+            const list = useListInstance({ props: { pkKey: "id" } });
             const textSearchValue = ref("");
             const searchProps = reactive({
                 textSearchValue,
@@ -476,7 +474,7 @@ describe("use/listSearch", () => {
         });
     });
     scopedIt("does not pass through when showAllWhenEmpty is false", async () => {
-        const list = useListInstance({ props: { pkKey: "id" }, keepOldPages: false });
+        const list = useListInstance({ props: { pkKey: "id" } });
         const textSearchValue = ref("");
         const search = useListSearch({
             parentState: list.state,
@@ -508,7 +506,6 @@ describe("use/listSearch", () => {
     scopedIt("should update when parentState is filtered in pass through mode.", async () => {
         const listInstance = useListInstance({
             props: { pkKey: "id" },
-            keepOldPages: false,
         });
         const allowedFilter = ref((obj) => !obj.filtered);
         const listFilter = useListFilter({

@@ -1,5 +1,4 @@
 import { assignReactiveObject } from "../../../utils/assignReactiveObject.js";
-import { expectErrorToBeNull } from "../expectHelpers.js";
 import flushPromises from "flush-promises";
 import { isRef, nextTick, reactive, ref, unref } from "vue";
 import { deepUnref } from "../../../utils/deepUnref.js";
@@ -154,12 +153,12 @@ describe("use/objectInstance.js", function () {
             });
             objectInstance.state.crud.retrieve.mockReturnValueOnce(crudRetrievePromise);
 
-            expectErrorToBeNull(objectInstance.state.error);
+            expect(objectInstance.state.error).toBeNullError();
             expect(objectInstance.state.errored).toBe(false);
             expect(objectInstance.state.loading).toBeUndefined();
             expect({ ...objectInstance.state.object }).toEqual({});
             const oiRetrieveResolve = objectInstance.retrieve();
-            expectErrorToBeNull(objectInstance.state.error);
+            expect(objectInstance.state.error).toBeNullError();
             expect(objectInstance.state.errored).toBe(false);
             expect(objectInstance.state.loading).toBe(true);
             expect({ ...objectInstance.state.object }).toEqual({});
@@ -167,7 +166,7 @@ describe("use/objectInstance.js", function () {
             // @ts-ignore - crudRetrieveResolve is set in the promise, so it will be defined
             crudRetrieveResolve(crudRetrieveResolved);
             await flushPromises();
-            expectErrorToBeNull(objectInstance.state.error);
+            expect(objectInstance.state.error).toBeNullError();
             expect(objectInstance.state.errored).toBe(false);
             expect(objectInstance.state.loading).toBe(false);
             expect({ ...objectInstance.state.object }).toEqual(crudRetrieveResolved);
@@ -202,12 +201,12 @@ describe("use/objectInstance.js", function () {
             });
             objectInstance.state.crud.retrieve.mockReturnValueOnce(crudRetrievePromise);
 
-            expectErrorToBeNull(objectInstance.state.error);
+            expect(objectInstance.state.error).toBeNullError();
             expect(objectInstance.state.errored).toBe(false);
             expect(objectInstance.state.loading).toBeUndefined();
             expect({ ...objectInstance.state.object }).toEqual({});
             const oiRetrieveResolve = objectInstance.retrieve();
-            expectErrorToBeNull(objectInstance.state.error);
+            expect(objectInstance.state.error).toBeNullError();
             expect(objectInstance.state.errored).toBe(false);
             expect(objectInstance.state.loading).toBe(true);
             expect({ ...objectInstance.state.object }).toEqual({});
@@ -215,7 +214,7 @@ describe("use/objectInstance.js", function () {
             // @ts-ignore - crudRetrieveResolve is set in the promise, so it will be defined
             crudRetrieveResolve(crudRetrieveResolvedNonStandardPrimaryKey);
             await flushPromises();
-            expectErrorToBeNull(objectInstance.state.error);
+            expect(objectInstance.state.error).toBeNullError();
             expect(objectInstance.state.errored).toBe(false);
             expect(objectInstance.state.loading).toBe(false);
             expect({ ...objectInstance.state.object }).toEqual(crudRetrieveResolvedNonStandardPrimaryKey);
@@ -249,19 +248,19 @@ describe("use/objectInstance.js", function () {
                 crudRetrieveResolve = resolve;
             });
             objectInstance.state.crud.retrieve.mockReturnValueOnce(crudRetrievePromise);
-            expectErrorToBeNull(objectInstance.state.error);
+            expect(objectInstance.state.error).toBeNullError();
             expect(objectInstance.state.errored).toBe(false);
             expect(objectInstance.state.loading).toBeUndefined();
             expect({ ...objectInstance.state.object }).toEqual({});
             const oiRetrieveResolve = objectInstance.retrieve();
-            expectErrorToBeNull(objectInstance.state.error);
+            expect(objectInstance.state.error).toBeNullError();
             expect(objectInstance.state.errored).toBe(false);
             expect(objectInstance.state.loading).toBe(true);
             expect({ ...objectInstance.state.object }).toEqual({});
             // @ts-ignore - crudRetrieveResolve is set in the promise, so it will be defined
             crudRetrieveResolve(crudRetrieveResolved);
             await flushPromises();
-            expectErrorToBeNull(objectInstance.state.error);
+            expect(objectInstance.state.error).toBeNullError();
             expect(objectInstance.state.errored).toBe(false);
             expect(objectInstance.state.loading).toBe(false);
             expect({ ...objectInstance.state.object }).toEqual(crudRetrieveResolved);
@@ -293,12 +292,12 @@ describe("use/objectInstance.js", function () {
                 crudRetrieveReject = reject;
             });
             objectInstance.state.crud.retrieve.mockReturnValueOnce(crudRetrievePromise);
-            expectErrorToBeNull(objectInstance.state.error);
+            expect(objectInstance.state.error).toBeNullError();
             expect(objectInstance.state.errored).toBe(false);
             expect(objectInstance.state.loading).toBeUndefined();
             expect({ ...objectInstance.state.object }).toEqual({});
             const oiRetrieveResolve = objectInstance.retrieve();
-            expectErrorToBeNull(objectInstance.state.error);
+            expect(objectInstance.state.error).toBeNullError();
             expect(objectInstance.state.errored).toBe(false);
             expect(objectInstance.state.loading).toBe(true);
             expect({ ...objectInstance.state.object }).toEqual({});
@@ -339,12 +338,12 @@ describe("use/objectInstance.js", function () {
                 crudRetrieveReject = reject;
             });
             objectInstance.state.crud.retrieve.mockReturnValueOnce(crudRetrievePromise);
-            expectErrorToBeNull(objectInstance.state.error);
+            expect(objectInstance.state.error).toBeNullError();
             expect(objectInstance.state.errored).toBe(false);
             expect(objectInstance.state.loading).toBeUndefined();
             expect({ ...objectInstance.state.object }).toEqual({});
             const oiRetrieveResolve = objectInstance.retrieve();
-            expectErrorToBeNull(objectInstance.state.error);
+            expect(objectInstance.state.error).toBeNullError();
             expect(objectInstance.state.errored).toBe(false);
             expect(objectInstance.state.loading).toBe(true);
             expect({ ...objectInstance.state.object }).toEqual({});
@@ -383,19 +382,19 @@ describe("use/objectInstance.js", function () {
             objectInstance.state.crud.create.mockImplementation(() => new Promise(() => {}));
             objectInstance.state.crud.retrieve = vi.fn();
             objectInstance.state.crud.retrieve.mockImplementation(() => new Promise(() => {}));
-            expectErrorToBeNull(objectInstance.state.error);
+            expect(objectInstance.state.error).toBeNullError();
             expect(objectInstance.state.errored).toBe(false);
             expect(objectInstance.state.loading).toBeUndefined();
             expect({ ...objectInstance.state.object }).toEqual({});
             objectInstance.create({
                 fake: "object",
             });
-            expectErrorToBeNull(objectInstance.state.error);
+            expect(objectInstance.state.error).toBeNullError();
             expect(objectInstance.state.errored).toBe(false);
             expect(objectInstance.state.loading).toBe(true);
             expect(() => objectInstance.retrieve()).toThrow(new ObjectError("already loading.", "already-loading"));
             expect(objectInstance.state.crud.retrieve).toHaveBeenCalledTimes(0);
-            expectErrorToBeNull(objectInstance.state.error);
+            expect(objectInstance.state.error).toBeNullError();
             expect(objectInstance.state.errored).toBe(false);
             expect(objectInstance.state.loading).toBe(true);
             expect({ ...objectInstance.state.object }).toEqual({});
@@ -413,7 +412,7 @@ describe("use/objectInstance.js", function () {
             });
             objectInstance.state.crud.retrieve = vi.fn();
             objectInstance.state.crud.retrieve.mockImplementation(() => new Promise(() => {}));
-            expectErrorToBeNull(objectInstance.state.error);
+            expect(objectInstance.state.error).toBeNullError();
             expect(objectInstance.state.errored).toBe(false);
             expect(objectInstance.state.loading).toBeUndefined();
             expect({ ...objectInstance.state.object }).toEqual({});
@@ -430,7 +429,7 @@ describe("use/objectInstance.js", function () {
             expect(objectInstance.state.crud.retrieve).toHaveBeenCalledTimes(1);
             expect(isRef(objectInstance.state.crud.retrieve.mock.calls[0][0].isCancelled)).toBe(true);
             expect(unref(objectInstance.state.crud.retrieve.mock.calls[0][0].isCancelled)).toBe(false);
-            expectErrorToBeNull(objectInstance.state.error);
+            expect(objectInstance.state.error).toBeNullError();
             expect(objectInstance.state.errored).toBe(false);
             expect(objectInstance.state.loading).toBe(true);
             expect({ ...objectInstance.state.object }).toEqual({});
@@ -481,7 +480,7 @@ describe("use/objectInstance.js", function () {
                 crudCreateResolve = resolve;
             });
             objectInstance.state.crud.create.mockReturnValueOnce(crudCreatePromise);
-            expectErrorToBeNull(objectInstance.state.error);
+            expect(objectInstance.state.error).toBeNullError();
             expect(objectInstance.state.errored).toBe(false);
             expect(objectInstance.state.loading).toBeUndefined();
             expect({ ...objectInstance.state.object }).toEqual({});
@@ -491,7 +490,7 @@ describe("use/objectInstance.js", function () {
                 },
                 fields,
             });
-            expectErrorToBeNull(objectInstance.state.error);
+            expect(objectInstance.state.error).toBeNullError();
             expect(objectInstance.state.errored).toBe(false);
             expect(objectInstance.state.loading).toBe(true);
             expect({ ...objectInstance.state.object }).toEqual({});
@@ -499,7 +498,7 @@ describe("use/objectInstance.js", function () {
             // @ts-ignore - crudCreateResolve is set in the promise, so it will be defined
             crudCreateResolve(crudCreateResolved);
             await flushPromises();
-            expectErrorToBeNull(objectInstance.state.error);
+            expect(objectInstance.state.error).toBeNullError();
             expect(objectInstance.state.errored).toBe(false);
             expect(objectInstance.state.loading).toBe(false);
             expect({ ...objectInstance.state.object }).toEqual(crudCreateResolved);
@@ -537,7 +536,7 @@ describe("use/objectInstance.js", function () {
                 crudCreateResolve = resolve;
             });
             objectInstance.state.crud.create.mockReturnValueOnce(crudCreatePromise);
-            expectErrorToBeNull(objectInstance.state.error);
+            expect(objectInstance.state.error).toBeNullError();
             expect(objectInstance.state.errored).toBe(false);
             expect(objectInstance.state.loading).toBeUndefined();
             expect({ ...objectInstance.state.object }).toEqual({});
@@ -546,14 +545,14 @@ describe("use/objectInstance.js", function () {
                     name: "qwer",
                 },
             });
-            expectErrorToBeNull(objectInstance.state.error);
+            expect(objectInstance.state.error).toBeNullError();
             expect(objectInstance.state.errored).toBe(false);
             expect(objectInstance.state.loading).toBe(true);
             expect({ ...objectInstance.state.object }).toEqual({});
             // @ts-ignore - crudCreateResolve is set in the promise, so it will be defined
             crudCreateResolve(crudCreateResolved);
             await flushPromises();
-            expectErrorToBeNull(objectInstance.state.error);
+            expect(objectInstance.state.error).toBeNullError();
             expect(objectInstance.state.errored).toBe(false);
             expect(objectInstance.state.loading).toBe(false);
             expect({ ...objectInstance.state.object }).toEqual(crudCreateResolved);
@@ -591,7 +590,7 @@ describe("use/objectInstance.js", function () {
                 crudCreateResolve = resolve;
             });
             objectInstance.state.crud.create.mockReturnValueOnce(crudCreatePromise);
-            expectErrorToBeNull(objectInstance.state.error);
+            expect(objectInstance.state.error).toBeNullError();
             expect(objectInstance.state.errored).toBe(false);
             expect(objectInstance.state.loading).toBeUndefined();
             expect({ ...objectInstance.state.object }).toEqual({});
@@ -601,7 +600,7 @@ describe("use/objectInstance.js", function () {
                 },
                 fields,
             });
-            expectErrorToBeNull(objectInstance.state.error);
+            expect(objectInstance.state.error).toBeNullError();
             expect(objectInstance.state.errored).toBe(false);
             expect(objectInstance.state.loading).toBe(true);
             expect({ ...objectInstance.state.object }).toEqual({});
@@ -609,7 +608,7 @@ describe("use/objectInstance.js", function () {
             // @ts-ignore - crudCreateResolve is set in the promise, so it will be defined
             crudCreateResolve(crudCreateResolvedNonStandardPK);
             await flushPromises();
-            expectErrorToBeNull(objectInstance.state.error);
+            expect(objectInstance.state.error).toBeNullError();
             expect(objectInstance.state.errored).toBe(false);
             expect(objectInstance.state.loading).toBe(false);
             expect({ ...objectInstance.state.object }).toEqual(crudCreateResolvedNonStandardPK);
@@ -647,7 +646,7 @@ describe("use/objectInstance.js", function () {
                 crudCreateReject = reject;
             });
             objectInstance.state.crud.create.mockReturnValueOnce(crudCreatePromise);
-            expectErrorToBeNull(objectInstance.state.error);
+            expect(objectInstance.state.error).toBeNullError();
             expect(objectInstance.state.errored).toBe(false);
             expect(objectInstance.state.loading).toBeUndefined();
             expect({ ...objectInstance.state.object }).toEqual({});
@@ -657,7 +656,7 @@ describe("use/objectInstance.js", function () {
                 },
                 fields,
             });
-            expectErrorToBeNull(objectInstance.state.error);
+            expect(objectInstance.state.error).toBeNullError();
             expect(objectInstance.state.errored).toBe(false);
             expect(objectInstance.state.loading).toBe(true);
             expect({ ...objectInstance.state.object }).toEqual({});
@@ -702,7 +701,7 @@ describe("use/objectInstance.js", function () {
                 crudCreateReject = reject;
             });
             objectInstance.state.crud.create.mockReturnValueOnce(crudCreatePromise);
-            expectErrorToBeNull(objectInstance.state.error);
+            expect(objectInstance.state.error).toBeNullError();
             expect(objectInstance.state.errored).toBe(false);
             expect(objectInstance.state.loading).toBeUndefined();
             expect({ ...objectInstance.state.object }).toEqual({});
@@ -712,7 +711,7 @@ describe("use/objectInstance.js", function () {
                 },
                 fields,
             });
-            expectErrorToBeNull(objectInstance.state.error);
+            expect(objectInstance.state.error).toBeNullError();
             expect(objectInstance.state.errored).toBe(false);
             expect(objectInstance.state.loading).toBe(true);
             expect({ ...objectInstance.state.object }).toEqual({});
@@ -754,7 +753,7 @@ describe("use/objectInstance.js", function () {
             objectInstance.state.crud.create = vi.fn();
             const crudCreatePromise = new Promise(() => {});
             objectInstance.state.crud.create.mockReturnValueOnce(crudCreatePromise);
-            expectErrorToBeNull(objectInstance.state.error);
+            expect(objectInstance.state.error).toBeNullError();
             expect(objectInstance.state.errored).toBe(false);
             expect(objectInstance.state.loading).toBeUndefined();
             expect({ ...objectInstance.state.object }).toEqual({});
@@ -784,7 +783,7 @@ describe("use/objectInstance.js", function () {
             expect(objectInstance.state.crud.create).toHaveBeenCalledTimes(1);
             expect(isRef(objectInstance.state.crud.create.mock.calls[0][0].isCancelled)).toBe(true);
             expect(unref(objectInstance.state.crud.create.mock.calls[0][0].isCancelled)).toBe(false);
-            expectErrorToBeNull(objectInstance.state.error);
+            expect(objectInstance.state.error).toBeNullError();
             expect(objectInstance.state.errored).toBe(false);
             expect(objectInstance.state.loading).toBe(true);
             expect({ ...objectInstance.state.object }).toEqual({});
@@ -837,7 +836,7 @@ describe("use/objectInstance.js", function () {
             });
             objectInstance.state.crud.update = vi.fn();
             objectInstance.state.crud.update.mockReturnValueOnce(crudUpdatePromise);
-            expectErrorToBeNull(objectInstance.state.error);
+            expect(objectInstance.state.error).toBeNullError();
             expect(objectInstance.state.errored).toBe(false);
             expect(objectInstance.state.loading).toBeUndefined();
             expect({ ...objectInstance.state.object }).toEqual({});
@@ -847,7 +846,7 @@ describe("use/objectInstance.js", function () {
                     name: "zxcv!",
                 },
             });
-            expectErrorToBeNull(objectInstance.state.error);
+            expect(objectInstance.state.error).toBeNullError();
             expect(objectInstance.state.errored).toBe(false);
             expect(objectInstance.state.loading).toBe(true);
             expect({ ...objectInstance.state.object }).toEqual({});
@@ -855,7 +854,7 @@ describe("use/objectInstance.js", function () {
             // @ts-ignore - crudUpdateResolve is set in the promise, so it will be defined
             crudUpdateResolve(crudUpdateResolved);
             await flushPromises();
-            expectErrorToBeNull(objectInstance.state.error);
+            expect(objectInstance.state.error).toBeNullError();
             expect(objectInstance.state.errored).toBe(false);
             expect(objectInstance.state.loading).toBe(false);
             expect({ ...objectInstance.state.object }).toEqual(crudUpdateResolved);
@@ -894,7 +893,7 @@ describe("use/objectInstance.js", function () {
             });
             objectInstance.state.crud.update = vi.fn();
             objectInstance.state.crud.update.mockReturnValueOnce(crudUpdatePromise);
-            expectErrorToBeNull(objectInstance.state.error);
+            expect(objectInstance.state.error).toBeNullError();
             expect(objectInstance.state.errored).toBe(false);
             expect(objectInstance.state.loading).toBeUndefined();
             expect({ ...objectInstance.state.object }).toEqual({});
@@ -904,14 +903,14 @@ describe("use/objectInstance.js", function () {
                     name: "zxcv!",
                 },
             });
-            expectErrorToBeNull(objectInstance.state.error);
+            expect(objectInstance.state.error).toBeNullError();
             expect(objectInstance.state.errored).toBe(false);
             expect(objectInstance.state.loading).toBe(true);
             expect({ ...objectInstance.state.object }).toEqual({});
             // @ts-ignore - crudUpdateResolve is set in the promise, so it will be defined
             crudUpdateResolve(crudUpdateResolved);
             await flushPromises();
-            expectErrorToBeNull(objectInstance.state.error);
+            expect(objectInstance.state.error).toBeNullError();
             expect(objectInstance.state.errored).toBe(false);
             expect(objectInstance.state.loading).toBe(false);
             expect({ ...objectInstance.state.object }).toEqual(crudUpdateResolved);
@@ -949,7 +948,7 @@ describe("use/objectInstance.js", function () {
             });
             objectInstance.state.crud.update = vi.fn();
             objectInstance.state.crud.update.mockReturnValueOnce(crudUpdatePromise);
-            expectErrorToBeNull(objectInstance.state.error);
+            expect(objectInstance.state.error).toBeNullError();
             expect(objectInstance.state.errored).toBe(false);
             expect(objectInstance.state.loading).toBeUndefined();
             expect({ ...objectInstance.state.object }).toEqual({});
@@ -959,14 +958,14 @@ describe("use/objectInstance.js", function () {
                     name: "zxcv!",
                 },
             });
-            expectErrorToBeNull(objectInstance.state.error);
+            expect(objectInstance.state.error).toBeNullError();
             expect(objectInstance.state.errored).toBe(false);
             expect(objectInstance.state.loading).toBe(true);
             expect({ ...objectInstance.state.object }).toEqual({});
             // @ts-ignore - crudUpdateResolve is set in the promise, so it will be defined
             crudUpdateResolve(crudUpdateResolvedWithNonStandardPk);
             await flushPromises();
-            expectErrorToBeNull(objectInstance.state.error);
+            expect(objectInstance.state.error).toBeNullError();
             expect(objectInstance.state.errored).toBe(false);
             expect(objectInstance.state.loading).toBe(false);
             expect({ ...objectInstance.state.object }).toEqual(crudUpdateResolvedWithNonStandardPk);
@@ -1004,7 +1003,7 @@ describe("use/objectInstance.js", function () {
             });
             objectInstance.state.crud.update = vi.fn();
             objectInstance.state.crud.update.mockReturnValueOnce(crudUpdatePromise);
-            expectErrorToBeNull(objectInstance.state.error);
+            expect(objectInstance.state.error).toBeNullError();
             expect(objectInstance.state.errored).toBe(false);
             expect(objectInstance.state.loading).toBeUndefined();
             expect({ ...objectInstance.state.object }).toEqual({});
@@ -1014,7 +1013,7 @@ describe("use/objectInstance.js", function () {
                     name: "zxcv!",
                 },
             });
-            expectErrorToBeNull(objectInstance.state.error);
+            expect(objectInstance.state.error).toBeNullError();
             expect(objectInstance.state.errored).toBe(false);
             expect(objectInstance.state.loading).toBe(true);
             expect({ ...objectInstance.state.object }).toEqual({});
@@ -1059,7 +1058,7 @@ describe("use/objectInstance.js", function () {
             });
             objectInstance.state.crud.update = vi.fn();
             objectInstance.state.crud.update.mockReturnValueOnce(crudUpdatePromise);
-            expectErrorToBeNull(objectInstance.state.error);
+            expect(objectInstance.state.error).toBeNullError();
             expect(objectInstance.state.errored).toBe(false);
             expect(objectInstance.state.loading).toBeUndefined();
             expect({ ...objectInstance.state.object }).toEqual({});
@@ -1069,7 +1068,7 @@ describe("use/objectInstance.js", function () {
                     name: "zxcv!",
                 },
             });
-            expectErrorToBeNull(objectInstance.state.error);
+            expect(objectInstance.state.error).toBeNullError();
             expect(objectInstance.state.errored).toBe(false);
             expect(objectInstance.state.loading).toBe(true);
             expect({ ...objectInstance.state.object }).toEqual({});
@@ -1111,7 +1110,7 @@ describe("use/objectInstance.js", function () {
             const crudUpdatePromise = new Promise(() => {});
             objectInstance.state.crud.update = vi.fn();
             objectInstance.state.crud.update.mockReturnValueOnce(crudUpdatePromise);
-            expectErrorToBeNull(objectInstance.state.error);
+            expect(objectInstance.state.error).toBeNullError();
             expect(objectInstance.state.errored).toBe(false);
             expect(objectInstance.state.loading).toBeUndefined();
             expect({ ...objectInstance.state.object }).toEqual({});
@@ -1129,7 +1128,7 @@ describe("use/objectInstance.js", function () {
                     },
                 })
             ).toThrow(new ObjectError("already loading.", "already-loading"));
-            expectErrorToBeNull(objectInstance.state.error);
+            expect(objectInstance.state.error).toBeNullError();
             expect(objectInstance.state.errored).toBe(false);
             expect(objectInstance.state.loading).toBe(true);
             expect({ ...objectInstance.state.object }).toEqual({});
@@ -1198,7 +1197,7 @@ describe("use/objectInstance.js", function () {
             });
             objectInstance.state.crud.patch = vi.fn();
             objectInstance.state.crud.patch.mockReturnValueOnce(crudPatchPromise);
-            expectErrorToBeNull(objectInstance.state.error);
+            expect(objectInstance.state.error).toBeNullError();
             expect(objectInstance.state.errored).toBe(false);
             expect(objectInstance.state.loading).toBeUndefined();
             expect({ ...objectInstance.state.object }).toEqual({});
@@ -1208,7 +1207,7 @@ describe("use/objectInstance.js", function () {
                     name: "zxcv!",
                 },
             });
-            expectErrorToBeNull(objectInstance.state.error);
+            expect(objectInstance.state.error).toBeNullError();
             expect(objectInstance.state.errored).toBe(false);
             expect(objectInstance.state.loading).toBe(true);
             expect({ ...objectInstance.state.object }).toEqual({});
@@ -1216,7 +1215,7 @@ describe("use/objectInstance.js", function () {
             // @ts-ignore - crudPatchResolve is set in the promise, so it will be defined
             crudPatchResolve(crudPatchResolved);
             await flushPromises();
-            expectErrorToBeNull(objectInstance.state.error);
+            expect(objectInstance.state.error).toBeNullError();
             expect(objectInstance.state.errored).toBe(false);
             expect(objectInstance.state.loading).toBe(false);
             expect({ ...objectInstance.state.object }).toEqual(crudPatchResolved);
@@ -1256,7 +1255,7 @@ describe("use/objectInstance.js", function () {
             });
             objectInstance.state.crud.patch = vi.fn();
             objectInstance.state.crud.patch.mockReturnValueOnce(crudPatchPromise);
-            expectErrorToBeNull(objectInstance.state.error);
+            expect(objectInstance.state.error).toBeNullError();
             expect(objectInstance.state.errored).toBe(false);
             expect(objectInstance.state.loading).toBeUndefined();
             expect({ ...objectInstance.state.object }).toEqual({});
@@ -1266,7 +1265,7 @@ describe("use/objectInstance.js", function () {
                     name: "zxcv!",
                 },
             });
-            expectErrorToBeNull(objectInstance.state.error);
+            expect(objectInstance.state.error).toBeNullError();
             expect(objectInstance.state.errored).toBe(false);
             expect(objectInstance.state.loading).toBe(true);
             expect({ ...objectInstance.state.object }).toEqual({});
@@ -1274,7 +1273,7 @@ describe("use/objectInstance.js", function () {
             // @ts-ignore - crudPatchResolve is set in the promise, so it will be defined
             crudPatchResolve(crudPatchResolvedWithNonStandardPk);
             await flushPromises();
-            expectErrorToBeNull(objectInstance.state.error);
+            expect(objectInstance.state.error).toBeNullError();
             expect(objectInstance.state.errored).toBe(false);
             expect(objectInstance.state.loading).toBe(false);
             expect({ ...objectInstance.state.object }).toEqual(crudPatchResolvedWithNonStandardPk);
@@ -1314,7 +1313,7 @@ describe("use/objectInstance.js", function () {
             });
             objectInstance.state.crud.patch = vi.fn();
             objectInstance.state.crud.patch.mockReturnValueOnce(crudPatchPromise);
-            expectErrorToBeNull(objectInstance.state.error);
+            expect(objectInstance.state.error).toBeNullError();
             expect(objectInstance.state.errored).toBe(false);
             expect(objectInstance.state.loading).toBeUndefined();
             expect({ ...objectInstance.state.object }).toEqual({});
@@ -1324,7 +1323,7 @@ describe("use/objectInstance.js", function () {
                     name: "zxcv!",
                 },
             });
-            expectErrorToBeNull(objectInstance.state.error);
+            expect(objectInstance.state.error).toBeNullError();
             expect(objectInstance.state.errored).toBe(false);
             expect(objectInstance.state.loading).toBe(true);
             expect({ ...objectInstance.state.object }).toEqual({});
@@ -1370,7 +1369,7 @@ describe("use/objectInstance.js", function () {
             });
             objectInstance.state.crud.patch = vi.fn();
             objectInstance.state.crud.patch.mockReturnValueOnce(crudPatchPromise);
-            expectErrorToBeNull(objectInstance.state.error);
+            expect(objectInstance.state.error).toBeNullError();
             expect(objectInstance.state.errored).toBe(false);
             expect(objectInstance.state.loading).toBeUndefined();
             expect({ ...objectInstance.state.object }).toEqual({});
@@ -1380,7 +1379,7 @@ describe("use/objectInstance.js", function () {
                     name: "zxcv!",
                 },
             });
-            expectErrorToBeNull(objectInstance.state.error);
+            expect(objectInstance.state.error).toBeNullError();
             expect(objectInstance.state.errored).toBe(false);
             expect(objectInstance.state.loading).toBe(true);
             expect({ ...objectInstance.state.object }).toEqual({});
@@ -1505,7 +1504,7 @@ describe("use/objectInstance.js", function () {
             objectInstance.state.crud.delete = vi.fn();
             objectInstance.state.crud.delete.mockReturnValueOnce(deletePromise);
 
-            expectErrorToBeNull(objectInstance.state.error);
+            expect(objectInstance.state.error).toBeNullError();
             expect(objectInstance.state.errored).toBe(false);
             expect(objectInstance.state.loading).toBeUndefined();
             expect(objectInstance.state.deleted).toBe(false);
@@ -1513,7 +1512,7 @@ describe("use/objectInstance.js", function () {
 
             const returnsPromise = objectInstance.delete();
 
-            expectErrorToBeNull(objectInstance.state.error);
+            expect(objectInstance.state.error).toBeNullError();
             expect(objectInstance.state.errored).toBe(false);
             expect(objectInstance.state.loading).toBe(true);
             expect(objectInstance.state.deleted).toBe(false);
@@ -1524,7 +1523,7 @@ describe("use/objectInstance.js", function () {
             deleteResolve(crudDeleteResolved);
             await flushPromises();
 
-            expectErrorToBeNull(objectInstance.state.error);
+            expect(objectInstance.state.error).toBeNullError();
             expect(objectInstance.state.errored).toBe(false);
             expect(objectInstance.state.loading).toBe(false);
             expect(objectInstance.state.deleted).toBe(true);
@@ -1536,11 +1535,8 @@ describe("use/objectInstance.js", function () {
                 target: { stream: "test_stream" },
                 pk: 1,
                 pkKey: "unique",
-                isCancelled: expect.any(Object),
             });
             expect(objectInstance.state.crud.delete).toHaveBeenCalledTimes(1);
-            expect(isRef(objectInstance.state.crud.delete.mock.calls[0][0].isCancelled)).toBe(true);
-            expect(unref(objectInstance.state.crud.delete.mock.calls[0][0].isCancelled)).toBe(false);
         });
         scopedIt("errored", async function () {
             const pk = ref(1);
@@ -1561,7 +1557,7 @@ describe("use/objectInstance.js", function () {
             objectInstance.state.crud.delete = vi.fn();
             objectInstance.state.crud.delete.mockReturnValueOnce(deletePromise);
 
-            expectErrorToBeNull(objectInstance.state.error);
+            expect(objectInstance.state.error).toBeNullError();
             expect(objectInstance.state.errored).toBe(false);
             expect(objectInstance.state.loading).toBeUndefined();
             expect(objectInstance.state.deleted).toBe(false);
@@ -1569,7 +1565,7 @@ describe("use/objectInstance.js", function () {
 
             const returnsPromise = objectInstance.delete();
 
-            expectErrorToBeNull(objectInstance.state.error);
+            expect(objectInstance.state.error).toBeNullError();
             expect(objectInstance.state.errored).toBe(false);
             expect(objectInstance.state.loading).toBe(true);
             expect(objectInstance.state.deleted).toBe(false);
@@ -1592,11 +1588,8 @@ describe("use/objectInstance.js", function () {
                 target: { stream: "test_stream" },
                 pk: 1,
                 pkKey: "id",
-                isCancelled: expect.any(Object),
             });
             expect(objectInstance.state.crud.delete).toHaveBeenCalledTimes(1);
-            expect(isRef(objectInstance.state.crud.delete.mock.calls[0][0].isCancelled)).toBe(true);
-            expect(unref(objectInstance.state.crud.delete.mock.calls[0][0].isCancelled)).toBe(false);
         });
         scopedIt("errored with non-matching pkKey", async function () {
             const pk = ref(1);
@@ -1617,7 +1610,7 @@ describe("use/objectInstance.js", function () {
             objectInstance.state.crud.delete = vi.fn();
             objectInstance.state.crud.delete.mockReturnValueOnce(deletePromise);
 
-            expectErrorToBeNull(objectInstance.state.error);
+            expect(objectInstance.state.error).toBeNullError();
             expect(objectInstance.state.errored).toBe(false);
             expect(objectInstance.state.loading).toBeUndefined();
             expect(objectInstance.state.deleted).toBe(false);
@@ -1625,7 +1618,7 @@ describe("use/objectInstance.js", function () {
 
             const returnsPromise = objectInstance.delete();
 
-            expectErrorToBeNull(objectInstance.state.error);
+            expect(objectInstance.state.error).toBeNullError();
             expect(objectInstance.state.errored).toBe(false);
             expect(objectInstance.state.loading).toBe(true);
             expect(objectInstance.state.deleted).toBe(false);
@@ -1648,11 +1641,8 @@ describe("use/objectInstance.js", function () {
                 target: { stream: "test_stream" },
                 pk: 1,
                 pkKey: "unique",
-                isCancelled: expect.any(Object),
             });
             expect(objectInstance.state.crud.delete).toHaveBeenCalledTimes(1);
-            expect(isRef(objectInstance.state.crud.delete.mock.calls[0][0].isCancelled)).toBe(true);
-            expect(unref(objectInstance.state.crud.delete.mock.calls[0][0].isCancelled)).toBe(false);
         });
         scopedIt("already loading", async function () {
             const pk = ref(1);
@@ -1674,13 +1664,10 @@ describe("use/objectInstance.js", function () {
                 target: { stream: "test_stream" },
                 pk: 1,
                 pkKey: "id",
-                isCancelled: expect.any(Object),
             });
             expect(objectInstance.state.crud.delete).toHaveBeenCalledTimes(1);
-            expect(isRef(objectInstance.state.crud.delete.mock.calls[0][0].isCancelled)).toBe(true);
-            expect(unref(objectInstance.state.crud.delete.mock.calls[0][0].isCancelled)).toBe(false);
         });
-        scopedIt("cancel", async () => {
+        scopedIt("does not support cancel", async () => {
             const objectInstance = useObjectInstance({
                 props: {
                     target: { stream: "test_stream" },
@@ -1690,29 +1677,20 @@ describe("use/objectInstance.js", function () {
                 },
             });
 
-            let cancelFnCalled = false;
-            const testPromise = CancellablePromise(new Promise(() => {}), () => {
-                cancelFnCalled = true;
-                return Promise.resolve();
-            });
+            const testPromise = Promise.resolve({});
 
             objectInstance.state.crud.delete = vi.fn().mockReturnValueOnce(testPromise);
 
             const result = objectInstance.delete();
+
             expect(objectInstance.state.crud.delete).toHaveBeenCalledWith({
                 target: { stream: "test_stream" },
                 pk: 1,
                 pkKey: "id",
-                isCancelled: expect.any(Object),
             });
             expect(objectInstance.state.crud.delete).toHaveBeenCalledTimes(1);
-            expect(isRef(objectInstance.state.crud.delete.mock.calls[0][0].isCancelled)).toBe(true);
-            expect(unref(objectInstance.state.crud.delete.mock.calls[0][0].isCancelled)).toBe(false);
 
-            await result.cancel();
-
-            expect(cancelFnCalled).toBe(true);
-            expect(unref(objectInstance.state.crud.delete.mock.calls[0][0].isCancelled)).toBe(true);
+            expect(result).not.toHaveProperty("cancel");
         });
     });
     describe("clear", () => {

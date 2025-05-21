@@ -1,10 +1,10 @@
 import { assignReactiveObject } from "../utils/assignReactiveObject.js";
-import { loadingCombine } from "../utils/loadingCombine.js";
 import { useCancellableIntent } from "./cancellableIntent.js";
-import { useLoadingError } from "./loadingError.js";
 import { useObjectInstance } from "./objectInstance.js";
-import { computed, effectScope, reactive, ref, toRef, toRefs } from "vue";
-import { CancellablePromise } from "../utils/cancellablePromise.js";
+import { computed, reactive, ref, toRef, toRefs } from "vue";
+import { refIfReactive } from "../utils/refIfReactive.js";
+import { useProxyError } from "./proxyError.js";
+import { loadingCombine } from "../utils/loadingCombine.js";
 
 /**
  * A composition function for managing object subscriptions, including subscription status, errors, and reactivity.
@@ -38,21 +38,12 @@ export const objectSubscriptionStateKeys = [
     "intendToSubscribe",
 ];
 
-export const objectSubscriptionFunctions = [
-    "subscribe",
-    "unsubscribe",
-    "updateFromSubscription",
-    "deleteFromSubscription",
-    "clearError",
-];
+export const objectSubscriptionFunctions = ["clearError"];
 
 /**
  * The raw state of the object subscription.
  *
  * @typedef {object} ObjectSubscriptionRawState
- * @property {import('./loadingError.js').LoadingReadonlyRef} subscriptionLoading - Whether the subscription is loading.
- * @property {import('./loadingError.js').ErroredReadonlyRef} subscriptionErrored - Whether the subscription has errored.
- * @property {import('./loadingError.js').ErrorReadonlyRef} subscriptionError - The error that occurred.
  * @property {import('vue').Ref<boolean>} intendToRetrieve - Whether the object intends to retrieve.
  * @property {import('vue').Ref<boolean>} intendToSubscribe - Whether the object intends to subscribe.
  * @property {import('vue').Ref<boolean|undefined>} subscribed - Whether the object is subscribed.
@@ -71,16 +62,6 @@ export const objectSubscriptionFunctions = [
  * Functions available for object subscription management.
  *
  * @typedef {object} ObjectSubscriptionFunctions
- * @property {(
- *     (options?: { retrieve?: boolean }) => boolean
- * )} subscribe - Subscribes to updates from an object, managing subscription state and handling errors internally.
- *  Ensures that only one active subscription can exist at a time to prevent duplicate calls. Returns a promise that
- *  resolves to true if the subscription was successful, and false if it failed.
- * @property {() => boolean} unsubscribe - Unsubscribes from the object, resetting related state flags. Returns
- *  true if the object was unsubscribed, and false if it was not subscribed.
- * @property {(data: import('./objectInstance.js').ExistingCrudObject) => void} updateFromSubscription - Update the
- *  object from a subscription.
- * @property {() => void} deleteFromSubscription - Delete the object from a subscription.
  * @property {() => void} clearError - Clears any errors related to the subscription, and resets the loading state.
  */
 
@@ -92,7 +73,7 @@ export const objectSubscriptionFunctions = [
  * @property {import('./objectInstance.js').ObjectInstance} objectInstance - The object instance.
  * @property {import('./cancellableIntent.js').CancellableIntent} subscribeIntent - The subscribe intent.
  * @property {import('./cancellableIntent.js').CancellableIntent} retrieveIntent - The retrieve intent.
- * @property {import('vue').EffectScope} effectScope - The effect scope.
+ * @property {() => void} stop - Stops the subscription reactive effects.
  */
 
 /**
@@ -134,6 +115,16 @@ export function useObjectSubscriptions(subscriptionArgs) {
     }
     return subscriptions;
 }
+
+/**
+ * The context bound to shared objectSubscription functions.
+ *
+ * @typedef {object} ObjectSubscriptionContext
+ * @property {ObjectSubscriptionState} state - The object subscription state.
+ * @property {import('./objectInstance.js').ObjectInstance} objectInstance - The object instance.
+ * @property {import('./cancellableIntent.js').CancellableIntent} subscribeIntent - The subscribe intent.
+ * @property {import('./cancellableIntent.js').CancellableIntent} retrieveIntent - The retrieve intent.
+ */
 
 /**
  * Initializes an object subscription to manage object state and reactivity, including subscription status and errors.
@@ -187,7 +178,7 @@ export function useObjectSubscription({ objectInstance, props, handlers }) {
             // falsely values are fine, especially when loading, but your going to have a bad time if you
             //  don't have something to react to.
             throw new ObjectSubscriptionError(
-                "pk not in props, must be truthy for intendToRetrieve or intendToSubscribe to work.",
+                "pk not in props, you must at least define the key first for intendTo* to react.",
                 "missing-pk"
             );
         }
@@ -195,7 +186,7 @@ export function useObjectSubscription({ objectInstance, props, handlers }) {
             // falsely values are fine, especially when loading, but your going to have a bad time if you
             //  don't have something to react to.
             throw new ObjectSubscriptionError(
-                "params not in props, must be truthy for intendToRetrieve or intendToSubscribe to work.",
+                "params not in props, you must at least define the key first for intendTo* to react.",
                 "missing-params"
             );
         }
@@ -206,10 +197,18 @@ export function useObjectSubscription({ objectInstance, props, handlers }) {
             );
         }
     }
-
-    const es = effectScope();
+    const intendToRetrieve = refIfReactive(props, "intendToRetrieve", false);
+    const intendToSubscribe = refIfReactive(props, "intendToSubscribe", false);
     const parentState = objectInstance.state;
-    const loadingError = useLoadingError();
+    /** @type {import('./proxyError.js').WatchableErrors} */
+    const errorStates = ref([
+        {
+            error: toRef(parentState, "error"),
+            errored: toRef(parentState, "errored"),
+            clearError: objectInstance.clearError,
+        },
+    ]);
+    const proxyError = useProxyError(errorStates);
     const {
         crud: parentCrud,
         pk: parentPk,
@@ -226,156 +225,92 @@ export function useObjectSubscription({ objectInstance, props, handlers }) {
         params: parentParams,
         object: parentObject,
         deleted: parentDeleted,
-        subscriptionLoading: loadingError.loading,
-        subscriptionErrored: loadingError.errored,
-        subscriptionError: loadingError.error,
-        subscribed: ref(undefined),
-        intendToSubscribe: "intendToSubscribe" in props ? toRef(props, "intendToSubscribe") : ref(false),
-        intendToRetrieve: "intendToRetrieve" in props ? toRef(props, "intendToRetrieve") : ref(false),
-        loading: es.run(() => computed(() => loadingCombine(parentState.loading, state.subscriptionLoading))),
-        errored: es.run(() => computed(() => parentState.errored || state.subscriptionErrored)),
-        error: es.run(() => computed(() => parentState.error || state.subscriptionError)),
+        subscribed: undefined,
+        intendToRetrieve,
+        intendToSubscribe,
+        loading: undefined,
+        errored: proxyError.errored,
+        error: proxyError.error,
     });
-    /** @type {import('./cancellableIntent.js').CancellableIntent} */
-    let subscribeIntent;
-    /** @type {import('./cancellableIntent.js').CancellableIntent} */
-    let retrieveIntent;
-
-    function updateFromSubscription(/** @type {import('./objectInstance.js').ExistingCrudObject} */ data) {
-        assignReactiveObject(parentState.object, data);
-    }
-
-    function deleteFromSubscription() {
-        state.deleted = true;
-        assignReactiveObject(parentState.object, {});
-    }
-
-    function publicSubscribe({ retrieve = true } = {}) {
-        let didSubscribe = false;
-        if (!state.intendToSubscribe) {
-            state.intendToSubscribe = true;
-            didSubscribe = true;
-        }
-        if (retrieve) {
-            if (!state.intendToRetrieve) {
-                state.intendToRetrieve = true;
-                didSubscribe = true;
-            }
-        }
-        return didSubscribe;
-    }
-
-    function subscribe() {
-        // this function cannot be async, or the resulting promise will lose its .cancel() method
-        if (state.subscribed) {
-            // we throw because we want devs to see this error in the console
-            // state.error should be for user facing errors, or unknown errors
-            throw new ObjectSubscriptionError("already subscribed or subscribing.", "already-subscribed");
-        }
-        loadingError.clearError();
-        loadingError.setLoading();
-        const isCancelled = ref(false);
-        /** @type {import('../config/objectCrud.js').CrudSubscribeCallback} */
-        const subscribeCallback = (data, action) => {
-            if (action === "delete") {
-                objectInstance.deleteFromSubscription();
-            } else {
-                objectInstance.updateFromSubscription(data);
-            }
-        };
-        const subscribePromise = parentState.crud.subscribe({
-            target: parentState.crud.args,
-            pk: parentState.pk,
-            pkKey: parentState.pkKey,
-            params: state.params,
-            callback: subscribeCallback,
-            isCancelled,
-        });
-        let cancelSubscription = async (/** @type {any} */ reason) => {
-            let cancelPromise = subscribePromise.cancel(reason);
-            cancelSubscription = null;
-            state.subscribed = false;
-            return cancelPromise;
-        };
-        return CancellablePromise(
-            subscribePromise
-                .then(() => {
-                    state.subscribed = true;
-                    return true;
-                })
-                .catch((/** @type {Error} */ error) => {
-                    loadingError.setError(error);
-                    if (cancelSubscription) {
-                        // noinspection JSIgnoredPromiseFromCall
-                        cancelSubscription("Subscription error cancellation");
-                        cancelSubscription = null;
-                        state.subscribed = false;
-                    }
-                    return false;
-                })
-                .finally(() => {
-                    loadingError.clearLoading();
-                }),
-            cancelSubscription
-        );
-    }
-
-    function publicUnsubscribe() {
-        let didUnsubscribe = false;
-        if (state.intendToSubscribe) {
-            state.intendToSubscribe = false;
-            didUnsubscribe = true;
-        }
-        if (state.intendToRetrieve) {
-            state.intendToRetrieve = false;
-            didUnsubscribe = true;
-        }
-        return didUnsubscribe;
-    }
-
-    function clearError() {
-        loadingError.clearLoading();
-        objectInstance.clearError();
-    }
-
-    es.run(() => {
-        subscribeIntent = useCancellableIntent({
-            awaitableWithCancel: subscribe,
-            watchArguments: reactive({
-                intendToSubscribe: toRef(state, "intendToSubscribe"),
-                pk: toRef(parentState, "pk"),
-                pkKey: toRef(parentState, "pkKey"),
-                params: toRef(parentState, "params"),
-            }),
-            clearActiveOnResolved: false,
-        });
-
-        retrieveIntent = useCancellableIntent({
-            awaitableWithCancel: objectInstance.retrieve,
-            watchArguments: reactive({
-                intendToRetrieve: toRef(state, "intendToRetrieve"),
-                pk: toRef(parentState, "pk"),
-                pkKey: toRef(parentState, "pkKey"),
-                params: toRef(parentState, "params"),
-            }),
-            // delay triggering a retrieve until the last retrieve has finished/cancelled.
-            // cancel can still be triggered
-            guardArguments: reactive({
-                loading: toRef(state, "loading"),
-            }),
-        });
+    const retrieveIntent = useCancellableIntent({
+        awaitableWithCancel: objectInstance.retrieve,
+        watchArguments: {
+            intendToRetrieve: toRef(state, "intendToRetrieve"),
+            pk: parentPk,
+            pkKey: parentPkKey,
+            params: parentParams,
+        },
+        // delay triggering a retrieve until the last retrieve has finished/cancelled.
+        // cancel can still be triggered
+        guardArguments: {
+            loading: toRef(state.loading),
+        },
     });
-
+    const subscribeIntent = useCancellableIntent({
+        awaitableWithCancel: ({ runId, isCurrentRun }) => {
+            // this function cannot be async, or the resulting promise will lose its .cancel() method
+            const isCancelled = ref(false);
+            /** @type {import('../config/objectCrud.js').CrudSubscribeCallback} */
+            const subscribeCallback = (data, action) => {
+                if (action === "delete") {
+                    state.deleted = true;
+                    assignReactiveObject(objectInstance.state.object, {});
+                } else {
+                    assignReactiveObject(objectInstance.state.object, data);
+                }
+            };
+            const parentState = objectInstance.state;
+            return parentState.crud.subscribe({
+                runId,
+                isCurrentRun,
+                target: parentState.crud.args,
+                pk: parentState.pk,
+                pkKey: parentState.pkKey,
+                params: state.params,
+                callback: subscribeCallback,
+                isCancelled,
+            });
+        },
+        watchArguments: {
+            intendToSubscribe: toRef(state, "intendToSubscribe"),
+            pk: parentPk,
+            pkKey: parentPkKey,
+            params: parentParams,
+        },
+        // delay triggering a subscribe until the last subscribe has finished/cancelled.
+        // cancel can still be triggered
+        guardArguments: {
+            loading: toRef(state.loading),
+        },
+        // subscriptions persist until cancelled
+        clearActiveOnResolved: false,
+    });
+    errorStates.value.push({
+        error: toRef(retrieveIntent.state, "error"),
+        errored: toRef(retrieveIntent.state, "errored"),
+        clearError: retrieveIntent.clearError,
+    });
+    errorStates.value.push({
+        error: toRef(subscribeIntent.state, "error"),
+        errored: toRef(subscribeIntent.state, "errored"),
+        clearError: subscribeIntent.clearError,
+    });
+    // @ts-ignore - TS checks that the ref is the same type as the value, not that the ref's value has the same type
+    state.subscribed = toRef(subscribeIntent.state, "active");
+    // @ts-ignore - TS checks that the ref is the same type as the value, not that the ref's value has the same type
+    state.loading = computed(() =>
+        /** @type {boolean|undefined} */
+        loadingCombine(retrieveIntent.state.resolving, retrieveIntent.state.active, subscribeIntent.state.resolving)
+    );
     return {
         state,
         objectInstance,
         subscribeIntent,
         retrieveIntent,
-        subscribe: publicSubscribe,
-        unsubscribe: publicUnsubscribe,
-        updateFromSubscription,
-        deleteFromSubscription,
-        clearError,
-        effectScope: es,
+        clearError: proxyError.clearError,
+        stop: () => {
+            subscribeIntent.stop();
+            retrieveIntent.stop();
+        },
     };
 }

@@ -63,7 +63,7 @@ The error code.
 
 ## Interfaces
 
-### ObjectInstanceFunctions
+### ObjectInstanceMyFunctions
 
 #### Properties
 
@@ -77,12 +77,6 @@ Called to clear the object state.
 
 `void`
 
-##### clearError
-
-> **clearError**: [`ClearErrorFn`](loadingError.md#clearerrorfn)
-
-Called to clear the error state.
-
 ##### create()
 
 > **create**: (`args`) => [`MaybeCancellablePromise`](../utils/cancellablePromise.md#maybecancellablepromiset)\<`boolean`\>
@@ -93,9 +87,7 @@ Called to turn the current object into a new object on the server.
 
 ###### args
 
-###### object
-
-`any`
+[`ObjectInstanceCreateArgs`](objectInstance.md#objectinstancecreateargs)
 
 ###### Returns
 
@@ -121,9 +113,7 @@ Called to patch the current object on the server.
 
 ###### args
 
-###### partialObject
-
-[`ExistingCrudObject`](objectInstance.md#existingcrudobject)
+[`ObjectInstancePatchArgs`](objectInstance.md#objectinstancepatchargs)
 
 ###### Returns
 
@@ -131,9 +121,15 @@ Called to patch the current object on the server.
 
 ##### retrieve()
 
-> **retrieve**: () => [`MaybeCancellablePromise`](../utils/cancellablePromise.md#maybecancellablepromiset)\<`boolean`\>
+> **retrieve**: (`args`?) => [`MaybeCancellablePromise`](../utils/cancellablePromise.md#maybecancellablepromiset)\<`boolean`\>
 
 Called to retrieve the current object by pk from the server.
+
+###### Parameters
+
+###### args?
+
+[`CommonRunTracking`](cancellableIntent.md#commonruntracking)
 
 ###### Returns
 
@@ -149,9 +145,7 @@ Called to update the current object on the server.
 
 ###### args
 
-###### object
-
-[`ExistingCrudObject`](objectInstance.md#existingcrudobject)
+[`ObjectInstanceUpdateArgs`](objectInstance.md#objectinstanceupdateargs)
 
 ###### Returns
 
@@ -201,7 +195,7 @@ The arguments to be passed to the crud handlers.
 
 ###### target.args
 
-> **args**: [`ObjectTargetArgs`](../config/objectCrud.md#objecttargetargs)
+> **args**: [`TargetArgs`](../config/objectCrud.md#targetargs)
 
 The arguments to be passed to the crud handlers.
 
@@ -261,7 +255,7 @@ The crud handlers.
 
 ###### crud.args
 
-> **args**: `Reactive`\<\{\} \| [`ObjectTargetArgs`](../config/objectCrud.md#objecttargetargs)\>
+> **args**: `Reactive`\<\{\} \| [`TargetArgs`](../config/objectCrud.md#targetargs)\>
 
 The arguments to be passed to the crud handlers.
 
@@ -311,23 +305,23 @@ Whether the object is deleted.
 
 > **error**: `Error`
 
-The error.
+The error that occurred.
 
 ###### errored
 
 > **errored**: `boolean`
 
-Whether the object errored.
+Whether an error has occurred.
 
 ###### loading
 
 > **loading**: `boolean`
 
-Whether the object is loading.
+Whether the component is loading.
 
 ###### object
 
-> **object**: [`NewCrudObject`](objectInstance.md#newcrudobject) \| \{ `[key: string]`: `any`;  `pkKey`: `string`; \}
+> **object**: `Reactive`\<[`CrudObject`](objectInstance.md#crudobject)\>
 
 The object.
 
@@ -355,37 +349,7 @@ The pk key of the object.
 
 ***
 
-### ObjectInstanceRawProps
-
-#### Properties
-
-##### params
-
-> **params**: `any`
-
-The arguments to be passed to the retrieve function.
-
-##### pk?
-
-> `optional` **pk**: `string`
-
-The pk of the object, optional to support creating new objects.
-
-##### pkKey
-
-> **pkKey**: `string`
-
-The pk key of the object.
-
-##### target
-
-> **target**: [`ObjectTarget`](../config/objectCrud.md#objecttarget)
-
-The arguments to be passed to the crud handlers.
-
-***
-
-### ObjectInstanceRawState
+### ObjectInstanceRawMyState
 
 #### Properties
 
@@ -397,7 +361,7 @@ The crud handlers.
 
 ###### args
 
-> **args**: `Reactive`\<\{\} \| [`ObjectTargetArgs`](../config/objectCrud.md#objecttargetargs)\>
+> **args**: `Reactive`\<\{\} \| [`TargetArgs`](../config/objectCrud.md#targetargs)\>
 
 The arguments to be passed to the crud handlers.
 
@@ -443,24 +407,6 @@ The update function.
 
 Whether the object is deleted.
 
-##### error
-
-> **error**: `Readonly`\<`Ref`\<`Error`, `Error`\>\>
-
-The error.
-
-##### errored
-
-> **errored**: `Readonly`\<`Ref`\<`boolean`, `boolean`\>\>
-
-Whether the object errored.
-
-##### loading
-
-> **loading**: `Readonly`\<`Ref`\<`boolean`, `boolean`\>\>
-
-Whether the object is loading.
-
 ##### object
 
 > **object**: `Reactive`\<[`CrudObject`](objectInstance.md#crudobject)\>
@@ -487,13 +433,43 @@ The pk key of the object.
 
 ***
 
+### ObjectInstanceRawProps
+
+#### Properties
+
+##### params
+
+> **params**: `any`
+
+The arguments to be passed to the retrieve function.
+
+##### pk?
+
+> `optional` **pk**: `string`
+
+The pk of the object, optional to support creating new objects.
+
+##### pkKey
+
+> **pkKey**: `string`
+
+The pk key of the object.
+
+##### target
+
+> **target**: [`ObjectTarget`](../config/objectCrud.md#objecttarget)
+
+The arguments to be passed to the crud handlers.
+
+***
+
 ### ObjectInstanceRawStateCrud
 
 #### Properties
 
 ##### args
 
-> **args**: `Reactive`\<\{\} \| [`ObjectTargetArgs`](../config/objectCrud.md#objecttargetargs)\>
+> **args**: `Reactive`\<\{\} \| [`TargetArgs`](../config/objectCrud.md#targetargs)\>
 
 The arguments to be passed to the crud handlers.
 
@@ -549,15 +525,9 @@ The update function.
 
 #### Type Parameters
 
-#### Type declaration
-
 #### Index Signature
 
 \[`key`: `string`\]: `any`
-
-##### pkKey
-
-> **pkKey**: `string`
 
 ***
 
@@ -581,11 +551,69 @@ The update function.
 
 ***
 
+### ObjectInstanceCreateArgs
+
+> **ObjectInstanceCreateArgs**\<\>: `object`
+
+#### Type Parameters
+
+#### Type declaration
+
+##### object
+
+> **object**: [`NewCrudObject`](objectInstance.md#newcrudobject)
+
+***
+
+### ObjectInstanceFunctions
+
+> **ObjectInstanceFunctions**\<\>: `Pick`\<[`LoadingErrorStatus`](loadingError.md#loadingerrorstatus), `"clearError"`\> & [`ObjectInstanceMyFunctions`](objectInstance.md#objectinstancemyfunctions)
+
+#### Type Parameters
+
+***
+
+### ObjectInstancePatchArgs
+
+> **ObjectInstancePatchArgs**\<\>: `object`
+
+#### Type Parameters
+
+#### Type declaration
+
+##### partialObject
+
+> **partialObject**: [`ExistingCrudObject`](objectInstance.md#existingcrudobject)
+
+***
+
+### ObjectInstanceRawState
+
+> **ObjectInstanceRawState**\<\>: [`ObjectInstanceRawMyState`](objectInstance.md#objectinstancerawmystate) & `Pick`\<[`LoadingErrorStatus`](loadingError.md#loadingerrorstatus), `"loading"` \| `"error"` \| `"errored"`\>
+
+#### Type Parameters
+
+***
+
 ### ObjectInstanceState
 
 > **ObjectInstanceState**\<\>: `Reactive`
 
 #### Type Parameters
+
+***
+
+### ObjectInstanceUpdateArgs
+
+> **ObjectInstanceUpdateArgs**\<\>: `object`
+
+#### Type Parameters
+
+#### Type declaration
+
+##### object
+
+> **object**: [`ExistingCrudObject`](objectInstance.md#existingcrudobject)
 
 ## Variables
 

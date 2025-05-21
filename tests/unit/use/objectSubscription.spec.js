@@ -1,76 +1,52 @@
-import { assignReactiveObject } from "../../../utils/assignReactiveObject.js";
-import { doAwaitTimeout } from "../../../utils/watches.js";
-import { expectErrorToBeNull } from "../expectHelpers.js";
-// import { getMockOnUnmounted } from "../mockOnUnmounted.js";
-import { poll } from "../poll.js";
 import flushPromises from "flush-promises";
-import cloneDeep from "lodash-es/cloneDeep.js";
-import { isRef, nextTick, ref, unref } from "vue";
-import { stringify } from "flatted";
+import { reactive, ref } from "vue";
 import { deepUnref } from "../../../utils/deepUnref.js";
-import { CancellablePromise } from "../../../utils/cancellablePromise.js";
 import { scopedIt } from "../scopedIt.js";
-
-// getMockOnUnmounted();
+import { CancellableResolvable } from "../crudPromise.js";
+import { poll } from "../poll.js";
+import { useObjectInstance } from "../../../use/objectInstance.js";
 
 afterAll(() => {
     vi.restoreAllMocks();
 });
 
-const mockedUseLoadingError = vi.fn();
-const currentSetErrors = [];
-vi.mock("../../../use/loadingError.js", async () => {
-    const actual = /** @type {import("../../../use/loadingError.js")} */ (
-        await vi.importActual("../../../use/loadingError.js")
-    );
-    // we just want a way to call setError on the last run instance.
-    return {
-        ...actual,
-        useLoadingError: mockedUseLoadingError.mockImplementation(() => {
-            const real = actual.useLoadingError();
-            currentSetErrors.push(real.setError);
-            return real;
+const getProps = (overrides) => {
+    return reactive({
+        pk: 1,
+        pkKey: "id",
+        params: {
+            fields: ["id", "__str__", "name"],
+        },
+        ...overrides,
+    });
+};
+const getHandlers = () => {
+    const returnObject = {
+        retrieve: vi.fn(({ callback }) => {
+            returnObject.lastRetrieveCallback = callback;
+            returnObject.lastRetrieveResolvable = new CancellableResolvable();
+            return returnObject.lastRetrieveResolvable.promise;
+        }),
+        subscribe: vi.fn(({ callback }) => {
+            returnObject.lastSubscribeCallback = callback;
+            returnObject.lastSubscribeResolvable = new CancellableResolvable();
+            return returnObject.lastSubscribeResolvable.promise;
         }),
     };
-});
+    return returnObject;
+};
 
 describe("use/objectSubscription.js", function () {
-    let useObjectSubscription,
-        useObjectSubscriptions,
-        globalSubscribe,
-        globalUnsubscribe,
-        globalRetrieve,
-        objectSubscription;
+    /** @type {typeof import("../../../use/objectSubscription.js").useObjectSubscription} */
+    let useObjectSubscription;
+    /** @type {typeof import("../../../use/objectSubscription.js").useObjectSubscriptions} */
+    let useObjectSubscriptions;
     beforeEach(async () => {
-        const objectCrudModule = await import("../../../config/objectCrud.js");
-        globalRetrieve = vi.fn();
-        globalUnsubscribe = vi.fn();
-        globalSubscribe = vi.fn();
-        globalSubscribe.mockImplementation(() => Promise.resolve(globalUnsubscribe));
-        objectCrudModule.setObjectCrud({
-            retrieve: globalRetrieve,
-            create: vi.fn(),
-            update: vi.fn(),
-            patch: vi.fn(),
-            delete: vi.fn(),
-            subscribe: globalSubscribe,
-            args: { stream: "test_stream" },
-        });
-        globalUnsubscribe.mockImplementation(() => true);
         const imported = await import("../../../use/objectSubscription.js");
         useObjectSubscription = imported.useObjectSubscription;
         useObjectSubscriptions = imported.useObjectSubscriptions;
-
-        objectSubscription = useObjectSubscription({
-            props: {
-                pk: 1,
-                pkKey: "id",
-                params: cloneDeep({ fields }),
-            },
-        });
     });
     afterEach(function () {
-        currentSetErrors.length = 0;
         vi.clearAllMocks();
     });
     const crudRetrieveResolved = {
@@ -99,710 +75,411 @@ describe("use/objectSubscription.js", function () {
         request_id: "60799141-959a-4ff7-80bc-1ad6b805a8fd",
     };
     const fields = ["id", "__str__", "name"];
-    describe("subscribe", function () {
-        let crudRetrieveResolve, crudRetrieveReject, crudSubscribeResolve, crudSubscribeReject, crudSubscribePromise;
-        beforeEach(() => {
-            const crudRetrievePromise = new Promise((resolve, reject) => {
-                crudRetrieveResolve = resolve;
-                crudRetrieveReject = reject;
-            });
-            globalRetrieve.mockReturnValueOnce(crudRetrievePromise);
-            crudSubscribePromise = CancellablePromise(
-                new Promise((resolve, reject) => {
-                    crudSubscribeResolve = resolve;
-                    crudSubscribeReject = reject;
-                }),
-                vi.fn().mockReturnValueOnce(true).mockReturnValue(false)
-            );
-            globalSubscribe.mockReturnValueOnce(crudSubscribePromise);
-        });
-        scopedIt("success", async function () {
-            expect(objectSubscription.state.loading).toBeUndefined();
-            expect(objectSubscription.state.errored).toBe(false);
-            expectErrorToBeNull(objectSubscription.state.error);
-            expect(objectSubscription.state.deleted).toBe(false);
-            expect(objectSubscription.state.subscribed).toBeUndefined();
-            expect(objectSubscription.state.intendToSubscribe).toBe(false);
-            expect(objectSubscription.state.intendToRetrieve).toBe(false);
-            expect(objectSubscription.state.object).toEqual({});
-
-            objectSubscription.subscribe();
-
-            await nextTick();
-            expect(objectSubscription.state.loading).toBe(true);
-            expect(objectSubscription.state.errored).toBe(false);
-            expectErrorToBeNull(objectSubscription.state.error);
-            expect(objectSubscription.state.deleted).toBe(false);
-            expect(objectSubscription.state.subscribed).toBeUndefined();
-            expect(objectSubscription.state.intendToSubscribe).toBe(true);
-            expect(objectSubscription.state.intendToRetrieve).toBe(true);
-            expect(objectSubscription.state.object).toEqual({});
-            await nextTick();
-
-            crudRetrieveResolve(crudRetrieveResolved);
-            crudSubscribeResolve(crudSubscribeResolved);
-            await flushPromises();
-
-            expect(objectSubscription.state.loading).toBe(false);
-            expect(objectSubscription.state.errored).toBe(false);
-            expectErrorToBeNull(objectSubscription.state.error);
-            expect(objectSubscription.state.deleted).toBe(false);
-            expect(objectSubscription.state.subscribed).toBe(true);
-            expect(objectSubscription.state.intendToSubscribe).toBe(true);
-            expect(objectSubscription.state.intendToRetrieve).toBe(true);
-            expect(objectSubscription.state.object).toEqual(crudRetrieveResolved);
-            await nextTick();
-            await flushPromises();
-
-            expect(globalRetrieve).toHaveBeenCalledWith({
-                target: { stream: "test_stream" },
-                pk: 1,
+    describe("subscribeIntent", function () {
+        scopedIt("subscribes when `intendToSubscribe` + pk + pkKey + params are all truthy", async function () {
+            const intendToSubscribe = ref(false);
+            const pk = ref(null);
+            /** @type {import('vue').Reactive<object>} */
+            const props = getProps({
+                params: null,
+                pk,
                 pkKey: "id",
-                params: {
-                    fields,
-                },
-                isCancelled: expect.any(Object),
+                intendToRetrieve: false,
+                intendToSubscribe,
             });
-            expect(globalRetrieve).toHaveBeenCalledTimes(1);
-            expect(isRef(globalRetrieve.mock.calls[0][0].isCancelled)).toBe(true);
-            expect(unref(globalRetrieve.mock.calls[0][0].isCancelled)).toBe(false);
-            expect(globalSubscribe).toHaveBeenCalledWith({
-                target: { stream: "test_stream" },
-                pk: 1,
-                pkKey: "id",
-                params: {
-                    fields,
-                },
-                callback: expect.any(Function),
-                isCancelled: expect.any(Object),
+            const handlers = getHandlers();
+            const objSub = useObjectSubscription({
+                props,
+                handlers,
             });
-            expect(globalSubscribe).toHaveBeenCalledTimes(1);
-            expect(isRef(globalSubscribe.mock.calls[0][0].isCancelled)).toBe(true);
-            expect(unref(globalSubscribe.mock.calls[0][0].isCancelled)).toBe(false);
+
+            await flushPromises();
+
+            expect(objSub.state).toMatchObject({
+                loading: undefined,
+                error: null,
+                errored: false,
+                subscribed: undefined,
+                object: {},
+            });
+            expect(handlers.subscribe).not.toHaveBeenCalled();
+
+            intendToSubscribe.value = true;
+            await flushPromises();
+
+            expect(handlers.subscribe).not.toHaveBeenCalled();
+
+            pk.value = 1;
+            await flushPromises();
+
+            expect(handlers.subscribe).not.toHaveBeenCalled();
+
+            props.params = {
+                fields: ["id", "__str__", "name"],
+            };
+            await flushPromises();
+            expect(handlers.subscribe).toHaveBeenCalledTimes(1);
+
+            handlers.lastSubscribeResolvable.resolve(crudSubscribeResolved);
+            await flushPromises();
+
+            expect(objSub.state).toMatchObject({
+                loading: false,
+                error: null,
+                errored: false,
+                subscribed: true,
+                object: {},
+            });
+
+            handlers.lastSubscribeCallback(crudRetrieveResolved, "update");
+            await flushPromises();
+
+            expect(objSub.state.object).toEqual(crudRetrieveResolved);
         });
-        scopedIt("subscribe callback", async function () {
-            globalSubscribe.mockReset();
+        scopedIt("delays when `params` are falsy", async function () {
+            const pk = ref(1);
+            const intendToSubscribe = ref(true);
+            const params = ref(null);
 
-            let subscribeCallback;
+            const props = getProps({ pk, intendToSubscribe, params });
+            const handlers = getHandlers();
+            useObjectSubscription({ props, handlers });
 
-            globalSubscribe.mockImplementation(({ callback }) => {
-                subscribeCallback = callback;
-                return crudSubscribePromise;
-            });
+            await flushPromises();
+            expect(handlers.subscribe).not.toHaveBeenCalled();
 
-            objectSubscription.objectInstance.updateFromSubscription = vi.fn();
-            objectSubscription.objectInstance.deleteFromSubscription = vi.fn();
-
-            const subscribeResult = objectSubscription.subscribe();
-            crudRetrieveResolve(crudRetrieveResolved);
-            crudSubscribeResolve(crudSubscribeResolved);
-            expect(subscribeResult).toBe(true);
-
-            await poll(() => subscribeCallback);
-
-            // @ts-ignore - subscribeCallback is set as a result of the subscribe call
-            subscribeCallback({ id: 1, __str__: "!asdf", name: "!zxcv" }, "update");
-            // @ts-ignore - subscribeCallback is set as a result of the subscribe call
-            subscribeCallback({ id: 1, __str__: "asdf!", name: "zxcv!" }, "create");
-            // @ts-ignore - subscribeCallback is set as a result of the subscribe call
-            subscribeCallback({ pk: 1 }, "delete");
-            expect(objectSubscription.objectInstance.updateFromSubscription).toHaveBeenNthCalledWith(1, {
-                id: 1,
-                __str__: "!asdf",
-                name: "!zxcv",
-            });
-            expect(objectSubscription.objectInstance.updateFromSubscription).toHaveBeenNthCalledWith(2, {
-                id: 1,
-                __str__: "asdf!",
-                name: "zxcv!",
-            });
-            expect(objectSubscription.objectInstance.updateFromSubscription).toHaveBeenCalledTimes(2);
-            expect(objectSubscription.objectInstance.deleteFromSubscription).toHaveBeenNthCalledWith(1);
-            expect(objectSubscription.objectInstance.deleteFromSubscription).toHaveBeenCalledTimes(1);
+            params.value = { fields };
+            await flushPromises();
+            expect(handlers.subscribe).toHaveBeenCalledTimes(1);
         });
-        scopedIt("intendToSubscribe but dont intendToRetrieve", async function () {
-            const returnValue = objectSubscription.subscribe({ retrieve: false });
-            crudSubscribeResolve(crudSubscribeResolved);
-            expect(returnValue).toBe(true);
+        scopedIt("prevents duplicate subscribes", async function () {
+            const pk = ref(1);
+            const intendToSubscribe = ref(true);
+            const params = ref({ fields });
 
-            await nextTick();
+            const props = getProps({ pk, intendToSubscribe, params });
+            const handlers = getHandlers();
+            useObjectSubscription({ props, handlers });
+
+            await flushPromises();
+            expect(handlers.subscribe).toHaveBeenCalledTimes(1);
+
+            intendToSubscribe.value = false;
+            await flushPromises();
+            intendToSubscribe.value = true;
             await flushPromises();
 
-            expect(objectSubscription.state.loading).toBe(false);
-            expect(objectSubscription.state.errored).toBe(false);
-            expectErrorToBeNull(objectSubscription.state.error);
-            expect(objectSubscription.state.deleted).toBe(false);
-            expect(objectSubscription.state.subscribed).toBe(true);
-            expect(objectSubscription.state.intendToSubscribe).toBe(true);
-            expect(objectSubscription.state.intendToRetrieve).toBe(false);
-            expect(objectSubscription.state.object).toEqual({});
+            expect(handlers.subscribe).toHaveBeenCalledTimes(1);
 
-            expect(globalRetrieve).toHaveBeenCalledTimes(0);
-            expect(globalSubscribe).toHaveBeenNthCalledWith(1, {
-                target: { stream: "test_stream" },
-                pk: 1,
-                pkKey: "id",
-                params: {
-                    fields,
-                },
-                callback: expect.any(Function),
-                isCancelled: expect.any(Object),
-            });
-            expect(globalSubscribe).toHaveBeenCalledTimes(1);
-            expect(isRef(globalSubscribe.mock.calls[0][0].isCancelled)).toBe(true);
-            expect(unref(globalSubscribe.mock.calls[0][0].isCancelled)).toBe(false);
+            expect(handlers.subscribe).toHaveBeenCalledTimes(1);
         });
-        scopedIt("delayed success", async function () {
-            objectSubscription.objectInstance.state.params = ref(false);
+        scopedIt("handles subscribe immediate errors", async function () {
+            const error = new Error("Subscription failed");
+            const handlers = getHandlers();
+            handlers.subscribe.mockImplementationOnce(() => {
+                throw error;
+            });
 
-            expect(objectSubscription.state.loading).toBeUndefined();
-            expect(objectSubscription.state.errored).toBe(false);
-            expectErrorToBeNull(objectSubscription.state.error);
-            expect(objectSubscription.state.deleted).toBe(false);
-            expect(objectSubscription.state.subscribed).toBeUndefined();
-            expect(objectSubscription.state.intendToSubscribe).toBe(false);
-            expect(objectSubscription.state.intendToRetrieve).toBe(false);
-            expect(objectSubscription.state.object).toEqual({});
+            const props = getProps({
+                pk: 1,
+                intendToSubscribe: true,
+                params: { fields },
+            });
 
-            const returnValue = objectSubscription.subscribe();
-            expect(returnValue).toBe(true);
-            await nextTick();
+            const sub = useObjectSubscription({ props, handlers });
             await flushPromises();
 
-            expect(objectSubscription.state.loading).toBeUndefined();
-            expect(objectSubscription.state.errored).toBe(false);
-            expectErrorToBeNull(objectSubscription.state.error);
-            expect(objectSubscription.state.deleted).toBe(false);
-            expect(objectSubscription.state.subscribed).toBeUndefined();
-            expect(objectSubscription.state.intendToSubscribe).toBe(true);
-            expect(objectSubscription.state.intendToRetrieve).toBe(true);
-            expect(objectSubscription.state.object).toEqual({});
-
-            objectSubscription.objectInstance.state.params = { fields };
-            await nextTick();
-
-            expect(objectSubscription.state.loading).toBe(true);
-            expect(objectSubscription.state.errored).toBe(false);
-            expectErrorToBeNull(objectSubscription.state.error);
-            expect(objectSubscription.state.deleted).toBe(false);
-            expect(objectSubscription.state.subscribed).toBeUndefined();
-            expect(objectSubscription.state.intendToSubscribe).toBe(true);
-            expect(objectSubscription.state.intendToRetrieve).toBe(true);
-            expect(objectSubscription.state.object).toEqual({});
-
-            crudRetrieveResolve(crudRetrieveResolved);
-            crudSubscribeResolve(crudSubscribeResolved);
-            await flushPromises();
-
-            expect(objectSubscription.state.loading).toBe(false);
-            expect(objectSubscription.state.errored).toBe(false);
-            expectErrorToBeNull(objectSubscription.state.error);
-            expect(objectSubscription.state.deleted).toBe(false);
-            expect(objectSubscription.state.subscribed).toBe(true);
-            expect(objectSubscription.state.intendToSubscribe).toBe(true);
-            expect(objectSubscription.state.intendToRetrieve).toBe(true);
-            expect(objectSubscription.state.object).toEqual(crudRetrieveResolved);
-            await nextTick();
-
-            expect(globalRetrieve).toHaveBeenNthCalledWith(1, {
-                target: { stream: "test_stream" },
-                pk: 1,
-                pkKey: "id",
-                params: {
-                    fields,
-                },
-                isCancelled: expect.any(Object),
+            expect(sub.state).toMatchObject({
+                subscribed: false,
+                errored: true,
+                error,
             });
-            expect(globalRetrieve).toHaveBeenCalledTimes(1);
-            expect(isRef(globalRetrieve.mock.calls[0][0].isCancelled)).toBe(true);
-            expect(unref(globalRetrieve.mock.calls[0][0].isCancelled)).toBe(false);
-            expect(globalSubscribe).toHaveBeenNthCalledWith(1, {
-                target: { stream: "test_stream" },
-                pk: 1,
-                pkKey: "id",
-                params: {
-                    fields,
-                },
-                callback: expect.any(Function),
-                isCancelled: expect.any(Object),
-            });
-            expect(globalSubscribe).toHaveBeenCalledTimes(1);
-            expect(isRef(globalSubscribe.mock.calls[0][0].isCancelled)).toBe(true);
-            expect(unref(globalSubscribe.mock.calls[0][0].isCancelled)).toBe(false);
         });
-        scopedIt("retrieve errored", async function () {
-            expect(objectSubscription.state.loading).toBeUndefined();
-            expect(objectSubscription.state.errored).toBe(false);
-            expectErrorToBeNull(objectSubscription.state.error);
-            expect(objectSubscription.state.deleted).toBe(false);
-            expect(objectSubscription.state.subscribed).toBeUndefined();
-            expect(objectSubscription.state.intendToSubscribe).toBe(false);
-            expect(objectSubscription.state.intendToRetrieve).toBe(false);
-            expect(objectSubscription.state.object).toEqual({});
+        scopedIt("handles subscribe delayed errors", async function () {
+            const error = new Error("Subscription failed");
+            const handlers = getHandlers();
 
-            const returnValue = objectSubscription.subscribe();
-            expect(returnValue).toBe(true);
-            await nextTick();
+            const props = getProps({
+                pk: 1,
+                intendToSubscribe: true,
+                params: { fields },
+            });
+
+            const objectSubscription = useObjectSubscription({ props, handlers });
             await flushPromises();
+            handlers.lastSubscribeResolvable.reject(error);
 
-            expect(objectSubscription.state.loading).toBe(true);
-            expect(objectSubscription.state.errored).toBe(false);
-            expectErrorToBeNull(objectSubscription.state.error);
-            expect(objectSubscription.state.deleted).toBe(false);
-            expect(objectSubscription.state.subscribed).toBeUndefined();
-            expect(objectSubscription.state.intendToSubscribe).toBe(true);
-            expect(objectSubscription.state.intendToRetrieve).toBe(true);
-            expect(objectSubscription.state.object).toEqual({});
-            await nextTick();
-
-            crudRetrieveReject(crudRetrieveRejected);
-            crudSubscribeResolve(crudSubscribeResolved);
-            await flushPromises();
-
-            expect(objectSubscription.state.loading).toBe(false);
+            await poll(() => !objectSubscription.state.subscribed);
+            expect(objectSubscription.state.subscribed).toBe(false);
             expect(objectSubscription.state.errored).toBe(true);
-            expect(objectSubscription.state.error).toEqual(crudRetrieveRejected);
-            expect(objectSubscription.state.deleted).toBe(false);
-            expect(objectSubscription.state.subscribed).toBe(true);
-            expect(objectSubscription.state.intendToSubscribe).toBe(true);
-            expect(objectSubscription.state.intendToRetrieve).toBe(true);
-            expect(objectSubscription.state.object).toEqual({});
-            await nextTick();
-
-            expect(globalRetrieve).toHaveBeenCalledWith({
-                target: { stream: "test_stream" },
-                pk: 1,
-                pkKey: "id",
-                params: {
-                    fields,
-                },
-                isCancelled: expect.any(Object),
-            });
-            expect(globalRetrieve).toHaveBeenCalledTimes(1);
-            expect(isRef(globalRetrieve.mock.calls[0][0].isCancelled)).toBe(true);
-            expect(unref(globalRetrieve.mock.calls[0][0].isCancelled)).toBe(false);
-            expect(globalSubscribe).toHaveBeenCalledWith({
-                target: { stream: "test_stream" },
-                pk: 1,
-                pkKey: "id",
-                params: {
-                    fields,
-                },
-                callback: expect.any(Function),
-                isCancelled: expect.any(Object),
-            });
-            expect(globalSubscribe).toHaveBeenCalledTimes(1);
-            expect(isRef(globalSubscribe.mock.calls[0][0].isCancelled)).toBe(true);
-            expect(unref(globalSubscribe.mock.calls[0][0].isCancelled)).toBe(false);
+            expect(objectSubscription.state.error).toBe(error);
         });
-        scopedIt("subscribe errored", async function () {
-            expect(objectSubscription.state.loading).toBeUndefined();
-            expect(objectSubscription.state.errored).toBe(false);
-            expectErrorToBeNull(objectSubscription.state.error);
-            expect(objectSubscription.state.deleted).toBe(false);
-            expect(objectSubscription.state.subscribed).toBeUndefined();
-            expect(objectSubscription.state.intendToSubscribe).toBe(false);
-            expect(objectSubscription.state.intendToRetrieve).toBe(false);
-            expect(objectSubscription.state.object).toEqual({});
+        scopedIt("handles deleted callback", async function () {
+            const handlers = getHandlers();
+            const props = getProps({
+                pk: 1,
+                intendToSubscribe: true,
+                params: { fields },
+            });
 
-            const returnValue = objectSubscription.subscribe();
-            expect(returnValue).toBe(true);
-
-            await nextTick();
+            const sub = useObjectSubscription({ props, handlers });
             await flushPromises();
 
-            expect(objectSubscription.state.loading).toBe(true);
-            expect(objectSubscription.state.errored).toBe(false);
-            expectErrorToBeNull(objectSubscription.state.error);
-            expect(objectSubscription.state.deleted).toBe(false);
-            expect(objectSubscription.state.subscribed).toBeUndefined();
-            expect(objectSubscription.state.intendToSubscribe).toBe(true);
-            expect(objectSubscription.state.intendToRetrieve).toBe(true);
-            expect(objectSubscription.state.object).toEqual({});
-            await nextTick();
+            handlers.lastSubscribeCallback({}, "delete");
+            expect(sub.state).toMatchObject({
+                deleted: true,
+                object: {},
+            });
+        });
+        scopedIt("handles update/create callback", async function () {
+            const handlers = getHandlers();
+            const props = getProps({
+                pk: 1,
+                intendToSubscribe: true,
+                params: { fields },
+            });
 
-            crudRetrieveResolve(crudRetrieveResolved);
-            crudSubscribeReject(crudSubscribeRejected);
+            const sub = useObjectSubscription({ props, handlers });
             await flushPromises();
 
-            expect(objectSubscription.state.loading).toBe(false);
-            expect(objectSubscription.state.errored).toBe(true);
-            expect(objectSubscription.state.error).toEqual(crudSubscribeRejected);
-            expect(objectSubscription.state.deleted).toBe(false);
-            expect(objectSubscription.state.subscribed).toBe(false);
-            expect(objectSubscription.state.intendToSubscribe).toBe(true);
-            expect(objectSubscription.state.intendToRetrieve).toBe(true);
-            expect(objectSubscription.state.object).toEqual(crudRetrieveResolved);
+            handlers.lastSubscribeCallback({ id: 1, name: "New" }, "update");
+            expect(sub.state.object).toMatchObject({ id: 1, name: "New" });
 
-            await nextTick();
-
-            expect(globalRetrieve).toHaveBeenCalledWith({
-                target: { stream: "test_stream" },
-                pk: 1,
-                pkKey: "id",
-                params: {
-                    fields,
-                },
-                isCancelled: expect.any(Object),
-            });
-            expect(globalRetrieve).toHaveBeenCalledTimes(1);
-            expect(isRef(globalRetrieve.mock.calls[0][0].isCancelled)).toBe(true);
-            expect(unref(globalRetrieve.mock.calls[0][0].isCancelled)).toBe(false);
-            expect(globalSubscribe).toHaveBeenCalledWith({
-                target: { stream: "test_stream" },
-                pk: 1,
-                pkKey: "id",
-                params: {
-                    fields,
-                },
-                callback: expect.any(Function),
-                isCancelled: expect.any(Object),
-            });
-            expect(globalSubscribe).toHaveBeenCalledTimes(1);
-            expect(isRef(globalSubscribe.mock.calls[0][0].isCancelled)).toBe(true);
-            expect(unref(globalSubscribe.mock.calls[0][0].isCancelled)).toBe(false);
-        });
-        scopedIt("already subscribed", async function () {
-            expect(objectSubscription.state.loading).toBeUndefined();
-            expect(objectSubscription.state.errored).toBe(false);
-            expectErrorToBeNull(objectSubscription.state.error);
-            expect(objectSubscription.state.deleted).toBe(false);
-            expect(objectSubscription.state.subscribed).toBeUndefined();
-            expect(objectSubscription.state.intendToSubscribe).toBe(false);
-            expect(objectSubscription.state.intendToRetrieve).toBe(false);
-            expect(objectSubscription.state.object).toEqual({});
-
-            objectSubscription.subscribe();
-            const returnValue = objectSubscription.subscribe();
-            expect(returnValue).toBe(false);
+            handlers.lastSubscribeCallback({ id: 1, name: "Newer" }, "create");
+            expect(sub.state.object).toMatchObject({ id: 1, name: "Newer" });
         });
     });
-    describe("unsubscribe", function () {
-        let crudRetrieveResolve, crudSubscribePromise, crudSubscribeResolve, crudCancelResolve;
-        beforeEach(() => {
-            const crudRetrievePromise = new Promise((resolve) => {
-                crudRetrieveResolve = resolve;
+    describe("retrieveIntent", function () {
+        scopedIt("retrieves when `intentToRetrieve` + pk + params are all truthy", async () => {
+            const pk = ref(null);
+            const intendToRetrieve = ref(false);
+            const props = getProps({ pk, intendToRetrieve, params: null });
+            const handlers = getHandlers();
+            const sub = useObjectSubscription({ props, handlers });
+
+            await flushPromises();
+            expect(handlers.retrieve).not.toHaveBeenCalled();
+
+            intendToRetrieve.value = true;
+            await flushPromises();
+            expect(handlers.retrieve).not.toHaveBeenCalled();
+
+            pk.value = 1;
+            await flushPromises();
+            expect(handlers.retrieve).not.toHaveBeenCalled();
+
+            props.params = { fields };
+            await flushPromises();
+
+            expect(handlers.retrieve).toHaveBeenCalledTimes(1);
+            handlers.lastRetrieveResolvable.resolve(crudRetrieveResolved);
+            await flushPromises();
+
+            expect(sub.state.object).toEqual(crudRetrieveResolved);
+        });
+
+        scopedIt("handles retrieve errors", async () => {
+            const error = new Error("Retrieve failed");
+            const handlers = getHandlers();
+            handlers.retrieve.mockImplementationOnce(() => {
+                throw error;
             });
-            globalRetrieve.mockReturnValueOnce(crudRetrievePromise);
-            crudSubscribePromise = new Promise((resolve) => {
-                crudSubscribeResolve = resolve;
+
+            const props = getProps({
+                pk: 1,
+                intendToRetrieve: true,
+                params: { fields },
             });
-            const crudCancelPromise = new Promise((resolve) => {
-                crudCancelResolve = resolve;
+
+            const sub = useObjectSubscription({ props, handlers });
+            await flushPromises();
+
+            expect(sub.state).toMatchObject({
+                errored: true,
+                error,
             });
-            // @ts-ignore - mocking cancel
-            crudSubscribePromise.cancel = vi.fn();
-            // @ts-ignore - mocking cancel
-            crudSubscribePromise.cancel.mockReturnValueOnce(crudCancelPromise).mockResolvedValue(false);
-            globalSubscribe.mockReturnValueOnce(crudSubscribePromise);
-        });
-        scopedIt("success", async function () {
-            expect(objectSubscription.subscribe()).toBe(true);
-            crudSubscribeResolve(crudSubscribeResolved);
-            crudRetrieveResolve(crudRetrieveResolved);
-
-            await nextTick();
-            await flushPromises();
-
-            expect(objectSubscription.state.loading).toBe(false);
-            expect(objectSubscription.state.errored).toBe(false);
-            expectErrorToBeNull(objectSubscription.state.error);
-            expect(objectSubscription.state.deleted).toBe(false);
-            expect(objectSubscription.state.subscribed).toBe(true);
-            expect(objectSubscription.state.intendToSubscribe).toBe(true);
-            expect(objectSubscription.state.intendToRetrieve).toBe(true);
-            expect(objectSubscription.state.object).toEqual(crudRetrieveResolved);
-
-            expect(objectSubscription.unsubscribe()).toBe(true);
-
-            await nextTick();
-            await flushPromises();
-
-            expect(objectSubscription.state.loading).toBe(false);
-            expect(objectSubscription.state.errored).toBe(false);
-            expectErrorToBeNull(objectSubscription.state.error);
-            expect(objectSubscription.state.deleted).toBe(false);
-            expect(objectSubscription.state.subscribed).toBe(false);
-            expect(objectSubscription.state.intendToSubscribe).toBe(false);
-            expect(objectSubscription.state.intendToRetrieve).toBe(false);
-            expect(objectSubscription.state.object).toEqual(crudRetrieveResolved);
-
-            crudCancelResolve(true);
-            await nextTick();
-            await flushPromises();
-
-            expect(objectSubscription.state.loading).toBe(false);
-            expect(objectSubscription.state.errored).toBe(false);
-            expectErrorToBeNull(objectSubscription.state.error);
-            expect(objectSubscription.state.deleted).toBe(false);
-            expect(objectSubscription.state.subscribed).toBe(false);
-            expect(objectSubscription.state.intendToSubscribe).toBe(false);
-            expect(objectSubscription.state.intendToRetrieve).toBe(false);
-            expect(objectSubscription.state.object).toEqual(crudRetrieveResolved);
-        });
-        scopedIt("errored", async function () {
-            expect(objectSubscription.subscribe()).toBe(true);
-            crudSubscribeResolve(crudSubscribeResolved);
-            crudRetrieveResolve(crudRetrieveResolved);
-
-            await nextTick();
-            await flushPromises();
-
-            expect(objectSubscription.state.loading).toBe(false);
-            expect(objectSubscription.state.errored).toBe(false);
-            expectErrorToBeNull(objectSubscription.state.error);
-            expect(objectSubscription.state.deleted).toBe(false);
-            expect(objectSubscription.state.subscribed).toBe(true);
-            expect(objectSubscription.state.intendToSubscribe).toBe(true);
-            expect(objectSubscription.state.intendToRetrieve).toBe(true);
-            expect(objectSubscription.state.object).toEqual(crudRetrieveResolved);
-
-            expect(objectSubscription.unsubscribe()).toBe(true);
-            await nextTick();
-            await flushPromises();
-
-            expect(objectSubscription.state.loading).toBe(false);
-            expect(objectSubscription.state.errored).toBe(false);
-            expectErrorToBeNull(objectSubscription.state.error);
-            expect(objectSubscription.state.deleted).toBe(false);
-            expect(objectSubscription.state.subscribed).toBe(false);
-            expect(objectSubscription.state.intendToSubscribe).toBe(false);
-            expect(objectSubscription.state.intendToRetrieve).toBe(false);
-            expect(objectSubscription.state.object).toEqual(crudRetrieveResolved);
-
-            crudCancelResolve(false);
-
-            expect(objectSubscription.state.loading).toBe(false);
-            expect(objectSubscription.state.errored).toBe(false);
-            expectErrorToBeNull(objectSubscription.state.error);
-            expect(objectSubscription.state.deleted).toBe(false);
-            expect(objectSubscription.state.subscribed).toBe(false);
-            expect(objectSubscription.state.intendToSubscribe).toBe(false);
-            expect(objectSubscription.state.intendToRetrieve).toBe(false);
-            expect(objectSubscription.state.object).toEqual(crudRetrieveResolved);
-        });
-        scopedIt("already unsubscribed", async function () {
-            expect(objectSubscription.subscribe()).toBe(true);
-            crudSubscribeResolve(crudSubscribeResolved);
-            crudRetrieveResolve(crudRetrieveResolved);
-            objectSubscription.unsubscribe();
-            expect(objectSubscription.unsubscribe()).toBe(false);
         });
 
-        scopedIt("not subscribed", async function () {
-            expect(objectSubscription.unsubscribe()).toBe(false);
+        scopedIt("doesn't trigger while `loading` is true", async () => {
+            const pk = ref(1);
+            const intendToRetrieve = ref(false);
+            const props = getProps({
+                pk,
+                intendToRetrieve,
+                params: { fields },
+            });
+
+            const handlers = getHandlers();
+            const sub = useObjectSubscription({ props, handlers });
+
+            sub.objectInstance.retrieve();
+            await flushPromises();
+
+            intendToRetrieve.value = false;
+            await flushPromises();
+            intendToRetrieve.value = true;
+            await flushPromises();
+
+            expect(handlers.retrieve).toHaveBeenCalledTimes(1);
+        });
+
+        scopedIt("delayed triggering when `params` are initially falsy", async () => {
+            const pk = ref(1);
+            const intendToRetrieve = ref(true);
+            const params = ref(null);
+
+            const props = getProps({ pk, intendToRetrieve, params });
+            const handlers = getHandlers();
+            useObjectSubscription({ props, handlers });
+
+            await flushPromises();
+            expect(handlers.retrieve).not.toHaveBeenCalled();
+
+            params.value = { fields };
+            await flushPromises();
+            expect(handlers.retrieve).toHaveBeenCalledTimes(1);
         });
     });
-    describe("custom crud", function () {
-        scopedIt("custom crud args", async function () {
-            let crudRetrieveResolve, crudSubscribeResolve;
-            const crudRetrievePromise = new Promise((resolve) => {
-                crudRetrieveResolve = resolve;
+    describe("handler defaults", function () {
+        scopedIt("uses global retrieve when handlers are not passed", async () => {
+            const { setObjectCrud } = await import("../../../config/objectCrud.js");
+            const retrieve = new CancellableResolvable();
+            const globalRetrieve = vi.fn().mockReturnValueOnce(retrieve.promise);
+            setObjectCrud({
+                retrieve: globalRetrieve,
+                subscribe: vi.fn(),
+                args: { stream: "test_streamA" },
+                create: vi.fn(),
+                update: vi.fn(),
+                patch: vi.fn(),
+                delete: vi.fn(),
             });
-            globalRetrieve.mockReturnValueOnce(crudRetrievePromise);
-            const crudSubscribePromise = new Promise((resolve) => {
-                crudSubscribeResolve = resolve;
-            });
-            // @ts-ignore - mocking cancel
-            crudSubscribePromise.cancel = vi.fn();
-            // @ts-ignore - mocking cancel
-            crudSubscribePromise.cancel.mockReturnValueOnce(true).mockReturnValue(false);
-            globalSubscribe.mockReturnValueOnce(crudSubscribePromise);
-
-            const objectSubscription = useObjectSubscription({
-                props: {
-                    target: { stream: "test_stream2" },
-                    pk: 1,
-                    pkKey: "id",
-                    params: {
-                        fields,
-                    },
-                },
-            });
-
-            expect(objectSubscription.subscribe()).toBe(true);
-            // @ts-ignore - crudRetrieveResolve is set as a result of the subscribe call
-            crudRetrieveResolve(crudRetrieveResolved);
-            // @ts-ignore - crudSubscribeResolve is set as a result of the subscribe call
-            crudSubscribeResolve(crudSubscribeResolved);
-            await flushPromises();
-
-            expect(globalRetrieve).toHaveBeenCalledWith({
-                target: { stream: "test_stream2" },
+            const props = getProps({
                 pk: 1,
                 pkKey: "id",
-                params: {
-                    fields,
-                },
-                isCancelled: expect.any(Object),
+                params: { fields },
+                intendToRetrieve: true,
             });
+
+            useObjectSubscription({ props }); // no handlers
+
+            await flushPromises();
+
             expect(globalRetrieve).toHaveBeenCalledTimes(1);
-            expect(isRef(globalRetrieve.mock.calls[0][0].isCancelled)).toBe(true);
-            expect(unref(globalRetrieve.mock.calls[0][0].isCancelled)).toBe(false);
-            expect(globalSubscribe).toHaveBeenCalledWith({
-                target: { stream: "test_stream2" },
-                pk: 1,
-                pkKey: "id",
-                params: {
-                    fields,
-                },
-                callback: expect.any(Function),
-                isCancelled: expect.any(Object),
-            });
-            expect(globalSubscribe).toHaveBeenCalledTimes(1);
-            expect(isRef(globalSubscribe.mock.calls[0][0].isCancelled)).toBe(true);
-            expect(unref(globalSubscribe.mock.calls[0][0].isCancelled)).toBe(false);
-        });
-        scopedIt("override subscribe", async function () {
-            let crudRetrieveResolve, crudSubscribeResolve;
-
-            const customCrudRetrieve = vi.fn();
-            const customCrudSubscribe = vi.fn();
-
-            const crudRetrievePromise = new Promise((resolve) => {
-                crudRetrieveResolve = resolve;
-            });
-            customCrudRetrieve.mockReturnValueOnce(crudRetrievePromise);
-            const crudSubscribePromise = new Promise((resolve) => {
-                crudSubscribeResolve = resolve;
-            });
-            // @ts-ignore - mocking cancel
-            crudSubscribePromise.cancel = vi.fn();
-            // @ts-ignore - mocking cancel
-            crudSubscribePromise.cancel.mockReturnValueOnce(true).mockReturnValue(false);
-            customCrudSubscribe.mockReturnValueOnce(crudSubscribePromise);
-
-            const objectSubscription = useObjectSubscription({
-                props: {
-                    pk: 1,
-                    pkKey: "id",
-                    params: {
-                        fields,
-                    },
-                },
-            });
-            objectSubscription.objectInstance.state.crud.retrieve = customCrudRetrieve;
-            objectSubscription.objectInstance.state.crud.subscribe = customCrudSubscribe;
-
-            const subscribePromise = objectSubscription.subscribe();
-            // @ts-ignore - crudRetrieveResolve is set as a result of the subscribe call
-            crudRetrieveResolve(crudRetrieveResolved);
-            // @ts-ignore - crudSubscribeResolve is set as a result of the subscribe call
-            crudSubscribeResolve(crudSubscribeResolved);
-            await flushPromises();
-            expect(subscribePromise).toBe(true);
-
-            expect(globalRetrieve).toHaveBeenCalledTimes(0);
-            expect(globalSubscribe).toHaveBeenCalledTimes(0);
-            expect(customCrudRetrieve).toHaveBeenCalledWith({
-                target: { stream: "test_stream" },
-                pk: 1,
-                pkKey: "id",
-                params: {
-                    fields,
-                },
-                isCancelled: expect.any(Object),
-            });
-            expect(customCrudRetrieve).toHaveBeenCalledTimes(1);
-            expect(isRef(customCrudRetrieve.mock.calls[0][0].isCancelled)).toBe(true);
-            expect(unref(customCrudRetrieve.mock.calls[0][0].isCancelled)).toBe(false);
-            expect(customCrudSubscribe).toHaveBeenCalledWith({
-                target: { stream: "test_stream" },
-                pk: 1,
-                pkKey: "id",
-                params: {
-                    fields,
-                },
-                callback: expect.any(Function),
-                isCancelled: expect.any(Object),
-            });
-            expect(customCrudSubscribe).toHaveBeenCalledTimes(1);
-            expect(isRef(customCrudSubscribe.mock.calls[0][0].isCancelled)).toBe(true);
-            expect(unref(customCrudSubscribe.mock.calls[0][0].isCancelled)).toBe(false);
-        });
-    });
-    describe("custom primary key", function () {
-        scopedIt("custom pkKeys", async function () {
-            let crudRetrieveResolve, crudSubscribeResolve;
-            const crudRetrievePromise = new Promise((resolve) => {
-                crudRetrieveResolve = resolve;
-            });
-            globalRetrieve.mockReturnValueOnce(crudRetrievePromise);
-            const crudSubscribePromise = new Promise((resolve) => {
-                crudSubscribeResolve = resolve;
-            });
-            // @ts-ignore - mocking cancel
-            crudSubscribePromise.cancel = vi.fn();
-            // @ts-ignore - mocking cancel
-            crudSubscribePromise.cancel.mockReturnValueOnce(true).mockReturnValue(false);
-            globalSubscribe.mockReturnValueOnce(crudSubscribePromise);
-
-            const objectSubscription = useObjectSubscription({
-                props: {
-                    target: { stream: "test_streamA" },
-                    pk: 1,
-                    pkKey: "hash",
-                    params: {
-                        fields,
-                    },
-                },
-            });
-
-            expect(objectSubscription.subscribe()).toBe(true);
-            // @ts-ignore - crudRetrieveResolve is set as a result of the subscribe call
-            crudRetrieveResolve(crudRetrieveResolvedNonStandardPk);
-            // @ts-ignore - crudSubscribeResolve is set as a result of the subscribe call
-            crudSubscribeResolve(crudSubscribeResolved);
-            await flushPromises();
-
-            expect(globalRetrieve).toHaveBeenCalledWith({
-                target: { stream: "test_streamA" },
-                pk: 1,
-                pkKey: "hash",
-                params: {
-                    fields,
-                },
-                isCancelled: expect.any(Object),
-            });
-            expect(globalRetrieve).toHaveBeenCalledTimes(1);
-            expect(isRef(globalRetrieve.mock.calls[0][0].isCancelled)).toBe(true);
-            expect(unref(globalRetrieve.mock.calls[0][0].isCancelled)).toBe(false);
-            expect(globalSubscribe).toHaveBeenCalledWith({
-                target: { stream: "test_streamA" },
-                pk: 1,
-                pkKey: "hash",
-                params: {
-                    fields,
-                },
-                callback: expect.any(Function),
-                isCancelled: expect.any(Object),
-            });
-            expect(globalSubscribe).toHaveBeenCalledTimes(1);
-            expect(isRef(globalSubscribe.mock.calls[0][0].isCancelled)).toBe(true);
-            expect(unref(globalSubscribe.mock.calls[0][0].isCancelled)).toBe(false);
-        });
-    });
-    describe("clearError", () => {
-        scopedIt("propagates clearError to loadingError and objectInstance", () => {
-            const objectSubscription = useObjectSubscription({
-                props: {
+            expect(globalRetrieve).toHaveBeenCalledWith(
+                expect.objectContaining({
                     pk: 1,
                     pkKey: "id",
                     params: { fields },
-                },
+                    isCancelled: expect.any(Object),
+                })
+            );
+        });
+        scopedIt("uses global subscribe when handlers are not passed", async () => {
+            const { setObjectCrud } = await import("../../../config/objectCrud.js");
+            const subscribe = new CancellableResolvable();
+            const globalSubscribe = vi.fn().mockReturnValueOnce(subscribe.promise);
+            setObjectCrud({
+                retrieve: vi.fn(),
+                subscribe: globalSubscribe,
+                args: { stream: "test_streamA" },
+                create: vi.fn(),
+                update: vi.fn(),
+                patch: vi.fn(),
+                delete: vi.fn(),
+            });
+            const props = getProps({
+                pk: 1,
+                pkKey: "id",
+                params: { fields },
+                intendToSubscribe: true,
             });
 
-            // Retrieve the last useLoadingError instance's clearLoading spy
-            const loadingErrorInstance = mockedUseLoadingError.mock.results.at(-1)?.value;
-            expect(loadingErrorInstance).toBeDefined();
+            useObjectSubscription({ props }); // no handlers
 
-            const clearLoadingSpy = vi.spyOn(loadingErrorInstance, "clearLoading");
-            const objectClearErrorSpy = vi.spyOn(objectSubscription.objectInstance, "clearError");
+            await flushPromises();
+
+            expect(globalSubscribe).toHaveBeenCalledTimes(1);
+            expect(globalSubscribe).toHaveBeenCalledWith(
+                expect.objectContaining({
+                    pk: 1,
+                    pkKey: "id",
+                    params: { fields },
+                    isCancelled: expect.any(Object),
+                })
+            );
+        });
+    });
+    scopedIt("uses custom pkKey in global retrieve and subscribe", async function () {
+        const handlers = getHandlers();
+        const props = getProps({
+            target: { stream: "test_streamA" },
+            pk: 1,
+            pkKey: "hash",
+            params: { fields },
+            intendToRetrieve: true,
+            intendToSubscribe: true,
+        });
+
+        useObjectSubscription({ props, handlers });
+
+        await flushPromises();
+
+        expect(handlers.retrieve).toHaveBeenCalledWith(expect.objectContaining({ pkKey: "hash" }));
+
+        handlers.lastRetrieveResolvable.resolve(crudRetrieveResolved);
+
+        await flushPromises();
+
+        expect(handlers.subscribe).toHaveBeenCalledWith(expect.objectContaining({ pkKey: "hash" }));
+    });
+    describe("clearError", () => {
+        scopedIt("clearError calls all error sources", async () => {
+            const capturedIntents = [];
+
+            vi.doMock("../../../use/cancellableIntent.js", async () => {
+                const actual = await vi.importActual("../../../use/cancellableIntent.js");
+                return {
+                    ...actual,
+                    useCancellableIntent: vi.fn(() => {
+                        const intent = {
+                            state: {
+                                error: ref(null),
+                                errored: ref(false),
+                                resolving: ref(false),
+                                active: ref(false),
+                            },
+                            clearError: vi.fn(),
+                        };
+                        capturedIntents.push(intent);
+                        return intent;
+                    }),
+                };
+            });
+
+            const props = getProps({
+                pk: 1,
+                pkKey: "id",
+                params: { fields },
+            });
+            const handlers = getHandlers();
+            const objectInstance = useObjectInstance({
+                props,
+                handlers,
+            });
+            const instanceClearSpy = vi.spyOn(objectInstance, "clearError");
+            const { useObjectSubscription } = await import("../../../use/objectSubscription.js");
+            const objectSubscription = useObjectSubscription({
+                props,
+                objectInstance,
+            });
 
             objectSubscription.clearError();
 
-            expect(clearLoadingSpy).toHaveBeenCalledTimes(1);
-            expect(objectClearErrorSpy).toHaveBeenCalledTimes(1);
+            for (const intent of capturedIntents) {
+                expect(intent.clearError).toHaveBeenCalledTimes(1);
+            }
+            expect(instanceClearSpy).toHaveBeenCalledTimes(1);
         });
     });
     describe("useObjectSubscriptions with objectInstance", function () {
@@ -833,7 +510,7 @@ describe("use/objectSubscription.js", function () {
                         },
                     },
                 });
-            }).toThrow("pk not in props, must be truthy for intendToRetrieve or intendToSubscribe to work.");
+            }).toThrow("pk not in props, you must at least define the key first for intendTo* to react.");
         });
         scopedIt("error when missing params", async function () {
             objectInstance = useObjectInstance({
@@ -849,7 +526,7 @@ describe("use/objectSubscription.js", function () {
             expect(() => {
                 // @ts-ignore - we're testing the error case
                 useObjectSubscription({ objectInstance, props: { pk: 1 } });
-            }).toThrow("params not in props, must be truthy for intendToRetrieve or intendToSubscribe to work.");
+            }).toThrow("params not in props, you must at least define the key first for intendTo* to react.");
         });
     });
     scopedIt("useObjectSubscriptions", async function () {
@@ -897,35 +574,5 @@ describe("use/objectSubscription.js", function () {
         });
         expect(deepUnref(objSubs.A.state)).toEqual(deepUnref(objectSubscriptionA.state));
         expect(deepUnref(objSubs.B.state)).toEqual(deepUnref(objectSubscriptionB.state));
-    });
-    scopedIt("updateFromSubscription", function () {
-        const objectSubscription = useObjectSubscription({
-            stream: "test_stream",
-            props: { pkKey: "id" },
-        });
-        assignReactiveObject(objectSubscription.state.object, {
-            id: 1,
-            __str__: "asdf",
-            name: "zxcv",
-        });
-        objectSubscription.updateFromSubscription({ id: 1, name: "asdf" });
-        expect({ ...objectSubscription.state.object }).toEqual({ id: 1, name: "asdf" });
-        objectSubscription.updateFromSubscription({ id: 1, __str__: "zxcv" });
-        expect({ ...objectSubscription.state.object }).toEqual({ id: 1, __str__: "zxcv" });
-    });
-    scopedIt("deleteFromSubscription", function () {
-        const objectSubscription = useObjectSubscription({
-            stream: "test_stream",
-            props: { pkKey: "id" },
-        });
-        assignReactiveObject(objectSubscription.state.object, {
-            id: 1,
-            __str__: "asdf",
-            name: "zxcv",
-        });
-        expect(objectSubscription.state.deleted).toBe(false);
-        objectSubscription.deleteFromSubscription();
-        expect(objectSubscription.state.object).toEqual({});
-        expect(objectSubscription.state.deleted).toBe(true);
     });
 });

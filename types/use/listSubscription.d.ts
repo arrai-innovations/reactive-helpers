@@ -1,29 +1,37 @@
 /**
  * The raw state of a list subscription.
  *
- * @typedef {object} ListSubscriptionRawState
- * @property {Readonly<import('vue').Ref<boolean>>} subscriptionLoading - Whether the subscription is loading.
- * @property {Readonly<import('vue').Ref<boolean>>} subscriptionErrored - Whether the subscription has errored.
- * @property {Readonly<import('vue').Ref<Error>>} subscriptionError - The error that occurred.
- * @property {boolean} intendToList - If this is true, the list should be fetched, or re-fetched if arguments change.
- * @property {boolean} intendToSubscribe - If this is true, the subscription should start or restart if arguments change.
- * @property {boolean} subscribed - Whether the subscription is active.
+ * @typedef {object} ListSubscriptionMyState
+ * @property {import('vue').Ref<boolean>|boolean} intendToList - If this is true, the list should be fetched, or re-fetched if arguments change.
+ * @property {import('vue').Ref<boolean>|boolean} intendToSubscribe - If this is true, the subscription should start or restart if arguments change.
+ * @property {import('vue').Ref<boolean>} subscribed - Whether the subscription is active.
+ */
+/**
+ * @typedef {import('vue').ToRefs<import('./listInstance.js').ListInstanceState>} ListInstanceStateRefs
+ */
+/**
+ * The raw state of a list subscription, including the state from the list instance.
+ *
+ * @typedef {ListSubscriptionMyState & (
+ *     Pick<import('./loadingError.js').LoadingErrorStatus, "loading" | "error" | "errored">
+ * ) & ListInstanceStateRefs} ListSubscriptionRawState
  */
 /**
  * A reactive object that manages a list of objects, as returned by `useListInstance`.
  *
- * @typedef {import('vue').UnwrapNestedRefs<
- *     ListSubscriptionRawState &
- *     import('./listInstance.js').ListInstanceRawState
- * >} ListSubscriptionState
+ * @typedef {import('vue').Reactive<ListSubscriptionRawState>} ListSubscriptionState
  */
 /**
  * The methods available on a list subscription.
  *
- * @typedef {object} ListSubscriptionFunctions
- * @property {Function} subscribe - Trigger a subscription to the list.
- * @property {Function} unsubscribe - Unsubscribe from the list.
- * @property {Function} clearError - Clear the subscription error and the underlying list instance error.
+ * @typedef {Pick<import('./loadingError.js').LoadingErrorStatus, "clearError">} ListSubscriptionFunctions
+ */
+/**
+ * @typedef {{
+ *     state: ListSubscriptionState,
+ *     listInstance: import('./listInstance.js').ListInstance,
+ *     loadingError: import('./loadingError.js').LoadingErrorStatus,
+ * }} ListSubscriptionContext
  */
 /**
  * The properties of a list subscription.
@@ -33,7 +41,6 @@
  * @property {import('./listInstance.js').ListInstance} listInstance - The list instance used by the subscription.
  * @property {import('./cancellableIntent.js').CancellableIntent} listIntent - The `CancellableIntent` instance managing if the list should be (re)fetched.
  * @property {import('./cancellableIntent.js').CancellableIntent} subscribeIntent - The `CancellableIntent` instance managing if the subscription should be (un)subscribed.
- * @property {import('vue').EffectScope} effectScope - The effect scope of the list subscription.
  */
 /**
  * An instance of a list subscription, returned by `useListSubscription`.
@@ -46,8 +53,6 @@
  *
  * @typedef {object & import("./listInstance.js").ListInstanceOptions} ListSubscriptionOptions
  * @property {import("./listInstance.js").ListInstance} listInstance - A list instance to use instead of creating one.
- * @property {boolean} clearListOnListIntentTriggered - If true, the list will be cleared when the list intent is triggered. Default is false.
- * @property {import('vue').Ref<boolean>|boolean} keepOldPages - If true, pages will not be cleared when defaultPageCallback is called.
  */
 /**
  * A Vue composition function that creates multiple list subscriptions, and returns them as an object.
@@ -105,11 +110,9 @@ export function useListSubscriptions(listSubscriptionArgs: {
  * @param {ListSubscriptionOptions} options - The options for the list subscription.
  * @returns {ListSubscription} - Returns a robust list subscription object that manages a list instance with
  *  capabilities to subscribe and unsubscribe to data sources, alongside handling real-time data updates.
- * @throws {ListSubscriptionError} - If both listInstance and props are passed, or if neither are
- * passed. Also thrown if clearListOnListIntentTriggered is not passed or if neither listInstance
- * nor keepOldPages are passed.
+ * @throws {ListSubscriptionError} - If the list instance is not set and no props are passed.
  */
-export function useListSubscription({ listInstance, props, handlers, keepOldPages, clearListOnListIntentTriggered }: ListSubscriptionOptions): ListSubscription;
+export function useListSubscription({ listInstance, props, handlers }: ListSubscriptionOptions): ListSubscription;
 /**
  * A composable function for managing a list subscription.
  *
@@ -131,52 +134,37 @@ export class ListSubscriptionError extends Error {
 /**
  * The raw state of a list subscription.
  */
-export type ListSubscriptionRawState = {
-    /**
-     * - Whether the subscription is loading.
-     */
-    subscriptionLoading: Readonly<import("vue").Ref<boolean>>;
-    /**
-     * - Whether the subscription has errored.
-     */
-    subscriptionErrored: Readonly<import("vue").Ref<boolean>>;
-    /**
-     * - The error that occurred.
-     */
-    subscriptionError: Readonly<import("vue").Ref<Error>>;
+export type ListSubscriptionMyState = {
     /**
      * - If this is true, the list should be fetched, or re-fetched if arguments change.
      */
-    intendToList: boolean;
+    intendToList: import("vue").Ref<boolean> | boolean;
     /**
      * - If this is true, the subscription should start or restart if arguments change.
      */
-    intendToSubscribe: boolean;
+    intendToSubscribe: import("vue").Ref<boolean> | boolean;
     /**
      * - Whether the subscription is active.
      */
-    subscribed: boolean;
+    subscribed: import("vue").Ref<boolean>;
 };
+export type ListInstanceStateRefs = import("vue").ToRefs<import("./listInstance.js").ListInstanceState>;
+/**
+ * The raw state of a list subscription, including the state from the list instance.
+ */
+export type ListSubscriptionRawState = ListSubscriptionMyState & (Pick<import("./loadingError.js").LoadingErrorStatus, "loading" | "error" | "errored">) & ListInstanceStateRefs;
 /**
  * A reactive object that manages a list of objects, as returned by `useListInstance`.
  */
-export type ListSubscriptionState = import("vue").UnwrapNestedRefs<ListSubscriptionRawState & import("./listInstance.js").ListInstanceRawState>;
+export type ListSubscriptionState = import("vue").Reactive<ListSubscriptionRawState>;
 /**
  * The methods available on a list subscription.
  */
-export type ListSubscriptionFunctions = {
-    /**
-     * - Trigger a subscription to the list.
-     */
-    subscribe: Function;
-    /**
-     * - Unsubscribe from the list.
-     */
-    unsubscribe: Function;
-    /**
-     * - Clear the subscription error and the underlying list instance error.
-     */
-    clearError: Function;
+export type ListSubscriptionFunctions = Pick<import("./loadingError.js").LoadingErrorStatus, "clearError">;
+export type ListSubscriptionContext = {
+    state: ListSubscriptionState;
+    listInstance: import("./listInstance.js").ListInstance;
+    loadingError: import("./loadingError.js").LoadingErrorStatus;
 };
 /**
  * The properties of a list subscription.
@@ -198,10 +186,6 @@ export type ListSubscriptionProperties = {
      * - The `CancellableIntent` instance managing if the subscription should be (un)subscribed.
      */
     subscribeIntent: import("./cancellableIntent.js").CancellableIntent;
-    /**
-     * - The effect scope of the list subscription.
-     */
-    effectScope: import("vue").EffectScope;
 };
 /**
  * An instance of a list subscription, returned by `useListSubscription`.

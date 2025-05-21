@@ -3,6 +3,7 @@ export const listInstanceStateKeys = [
     "pkKey",
     "params",
     "objects",
+    "objectsMap",
     "loading",
     "running",
     "errored",
@@ -10,11 +11,6 @@ export const listInstanceStateKeys = [
     "objectsInOrder",
     "objectsInOrderRefs",
     "order",
-    // when paged
-    "totalRecords",
-    "totalPages",
-    "perPage",
-    "pageToIds",
 ];
 export const listInstanceFunctions = [
     "list",
@@ -26,8 +22,8 @@ export const listInstanceFunctions = [
     "clearList",
     "clearError",
     "getFakePk",
-    "defaultPageCallback",
-    "pageCallback",
+    "defaultpushObjects",
+    "PushObjectsFn",
 ];
 
 export const listSubscriptionStateKeys = [

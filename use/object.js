@@ -1,8 +1,8 @@
-import { objectCalculatedFunctions, useObjectCalculated } from "./objectCalculated.js";
-import { objectInstanceFunctions, useObjectInstance } from "./objectInstance.js";
-import { objectRelatedFunctions, useObjectRelated } from "./objectRelated.js";
-import { objectSubscriptionFunctions, useObjectSubscription } from "./objectSubscription.js";
-import { effectScope, reactive, shallowReactive, shallowReadonly, toRef } from "vue";
+import { useObjectCalculated } from "./objectCalculated.js";
+import { useObjectInstance } from "./objectInstance.js";
+import { useObjectRelated } from "./objectRelated.js";
+import { useObjectSubscription } from "./objectSubscription.js";
+import { effectScope, shallowReactive, shallowReadonly, toRef } from "vue";
 
 /**
  * Provides a Vue 3 composable function for object management. This module orchestrates the useObjectInstance,
@@ -39,23 +39,6 @@ import { effectScope, reactive, shallowReactive, shallowReadonly, toRef } from "
  */
 
 /**
- * Defines the raw state of the object manager.
- *
- * @typedef {(
- *     import('./objectInstance.js').ObjectInstanceRawState &
- *     import('./objectSubscription.js').ObjectSubscriptionRawState &
- *     import('./objectRelated.js').ObjectRelatedRawState &
- *     import('./objectCalculated.js').ObjectCalculatedRawState
- * )} ObjectManagerRawState
- */
-
-/**
- * Defines the state of the object manager.
- *
- * @typedef {import('vue').UnwrapNestedRefs<ObjectManagerRawState>} ObjectManagerState
- */
-
-/**
  * Defines the managed object, containing the managed object instance, subscription, related objects, and calculated objects.
  *
  * @typedef {{
@@ -85,8 +68,8 @@ import { effectScope, reactive, shallowReactive, shallowReadonly, toRef } from "
  *
  * @typedef {object} ObjectManagerProperties
  * @property {ObjectManaged} managed - The managed object.
- * @property {ObjectManagerState} state - The state of the managed object.
- * @property {import('vue').EffectScope} effectScope - The effect scope of the managed object.
+ * @property {import('./objectCalculated.js').ObjectCalculatedState} state - The state of the managed object.
+ * @property {() => void} stop - Stop the effect scope of the managed object.
  */
 
 /**
@@ -112,6 +95,31 @@ export const useObjects = (objectArgs) => {
     }
     return objects;
 };
+
+/* eslint-disable jsdoc/valid-types */
+/**
+ * Extract function properties from a source object, excluding `stop`.
+ *
+ * @template {object} T
+ * @param {T} source - The source object from which to extract function properties.
+ * @returns {{
+ *   [K in keyof T as K extends "stop" ? never : T[K] extends (...args: any[]) => any ? K : never]: T[K]
+ * }} - An object containing only the function properties of the source object, excluding `stop`.
+ */
+function mergeFns(source) {
+    const returnedFns = {};
+    for (const key of Object.keys(source)) {
+        if (key !== "stop") {
+            const val = source[key];
+            if (typeof val === "function") {
+                returnedFns[key] = val;
+            }
+        }
+    }
+    // @ts-ignore
+    return returnedFns;
+}
+/* eslint-enable jsdoc/valid-types */
 
 /**
  * Initializes a chain of useObject* functions, returning an object of them.
@@ -212,6 +220,7 @@ export const useObjects = (objectArgs) => {
  * @returns {ObjectManager} - An object managing a chain of useObject* instances.
  */
 export const useObject = ({ props, handlers }) => {
+    /** @type {ObjectManaged} */
     const managed = shallowReactive({
         objectInstance: null,
         objectSubscription: null,
@@ -239,50 +248,21 @@ export const useObject = ({ props, handlers }) => {
             calculatedObjectRules: toRef(props, "calculatedObjectRules"),
         });
     });
-    const clearError = () => {
-        // subscription clearError also clears the instance error
-        managed.objectSubscription.clearError();
-    };
-    const clear = () => {
-        managed.objectSubscription.clearError();
-        managed.objectInstance.clear();
-    };
-    /** @type {ObjectManager} */
-    // @ts-ignore - the remaining properties are added below
-    const returnObject = reactive({
+    return {
         managed: shallowReadonly(managed),
         state: managed.objectCalculated.state,
-        retrieve: managed.objectInstance.retrieve,
-        create: managed.objectInstance.create,
-        update: managed.objectInstance.update,
-        patch: managed.objectInstance.patch,
-        subscribe: managed.objectSubscription.subscribe,
-        unsubscribe: managed.objectSubscription.unsubscribe,
-        updateFromSubscription: managed.objectSubscription.updateFromSubscription,
-        deleteFromSubscription: managed.objectSubscription.deleteFromSubscription,
-        clearError,
-        clear,
-        effectScope: es,
-    });
-    const handledDuplicateFunctions = {
-        clearError,
-        clear,
+        ...mergeFns(managed.objectInstance),
+        ...mergeFns(managed.objectSubscription),
+        ...mergeFns(managed.objectRelated),
+        ...mergeFns(managed.objectCalculated),
+        clearError: () => {
+            // subscription clearError also clears the instance error
+            managed.objectSubscription.clearError();
+        },
+        clear: () => {
+            managed.objectSubscription.clearError();
+            managed.objectInstance.clear();
+        },
+        stop: () => es.stop(),
     };
-    for (const [source, fnNames] of [
-        [managed.objectInstance, objectInstanceFunctions],
-        [managed.objectSubscription, objectSubscriptionFunctions],
-        [managed.objectRelated, objectRelatedFunctions],
-        [managed.objectCalculated, objectCalculatedFunctions],
-    ]) {
-        for (const fnName of fnNames) {
-            if (handledDuplicateFunctions[fnName]) {
-                continue;
-            }
-            returnObject[fnName] = source[fnName];
-        }
-    }
-    for (const [fnName, fn] of Object.entries(handledDuplicateFunctions)) {
-        returnObject[fnName] = fn;
-    }
-    return returnObject;
 };

@@ -1,4 +1,73 @@
 /**
+ * Vue Composition API composable function for managing relationships among objects in a list.
+ * It enables linking objects based on predefined rules and dynamically adjusts as the underlying data changes.
+ *
+ * @module use/listRelated.js
+ */
+/**
+ * The rule for defining relationships for objects in a list.
+ *
+ * @typedef {object} ListRelatedRule
+ * @property {string} pkKey - Specifies the foreign key used to link objects across lists. Planned to be renamed to
+ *  'fkKey' to better reflect its usage.
+ * @property {string[]} [order] - Specifies the order in which related objects should be sorted, if applicable.
+ * @property {import('./listInstance.js').ObjectsByPk} objects - The objects that can be related based on the foreign key.
+ */
+/**
+ * The rules for defining relationships among objects in a list.
+ *
+ * @typedef {{
+ *     [rule: string]: ListRelatedRule,
+ * }} ListRelatedRules
+ */
+/**
+ * Represents the internal state used by the list related composition function. It manages and computes the relationships
+ * between objects based on specified rules, providing real-time updates to related objects as the parent state changes.
+ *
+ * @typedef {object} ListRelatedRawState
+ * @property {{
+ *     [pk: string]: {
+ *         [rule: string]: import('vue').ComputedRef<any>,
+ *     },
+ * }} relatedObjects - Stores computed references to related objects, allowing for dynamic access based on object pk and specific rules.
+ * @property {ListRelatedRules} relatedObjectsRules - Defines the rules for establishing relationships, such as foreign key links and sorting orders.
+ * @property {{
+ *     [pk: string]: {
+ *         [rule: string]: import('vue').ComputedRef<[object, string]>,
+ *     },
+ * }} objAndKeyForPkAndRule - Maps each object pk and rule to a tuple consisting of the related object and its respective key, facilitating direct data manipulation.
+ * @property {{
+ *     [pk: string]: {
+ *         [rule: string]: import('vue').ComputedRef<any>,
+ *     },
+ * }} fkForPkAndRule - Maintains computed references to the foreign keys for each object pk and rule, crucial for navigating complex data relationships.
+ * @property {boolean} relatedObjectsParentStateObjectsWatchRunning - Flags whether the watch on parent state objects is currently active, ensuring updates trigger as needed.
+ * @property {boolean} relatedObjectsWatchRunning - Indicates if watches on the related objects themselves are active, managing updates efficiently.
+ * @property {boolean} relatedRunning - Signals whether any computations related to object relationships are currently in progress.
+ * @property {import('vue').Ref<boolean>} running - General flag that indicates if the list-related logic is processing, used to manage UI feedback or prevent concurrent operations.
+ */
+/**
+ * The raw state properties for a parent of a list related property.
+ *
+ * @typedef {(
+ *     import('./listInstance.js').ListInstanceRawState &
+ *     Partial<import('./listSubscription.js').ListSubscriptionRawState>
+ * )} ListRelatedParentRawState
+ */
+/**
+ * The type for a parentState object.
+ *
+ * @typedef {import('vue').UnwrapNestedRefs<ListRelatedParentRawState>} ListRelatedParentState
+ */
+/**
+ * The state for a list related property.
+ *
+ * @typedef {import('vue').UnwrapNestedRefs<
+ *     ListRelatedParentRawState &
+ *     ListRelatedRawState
+ * >} ListRelatedState
+ */
+/**
  * The options for the list related composition function.
  *
  * @typedef {object} ListRelatedOptions
@@ -11,8 +80,7 @@
  * @typedef {object} ListRelatedProperties
  * @property {ListRelatedState} state - The state for the list related property.
  * @property {ListRelatedParentState} parentState - The parent state object.
- * @property {import('./watchesRunning.js').WatchesRunning} watchesRunning - The watches running instance.
- * @property {import('vue').EffectScope} effectScope - The effect scope for the list related property.
+ * @property {() => void} stop - Stops all effects of the list related property.
  */
 /**
  * An instance of `useListRelated`.
@@ -110,44 +178,6 @@ export function useListRelateds(listRelatedArgs: {
  */
 export function useListRelated({ parentState, relatedObjectsRules }: ListRelatedOptions): ListRelated;
 /**
- * The options for the list related composition function.
- */
-export type ListRelatedOptions = {
-    /**
-     * - The parent state object.
-     */
-    parentState: ListRelatedParentState;
-    /**
-     * - The rules for the related objects.
-     */
-    relatedObjectsRules: import("vue").Ref<ListRelatedRules>;
-};
-/**
- * The properties for the list related composition function.
- */
-export type ListRelatedProperties = {
-    /**
-     * - The state for the list related property.
-     */
-    state: ListRelatedState;
-    /**
-     * - The parent state object.
-     */
-    parentState: ListRelatedParentState;
-    /**
-     * - The watches running instance.
-     */
-    watchesRunning: import("./watchesRunning.js").WatchesRunning;
-    /**
-     * - The effect scope for the list related property.
-     */
-    effectScope: import("vue").EffectScope;
-};
-/**
- * An instance of `useListRelated`.
- */
-export type ListRelated = ListRelatedProperties;
-/**
  * The rule for defining relationships for objects in a list.
  */
 export type ListRelatedRule = {
@@ -168,9 +198,9 @@ export type ListRelatedRule = {
 /**
  * The rules for defining relationships among objects in a list.
  */
-export type ListRelatedRules = import("vue").UnwrapNestedRefs<{
+export type ListRelatedRules = {
     [rule: string]: ListRelatedRule;
-}>;
+};
 /**
  * Represents the internal state used by the list related composition function. It manages and computes the relationships
  * between objects based on specified rules, providing real-time updates to related objects as the parent state changes.
@@ -233,4 +263,38 @@ export type ListRelatedParentState = import("vue").UnwrapNestedRefs<ListRelatedP
  * The state for a list related property.
  */
 export type ListRelatedState = import("vue").UnwrapNestedRefs<ListRelatedParentRawState & ListRelatedRawState>;
+/**
+ * The options for the list related composition function.
+ */
+export type ListRelatedOptions = {
+    /**
+     * - The parent state object.
+     */
+    parentState: ListRelatedParentState;
+    /**
+     * - The rules for the related objects.
+     */
+    relatedObjectsRules: import("vue").Ref<ListRelatedRules>;
+};
+/**
+ * The properties for the list related composition function.
+ */
+export type ListRelatedProperties = {
+    /**
+     * - The state for the list related property.
+     */
+    state: ListRelatedState;
+    /**
+     * - The parent state object.
+     */
+    parentState: ListRelatedParentState;
+    /**
+     * - Stops all effects of the list related property.
+     */
+    stop: () => void;
+};
+/**
+ * An instance of `useListRelated`.
+ */
+export type ListRelated = ListRelatedProperties;
 //# sourceMappingURL=listRelated.d.ts.map

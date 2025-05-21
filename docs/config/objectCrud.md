@@ -46,25 +46,15 @@ The key name of the primary key.
 
 ##### target
 
-> **target**: `object`
+> **target**: [`TargetArgs`](objectCrud.md#targetargs)
 
 The arguments to be passed to the crud handlers.
-
-###### Index Signature
-
-\[`key`: `string`\]: `any`
 
 ***
 
 ### DeleteArgs
 
 #### Properties
-
-##### isCancelled
-
-> **isCancelled**: `Readonly`\<`Ref`\<`boolean`, `boolean`\>\>
-
-A ref to indicate if the request was cancelled.
 
 ##### pk
 
@@ -80,13 +70,9 @@ The key name of the primary key.
 
 ##### target
 
-> **target**: `object`
+> **target**: [`TargetArgs`](objectCrud.md#targetargs)
 
 The arguments to be passed to the crud handlers.
-
-###### Index Signature
-
-\[`key`: `string`\]: `any`
 
 ***
 
@@ -132,7 +118,7 @@ A function to be used instead of the default crud update function.
 
 ***
 
-### ObjectSubscribeArgs
+### ObjectSubscribeArgsRaw
 
 #### Properties
 
@@ -172,13 +158,9 @@ The key name of the primary key.
 
 ##### target
 
-> **target**: `object`
+> **target**: [`TargetArgs`](objectCrud.md#targetargs)
 
 The arguments to be passed to the crud handlers.
-
-###### Index Signature
-
-\[`key`: `string`\]: `any`
 
 ***
 
@@ -188,7 +170,7 @@ The arguments to be passed to the crud handlers.
 
 ##### target?
 
-> `optional` **target**: [`ObjectTargetArgs`](objectCrud.md#objecttargetargs)
+> `optional` **target**: [`TargetArgs`](objectCrud.md#targetargs)
 
 The arguments to be passed to the crud handlers.
 
@@ -200,7 +182,7 @@ The arguments to be passed to the crud handlers.
 
 ##### args
 
-> **args**: [`ObjectTargetArgs`](objectCrud.md#objecttargetargs)
+> **args**: [`TargetArgs`](objectCrud.md#targetargs)
 
 The arguments to be passed to the crud handlers.
 
@@ -250,17 +232,13 @@ The key name of the primary key.
 
 ##### target
 
-> **target**: `object`
+> **target**: [`TargetArgs`](objectCrud.md#targetargs)
 
 The arguments to be passed to the crud handlers.
 
-###### Index Signature
-
-\[`key`: `string`\]: `any`
-
 ***
 
-### RetrieveArgs
+### RetrieveArgsRaw
 
 #### Properties
 
@@ -294,13 +272,9 @@ The key name of the primary key.
 
 ##### target
 
-> **target**: `object`
+> **target**: [`TargetArgs`](objectCrud.md#targetargs)
 
 The arguments to be passed to the crud handlers.
-
-###### Index Signature
-
-\[`key`: `string`\]: `any`
 
 ***
 
@@ -338,13 +312,9 @@ The key name of the primary key.
 
 ##### target
 
-> **target**: `object`
+> **target**: [`TargetArgs`](objectCrud.md#targetargs)
 
 The arguments to be passed to the crud handlers.
-
-###### Index Signature
-
-\[`key`: `string`\]: `any`
 
 ## Type Aliases
 
@@ -472,9 +442,9 @@ The data to be passed to the callback.
 
 ##### action
 
-`string`
-
 The action that was performed.
+
+`"delete"` | `"update"` | `"create"`
 
 #### Returns
 
@@ -502,6 +472,14 @@ The arguments to be passed to the update function.
 
 ***
 
+### ObjectSubscribeArgs
+
+> **ObjectSubscribeArgs**\<\>: [`ObjectSubscribeArgsRaw`](objectCrud.md#objectsubscribeargsraw) & [`CommonRunTracking`](../use/cancellableIntent.md#commonruntracking)
+
+#### Type Parameters
+
+***
+
 ### ObjectTarget
 
 > **ObjectTarget**\<\>: [`ObjectTargetProperties`](objectCrud.md#objecttargetproperties) & [`ObjectCrudHandlers`](objectCrud.md#objectcrudhandlers)
@@ -510,9 +488,17 @@ The arguments to be passed to the update function.
 
 ***
 
-### ObjectTargetArgs
+### RetrieveArgs
 
-> **ObjectTargetArgs**\<\>: `object`
+> **RetrieveArgs**\<\>: [`RetrieveArgsRaw`](objectCrud.md#retrieveargsraw) & [`CommonRunTracking`](../use/cancellableIntent.md#commonruntracking)
+
+#### Type Parameters
+
+***
+
+### TargetArgs
+
+> **TargetArgs**\<\>: `object`
 
 #### Type Parameters
 
@@ -544,7 +530,7 @@ The reactive object you want to add the resulting crud to.
 
 ###### args
 
-[`ObjectTargetArgs`](objectCrud.md#objecttargetargs)
+[`TargetArgs`](objectCrud.md#targetargs)
 
 The arguments to be passed to the crud handlers.
 
@@ -560,13 +546,13 @@ Any functions to override the default crud functions.
 
 ###### props?
 
-\{ `target`: [`ObjectTargetArgs`](objectCrud.md#objecttargetargs); \}
+\{ `target`: [`TargetArgs`](objectCrud.md#targetargs); \}
 
 The props with any passed target.
 
 ###### props.target?
 
-[`ObjectTargetArgs`](objectCrud.md#objecttargetargs)
+[`TargetArgs`](objectCrud.md#targetargs)
 
 The arguments to be passed to the crud handlers.
 

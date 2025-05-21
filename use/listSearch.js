@@ -1,23 +1,14 @@
-import { difference } from "../utils/set.js";
 import { keyDiff } from "../utils/keyDiff.js";
 import { proxyRunning } from "../utils/proxyRunning.js";
 import { getObjectRelatedCalculatedByKey } from "../utils/relatedCalculatedHelpers.js";
-import {
-    listCalculatedStateKeys,
-    listFilterStateKeys,
-    listInstanceStateKeys,
-    listRelatedStateKeys,
-    listSearchStateKeys,
-    listSortStateKeys,
-    listSubscriptionStateKeys,
-} from "./listKeys.js";
 import { useSearch } from "./search.js";
 import get from "lodash-es/get.js";
 import isEqual from "lodash-es/isEqual.js";
-import { computed, effectScope, onScopeDispose, reactive, readonly, ref, toRef, unref, watch } from "vue";
+import { computed, effectScope, reactive, readonly, ref, toRef, toRefs, unref, watch } from "vue";
 import { deepUnref } from "../utils/deepUnref.js";
 import { assignReactiveObject } from "../utils/assignReactiveObject.js";
 import { loadingCombine } from "../utils/loadingCombine.js";
+import { refIfReactive } from "../utils/refIfReactive.js";
 
 /**
  * Provides a Vue 3 composable for adding text search functionality to lists. It allows for
@@ -28,18 +19,6 @@ import { loadingCombine } from "../utils/loadingCombine.js";
  *
  * @module use/listSearch.js
  */
-
-const parentStateKeys = difference(
-    new Set([
-        ...listInstanceStateKeys,
-        ...listSubscriptionStateKeys,
-        ...listRelatedStateKeys,
-        ...listCalculatedStateKeys,
-        ...listSortStateKeys,
-        ...listFilterStateKeys,
-    ]),
-    new Set(listSearchStateKeys)
-);
 
 /**
  * Represents the raw reactive state used by the list search functionality.
@@ -54,8 +33,8 @@ const parentStateKeys = difference(
  * @property {object} objectIndexes - Indexes built for quick search across objects based on rules.
  * @property {object} customDocumentOptions - Configuration options for the search document, used by FlexSearch.
  * @property {object} customSearchOptions - Additional search options for FlexSearch.
- * @property {boolean} searched - Flag indicating if a search has been performed.
- * @property {boolean} running - Indicates if the search process is actively running.
+ * @property {Readonly<import('vue').Ref<boolean>>} searched - Flag indicating if a search has been performed.
+ * @property {import('vue').ComputedRef<boolean>} running - Indicates if the search process is actively running.
  */
 
 /**
@@ -72,6 +51,10 @@ const parentStateKeys = difference(
 
 /**
  * @typedef {import('vue').UnwrapNestedRefs<ListSearchParentRawState>} ListSearchParentState - The parent state for a list search.
+ */
+
+/**
+ *  @typedef {import('vue').ToRefs<ListSearchParentState>} ListSearchParentStateToRefs
  */
 
 /**
@@ -107,8 +90,8 @@ const parentStateKeys = difference(
  *
  * @typedef {object} ListSearchProperties
  * @property {ListSearchState} state - The state.
- * @property {import('vue').EffectScope} effectScope - The effect scope.
  * @property {import('./search.js').SearchInstance} textSearchIndex - The text search index.
+ * @property {() => void} stop - Stops the effect scope and cleans up resources.
  */
 
 // if we provided functions, we would add a typedef and mix them into ListSearch
@@ -158,7 +141,7 @@ export function useListSearches(listSearchArgs) {
 /**
  * @typedef {object} ListSearchInstanceOptions
  * @property {object} parentState - The list being filtered.
- * @property {ListSearchProps} props - Reactive properties.
+ * @property {ListSearchProps} [props] - Reactive properties.
  * @property {number} [throttle=500] - Throttle wait time.
  * @property {boolean} [showAllWhenEmpty=true] - Whether to show all items when the search is empty.
  */
@@ -198,6 +181,9 @@ export function useListSearch({ parentState, props, throttle = 500, showAllWhenE
     if (!parentState.pkKey) {
         throw new Error("parentState.pkKey is required");
     }
+    const es = effectScope();
+    const parentRunning = ref(undefined);
+    proxyRunning(parentState, "running", parentRunning);
     const internalState = reactive({
         /** @type {import('./listFilter.js').ObjectsInOrderRefs} */
         objectsInOrderRefs: [],
@@ -205,33 +191,28 @@ export function useListSearch({ parentState, props, throttle = 500, showAllWhenE
         newSearchComputeds: undefined,
     });
     /** @type {ListSearchState} */
-    // @ts-ignore - we are assigning the parent state keys & computeds in the effect scope
+    // @ts-ignore
     const state = reactive(
         /** @type {ListSearchRawState} */ {
+            .../** @type {ListSearchParentStateToRefs} */ toRefs(parentState),
             objects: {},
-            objectsInOrder: [],
+            objectsInOrder: computed(() => internalState.objectsInOrderRefs.map((ref) => unref(ref))),
             order: [],
-            textSearchRules: toRef(props, "textSearchRules"),
-            textSearchValue: toRef(props, "textSearchValue"),
+            textSearchRules: refIfReactive(props, "textSearchRules", []),
+            textSearchValue: refIfReactive(props, "textSearchValue", ""),
             objectIndexes: {},
-            customDocumentOptions: toRef(props, "customDocumentOptions"),
-            customSearchOptions: toRef(props, "customSearchOptions"),
-            searched: undefined,
-            running: undefined,
+            customDocumentOptions: refIfReactive(props, "customDocumentOptions", {}),
+            customSearchOptions: refIfReactive(props, "customSearchOptions", {}),
+            searched: readonly(ref(false)),
+            running: computed(() => false),
         }
     );
-    if (!state.customDocumentOptions) {
-        state.customDocumentOptions = {};
-    }
-    if (!state.customSearchOptions) {
-        state.customSearchOptions = {};
-    }
     const textSearchIndexProps = reactive({
         customDocumentOptions: computed(() => {
             const options = {
                 tokenize: "forward",
                 minlength: 2,
-                ...state.customDocumentOptions, // todo: not sure if this is ok inside a computed
+                ...(state.customDocumentOptions ?? {}), // todo: not sure if this is ok inside a computed
             };
             if (!options.document) {
                 options.document = {
@@ -242,15 +223,23 @@ export function useListSearch({ parentState, props, throttle = 500, showAllWhenE
             return options;
         }),
         customSearchOptions: computed(() => ({
-            ...state.customSearchOptions, // todo: not sure if this is ok inside a computed
-            limit: state.customSearchOptions.limit ?? 1000,
+            ...(state.customSearchOptions ?? {}), // todo: not sure if this is ok inside a computed
+            limit: state.customSearchOptions?.limit ?? 1000,
         })),
         pkKey: toRef(parentState, "pkKey"),
     });
-
-    const es = effectScope();
-
-    let textSearchIndex;
+    const textSearchIndex = useSearch({
+        props: textSearchIndexProps,
+        throttle,
+    });
+    // @ts-ignore
+    state.searched = readonly(toRef(textSearchIndex.state, "searched"));
+    // @ts-ignore
+    state.running = computed(() =>
+        loadingCombine(parentRunning.value, internalState.newSearchComputeds, textSearchIndex.state.running)
+    );
+    // @ts-ignore
+    textSearchIndex.state.search = toRef(state, "textSearchValue");
 
     const objectEffectScopes = {};
     const objectComputeds = {};
@@ -267,8 +256,8 @@ export function useListSearch({ parentState, props, throttle = 500, showAllWhenE
         // if there were indexes or computeds, there is no point in keeping them.
         for (const objectKey of Object.keys(objectEffectScopes)) {
             objectEffectScopes[objectKey].stop();
+            delete objectEffectScopes[objectKey];
         }
-        assignReactiveObject(objectEffectScopes, {});
         assignReactiveObject(objectComputeds, {});
         assignReactiveObject(state.objectIndexes, {});
     };
@@ -299,8 +288,7 @@ export function useListSearch({ parentState, props, throttle = 500, showAllWhenE
         for (const addedObjectPk of addedObjectPks) {
             state.objectIndexes[addedObjectPk] = { [parentState.pkKey]: addedObjectPk };
             objectComputeds[addedObjectPk] = {};
-            objectEffectScopes[addedObjectPk] = effectScope();
-            const objectEffectScope = objectEffectScopes[addedObjectPk];
+            objectEffectScopes[addedObjectPk] = es.run(() => effectScope());
             const objectRef = toRef(parentState.objects, addedObjectPk);
             const relatedRef = parentState.relatedObjects
                 ? toRef(parentState.relatedObjects, addedObjectPk)
@@ -308,7 +296,7 @@ export function useListSearch({ parentState, props, throttle = 500, showAllWhenE
             const calculatedRef = parentState.calculatedObjects
                 ? toRef(parentState.calculatedObjects, addedObjectPk)
                 : undefined;
-            objectEffectScope.run(() => {
+            objectEffectScopes[addedObjectPk].run(() => {
                 for (const rule of state.textSearchRules || []) {
                     const [obj, key] = getObjectRelatedCalculatedByKey(objectRef, relatedRef, calculatedRef, rule);
                     internalState.newSearchComputeds = true;
@@ -319,7 +307,6 @@ export function useListSearch({ parentState, props, throttle = 500, showAllWhenE
             });
         }
         for (const sameObjectPk of sameObjectPks) {
-            const objectEffectScope = objectEffectScopes[sameObjectPk];
             const objectRef = toRef(parentState.objects, sameObjectPk);
             const relatedRef = parentState.relatedObjects ? toRef(parentState.relatedObjects, sameObjectPk) : undefined;
             const calculatedRef = parentState.calculatedObjects
@@ -331,7 +318,7 @@ export function useListSearch({ parentState, props, throttle = 500, showAllWhenE
                 objectComputeds[sameObjectPk][key]?.effect?.stop?.();
                 delete objectComputeds[sameObjectPk][key];
             }
-            objectEffectScope.run(() => {
+            objectEffectScopes[sameObjectPk].run(() => {
                 for (const rule of addedTextSearchRules) {
                     const [obj, key] = getObjectRelatedCalculatedByKey(objectRef, relatedRef, calculatedRef, rule);
                     internalState.newSearchComputeds = true;
@@ -397,7 +384,6 @@ export function useListSearch({ parentState, props, throttle = 500, showAllWhenE
         state.order = parentState.order.filter((pk) => !!state.objects[pk]);
         assignReactiveObject(
             internalState.objectsInOrderRefs,
-            // @ts-ignore - order items will be in objects
             state.order.map((pk) => toRef(state.objects, pk))
         );
     };
@@ -415,28 +401,6 @@ export function useListSearch({ parentState, props, throttle = 500, showAllWhenE
     };
 
     es.run(() => {
-        for (const key of parentStateKeys) {
-            state[key] = toRef(parentState, key);
-        }
-
-        textSearchIndex = useSearch({
-            props: textSearchIndexProps,
-            throttle,
-        });
-        // @ts-ignore - assigning ref to UnwrapNestedRefs is fine
-        textSearchIndex.state.search = toRef(state, "textSearchValue");
-        textSearchIndex.events.addEventListener("newIndex", indexWasCleared);
-        // @ts-ignore - ignore Type 'Readonly<Ref<boolean>>' is not assignable to type 'boolean'.
-        state.searched = readonly(toRef(textSearchIndex.state, "searched"));
-        const parentRunning = ref(undefined);
-        proxyRunning(parentState, "running", parentRunning);
-        // @ts-ignore - assignment here so the computed is in the effect scope
-        state.running = computed(() => {
-            return loadingCombine(parentRunning.value, internalState.newSearchComputeds, textSearchIndex.state.running);
-        });
-        // @ts-ignore - assignment here so the computed is in the effect scope
-        state.objectsInOrder = computed(() => internalState.objectsInOrderRefs.map((ref) => unref(ref)));
-
         watch([() => Object.keys(parentState.objects), toRef(state.textSearchRules)], makeComputeds, {
             immediate: true,
         });
@@ -456,7 +420,6 @@ export function useListSearch({ parentState, props, throttle = 500, showAllWhenE
             [
                 toRef(state, "textSearchValue"),
                 () => Object.keys(textSearchIndex.state.results),
-                // @ts-ignore -
                 toRef(textSearchIndex.state, "running"),
             ],
             updateObjectsForResults,
@@ -469,17 +432,17 @@ export function useListSearch({ parentState, props, throttle = 500, showAllWhenE
             immediate: true,
             deep: true,
         });
-
-        onScopeDispose(() => {
-            for (const objectKey of Object.keys(objectEffectScopes)) {
-                objectEffectScopes[objectKey].stop();
-            }
-        });
     });
-
+    textSearchIndex.events.addEventListener("newIndex", indexWasCleared);
     return {
         state,
-        effectScope: es,
         textSearchIndex,
+        stop: () => {
+            textSearchIndex.events.removeEventListener("newIndex", indexWasCleared);
+            es.stop();
+            for (const objectKey of Object.keys(objectEffectScopes)) {
+                delete objectEffectScopes[objectKey];
+            }
+        },
     };
 }

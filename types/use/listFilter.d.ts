@@ -1,5 +1,13 @@
 /**
- * @typedef {import('vue').Ref<import('./listInstance.js').ListObject>[]} ObjectsInOrderRefs
+ * Provides reactive filtering functionality for lists within a Vue application. This composable
+ * supports defining dynamic inclusion and exclusion criteria to control the visibility of list items
+ * based on user-defined rules. It's particularly useful in scenarios where list contents need to be
+ * dynamically adjusted without modifying the source data.
+ *
+ * @module use/listFilter.js
+ */
+/**
+ * @typedef {import('vue').Ref<import('../use/objectInstance.js').ExistingCrudObject>[]} ObjectsInOrderRefs
  */
 /**
  * @typedef {Function} ListFilterAllowedFilter - A function that returns true if an item should be included.
@@ -14,11 +22,6 @@
  * @typedef {object} ListFilterRawState
  * @property {ListFilterAllowedFilter} [allowedFilter] - Function to determine if an item should be included based on custom logic.
  * @property {ListFilterExcludedFilter} [excludedFilter] - Function to determine if an item should be excluded based on custom logic.
- * @property {object} inResults - A map of items to boolean values indicating filter results.
- * @property {boolean} objectsWatchRunning - Flag indicating if the object watch is active.
- * @property {boolean} resultsWatchRunning - Flag indicating if the results watch is active.
- * @property {boolean} running - Flag indicating if any part of the filter logic is currently processing.
- * @property {boolean} orderWatchRunning - Flag indicating if the order watch is active.
  */
 /**
  *
@@ -59,7 +62,7 @@
  * @typedef {object} ListFilterProperties
  * @property {ListFilterState} state - The reactive state managing the filter logic and results.
  * @property {ListFilterParentState} parentState - The state of the list being filtered.
- * @property {import('vue').EffectScope} effectScope - Scoped reactivity for this filter instance.
+ * @property {() => void} stop - A function to stop the effect scope and clean up resources.
  */
 /**
  * Represents an instance of a list filter, including its state and associated Vue composition API utilities.
@@ -110,7 +113,7 @@ export function useListFilters(listFilterArgs: {
  * @returns {ListFilter} A fully configured list filter instance, providing reactive filtered results.
  */
 export function useListFilter({ parentState, allowedFilter, excludedFilter }: ListFilterOptions): ListFilter;
-export type ObjectsInOrderRefs = import("vue").Ref<import("./listInstance.js").ListObject>[];
+export type ObjectsInOrderRefs = import("vue").Ref<import("../use/objectInstance.js").ExistingCrudObject>[];
 /**
  * - A function that returns true if an item should be included.
  */
@@ -132,26 +135,6 @@ export type ListFilterRawState = {
      * - Function to determine if an item should be excluded based on custom logic.
      */
     excludedFilter?: ListFilterExcludedFilter;
-    /**
-     * - A map of items to boolean values indicating filter results.
-     */
-    inResults: object;
-    /**
-     * - Flag indicating if the object watch is active.
-     */
-    objectsWatchRunning: boolean;
-    /**
-     * - Flag indicating if the results watch is active.
-     */
-    resultsWatchRunning: boolean;
-    /**
-     * - Flag indicating if any part of the filter logic is currently processing.
-     */
-    running: boolean;
-    /**
-     * - Flag indicating if the order watch is active.
-     */
-    orderWatchRunning: boolean;
 };
 export type ListFilterParentRawState = (import("./listInstance.js").ListInstanceRawState & Partial<import("./listSubscription.js").ListSubscriptionRawState> & Partial<import("./listRelated.js").ListRelatedRawState> & Partial<import("./listCalculated.js").ListCalculatedRawState>);
 /**
@@ -192,9 +175,9 @@ export type ListFilterProperties = {
      */
     parentState: ListFilterParentState;
     /**
-     * - Scoped reactivity for this filter instance.
+     * - A function to stop the effect scope and clean up resources.
      */
-    effectScope: import("vue").EffectScope;
+    stop: () => void;
 };
 /**
  * Represents an instance of a list filter, including its state and associated Vue composition API utilities.

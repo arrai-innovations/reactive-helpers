@@ -8,9 +8,17 @@
 
 ## Type Aliases
 
+### ProxyLoadingError
+
+> **ProxyLoadingError**\<\>: [`ReadonlyLoadingStatus`](proxyLoading.md#readonlyloadingstatus) & [`ReadonlyErrorStatus`](proxyError.md#readonlyerrorstatus)
+
+#### Type Parameters
+
+***
+
 ### WatchableLoadingError
 
-> **WatchableLoadingError**\<\>: `UnwrapNestedRefs` \| `Ref` \| [`LoadingErrorStatus`](loadingError.md#loadingerrorstatus)
+> **WatchableLoadingError**\<\>: [`WatchableLoading`](proxyLoading.md#watchableloading) & [`WatchableError`](proxyError.md#watchableerror)
 
 #### Type Parameters
 
@@ -18,9 +26,9 @@
 
 ### useProxyLoadingError()
 
-> **useProxyLoadingError**(`loadingErrors`): [`LoadingErrorStatus`](loadingError.md#loadingerrorstatus)
+> **useProxyLoadingError**(`loadingErrors`): [`ProxyLoadingError`](proxyLoadingError.md#proxyloadingerror)
 
-A composable function for managing aggregated loading and error states across multiple sources.
+A composable function combining aggregated loading and error state.
 
 #### Parameters
 
@@ -28,10 +36,10 @@ A composable function for managing aggregated loading and error states across mu
 
 [`WatchableLoadingError`](proxyLoadingError.md#watchableloadingerror)[]
 
-A collection of loading error statuses to monitor and aggregate.
+The loading and error states to monitor.
 
 #### Returns
 
-[`LoadingErrorStatus`](loadingError.md#loadingerrorstatus)
+[`ProxyLoadingError`](proxyLoadingError.md#proxyloadingerror)
 
-An object containing aggregated reactive fields and actions for loading and error states.
+- An object containing aggregated reactive fields and actions for both loading and error state.

@@ -63,7 +63,7 @@ The error code.
 
 ## Interfaces
 
-### ListInstanceFunctions
+### ListInstanceMyFunctions
 
 #### Properties
 
@@ -77,7 +77,7 @@ Adds an object to the list.
 
 ###### object
 
-[`ListObject`](listInstance.md#listobject)
+[`ExistingCrudObject`](objectInstance.md#existingcrudobject)
 
 ###### Returns
 
@@ -85,9 +85,17 @@ Adds an object to the list.
 
 ##### bulkDelete()
 
-> **bulkDelete**: () => `Promise`\<`boolean`\>
+> **bulkDelete**: (`args`) => `Promise`\<`boolean`\>
 
-Initiates a bulk delete operation on all objects in the list, returning a promise to a boolean indicating success.
+Deletes objects from the list by pk, returning a promise to a boolean indicating success.
+
+###### Parameters
+
+###### args
+
+###### pks?
+
+`string`[]
 
 ###### Returns
 
@@ -98,22 +106,6 @@ Initiates a bulk delete operation on all objects in the list, returning a promis
 > **clearList**: () => `void`
 
 Clears all objects and errors from the list.
-
-###### Returns
-
-`void`
-
-##### defaultPageCallback()
-
-> **defaultPageCallback**: (`newObjects`) => `void`
-
-Handles new or updated objects, respecting the keepOldPages setting.
-
-###### Parameters
-
-###### newObjects
-
-[`ListObject`](listInstance.md#listobject)[]
 
 ###### Returns
 
@@ -165,21 +157,11 @@ Initiates a fetch to retrieve objects according to the CRUD configuration, retur
 
 [`MaybeCancellablePromise`](../utils/cancellablePromise.md#maybecancellablepromiset)\<`boolean`\>
 
-##### pageCallback()
+##### pushObjects
 
-> **pageCallback**: (`newObjects`) => `void`
+> **pushObjects**: [`PushObjectsFn`](listInstance.md#pushobjectsfn)
 
 Customizable callback for handling new objects per page.
-
-###### Parameters
-
-###### newObjects
-
-[`ListObject`](listInstance.md#listobject)[]
-
-###### Returns
-
-`void`
 
 ##### updateListObject()
 
@@ -191,7 +173,7 @@ Updates an object in the list.
 
 ###### object
 
-[`ListObject`](listInstance.md#listobject)
+[`ExistingCrudObject`](objectInstance.md#existingcrudobject)
 
 ###### Returns
 
@@ -236,12 +218,6 @@ Provide the implementation for the list
 
 Provide the implementation for the
  subscribe function.
-
-##### keepOldPages
-
-> **keepOldPages**: `boolean` \| `Ref`\<`boolean`, `boolean`\>
-
-If true, pages will not be cleared when defaultPageCallback is called.
 
 ##### props
 
@@ -293,7 +269,7 @@ Implementation specific arguments.
 
 ***
 
-### ListInstanceRawState
+### ListInstanceRawMyState
 
 #### Properties
 
@@ -305,33 +281,33 @@ CRUD handlers and their configurations for the list.
 
 ###### args
 
-> **args**: `any`
+> **args**: `Reactive`\<\{\} \| [`TargetArgs`](../config/objectCrud.md#targetargs)\>
 
-Arguments for the CRUD handlers.
+The arguments to be passed to the crud handlers.
 
-###### list?
+###### bulkDelete
 
-> `optional` **list**: `Function`
+> **bulkDelete**: [`CrudBulkDeleteFn`](../config/listCrud.md#crudbulkdeletefn)
 
-Function to list objects.
+The bulk delete function.
 
-##### error
+###### executeAction
 
-> **error**: `Readonly`\<`Ref`\<`Error`, `Error`\>\>
+> **executeAction**: [`CrudExecuteActionFn`](../config/listCrud.md#crudexecuteactionfn)
 
-The last error encountered.
+The execute action function.
 
-##### errored
+###### list
 
-> **errored**: `Readonly`\<`Ref`\<`boolean`, `boolean`\>\>
+> **list**: [`CrudListFn`](../config/listCrud.md#crudlistfn)
 
-Indicates if an error occurred during the last operation.
+The list function.
 
-##### loading?
+###### subscribe
 
-> `optional` **loading**: `Readonly`\<`Ref`\<`boolean`, `boolean`\>\>
+> **subscribe**: [`CrudListSubscribeFn`](../config/listCrud.md#crudlistsubscribefn)
 
-Indicates if the list is currently loading.
+The subscribe function.
 
 ##### objects
 
@@ -341,9 +317,15 @@ The list objects stored by their pks.
 
 ##### objectsInOrder
 
-> **objectsInOrder**: `ComputedRef`\<[`ListObject`](listInstance.md#listobject)[]\>
+> **objectsInOrder**: `ComputedRef`\<[`ExistingCrudObject`](objectInstance.md#existingcrudobject)[]\>
 
 The objects in the order specified by the list.
+
+##### objectsMap
+
+> **objectsMap**: [`ObjectsMap`](listInstance.md#objectsmap-1)
+
+The map of objects stored by their pks.
 
 ##### order
 
@@ -363,17 +345,63 @@ Arguments passed to the server for listing operations.
 
 The primary key field for the list objects.
 
-##### running
+***
 
-> **running**: `boolean`
+### ListInstanceRawStateCrud
 
-Indicates if there are ongoing reactive updates.
+#### Properties
+
+##### args
+
+> **args**: `Reactive`\<\{\} \| [`TargetArgs`](../config/objectCrud.md#targetargs)\>
+
+The arguments to be passed to the crud handlers.
+
+##### bulkDelete
+
+> **bulkDelete**: [`CrudBulkDeleteFn`](../config/listCrud.md#crudbulkdeletefn)
+
+The bulk delete function.
+
+##### executeAction
+
+> **executeAction**: [`CrudExecuteActionFn`](../config/listCrud.md#crudexecuteactionfn)
+
+The execute action function.
+
+##### list
+
+> **list**: [`CrudListFn`](../config/listCrud.md#crudlistfn)
+
+The list function.
+
+##### subscribe
+
+> **subscribe**: [`CrudListSubscribeFn`](../config/listCrud.md#crudlistsubscribefn)
+
+The subscribe function.
 
 ## Type Aliases
 
 ### ListInstance
 
 > **ListInstance**\<\>: [`ListInstanceStateMixIn`](listInstance.md#listinstancestatemixin) & [`ListInstanceFunctions`](listInstance.md#listinstancefunctions)
+
+#### Type Parameters
+
+***
+
+### ListInstanceFunctions
+
+> **ListInstanceFunctions**\<\>: [`ListInstanceMyFunctions`](listInstance.md#listinstancemyfunctions) & `Pick`\<[`LoadingErrorStatus`](loadingError.md#loadingerrorstatus), `"clearError"`\>
+
+#### Type Parameters
+
+***
+
+### ListInstanceRawState
+
+> **ListInstanceRawState**\<\>: [`ListInstanceRawMyState`](listInstance.md#listinstancerawmystate) & `Pick`\<[`LoadingErrorStatus`](loadingError.md#loadingerrorstatus), `"loading"` \| `"error"` \| `"errored"`\>
 
 #### Type Parameters
 
@@ -401,24 +429,6 @@ Indicates if there are ongoing reactive updates.
 
 ***
 
-### ListObject
-
-> **ListObject**\<\>: `object`
-
-#### Type Parameters
-
-#### Type declaration
-
-#### Index Signature
-
-\[`key`: `string`\]: `any`
-
-##### pk
-
-> **pk**: `string`
-
-***
-
 ### ListOrder
 
 > **ListOrder**\<\>: `ComputedRef`
@@ -435,7 +445,7 @@ Indicates if there are ongoing reactive updates.
 
 #### Index Signature
 
-\[`pk`: `string`\]: [`ListObject`](listInstance.md#listobject)
+\[`pk`: `string`\]: [`ExistingCrudObject`](objectInstance.md#existingcrudobject)
 
 ***
 
@@ -444,6 +454,32 @@ Indicates if there are ongoing reactive updates.
 > **ObjectsInOrder**\<\>: `ComputedRef`
 
 #### Type Parameters
+
+***
+
+### ObjectsMap
+
+> **ObjectsMap**\<\>: `Map`\<`string`, `Reactive`\>
+
+#### Type Parameters
+
+***
+
+### PushObjectsFn()
+
+> **PushObjectsFn**\<\>: (`newObjects`) => `void`
+
+#### Type Parameters
+
+#### Parameters
+
+##### newObjects
+
+[`ExistingCrudObject`](objectInstance.md#existingcrudobject)[]
+
+#### Returns
+
+`void`
 
 ## Functions
 
@@ -515,7 +551,7 @@ watch(toRef(props, "someListFilter"), (newValue, oldValue) => {
 
 #### Throws
 
-If the props or keepOldPages are missing.
+If the props are missing.
 
 ***
 
@@ -536,3 +572,9 @@ The arguments for each list instance.
 `object`
 
 An object of list instances.
+
+## References
+
+### ClearListFn
+
+Renames and re-exports [ClearObjectsFn](../config/listCrud.md#clearobjectsfn)

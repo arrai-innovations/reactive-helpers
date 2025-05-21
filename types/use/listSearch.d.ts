@@ -1,4 +1,13 @@
 /**
+ * Provides a Vue 3 composable for adding text search functionality to lists. It allows for
+ * configuring dynamic search rules that reactively filter lists based on user input and other
+ * criteria. The search functionality is optimized for integration with other list management
+ * composables like listInstance and listFilter, enabling complex search scenarios across
+ * multiple data points.
+ *
+ * @module use/listSearch.js
+ */
+/**
  * Represents the raw reactive state used by the list search functionality.
  *
  * @typedef {object} ListSearchRawState
@@ -11,8 +20,8 @@
  * @property {object} objectIndexes - Indexes built for quick search across objects based on rules.
  * @property {object} customDocumentOptions - Configuration options for the search document, used by FlexSearch.
  * @property {object} customSearchOptions - Additional search options for FlexSearch.
- * @property {boolean} searched - Flag indicating if a search has been performed.
- * @property {boolean} running - Indicates if the search process is actively running.
+ * @property {Readonly<import('vue').Ref<boolean>>} searched - Flag indicating if a search has been performed.
+ * @property {import('vue').ComputedRef<boolean>} running - Indicates if the search process is actively running.
  */
 /**
  *
@@ -27,6 +36,9 @@
  */
 /**
  * @typedef {import('vue').UnwrapNestedRefs<ListSearchParentRawState>} ListSearchParentState - The parent state for a list search.
+ */
+/**
+ *  @typedef {import('vue').ToRefs<ListSearchParentState>} ListSearchParentStateToRefs
  */
 /**
  * @typedef {import('vue').UnwrapNestedRefs<
@@ -58,8 +70,8 @@
  *
  * @typedef {object} ListSearchProperties
  * @property {ListSearchState} state - The state.
- * @property {import('vue').EffectScope} effectScope - The effect scope.
  * @property {import('./search.js').SearchInstance} textSearchIndex - The text search index.
+ * @property {() => void} stop - Stops the effect scope and cleans up resources.
  */
 /**
  * The provided list search instance, containing properties and functions.
@@ -99,7 +111,7 @@ export function useListSearches(listSearchArgs: {
 /**
  * @typedef {object} ListSearchInstanceOptions
  * @property {object} parentState - The list being filtered.
- * @property {ListSearchProps} props - Reactive properties.
+ * @property {ListSearchProps} [props] - Reactive properties.
  * @property {number} [throttle=500] - Throttle wait time.
  * @property {boolean} [showAllWhenEmpty=true] - Whether to show all items when the search is empty.
  */
@@ -172,17 +184,18 @@ export type ListSearchRawState = {
     /**
      * - Flag indicating if a search has been performed.
      */
-    searched: boolean;
+    searched: Readonly<import("vue").Ref<boolean>>;
     /**
      * - Indicates if the search process is actively running.
      */
-    running: boolean;
+    running: import("vue").ComputedRef<boolean>;
 };
 export type ListSearchParentRawState = (import("./listInstance.js").ListInstanceRawState & Partial<import("./listSubscription.js").ListSubscriptionRawState> & Partial<import("./listRelated.js").ListRelatedRawState> & Partial<import("./listCalculated.js").ListCalculatedRawState> & Partial<import("./listFilter.js").ListFilterRawState>);
 /**
  * - The parent state for a list search.
  */
 export type ListSearchParentState = import("vue").UnwrapNestedRefs<ListSearchParentRawState>;
+export type ListSearchParentStateToRefs = import("vue").ToRefs<ListSearchParentState>;
 /**
  * - The state for a list search.
  */
@@ -240,13 +253,13 @@ export type ListSearchProperties = {
      */
     state: ListSearchState;
     /**
-     * - The effect scope.
-     */
-    effectScope: import("vue").EffectScope;
-    /**
      * - The text search index.
      */
     textSearchIndex: import("./search.js").SearchInstance;
+    /**
+     * - Stops the effect scope and cleans up resources.
+     */
+    stop: () => void;
 };
 /**
  * The provided list search instance, containing properties and functions.
@@ -285,7 +298,7 @@ export type ListSearchInstanceOptions = {
     /**
      * - Reactive properties.
      */
-    props: ListSearchProps;
+    props?: ListSearchProps;
     /**
      * - Throttle wait time.
      */

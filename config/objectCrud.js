@@ -9,24 +9,24 @@ import { readonly } from "vue";
  */
 
 /**
- * @typedef {{[key:string]: any}} ObjectTargetArgs
+ * @typedef {{[key:string]: any}} TargetArgs
  */
 
 /**
  * Defines the CRUD-related handlers and additional utilities provided by the object instance.
  *
  * @typedef {object} ObjectTargetProperties
- * @property {ObjectTargetArgs} args - The arguments to be passed to the crud handlers.
+ * @property {TargetArgs} args - The arguments to be passed to the crud handlers.
  */
 
 /**
  * @typedef {object} ObjectTargetOption
- * @property {ObjectTargetArgs} [target={}] - The arguments to be passed to the crud handlers.
+ * @property {TargetArgs} [target={}] - The arguments to be passed to the crud handlers.
  */
 
 /**
  * @typedef {object} CreateArgs
- * @property {{[key:string]: any}} target - The arguments to be passed to the crud handlers.
+ * @property {TargetArgs} target - The arguments to be passed to the crud handlers.
  * @property {{[key:string]: any}} object - The data to be acted upon.
  * @property {{[key:string]: any}} params - The arguments to be passed to the retrieve function.
  * @property {string} pkKey - The key name of the primary key.
@@ -34,8 +34,8 @@ import { readonly } from "vue";
  */
 
 /**
- * @typedef {object} RetrieveArgs
- * @property {{[key:string]: any}} target - The arguments to be passed to the crud handlers.
+ * @typedef {object} RetrieveArgsRaw
+ * @property {TargetArgs} target - The arguments to be passed to the crud handlers.
  * @property {string} pk - The pk of the object to be acted upon.
  * @property {string} pkKey - The key name of the primary key.
  * @property {{[key:string]: any}} params - The arguments to be passed to the retrieve function.
@@ -43,8 +43,12 @@ import { readonly } from "vue";
  */
 
 /**
+ * @typedef {RetrieveArgsRaw & import('../use/cancellableIntent.js').CommonRunTracking} RetrieveArgs
+ */
+
+/**
  * @typedef {object} UpdateArgs
- * @property {{[key:string]: any}} target - The arguments to be passed to the crud handlers.
+ * @property {TargetArgs} target - The arguments to be passed to the crud handlers.
  * @property {import('../use/objectInstance.js').ExistingCrudObject} object - The data to be acted upon.
  * @property {{[key:string]: any}} params - The arguments to be passed to the retrieve function.
  * @property {string} pkKey - The key name of the primary key.
@@ -53,15 +57,14 @@ import { readonly } from "vue";
 
 /**
  * @typedef {object} DeleteArgs
- * @property {{[key:string]: any}} target - The arguments to be passed to the crud handlers.
+ * @property {TargetArgs} target - The arguments to be passed to the crud handlers.
  * @property {string} pk - The pk of the object to be acted upon.
  * @property {string} pkKey - The key name of the primary key.
- * @property {Readonly<import('vue').Ref<boolean>>} isCancelled - A ref to indicate if the request was cancelled.
  */
 
 /**
  * @typedef {object} PartialArgs
- * @property {{[key:string]: any}} target - The arguments to be passed to the crud handlers.
+ * @property {TargetArgs} target - The arguments to be passed to the crud handlers.
  * @property {string} pk - The pk of the object to be acted upon.
  * @property {string} pkKey - The key name of the primary key.
  * @property {{[key:string]: any}} partialObject - The data to be acted upon.
@@ -72,17 +75,21 @@ import { readonly } from "vue";
 /**
  * @callback CrudSubscribeCallback
  * @param {import('../use/objectInstance.js').ExistingCrudObject} data - The data to be passed to the callback.
- * @param {string} action - The action that was performed.
+ * @param {"delete"|"update"|"create"} action - The action that was performed.
  */
 
 /**
- * @typedef {object} ObjectSubscribeArgs
- * @property {{[key:string]: any}} target - The arguments to be passed to the crud handlers.
+ * @typedef {object} ObjectSubscribeArgsRaw
+ * @property {TargetArgs} target - The arguments to be passed to the crud handlers.
  * @property {string} pk - The pk of the object to be acted upon.
  * @property {string} pkKey - The key name of the primary key.
  * @property {{[key:string]: any}} params - The arguments to be passed to the retrieve function.
  * @property {CrudSubscribeCallback} callback - The callback to be called when the object is updated.
  * @property {Readonly<import('vue').Ref<boolean>>} isCancelled - A ref to indicate if the request was cancelled.
+ */
+
+/**
+ * @typedef {ObjectSubscribeArgsRaw & import('../use/cancellableIntent.js').CommonRunTracking} ObjectSubscribeArgs
  */
 
 /**

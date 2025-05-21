@@ -1,21 +1,14 @@
 /**
- * A watchable collection of loading errors.
- *
- * @typedef {(
- *     import('vue').UnwrapNestedRefs<import('./loadingError.js').LoadingErrorStatus> |
- *     import('vue').Ref<import('./loadingError.js').LoadingErrorStatus> |
- *     import('./loadingError.js').LoadingErrorStatus
- * )} WatchableLoadingError
+ * @typedef {import('./proxyLoading.js').WatchableLoading & import('./proxyError.js').WatchableError} WatchableLoadingError
+ * @typedef {import('./proxyLoading.js').ReadonlyLoadingStatus & import('./proxyError.js').ReadonlyErrorStatus} ProxyLoadingError
  */
 /**
- * A composable function for managing aggregated loading and error states across multiple sources.
+ * A composable function combining aggregated loading and error state.
  *
- * @param {WatchableLoadingError[]} loadingErrors - A collection of loading error statuses to monitor and aggregate.
- * @returns {import('./loadingError.js').LoadingErrorStatus} An object containing aggregated reactive fields and actions for loading and error states.
+ * @param {WatchableLoadingError[]} loadingErrors - The loading and error states to monitor.
+ * @returns {ProxyLoadingError} - An object containing aggregated reactive fields and actions for both loading and error state.
  */
-export function useProxyLoadingError(loadingErrors: WatchableLoadingError[]): import("./loadingError.js").LoadingErrorStatus;
-/**
- * A watchable collection of loading errors.
- */
-export type WatchableLoadingError = (import("vue").UnwrapNestedRefs<import("./loadingError.js").LoadingErrorStatus> | import("vue").Ref<import("./loadingError.js").LoadingErrorStatus> | import("./loadingError.js").LoadingErrorStatus);
+export function useProxyLoadingError(loadingErrors: WatchableLoadingError[]): ProxyLoadingError;
+export type WatchableLoadingError = import("./proxyLoading.js").WatchableLoading & import("./proxyError.js").WatchableError;
+export type ProxyLoadingError = import("./proxyLoading.js").ReadonlyLoadingStatus & import("./proxyError.js").ReadonlyErrorStatus;
 //# sourceMappingURL=proxyLoadingError.d.ts.map

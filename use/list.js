@@ -1,21 +1,11 @@
 import { useListCalculated } from "./listCalculated.js";
 import { useListFilter } from "./listFilter.js";
 import { useListInstance } from "./listInstance.js";
-import {
-    listSortFunctions,
-    listFilterFunctions,
-    listRelatedFunctions,
-    listCalculatedFunctions,
-    listSubscriptionFunctions,
-    listInstanceFunctions,
-    listSearchFunctions,
-} from "./listKeys.js";
 import { useListRelated } from "./listRelated.js";
 import { useListSearch } from "./listSearch.js";
 import { useListSort } from "./listSort.js";
 import { useListSubscription } from "./listSubscription.js";
-import { usePagedListInstance } from "./paginatedListInstance.js";
-import { effectScope, reactive, shallowReactive, shallowReadonly, toRef } from "vue";
+import { effectScope, shallowReactive, shallowReadonly, toRef } from "vue";
 
 /**
  * Provides a comprehensive Vue 3 composable function for managing a list of objects. This module orchestrates several
@@ -66,45 +56,17 @@ export class ListError extends Error {
 /**
  * @typedef {object} ListOptions
  * @property {ListRawProps} props - The properties for configuring the list.
- * @property {import('../config/listCrud.js').ListCrudHandlers} handlers - Additional handlers to be included in the list manager.
- * @property {boolean} paged - Indicates whether the list should be paginated.
- * @property {import('vue').Ref<boolean>|boolean} keepOldPages - Indicates whether old pages should be kept when paginating.
- * @property {boolean} clearListOnListIntentTriggered - Indicates whether the list should be cleared when the list intent is triggered.
- * @property {number} searchThrottle - The throttle time for text search.
- * @property {number} sortThrottleWait - The throttle time for sorting.
- * @property {boolean} searchShowAllWhenEmpty - Indicates whether all items should be shown when the search query is empty.
- */
-
-/**
- * Represents the combined state definitions for all list-related components.
- * This interface aggregates the raw state from multiple list management functionalities.
- *
- * @typedef {(
- *     (
- *         import('./listInstance.js').ListInstanceRawState |
- *         import('./paginatedListInstance.js').PagedListInstanceRawState
- *     ) &
- *     import('./listSubscription.js').ListSubscriptionRawState &
- *     import('./listRelated.js').ListRelatedRawState &
- *     import('./listCalculated.js').ListCalculatedRawState &
- *     import('./listFilter.js').ListFilterRawState &
- *     import('./listSearch.js').ListSearchRawState &
- *     import('./listSort.js').ListSortRawState
- * )} ListRawState
- */
-
-/**
- * Represents the reactive state derived from aggregating states of various list-related components.
- * This state is typically used within Vue components for reactivity and access to updated list properties.
- *
- * @typedef {import('vue').UnwrapNestedRefs<ListRawState>} ListState
+ * @property {import('../config/listCrud.js').ListCrudHandlers} [handlers] - Additional handlers to be included in the list manager.
+ * @property {number} [searchThrottle] - The throttle time for text search.
+ * @property {number} [sortThrottleWait] - The throttle time for sorting.
+ * @property {boolean} [searchShowAllWhenEmpty] - Indicates whether all items should be shown when the search query is empty.
  */
 
 /**
  * Holds references to instances of all list-related composables, facilitating direct access and management.
  *
  * @typedef {{
- *     listInstance: import('./listInstance.js').ListInstance | import('./paginatedListInstance.js').PagedListInstance,
+ *     listInstance: import('./listInstance.js').ListInstance,
  *     listSubscription: import('./listSubscription.js').ListSubscription,
  *     listRelated: import('./listRelated.js').ListRelated,
  *     listCalculated: import('./listCalculated.js').ListCalculated,
@@ -123,20 +85,14 @@ export class ListError extends Error {
  * )} ListFunctions
  */
 
-// & import('./listRelated.js').ListRelatedFunctions
-// & import('./listCalculated.js').ListCalculatedFunctions
-// & import('./listFilter.js').ListFilterFunctions
-// & import('./listSearch.js').ListSearchFunctions
-// & import('./listSort.js').ListSortFunctions
-
 /**
  * Encapsulates properties relevant to the overall management of list-related hooks, including state, direct access to hooks,
  * and scoped effects.
  *
  * @typedef {object} ListManagerProperties
  * @property {ListManaged} managed - A readonly reference to the managed list hooks.
- * @property {ListState} state - Represents the final reactive state in the list processing chain.
- * @property {import('vue').EffectScope} effectScope - Encapsulates all reactive effects related to the list hooks.
+ * @property {import('./listSort.js').ListSortState} state - Represents the final reactive state in the list processing chain.
+ * @property {() => void} stop - A function to stop the effect scope and clean up resources.
  */
 
 /**
@@ -145,6 +101,31 @@ export class ListError extends Error {
  *
  * @typedef {ListFunctions & ListManagerProperties} ListManager
  */
+
+/* eslint-disable jsdoc/valid-types */
+/**
+ * Extract function properties from a source object, excluding `stop`.
+ *
+ * @template {object} T
+ * @param {T} source - The source object from which to extract function properties.
+ * @returns {{
+ *   [K in keyof T as K extends "stop" ? never : T[K] extends (...args: any[]) => any ? K : never]: T[K]
+ * }} - An object containing only the function properties of the source object, excluding `stop`.
+ */
+function mergeFns(source) {
+    const returnedFns = {};
+    for (const key of Object.keys(source)) {
+        if (key !== "stop") {
+            const val = source[key];
+            if (typeof val === "function") {
+                returnedFns[key] = val;
+            }
+        }
+    }
+    // @ts-ignore
+    return returnedFns;
+}
+/* eslint-enable jsdoc/valid-types */
 
 /**
  * Initializes multiple list management instances with provided configurations.
@@ -177,16 +158,8 @@ export const useLists = (listOptions) => {
  * @returns {ListManager} - The managed stack of list-related composable functions.
  * @throws {ListError} - If required options are not provided.
  */
-export const useList = ({
-    props,
-    handlers = {},
-    paged,
-    keepOldPages,
-    clearListOnListIntentTriggered,
-    searchThrottle = 500,
-    sortThrottleWait,
-    searchShowAllWhenEmpty,
-}) => {
+export const useList = ({ props, handlers = {}, searchThrottle = 500, sortThrottleWait, searchShowAllWhenEmpty }) => {
+    /** @type {ListManaged} */
     const managed = shallowReactive({
         listInstance: null,
         listSubscription: null,
@@ -196,12 +169,6 @@ export const useList = ({
         listSearch: null,
         listSort: null,
     });
-    if (paged === undefined || keepOldPages === undefined || clearListOnListIntentTriggered === undefined) {
-        throw new ListError(
-            "useList requires paged, keepOldPages, and clearListOnListIntentTriggered to be all set.",
-            "missing-arguments"
-        );
-    }
 
     if (!("params" in props)) {
         console.error("params not set, must be true for intendToList or intendToSubscribe to work.");
@@ -210,18 +177,15 @@ export const useList = ({
     const es = effectScope();
 
     es.run(() => {
-        managed.listInstance = (paged ? usePagedListInstance : useListInstance)({
+        managed.listInstance = useListInstance({
             props,
             handlers,
-            keepOldPages,
         });
 
         managed.listSubscription = useListSubscription({
             listInstance: managed.listInstance,
-            clearListOnListIntentTriggered,
+            props,
         });
-        managed.listSubscription.state.intendToList = toRef(props, "intendToList");
-        managed.listSubscription.state.intendToSubscribe = toRef(props, "intendToSubscribe");
 
         managed.listRelated = useListRelated({
             parentState: managed.listSubscription.state,
@@ -241,12 +205,7 @@ export const useList = ({
 
         managed.listSearch = useListSearch({
             parentState: managed.listFilter.state,
-            props: reactive({
-                textSearchRules: toRef(props, "textSearchRules"),
-                textSearchValue: toRef(props, "textSearchValue"),
-                customDocumentOptions: toRef(props, "customDocumentOptions"),
-                customSearchOptions: toRef(props, "customSearchOptions"),
-            }),
+            props,
             throttle: searchThrottle,
             showAllWhenEmpty: searchShowAllWhenEmpty,
         });
@@ -258,40 +217,21 @@ export const useList = ({
         });
     });
 
-    const clearError = () => {
-        managed.listSubscription.clearError();
-        managed.listInstance.clearError();
-    };
-
+    // noinspection UnnecessaryLocalVariableJS
     /** @type {ListManager} */
-    // @ts-ignore - we're going to assign remaining properties below.
-    const returnObject = {
-        // we manage the keys on both of these, so hands off the root.
+    const manager = {
         managed: shallowReadonly(managed),
         state: managed.listSort.state,
-        effectScope: es,
+        stop: () => {
+            es.stop();
+        },
+        ...mergeFns(managed.listInstance),
+        ...mergeFns(managed.listSubscription),
+        ...mergeFns(managed.listRelated),
+        ...mergeFns(managed.listCalculated),
+        ...mergeFns(managed.listFilter),
+        ...mergeFns(managed.listSearch),
+        ...mergeFns(managed.listSort),
     };
-    const handledDuplicateFunctions = {
-        clearError,
-    };
-    for (const [source, fnNames] of [
-        [managed.listInstance, listInstanceFunctions],
-        [managed.listSubscription, listSubscriptionFunctions],
-        [managed.listRelated, listRelatedFunctions],
-        [managed.listCalculated, listCalculatedFunctions],
-        [managed.listFilter, listFilterFunctions],
-        [managed.listSearch, listSearchFunctions],
-        [managed.listSort, listSortFunctions],
-    ]) {
-        for (const fnName of fnNames) {
-            if (handledDuplicateFunctions[fnName]) {
-                continue;
-            }
-            returnObject[fnName] = source[fnName];
-        }
-    }
-    for (const [fnName, fn] of Object.entries(handledDuplicateFunctions)) {
-        returnObject[fnName] = fn;
-    }
-    return returnObject;
+    return manager;
 };

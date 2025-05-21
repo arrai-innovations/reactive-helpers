@@ -2,9 +2,6 @@
  * The raw state of the object subscription.
  *
  * @typedef {object} ObjectSubscriptionRawState
- * @property {import('./loadingError.js').LoadingReadonlyRef} subscriptionLoading - Whether the subscription is loading.
- * @property {import('./loadingError.js').ErroredReadonlyRef} subscriptionErrored - Whether the subscription has errored.
- * @property {import('./loadingError.js').ErrorReadonlyRef} subscriptionError - The error that occurred.
  * @property {import('vue').Ref<boolean>} intendToRetrieve - Whether the object intends to retrieve.
  * @property {import('vue').Ref<boolean>} intendToSubscribe - Whether the object intends to subscribe.
  * @property {import('vue').Ref<boolean|undefined>} subscribed - Whether the object is subscribed.
@@ -21,16 +18,6 @@
  * Functions available for object subscription management.
  *
  * @typedef {object} ObjectSubscriptionFunctions
- * @property {(
- *     (options?: { retrieve?: boolean }) => boolean
- * )} subscribe - Subscribes to updates from an object, managing subscription state and handling errors internally.
- *  Ensures that only one active subscription can exist at a time to prevent duplicate calls. Returns a promise that
- *  resolves to true if the subscription was successful, and false if it failed.
- * @property {() => boolean} unsubscribe - Unsubscribes from the object, resetting related state flags. Returns
- *  true if the object was unsubscribed, and false if it was not subscribed.
- * @property {(data: import('./objectInstance.js').ExistingCrudObject) => void} updateFromSubscription - Update the
- *  object from a subscription.
- * @property {() => void} deleteFromSubscription - Delete the object from a subscription.
  * @property {() => void} clearError - Clears any errors related to the subscription, and resets the loading state.
  */
 /**
@@ -41,7 +28,7 @@
  * @property {import('./objectInstance.js').ObjectInstance} objectInstance - The object instance.
  * @property {import('./cancellableIntent.js').CancellableIntent} subscribeIntent - The subscribe intent.
  * @property {import('./cancellableIntent.js').CancellableIntent} retrieveIntent - The retrieve intent.
- * @property {import('vue').EffectScope} effectScope - The effect scope.
+ * @property {() => void} stop - Stops the subscription reactive effects.
  */
 /**
  * The object subscription instance, combining state, properties, and functions.
@@ -76,6 +63,15 @@ export function useObjectSubscriptions(subscriptionArgs: {
 }): {
     [key: string]: ObjectSubscription;
 };
+/**
+ * The context bound to shared objectSubscription functions.
+ *
+ * @typedef {object} ObjectSubscriptionContext
+ * @property {ObjectSubscriptionState} state - The object subscription state.
+ * @property {import('./objectInstance.js').ObjectInstance} objectInstance - The object instance.
+ * @property {import('./cancellableIntent.js').CancellableIntent} subscribeIntent - The subscribe intent.
+ * @property {import('./cancellableIntent.js').CancellableIntent} retrieveIntent - The retrieve intent.
+ */
 /**
  * Initializes an object subscription to manage object state and reactivity, including subscription status and errors.
  *
@@ -145,18 +141,6 @@ export const objectSubscriptionFunctions: string[];
  */
 export type ObjectSubscriptionRawState = {
     /**
-     * - Whether the subscription is loading.
-     */
-    subscriptionLoading: import("./loadingError.js").LoadingReadonlyRef;
-    /**
-     * - Whether the subscription has errored.
-     */
-    subscriptionErrored: import("./loadingError.js").ErroredReadonlyRef;
-    /**
-     * - The error that occurred.
-     */
-    subscriptionError: import("./loadingError.js").ErrorReadonlyRef;
-    /**
      * - Whether the object intends to retrieve.
      */
     intendToRetrieve: import("vue").Ref<boolean>;
@@ -177,28 +161,6 @@ export type ObjectSubscriptionState = import("vue").Reactive<ObjectSubscriptionR
  * Functions available for object subscription management.
  */
 export type ObjectSubscriptionFunctions = {
-    /**
-     * - Subscribes to updates from an object, managing subscription state and handling errors internally.
-     * Ensures that only one active subscription can exist at a time to prevent duplicate calls. Returns a promise that
-     * resolves to true if the subscription was successful, and false if it failed.
-     */
-    subscribe: ((options?: {
-        retrieve?: boolean;
-    }) => boolean);
-    /**
-     * - Unsubscribes from the object, resetting related state flags. Returns
-     * true if the object was unsubscribed, and false if it was not subscribed.
-     */
-    unsubscribe: () => boolean;
-    /**
-     * - Update the
-     * object from a subscription.
-     */
-    updateFromSubscription: (data: import("./objectInstance.js").ExistingCrudObject) => void;
-    /**
-     * - Delete the object from a subscription.
-     */
-    deleteFromSubscription: () => void;
     /**
      * - Clears any errors related to the subscription, and resets the loading state.
      */
@@ -225,9 +187,9 @@ export type ObjectSubscriptionProperties = {
      */
     retrieveIntent: import("./cancellableIntent.js").CancellableIntent;
     /**
-     * - The effect scope.
+     * - Stops the subscription reactive effects.
      */
-    effectScope: import("vue").EffectScope;
+    stop: () => void;
 };
 /**
  * The object subscription instance, combining state, properties, and functions.
@@ -250,4 +212,25 @@ export type ObjectSubscriptionRawProps = {
  * Options for initializing an object subscription, including reactive props and non-reactive handlers.
  */
 export type ObjectSubscriptionOptions = object & import("./objectInstance.js").ObjectInstanceOptions;
+/**
+ * The context bound to shared objectSubscription functions.
+ */
+export type ObjectSubscriptionContext = {
+    /**
+     * - The object subscription state.
+     */
+    state: ObjectSubscriptionState;
+    /**
+     * - The object instance.
+     */
+    objectInstance: import("./objectInstance.js").ObjectInstance;
+    /**
+     * - The subscribe intent.
+     */
+    subscribeIntent: import("./cancellableIntent.js").CancellableIntent;
+    /**
+     * - The retrieve intent.
+     */
+    retrieveIntent: import("./cancellableIntent.js").CancellableIntent;
+};
 //# sourceMappingURL=objectSubscription.d.ts.map

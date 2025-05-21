@@ -9,7 +9,7 @@ export function getObjectCrud(target: import("vue").UnwrapNestedRefs<ObjectTarge
     props?: import("vue").UnwrapNestedRefs<ObjectTargetOption>;
     handlers?: ObjectCrudHandlers;
 }): void;
-export type ObjectTargetArgs = {
+export type TargetArgs = {
     [key: string]: any;
 };
 /**
@@ -19,21 +19,19 @@ export type ObjectTargetProperties = {
     /**
      * - The arguments to be passed to the crud handlers.
      */
-    args: ObjectTargetArgs;
+    args: TargetArgs;
 };
 export type ObjectTargetOption = {
     /**
      * - The arguments to be passed to the crud handlers.
      */
-    target?: ObjectTargetArgs;
+    target?: TargetArgs;
 };
 export type CreateArgs = {
     /**
      * - The arguments to be passed to the crud handlers.
      */
-    target: {
-        [key: string]: any;
-    };
+    target: TargetArgs;
     /**
      * - The data to be acted upon.
      */
@@ -55,13 +53,11 @@ export type CreateArgs = {
      */
     isCancelled: Readonly<import("vue").Ref<boolean>>;
 };
-export type RetrieveArgs = {
+export type RetrieveArgsRaw = {
     /**
      * - The arguments to be passed to the crud handlers.
      */
-    target: {
-        [key: string]: any;
-    };
+    target: TargetArgs;
     /**
      * - The pk of the object to be acted upon.
      */
@@ -81,13 +77,12 @@ export type RetrieveArgs = {
      */
     isCancelled: Readonly<import("vue").Ref<boolean>>;
 };
+export type RetrieveArgs = RetrieveArgsRaw & import("../use/cancellableIntent.js").CommonRunTracking;
 export type UpdateArgs = {
     /**
      * - The arguments to be passed to the crud handlers.
      */
-    target: {
-        [key: string]: any;
-    };
+    target: TargetArgs;
     /**
      * - The data to be acted upon.
      */
@@ -111,9 +106,7 @@ export type DeleteArgs = {
     /**
      * - The arguments to be passed to the crud handlers.
      */
-    target: {
-        [key: string]: any;
-    };
+    target: TargetArgs;
     /**
      * - The pk of the object to be acted upon.
      */
@@ -122,18 +115,12 @@ export type DeleteArgs = {
      * - The key name of the primary key.
      */
     pkKey: string;
-    /**
-     * - A ref to indicate if the request was cancelled.
-     */
-    isCancelled: Readonly<import("vue").Ref<boolean>>;
 };
 export type PartialArgs = {
     /**
      * - The arguments to be passed to the crud handlers.
      */
-    target: {
-        [key: string]: any;
-    };
+    target: TargetArgs;
     /**
      * - The pk of the object to be acted upon.
      */
@@ -159,14 +146,12 @@ export type PartialArgs = {
      */
     isCancelled: Readonly<import("vue").Ref<boolean>>;
 };
-export type CrudSubscribeCallback = (data: import("../use/objectInstance.js").ExistingCrudObject, action: string) => any;
-export type ObjectSubscribeArgs = {
+export type CrudSubscribeCallback = (data: import("../use/objectInstance.js").ExistingCrudObject, action: "delete" | "update" | "create") => any;
+export type ObjectSubscribeArgsRaw = {
     /**
      * - The arguments to be passed to the crud handlers.
      */
-    target: {
-        [key: string]: any;
-    };
+    target: TargetArgs;
     /**
      * - The pk of the object to be acted upon.
      */
@@ -190,6 +175,7 @@ export type ObjectSubscribeArgs = {
      */
     isCancelled: Readonly<import("vue").Ref<boolean>>;
 };
+export type ObjectSubscribeArgs = ObjectSubscribeArgsRaw & import("../use/cancellableIntent.js").CommonRunTracking;
 export type CrudResponse = import("../utils/cancellablePromise.js").MaybeCancellablePromise<object | string>;
 export type CrudCreateFn = (args: CreateArgs) => CrudResponse;
 export type CrudRetrieveFn = (args: RetrieveArgs) => CrudResponse;

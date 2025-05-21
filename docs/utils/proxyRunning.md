@@ -10,7 +10,7 @@
 
 ### proxyRunning()
 
-> **proxyRunning**(`parentState`, `parentStateProp`, `ref`): `void`
+> **proxyRunning**(`parentState`, `parentStateProp`, `childRef`): `void`
 
 Proxy a parent's running state to a child's running state.
 
@@ -28,7 +28,7 @@ The parent state.
 
 The parent state property.
 
-##### ref
+##### childRef
 
 `Ref`\<`boolean`, `boolean`\>
 
