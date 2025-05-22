@@ -155,7 +155,7 @@ export const stringifyClasses = (...classes) =>
  * We unref your refs, so probably want a computed around this. We filter out false values, as Vue will not necessarily
  *  do this if it can't statically realize a bound value for class will be an object.
  *
- * @param {...(CombinedClassesArgument|CombinedClassesArgument[])|null|undefined} cls - Handles the multiple ways of specifying CSS class related values.
+ * @param {CombinedClassesArgument|CombinedClassesArgument[]|null|undefined} cls - Handles the multiple ways of specifying CSS class related values.
  * @returns {string|null|undefined} A space-separated list of CSS classes.
  */
 export const stringifyClass = (cls) => {
