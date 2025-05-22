@@ -87,4 +87,19 @@ describe("use/objectRelated", () => {
 
         expect(deepUnref(objectRelated.state.relatedObject.friend)).toEqual(relatedObjects[2]);
     });
+
+    scopedIt("stops effects", async () => {
+        const parentState = createParentState();
+        const relatedObjects = { 2: { id: "2" }, 3: { id: "3" } };
+        const rules = reactive({
+            friend: { pkKey: "friend_id", objects: relatedObjects },
+        });
+        const or = useObjectRelated({ parentState, relatedObjectRules: rules });
+        await nextTick();
+        expect(deepUnref(or.state.relatedObject.friend)).toEqual(relatedObjects[2]);
+
+        or.stop();
+        parentState.object.friend_id = "3";
+        await nextTick();
+    });
 });

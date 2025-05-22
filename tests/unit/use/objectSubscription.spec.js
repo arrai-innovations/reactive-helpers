@@ -482,6 +482,64 @@ describe("use/objectSubscription.js", function () {
             expect(instanceClearSpy).toHaveBeenCalledTimes(1);
         });
     });
+
+    describe("stop and handlers", () => {
+        scopedIt("logs when handlers are ignored", async () => {
+            const props = getProps({
+                pk: 1,
+                pkKey: "id",
+                params: { fields },
+            });
+            const handlers = getHandlers();
+            const objectInstance = useObjectInstance({ props, handlers });
+            const consoleSpy = vi.spyOn(console, "error").mockImplementation(() => {});
+            const { useObjectSubscription } = await import("../../../use/objectSubscription.js");
+            useObjectSubscription({ objectInstance, props, handlers });
+            expect(consoleSpy).toHaveBeenCalledWith(
+                "handlers passed to useObjectSubscription, but objectInstance was passed. handlers ignored."
+            );
+        });
+
+        scopedIt("stop calls intent stops", async () => {
+            const capturedIntents = [];
+            vi.doMock("../../../use/cancellableIntent.js", async () => {
+                const actual = await vi.importActual("../../../use/cancellableIntent.js");
+                return {
+                    ...actual,
+                    useCancellableIntent: vi.fn(() => {
+                        const intent = {
+                            state: {
+                                error: ref(null),
+                                errored: ref(false),
+                                resolving: ref(false),
+                                active: ref(false),
+                            },
+                            clearError: vi.fn(),
+                            stop: vi.fn(),
+                        };
+                        capturedIntents.push(intent);
+                        return intent;
+                    }),
+                };
+            });
+
+            const props = getProps({
+                pk: 1,
+                pkKey: "id",
+                params: { fields },
+            });
+            const handlers = getHandlers();
+            const objectInstance = useObjectInstance({ props, handlers });
+            const { useObjectSubscription } = await import("../../../use/objectSubscription.js");
+            const sub = useObjectSubscription({ objectInstance, props });
+
+            sub.stop();
+
+            for (const intent of capturedIntents) {
+                expect(intent.stop).toHaveBeenCalledTimes(1);
+            }
+        });
+    });
     describe("useObjectSubscriptions with objectInstance", function () {
         let useObjectInstance, ObjectError, objectInstance;
         beforeEach(async () => {

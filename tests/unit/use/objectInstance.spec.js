@@ -1692,6 +1692,31 @@ describe("use/objectInstance.js", function () {
 
             expect(result).not.toHaveProperty("cancel");
         });
+
+        scopedIt("cancel", async () => {
+            const objectInstance = useObjectInstance({
+                props: {
+                    target: { stream: "test_stream" },
+                    pk: 1,
+                    pkKey: "id",
+                    params: { fields },
+                },
+            });
+
+            let cancelFnCalled = false;
+            const testPromise = CancellablePromise(new Promise(() => {}), () => {
+                cancelFnCalled = true;
+                return Promise.resolve();
+            });
+
+            objectInstance.state.crud.delete = vi.fn().mockReturnValueOnce(testPromise);
+
+            const result = objectInstance.delete();
+
+            await result.cancel();
+
+            expect(cancelFnCalled).toBe(true);
+        });
     });
     describe("clear", () => {
         scopedIt("resets object and error state", async () => {
