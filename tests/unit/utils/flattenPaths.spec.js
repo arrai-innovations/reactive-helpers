@@ -122,5 +122,11 @@ describe("utils/flattenPaths", () => {
                 "products[1].regularPrice",
             ]);
         });
+
+        describe("edge cases", () => {
+            it("handles primitive values when a currentPath is provided", () => {
+                expect(flattenPaths("value", { currentPath: "a.b" })).toEqual(["a.b"]);
+            });
+        });
     });
 });
