@@ -100,4 +100,25 @@ describe("use/objectCalculated", () => {
         await flushPromises();
         expect(oc.state.calculatedObject.increment).toBeUndefined();
     });
+
+    scopedIt("warns on invalid rule and stops reactive effects", async () => {
+        const parentState = createParentState();
+        const rules = reactive({
+            bad: (obj) => obj.value + 2,
+        });
+        const warnSpy = vi.spyOn(console, "warn").mockImplementation(() => {});
+        const oc = useObjectCalculated({ parentState, calculatedObjectRules: rules });
+        await flushPromises();
+        expect(deepUnref(oc.state.calculatedObject.bad)).toBe(4);
+
+        // @ts-ignore - this is a test case
+        rules.bad = 123;
+        await flushPromises();
+        expect(warnSpy).toHaveBeenCalledWith('[useObjectCalculated] Skipping rule "bad" because it\'s not a function.');
+        expect(oc.state.calculatedObject.bad).toBeUndefined();
+
+        oc.stop();
+        parentState.object.value = 5;
+        await flushPromises();
+    });
 });
