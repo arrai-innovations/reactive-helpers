@@ -144,12 +144,24 @@ describe("utils/assignReactiveObject extra", () => {
         expect(target.b).toBe(3);
     });
 
+    it("addReactiveObject short circuits when target equals source", () => {
+        const obj = reactive({ a: 1 });
+        const did = addReactiveObject(obj, obj);
+        expect(did).toBe(false);
+    });
+
     it("updateReactiveObject computes keys when none provided", () => {
         const target = reactive({ a: 1, b: 2 });
         const source = reactive({ a: 3, b: 2 });
         const did = updateReactiveObject(target, source);
         expect(did).toBe(true);
         expect(target).toEqual({ a: 3, b: 2 });
+    });
+
+    it("updateReactiveObject short circuits when target equals source", () => {
+        const obj = reactive({ a: 1 });
+        const did = updateReactiveObject(obj, obj);
+        expect(did).toBe(false);
     });
 
     it("addOrUpdateReactiveObject short circuits when target equals source", () => {

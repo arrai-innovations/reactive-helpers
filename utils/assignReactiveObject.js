@@ -144,7 +144,7 @@ export function addReactiveObject(target, source, exclude, addedKeys = null) {
             return false;
         }
         ({ target, source } = validateTargetAndSource(target, source));
-        ({ addedKeys } = keyDiff(Object.keys(source) || [], Object.keys(target) || []));
+        ({ addedKeys } = keyDiff(Object.keys(source), Object.keys(target)));
     }
     return reactiveReplaceKeys(target, source, addedKeys, exclude);
 }
@@ -166,7 +166,7 @@ export function updateReactiveObject(target, source, exclude, sameKeys = null) {
             return false;
         }
         ({ target, source } = validateTargetAndSource(target, source));
-        ({ sameKeys } = keyDiff(Object.keys(source) || [], Object.keys(target) || []));
+        ({ sameKeys } = keyDiff(Object.keys(source), Object.keys(target)));
     }
     return reactiveReplaceKeys(target, source, sameKeys, exclude);
 }
@@ -197,7 +197,7 @@ export function addOrUpdateReactiveObject(
             return false;
         }
         ({ target, source } = validateTargetAndSource(target, source));
-        ({ addedKeys, sameKeys } = keyDiff(Object.keys(source) || [], Object.keys(target) || []));
+        ({ addedKeys, sameKeys } = keyDiff(Object.keys(source), Object.keys(target)));
     }
     // if the source update value is undefined, we should not update the target
     if (sameKeys && doNotSetUndefinedKeys) {
@@ -236,7 +236,7 @@ export function trimReactiveObject(target, source, exclude, removedKeys = null) 
             return false;
         }
         ({ target, source } = validateTargetAndSource(target, source));
-        ({ removedKeys } = keyDiff(Object.keys(source) || [], Object.keys(target) || []));
+        ({ removedKeys } = keyDiff(Object.keys(source), Object.keys(target)));
     }
     const targetIsArray = isArray(target);
     let didAnything = false;
@@ -299,7 +299,7 @@ export function assignReactiveArray(target, source) {
         target.reverse();
         didAnything = true;
     } else {
-        const { addedKeys, sameKeys, removedKeys } = keyDiff(Object.keys(source) || [], Object.keys(target) || []);
+        const { addedKeys, sameKeys, removedKeys } = keyDiff(Object.keys(source), Object.keys(target));
         const wasTrimmed = trimReactiveObject(target, source, null, removedKeys);
         const wasChanged = addOrUpdateReactiveObject(target, source, null, addedKeys, sameKeys, false);
         didAnything = wasTrimmed || wasChanged;
@@ -328,7 +328,7 @@ export function assignReactiveObject(target, source, exclude) {
         return false;
     }
     ({ target, source } = validateTargetAndSource(target, source));
-    const { addedKeys, sameKeys, removedKeys } = keyDiff(Object.keys(source) || [], Object.keys(target) || []);
+    const { addedKeys, sameKeys, removedKeys } = keyDiff(Object.keys(source), Object.keys(target));
     const wasTrimmed = trimReactiveObject(target, source, exclude, removedKeys);
     const wasChanged = addOrUpdateReactiveObject(target, source, exclude, addedKeys, sameKeys, false);
     return wasTrimmed || wasChanged;
@@ -401,7 +401,7 @@ function recursiveInner(target, source, exclude, addedKeys, sameKeys, path, fn) 
  * @throws {AssignReactiveObjectError} If either target or source are not ultimately objects or arrays.
  */
 function assignReactiveObjectRecursive(target, source, exclude, path = "") {
-    let { addedKeys, sameKeys, removedKeys } = keyDiff(Object.keys(source) || [], Object.keys(target) || []);
+    let { addedKeys, sameKeys, removedKeys } = keyDiff(Object.keys(source), Object.keys(target));
     const wasTrimmed = trimReactiveObject(target, source, exclude, removedKeys);
     const recursiveDidAnything = recursiveInner(
         target,
@@ -448,7 +448,7 @@ export function assignReactiveObjectDeep(target, source, exclude) {
  * @returns {boolean} True if any keys were added or updated, false otherwise.
  */
 function addOrUpdateReactiveObjectRecursive(target, source, exclude, path = "") {
-    let { addedKeys, sameKeys } = keyDiff(Object.keys(source) || [], Object.keys(target) || []);
+    let { addedKeys, sameKeys } = keyDiff(Object.keys(source), Object.keys(target));
     return recursiveInner(target, source, exclude, addedKeys, sameKeys, path, addOrUpdateReactiveObjectRecursive);
 }
 

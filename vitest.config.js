@@ -6,7 +6,9 @@ export default defineConfig({
         globals: true,
         environment: "jsdom",
         coverage: {
+            provider: "v8",
             reporter: ["text", "json-summary", "html"],
+            include: ["config/**/*.js", "use/**/*.js", "utils/**/*.js"],
             exclude: [
                 ".git",
                 "index.js",
