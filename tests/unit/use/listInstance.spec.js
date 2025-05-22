@@ -1108,8 +1108,51 @@ describe("use/listInstance.spec.js", function () {
         });
     });
     describe("useListInstance", function () {
-        scopedIt("throw error when missing props", async function () {
-            expect(() => useListInstance({}).toThrow("useListInstance requires props."));
+        scopedIt("throw error when missing props", function () {
+            expect(() => useListInstance({})).toThrow("useListInstance requires props");
+        });
+        scopedIt("throw error when missing pkKey", function () {
+            expect(() => useListInstance({ props: {} })).toThrow("useListInstance requires pkKey.");
+        });
+    });
+    describe("internal objectsMap proxy", function () {
+        scopedIt("set wraps objects reactively", function () {
+            const listInstance = useListInstance({ props: { pkKey: "id" } });
+            const obj = { id: 1, __str__: "one", name: "one" };
+            listInstance.state.objectsMap.set("1", obj);
+            expect(isReactive(listInstance.state.objectsMap.get("1"))).toBe(true);
+        });
+        scopedIt("set passes through reactive objects", function () {
+            const listInstance = useListInstance({ props: { pkKey: "id" } });
+            const obj = reactive({ id: 2, __str__: "two", name: "two" });
+            listInstance.state.objectsMap.set("2", obj);
+            expect(listInstance.state.objectsMap.get("2")).toBe(obj);
+        });
+
+        scopedIt("preventExtensions trap executes", function () {
+            const listInstance = useListInstance({ props: { pkKey: "id" } });
+            expect(Object.isExtensible(listInstance.state.objectsMap)).toBe(true);
+            Object.preventExtensions(listInstance.state.objectsMap);
+            expect(Object.isExtensible(listInstance.state.objectsMap)).toBe(false);
+        });
+    });
+    describe("internal objects proxy", function () {
+        scopedIt("prototype and define traps", function () {
+            const listInstance = useListInstance({ props: { pkKey: "id" } });
+            expect(() => Object.setPrototypeOf(listInstance.state.objects, null)).toThrow(TypeError);
+            expect(() => Object.defineProperty(listInstance.state.objects, "foo", { value: 1 })).toThrow(TypeError);
+            expect(() => Object.preventExtensions(listInstance.state.objects)).toThrow(TypeError);
+            expect(Object.getPrototypeOf(listInstance.state.objects)).toBe(Object.prototype);
+        });
+        scopedIt("symbol operations", function () {
+            const listInstance = useListInstance({ props: { pkKey: "id" } });
+            const sym = Symbol("test");
+            expect(sym in listInstance.state.objects).toBe(false);
+            Reflect.set(listInstance.state.objects, sym, "foo");
+            expect(sym in listInstance.state.objects).toBe(true);
+            Reflect.deleteProperty(listInstance.state.objects, sym);
+            expect(sym in listInstance.state.objects).toBe(false);
+            expect(Symbol.iterator in listInstance.state.objects).toBe(false);
         });
     });
 });
