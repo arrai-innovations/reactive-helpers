@@ -5,6 +5,12 @@ import isSymbol from "lodash-es/isSymbol.js";
 const reEscapeChar = /\\(\\)?/g;
 const rePropName = /[^.[\]]+|\[(?:(-?\d+(?:\.\d+)?)|(["'])((?:(?!\2)[^\\]|\\.)*?)\2)\]|(?=(?:\.|\[\])(?:\.|\[\]|$))/g;
 
+/**
+ * Convert `value` to a property key.
+ *
+ * @param {string | number | symbol} value - The value to convert.
+ * @returns {string | symbol} Returns the converted key.
+ */
 function toKey(value) {
     if (typeof value == "string" || isSymbol(value)) {
         return value;
@@ -17,9 +23,9 @@ function toKey(value) {
 /**
  * Split a string into an array of keys.
  *
- * @param {string} string - The string to split.
+ * @param {string | (string | number | symbol)[]} string - The string to split.
  * @param {object} object - The object to split keys for.
- * @returns {string[]} Returns the new array of split keys.
+ * @returns {(string | number | symbol)[]} Returns the new array of split keys.
  */
 export function lodashLikePathSplit(string, object) {
     if (isArray(string)) {
@@ -43,7 +49,7 @@ export function lodashLikePathSplit(string, object) {
  * Delete a key from an object. Lodash-like delete function, as companion for get/set.
  *
  * @param {object} obj - The object to modify.
- * @param {string} path - The key to delete.
+ * @param {string | (string | number | symbol)[]} path - The key to delete.
  * @returns {boolean} Returns true if the key was deleted, false otherwise.
  */
 export function del(obj, path) {
