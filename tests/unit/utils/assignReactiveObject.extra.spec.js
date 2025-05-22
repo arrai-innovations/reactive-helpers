@@ -132,6 +132,17 @@ describe("utils/assignReactiveObject extra", () => {
         expect(target.b).toBe(source.b);
     });
 
+    it("reactiveReplaceKeys skips identical Set and Map values", () => {
+        const sharedSet = reactive(new Set([1, 2]));
+        const sharedMap = reactive(new Map([["x", 1]]));
+        const target = reactive({ a: sharedSet, b: sharedMap });
+        const source = reactive({ a: sharedSet, b: sharedMap });
+        const did = updateReactiveObject(target, source);
+        expect(did).toBe(false);
+        expect(target.a).toBe(sharedSet);
+        expect(target.b).toBe(sharedMap);
+    });
+
     it("addReactiveObject computes keys when none provided", () => {
         const target = reactive({ a: 1 });
         const source = reactive({ a: 1, b: 2 });
