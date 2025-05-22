@@ -131,4 +131,44 @@ describe("utils/assignReactiveObject extra", () => {
         expect(target.a).toBe(1);
         expect(target.b).toBe(source.b);
     });
+
+    it("addReactiveObject computes keys when none provided", () => {
+        const target = reactive({ a: 1 });
+        const source = reactive({ a: 1, b: 2 });
+        const did = addReactiveObject(target, source);
+        expect(did).toBe(true);
+        // @ts-ignore
+        expect(target.b).toBe(source.b);
+        source.b = 3;
+        // @ts-ignore
+        expect(target.b).toBe(3);
+    });
+
+    it("updateReactiveObject computes keys when none provided", () => {
+        const target = reactive({ a: 1, b: 2 });
+        const source = reactive({ a: 3, b: 2 });
+        const did = updateReactiveObject(target, source);
+        expect(did).toBe(true);
+        expect(target).toEqual({ a: 3, b: 2 });
+    });
+
+    it("addOrUpdateReactiveObject short circuits when target equals source", () => {
+        const obj = reactive({ a: 1 });
+        const did = addOrUpdateReactiveObject(obj, obj);
+        expect(did).toBe(false);
+    });
+
+    it("addOrUpdateReactiveObject handles sameKeys array with undefined", () => {
+        const target = { a: 1, b: 2 };
+        const source = { a: 3, b: undefined, c: 4 };
+        const did = addOrUpdateReactiveObject(target, source, null, null, ["a", "b"]);
+        expect(did).toBe(true);
+        expect(target).toEqual({ a: 3, b: 2, c: 4 });
+    });
+
+    it("trimReactiveObject short circuits when target equals source", () => {
+        const obj = reactive({ a: 1 });
+        const did = trimReactiveObject(obj, obj);
+        expect(did).toBe(false);
+    });
 });
