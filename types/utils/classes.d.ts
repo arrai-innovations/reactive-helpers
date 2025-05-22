@@ -3,7 +3,7 @@ export function objectifyClasses(...classes: (CombinedClassesArgument | Combined
 };
 export function combineClasses(...classes: (CombinedClassesArgument | CombinedClassesArgument[])[]): CombinedClasses;
 export function stringifyClasses(...classes: (CombinedClassesArgument | CombinedClassesArgument[])[]): string;
-export function stringifyClass(cls: ((CombinedClassesArgument | CombinedClassesArgument[]) | null | undefined)[]): string | null | undefined;
+export function stringifyClass(cls: CombinedClassesArgument | CombinedClassesArgument[] | null | undefined): string | null | undefined;
 /**
  * - The normalized form of the CSS classes, either as a string of space-separated class names or an
  */
