@@ -246,4 +246,77 @@ describe("use/search", () => {
         });
         expect(Object.keys(search.state.results)).toEqual(["1", "2", "3"]);
     });
+
+    scopedIt("clears results when pkKey changes", async () => {
+        const searchProps = reactive({
+            customDocumentOptions: {
+                tokenize: "forward",
+                document: {
+                    index: ["field1"],
+                },
+            },
+            pkKey: "id",
+        });
+        const search = useSearch({
+            props: searchProps,
+            throttle: 50,
+        });
+        search.addIndex({ id: 1, field1: "one" });
+        search.state.search = "one";
+        await doAwaitNot({ obj: search.state, prop: "running" });
+        expect(Object.keys(search.state.results)).toEqual(["1"]);
+
+        let resolveNewIndex;
+        const eventPromise = new Promise((resolve) => {
+            resolveNewIndex = resolve;
+        });
+        search.events.addEventListener("newIndex", resolveNewIndex);
+        searchProps.pkKey = "uuid";
+        await eventPromise;
+        expect(Object.keys(search.state.results)).toEqual([]);
+
+        search.addIndex({ uuid: "a", field1: "one" });
+        search.state.search = "one";
+        await doAwaitNot({ obj: search.state, prop: "running" });
+        expect(Object.keys(search.state.results)).toEqual(["a"]);
+    });
+
+    scopedIt("stops reacting after stop is called", async () => {
+        const search = useSearch({
+            props: reactive({
+                pkKey: "id",
+                customDocumentOptions: {
+                    tokenize: "forward",
+                    document: { index: ["field1"] },
+                },
+            }),
+            throttle: 50,
+        });
+        search.addIndex({ id: 1, field1: "first" });
+        search.state.search = "first";
+        await doAwaitNot({ obj: search.state, prop: "running" });
+        expect(Object.keys(search.state.results)).toEqual(["1"]);
+
+        search.stop();
+        const called = search.state.called;
+        search.state.search = "nothing";
+        await new Promise((r) => setTimeout(r, 100));
+        expect(search.state.called).toBe(called);
+    });
+
+    scopedIt("defaults pkKey to id when not provided", async () => {
+        const search = useSearch({
+            props: reactive({
+                customDocumentOptions: {
+                    tokenize: "forward",
+                    document: { index: ["field1"] },
+                },
+            }),
+            throttle: 50,
+        });
+        search.addIndex({ id: 1, field1: "foo" });
+        search.state.search = "foo";
+        await doAwaitNot({ obj: search.state, prop: "running" });
+        expect(Object.keys(search.state.results)).toEqual(["1"]);
+    });
 });
