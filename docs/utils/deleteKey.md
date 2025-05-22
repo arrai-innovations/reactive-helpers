@@ -24,9 +24,9 @@ The object to modify.
 
 ##### path
 
-`string`
-
 The key to delete.
+
+`string` | (`string` \| `number` \| `symbol`)[]
 
 #### Returns
 
@@ -38,7 +38,7 @@ Returns true if the key was deleted, false otherwise.
 
 ### lodashLikePathSplit()
 
-> **lodashLikePathSplit**(`string`, `object`): `string`[]
+> **lodashLikePathSplit**(`string`, `object`): (`string` \| `number` \| `symbol`)[]
 
 Split a string into an array of keys.
 
@@ -46,9 +46,9 @@ Split a string into an array of keys.
 
 ##### string
 
-`string`
-
 The string to split.
+
+`string` | (`string` \| `number` \| `symbol`)[]
 
 ##### object
 
@@ -58,6 +58,6 @@ The object to split keys for.
 
 #### Returns
 
-`string`[]
+(`string` \| `number` \| `symbol`)[]
 
 Returns the new array of split keys.

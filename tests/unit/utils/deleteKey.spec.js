@@ -262,4 +262,51 @@ describe("utils/deleteKey.js", () => {
             });
         });
     });
+
+    describe("additional coverage", () => {
+        it("should return array paths unchanged", () => {
+            const arr = ["a", "b"];
+            const result = lodashLikePathSplit(arr, { a: { b: 1 } });
+            expect(result).toBe(arr);
+        });
+
+        it("should split paths starting with a dot", () => {
+            const path = ".a.b";
+            const split = lodashLikePathSplit(path, { ".a": { b: 1 } });
+            expect(split).toEqual(["", "a", "b"]);
+        });
+
+        it("should split quoted keys", () => {
+            const path = 'a["b"]';
+            const split = lodashLikePathSplit(path, { a: { b: 1 } });
+            expect(split).toEqual(["a", "b"]);
+        });
+
+        it("should return false when object is falsy", () => {
+            const result = del(null, "a");
+            expect(result).toBe(false);
+        });
+
+        it("should delete a negative zero key", () => {
+            const obj = { "-0": 1, 0: 2 };
+            const deleted = del(obj, [-0]);
+            expect(deleted).toBe(true);
+            expect(obj).toEqual({ 0: 2 });
+        });
+
+        it("should delete a symbol key", () => {
+            const sym = Symbol("s");
+            const obj = { [sym]: 1 };
+            const deleted = del(obj, [sym]);
+            expect(deleted).toBe(true);
+            expect(obj).toEqual({});
+        });
+
+        it("should delete a numeric key from an object", () => {
+            const obj = { 1: "a", 2: "b" };
+            const deleted = del(obj, [1]);
+            expect(deleted).toBe(true);
+            expect(obj).toEqual({ 2: "b" });
+        });
+    });
 });
