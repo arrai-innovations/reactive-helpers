@@ -273,4 +273,36 @@ describe("utils/watches", () => {
             expect(watchFunc).toHaveBeenCalledTimes(5);
         });
     });
+
+    describe("additional coverage", () => {
+        it("ImmediateStopWatch throws when immediate option is provided", () => {
+            const isw = new ImmediateStopWatch();
+            const startWatch = () =>
+                isw.start(
+                    () => reactiveObject.prop,
+                    () => {},
+                    [],
+                    { immediate: true }
+                );
+            expect(startWatch).toThrow("ImmediateStopWatch is always immediate.");
+        });
+
+        it("AwaitTimeout resolves immediately with zero timeout", async () => {
+            const at = new AwaitTimeout({ timeout: 0 });
+            at.start();
+            await expect(at.promise).resolves.toBeUndefined();
+        });
+
+        it("AwaitNot propagates timeout errors", async () => {
+            const err = new Error("boom");
+            awaitNot.timeout = {
+                promise: Promise.reject(err),
+                start: vi.fn(),
+                stop: vi.fn(),
+            };
+            awaitNot.start();
+            await expect(awaitNot.promise).rejects.toBe(err);
+            expect(awaitNot.timeout.stop).toHaveBeenCalled();
+        });
+    });
 });
