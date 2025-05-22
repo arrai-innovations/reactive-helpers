@@ -233,12 +233,23 @@ export function useObjectCalculated({ parentState, calculatedObjectRules }) {
                 }
             }
             for (const addedKey of addedKeys) {
-                calculatedObjectOriginalFunctions[addedKey] = state.calculatedObjectRules[addedKey];
+                const ruleFn = state.calculatedObjectRules[addedKey];
+                if (typeof ruleFn !== "function") {
+                    // cleanup any prior rule under this key
+                    delete calculatedObjectOriginalFunctions[addedKey];
+                    delete state.calculatedObject[addedKey];
+                    if (calculatedObjectEffectScopes[addedKey]) {
+                        calculatedObjectEffectScopes[addedKey].stop();
+                        delete calculatedObjectEffectScopes[addedKey];
+                    }
+
+                    console.warn(`[useObjectCalculated] Skipping rule "${addedKey}" because it's not a function.`);
+                    continue;
+                }
+                calculatedObjectOriginalFunctions[addedKey] = ruleFn;
                 calculatedObjectEffectScopes[addedKey] = effectScope();
                 calculatedObjectEffectScopes[addedKey].run(() => {
-                    state.calculatedObject[addedKey] = computed(() =>
-                        calculatedObjectOriginalFunctions[addedKey](state.object, state.relatedObject)
-                    );
+                    state.calculatedObject[addedKey] = computed(() => ruleFn(state.object, state.relatedObject));
                 });
             }
             nextTick(() => {
@@ -267,18 +278,18 @@ export function useObjectCalculated({ parentState, calculatedObjectRules }) {
             { immediate: true }
         );
         watch(
-            [() => state.calculatedObjectRules && Object.keys(state.calculatedObjectRules)],
+            toRef(state, "calculatedObjectRules"),
             () => {
                 state.calculatedObjectWatchRunning = true;
             },
-            { flush: "sync" }
+            { flush: "sync", deep: true }
         );
         watch(
-            [() => state.calculatedObjectRules && Object.keys(state.calculatedObjectRules)],
+            toRef(state, "calculatedObjectRules"),
             () => {
                 rulesWatch();
             },
-            { immediate: true }
+            { immediate: true, deep: true }
         );
 
         onScopeDispose(() => {
