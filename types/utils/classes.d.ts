@@ -12,11 +12,6 @@ export type CombinedClasses = (string | {
 } | {
     [classnames: string]: boolean | import("vue").Ref<boolean>;
 }[]);
-export type NestedArrayStructureWithStrings = (string | string[] | import("vue").Ref<string | string[]>);
 export type BooleanOrRef = boolean | import("vue").Ref<boolean>;
-export type CombinedClassesArgument = (NestedArrayStructureWithStrings | {
-    [key: string]: BooleanOrRef | NestedArrayStructureWithStrings | CombinedClassesArgument;
-} | import("vue").Ref<NestedArrayStructureWithStrings | {
-    [key: string]: BooleanOrRef | NestedArrayStructureWithStrings | CombinedClassesArgument;
-}>);
+export type CombinedClassesArgument = string | string[] | Set<any> | Map<any, any> | object | import("vue").Ref<any>;
 //# sourceMappingURL=classes.d.ts.map

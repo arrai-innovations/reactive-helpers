@@ -28,15 +28,7 @@ The normalized form of the CSS classes, either as a string of space-separated cl
 
 ### CombinedClassesArgument
 
-> **CombinedClassesArgument**\<\>: [`NestedArrayStructureWithStrings`](classes.md#nestedarraystructurewithstrings) \| \{\} \| `Ref`
-
-#### Type Parameters
-
-***
-
-### NestedArrayStructureWithStrings
-
-> **NestedArrayStructureWithStrings**\<\>: `string` \| `string`[] \| `Ref`
+> **CombinedClassesArgument**\<\>: `string` \| `string`[] \| `Set`\<`any`\> \| `Map`\<`any`, `any`\> \| `object` \| `Ref`
 
 #### Type Parameters
 
@@ -56,7 +48,7 @@ We unref your refs, so probably want a computed around this. We filter out false
 
 ##### classes
 
-...([`CombinedClassesArgument`](classes.md#combinedclassesargument) \| [`CombinedClassesArgument`](classes.md#combinedclassesargument)[])[]
+...`any`[]
 
 A variable list of class specifications.
 
@@ -78,7 +70,7 @@ Normalize various ways of specifying CSS classes into an object for use in Vue.j
 
 ##### classes
 
-...([`CombinedClassesArgument`](classes.md#combinedclassesargument) \| [`CombinedClassesArgument`](classes.md#combinedclassesargument)[])[]
+...`any`[]
 
 A mixed array containing multiple ways of specifying CSS classes.
 
@@ -103,9 +95,9 @@ We unref your refs, so probably want a computed around this. We filter out false
 
 ##### cls
 
-Handles the multiple ways of specifying CSS class related values.
+`any`
 
-[`CombinedClassesArgument`](classes.md#combinedclassesargument) | [`CombinedClassesArgument`](classes.md#combinedclassesargument)[]
+Handles the multiple ways of specifying CSS class related values.
 
 #### Returns
 
@@ -128,7 +120,7 @@ We unref your refs, so probably want a computed around this. We filter out false
 
 ##### classes
 
-...([`CombinedClassesArgument`](classes.md#combinedclassesargument) \| [`CombinedClassesArgument`](classes.md#combinedclassesargument)[])[]
+...`any`[]
 
 Handles the multiple ways of specifying CSS class related values.
 

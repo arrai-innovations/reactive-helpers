@@ -97,6 +97,25 @@ describe("utils/classes.js", () => {
             };
             expect(actual).toStrictEqual(expected);
         });
+        it("should handle Set and Map inputs", () => {
+            const set = new Set(["setA", "setB"]);
+            const map = new Map([
+                [1, "mapA"],
+                [2, "mapB"],
+            ]);
+
+            const result = objectifyClasses(set, map);
+
+            expect(result).toStrictEqual({
+                setA: true,
+                setB: true,
+                mapA: true,
+                mapB: true,
+            });
+        });
+        it("should throw on unsupported types", () => {
+            expect(() => objectifyClasses(123)).toThrow("Expected string or object, got 123");
+        });
     });
     describe("combineClasses", () => {
         it("should combine all strings", () => {
@@ -313,6 +332,10 @@ describe("utils/classes.js", () => {
                 classC: true,
             });
         });
+        it("should handle non-string primitives", () => {
+            const actual = combineClasses(true, "extra");
+            expect(actual).toBe("true extra");
+        });
     });
     describe("stringifyClass", () => {
         it("should stringify a string", () => {
@@ -357,6 +380,15 @@ describe("utils/classes.js", () => {
             classRef.value = "new-class";
             computedResult.value;
             expect(result.value).toBe("new-class");
+        });
+        it("should stringify reactive arrays", () => {
+            const arr = reactive([ref("one"), "two"]);
+            const actual = stringifyClass(arr);
+            expect(actual).toBe("one two");
+        });
+        it("should deduplicate classes in a string", () => {
+            const actual = stringifyClass("dup dup other");
+            expect(actual).toBe("dup other");
         });
     });
     describe("stringifyClasses", () => {

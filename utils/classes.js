@@ -5,7 +5,6 @@ import isString from "lodash-es/isString.js";
 import isBoolean from "lodash-es/isBoolean.js";
 import identity from "lodash-es/identity.js";
 import flatMapDeep from "lodash-es/flatMapDeep.js";
-import isEmpty from "lodash-es/isEmpty.js";
 import isSet from "lodash-es/isSet.js";
 import isMap from "lodash-es/isMap.js";
 
@@ -18,30 +17,11 @@ import isMap from "lodash-es/isMap.js";
  */
 
 /**
- * @typedef {(
- *    string | string[] |
- *    import("vue").Ref<string | string[]>
- * )} NestedArrayStructureWithStrings
- */
-
-/**
  * @typedef { boolean | import("vue").Ref<boolean> } BooleanOrRef
  */
 
 /**
- * @typedef {(
- *     NestedArrayStructureWithStrings |
- *     {
- *         [key: string]: BooleanOrRef |
- *         NestedArrayStructureWithStrings |
- *         CombinedClassesArgument
- *     } |
- *     import("vue").Ref<NestedArrayStructureWithStrings | {
- *         [key: string]: BooleanOrRef |
- *         NestedArrayStructureWithStrings |
- *         CombinedClassesArgument
- *     }>
- * )} CombinedClassesArgument
+ * @typedef {string | string[] | Set<any> | Map<any, any> | object | import("vue").Ref<any>} CombinedClassesArgument
  */
 
 /**
@@ -75,7 +55,7 @@ const deepUnrefFlatten = (val) => {
             }
         });
     }
-    return val;
+    return [val];
 };
 
 /**
@@ -130,8 +110,7 @@ export const combineClasses = (...classes) => {
     if (!hasObjects) {
         return stringifyClasses(...filteredClasses);
     }
-    const result = objectifyClasses(...filteredClasses);
-    return isEmpty(result) ? undefined : result;
+    return objectifyClasses(...filteredClasses);
 };
 
 /**
@@ -163,10 +142,10 @@ export const stringifyClass = (cls) => {
         return stringifyClass(unref(cls));
     }
     if (isReactive(cls)) {
-        if (isObject(cls)) {
-            return stringifyClass(/** @type {CombinedClassesArgument} */ (toRefs(cls)));
-        } else if (isArray(cls)) {
+        if (isArray(cls)) {
             return stringifyClass(cls.map((c) => unref(c)));
+        } else if (isObject(cls)) {
+            return stringifyClass(/** @type {CombinedClassesArgument} */ (toRefs(cls)));
         }
     }
     if (isArray(cls)) {
