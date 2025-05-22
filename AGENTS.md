@@ -17,7 +17,7 @@ This project uses [Vitest](https://vitest.dev/), ESLint, and Prettier.
 ## Useful Scripts
 
 - **Run tests**: `npm test run`
-- **Run tests with coverage**: `npm run coverage run`
+- **Run tests with coverage**: `npm run coverage`
 
     - Text coverage output will be shown in the console.
     - An HTML report is produced in `coverage/`.
