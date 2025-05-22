@@ -8,6 +8,7 @@ export default defineConfig({
         coverage: {
             reporter: ["text", "json-summary", "html"],
             exclude: [
+                ".git",
                 "index.js",
                 "**/*.config.js",
                 ".prettierrc.cjs",
