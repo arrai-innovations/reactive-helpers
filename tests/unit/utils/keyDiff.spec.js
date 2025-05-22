@@ -55,6 +55,17 @@ describe("keyDiff", function () {
                 sameKeys: new Set(["a", "b", "c"]),
             });
         });
+        it("when provided Sets", function () {
+            const newKeys = new Set(["a", "b"]);
+            const oldKeys = new Set(["b", "c"]);
+            expect(keyDiff(newKeys, oldKeys)).toEqual({
+                addedKeys: new Set(["a"]),
+                removedKeys: new Set(["c"]),
+                sameKeys: new Set(["b"]),
+            });
+            expect(newKeys).toEqual(new Set(["a", "b"]));
+            expect(oldKeys).toEqual(new Set(["b", "c"]));
+        });
     });
     it("should work as in the example for the readme", function () {
         const newKeys = Object.keys({ a: 1, b: 2 });
