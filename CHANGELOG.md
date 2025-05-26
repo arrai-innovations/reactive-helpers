@@ -8,15 +8,15 @@ _Actions potentially required by implementers are marked with italics._
 
 > Massive refactor and cleanup of the list and object framework internals.
 
-- Pagination is now manual  implement using `pushObjects()` / `clearObjects()` in your CRUD adapter.
+- Pagination is now manual - implement using `pushObjects()` / `clearObjects()` in your CRUD adapter.
 
-- All internal tracking now uses computed state + `stop()`  no more `watchesRunning`, `effectScope`, or mutating internal flags.
+- All internal tracking now uses computed state + `stop()` - no more `watchesRunning`, `effectScope`, or mutating internal flags.
 
-- CRUD adapter signatures changed  `list()` and `subscribe()` now receive a structured config object.
+- CRUD adapter signatures changed - `list()` and `subscribe()` now receive a structured config object.
 
-- All list and object utilities (`sort`, `filter`, `search`, `retrieve`, `subscribe`, etc.) are reactive-by-default  all support teardown via `stop()`.
+- All list and object utilities (`sort`, `filter`, `search`, `retrieve`, `subscribe`, etc.) are reactive-by-default - all support teardown via `stop()`.
 
-- Loading and error state is now modular and composable  `useLoading`, `useError`, `useProxyLoadingError`, etc.
+- Loading and error state is now modular and composable - `useLoading`, `useError`, `useProxyLoadingError`, etc.
 
 - Object CRUD internals (`useObjectInstance`, `useObject`) now support `{ runId, isCurrentRun }` for race-safe tracking, and fully integrate cancellable logic with `useCancellableIntent`.
 
