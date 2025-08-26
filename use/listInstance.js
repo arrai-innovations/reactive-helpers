@@ -349,6 +349,8 @@ export function useListInstance({ props, handlers = {} }) {
         },
         pkKey: refIfReactive(props, "pkKey"),
         params: refIfReactive(props, "params", {}),
+        paginateInfo: shallowReactive({}),
+        columnTotals: shallowReactive({}),
         objectsMap: _objectsMapProxy,
         // /** @type {{[key: string]: import('../use/objectInstance.js').ExistingCrudObject}} */
         // objects: /** @type {{[key: string]: import('../use/objectInstance.js').ExistingCrudObject}} */ _objectsProxy,
@@ -375,6 +377,12 @@ export function useListInstance({ props, handlers = {} }) {
     /** @type {ListInstance} */
     const self = {
         state,
+        setPaginateInfo: (info) => {
+            assignReactiveObject(state.paginateInfo, info || {});
+        },
+        setColumnTotals: (total) => {
+            assignReactiveObject(state.columnTotals, total || {});
+        },
         list: (args) => {
             const { runId, isCurrentRun } = args || {};
             // this function cannot be async, or the resulting promise will lose its .cancel() method
@@ -397,6 +405,8 @@ export function useListInstance({ props, handlers = {} }) {
                     pushObjects: self.pushObjects,
                     clearObjects: self.clearList,
                     isCancelled: readonly(isCancelled),
+                    setPaginateInfo: self.setPaginateInfo,
+                    setColumnTotals: self.setColumnTotals,
                 };
                 if (runId) {
                     listCrudArgs.runId = runId;
