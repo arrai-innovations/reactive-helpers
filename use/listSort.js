@@ -179,7 +179,9 @@ export function useListSort({ parentState, orderByRules, sortThrottleWait = defa
 
     const internalState = reactive({
         orderByRules,
-        orderByDesc: computed(() => internalState.orderByRules.map((r) => r.desc || false)),
+        orderByDesc: computed(() =>
+            internalState.orderByRules ? internalState.orderByRules.map((r) => r.desc || false) : []
+        ),
     });
 
     const criteriaMap = reactive({});
@@ -196,7 +198,7 @@ export function useListSort({ parentState, orderByRules, sortThrottleWait = defa
                     return [];
                 }
                 return internalState.orderByRules
-                    .filter((r) => r && r.key)
+                    ?.filter((r) => r && r.key)
                     .map((r) => {
                         if (!r) {
                             return undefined;
@@ -237,7 +239,7 @@ export function useListSort({ parentState, orderByRules, sortThrottleWait = defa
 
     const rawOrder = computed(() => {
         const arr = [...unref(toRef(parentState, "order"))];
-        const rulesArr = internalState.orderByRules.filter(identity);
+        const rulesArr = internalState.orderByRules?.filter(identity) || [];
         return arr.sort((a, b) => {
             const aCrit = criteriaMap[a].crit ?? [];
             const bCrit = criteriaMap[b].crit ?? [];
