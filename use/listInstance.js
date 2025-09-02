@@ -88,6 +88,18 @@ export class ListInstanceError extends Error {
  */
 
 /**
+ * @typedef {object} PaginateInfo
+ * @property {number} [totalRecords] - The total records.
+ * @property {number} [totalPages] - The total pages.
+ * @property {number} [perPage] - The per page.
+ * @property {number} [page] - The page you are giving us results for.
+ */
+
+/**
+ * @typedef {{ [key: string]: string }} ColumnTotals
+ */
+
+/**
  * The raw state object for the list instance, defining the reactive properties and their types.
  *
  * @typedef {object} ListInstanceRawMyState
@@ -98,6 +110,8 @@ export class ListInstanceError extends Error {
  * @property {ObjectsByPk} objects - The list objects stored by their pks.
  * @property {ListOrder} order - The order of objects in the list.
  * @property {ObjectsInOrder} objectsInOrder - The objects in the order specified by the list.
+ * @property {import('vue').ShallowReactive<PaginateInfo>} paginateInfo - Pagination information for the list.
+ * @property {import('vue').ShallowReactive<ColumnTotals>} columnTotals - Column totals for the list.
  */
 
 /**
@@ -119,6 +133,14 @@ export class ListInstanceError extends Error {
  */
 
 /**
+ * @typedef {(info: PaginateInfo) => void} SetPaginateInfoFn
+ */
+
+/**
+ * @typedef {(total: ColumnTotals) => void} SetColumnTotalsFn
+ */
+
+/**
  * Defines the methods provided by the list instance for managing objects in the list.
  *
  * @typedef {object} ListInstanceMyFunctions
@@ -131,6 +153,8 @@ export class ListInstanceError extends Error {
  * @property {() => import('../utils/cancellablePromise.js').MaybeCancellablePromise<boolean|never>} list - Initiates a fetch to retrieve objects according to the CRUD configuration, returning a promise to a boolean indicating success.
  * @property {(args: {pks?: string[]}) => Promise<boolean>} bulkDelete - Deletes objects from the list by pk, returning a promise to a boolean indicating success.
  * @property {() => Promise<object|string|false>} executeAction - Initiates an action on all objects in the list, returning the response, or false if the action failed.
+ * @property {(info: PaginateInfo) => void} setPaginateInfo - The method to update pagination information.
+ * @property {(total: ColumnTotals) => void} setColumnTotals - The method to update column totals.
  */
 
 /**

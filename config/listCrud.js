@@ -9,21 +9,16 @@ import { readonly } from "vue";
  */
 
 /**
- * @typedef {object} PaginateInfo
- * @property {number} [totalRecords] - The total records.
- * @property {number} [totalPages] - The total pages.
- * @property {number} [perPage] - The per page.
- * @property {number} [page] - The page you are giving us results for.
- */
-
-/**
- * @typedef {{ [key: string]: string }} ColumnTotals
- */
-
-/**
  * @typedef {import("../use/listInstance.js").ClearListFn} ClearObjectsFn
  */
 
+/**
+ * @typedef {import("../use/listInstance.js").SetPaginateInfoFn} SetPaginateInfo
+ */
+
+/**
+ * @typedef {import("../use/listInstance.js").SetColumnTotalsFn} SetColumnTotals
+ */
 /**
  * @typedef {object} ListArgsRaw
  * @property {import('../config/objectCrud.js').TargetArgs} target - The arguments to be passed to the crud handlers.
@@ -33,8 +28,8 @@ import { readonly } from "vue";
  * @property {ClearObjectsFn} clearObjects - The method to call to clear the objects.
  * @property {Readonly<import('vue').Ref<boolean>>} isCancelled - A ref to a boolean indicating whether the request has
  *  been cancelled.
- * @property {(info: PaginateInfo) => void} setPaginateInfo - The method to update pagination information.
- * @property {(total: ColumnTotals) => void} setColumnTotals - The method to update column totals.
+ * @property {SetPaginateInfo} setPaginateInfo - The method to update pagination information.
+ * @property {SetColumnTotals} setColumnTotals - The method to update column totals.
  */
 
 /**
