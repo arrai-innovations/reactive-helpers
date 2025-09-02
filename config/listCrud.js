@@ -17,6 +17,10 @@ import { readonly } from "vue";
  */
 
 /**
+ * @typedef {{ [key: string]: string }} ColumnTotals
+ */
+
+/**
  * @typedef {import("../use/listInstance.js").ClearListFn} ClearObjectsFn
  */
 
@@ -29,6 +33,8 @@ import { readonly } from "vue";
  * @property {ClearObjectsFn} clearObjects - The method to call to clear the objects.
  * @property {Readonly<import('vue').Ref<boolean>>} isCancelled - A ref to a boolean indicating whether the request has
  *  been cancelled.
+ * @property {(info: PaginateInfo) => void} setPaginateInfo - The method to update pagination information.
+ * @property {(totals: ColumnTotals) => void} setColumnTotals - The method to update column totals.
  */
 
 /**
