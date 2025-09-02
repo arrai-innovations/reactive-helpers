@@ -34,7 +34,7 @@ import { readonly } from "vue";
  * @property {Readonly<import('vue').Ref<boolean>>} isCancelled - A ref to a boolean indicating whether the request has
  *  been cancelled.
  * @property {(info: PaginateInfo) => void} setPaginateInfo - The method to update pagination information.
- * @property {(totals: ColumnTotals) => void} setColumnTotals - The method to update column totals.
+ * @property {(total: ColumnTotals) => void} setColumnTotals - The method to update column totals.
  */
 
 /**

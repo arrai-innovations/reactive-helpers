@@ -538,6 +538,8 @@ export function useListInstance({ props, handlers = {} }) {
         },
         clearList: () => {
             // assignReactiveObject(state.objects, {});
+            assignReactiveObject(state.paginateInfo, {});
+            assignReactiveObject(state.columnTotals, {});
             state.objectsMap.clear();
             loadingError.clearError();
         },
