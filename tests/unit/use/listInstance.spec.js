@@ -181,6 +181,8 @@ describe("use/listInstance.spec.js", function () {
                 pushObjects: passedPushObjects,
                 isCancelled: expect.any(Object),
                 clearObjects: expect.any(Function),
+                setPaginateInfo: expect.any(Function),
+                setColumnTotals: expect.any(Function),
             });
             expect(globalList).toHaveBeenCalledTimes(1);
         });
@@ -231,6 +233,8 @@ describe("use/listInstance.spec.js", function () {
                 pushObjects: passedPushObjects,
                 isCancelled: expect.anything(),
                 clearObjects: expect.any(Function),
+                setPaginateInfo: expect.any(Function),
+                setColumnTotals: expect.any(Function),
             });
             expect(isRef(globalList.mock.calls[0][0].isCancelled)).toBe(true);
             expect(unref(globalList.mock.calls[0][0].isCancelled)).toBe(false);
@@ -260,6 +264,8 @@ describe("use/listInstance.spec.js", function () {
                 pushObjects: expect.any(Function),
                 isCancelled: expect.any(Object), // ref
                 clearObjects: expect.any(Function),
+                setPaginateInfo: expect.any(Function),
+                setColumnTotals: expect.any(Function),
             });
             expect(globalList).toHaveBeenCalledTimes(1);
             expect(listInstance.state.error).toBeNullError();
@@ -351,6 +357,8 @@ describe("use/listInstance.spec.js", function () {
                 pushObjects: passedPushObjects,
                 isCancelled: expect.any(Object), // ref
                 clearObjects: expect.any(Function),
+                setPaginateInfo: expect.any(Function),
+                setColumnTotals: expect.any(Function),
             });
             expect(globalList).toHaveBeenCalledTimes(1);
         });
@@ -418,6 +426,8 @@ describe("use/listInstance.spec.js", function () {
                 pushObjects: passedPushObjects,
                 isCancelled: expect.any(Object), // ref
                 clearObjects: expect.any(Function),
+                setPaginateInfo: expect.any(Function),
+                setColumnTotals: expect.any(Function),
             });
             expect(globalList).toHaveBeenCalledTimes(1);
         });
@@ -465,6 +475,8 @@ describe("use/listInstance.spec.js", function () {
                 pushObjects: passedPushObjects,
                 isCancelled: expect.any(Object), // ref
                 clearObjects: expect.any(Function),
+                setPaginateInfo: expect.any(Function),
+                setColumnTotals: expect.any(Function),
             });
             expect(globalList).toHaveBeenCalledTimes(1);
 
