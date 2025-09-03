@@ -108,6 +108,12 @@ The `CancellableIntent` instance managing if the list should be (re)fetched.
 
 The reactive state of the list subscription.
 
+###### columnTotals
+
+> **columnTotals**: `ShallowReactive`\<[`ColumnTotals`](listInstance.md#columntotals-1)\>
+
+Column totals for the list.
+
 ###### crud
 
 > **crud**: `object`
@@ -197,6 +203,12 @@ The map of objects stored by their pks.
 > **order**: `string`[]
 
 The order of objects in the list.
+
+###### paginateInfo
+
+> **paginateInfo**: `ShallowReactive`\<[`PaginateInfo`](listInstance.md#paginateinfo-1)\>
+
+Pagination information for the list.
 
 ###### params
 

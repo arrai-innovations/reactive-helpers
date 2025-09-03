@@ -163,6 +163,38 @@ Initiates a fetch to retrieve objects according to the CRUD configuration, retur
 
 Customizable callback for handling new objects per page.
 
+##### setColumnTotals()
+
+> **setColumnTotals**: (`total`) => `void`
+
+The method to update column totals.
+
+###### Parameters
+
+###### total
+
+[`ColumnTotals`](listInstance.md#columntotals-1)
+
+###### Returns
+
+`void`
+
+##### setPaginateInfo()
+
+> **setPaginateInfo**: (`info`) => `void`
+
+The method to update pagination information.
+
+###### Parameters
+
+###### info
+
+[`PaginateInfo`](listInstance.md#paginateinfo-1)
+
+###### Returns
+
+`void`
+
 ##### updateListObject()
 
 > **updateListObject**: (`object`) => `void`
@@ -273,6 +305,12 @@ Implementation specific arguments.
 
 #### Properties
 
+##### columnTotals
+
+> **columnTotals**: `ShallowReactive`\<[`ColumnTotals`](listInstance.md#columntotals-1)\>
+
+Column totals for the list.
+
 ##### crud
 
 > **crud**: `object`
@@ -333,6 +371,12 @@ The map of objects stored by their pks.
 
 The order of objects in the list.
 
+##### paginateInfo
+
+> **paginateInfo**: `ShallowReactive`\<[`PaginateInfo`](listInstance.md#paginateinfo-1)\>
+
+Pagination information for the list.
+
 ##### params
 
 > **params**: `any`
@@ -381,7 +425,49 @@ The list function.
 
 The subscribe function.
 
+***
+
+### PaginateInfo
+
+#### Properties
+
+##### page?
+
+> `optional` **page**: `number`
+
+The page you are giving us results for.
+
+##### perPage?
+
+> `optional` **perPage**: `number`
+
+The per page.
+
+##### totalPages?
+
+> `optional` **totalPages**: `number`
+
+The total pages.
+
+##### totalRecords?
+
+> `optional` **totalRecords**: `number`
+
+The total records.
+
 ## Type Aliases
+
+### ColumnTotals
+
+> **ColumnTotals**\<\>: `object`
+
+#### Type Parameters
+
+#### Index Signature
+
+\[`key`: `string`\]: `string`
+
+***
 
 ### ListInstance
 
@@ -578,3 +664,11 @@ An object of list instances.
 ### ClearListFn
 
 Renames and re-exports [ClearObjectsFn](../config/listCrud.md#clearobjectsfn)
+
+### SetColumnTotalsFn
+
+Renames and re-exports [SetColumnTotals](../config/listCrud.md#setcolumntotals-1)
+
+### SetPaginateInfoFn
+
+Renames and re-exports [SetPaginateInfo](../config/listCrud.md#setpaginateinfo-1)

@@ -90,6 +90,12 @@ Whether the calculated objects watch is running.
 
 Whether the calculated properties are running.
 
+###### columnTotals
+
+> **columnTotals**: `ShallowReactive`\<[`ColumnTotals`](listInstance.md#columntotals-1)\>
+
+Column totals for the list.
+
 ###### crud
 
 > **crud**: `object`
@@ -205,6 +211,12 @@ The map of objects stored by their pks.
 > **order**: `string`[]
 
 The order of objects in the list.
+
+###### paginateInfo
+
+> **paginateInfo**: `ShallowReactive`\<[`PaginateInfo`](listInstance.md#paginateinfo-1)\>
+
+Pagination information for the list.
 
 ###### params
 
@@ -364,6 +376,12 @@ Whether the calculated objects watch is running.
 
 Whether the calculated properties are running.
 
+###### columnTotals
+
+> **columnTotals**: `ShallowReactive`\<[`ColumnTotals`](listInstance.md#columntotals-1)\>
+
+Column totals for the list.
+
 ###### crud
 
 > **crud**: `object`
@@ -497,6 +515,12 @@ The map of objects stored by their pks.
 > **order**: `string`[]
 
 The current sort order of object pks after search have been applied.
+
+###### paginateInfo
+
+> **paginateInfo**: `ShallowReactive`\<[`PaginateInfo`](listInstance.md#paginateinfo-1)\>
+
+Pagination information for the list.
 
 ###### params
 
