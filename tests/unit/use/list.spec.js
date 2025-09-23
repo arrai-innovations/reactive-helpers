@@ -67,6 +67,7 @@ describe("use/list.js", () => {
             deleteListObject: vi.fn(),
             executeAction: vi.fn(),
             clearList: vi.fn(),
+            cleanOldObjects: vi.fn(),
             clearError: vi.fn(),
             getFakePk: vi.fn(),
         };
@@ -161,6 +162,7 @@ describe("use/list.js", () => {
         expect(list.deleteListObject).toBe(fakeInstance.deleteListObject);
         expect(list.executeAction).toBe(fakeInstance.executeAction);
         expect(list.clearList).toBe(fakeInstance.clearList);
+        expect(list.cleanOldObjects).toBe(fakeInstance.cleanOldObjects);
         expect(list.getFakePk).toBe(fakeInstance.getFakePk);
 
         expect(typeof list.clearError).toBe("function");

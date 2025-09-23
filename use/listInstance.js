@@ -129,7 +129,7 @@ export class ListInstanceError extends Error {
  */
 
 /**
- * @typedef {() => void} ClearListFn
+ * @typedef {() => void} CleanOldObjectsFn
  */
 
 /**
@@ -148,7 +148,8 @@ export class ListInstanceError extends Error {
  * @property {(object: import('../use/objectInstance.js').ExistingCrudObject) => void} addListObject - Adds an object to the list.
  * @property {(object: import('../use/objectInstance.js').ExistingCrudObject) => void} updateListObject - Updates an object in the list.
  * @property {(objectId: string) => void} deleteListObject - Deletes an object from the list by pk.
- * @property {() => void} clearList - Clears all objects and errors from the list.
+ * @property {() => void} clearList - Clears all objects and errors from the list, resetting the list completely.
+ * @property {() => void} cleanOldObjects - Clears all objects and errors from the list but preserves `columnsTotal` and `paginateInfo`.
  * @property {() => string} getFakePk - Generates a unique fake pk for use within the list.
  * @property {() => import('../utils/cancellablePromise.js').MaybeCancellablePromise<boolean|never>} list - Initiates a fetch to retrieve objects according to the CRUD configuration, returning a promise to a boolean indicating success.
  * @property {(args: {pks?: string[]}) => Promise<boolean>} bulkDelete - Deletes objects from the list by pk, returning a promise to a boolean indicating success.
@@ -428,6 +429,7 @@ export function useListInstance({ props, handlers = {} }) {
                     params: state.params,
                     pushObjects: self.pushObjects,
                     clearObjects: self.clearList,
+                    cleanOldObjects: self.cleanOldObjects,
                     isCancelled: readonly(isCancelled),
                     setPaginateInfo: self.setPaginateInfo,
                     setColumnTotals: self.setColumnTotals,
@@ -559,6 +561,10 @@ export function useListInstance({ props, handlers = {} }) {
                 );
             }
             delete state.objects[pk];
+        },
+        cleanOldObjects: () => {
+            state.objectsMap.clear();
+            loadingError.clearError();
         },
         clearList: () => {
             // assignReactiveObject(state.objects, {});
