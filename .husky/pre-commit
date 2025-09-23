@@ -2,3 +2,4 @@
 
 npx --no-install lint-staged
 npm run docs
+npm run docs:check
