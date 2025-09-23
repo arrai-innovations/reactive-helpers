@@ -9,25 +9,9 @@ export function getListCrud(target: import("vue").UnwrapNestedRefs<ListCrudHandl
     props?: import("vue").UnwrapNestedRefs<ListTargetOption>;
     handlers?: ListCrudHandlers;
 }): void;
-export type PaginateInfo = {
-    /**
-     * - The total records.
-     */
-    totalRecords?: number;
-    /**
-     * - The total pages.
-     */
-    totalPages?: number;
-    /**
-     * - The per page.
-     */
-    perPage?: number;
-    /**
-     * - The page you are giving us results for.
-     */
-    page?: number;
-};
 export type ClearObjectsFn = import("../use/listInstance.js").ClearListFn;
+export type SetPaginateInfo = import("../use/listInstance.js").SetPaginateInfoFn;
+export type SetColumnTotals = import("../use/listInstance.js").SetColumnTotalsFn;
 export type ListArgsRaw = {
     /**
      * - The arguments to be passed to the crud handlers.
@@ -54,6 +38,14 @@ export type ListArgsRaw = {
      * been cancelled.
      */
     isCancelled: Readonly<import("vue").Ref<boolean>>;
+    /**
+     * - The method to update pagination information.
+     */
+    setPaginateInfo: SetPaginateInfo;
+    /**
+     * - The method to update column totals.
+     */
+    setColumnTotals: SetColumnTotals;
 };
 export type ListArgs = ListArgsRaw & Partial<import("../use/cancellableIntent.js").CommonRunTracking>;
 export type BulkDeleteArgs = {

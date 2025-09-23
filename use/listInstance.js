@@ -88,6 +88,18 @@ export class ListInstanceError extends Error {
  */
 
 /**
+ * @typedef {object} PaginateInfo
+ * @property {number} [totalRecords] - The total records.
+ * @property {number} [totalPages] - The total pages.
+ * @property {number} [perPage] - The per page.
+ * @property {number} [page] - The page you are giving us results for.
+ */
+
+/**
+ * @typedef {{ [key: string]: number | string }} ColumnTotals
+ */
+
+/**
  * The raw state object for the list instance, defining the reactive properties and their types.
  *
  * @typedef {object} ListInstanceRawMyState
@@ -98,6 +110,8 @@ export class ListInstanceError extends Error {
  * @property {ObjectsByPk} objects - The list objects stored by their pks.
  * @property {ListOrder} order - The order of objects in the list.
  * @property {ObjectsInOrder} objectsInOrder - The objects in the order specified by the list.
+ * @property {import('vue').ShallowReactive<PaginateInfo>} paginateInfo - Pagination information for the list.
+ * @property {import('vue').ShallowReactive<ColumnTotals>} columnTotals - Column totals for the list.
  */
 
 /**
@@ -119,6 +133,14 @@ export class ListInstanceError extends Error {
  */
 
 /**
+ * @typedef {(info: PaginateInfo) => void} SetPaginateInfoFn
+ */
+
+/**
+ * @typedef {(total: ColumnTotals) => void} SetColumnTotalsFn
+ */
+
+/**
  * Defines the methods provided by the list instance for managing objects in the list.
  *
  * @typedef {object} ListInstanceMyFunctions
@@ -131,6 +153,8 @@ export class ListInstanceError extends Error {
  * @property {() => import('../utils/cancellablePromise.js').MaybeCancellablePromise<boolean|never>} list - Initiates a fetch to retrieve objects according to the CRUD configuration, returning a promise to a boolean indicating success.
  * @property {(args: {pks?: string[]}) => Promise<boolean>} bulkDelete - Deletes objects from the list by pk, returning a promise to a boolean indicating success.
  * @property {() => Promise<object|string|false>} executeAction - Initiates an action on all objects in the list, returning the response, or false if the action failed.
+ * @property {(info: PaginateInfo) => void} setPaginateInfo - The method to update pagination information.
+ * @property {(total: ColumnTotals) => void} setColumnTotals - The method to update column totals.
  */
 
 /**
@@ -349,6 +373,8 @@ export function useListInstance({ props, handlers = {} }) {
         },
         pkKey: refIfReactive(props, "pkKey"),
         params: refIfReactive(props, "params", {}),
+        paginateInfo: shallowReactive({}),
+        columnTotals: shallowReactive({}),
         objectsMap: _objectsMapProxy,
         // /** @type {{[key: string]: import('../use/objectInstance.js').ExistingCrudObject}} */
         // objects: /** @type {{[key: string]: import('../use/objectInstance.js').ExistingCrudObject}} */ _objectsProxy,
@@ -375,6 +401,12 @@ export function useListInstance({ props, handlers = {} }) {
     /** @type {ListInstance} */
     const self = {
         state,
+        setPaginateInfo: (info) => {
+            assignReactiveObject(state.paginateInfo, info || {});
+        },
+        setColumnTotals: (total) => {
+            assignReactiveObject(state.columnTotals, total || {});
+        },
         list: (args) => {
             const { runId, isCurrentRun } = args || {};
             // this function cannot be async, or the resulting promise will lose its .cancel() method
@@ -397,6 +429,8 @@ export function useListInstance({ props, handlers = {} }) {
                     pushObjects: self.pushObjects,
                     clearObjects: self.clearList,
                     isCancelled: readonly(isCancelled),
+                    setPaginateInfo: self.setPaginateInfo,
+                    setColumnTotals: self.setColumnTotals,
                 };
                 if (runId) {
                     listCrudArgs.runId = runId;
@@ -528,6 +562,8 @@ export function useListInstance({ props, handlers = {} }) {
         },
         clearList: () => {
             // assignReactiveObject(state.objects, {});
+            assignReactiveObject(state.paginateInfo, {});
+            assignReactiveObject(state.columnTotals, {});
             state.objectsMap.clear();
             loadingError.clearError();
         },

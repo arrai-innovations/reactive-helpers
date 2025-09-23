@@ -18,6 +18,12 @@
 
 The parent state object.
 
+###### columnTotals
+
+> **columnTotals**: `ShallowReactive`\<[`ColumnTotals`](listInstance.md#columntotals-1)\>
+
+Column totals for the list.
+
 ###### crud
 
 > **crud**: `object`
@@ -107,6 +113,12 @@ The map of objects stored by their pks.
 > **order**: `string`[]
 
 The order of objects in the list.
+
+###### paginateInfo
+
+> **paginateInfo**: `ShallowReactive`\<[`PaginateInfo`](listInstance.md#paginateinfo-1)\>
+
+Pagination information for the list.
 
 ###### params
 
@@ -144,6 +156,12 @@ The rules for the related objects.
 
 The parent state object.
 
+###### columnTotals
+
+> **columnTotals**: `ShallowReactive`\<[`ColumnTotals`](listInstance.md#columntotals-1)\>
+
+Column totals for the list.
+
 ###### crud
 
 > **crud**: `object`
@@ -234,6 +252,12 @@ The map of objects stored by their pks.
 
 The order of objects in the list.
 
+###### paginateInfo
+
+> **paginateInfo**: `ShallowReactive`\<[`PaginateInfo`](listInstance.md#paginateinfo-1)\>
+
+Pagination information for the list.
+
 ###### params
 
 > **params**: `any`
@@ -257,6 +281,12 @@ Whether the subscription is active.
 > **state**: `object`
 
 The state for the list related property.
+
+###### columnTotals
+
+> **columnTotals**: `ShallowReactive`\<[`ColumnTotals`](listInstance.md#columntotals-1)\>
+
+Column totals for the list.
 
 ###### crud
 
@@ -367,6 +397,12 @@ The map of objects stored by their pks.
 > **order**: `string`[]
 
 The order of objects in the list.
+
+###### paginateInfo
+
+> **paginateInfo**: `ShallowReactive`\<[`PaginateInfo`](listInstance.md#paginateinfo-1)\>
+
+Pagination information for the list.
 
 ###### params
 

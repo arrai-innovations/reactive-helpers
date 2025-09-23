@@ -97,6 +97,18 @@ The key name of the primary key.
 
 The method to call with new page(s) of data received.
 
+##### setColumnTotals
+
+> **setColumnTotals**: [`SetColumnTotals`](listCrud.md#setcolumntotals-1)
+
+The method to update column totals.
+
+##### setPaginateInfo
+
+> **setPaginateInfo**: [`SetPaginateInfo`](listCrud.md#setpaginateinfo-1)
+
+The method to update pagination information.
+
 ##### target
 
 > **target**: [`TargetArgs`](objectCrud.md#targetargs)
@@ -193,36 +205,6 @@ The default arguments for the crud handlers.
 > `optional` **target**: `any`
 
 The default arguments for the crud handlers.
-
-***
-
-### PaginateInfo
-
-#### Properties
-
-##### page?
-
-> `optional` **page**: `number`
-
-The page you are giving us results for.
-
-##### perPage?
-
-> `optional` **perPage**: `number`
-
-The per page.
-
-##### totalPages?
-
-> `optional` **totalPages**: `number`
-
-The total pages.
-
-##### totalRecords?
-
-> `optional` **totalRecords**: `number`
-
-The total records.
 
 ## Type Aliases
 
@@ -353,6 +335,42 @@ The arguments to be passed to the crud handlers.
 > **ListSubscribeArgs**\<\>: [`ListSubscribeArgsRaw`](listCrud.md#listsubscribeargsraw) & `Partial`\<[`CommonRunTracking`](../use/cancellableIntent.md#commonruntracking)\>
 
 #### Type Parameters
+
+***
+
+### SetColumnTotals()
+
+> **SetColumnTotals**\<\>: (`total`) => `void`
+
+#### Type Parameters
+
+#### Parameters
+
+##### total
+
+[`ColumnTotals`](../use/listInstance.md#columntotals-1)
+
+#### Returns
+
+`void`
+
+***
+
+### SetPaginateInfo()
+
+> **SetPaginateInfo**\<\>: (`info`) => `void`
+
+#### Type Parameters
+
+#### Parameters
+
+##### info
+
+[`PaginateInfo`](../use/listInstance.md#paginateinfo-1)
+
+#### Returns
+
+`void`
 
 ## Variables
 

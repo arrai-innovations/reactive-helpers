@@ -48,6 +48,16 @@
  * @typedef {Map<string, import('vue').Reactive<import('../use/objectInstance.js').ExistingCrudObject>>} ObjectsMap
  */
 /**
+ * @typedef {object} PaginateInfo
+ * @property {number} [totalRecords] - The total records.
+ * @property {number} [totalPages] - The total pages.
+ * @property {number} [perPage] - The per page.
+ * @property {number} [page] - The page you are giving us results for.
+ */
+/**
+ * @typedef {{ [key: string]: number | string }} ColumnTotals
+ */
+/**
  * The raw state object for the list instance, defining the reactive properties and their types.
  *
  * @typedef {object} ListInstanceRawMyState
@@ -58,6 +68,8 @@
  * @property {ObjectsByPk} objects - The list objects stored by their pks.
  * @property {ListOrder} order - The order of objects in the list.
  * @property {ObjectsInOrder} objectsInOrder - The objects in the order specified by the list.
+ * @property {import('vue').ShallowReactive<PaginateInfo>} paginateInfo - Pagination information for the list.
+ * @property {import('vue').ShallowReactive<ColumnTotals>} columnTotals - Column totals for the list.
  */
 /**
  * @typedef {ListInstanceRawMyState & Pick<import('./loadingError.js').LoadingErrorStatus, "loading" | "error" | "errored">} ListInstanceRawState
@@ -74,6 +86,12 @@
  * @typedef {() => void} ClearListFn
  */
 /**
+ * @typedef {(info: PaginateInfo) => void} SetPaginateInfoFn
+ */
+/**
+ * @typedef {(total: ColumnTotals) => void} SetColumnTotalsFn
+ */
+/**
  * Defines the methods provided by the list instance for managing objects in the list.
  *
  * @typedef {object} ListInstanceMyFunctions
@@ -86,6 +104,8 @@
  * @property {() => import('../utils/cancellablePromise.js').MaybeCancellablePromise<boolean|never>} list - Initiates a fetch to retrieve objects according to the CRUD configuration, returning a promise to a boolean indicating success.
  * @property {(args: {pks?: string[]}) => Promise<boolean>} bulkDelete - Deletes objects from the list by pk, returning a promise to a boolean indicating success.
  * @property {() => Promise<object|string|false>} executeAction - Initiates an action on all objects in the list, returning the response, or false if the action failed.
+ * @property {(info: PaginateInfo) => void} setPaginateInfo - The method to update pagination information.
+ * @property {(total: ColumnTotals) => void} setColumnTotals - The method to update column totals.
  */
 /**
  * @typedef {ListInstanceMyFunctions & Pick<import('./loadingError.js').LoadingErrorStatus, "clearError">} ListInstanceFunctions
@@ -255,6 +275,27 @@ export type ListInstanceRawStateCrud = {
     executeAction: import("../config/listCrud.js").CrudExecuteActionFn;
 };
 export type ObjectsMap = Map<string, import("vue").Reactive<import("../use/objectInstance.js").ExistingCrudObject>>;
+export type PaginateInfo = {
+    /**
+     * - The total records.
+     */
+    totalRecords?: number;
+    /**
+     * - The total pages.
+     */
+    totalPages?: number;
+    /**
+     * - The per page.
+     */
+    perPage?: number;
+    /**
+     * - The page you are giving us results for.
+     */
+    page?: number;
+};
+export type ColumnTotals = {
+    [key: string]: number | string;
+};
 /**
  * The raw state object for the list instance, defining the reactive properties and their types.
  */
@@ -287,6 +328,14 @@ export type ListInstanceRawMyState = {
      * - The objects in the order specified by the list.
      */
     objectsInOrder: ObjectsInOrder;
+    /**
+     * - Pagination information for the list.
+     */
+    paginateInfo: import("vue").ShallowReactive<PaginateInfo>;
+    /**
+     * - Column totals for the list.
+     */
+    columnTotals: import("vue").ShallowReactive<ColumnTotals>;
 };
 export type ListInstanceRawState = ListInstanceRawMyState & Pick<import("./loadingError.js").LoadingErrorStatus, "loading" | "error" | "errored">;
 /**
@@ -295,6 +344,8 @@ export type ListInstanceRawState = ListInstanceRawMyState & Pick<import("./loadi
 export type ListInstanceState = import("vue").UnwrapNestedRefs<ListInstanceRawState>;
 export type PushObjectsFn = (newObjects: import("../use/objectInstance.js").ExistingCrudObject[]) => void;
 export type ClearListFn = () => void;
+export type SetPaginateInfoFn = (info: PaginateInfo) => void;
+export type SetColumnTotalsFn = (total: ColumnTotals) => void;
 /**
  * Defines the methods provided by the list instance for managing objects in the list.
  */
@@ -337,6 +388,14 @@ export type ListInstanceMyFunctions = {
      * - Initiates an action on all objects in the list, returning the response, or false if the action failed.
      */
     executeAction: () => Promise<object | string | false>;
+    /**
+     * - The method to update pagination information.
+     */
+    setPaginateInfo: (info: PaginateInfo) => void;
+    /**
+     * - The method to update column totals.
+     */
+    setColumnTotals: (total: ColumnTotals) => void;
 };
 export type ListInstanceFunctions = ListInstanceMyFunctions & Pick<import("./loadingError.js").LoadingErrorStatus, "clearError">;
 /**

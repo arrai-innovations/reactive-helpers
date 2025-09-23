@@ -64,6 +64,12 @@ Whether the calculated objects watch is running.
 
 Whether the calculated properties are running.
 
+###### columnTotals
+
+> **columnTotals**: `ShallowReactive`\<[`ColumnTotals`](listInstance.md#columntotals-1)\>
+
+Column totals for the list.
+
 ###### crud
 
 > **crud**: `object`
@@ -197,6 +203,12 @@ The map of objects stored by their pks.
 > **order**: `string`[]
 
 The order of objects in the list.
+
+###### paginateInfo
+
+> **paginateInfo**: `ShallowReactive`\<[`PaginateInfo`](listInstance.md#paginateinfo-1)\>
+
+Pagination information for the list.
 
 ###### params
 
@@ -333,6 +345,12 @@ Whether the calculated objects watch is running.
 
 Whether the calculated properties are running.
 
+###### columnTotals
+
+> **columnTotals**: `ShallowReactive`\<[`ColumnTotals`](listInstance.md#columntotals-1)\>
+
+Column totals for the list.
+
 ###### crud
 
 > **crud**: `object`
@@ -467,6 +485,12 @@ The map of objects stored by their pks.
 
 The order of objects in the list.
 
+###### paginateInfo
+
+> **paginateInfo**: `ShallowReactive`\<[`PaginateInfo`](listInstance.md#paginateinfo-1)\>
+
+Pagination information for the list.
+
 ###### params
 
 > **params**: `any`
@@ -589,6 +613,12 @@ Whether the calculated objects watch is running.
 > `optional` **calculatedRunning**: `boolean`
 
 Whether the calculated properties are running.
+
+###### columnTotals
+
+> **columnTotals**: `ShallowReactive`\<[`ColumnTotals`](listInstance.md#columntotals-1)\>
+
+Column totals for the list.
 
 ###### crud
 
@@ -735,6 +765,12 @@ Flags indicating whether each sort criterion is in descending order.
 > **orderByRules**: `object`[]
 
 Current sorting rules applied to the list.
+
+###### paginateInfo
+
+> **paginateInfo**: `ShallowReactive`\<[`PaginateInfo`](listInstance.md#paginateinfo-1)\>
+
+Pagination information for the list.
 
 ###### params
 

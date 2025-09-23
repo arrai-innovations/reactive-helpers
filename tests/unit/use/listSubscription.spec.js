@@ -120,14 +120,16 @@ describe("use/listSubscription.spec.js", function () {
             });
             await poll(() => listSubscription.state.loading);
             expect(crudList).toHaveBeenCalledWith({
-                target: { stream: "test_stream" },
-                pkKey: "id",
-                params: { user: 1, fields },
-                pushObjects: expect.any(Function),
                 clearObjects: expect.any(Function),
                 isCancelled: expect.any(Object), // ref
-                runId: expect.any(Number),
                 isCurrentRun: expect.any(Function),
+                params: { user: 1, fields },
+                pkKey: "id",
+                pushObjects: expect.any(Function),
+                runId: expect.any(Number),
+                setPaginateInfo: expect.any(Function),
+                setColumnTotals: expect.any(Function),
+                target: { stream: "test_stream" },
             });
             expect(crudList).toHaveBeenCalledTimes(1);
             crudListResolvable[0].resolve();
