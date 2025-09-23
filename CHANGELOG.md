@@ -2,7 +2,13 @@
 
 _Actions potentially required by implementers are marked with italics._
 
-## v21.0.0 (2025-05-21)
+## v21.0.1 (2025-09-23)
+
+### Features
+
+- Added a new function`cleanOldObjects` which gets returned as part of the config object that returns to CRUD adapters: function to clear all list objects but still keeps paginationInfo and columnsTotal.
+
+## v21.0.0 (2025-09-23)
 
 ### TL;DR
 
