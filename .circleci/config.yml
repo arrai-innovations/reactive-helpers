@@ -124,3 +124,24 @@ workflows:
                       branches:
                           ignore:
                               - main
+    audit:
+        jobs:
+            - npm/audit_fixed_ip:
+                  name: audit
+                  context:
+                      - arrai-global
+                  skip_dev: false
+                  filters:
+                      branches:
+                          only:
+                              - main
+            - npm/audit:
+                  name: audit-no-badge
+                  context:
+                      - arrai-global
+                  skip_dev: false
+                  create_badges: false
+                  filters:
+                      branches:
+                          ignore:
+                              - main
