@@ -75,7 +75,7 @@ import { readonly } from "vue";
 /**
  * @callback CrudListFn
  * @param {ListArgs} args - The arguments to be passed to the crud handlers.
- * @returns {import('../utils/cancellablePromise.js').MaybeCancellablePromise<void>} - A promise that resolves to a boolean indicating success.
+ * @returns {import('../utils/cancellablePromise.js').MaybeCancellablePromise<void>} - A cancellable promise for the list request.
  */
 
 /**
@@ -87,7 +87,7 @@ import { readonly } from "vue";
 /**
  * @callback CrudListSubscribeFn
  * @param {ListSubscribeArgs} args - The arguments to be passed to the crud handlers.
- * @returns {import('../utils/cancellablePromise.js').CancellablePromise<void>} - A promise that resolves to a boolean indicating success.
+ * @returns {import('../utils/cancellablePromise.js').CancellablePromise<void>} - A cancellable promise for the subscription.
  */
 
 /**

@@ -96,7 +96,7 @@ export class ListInstanceError extends Error {
  */
 
 /**
- * @typedef {{ [key: string]: string }} ColumnTotals
+ * @typedef {{ [key: string]: number | string }} ColumnTotals
  */
 
 /**
