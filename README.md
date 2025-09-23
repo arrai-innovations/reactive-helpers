@@ -4,6 +4,7 @@
 [![Coverage for 14.x](https://docs.arrai-dev.com/reactive-helpers/artifacts/main/tests.coverage.svg)](https://docs.arrai-dev.com/reactive-helpers/artifacts/main/coverage_tests/)
 ![ESLint](https://docs.arrai-dev.com/reactive-helpers/artifacts/main/eslint.svg)
 ![Prettier](https://docs.arrai-dev.com/reactive-helpers/artifacts/main/prettier.svg)
+![Audit](https://docs.arrai.dev/reactive-helpers/artifacts/main/npm-audit.svg)
 
 Vue.js 3 composition utilities to manage reactive lists, objects and other helpers.
 
