@@ -216,4 +216,3 @@ export type ObjectCrudHandlers = {
  * The CRUD arguments.
  */
 export type ObjectTarget = ObjectTargetProperties & ObjectCrudHandlers;
-//# sourceMappingURL=objectCrud.d.ts.map

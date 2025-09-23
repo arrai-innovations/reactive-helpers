@@ -46,4 +46,3 @@ export type ErrorStatus = {
      */
     clearError: ClearErrorFn;
 };
-//# sourceMappingURL=error.d.ts.map

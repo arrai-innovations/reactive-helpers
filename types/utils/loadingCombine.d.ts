@@ -6,4 +6,3 @@
  * @returns {boolean | undefined} The combined loading state.
  */
 export function loadingCombine(...loadingStates: (boolean | undefined)[]): boolean | undefined;
-//# sourceMappingURL=loadingCombine.d.ts.map

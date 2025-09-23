@@ -201,4 +201,3 @@ export type ListSortProperties = {
  * The list sort instance, including reactive state and utilities to manage list sorting operations.
  */
 export type ListSort = ListSortProperties;
-//# sourceMappingURL=listSort.d.ts.map

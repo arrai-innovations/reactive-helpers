@@ -225,4 +225,3 @@ export type MyCancellableIntent = {
  * - The instance of the cancellable intent.
  */
 export type CancellableIntent = MyCancellableIntent & Pick<import("./error.js").ErrorStatus, "clearError">;
-//# sourceMappingURL=cancellableIntent.d.ts.map

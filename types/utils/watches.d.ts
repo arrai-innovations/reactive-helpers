@@ -152,4 +152,3 @@ export class AwaitNot {
      */
     stop(): void;
 }
-//# sourceMappingURL=watches.d.ts.map

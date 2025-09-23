@@ -9,4 +9,3 @@
  */
 export function cancellableFetch<T>(input: RequestInfo, init: RequestInit, transform: (response: Response) => Promise<T>): CancellablePromise<T>;
 import { CancellablePromise } from "./cancellablePromise.js";
-//# sourceMappingURL=cancellableFetch.d.ts.map

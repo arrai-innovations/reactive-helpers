@@ -6,4 +6,3 @@
  * @param {import("vue").Ref<boolean>} childRef - The ref to proxy to.
  */
 export function proxyRunning(parentState: import("vue").UnwrapNestedRefs<object>, parentStateProp: string, childRef: import("vue").Ref<boolean>): void;
-//# sourceMappingURL=proxyRunning.d.ts.map

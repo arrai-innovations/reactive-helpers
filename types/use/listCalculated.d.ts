@@ -247,4 +247,3 @@ export type ListCalculatedProperties = {
  * The instance of `useListCalculated`.
  */
 export type ListCalculated = ListCalculatedProperties;
-//# sourceMappingURL=listCalculated.d.ts.map

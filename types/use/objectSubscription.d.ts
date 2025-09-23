@@ -233,4 +233,3 @@ export type ObjectSubscriptionContext = {
      */
     retrieveIntent: import("./cancellableIntent.js").CancellableIntent;
 };
-//# sourceMappingURL=objectSubscription.d.ts.map

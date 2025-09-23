@@ -13,4 +13,3 @@ export function useProxyLoading(loadings: WatchableLoading[]): ReadonlyLoadingSt
 export type ReadonlyLoadingStatus = Pick<import("./loading.js").LoadingStatus, "loading">;
 export type RefLoadingStatus = import("vue").Ref<ReadonlyLoadingStatus>;
 export type WatchableLoading = ReadonlyLoadingStatus | RefLoadingStatus;
-//# sourceMappingURL=proxyLoading.d.ts.map

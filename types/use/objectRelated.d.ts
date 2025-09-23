@@ -256,4 +256,3 @@ export type ObjectRelatedRawState = {
 export type ObjectRelatedParentRawState = (import("./objectInstance.js").ObjectInstanceRawState & Partial<import("./objectSubscription.js").ObjectSubscriptionRawState>);
 export type ObjectRelatedParentState = import("vue").UnwrapNestedRefs<ObjectRelatedParentRawState>;
 export type ObjectRelatedState = import("vue").UnwrapNestedRefs<(ObjectRelatedParentRawState & ObjectRelatedRawState)>;
-//# sourceMappingURL=objectRelated.d.ts.map

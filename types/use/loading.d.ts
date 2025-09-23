@@ -35,4 +35,3 @@ export type LoadingStatus = {
      */
     clearLoading: () => void;
 };
-//# sourceMappingURL=loading.d.ts.map

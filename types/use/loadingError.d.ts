@@ -8,4 +8,3 @@
  */
 export function useLoadingError(): LoadingErrorStatus;
 export type LoadingErrorStatus = import("./loading.js").LoadingStatus & import("./error.js").ErrorStatus;
-//# sourceMappingURL=loadingError.d.ts.map

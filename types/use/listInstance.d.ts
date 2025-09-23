@@ -408,4 +408,3 @@ export type ListInstanceStateMixIn = {
  * The list instance, combining state management and functional operations for managing a list of objects.
  */
 export type ListInstance = ListInstanceStateMixIn & ListInstanceFunctions;
-//# sourceMappingURL=listInstance.d.ts.map

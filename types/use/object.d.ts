@@ -56,4 +56,3 @@ export type ObjectManagerProperties = {
     stop: () => void;
 };
 export type ObjectManager = ObjectManagerProperties & ObjectManagerFunctions;
-//# sourceMappingURL=object.d.ts.map

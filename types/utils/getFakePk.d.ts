@@ -10,4 +10,3 @@
  * @returns {string} - The fake pk.
  */
 export function getFakePk(arraySetMapOrObject: any[] | Set<any> | Map<any, any> | object, key?: string): string;
-//# sourceMappingURL=getFakePk.d.ts.map

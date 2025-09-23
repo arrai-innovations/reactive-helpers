@@ -139,4 +139,3 @@ export type ListTargetOption = {
      */
     target?: object;
 };
-//# sourceMappingURL=listCrud.d.ts.map

@@ -16,4 +16,3 @@ export function assignCrud(target: object, defaultCrud: object, { props, handler
 export function missingMethod(name: string): (...args: any[]) => import("../utils/cancellablePromise.js").MaybeCancellablePromise<any>;
 export function requiredCancelMissingMethod(name: string): ((..._args: any[]) => import("../utils/cancellablePromise.js").CancellablePromise<void>);
 export function createDefaultCrud(keys: string[], cancellableKeys?: Set<string>): object;
-//# sourceMappingURL=commonCrud.d.ts.map

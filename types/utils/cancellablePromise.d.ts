@@ -37,4 +37,3 @@ export namespace CancellablePromise {
 export type MaybeCancellablePromise<T> = Promise<T> & {
     cancel?: (reason?: any) => Promise<void> | void;
 };
-//# sourceMappingURL=cancellablePromise.d.ts.map

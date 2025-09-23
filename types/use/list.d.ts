@@ -147,4 +147,3 @@ export type ListManagerProperties = {
  * orchestrating various functionalities such as sorting, searching, filtering, and state management.
  */
 export type ListManager = ListFunctions & ListManagerProperties;
-//# sourceMappingURL=list.d.ts.map
