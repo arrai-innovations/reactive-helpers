@@ -465,7 +465,7 @@ The total records.
 
 #### Index Signature
 
-\[`key`: `string`\]: `string`
+\[`key`: `string`\]: `string` \| `number`
 
 ***
 

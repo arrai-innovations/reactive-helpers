@@ -55,7 +55,7 @@
  * @property {number} [page] - The page you are giving us results for.
  */
 /**
- * @typedef {{ [key: string]: string }} ColumnTotals
+ * @typedef {{ [key: string]: number | string }} ColumnTotals
  */
 /**
  * The raw state object for the list instance, defining the reactive properties and their types.
@@ -294,7 +294,7 @@ export type PaginateInfo = {
     page?: number;
 };
 export type ColumnTotals = {
-    [key: string]: string;
+    [key: string]: number | string;
 };
 /**
  * The raw state object for the list instance, defining the reactive properties and their types.
