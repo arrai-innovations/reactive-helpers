@@ -351,4 +351,3 @@ export type ObjectInstanceProperties = {
  * The instance of the object instance.
  */
 export type ObjectInstance = ObjectInstanceFunctions & ObjectInstanceProperties;
-//# sourceMappingURL=objectInstance.d.ts.map

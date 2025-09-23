@@ -11,4 +11,3 @@
 export function useProxyLoadingError(loadingErrors: WatchableLoadingError[]): ProxyLoadingError;
 export type WatchableLoadingError = import("./proxyLoading.js").WatchableLoading & import("./proxyError.js").WatchableError;
 export type ProxyLoadingError = import("./proxyLoading.js").ReadonlyLoadingStatus & import("./proxyError.js").ReadonlyErrorStatus;
-//# sourceMappingURL=proxyLoadingError.d.ts.map

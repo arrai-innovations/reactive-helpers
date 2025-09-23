@@ -20,4 +20,3 @@ export function flattenPaths(arrayOrObject: any[] | object, { currentPath, depth
     depth?: number;
     limit?: number;
 }): string[];
-//# sourceMappingURL=flattenPaths.d.ts.map

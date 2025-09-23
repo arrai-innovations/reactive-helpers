@@ -25,4 +25,3 @@ export type RefErrorStatus = import("vue").Ref<ReadonlyErrorStatus>;
 export type WatchableError = ReadonlyErrorStatus | RefErrorStatus;
 export type WatchableErrorRef = import("vue").Ref<WatchableError[]>;
 export type WatchableErrors = WatchableErrorRef | WatchableError[];
-//# sourceMappingURL=proxyError.d.ts.map

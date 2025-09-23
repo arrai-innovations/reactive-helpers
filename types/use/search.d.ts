@@ -141,4 +141,3 @@ export type SearchInstance = {
      */
     stop: Function;
 };
-//# sourceMappingURL=search.d.ts.map

@@ -50,4 +50,3 @@ export class CancellableResolvable<T> {
      */
     private _cancelResolve;
 }
-//# sourceMappingURL=crudPromise.d.ts.map

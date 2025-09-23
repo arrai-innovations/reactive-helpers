@@ -40,4 +40,3 @@ export function useCombineClasses(...classes: (CSSClasses)[]): import("vue").Ref
 export type CSSClasses = (string | string[] | {
     [key: string]: boolean | import("vue").Ref<boolean>;
 } | import("vue").Ref<string | string[]>);
-//# sourceMappingURL=combineClasses.d.ts.map

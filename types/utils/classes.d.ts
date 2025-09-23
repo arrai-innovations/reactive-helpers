@@ -14,4 +14,3 @@ export type CombinedClasses = (string | {
 }[]);
 export type BooleanOrRef = boolean | import("vue").Ref<boolean>;
 export type CombinedClassesArgument = string | string[] | Set<any> | Map<any, any> | object | import("vue").Ref<any>;
-//# sourceMappingURL=classes.d.ts.map

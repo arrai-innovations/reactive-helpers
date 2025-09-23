@@ -14,4 +14,3 @@ export function lodashLikePathSplit(string: string | (string | number | symbol)[
  * @returns {boolean} Returns true if the key was deleted, false otherwise.
  */
 export function del(obj: object, path: string | (string | number | symbol)[]): boolean;
-//# sourceMappingURL=deleteKey.d.ts.map

@@ -196,4 +196,3 @@ export type ListSubscription = ListSubscriptionFunctions & ListSubscriptionPrope
  *  and subscriptions based on the given properties.
  */
 export type ListSubscriptionOptions = object & import("./listInstance.js").ListInstanceOptions;
-//# sourceMappingURL=listSubscription.d.ts.map

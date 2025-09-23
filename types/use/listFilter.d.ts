@@ -183,4 +183,3 @@ export type ListFilterProperties = {
  * Represents an instance of a list filter, including its state and associated Vue composition API utilities.
  */
 export type ListFilter = ListFilterProperties;
-//# sourceMappingURL=listFilter.d.ts.map

@@ -13,4 +13,3 @@ export namespace scopedIt {
     function _for(cases: any[]): (name: any, maybeOptionsOrFn: any, maybeFnOrNothing: any) => void;
     export { _for as for };
 }
-//# sourceMappingURL=scopedIt.d.ts.map

@@ -112,4 +112,3 @@ export class AssignReactiveObjectError extends Error {
  */
 export type ValidTargetOrSource = import("vue").Ref<object | any[]> | object | any[];
 export type validateTargetAndSourceResult = object;
-//# sourceMappingURL=assignReactiveObject.d.ts.map

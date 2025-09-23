@@ -308,4 +308,3 @@ export type ListSearchInstanceOptions = {
      */
     showAllWhenEmpty?: boolean;
 };
-//# sourceMappingURL=listSearch.d.ts.map
