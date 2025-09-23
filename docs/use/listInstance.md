@@ -101,11 +101,21 @@ Deletes objects from the list by pk, returning a promise to a boolean indicating
 
 `Promise`\<`boolean`\>
 
+##### cleanOldObjects()
+
+> **cleanOldObjects**: () => `void`
+
+Clears all objects and errors from the list but preserves `columnsTotal` and `paginateInfo`.
+
+###### Returns
+
+`void`
+
 ##### clearList()
 
 > **clearList**: () => `void`
 
-Clears all objects and errors from the list.
+Clears all objects and errors from the list, resetting the list completely.
 
 ###### Returns
 
@@ -660,6 +670,10 @@ The arguments for each list instance.
 An object of list instances.
 
 ## References
+
+### CleanOldObjectsFn
+
+Renames and re-exports [CleanOldObjects](../config/listCrud.md#cleanoldobjects-1)
 
 ### ClearListFn
 

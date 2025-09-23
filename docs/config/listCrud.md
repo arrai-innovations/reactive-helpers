@@ -66,6 +66,12 @@ The arguments to be passed to the crud handlers.
 
 #### Properties
 
+##### cleanOldObjects
+
+> **cleanOldObjects**: [`CleanOldObjects`](listCrud.md#cleanoldobjects-1)
+
+The method to call to only clear the objects but preserves `columnsTotal` and `paginateInfo`.
+
 ##### clearObjects
 
 > **clearObjects**: [`ClearObjectsFn`](listCrud.md#clearobjectsfn)
@@ -223,6 +229,18 @@ The default arguments for the crud handlers.
 ##### action
 
 `"create"` | `"update"` | `"delete"`
+
+#### Returns
+
+`void`
+
+***
+
+### CleanOldObjects()
+
+> **CleanOldObjects**\<\>: () => `void`
+
+#### Type Parameters
 
 #### Returns
 

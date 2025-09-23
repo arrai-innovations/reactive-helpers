@@ -13,7 +13,7 @@ import { readonly } from "vue";
  */
 
 /**
- * @typedef {import("../use/listInstance.js").CleanOldObjectsFn} CleanOldObjectsFn
+ * @typedef {import("../use/listInstance.js").CleanOldObjectsFn} CleanOldObjects
  */
 
 /**
@@ -30,7 +30,7 @@ import { readonly } from "vue";
  * @property {object} params - The arguments to be passed for list crud handlers.
  * @property {import("../use/listInstance.js").PushObjectsFn} pushObjects - The method to call with new page(s) of data received.
  * @property {ClearObjectsFn} clearObjects - The method to call to clear the objects.
- * @property {CleanOldObjectsFn} cleanOldObjects - The method to call to only clear the objects but preserves `columnsTotal` and `paginateInfo`.
+ * @property {CleanOldObjects} cleanOldObjects - The method to call to only clear the objects but preserves `columnsTotal` and `paginateInfo`.
  * @property {Readonly<import('vue').Ref<boolean>>} isCancelled - A ref to a boolean indicating whether the request has
  *  been cancelled.
  * @property {SetPaginateInfo} setPaginateInfo - The method to update pagination information.

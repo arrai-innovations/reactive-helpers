@@ -10,6 +10,7 @@ export function getListCrud(target: import("vue").UnwrapNestedRefs<ListCrudHandl
     handlers?: ListCrudHandlers;
 }): void;
 export type ClearObjectsFn = import("../use/listInstance.js").ClearListFn;
+export type CleanOldObjects = import("../use/listInstance.js").CleanOldObjectsFn;
 export type SetPaginateInfo = import("../use/listInstance.js").SetPaginateInfoFn;
 export type SetColumnTotals = import("../use/listInstance.js").SetColumnTotalsFn;
 export type ListArgsRaw = {
@@ -33,6 +34,10 @@ export type ListArgsRaw = {
      * - The method to call to clear the objects.
      */
     clearObjects: ClearObjectsFn;
+    /**
+     * - The method to call to only clear the objects but preserves `columnsTotal` and `paginateInfo`.
+     */
+    cleanOldObjects: CleanOldObjects;
     /**
      * - A ref to a boolean indicating whether the request has
      * been cancelled.

@@ -86,6 +86,9 @@
  * @typedef {() => void} ClearListFn
  */
 /**
+ * @typedef {() => void} CleanOldObjectsFn
+ */
+/**
  * @typedef {(info: PaginateInfo) => void} SetPaginateInfoFn
  */
 /**
@@ -99,7 +102,8 @@
  * @property {(object: import('../use/objectInstance.js').ExistingCrudObject) => void} addListObject - Adds an object to the list.
  * @property {(object: import('../use/objectInstance.js').ExistingCrudObject) => void} updateListObject - Updates an object in the list.
  * @property {(objectId: string) => void} deleteListObject - Deletes an object from the list by pk.
- * @property {() => void} clearList - Clears all objects and errors from the list.
+ * @property {() => void} clearList - Clears all objects and errors from the list, resetting the list completely.
+ * @property {() => void} cleanOldObjects - Clears all objects and errors from the list but preserves `columnsTotal` and `paginateInfo`.
  * @property {() => string} getFakePk - Generates a unique fake pk for use within the list.
  * @property {() => import('../utils/cancellablePromise.js').MaybeCancellablePromise<boolean|never>} list - Initiates a fetch to retrieve objects according to the CRUD configuration, returning a promise to a boolean indicating success.
  * @property {(args: {pks?: string[]}) => Promise<boolean>} bulkDelete - Deletes objects from the list by pk, returning a promise to a boolean indicating success.
@@ -344,6 +348,7 @@ export type ListInstanceRawState = ListInstanceRawMyState & Pick<import("./loadi
 export type ListInstanceState = import("vue").UnwrapNestedRefs<ListInstanceRawState>;
 export type PushObjectsFn = (newObjects: import("../use/objectInstance.js").ExistingCrudObject[]) => void;
 export type ClearListFn = () => void;
+export type CleanOldObjectsFn = () => void;
 export type SetPaginateInfoFn = (info: PaginateInfo) => void;
 export type SetColumnTotalsFn = (total: ColumnTotals) => void;
 /**
@@ -367,9 +372,13 @@ export type ListInstanceMyFunctions = {
      */
     deleteListObject: (objectId: string) => void;
     /**
-     * - Clears all objects and errors from the list.
+     * - Clears all objects and errors from the list, resetting the list completely.
      */
     clearList: () => void;
+    /**
+     * - Clears all objects and errors from the list but preserves `columnsTotal` and `paginateInfo`.
+     */
+    cleanOldObjects: () => void;
     /**
      * - Generates a unique fake pk for use within the list.
      */

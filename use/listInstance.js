@@ -129,6 +129,10 @@ export class ListInstanceError extends Error {
  */
 
 /**
+ * @typedef {() => void} ClearListFn
+ */
+
+/**
  * @typedef {() => void} CleanOldObjectsFn
  */
 
