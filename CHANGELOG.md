@@ -2,7 +2,11 @@
 
 _Actions potentially required by implementers are marked with italics._
 
-## v21.0.0 (2025-05-21)
+## v21.0.1 (2025-09-24)
+
+### Features
+
+- Update `clearList` API to accept options: `listInstance.clearList` now honors keepPagination, keepColumnTotals, and keepError flags so callers can retain specific state while clearing objects.
 
 ### TL;DR
 
