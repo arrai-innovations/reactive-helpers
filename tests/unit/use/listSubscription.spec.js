@@ -119,18 +119,21 @@ describe("use/listSubscription.spec.js", function () {
                 }),
             });
             await poll(() => listSubscription.state.loading);
-            expect(crudList).toHaveBeenCalledWith({
-                clearObjects: expect.any(Function),
-                isCancelled: expect.any(Object), // ref
-                isCurrentRun: expect.any(Function),
-                params: { user: 1, fields },
-                pkKey: "id",
-                pushObjects: expect.any(Function),
-                runId: expect.any(Number),
-                setPaginateInfo: expect.any(Function),
-                setColumnTotals: expect.any(Function),
-                target: { stream: "test_stream" },
-            });
+            expect(crudList).toHaveBeenCalledWith(
+                expect.objectContaining({
+                    cleanOldObjects: expect.any(Function),
+                    clearObjects: expect.any(Function),
+                    isCancelled: expect.any(Object), // ref
+                    isCurrentRun: expect.any(Function),
+                    params: { user: 1, fields },
+                    pkKey: "id",
+                    pushObjects: expect.any(Function),
+                    runId: expect.any(Number),
+                    setPaginateInfo: expect.any(Function),
+                    setColumnTotals: expect.any(Function),
+                    target: { stream: "test_stream" },
+                })
+            );
             expect(crudList).toHaveBeenCalledTimes(1);
             crudListResolvable[0].resolve();
             await poll(() => listSubscription.state.subscribed);

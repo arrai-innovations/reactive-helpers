@@ -180,6 +180,7 @@ describe("use/listInstance.spec.js", function () {
                 params: { user: 1, fields },
                 pushObjects: passedPushObjects,
                 isCancelled: expect.any(Object),
+                cleanOldObjects: expect.any(Function),
                 clearObjects: expect.any(Function),
                 setPaginateInfo: expect.any(Function),
                 setColumnTotals: expect.any(Function),
@@ -232,6 +233,7 @@ describe("use/listInstance.spec.js", function () {
                 params: { user: 1, fields },
                 pushObjects: passedPushObjects,
                 isCancelled: expect.anything(),
+                cleanOldObjects: expect.any(Function),
                 clearObjects: expect.any(Function),
                 setPaginateInfo: expect.any(Function),
                 setColumnTotals: expect.any(Function),
@@ -263,6 +265,7 @@ describe("use/listInstance.spec.js", function () {
                 params: { user: 1, fields },
                 pushObjects: expect.any(Function),
                 isCancelled: expect.any(Object), // ref
+                cleanOldObjects: expect.any(Function),
                 clearObjects: expect.any(Function),
                 setPaginateInfo: expect.any(Function),
                 setColumnTotals: expect.any(Function),
@@ -356,6 +359,7 @@ describe("use/listInstance.spec.js", function () {
                 params: { user: 1, fields },
                 pushObjects: passedPushObjects,
                 isCancelled: expect.any(Object), // ref
+                cleanOldObjects: expect.any(Function),
                 clearObjects: expect.any(Function),
                 setPaginateInfo: expect.any(Function),
                 setColumnTotals: expect.any(Function),
@@ -425,6 +429,7 @@ describe("use/listInstance.spec.js", function () {
                 params: { user: 1, fields },
                 pushObjects: passedPushObjects,
                 isCancelled: expect.any(Object), // ref
+                cleanOldObjects: expect.any(Function),
                 clearObjects: expect.any(Function),
                 setPaginateInfo: expect.any(Function),
                 setColumnTotals: expect.any(Function),
@@ -474,6 +479,7 @@ describe("use/listInstance.spec.js", function () {
                 params: { user: 1, fields },
                 pushObjects: passedPushObjects,
                 isCancelled: expect.any(Object), // ref
+                cleanOldObjects: expect.any(Function),
                 clearObjects: expect.any(Function),
                 setPaginateInfo: expect.any(Function),
                 setColumnTotals: expect.any(Function),
@@ -494,6 +500,59 @@ describe("use/listInstance.spec.js", function () {
             await flushPromises();
             expect(listInstance.state.order).toEqual([]);
             expect(listInstance.state.objectsInOrder).toEqual([]);
+        });
+        scopedIt("cleanOldObjects should clear objects while keeping metadata", async function () {
+            const params = reactive({
+                user: 1,
+                fields,
+            });
+            const listInstance = useListInstance({
+                props: {
+                    params,
+                    pkKey: "id",
+                },
+            });
+            /** @type {(value: boolean) => void} */
+            let crudListResolve;
+            const crudListPromise = new Promise((resolve) => {
+                crudListResolve = resolve;
+            });
+            /** @type {import("../../../use/listInstance.js").PushObjectsFn} */
+            let passedPushObjects;
+            globalList.mockImplementationOnce(({ pushObjects }) => {
+                passedPushObjects = pushObjects;
+                return crudListPromise;
+            });
+            const listPromise = listInstance.list();
+            passedPushObjects(crudListResolvedPage1);
+            crudListResolve(true);
+            await flushPromises();
+            await expect(listPromise).resolves.toBe(true);
+            await flushPromises();
+            expect({ ...listInstance.state.objects }).toEqual(crudListResolvedObjects1);
+            expect(listInstance.state.order).toEqual(Object.keys(crudListResolvedObjects1));
+            expect(listInstance.state.objectsInOrder).toEqual(Object.values(crudListResolvedObjects1));
+            listInstance.setPaginateInfo({ current: 1 });
+            listInstance.setColumnTotals({ total: 5 });
+            await flushPromises();
+            expect({ ...listInstance.state.paginateInfo }).toEqual({ current: 1 });
+            expect({ ...listInstance.state.columnTotals }).toEqual({ total: 5 });
+            const listError = new Error("list failure");
+            globalList.mockImplementationOnce(() => Promise.reject(listError));
+            await expect(listInstance.list()).resolves.toBe(false);
+            await flushPromises();
+            expect(listInstance.state.error).toEqual(listError);
+            expect(listInstance.state.errored).toBe(true);
+            expect({ ...listInstance.state.objects }).toEqual(crudListResolvedObjects1);
+            listInstance.cleanOldObjects();
+            await flushPromises();
+            expect(listInstance.state.error).toBeNullError();
+            expect(listInstance.state.errored).toBe(false);
+            expect({ ...listInstance.state.objects }).toEqual({});
+            expect(listInstance.state.order).toEqual([]);
+            expect(listInstance.state.objectsInOrder).toEqual([]);
+            expect({ ...listInstance.state.paginateInfo }).toEqual({ current: 1 });
+            expect({ ...listInstance.state.columnTotals }).toEqual({ total: 5 });
         });
         scopedIt("list handles synchronously thrown errors", async () => {
             const listInstance = useListInstance({
