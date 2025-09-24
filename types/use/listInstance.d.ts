@@ -83,7 +83,15 @@
  * @typedef {(newObjects: import('../use/objectInstance.js').ExistingCrudObject[]) => void} PushObjectsFn
  */
 /**
- * @typedef {() => void} ClearListFn
+ * Options to control which reactive state is reset when clearing the list.
+ *
+ * @typedef {object} ClearListOptions
+ * @property {boolean} [keepPagination] - When true, keep the current pagination information.
+ * @property {boolean} [keepColumnTotals] - When true, keep the current column totals.
+ * @property {boolean} [keepError] - When true, keep the current error state.
+ */
+/**
+ * @typedef {(options?: ClearListOptions) => void} ClearListFn
  */
 /**
  * @typedef {(info: PaginateInfo) => void} SetPaginateInfoFn
@@ -99,7 +107,8 @@
  * @property {(object: import('../use/objectInstance.js').ExistingCrudObject) => void} addListObject - Adds an object to the list.
  * @property {(object: import('../use/objectInstance.js').ExistingCrudObject) => void} updateListObject - Updates an object in the list.
  * @property {(objectId: string) => void} deleteListObject - Deletes an object from the list by pk.
- * @property {() => void} clearList - Clears all objects and errors from the list.
+ * @property {(options?: ClearListOptions) => void} clearList - Clears the list objects and optionally keeps pagination, totals,
+ *  or error state.
  * @property {() => string} getFakePk - Generates a unique fake pk for use within the list.
  * @property {() => import('../utils/cancellablePromise.js').MaybeCancellablePromise<boolean|never>} list - Initiates a fetch to retrieve objects according to the CRUD configuration, returning a promise to a boolean indicating success.
  * @property {(args: {pks?: string[]}) => Promise<boolean>} bulkDelete - Deletes objects from the list by pk, returning a promise to a boolean indicating success.
@@ -343,7 +352,24 @@ export type ListInstanceRawState = ListInstanceRawMyState & Pick<import("./loadi
  */
 export type ListInstanceState = import("vue").UnwrapNestedRefs<ListInstanceRawState>;
 export type PushObjectsFn = (newObjects: import("../use/objectInstance.js").ExistingCrudObject[]) => void;
-export type ClearListFn = () => void;
+/**
+ * Options to control which reactive state is reset when clearing the list.
+ */
+export type ClearListOptions = {
+    /**
+     * - When true, keep the current pagination information.
+     */
+    keepPagination?: boolean;
+    /**
+     * - When true, keep the current column totals.
+     */
+    keepColumnTotals?: boolean;
+    /**
+     * - When true, keep the current error state.
+     */
+    keepError?: boolean;
+};
+export type ClearListFn = (options?: ClearListOptions) => void;
 export type SetPaginateInfoFn = (info: PaginateInfo) => void;
 export type SetColumnTotalsFn = (total: ColumnTotals) => void;
 /**
@@ -367,9 +393,10 @@ export type ListInstanceMyFunctions = {
      */
     deleteListObject: (objectId: string) => void;
     /**
-     * - Clears all objects and errors from the list.
+     * - Clears the list objects and optionally keeps pagination, totals,
+     * or error state.
      */
-    clearList: () => void;
+    clearList: (options?: ClearListOptions) => void;
     /**
      * - Generates a unique fake pk for use within the list.
      */

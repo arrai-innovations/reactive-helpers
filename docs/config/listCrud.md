@@ -232,9 +232,15 @@ The default arguments for the crud handlers.
 
 ### ClearObjectsFn()
 
-> **ClearObjectsFn**\<\>: () => `void`
+> **ClearObjectsFn**\<\>: (`options`?) => `void`
 
 #### Type Parameters
+
+#### Parameters
+
+##### options?
+
+[`ClearListOptions`](../use/listInstance.md#clearlistoptions)
 
 #### Returns
 

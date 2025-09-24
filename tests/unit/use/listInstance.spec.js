@@ -494,6 +494,40 @@ describe("use/listInstance.spec.js", function () {
             await flushPromises();
             expect(listInstance.state.order).toEqual([]);
             expect(listInstance.state.objectsInOrder).toEqual([]);
+
+            const keepPaginationError = new Error("sync throw keep pagination");
+            globalList.mockImplementationOnce(() => {
+                throw keepPaginationError;
+            });
+            await expect(listInstance.list()).resolves.toBe(false);
+            expect(listInstance.state.error).toEqual(keepPaginationError);
+            expect(listInstance.state.errored).toBe(true);
+            listInstance.setPaginateInfo({ current: 2 });
+            listInstance.setColumnTotals({ total: 10 });
+
+            listInstance.clearList({ keepPagination: true });
+
+            expect({ ...listInstance.state.paginateInfo }).toEqual({ current: 2 });
+            expect({ ...listInstance.state.columnTotals }).toEqual({});
+            expect(listInstance.state.error).toBeNullError();
+            expect(listInstance.state.errored).toBe(false);
+
+            const keepError = new Error("sync throw keep error");
+            globalList.mockImplementationOnce(() => {
+                throw keepError;
+            });
+            await expect(listInstance.list()).resolves.toBe(false);
+            expect(listInstance.state.error).toEqual(keepError);
+            expect(listInstance.state.errored).toBe(true);
+            listInstance.setPaginateInfo({ current: 3 });
+            listInstance.setColumnTotals({ total: 30 });
+
+            listInstance.clearList({ keepColumnTotals: true, keepError: true });
+
+            expect({ ...listInstance.state.paginateInfo }).toEqual({});
+            expect({ ...listInstance.state.columnTotals }).toEqual({ total: 30 });
+            expect(listInstance.state.error).toEqual(keepError);
+            expect(listInstance.state.errored).toBe(true);
         });
         scopedIt("list handles synchronously thrown errors", async () => {
             const listInstance = useListInstance({
