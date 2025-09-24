@@ -63,6 +63,30 @@ The error code.
 
 ## Interfaces
 
+### ClearListOptions
+
+#### Properties
+
+##### keepColumnTotals?
+
+> `optional` **keepColumnTotals**: `boolean`
+
+When true, keep the current column totals.
+
+##### keepError?
+
+> `optional` **keepError**: `boolean`
+
+When true, keep the current error state.
+
+##### keepPagination?
+
+> `optional` **keepPagination**: `boolean`
+
+When true, keep the current pagination information.
+
+***
+
 ### ListInstanceMyFunctions
 
 #### Properties
@@ -103,9 +127,16 @@ Deletes objects from the list by pk, returning a promise to a boolean indicating
 
 ##### clearList()
 
-> **clearList**: () => `void`
+> **clearList**: (`options`?) => `void`
 
-Clears all objects and errors from the list.
+Clears the list objects and optionally keeps pagination, totals,
+ or error state.
+
+###### Parameters
+
+###### options?
+
+[`ClearListOptions`](listInstance.md#clearlistoptions)
 
 ###### Returns
 

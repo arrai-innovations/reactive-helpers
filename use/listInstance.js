@@ -129,7 +129,16 @@ export class ListInstanceError extends Error {
  */
 
 /**
- * @typedef {() => void} ClearListFn
+ * Options to control which reactive state is reset when clearing the list.
+ *
+ * @typedef {object} ClearListOptions
+ * @property {boolean} [keepPagination] - When true, keep the current pagination information.
+ * @property {boolean} [keepColumnTotals] - When true, keep the current column totals.
+ * @property {boolean} [keepError] - When true, keep the current error state.
+ */
+
+/**
+ * @typedef {(options?: ClearListOptions) => void} ClearListFn
  */
 
 /**
@@ -148,7 +157,8 @@ export class ListInstanceError extends Error {
  * @property {(object: import('../use/objectInstance.js').ExistingCrudObject) => void} addListObject - Adds an object to the list.
  * @property {(object: import('../use/objectInstance.js').ExistingCrudObject) => void} updateListObject - Updates an object in the list.
  * @property {(objectId: string) => void} deleteListObject - Deletes an object from the list by pk.
- * @property {() => void} clearList - Clears all objects and errors from the list.
+ * @property {(options?: ClearListOptions) => void} clearList - Clears the list objects and optionally keeps pagination, totals,
+ *  or error state.
  * @property {() => string} getFakePk - Generates a unique fake pk for use within the list.
  * @property {() => import('../utils/cancellablePromise.js').MaybeCancellablePromise<boolean|never>} list - Initiates a fetch to retrieve objects according to the CRUD configuration, returning a promise to a boolean indicating success.
  * @property {(args: {pks?: string[]}) => Promise<boolean>} bulkDelete - Deletes objects from the list by pk, returning a promise to a boolean indicating success.
@@ -560,12 +570,19 @@ export function useListInstance({ props, handlers = {} }) {
             }
             delete state.objects[pk];
         },
-        clearList: () => {
-            // assignReactiveObject(state.objects, {});
-            assignReactiveObject(state.paginateInfo, {});
-            assignReactiveObject(state.columnTotals, {});
+        clearList: (options) => {
+            const { keepPagination = false, keepColumnTotals = false, keepError = false } = options || {};
+
+            if (!keepPagination) {
+                assignReactiveObject(state.paginateInfo, {});
+            }
+            if (!keepColumnTotals) {
+                assignReactiveObject(state.columnTotals, {});
+            }
             state.objectsMap.clear();
-            loadingError.clearError();
+            if (!keepError) {
+                loadingError.clearError();
+            }
         },
         clearError: loadingError.clearError,
         getFakePk: () => getFakePk(state.objects, state.pkKey),
