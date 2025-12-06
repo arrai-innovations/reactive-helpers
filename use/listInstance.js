@@ -475,7 +475,7 @@ export function useListInstance({ props, handlers = {} }) {
             );
             return promises.list;
         },
-        bulkDelete: ({ pks } = {}) => {
+        bulkDelete: ({ pks, dryRun } = {}) => {
             if (state.loading) {
                 return Promise.reject(new ListInstanceError("already loading.", "already-loading"));
             }
@@ -489,6 +489,7 @@ export function useListInstance({ props, handlers = {} }) {
                     target: state.crud.args,
                     pks,
                     pkKey: state.pkKey,
+                    dryRun,
                 })
                 .then(() => {
                     assignReactiveObject(state.objects, {});
@@ -503,7 +504,7 @@ export function useListInstance({ props, handlers = {} }) {
                     loadingError.clearLoading();
                 });
         },
-        executeAction: ({ pks, action }) => {
+        executeAction: ({ pks, action, dryRun }) => {
             if (state.loading) {
                 return Promise.reject(new ListInstanceError("already loading.", "already-loading"));
             }
@@ -518,6 +519,7 @@ export function useListInstance({ props, handlers = {} }) {
                     target: state.crud.args,
                     pks,
                     pkKey: state.pkKey,
+                    dryRun,
                 })
                 .then((/** @type {object|string} */ responseData) => {
                     loadingError.clearError();
