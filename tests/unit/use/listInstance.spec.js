@@ -748,6 +748,47 @@ describe("use/listInstance.spec.js", function () {
             await expect(executeActionResolve).resolves.toBe(true);
             expect({ ...listInstance.state.objects }).toEqual(crudListResolvedObjects2);
         });
+        scopedIt("passes dryRun to executeAction", async function () {
+            const params = reactive({
+                user: 1,
+                fields,
+            });
+            const listInstance = useListInstance({
+                props: { pkKey: "id", params },
+            });
+            /** @type {(value: boolean) => void} */
+            let crudListResolve;
+            const crudListPromise = new Promise((resolve) => {
+                crudListResolve = resolve;
+            });
+            /** @type {import("../../../use/listInstance.js").PushObjectsFn} */
+            let passedPushObjects;
+            globalList.mockImplementation(({ pushObjects }) => {
+                passedPushObjects = pushObjects;
+                return crudListPromise;
+            });
+            const liListResolve = listInstance.list();
+            await nextTick();
+            passedPushObjects(crudListResolvedPage1);
+            crudListResolve(true);
+            await flushPromises();
+            await expect(liListResolve).resolves.toBe(true);
+
+            const executeActionResolve = listInstance.executeAction({ action: "foo", dryRun: true });
+
+            expect(globalExecuteAction).toHaveBeenCalledWith({
+                target: { stream: "test_stream" },
+                pkKey: "id",
+                pks: Object.keys(crudListResolvedObjects1),
+                action: "foo",
+                dryRun: true,
+            });
+
+            crudListResolve(true);
+            await flushPromises();
+            await expect(executeActionResolve).resolves.toBe(true);
+        });
+
         scopedIt("succeeds with non-standard primary key", async function () {
             const params = reactive({
                 user: 1,
@@ -914,6 +955,45 @@ describe("use/listInstance.spec.js", function () {
             await flushPromises();
             await expect(bulkDeleteResolve).resolves.toBe(true);
             expect({ ...listInstance.state.objects }).toEqual({});
+        });
+        scopedIt("passes dryRun to bulkDelete", async function () {
+            const params = reactive({
+                user: 1,
+                fields,
+            });
+            const listInstance = useListInstance({
+                props: { pkKey: "id", params },
+            });
+            /** @type {(value: boolean) => void} */
+            let crudListResolve;
+            const crudListPromise = new Promise((resolve) => {
+                crudListResolve = resolve;
+            });
+            /** @type {import("../../../use/listInstance.js").PushObjectsFn} */
+            let passedPushObjects;
+            globalList.mockImplementation(({ pushObjects }) => {
+                passedPushObjects = pushObjects;
+                return crudListPromise;
+            });
+            const liListResolve = listInstance.list();
+            await nextTick();
+            passedPushObjects(crudListResolvedPage1);
+            crudListResolve(true);
+            await flushPromises();
+            await expect(liListResolve).resolves.toBe(true);
+
+            const bulkDeleteResolve = listInstance.bulkDelete({ dryRun: true });
+
+            expect(globalBulkDelete).toHaveBeenCalledWith({
+                target: { stream: "test_stream" },
+                pkKey: "id",
+                pks: Object.keys(crudListResolvedObjects1),
+                dryRun: true,
+            });
+
+            crudListResolve(true);
+            await flushPromises();
+            await expect(bulkDeleteResolve).resolves.toBe(true);
         });
         scopedIt("succeeds with non-standard primary key", async function () {
             const params = reactive({
