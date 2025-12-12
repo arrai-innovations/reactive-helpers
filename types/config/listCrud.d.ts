@@ -61,6 +61,10 @@ export type BulkDeleteArgs = {
      * - The key name of the primary key.
      */
     pkKey: string;
+    /**
+     * - The flag indicating whether this is a dry run.
+     */
+    dryRun?: boolean;
 };
 export type applyObjectEvent = (newOrUpdatedOrDeleteObject: import("../use/objectInstance.js").ExistingCrudObject | string, action: "create" | "update" | "delete") => void;
 export type ListSubscribeArgsRaw = {
@@ -104,6 +108,10 @@ export type ExecuteActionArgs = {
      * - The action to execute.
      */
     action: string;
+    /**
+     * - The flag indicating whether this is a dry run.
+     */
+    dryRun?: boolean;
 };
 export type CrudListFn = (args: ListArgs) => import("../utils/cancellablePromise.js").MaybeCancellablePromise<void>;
 export type CrudBulkDeleteFn = (args: BulkDeleteArgs) => Promise<boolean>;

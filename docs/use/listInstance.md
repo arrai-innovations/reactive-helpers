@@ -117,6 +117,10 @@ Deletes objects from the list by pk, returning a promise to a boolean indicating
 
 ###### args
 
+###### dryRun?
+
+`boolean`
+
 ###### pks?
 
 `string`[]
@@ -160,9 +164,25 @@ Deletes an object from the list by pk.
 
 ##### executeAction()
 
-> **executeAction**: () => `Promise`\<`any`\>
+> **executeAction**: (`args`) => `Promise`\<`any`\>
 
 Initiates an action on all objects in the list, returning the response, or false if the action failed.
+
+###### Parameters
+
+###### args
+
+###### action?
+
+`string`
+
+###### dryRun?
+
+`boolean`
+
+###### pks?
+
+`string`[]
 
 ###### Returns
 

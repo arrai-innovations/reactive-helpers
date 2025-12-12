@@ -12,6 +12,12 @@
 
 #### Properties
 
+##### dryRun?
+
+> `optional` **dryRun**: `boolean`
+
+The flag indicating whether this is a dry run.
+
 ##### pkKey
 
 > **pkKey**: `string`
@@ -41,6 +47,12 @@ The arguments to be passed to the crud handlers.
 > **action**: `string`
 
 The action to execute.
+
+##### dryRun?
+
+> `optional` **dryRun**: `boolean`
+
+The flag indicating whether this is a dry run.
 
 ##### pkKey
 
