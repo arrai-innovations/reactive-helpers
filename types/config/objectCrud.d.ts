@@ -13,12 +13,6 @@ export type TargetArgs = {
     [key: string]: any;
 };
 /**
- * Additional arguments that can be passed to CRUD handlers.
- */
-export type AdditionalCrudArgs = {
-    [key: string]: any;
-};
-/**
  * Defines the CRUD-related handlers and additional utilities provided by the object instance.
  */
 export type ObjectTargetProperties = {
@@ -33,7 +27,7 @@ export type ObjectTargetOption = {
      */
     target?: TargetArgs;
 };
-export type CreateArgsRaw = {
+export type CreateArgs = {
     /**
      * - The arguments to be passed to the crud handlers.
      */
@@ -59,7 +53,6 @@ export type CreateArgsRaw = {
      */
     isCancelled: Readonly<import("vue").Ref<boolean>>;
 };
-export type CreateArgs = CreateArgsRaw & AdditionalCrudArgs;
 export type RetrieveArgsRaw = {
     /**
      * - The arguments to be passed to the crud handlers.
@@ -84,8 +77,8 @@ export type RetrieveArgsRaw = {
      */
     isCancelled: Readonly<import("vue").Ref<boolean>>;
 };
-export type RetrieveArgs = RetrieveArgsRaw & Partial<import("../use/cancellableIntent.js").CommonRunTracking> & AdditionalCrudArgs;
-export type UpdateArgsRaw = {
+export type RetrieveArgs = RetrieveArgsRaw & import("../use/cancellableIntent.js").CommonRunTracking;
+export type UpdateArgs = {
     /**
      * - The arguments to be passed to the crud handlers.
      */
@@ -109,8 +102,7 @@ export type UpdateArgsRaw = {
      */
     isCancelled: Readonly<import("vue").Ref<boolean>>;
 };
-export type UpdateArgs = UpdateArgsRaw & AdditionalCrudArgs;
-export type DeleteArgsRaw = {
+export type DeleteArgs = {
     /**
      * - The arguments to be passed to the crud handlers.
      */
@@ -124,8 +116,7 @@ export type DeleteArgsRaw = {
      */
     pkKey: string;
 };
-export type DeleteArgs = DeleteArgsRaw & AdditionalCrudArgs;
-export type PartialArgsRaw = {
+export type PartialArgs = {
     /**
      * - The arguments to be passed to the crud handlers.
      */
@@ -155,30 +146,6 @@ export type PartialArgsRaw = {
      */
     isCancelled: Readonly<import("vue").Ref<boolean>>;
 };
-export type PartialArgs = PartialArgsRaw & AdditionalCrudArgs;
-export type ObjectExecuteActionArgsRaw = {
-    /**
-     * - The arguments to be passed to the crud handlers.
-     */
-    target: import("../config/objectCrud.js").TargetArgs;
-    /**
-     * - The id of the objects to be acted upon.
-     */
-    pk: string;
-    /**
-     * - The key name of the primary key.
-     */
-    pkKey: string;
-    /**
-     * - The action to execute.
-     */
-    action: string;
-    /**
-     * - A ref to indicate if the request was cancelled.
-     */
-    isCancelled: Readonly<import("vue").Ref<boolean>>;
-};
-export type ObjectExecuteActionArgs = ObjectExecuteActionArgsRaw & AdditionalCrudArgs;
 export type CrudSubscribeCallback = (data: import("../use/objectInstance.js").ExistingCrudObject, action: "delete" | "update" | "create") => any;
 export type ObjectSubscribeArgsRaw = {
     /**
@@ -208,14 +175,14 @@ export type ObjectSubscribeArgsRaw = {
      */
     isCancelled: Readonly<import("vue").Ref<boolean>>;
 };
-export type ObjectSubscribeArgs = ObjectSubscribeArgsRaw & import("../use/cancellableIntent.js").CommonRunTracking & AdditionalCrudArgs;
+export type ObjectSubscribeArgs = ObjectSubscribeArgsRaw & import("../use/cancellableIntent.js").CommonRunTracking;
 export type CrudResponse = import("../utils/cancellablePromise.js").MaybeCancellablePromise<object | string>;
 export type CrudCreateFn = (args: CreateArgs) => CrudResponse;
 export type CrudRetrieveFn = (args: RetrieveArgs) => CrudResponse;
 export type CrudUpdateFn = (args: UpdateArgs) => CrudResponse;
 export type CrudPatchFn = (args: PartialArgs) => CrudResponse;
 export type CrudDeleteFn = (args: DeleteArgs) => CrudResponse;
-export type CrudObjectExecuteActionFn = (args: ObjectExecuteActionArgs) => CrudResponse;
+export type CrudObjectexecuteActionFn = (args: ExecuteActionArgs) => CrudResponse;
 export type CrudObjectSubscribeFn = (args: ObjectSubscribeArgs) => import("../utils/cancellablePromise.js").CancellablePromise<void>;
 /**
  * Defines the CRUD-related handlers and additional utilities provided by the object instance.
@@ -248,7 +215,7 @@ export type ObjectCrudHandlers = {
     /**
      * - The  function to execute a certain action on an object.
      */
-    executeAction?: CrudObjectExecuteActionFn;
+    executeAction?: CrudObjectexecuteActionFn;
 };
 /**
  * The CRUD arguments.

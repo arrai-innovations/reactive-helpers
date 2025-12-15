@@ -106,7 +106,7 @@ export function useObjectInstance({ props, handlers }: ObjectInstanceOptions): O
  * @property {import('../config/objectCrud.js').CrudPatchFn} patch - The patch function.
  * @property {import('../config/objectCrud.js').CrudDeleteFn} delete - The delete function.
  * @property {import('../config/objectCrud.js').CrudObjectSubscribeFn} subscribe - The subscribe function.
- * @property {import('../config/objectCrud.js').CrudObjectExecuteActionFn} executeAction - The executeAction function.
+ * @property {import('../config/objectCrud.js').CrudObjectexecuteActionFn} executeAction - The executeAction function.
  */
 /**
  * The raw state of the object instance.
@@ -140,12 +140,12 @@ export function useObjectInstance({ props, handlers }: ObjectInstanceOptions): O
  * The functions available on the object instance.
  *
  * @typedef {object} ObjectInstanceMyFunctions
- * @property {(args: ObjectInstanceCreateArgs & AdditionalArgs) => import('../utils/cancellablePromise.js').MaybeCancellablePromise<boolean|never>} create - Called to turn the current object into a new object on the server.
- * @property {(args?: Partial<import('./cancellableIntent.js').CommonRunTracking> & AdditionalArgs) => import('../utils/cancellablePromise.js').MaybeCancellablePromise<boolean|never>} retrieve - Called to retrieve the current object by pk from the server.
- * @property {(args: ObjectInstanceUpdateArgs & AdditionalArgs) => import('../utils/cancellablePromise.js').MaybeCancellablePromise<boolean|never>} update - Called to update the current object on the server.
+ * @property {(args: ObjectInstanceCreateArgs) => import('../utils/cancellablePromise.js').MaybeCancellablePromise<boolean|never>} create - Called to turn the current object into a new object on the server.
+ * @property {(args?: import('./cancellableIntent.js').CommonRunTracking) => import('../utils/cancellablePromise.js').MaybeCancellablePromise<boolean|never>} retrieve - Called to retrieve the current object by pk from the server.
+ * @property {(args: ObjectInstanceUpdateArgs) => import('../utils/cancellablePromise.js').MaybeCancellablePromise<boolean|never>} update - Called to update the current object on the server.
  * @property {(args?: AdditionalArgs) => import('../utils/cancellablePromise.js').MaybeCancellablePromise<boolean|never>} delete - Called to delete the current object on the server.
- * @property {(args: ObjectInstancePatchArgs & AdditionalArgs) => import('../utils/cancellablePromise.js').MaybeCancellablePromise<boolean|never>} patch - Called to patch the current object on the server.
- * @property {(args: {action: string} & AdditionalArgs) => import('../utils/cancellablePromise.js').MaybeCancellablePromise<boolean|never>} executeAction - Called to execute certain action on the current object.
+ * @property {(args: ObjectInstancePatchArgs) => import('../utils/cancellablePromise.js').MaybeCancellablePromise<boolean|never>} patch - Called to patch the current object on the server.
+ * @property {(args?: AdditionalArgs) => import('../utils/cancellablePromise.js').MaybeCancellablePromise<boolean|never>} executeAction - Called to execute certain action on the current object.
  * @property {() => void} clear - Called to clear the object state.
  */
 /**
@@ -263,7 +263,7 @@ export type ObjectInstanceRawStateCrud = {
     /**
      * - The executeAction function.
      */
-    executeAction: import("../config/objectCrud.js").CrudObjectExecuteActionFn;
+    executeAction: import("../config/objectCrud.js").CrudObjectexecuteActionFn;
 };
 /**
  * The raw state of the object instance.
@@ -324,15 +324,15 @@ export type ObjectInstanceMyFunctions = {
     /**
      * - Called to turn the current object into a new object on the server.
      */
-    create: (args: ObjectInstanceCreateArgs & AdditionalArgs) => import("../utils/cancellablePromise.js").MaybeCancellablePromise<boolean | never>;
+    create: (args: ObjectInstanceCreateArgs) => import("../utils/cancellablePromise.js").MaybeCancellablePromise<boolean | never>;
     /**
      * - Called to retrieve the current object by pk from the server.
      */
-    retrieve: (args?: Partial<import("./cancellableIntent.js").CommonRunTracking> & AdditionalArgs) => import("../utils/cancellablePromise.js").MaybeCancellablePromise<boolean | never>;
+    retrieve: (args?: import("./cancellableIntent.js").CommonRunTracking) => import("../utils/cancellablePromise.js").MaybeCancellablePromise<boolean | never>;
     /**
      * - Called to update the current object on the server.
      */
-    update: (args: ObjectInstanceUpdateArgs & AdditionalArgs) => import("../utils/cancellablePromise.js").MaybeCancellablePromise<boolean | never>;
+    update: (args: ObjectInstanceUpdateArgs) => import("../utils/cancellablePromise.js").MaybeCancellablePromise<boolean | never>;
     /**
      * - Called to delete the current object on the server.
      */
@@ -340,13 +340,11 @@ export type ObjectInstanceMyFunctions = {
     /**
      * - Called to patch the current object on the server.
      */
-    patch: (args: ObjectInstancePatchArgs & AdditionalArgs) => import("../utils/cancellablePromise.js").MaybeCancellablePromise<boolean | never>;
+    patch: (args: ObjectInstancePatchArgs) => import("../utils/cancellablePromise.js").MaybeCancellablePromise<boolean | never>;
     /**
      * - Called to execute certain action on the current object.
      */
-    executeAction: (args: {
-        action: string;
-    } & AdditionalArgs) => import("../utils/cancellablePromise.js").MaybeCancellablePromise<boolean | never>;
+    executeAction: (args?: AdditionalArgs) => import("../utils/cancellablePromise.js").MaybeCancellablePromise<boolean | never>;
     /**
      * - Called to clear the object state.
      */
