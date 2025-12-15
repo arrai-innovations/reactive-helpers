@@ -21,6 +21,7 @@ describe("config/objectCrud.js", () => {
                 patch: () => 4,
                 delete: () => 5,
                 subscribe: () => 6,
+                executeAction: () => 7,
                 args: {
                     test: "test",
                 },
@@ -37,7 +38,7 @@ describe("config/objectCrud.js", () => {
             });
             expect(() => getObjectCrud(retrievedCrud)).not.toThrow();
             expect(new Set(Object.keys(retrievedCrud))).toEqual(
-                new Set(["retrieve", "create", "update", "patch", "delete", "subscribe", "args"])
+                new Set(["retrieve", "create", "update", "patch", "delete", "executeAction", "subscribe", "args"])
             );
             expect(retrievedCrud.args).not.toBe(crud.args);
             expect(retrievedCrud.args).toEqual(crud.args);
@@ -47,6 +48,7 @@ describe("config/objectCrud.js", () => {
             expect(retrievedCrud.patch).toBe(crud.patch);
             expect(retrievedCrud.delete).toBe(crud.delete);
             expect(retrievedCrud.subscribe).toBe(crud.subscribe);
+            expect(retrievedCrud.executeAction).toBe(crud.executeAction);
 
             const originalCrud = cloneDeep(crud);
             crud.args.test = "test2";
@@ -56,6 +58,7 @@ describe("config/objectCrud.js", () => {
             crud.patch = () => 10;
             crud.delete = () => 11;
             crud.subscribe = () => 12;
+            crud.executeAction = () => 13;
             expect(retrievedCrud.args.test).toBe(originalCrud.args.test);
             expect(retrievedCrud.retrieve).toBe(originalCrud.retrieve);
             expect(retrievedCrud.create).toBe(originalCrud.create);
@@ -63,6 +66,7 @@ describe("config/objectCrud.js", () => {
             expect(retrievedCrud.patch).toBe(originalCrud.patch);
             expect(retrievedCrud.delete).toBe(originalCrud.delete);
             expect(retrievedCrud.subscribe).toBe(originalCrud.subscribe);
+            expect(retrievedCrud.executeAction).toBe(originalCrud.executeAction);
         });
         it("should customize via getObjectCrud", () => {
             const defaultCrud = {
@@ -72,6 +76,7 @@ describe("config/objectCrud.js", () => {
                 patch: () => 4,
                 delete: () => 5,
                 subscribe: () => 6,
+                executeAction: () => 7,
                 args: {
                     test: "test",
                 },
@@ -89,6 +94,7 @@ describe("config/objectCrud.js", () => {
                     patch: () => 10,
                     delete: () => 11,
                     subscribe: () => 12,
+                    executeAction: () => 13,
                 },
             };
             const expectedCustomCrud = {
@@ -98,6 +104,7 @@ describe("config/objectCrud.js", () => {
                 patch: customTarget.handlers.patch,
                 delete: customTarget.handlers.delete,
                 subscribe: customTarget.handlers.subscribe,
+                executeAction: customTarget.handlers.executeAction,
                 args: customTarget.props.target,
             };
             expect(() => setObjectCrud(defaultCrud)).not.toThrow();
@@ -121,8 +128,9 @@ describe("config/objectCrud.js", () => {
                     patch: () => 4,
                     delete: () => 5,
                     subscribe: () => 6,
+                    executeAction: () => 7,
                     args: { test: "test" },
-                    unknown: () => 7,
+                    unknown: () => 8,
                 })
             ).toThrow('Unknown key "unknown" passed to setObjectCrud');
         });
@@ -138,6 +146,7 @@ describe("config/objectCrud.js", () => {
                         patch: () => 4,
                         delete: () => 5,
                         subscribe: () => 6,
+                        executeAction: () => 7,
                     },
                 })
             ).toThrow('Function "update" is not actually a function');
@@ -153,7 +162,8 @@ describe("config/objectCrud.js", () => {
                         patch: () => 4,
                         delete: () => 5,
                         subscribe: () => 6,
-                        unknown: () => 7,
+                        executeAction: () => 7,
+                        unknown: () => 8,
                     },
                 })
             ).toThrow('Invalid function key "unknown" passed to assignCrud');

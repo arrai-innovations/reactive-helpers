@@ -512,6 +512,7 @@ describe("use/objectInstance.js", function () {
                 pkKey: "id",
                 params: { fields: ["id", "__str__", "name"] },
                 isCancelled: expect.any(Object),
+                fields,
             });
             expect(objectInstance.state.crud.create).toHaveBeenCalledTimes(1);
             expect(isRef(objectInstance.state.crud.create.mock.calls[0][0].isCancelled)).toBe(true);
@@ -622,6 +623,7 @@ describe("use/objectInstance.js", function () {
                 pkKey: "unique",
                 params: { fields: ["id", "__str__", "name"] },
                 isCancelled: expect.any(Object),
+                fields,
             });
             expect(objectInstance.state.crud.create).toHaveBeenCalledTimes(1);
             expect(isRef(objectInstance.state.crud.create.mock.calls[0][0].isCancelled)).toBe(true);
@@ -677,6 +679,7 @@ describe("use/objectInstance.js", function () {
                 },
                 params: { fields: ["id", "__str__", "name"] },
                 isCancelled: expect.any(Object),
+                fields,
             });
             expect(objectInstance.state.crud.create).toHaveBeenCalledTimes(1);
             expect(isRef(objectInstance.state.crud.create.mock.calls[0][0].isCancelled)).toBe(true);
@@ -731,6 +734,7 @@ describe("use/objectInstance.js", function () {
                     name: "qwer",
                 },
                 params: { fields: ["id", "__str__", "name"] },
+                fields,
                 isCancelled: expect.any(Object),
             });
             expect(objectInstance.state.crud.create).toHaveBeenCalledTimes(1);

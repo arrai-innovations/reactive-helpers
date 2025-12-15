@@ -27,6 +27,7 @@
  * @typedef {object} CommonRunTracking
  * @property {RunId} runId - The unique identifier for your run.
  * @property {IsCurrentRunFn} isCurrentRun - A function that checks if the current run ID matches your run ID.
+ * @property {Record<string, any>} [additionalArgs] - Any additional arguments to pass through.
  */
 /**
  * @typedef {(runTracking: CommonRunTracking) => import('../utils/cancellablePromise.js').MaybeCancellablePromise<void>} AwaitableWithCancel - A function that returns a promise that can be cancelled.
@@ -168,6 +169,10 @@ export type CommonRunTracking = {
      * - A function that checks if the current run ID matches your run ID.
      */
     isCurrentRun: IsCurrentRunFn;
+    /**
+     * - Any additional arguments to pass through.
+     */
+    additionalArgs?: Record<string, any>;
 };
 /**
  * - A function that returns a promise that can be cancelled.
