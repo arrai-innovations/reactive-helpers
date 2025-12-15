@@ -95,9 +95,31 @@ Called to turn the current object into a new object on the server.
 
 ##### delete()
 
-> **delete**: () => [`MaybeCancellablePromise`](../utils/cancellablePromise.md#maybecancellablepromiset)\<`boolean`\>
+> **delete**: (`args`?) => [`MaybeCancellablePromise`](../utils/cancellablePromise.md#maybecancellablepromiset)\<`boolean`\>
 
 Called to delete the current object on the server.
+
+###### Parameters
+
+###### args?
+
+[`AdditionalArgs`](objectInstance.md#additionalargs)
+
+###### Returns
+
+[`MaybeCancellablePromise`](../utils/cancellablePromise.md#maybecancellablepromiset)\<`boolean`\>
+
+##### executeAction()
+
+> **executeAction**: (`args`?) => [`MaybeCancellablePromise`](../utils/cancellablePromise.md#maybecancellablepromiset)\<`boolean`\>
+
+Called to execute certain action on the current object.
+
+###### Parameters
+
+###### args?
+
+[`AdditionalArgs`](objectInstance.md#additionalargs)
 
 ###### Returns
 
@@ -211,6 +233,12 @@ A function to be used instead of the default crud create function.
 
 A function to be used instead of the default crud delete function.
 
+###### target.executeAction?
+
+> `optional` **executeAction**: [`CrudObjectexecuteActionFn`](../config/objectCrud.md#crudobjectexecuteactionfn)
+
+The  function to execute a certain action on an object.
+
 ###### target.patch?
 
 > `optional` **patch**: [`CrudPatchFn`](../config/objectCrud.md#crudpatchfn)
@@ -270,6 +298,12 @@ The create function.
 > **delete**: [`CrudDeleteFn`](../config/objectCrud.md#cruddeletefn)
 
 The delete function.
+
+###### crud.executeAction
+
+> **executeAction**: [`CrudObjectexecuteActionFn`](../config/objectCrud.md#crudobjectexecuteactionfn)
+
+The executeAction function.
 
 ###### crud.patch
 
@@ -376,6 +410,12 @@ The create function.
 > **delete**: [`CrudDeleteFn`](../config/objectCrud.md#cruddeletefn)
 
 The delete function.
+
+###### executeAction
+
+> **executeAction**: [`CrudObjectexecuteActionFn`](../config/objectCrud.md#crudobjectexecuteactionfn)
+
+The executeAction function.
 
 ###### patch
 
@@ -485,6 +525,12 @@ The create function.
 
 The delete function.
 
+##### executeAction
+
+> **executeAction**: [`CrudObjectexecuteActionFn`](../config/objectCrud.md#crudobjectexecuteactionfn)
+
+The executeAction function.
+
 ##### patch
 
 > **patch**: [`CrudPatchFn`](../config/objectCrud.md#crudpatchfn)
@@ -510,6 +556,18 @@ The subscribe function.
 The update function.
 
 ## Type Aliases
+
+### AdditionalArgs
+
+> **AdditionalArgs**\<\>: `object`
+
+#### Type Parameters
+
+#### Index Signature
+
+\[`key`: `string`\]: `any`
+
+***
 
 ### CrudObject
 
@@ -649,7 +707,7 @@ The options to be passed to useObjectInstance.
 
 [`ObjectInstance`](objectInstance.md#objectinstance)
 
-- An object used to manage create, retrieve, update, delete, and patch operations.
+- An object used to manage create, retrieve, update, delete, patch, and executeAction operations.
 
 #### Example
 

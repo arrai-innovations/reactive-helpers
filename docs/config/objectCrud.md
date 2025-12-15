@@ -92,6 +92,12 @@ A function to be used instead of the default crud create function.
 
 A function to be used instead of the default crud delete function.
 
+##### executeAction?
+
+> `optional` **executeAction**: [`CrudObjectexecuteActionFn`](objectCrud.md#crudobjectexecuteactionfn)
+
+The  function to execute a certain action on an object.
+
 ##### patch?
 
 > `optional` **patch**: [`CrudPatchFn`](objectCrud.md#crudpatchfn)
@@ -351,6 +357,26 @@ The arguments to be passed to the create function.
 [`DeleteArgs`](objectCrud.md#deleteargs)
 
 The arguments to be passed to the delete function.
+
+#### Returns
+
+[`CrudResponse`](objectCrud.md#crudresponse)
+
+***
+
+### CrudObjectexecuteActionFn()
+
+> **CrudObjectexecuteActionFn**\<\>: (`args`) => [`CrudResponse`](objectCrud.md#crudresponse)
+
+#### Type Parameters
+
+#### Parameters
+
+##### args
+
+`ExecuteActionArgs`
+
+The arguments to be passed to the executeAction function.
 
 #### Returns
 

@@ -108,6 +108,12 @@ The create function.
 
 The delete function.
 
+###### crud.executeAction
+
+> **executeAction**: [`CrudObjectexecuteActionFn`](../config/objectCrud.md#crudobjectexecuteactionfn)
+
+The executeAction function.
+
 ###### crud.patch
 
 > **patch**: [`CrudPatchFn`](../config/objectCrud.md#crudpatchfn)
@@ -271,6 +277,12 @@ The create function.
 > **delete**: [`CrudDeleteFn`](../config/objectCrud.md#cruddeletefn)
 
 The delete function.
+
+###### crud.executeAction
+
+> **executeAction**: [`CrudObjectexecuteActionFn`](../config/objectCrud.md#crudobjectexecuteactionfn)
+
+The executeAction function.
 
 ###### crud.patch
 

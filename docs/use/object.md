@@ -90,6 +90,12 @@ A function to be used instead of the default crud create function.
 
 A function to be used instead of the default crud delete function.
 
+###### target.executeAction?
+
+> `optional` **executeAction**: [`CrudObjectexecuteActionFn`](../config/objectCrud.md#crudobjectexecuteactionfn)
+
+The  function to execute a certain action on an object.
+
 ###### target.patch?
 
 > `optional` **patch**: [`CrudPatchFn`](../config/objectCrud.md#crudpatchfn)
@@ -183,6 +189,12 @@ The create function.
 > **delete**: [`CrudDeleteFn`](../config/objectCrud.md#cruddeletefn)
 
 The delete function.
+
+###### crud.executeAction
+
+> **executeAction**: [`CrudObjectexecuteActionFn`](../config/objectCrud.md#crudobjectexecuteactionfn)
+
+The executeAction function.
 
 ###### crud.patch
 
