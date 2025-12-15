@@ -507,8 +507,7 @@ export function useObjectInstance({ props, handlers = {} }) {
             });
             return wrapMaybeCancellable(
                 executeActionPromise
-                    .then((/** @type {ExistingCrudObject} */ object) => {
-                        assignReactiveObject(state.object, object);
+                    .then(() => {
                         return true;
                     })
                     .catch((/** @type {Error} */ error) => {
