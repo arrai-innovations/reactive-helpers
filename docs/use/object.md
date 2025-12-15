@@ -92,7 +92,7 @@ A function to be used instead of the default crud delete function.
 
 ###### target.executeAction?
 
-> `optional` **executeAction**: [`CrudObjectExecuteActionFn`](../config/objectCrud.md#crudobjectexecuteactionfn)
+> `optional` **executeAction**: [`CrudObjectexecuteActionFn`](../config/objectCrud.md#crudobjectexecuteactionfn)
 
 The  function to execute a certain action on an object.
 
@@ -192,7 +192,7 @@ The delete function.
 
 ###### crud.executeAction
 
-> **executeAction**: [`CrudObjectExecuteActionFn`](../config/objectCrud.md#crudobjectexecuteactionfn)
+> **executeAction**: [`CrudObjectexecuteActionFn`](../config/objectCrud.md#crudobjectexecuteactionfn)
 
 The executeAction function.
 

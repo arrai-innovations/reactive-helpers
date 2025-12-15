@@ -142,6 +142,12 @@ The watch arguments.
 
 #### Properties
 
+##### additionalArgs?
+
+> `optional` **additionalArgs**: `Record`\<`string`, `any`\>
+
+Any additional arguments to pass through.
+
 ##### isCurrentRun
 
 > **isCurrentRun**: [`IsCurrentRunFn`](cancellableIntent.md#iscurrentrunfn)

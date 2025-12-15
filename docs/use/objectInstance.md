@@ -87,7 +87,7 @@ Called to turn the current object into a new object on the server.
 
 ###### args
 
-[`ObjectInstanceCreateArgs`](objectInstance.md#objectinstancecreateargs) & [`AdditionalArgs`](objectInstance.md#additionalargs)
+[`ObjectInstanceCreateArgs`](objectInstance.md#objectinstancecreateargs)
 
 ###### Returns
 
@@ -111,15 +111,15 @@ Called to delete the current object on the server.
 
 ##### executeAction()
 
-> **executeAction**: (`args`) => [`MaybeCancellablePromise`](../utils/cancellablePromise.md#maybecancellablepromiset)\<`boolean`\>
+> **executeAction**: (`args`?) => [`MaybeCancellablePromise`](../utils/cancellablePromise.md#maybecancellablepromiset)\<`boolean`\>
 
 Called to execute certain action on the current object.
 
 ###### Parameters
 
-###### args
+###### args?
 
-`object` & [`AdditionalArgs`](objectInstance.md#additionalargs)
+[`AdditionalArgs`](objectInstance.md#additionalargs)
 
 ###### Returns
 
@@ -135,7 +135,7 @@ Called to patch the current object on the server.
 
 ###### args
 
-[`ObjectInstancePatchArgs`](objectInstance.md#objectinstancepatchargs) & [`AdditionalArgs`](objectInstance.md#additionalargs)
+[`ObjectInstancePatchArgs`](objectInstance.md#objectinstancepatchargs)
 
 ###### Returns
 
@@ -151,7 +151,7 @@ Called to retrieve the current object by pk from the server.
 
 ###### args?
 
-`Partial`\<[`CommonRunTracking`](cancellableIntent.md#commonruntracking)\> & [`AdditionalArgs`](objectInstance.md#additionalargs)
+[`CommonRunTracking`](cancellableIntent.md#commonruntracking)
 
 ###### Returns
 
@@ -167,7 +167,7 @@ Called to update the current object on the server.
 
 ###### args
 
-[`ObjectInstanceUpdateArgs`](objectInstance.md#objectinstanceupdateargs) & [`AdditionalArgs`](objectInstance.md#additionalargs)
+[`ObjectInstanceUpdateArgs`](objectInstance.md#objectinstanceupdateargs)
 
 ###### Returns
 
@@ -235,7 +235,7 @@ A function to be used instead of the default crud delete function.
 
 ###### target.executeAction?
 
-> `optional` **executeAction**: [`CrudObjectExecuteActionFn`](../config/objectCrud.md#crudobjectexecuteactionfn)
+> `optional` **executeAction**: [`CrudObjectexecuteActionFn`](../config/objectCrud.md#crudobjectexecuteactionfn)
 
 The  function to execute a certain action on an object.
 
@@ -301,7 +301,7 @@ The delete function.
 
 ###### crud.executeAction
 
-> **executeAction**: [`CrudObjectExecuteActionFn`](../config/objectCrud.md#crudobjectexecuteactionfn)
+> **executeAction**: [`CrudObjectexecuteActionFn`](../config/objectCrud.md#crudobjectexecuteactionfn)
 
 The executeAction function.
 
@@ -413,7 +413,7 @@ The delete function.
 
 ###### executeAction
 
-> **executeAction**: [`CrudObjectExecuteActionFn`](../config/objectCrud.md#crudobjectexecuteactionfn)
+> **executeAction**: [`CrudObjectexecuteActionFn`](../config/objectCrud.md#crudobjectexecuteactionfn)
 
 The executeAction function.
 
@@ -527,7 +527,7 @@ The delete function.
 
 ##### executeAction
 
-> **executeAction**: [`CrudObjectExecuteActionFn`](../config/objectCrud.md#crudobjectexecuteactionfn)
+> **executeAction**: [`CrudObjectexecuteActionFn`](../config/objectCrud.md#crudobjectexecuteactionfn)
 
 The executeAction function.
 
