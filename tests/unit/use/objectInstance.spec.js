@@ -1488,6 +1488,153 @@ describe("use/objectInstance.js", function () {
             expect(unref(objectInstance.state.crud.patch.mock.calls[0][0].isCancelled)).toBe(true);
         });
     });
+    describe("executeAction", function () {
+        scopedIt("success", async function () {
+            const pk = ref(1);
+            const params = reactive({ fields });
+            const objectInstance = useObjectInstance({
+                props: {
+                    target: { stream: "test_stream" },
+                    pk,
+                    pkKey: "id",
+                    params,
+                },
+            });
+            let executeActionResolve;
+            const executeActionPromise = new Promise((resolve) => {
+                executeActionResolve = resolve;
+            });
+            objectInstance.state.crud.executeAction = vi.fn();
+            objectInstance.state.crud.executeAction.mockReturnValueOnce(executeActionPromise);
+            expect(objectInstance.state.error).toBeNullError();
+            expect(objectInstance.state.errored).toBe(false);
+            expect(objectInstance.state.loading).toBeUndefined();
+            const oiExecuteActionPromise = objectInstance.executeAction({ action: "foo", dryRun: true });
+            expect(objectInstance.state.error).toBeNullError();
+            expect(objectInstance.state.errored).toBe(false);
+            expect(objectInstance.state.loading).toBe(true);
+            await nextTick();
+            // @ts-ignore - executeActionResolve is set in the promise, so it will be defined
+            executeActionResolve(true);
+            await flushPromises();
+            expect(objectInstance.state.error).toBeNullError();
+            expect(objectInstance.state.errored).toBe(false);
+            expect(objectInstance.state.loading).toBe(false);
+            await expect(oiExecuteActionPromise).resolves.toBe(true);
+            expect(objectInstance.state.crud.executeAction).toHaveBeenCalledWith({
+                target: { stream: "test_stream" },
+                pk: 1,
+                pkKey: "id",
+                isCancelled: expect.any(Object),
+                action: "foo",
+                dryRun: true,
+            });
+            expect(objectInstance.state.crud.executeAction).toHaveBeenCalledTimes(1);
+            expect(isRef(objectInstance.state.crud.executeAction.mock.calls[0][0].isCancelled)).toBe(true);
+            expect(unref(objectInstance.state.crud.executeAction.mock.calls[0][0].isCancelled)).toBe(false);
+        });
+        scopedIt("errored", async function () {
+            const pk = ref(1);
+            const params = reactive({ fields });
+            const objectInstance = useObjectInstance({
+                props: {
+                    target: { stream: "test_stream" },
+                    pk,
+                    pkKey: "id",
+                    params,
+                },
+            });
+            let executeActionReject;
+            const executeActionPromise = new Promise((resolve, reject) => {
+                executeActionReject = reject;
+            });
+            objectInstance.state.crud.executeAction = vi.fn();
+            objectInstance.state.crud.executeAction.mockReturnValueOnce(executeActionPromise);
+            expect(objectInstance.state.error).toBeNullError();
+            expect(objectInstance.state.errored).toBe(false);
+            expect(objectInstance.state.loading).toBeUndefined();
+            const oiExecuteActionPromise = objectInstance.executeAction({ action: "foo" });
+            expect(objectInstance.state.error).toBeNullError();
+            expect(objectInstance.state.errored).toBe(false);
+            expect(objectInstance.state.loading).toBe(true);
+            await nextTick();
+            const rejected = new Error("Test Error");
+            // @ts-ignore - executeActionReject is set in the promise, so it will be defined
+            executeActionReject(rejected);
+            await flushPromises();
+            expect(objectInstance.state.error).toBe(rejected);
+            expect(objectInstance.state.errored).toBe(true);
+            expect(objectInstance.state.loading).toBe(false);
+            await expect(oiExecuteActionPromise).resolves.toBe(false);
+            expect(objectInstance.state.crud.executeAction).toHaveBeenCalledWith({
+                target: { stream: "test_stream" },
+                pk: 1,
+                pkKey: "id",
+                isCancelled: expect.any(Object),
+                action: "foo",
+            });
+            expect(objectInstance.state.crud.executeAction).toHaveBeenCalledTimes(1);
+            expect(isRef(objectInstance.state.crud.executeAction.mock.calls[0][0].isCancelled)).toBe(true);
+            expect(unref(objectInstance.state.crud.executeAction.mock.calls[0][0].isCancelled)).toBe(false);
+        });
+        scopedIt("already loading", async function () {
+            const pk = ref(1);
+            const params = reactive({ fields });
+            const objectInstance = useObjectInstance({
+                props: {
+                    target: { stream: "test_stream" },
+                    pk,
+                    pkKey: "id",
+                    params,
+                },
+            });
+            const executeActionPromise = new Promise(() => {});
+            objectInstance.state.crud.executeAction = vi.fn();
+            objectInstance.state.crud.executeAction.mockReturnValueOnce(executeActionPromise);
+            objectInstance.executeAction({ action: "foo" });
+            expect(() => objectInstance.executeAction({ action: "foo" })).toThrow(
+                new ObjectError("already loading.", "already-loading")
+            );
+            expect(objectInstance.state.crud.executeAction).toHaveBeenCalledWith({
+                target: { stream: "test_stream" },
+                pk: 1,
+                pkKey: "id",
+                isCancelled: expect.any(Object),
+                action: "foo",
+            });
+            expect(objectInstance.state.crud.executeAction).toHaveBeenCalledTimes(1);
+            expect(isRef(objectInstance.state.crud.executeAction.mock.calls[0][0].isCancelled)).toBe(true);
+            expect(unref(objectInstance.state.crud.executeAction.mock.calls[0][0].isCancelled)).toBe(false);
+        });
+        scopedIt("cancel", async () => {
+            const objectInstance = useObjectInstance({
+                props: {
+                    target: { stream: "test_stream" },
+                    pk: 1,
+                    pkKey: "id",
+                    params: { fields },
+                },
+            });
+
+            let cancelFnCalled = false;
+            const testPromise = CancellablePromise(new Promise(() => {}), () => {
+                cancelFnCalled = true;
+                return Promise.resolve();
+            });
+
+            objectInstance.state.crud.executeAction = vi.fn().mockReturnValueOnce(testPromise);
+
+            const result = objectInstance.executeAction({ action: "foo" });
+            expect(isRef(objectInstance.state.crud.executeAction.mock.calls[0][0].isCancelled)).toBe(true);
+            expect(unref(objectInstance.state.crud.executeAction.mock.calls[0][0].isCancelled)).toBe(false);
+
+            await result.cancel();
+
+            expect(cancelFnCalled).toBe(true);
+            expect(unref(objectInstance.state.crud.executeAction.mock.calls[0][0].isCancelled)).toBe(true);
+            expect(objectInstance.state.loading).toBe(false);
+        });
+    });
     describe("delete", function () {
         scopedIt("success", async function () {
             const pk = ref(1);
