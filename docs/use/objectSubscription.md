@@ -110,7 +110,7 @@ The delete function.
 
 ###### crud.executeAction
 
-> **executeAction**: [`CrudObjectexecuteActionFn`](../config/objectCrud.md#crudobjectexecuteactionfn)
+> **executeAction**: [`CrudObjectExecuteActionFn`](../config/objectCrud.md#crudobjectexecuteactionfn)
 
 The executeAction function.
 
@@ -280,7 +280,7 @@ The delete function.
 
 ###### crud.executeAction
 
-> **executeAction**: [`CrudObjectexecuteActionFn`](../config/objectCrud.md#crudobjectexecuteactionfn)
+> **executeAction**: [`CrudObjectExecuteActionFn`](../config/objectCrud.md#crudobjectexecuteactionfn)
 
 The executeAction function.
 
