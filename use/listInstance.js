@@ -441,6 +441,7 @@ export function useListInstance({ props, handlers = {} }) {
                     isCancelled: readonly(isCancelled),
                     setPaginateInfo: self.setPaginateInfo,
                     setColumnTotals: self.setColumnTotals,
+                    ...args,
                 };
                 listPromise = state.crud.list(listCrudArgs);
             } catch (e) {
@@ -471,10 +472,12 @@ export function useListInstance({ props, handlers = {} }) {
             );
             return promises.list;
         },
-        bulkDelete: ({ pks, ...additionalArgs } = {}) => {
+        bulkDelete: (args = {}) => {
             if (state.loading) {
                 return Promise.reject(new ListInstanceError("already loading.", "already-loading"));
             }
+
+            let { pks, ...additionalArgs } = args;
             if (!pks) {
                 pks = Object.keys(state.objects);
             }
@@ -500,10 +503,11 @@ export function useListInstance({ props, handlers = {} }) {
                     loadingError.clearLoading();
                 });
         },
-        executeAction: ({ pks, action, ...additionalArgs }) => {
+        executeAction: (args = {}) => {
             if (state.loading) {
                 return Promise.reject(new ListInstanceError("already loading.", "already-loading"));
             }
+            let { pks, action, ...additionalArgs } = args;
             if (!pks) {
                 pks = Object.keys(state.objects);
             }

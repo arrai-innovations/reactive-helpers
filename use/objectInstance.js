@@ -279,7 +279,7 @@ export function useObjectInstance({ props, handlers = {} }) {
     /** @type {ObjectInstance} */
     const instance = {
         state,
-        create: ({ object, ...additionalArgs }) => {
+        create: (args = {}) => {
             // this function cannot be async, or the resulting promise will lose its .cancel() method
             if (state.loading) {
                 // we throw because we want devs to see this error in the console
@@ -290,12 +290,11 @@ export function useObjectInstance({ props, handlers = {} }) {
             loadingError.clearError();
             const isCancelled = ref(false);
             const createPromise = state.crud.create({
-                ...additionalArgs,
                 target: state.crud.args,
-                object,
                 params: state.params,
                 pkKey: state.pkKey,
                 isCancelled: readonly(isCancelled),
+                ...args,
             });
 
             return wrapMaybeCancellable(
@@ -338,12 +337,12 @@ export function useObjectInstance({ props, handlers = {} }) {
             let retrievePromise = null;
             try {
                 retrievePromise = state.crud.retrieve({
-                    ...args,
                     target: state.crud.args,
                     pk: state.pk,
                     params: state.params,
                     pkKey: state.pkKey,
                     isCancelled: readonly(isCancelled),
+                    ...args,
                 });
             } catch (error) {
                 loadingError.setError(error);
@@ -376,7 +375,7 @@ export function useObjectInstance({ props, handlers = {} }) {
 
             return promises.retrieve;
         },
-        update: ({ object, ...additionalArgs }) => {
+        update: (args = {}) => {
             // this function cannot be async, or the resulting promise will lose its .cancel() method
             if (state.loading) {
                 // we throw because we want devs to see this error in the console
@@ -387,12 +386,11 @@ export function useObjectInstance({ props, handlers = {} }) {
             loadingError.clearError();
             const isCancelled = ref(false);
             const updatePromise = state.crud.update({
-                ...additionalArgs,
                 target: state.crud.args,
-                object,
                 params: state.params,
                 pkKey: state.pkKey,
                 isCancelled: readonly(isCancelled),
+                ...args,
             });
             return wrapMaybeCancellable(
                 updatePromise
@@ -426,10 +424,10 @@ export function useObjectInstance({ props, handlers = {} }) {
             loadingError.setLoading();
             loadingError.clearError();
             const deletePromise = state.crud.delete({
-                ...args,
                 target: state.crud.args,
                 pk: state.pk,
                 pkKey: state.pkKey,
+                ...args,
             });
             return wrapMaybeCancellable(
                 deletePromise
@@ -453,7 +451,7 @@ export function useObjectInstance({ props, handlers = {} }) {
                     : undefined
             );
         },
-        patch: ({ partialObject, ...additionalArgs }) => {
+        patch: (args) => {
             // this function cannot be async, or the resulting promise will lose its .cancel() method
             if (state.loading) {
                 // we throw because we want devs to see this error in the console
@@ -464,13 +462,12 @@ export function useObjectInstance({ props, handlers = {} }) {
             loadingError.clearError();
             const isCancelled = ref(false);
             const patchPromise = state.crud.patch({
-                ...additionalArgs,
                 target: state.crud.args,
-                partialObject,
                 pk: state.pk,
                 pkKey: state.pkKey,
                 params: state.params,
                 isCancelled: readonly(isCancelled),
+                ...args,
             });
             return wrapMaybeCancellable(
                 patchPromise
@@ -494,7 +491,7 @@ export function useObjectInstance({ props, handlers = {} }) {
                     : undefined
             );
         },
-        executeAction: ({ action, ...additionalArgs }) => {
+        executeAction: (args = {}) => {
             if (state.loading) {
                 throw new ObjectError("already loading.", "already-loading");
             }
@@ -502,16 +499,16 @@ export function useObjectInstance({ props, handlers = {} }) {
             loadingError.clearError();
             const isCancelled = ref(false);
             const executeActionPromise = state.crud.executeAction({
-                ...additionalArgs,
                 target: state.crud.args,
-                action,
                 pk: state.pk,
                 pkKey: state.pkKey,
                 isCancelled: readonly(isCancelled),
+                ...args,
             });
             return wrapMaybeCancellable(
                 executeActionPromise
-                    .then(() => {
+                    .then((/** @type {ExistingCrudObject} */ object) => {
+                        assignReactiveObject(state.object, object);
                         return true;
                     })
                     .catch((/** @type {Error} */ error) => {
