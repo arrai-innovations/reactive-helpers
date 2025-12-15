@@ -182,7 +182,7 @@ export type CrudRetrieveFn = (args: RetrieveArgs) => CrudResponse;
 export type CrudUpdateFn = (args: UpdateArgs) => CrudResponse;
 export type CrudPatchFn = (args: PartialArgs) => CrudResponse;
 export type CrudDeleteFn = (args: DeleteArgs) => CrudResponse;
-export type CrudObjectexecuteActionFn = (args: ExecuteActionArgs) => CrudResponse;
+export type CrudObjectExecuteActionFn = (args: ExecuteActionArgs) => CrudResponse;
 export type CrudObjectSubscribeFn = (args: ObjectSubscribeArgs) => import("../utils/cancellablePromise.js").CancellablePromise<void>;
 /**
  * Defines the CRUD-related handlers and additional utilities provided by the object instance.
@@ -215,7 +215,7 @@ export type ObjectCrudHandlers = {
     /**
      * - The  function to execute a certain action on an object.
      */
-    executeAction?: CrudObjectexecuteActionFn;
+    executeAction?: CrudObjectExecuteActionFn;
 };
 /**
  * The CRUD arguments.

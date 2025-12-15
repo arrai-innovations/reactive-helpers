@@ -55,7 +55,7 @@ import { refIfReactive } from "../utils/refIfReactive.js";
  * @property {import('../config/objectCrud.js').CrudPatchFn} patch - The patch function.
  * @property {import('../config/objectCrud.js').CrudDeleteFn} delete - The delete function.
  * @property {import('../config/objectCrud.js').CrudObjectSubscribeFn} subscribe - The subscribe function.
- * @property {import('../config/objectCrud.js').CrudObjectexecuteActionFn} executeAction - The executeAction function.
+ * @property {import('../config/objectCrud.js').CrudObjectExecuteActionFn} executeAction - The executeAction function.
  */
 
 /**

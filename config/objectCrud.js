@@ -127,7 +127,7 @@ import { readonly } from "vue";
  */
 
 /**
- * @callback CrudObjectexecuteActionFn
+ * @callback CrudObjectExecuteActionFn
  * @param {ExecuteActionArgs} args - The arguments to be passed to the executeAction function.
  * @returns {CrudResponse} - The response data from the delete function.
  */
@@ -148,7 +148,7 @@ import { readonly } from "vue";
  * @property {CrudDeleteFn} [delete] - A function to be used instead of the default crud delete function.
  * @property {CrudPatchFn} [patch] - A function to be used instead of the default crud patch function.
  * @property {CrudObjectSubscribeFn} [subscribe] - A function to be used instead of the default crud subscribe function.
- * @property {CrudObjectexecuteActionFn} [executeAction] - The  function to execute a certain action on an object.
+ * @property {CrudObjectExecuteActionFn} [executeAction] - The  function to execute a certain action on an object.
  *
  */
 

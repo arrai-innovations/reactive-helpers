@@ -106,7 +106,7 @@ export function useObjectInstance({ props, handlers }: ObjectInstanceOptions): O
  * @property {import('../config/objectCrud.js').CrudPatchFn} patch - The patch function.
  * @property {import('../config/objectCrud.js').CrudDeleteFn} delete - The delete function.
  * @property {import('../config/objectCrud.js').CrudObjectSubscribeFn} subscribe - The subscribe function.
- * @property {import('../config/objectCrud.js').CrudObjectexecuteActionFn} executeAction - The executeAction function.
+ * @property {import('../config/objectCrud.js').CrudObjectExecuteActionFn} executeAction - The executeAction function.
  */
 /**
  * The raw state of the object instance.
@@ -263,7 +263,7 @@ export type ObjectInstanceRawStateCrud = {
     /**
      * - The executeAction function.
      */
-    executeAction: import("../config/objectCrud.js").CrudObjectexecuteActionFn;
+    executeAction: import("../config/objectCrud.js").CrudObjectExecuteActionFn;
 };
 /**
  * The raw state of the object instance.

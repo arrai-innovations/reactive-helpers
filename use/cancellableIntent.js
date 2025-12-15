@@ -60,7 +60,6 @@ export class CancellableIntentError extends Error {
  * @typedef {object} CommonRunTracking
  * @property {RunId} runId - The unique identifier for your run.
  * @property {IsCurrentRunFn} isCurrentRun - A function that checks if the current run ID matches your run ID.
- * @property {Record<string, any>} [additionalArgs] - Any additional arguments to pass through.
  */
 
 /**

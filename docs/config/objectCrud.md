@@ -94,7 +94,7 @@ A function to be used instead of the default crud delete function.
 
 ##### executeAction?
 
-> `optional` **executeAction**: [`CrudObjectexecuteActionFn`](objectCrud.md#crudobjectexecuteactionfn)
+> `optional` **executeAction**: [`CrudObjectExecuteActionFn`](objectCrud.md#crudobjectexecuteactionfn)
 
 The  function to execute a certain action on an object.
 
@@ -364,9 +364,9 @@ The arguments to be passed to the delete function.
 
 ***
 
-### CrudObjectexecuteActionFn()
+### CrudObjectExecuteActionFn()
 
-> **CrudObjectexecuteActionFn**\<\>: (`args`) => [`CrudResponse`](objectCrud.md#crudresponse)
+> **CrudObjectExecuteActionFn**\<\>: (`args`) => [`CrudResponse`](objectCrud.md#crudresponse)
 
 #### Type Parameters
 
