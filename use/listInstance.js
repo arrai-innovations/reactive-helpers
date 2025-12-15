@@ -417,8 +417,7 @@ export function useListInstance({ props, handlers = {} }) {
         setColumnTotals: (total) => {
             assignReactiveObject(state.columnTotals, total || {});
         },
-        list: (args) => {
-            const { runId, isCurrentRun } = args || {};
+        list: (args = {}) => {
             // this function cannot be async, or the resulting promise will lose its .cancel() method
             if (promises.list) {
                 // if a retrieve is already in progress, return the existing promise
@@ -441,11 +440,8 @@ export function useListInstance({ props, handlers = {} }) {
                     isCancelled: readonly(isCancelled),
                     setPaginateInfo: self.setPaginateInfo,
                     setColumnTotals: self.setColumnTotals,
+                    ...args,
                 };
-                if (runId) {
-                    listCrudArgs.runId = runId;
-                    listCrudArgs.isCurrentRun = isCurrentRun;
-                }
                 listPromise = state.crud.list(listCrudArgs);
             } catch (e) {
                 loadingError.setError(e);
@@ -475,10 +471,12 @@ export function useListInstance({ props, handlers = {} }) {
             );
             return promises.list;
         },
-        bulkDelete: ({ pks } = {}) => {
+        bulkDelete: (args = {}) => {
             if (state.loading) {
                 return Promise.reject(new ListInstanceError("already loading.", "already-loading"));
             }
+
+            let { pks, ...additionalArgs } = args;
             if (!pks) {
                 pks = Object.keys(state.objects);
             }
@@ -489,6 +487,7 @@ export function useListInstance({ props, handlers = {} }) {
                     target: state.crud.args,
                     pks,
                     pkKey: state.pkKey,
+                    ...additionalArgs,
                 })
                 .then(() => {
                     assignReactiveObject(state.objects, {});
@@ -503,10 +502,11 @@ export function useListInstance({ props, handlers = {} }) {
                     loadingError.clearLoading();
                 });
         },
-        executeAction: ({ pks, action }) => {
+        executeAction: (args = {}) => {
             if (state.loading) {
                 return Promise.reject(new ListInstanceError("already loading.", "already-loading"));
             }
+            let { pks, ...additionalArgs } = args;
             if (!pks) {
                 pks = Object.keys(state.objects);
             }
@@ -514,10 +514,10 @@ export function useListInstance({ props, handlers = {} }) {
             loadingError.clearError();
             return state.crud
                 .executeAction({
-                    action,
                     target: state.crud.args,
                     pks,
                     pkKey: state.pkKey,
+                    ...additionalArgs,
                 })
                 .then((/** @type {object|string} */ responseData) => {
                     loadingError.clearError();

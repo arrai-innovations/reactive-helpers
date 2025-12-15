@@ -127,6 +127,12 @@ import { readonly } from "vue";
  */
 
 /**
+ * @callback CrudObjectexecuteActionFn
+ * @param {ExecuteActionArgs} args - The arguments to be passed to the executeAction function.
+ * @returns {CrudResponse} - The response data from the delete function.
+ */
+
+/**
  * @callback CrudObjectSubscribeFn
  * @param {ObjectSubscribeArgs} args - The arguments to be passed to the subscribe function.
  * @returns {import('../utils/cancellablePromise.js').CancellablePromise<void>} - The cancellable promise.
@@ -142,6 +148,8 @@ import { readonly } from "vue";
  * @property {CrudDeleteFn} [delete] - A function to be used instead of the default crud delete function.
  * @property {CrudPatchFn} [patch] - A function to be used instead of the default crud patch function.
  * @property {CrudObjectSubscribeFn} [subscribe] - A function to be used instead of the default crud subscribe function.
+ * @property {CrudObjectexecuteActionFn} [executeAction] - The  function to execute a certain action on an object.
+ *
  */
 
 /**
@@ -152,7 +160,7 @@ import { readonly } from "vue";
  */
 
 const _defaultCrud = createDefaultCrud(
-    ["retrieve", "create", "update", "patch", "delete", "subscribe"],
+    ["retrieve", "create", "update", "patch", "delete", "subscribe", "executeAction"],
     new Set(["subscribe"])
 );
 
