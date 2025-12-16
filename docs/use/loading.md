@@ -8,7 +8,7 @@
 
 ## Interfaces
 
-### LoadingStatus
+### LoadingFunctions
 
 #### Properties
 
@@ -22,12 +22,6 @@ Set the loading state to false.
 
 `void`
 
-##### loading
-
-> **loading**: `Readonly`\<`Ref`\<`boolean`, `boolean`\>\>
-
-Whether the component is loading.
-
 ##### setLoading()
 
 > **setLoading**: () => `void`
@@ -37,6 +31,18 @@ Set the loading state to true.
 ###### Returns
 
 `void`
+
+***
+
+### LoadingProperties
+
+#### Properties
+
+##### loading
+
+> **loading**: `Readonly`\<`Ref`\<`boolean`, `boolean`\>\>
+
+Whether the component is loading.
 
 ## Type Aliases
 
@@ -51,6 +57,14 @@ Set the loading state to true.
 ### LoadingRef
 
 > **LoadingRef**\<\>: `Ref`
+
+#### Type Parameters
+
+***
+
+### LoadingStatus
+
+> **LoadingStatus**\<\>: [`LoadingProperties`](loading.md#loadingproperties) & [`LoadingFunctions`](loading.md#loadingfunctions)
 
 #### Type Parameters
 

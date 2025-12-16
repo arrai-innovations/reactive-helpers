@@ -8,17 +8,9 @@
 
 ## Type Aliases
 
-### ReadonlyLoadingStatus
+### MaybeRefWatchableLoading
 
-> **ReadonlyLoadingStatus**\<\>: `Pick`\<[`LoadingStatus`](loading.md#loadingstatus), `"loading"`\>
-
-#### Type Parameters
-
-***
-
-### RefLoadingStatus
-
-> **RefLoadingStatus**\<\>: `Ref`
+> **MaybeRefWatchableLoading**\<\>: `MaybeRef`
 
 #### Type Parameters
 
@@ -26,15 +18,38 @@
 
 ### WatchableLoading
 
-> **WatchableLoading**\<\>: [`ReadonlyLoadingStatus`](proxyLoading.md#readonlyloadingstatus) \| [`RefLoadingStatus`](proxyLoading.md#refloadingstatus)
+> **WatchableLoading**\<\>: [`LoadingProperties`](loading.md#loadingproperties) \| `Reactive`
 
 #### Type Parameters
 
 ## Functions
 
+### asWatchableLoading()
+
+> **asWatchableLoading**(`source`): [`WatchableLoading`](proxyLoading.md#watchableloading)
+
+Adapt an object with reactive loading state into a WatchableLoading shape.
+Accepts either an object with a `state` property or an object that already exposes `loading`.
+
+#### Parameters
+
+##### source
+
+`MaybeRef`\<[`WatchableLoading`](proxyLoading.md#watchableloading) \| \{ `state`: [`WatchableLoading`](proxyLoading.md#watchableloading); \}\>
+
+The source object to adapt.
+
+#### Returns
+
+[`WatchableLoading`](proxyLoading.md#watchableloading)
+
+- The adapted WatchableLoading object.
+
+***
+
 ### useProxyLoading()
 
-> **useProxyLoading**(`loadings`): `Pick`\<[`LoadingStatus`](loading.md#loadingstatus), `"loading"`\>
+> **useProxyLoading**(`loadings`): [`LoadingProperties`](loading.md#loadingproperties)
 
 A composable function for aggregating loading state across multiple sources.
 
@@ -42,12 +57,18 @@ A composable function for aggregating loading state across multiple sources.
 
 ##### loadings
 
-[`WatchableLoading`](proxyLoading.md#watchableloading)[]
+`MaybeRef`\<`MaybeRef`\<[`WatchableLoading`](proxyLoading.md#watchableloading)\>[]\>
 
 The loading states to monitor.
 
 #### Returns
 
-`Pick`\<[`LoadingStatus`](loading.md#loadingstatus), `"loading"`\>
+[`LoadingProperties`](loading.md#loadingproperties)
 
 An object containing the aggregated loading field.
+
+## References
+
+### ReadonlyLoadingStatus
+
+Renames and re-exports [LoadingProperties](loading.md#loadingproperties)

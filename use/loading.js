@@ -6,12 +6,20 @@ import { readonly, ref } from "vue";
  */
 
 /**
- * The loading state API.
- *
- * @typedef {object} LoadingStatus
+ * @typedef {object} LoadingProperties
  * @property {LoadingReadonlyRef} loading - Whether the component is loading.
+ */
+
+/**
+ * @typedef {object} LoadingFunctions
  * @property {() => void} setLoading - Set the loading state to true.
  * @property {() => void} clearLoading - Set the loading state to false.
+ */
+
+/**
+ * The loading state API.
+ *
+ * @typedef {LoadingProperties & LoadingFunctions} LoadingStatus
  */
 
 /**

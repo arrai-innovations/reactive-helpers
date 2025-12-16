@@ -2,7 +2,9 @@ import { useLoading } from "./loading.js";
 import { useError } from "./error.js";
 
 /**
- * @typedef {import('./loading.js').LoadingStatus & import('./error.js').ErrorStatus} LoadingErrorStatus
+ * @typedef {import('./loading.js').LoadingProperties & import('./error.js').ErrorProperties} LoadingErrorProperties
+ * @typedef {import('./loading.js').LoadingFunctions & import('./error.js').ErrorFunctions} LoadingErrorFunctions
+ * @typedef {LoadingErrorProperties & LoadingErrorFunctions} LoadingErrorStatus
  */
 
 /**

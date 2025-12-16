@@ -8,9 +8,31 @@
 
 ## Type Aliases
 
+### MaybeRefWatchableLoadingError
+
+> **MaybeRefWatchableLoadingError**\<\>: `MaybeRef`
+
+#### Type Parameters
+
+***
+
 ### ProxyLoadingError
 
-> **ProxyLoadingError**\<\>: [`ReadonlyLoadingStatus`](proxyLoading.md#readonlyloadingstatus) & [`ReadonlyErrorStatus`](proxyError.md#readonlyerrorstatus)
+> **ProxyLoadingError**\<\>: [`LoadingProperties`](loading.md#loadingproperties) & [`ReadonlyErrorStatus`](error.md#readonlyerrorstatus)
+
+#### Type Parameters
+
+***
+
+### SeparateStateLoadingError
+
+> **SeparateStateLoadingError**\<\>: `object` & [`ErrorReadOnlyFunctions`](error.md#errorreadonlyfunctions)
+
+#### Type declaration
+
+##### state
+
+> **state**: `Reactive`
 
 #### Type Parameters
 
@@ -24,17 +46,39 @@
 
 ## Functions
 
+### asWatchableLoadingError()
+
+> **asWatchableLoadingError**(`source`): [`WatchableLoadingError`](proxyLoadingError.md#watchableloadingerror)
+
+Adapt an object that exposes loading/error state and clearError into a WatchableLoadingError shape.
+
+#### Parameters
+
+##### source
+
+`MaybeRef`\<[`WatchableLoadingError`](proxyLoadingError.md#watchableloadingerror) \| [`SeparateStateLoadingError`](proxyLoadingError.md#separatestateloadingerror)\>
+
+The source object to adapt.
+
+#### Returns
+
+[`WatchableLoadingError`](proxyLoadingError.md#watchableloadingerror)
+
+- The adapted WatchableLoadingError object.
+
+***
+
 ### useProxyLoadingError()
 
 > **useProxyLoadingError**(`loadingErrors`): [`ProxyLoadingError`](proxyLoadingError.md#proxyloadingerror)
 
-A composable function combining aggregated loading and error state.
+A composable function combining aggregated loading and error state. Use `asWatchableLoadingError` to convert <List|Object><Instance|Subscription> to WatchableLoadingError.
 
 #### Parameters
 
 ##### loadingErrors
 
-[`WatchableLoadingError`](proxyLoadingError.md#watchableloadingerror)[]
+`MaybeRef`\<`MaybeRef`\<[`WatchableLoadingError`](proxyLoadingError.md#watchableloadingerror)\>[]\>
 
 The loading and error states to monitor.
 

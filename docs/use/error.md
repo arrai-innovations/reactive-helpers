@@ -8,7 +8,7 @@
 
 ## Interfaces
 
-### ErrorStatus
+### ErrorFunctions
 
 #### Properties
 
@@ -17,18 +17,6 @@
 > **clearError**: [`ClearErrorFn`](error.md#clearerrorfn)
 
 Clear the error state.
-
-##### error
-
-> **error**: `Readonly`\<`Ref`\<`Error`, `Error`\>\>
-
-The error that occurred.
-
-##### errored
-
-> **errored**: `Readonly`\<`Ref`\<`boolean`, `boolean`\>\>
-
-Whether an error has occurred.
 
 ##### setError()
 
@@ -45,6 +33,36 @@ Set the error state.
 ###### Returns
 
 `void`
+
+***
+
+### ErrorProperties
+
+#### Properties
+
+##### error
+
+> **error**: `Readonly`\<`Ref`\<`Error`, `Error`\>\>
+
+The error that occurred.
+
+##### errored
+
+> **errored**: `Readonly`\<`Ref`\<`boolean`, `boolean`\>\>
+
+Whether an error has occurred.
+
+***
+
+### ErrorReadOnlyFunctions
+
+#### Properties
+
+##### clearError
+
+> **clearError**: [`ClearErrorFn`](error.md#clearerrorfn)
+
+Clear the error state.
 
 ## Type Aliases
 
@@ -87,6 +105,22 @@ Set the error state.
 ### ErrorRef
 
 > **ErrorRef**\<\>: `Ref`
+
+#### Type Parameters
+
+***
+
+### ErrorStatus
+
+> **ErrorStatus**\<\>: [`ErrorProperties`](error.md#errorproperties) & [`ErrorFunctions`](error.md#errorfunctions)
+
+#### Type Parameters
+
+***
+
+### ReadonlyErrorStatus
+
+> **ReadonlyErrorStatus**\<\>: [`ErrorProperties`](error.md#errorproperties) & [`ErrorReadOnlyFunctions`](error.md#errorreadonlyfunctions)
 
 #### Type Parameters
 

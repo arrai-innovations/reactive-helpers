@@ -8,9 +8,25 @@
 
 ## Type Aliases
 
+### LoadingErrorFunctions
+
+> **LoadingErrorFunctions**\<\>: [`LoadingFunctions`](loading.md#loadingfunctions) & [`ErrorFunctions`](error.md#errorfunctions)
+
+#### Type Parameters
+
+***
+
+### LoadingErrorProperties
+
+> **LoadingErrorProperties**\<\>: [`LoadingProperties`](loading.md#loadingproperties) & [`ErrorProperties`](error.md#errorproperties)
+
+#### Type Parameters
+
+***
+
 ### LoadingErrorStatus
 
-> **LoadingErrorStatus**\<\>: [`LoadingStatus`](loading.md#loadingstatus) & [`ErrorStatus`](error.md#errorstatus)
+> **LoadingErrorStatus**\<\>: [`LoadingErrorProperties`](loadingError.md#loadingerrorproperties) & [`LoadingErrorFunctions`](loadingError.md#loadingerrorfunctions)
 
 #### Type Parameters
 

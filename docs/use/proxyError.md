@@ -8,17 +8,23 @@
 
 ## Type Aliases
 
-### ReadonlyErrorStatus
+### MaybeRefWatchableError
 
-> **ReadonlyErrorStatus**\<\>: `Pick`\<[`ErrorStatus`](error.md#errorstatus), `"error"` \| `"errored"` \| `"clearError"`\>
+> **MaybeRefWatchableError**\<\>: `MaybeRef`
 
 #### Type Parameters
 
 ***
 
-### RefErrorStatus
+### SeperateStateError
 
-> **RefErrorStatus**\<\>: `Ref`
+> **SeperateStateError**\<\>: `object` & [`ErrorReadOnlyFunctions`](error.md#errorreadonlyfunctions)
+
+#### Type declaration
+
+##### state
+
+> **state**: `Reactive`
 
 #### Type Parameters
 
@@ -26,31 +32,38 @@
 
 ### WatchableError
 
-> **WatchableError**\<\>: [`ReadonlyErrorStatus`](proxyError.md#readonlyerrorstatus) \| [`RefErrorStatus`](proxyError.md#referrorstatus)
-
-#### Type Parameters
-
-***
-
-### WatchableErrorRef
-
-> **WatchableErrorRef**\<\>: `Ref`
-
-#### Type Parameters
-
-***
-
-### WatchableErrors
-
-> **WatchableErrors**\<\>: [`WatchableErrorRef`](proxyError.md#watchableerrorref) \| [`WatchableError`](proxyError.md#watchableerror)[]
+> **WatchableError**\<\>: [`ReadonlyErrorStatus`](error.md#readonlyerrorstatus) \| `Reactive`
 
 #### Type Parameters
 
 ## Functions
 
+### asWatchableError()
+
+> **asWatchableError**(`source`): [`WatchableError`](proxyError.md#watchableerror)
+
+Adapt an object with reactive error state into a WatchableError shape.
+Accepts either an object with a `state` property or an object that already exposes error/errored/clearError.
+
+#### Parameters
+
+##### source
+
+`MaybeRef`\<[`WatchableError`](proxyError.md#watchableerror) \| [`SeperateStateError`](proxyError.md#seperatestateerror)\>
+
+The source object to adapt.
+
+#### Returns
+
+[`WatchableError`](proxyError.md#watchableerror)
+
+- The adapted WatchableError object.
+
+***
+
 ### useProxyError()
 
-> **useProxyError**(`errors`): `Pick`\<[`ErrorStatus`](error.md#errorstatus), `"error"` \| `"errored"` \| `"clearError"`\>
+> **useProxyError**(`errors`): [`ReadonlyErrorStatus`](error.md#readonlyerrorstatus)
 
 A composable function for aggregating error state across multiple sources.
 
@@ -58,12 +71,12 @@ A composable function for aggregating error state across multiple sources.
 
 ##### errors
 
-[`WatchableErrors`](proxyError.md#watchableerrors)
+`MaybeRef`\<`MaybeRef`\<[`WatchableError`](proxyError.md#watchableerror)\>[]\>
 
 The error states to monitor.
 
 #### Returns
 
-`Pick`\<[`ErrorStatus`](error.md#errorstatus), `"error"` \| `"errored"` \| `"clearError"`\>
+[`ReadonlyErrorStatus`](error.md#readonlyerrorstatus)
 
 An object containing aggregated reactive fields and actions for error state.
