@@ -62,39 +62,7 @@ The error code.
 
 ## Interfaces
 
-### CancellableIntentOptions
-
-The options for the cancellable intent.
-
-#### Properties
-
-##### awaitableWithCancel
-
-> **awaitableWithCancel**: [`AwaitableWithCancel`](cancellableIntent.md#awaitablewithcancel-1)
-
-The function that returns a promise that can be cancelled. Receives the run ID as an argument.
-
-##### clearActiveOnResolved?
-
-> `optional` **clearActiveOnResolved**: `boolean`
-
-Whether to clear the active state when the promise resolves.
-
-##### guardArguments?
-
-> `optional` **guardArguments**: `any`
-
-The reactive object to watch for truthiness before running the intent.
-
-##### watchArguments?
-
-> `optional` **watchArguments**: `any`
-
-The reactive object to watch for changes.
-
-***
-
-### CancellableIntentRawState
+### CancellableIntentMyState
 
 The raw state of the cancellable intent.
 
@@ -135,6 +103,38 @@ Whether there are resolving intents.
 > **watchArguments**: `any`
 
 The watch arguments.
+
+***
+
+### CancellableIntentOptions
+
+The options for the cancellable intent.
+
+#### Properties
+
+##### awaitableWithCancel
+
+> **awaitableWithCancel**: [`AwaitableWithCancel`](cancellableIntent.md#awaitablewithcancel-1)
+
+The function that returns a promise that can be cancelled. Receives the run ID as an argument.
+
+##### clearActiveOnResolved?
+
+> `optional` **clearActiveOnResolved**: `boolean`
+
+Whether to clear the active state when the promise resolves.
+
+##### guardArguments?
+
+> `optional` **guardArguments**: `any`
+
+The reactive object to watch for truthiness before running the intent.
+
+##### watchArguments?
+
+> `optional` **watchArguments**: `any`
+
+The reactive object to watch for changes.
 
 ***
 
@@ -238,7 +238,7 @@ Stop the cancellable intent.
 
 > **AwaitableWithCancel**\<\>: (`runTracking`) => [`MaybeCancellablePromise`](../utils/cancellablePromise.md#maybecancellablepromiset)
 
-A function that returns a promise that can be cancelled.
+A function that returns a promise that can be cancelled. The return value of the promise is not used.
 
 #### Type Parameters
 
@@ -264,9 +264,19 @@ A function that returns a promise that can be cancelled.
 
 ### CancellableIntent
 
-> **CancellableIntent**\<\>: [`MyCancellableIntent`](cancellableIntent.md#mycancellableintent) & `Pick`\<[`ErrorStatus`](error.md#errorstatus), `"clearError"`\>
+> **CancellableIntent**\<\>: [`MyCancellableIntent`](cancellableIntent.md#mycancellableintent) & [`ErrorReadOnlyFunctions`](error.md#errorreadonlyfunctions)
 
 The instance of the cancellable intent.
+
+#### Type Parameters
+
+***
+
+### CancellableIntentRawState
+
+> **CancellableIntentRawState**\<\>: [`CancellableIntentMyState`](cancellableIntent.md#cancellableintentmystate) & [`ErrorProperties`](error.md#errorproperties)
+
+The raw state of the cancellable intent.
 
 #### Type Parameters
 

@@ -4,7 +4,7 @@
  * Enables distinguishing results or effects from overlapping async runs.
  */
 /**
- * @typedef {object} CancellableIntentRawState - The raw state of the cancellable intent.
+ * @typedef {object} CancellableIntentMyState - The raw state of the cancellable intent.
  * @property {import('vue').ComputedRef<boolean>|undefined} active - Whether there are active intents.
  * @property {import('vue').ComputedRef<boolean>|undefined} resolving - Whether there are resolving intents.
  * @property {boolean} clearActiveOnResolved - Whether to clear the active state when the promise resolves.
@@ -13,10 +13,10 @@
  * @property {import('vue').DeepReadonly<object>} guardArguments - The guard arguments.
  */
 /**
- * @typedef {import("vue").Reactive<
- *     CancellableIntentRawState &
- *     Pick<import('./error.js').ErrorStatus, 'error' | 'errored'>
- * >} CancellableIntentState - The state of the cancellable intent.
+ * @typedef {CancellableIntentMyState & import('./error.js').ErrorProperties} CancellableIntentRawState - The raw state of the cancellable intent.
+ */
+/**
+ * @typedef {import("vue").Reactive<CancellableIntentRawState>} CancellableIntentState - The state of the cancellable intent.
  */
 /**
  * @typedef {() => boolean} IsCurrentRunFn - A function that checks if the current run ID matches the last run ID.
@@ -29,7 +29,7 @@
  * @property {IsCurrentRunFn} isCurrentRun - A function that checks if the current run ID matches your run ID.
  */
 /**
- * @typedef {(runTracking: CommonRunTracking) => import('../utils/cancellablePromise.js').MaybeCancellablePromise<void>} AwaitableWithCancel - A function that returns a promise that can be cancelled.
+ * @typedef {(runTracking: CommonRunTracking) => import('../utils/cancellablePromise.js').MaybeCancellablePromise<unknown>} AwaitableWithCancel - A function that returns a promise that can be cancelled. The return value of the promise is not used.
  */
 /**
  * @typedef {import("vue").UnwrapNestedRefs<object>|{[key: string]: import('vue').Ref<any>}} WatchGuardArguments - The reactive object to watch for changes.
@@ -56,7 +56,7 @@
  * @property {CancelFn} cancel - Cancel the cancellable intent.
  */
 /**
- * @typedef {MyCancellableIntent & Pick<import('./error.js').ErrorStatus, "clearError">} CancellableIntent - The instance of the cancellable intent.
+ * @typedef {MyCancellableIntent & import('./error.js').ErrorReadOnlyFunctions} CancellableIntent - The instance of the cancellable intent.
  */
 /**
  * Calls your awaitable function with the arguments you pass in when the watch arguments change and are all truthy.
@@ -122,7 +122,7 @@ export type RunId = number;
 /**
  * - The raw state of the cancellable intent.
  */
-export type CancellableIntentRawState = {
+export type CancellableIntentMyState = {
     /**
      * - Whether there are active intents.
      */
@@ -149,9 +149,13 @@ export type CancellableIntentRawState = {
     guardArguments: import("vue").DeepReadonly<object>;
 };
 /**
+ * - The raw state of the cancellable intent.
+ */
+export type CancellableIntentRawState = CancellableIntentMyState & import("./error.js").ErrorProperties;
+/**
  * - The state of the cancellable intent.
  */
-export type CancellableIntentState = import("vue").Reactive<CancellableIntentRawState & Pick<import("./error.js").ErrorStatus, "error" | "errored">>;
+export type CancellableIntentState = import("vue").Reactive<CancellableIntentRawState>;
 /**
  * - A function that checks if the current run ID matches the last run ID.
  */
@@ -170,9 +174,9 @@ export type CommonRunTracking = {
     isCurrentRun: IsCurrentRunFn;
 };
 /**
- * - A function that returns a promise that can be cancelled.
+ * - A function that returns a promise that can be cancelled. The return value of the promise is not used.
  */
-export type AwaitableWithCancel = (runTracking: CommonRunTracking) => import("../utils/cancellablePromise.js").MaybeCancellablePromise<void>;
+export type AwaitableWithCancel = (runTracking: CommonRunTracking) => import("../utils/cancellablePromise.js").MaybeCancellablePromise<unknown>;
 /**
  * - The reactive object to watch for changes.
  */
@@ -224,4 +228,4 @@ export type MyCancellableIntent = {
 /**
  * - The instance of the cancellable intent.
  */
-export type CancellableIntent = MyCancellableIntent & Pick<import("./error.js").ErrorStatus, "clearError">;
+export type CancellableIntent = MyCancellableIntent & import("./error.js").ErrorReadOnlyFunctions;

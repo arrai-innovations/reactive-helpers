@@ -34,7 +34,7 @@ export class CancellableIntentError extends Error {
  */
 
 /**
- * @typedef {object} CancellableIntentRawState - The raw state of the cancellable intent.
+ * @typedef {object} CancellableIntentMyState - The raw state of the cancellable intent.
  * @property {import('vue').ComputedRef<boolean>|undefined} active - Whether there are active intents.
  * @property {import('vue').ComputedRef<boolean>|undefined} resolving - Whether there are resolving intents.
  * @property {boolean} clearActiveOnResolved - Whether to clear the active state when the promise resolves.
@@ -44,10 +44,11 @@ export class CancellableIntentError extends Error {
  */
 
 /**
- * @typedef {import("vue").Reactive<
- *     CancellableIntentRawState &
- *     Pick<import('./error.js').ErrorStatus, 'error' | 'errored'>
- * >} CancellableIntentState - The state of the cancellable intent.
+ * @typedef {CancellableIntentMyState & import('./error.js').ErrorProperties} CancellableIntentRawState - The raw state of the cancellable intent.
+ */
+
+/**
+ * @typedef {import("vue").Reactive<CancellableIntentRawState>} CancellableIntentState - The state of the cancellable intent.
  */
 
 /**
@@ -63,7 +64,7 @@ export class CancellableIntentError extends Error {
  */
 
 /**
- * @typedef {(runTracking: CommonRunTracking) => import('../utils/cancellablePromise.js').MaybeCancellablePromise<void>} AwaitableWithCancel - A function that returns a promise that can be cancelled.
+ * @typedef {(runTracking: CommonRunTracking) => import('../utils/cancellablePromise.js').MaybeCancellablePromise<unknown>} AwaitableWithCancel - A function that returns a promise that can be cancelled. The return value of the promise is not used.
  */
 
 /**
@@ -95,7 +96,7 @@ export class CancellableIntentError extends Error {
  */
 
 /**
- * @typedef {MyCancellableIntent & Pick<import('./error.js').ErrorStatus, "clearError">} CancellableIntent - The instance of the cancellable intent.
+ * @typedef {MyCancellableIntent & import('./error.js').ErrorReadOnlyFunctions} CancellableIntent - The instance of the cancellable intent.
  */
 
 /**
