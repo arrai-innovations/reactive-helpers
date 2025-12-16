@@ -186,6 +186,33 @@ describe("use/listInstance.spec.js", function () {
             });
             expect(globalList).toHaveBeenCalledTimes(1);
         });
+        scopedIt("passes additional args to list and does not override", async function () {
+            const params = reactive({
+                user: 1,
+                fields,
+            });
+            const listInstance = useListInstance({
+                props: { pkKey: "id", params },
+            });
+            globalList.mockResolvedValueOnce(true);
+
+            await expect(listInstance.list({ region: "apac", pkKey: "wrong" })).resolves.toBe(true);
+
+            expect(globalList).toHaveBeenCalledWith({
+                region: "apac",
+                target: { stream: "test_stream" },
+                pkKey: "id",
+                params: { user: 1, fields },
+                pushObjects: expect.any(Function),
+                isCancelled: expect.any(Object),
+                clearObjects: expect.any(Function),
+                setPaginateInfo: expect.any(Function),
+                setColumnTotals: expect.any(Function),
+            });
+            expect(globalList).toHaveBeenCalledTimes(1);
+            expect(isRef(globalList.mock.calls[0][0].isCancelled)).toBe(true);
+            expect(unref(globalList.mock.calls[0][0].isCancelled)).toBe(false);
+        });
         scopedIt("success with non-standard primary key", async function () {
             const params = reactive({
                 user: 1,
@@ -748,6 +775,29 @@ describe("use/listInstance.spec.js", function () {
             await expect(executeActionResolve).resolves.toBe(true);
             expect({ ...listInstance.state.objects }).toEqual(crudListResolvedObjects2);
         });
+        scopedIt("passes additional args to executeAction and does not override", async function () {
+            const params = reactive({
+                user: 1,
+                fields,
+            });
+            const listInstance = useListInstance({
+                props: { pkKey: "id", params },
+            });
+            globalExecuteAction.mockResolvedValueOnce(true);
+
+            await expect(
+                listInstance.executeAction({ action: "foo", pks: ["1"], stage: "precheck", pkKey: "wrong" })
+            ).resolves.toBe(true);
+
+            expect(globalExecuteAction).toHaveBeenCalledWith({
+                stage: "precheck",
+                target: { stream: "test_stream" },
+                pkKey: "id",
+                pks: ["1"],
+                action: "foo",
+            });
+            expect(globalExecuteAction).toHaveBeenCalledTimes(1);
+        });
         scopedIt("succeeds with non-standard primary key", async function () {
             const params = reactive({
                 user: 1,
@@ -914,6 +964,26 @@ describe("use/listInstance.spec.js", function () {
             await flushPromises();
             await expect(bulkDeleteResolve).resolves.toBe(true);
             expect({ ...listInstance.state.objects }).toEqual({});
+        });
+        scopedIt("passes additional args to bulkDelete and does not override", async function () {
+            const params = reactive({
+                user: 1,
+                fields,
+            });
+            const listInstance = useListInstance({
+                props: { pkKey: "id", params },
+            });
+            globalBulkDelete.mockResolvedValueOnce(true);
+
+            await expect(listInstance.bulkDelete({ pks: ["1"], cascade: true, pkKey: "wrong" })).resolves.toBe(true);
+
+            expect(globalBulkDelete).toHaveBeenCalledWith({
+                cascade: true,
+                target: { stream: "test_stream" },
+                pkKey: "id",
+                pks: ["1"],
+            });
+            expect(globalBulkDelete).toHaveBeenCalledTimes(1);
         });
         scopedIt("succeeds with non-standard primary key", async function () {
             const params = reactive({

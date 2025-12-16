@@ -231,6 +231,33 @@ describe("use/objectInstance.js", function () {
             await nextTick();
             await expect(oiRetrieveResolve).resolves.toBe(true);
         });
+        scopedIt("passes additional args to retrieve and does not override", async function () {
+            const id = ref(1);
+            const params = reactive({ fields });
+            const objectInstance = useObjectInstance({
+                props: {
+                    target: { stream: "test_stream" },
+                    pk: id,
+                    pkKey: "id",
+                    params,
+                },
+            });
+            objectInstance.state.crud.retrieve = vi.fn().mockResolvedValue(crudRetrieveResolved);
+
+            await expect(objectInstance.retrieve({ include: "extras", pk: 8 })).resolves.toBe(true);
+
+            expect(objectInstance.state.crud.retrieve).toHaveBeenCalledWith({
+                include: "extras",
+                target: { stream: "test_stream" },
+                pk: 1,
+                pkKey: "id",
+                params: { fields: ["id", "__str__", "name"] },
+                isCancelled: expect.any(Object),
+            });
+            expect(objectInstance.state.crud.retrieve).toHaveBeenCalledTimes(1);
+            expect(isRef(objectInstance.state.crud.retrieve.mock.calls[0][0].isCancelled)).toBe(true);
+            expect(unref(objectInstance.state.crud.retrieve.mock.calls[0][0].isCancelled)).toBe(false);
+        });
         scopedIt("success (params)", async function () {
             const pk = ref(1);
             const params = reactive({ fields });
@@ -519,6 +546,45 @@ describe("use/objectInstance.js", function () {
             expect(unref(objectInstance.state.crud.create.mock.calls[0][0].isCancelled)).toBe(false);
             await nextTick();
             await expect(oiCreateResolve).resolves.toBe(true);
+        });
+        scopedIt("passes additional args to create and does not override", async function () {
+            const id = ref(1);
+            const params = reactive({ fields });
+            const objectInstance = useObjectInstance({
+                props: {
+                    target: { stream: "test_stream" },
+                    pk: id,
+                    pkKey: "id",
+                    params,
+                },
+            });
+            objectInstance.state.crud.create = vi.fn().mockResolvedValue(crudCreateResolved);
+
+            await expect(
+                objectInstance.create({
+                    object: {
+                        name: "qwer",
+                    },
+                    correlationId: "tracking-id",
+                    pkKey: "wrong",
+                })
+            ).resolves.toBe(true);
+
+            expect(objectInstance.state.crud.create).toHaveBeenCalledWith({
+                correlationId: "tracking-id",
+                target: {
+                    stream: "test_stream",
+                },
+                object: {
+                    name: "qwer",
+                },
+                pkKey: "id",
+                params: { fields: ["id", "__str__", "name"] },
+                isCancelled: expect.any(Object),
+            });
+            expect(objectInstance.state.crud.create).toHaveBeenCalledTimes(1);
+            expect(isRef(objectInstance.state.crud.create.mock.calls[0][0].isCancelled)).toBe(true);
+            expect(unref(objectInstance.state.crud.create.mock.calls[0][0].isCancelled)).toBe(false);
         });
         scopedIt("success (params)", async function () {
             const id = ref(undefined);
@@ -865,6 +931,47 @@ describe("use/objectInstance.js", function () {
             await nextTick();
             await expect(oiUpdatePromise).resolves.toBe(true);
             expect(objectInstance.state.crud.update).toHaveBeenCalledWith({
+                target: {
+                    stream: "test_stream",
+                },
+                pkKey: "id",
+                object: {
+                    id: 1,
+                    name: "zxcv!",
+                },
+                params: { fields: ["id", "__str__", "name"] },
+                isCancelled: expect.any(Object),
+            });
+            expect(objectInstance.state.crud.update).toHaveBeenCalledTimes(1);
+            expect(isRef(objectInstance.state.crud.update.mock.calls[0][0].isCancelled)).toBe(true);
+            expect(unref(objectInstance.state.crud.update.mock.calls[0][0].isCancelled)).toBe(false);
+        });
+        scopedIt("passes additional args to update and does not override", async function () {
+            const id = ref(1);
+            const params = reactive({ fields });
+            const objectInstance = useObjectInstance({
+                props: {
+                    target: { stream: "test_stream" },
+                    pk: id,
+                    pkKey: "id",
+                    params,
+                },
+            });
+            objectInstance.state.crud.update = vi.fn().mockResolvedValue(crudUpdateResolved);
+
+            await expect(
+                objectInstance.update({
+                    object: {
+                        id: 1,
+                        name: "zxcv!",
+                    },
+                    auditUser: "tester",
+                    pkKey: "wrong",
+                })
+            ).resolves.toBe(true);
+
+            expect(objectInstance.state.crud.update).toHaveBeenCalledWith({
+                auditUser: "tester",
                 target: {
                     stream: "test_stream",
                 },
@@ -1242,6 +1349,48 @@ describe("use/objectInstance.js", function () {
             expect(isRef(objectInstance.state.crud.patch.mock.calls[0][0].isCancelled)).toBe(true);
             expect(unref(objectInstance.state.crud.patch.mock.calls[0][0].isCancelled)).toBe(false);
         });
+        scopedIt("passes additional args to patch and does not override", async function () {
+            const id = ref(1);
+            const params = reactive({ fields });
+            const objectInstance = useObjectInstance({
+                props: {
+                    target: { stream: "test_stream" },
+                    pk: id,
+                    pkKey: "id",
+                    params,
+                },
+            });
+            objectInstance.state.crud.patch = vi.fn().mockResolvedValue(crudPatchResolved);
+
+            await expect(
+                objectInstance.patch({
+                    partialObject: {
+                        id: 1,
+                        name: "zxcv!",
+                    },
+                    source: "auto-save",
+                    pkKey: "wrong",
+                })
+            ).resolves.toBe(true);
+
+            expect(objectInstance.state.crud.patch).toHaveBeenCalledWith({
+                source: "auto-save",
+                target: {
+                    stream: "test_stream",
+                },
+                pk: 1,
+                pkKey: "id",
+                partialObject: {
+                    id: 1,
+                    name: "zxcv!",
+                },
+                params: { fields: ["id", "__str__", "name"] },
+                isCancelled: expect.any(Object),
+            });
+            expect(objectInstance.state.crud.patch).toHaveBeenCalledTimes(1);
+            expect(isRef(objectInstance.state.crud.patch.mock.calls[0][0].isCancelled)).toBe(true);
+            expect(unref(objectInstance.state.crud.patch.mock.calls[0][0].isCancelled)).toBe(false);
+        });
         scopedIt("success with non-standard pk", async function () {
             const id = ref(1);
             const params = reactive({ fields });
@@ -1533,6 +1682,35 @@ describe("use/objectInstance.js", function () {
             expect(isRef(objectInstance.state.crud.executeAction.mock.calls[0][0].isCancelled)).toBe(true);
             expect(unref(objectInstance.state.crud.executeAction.mock.calls[0][0].isCancelled)).toBe(false);
         });
+        scopedIt("passes additional args to executeAction and does not override", async function () {
+            const pk = ref(1);
+            const params = reactive({ fields });
+            const objectInstance = useObjectInstance({
+                props: {
+                    target: { stream: "test_stream" },
+                    pk,
+                    pkKey: "id",
+                    params,
+                },
+            });
+            objectInstance.state.crud.executeAction = vi.fn().mockResolvedValue(true);
+
+            await expect(
+                objectInstance.executeAction({ action: "foo", priority: "high", pkKey: "wrong" })
+            ).resolves.toBe(true);
+
+            expect(objectInstance.state.crud.executeAction).toHaveBeenCalledWith({
+                priority: "high",
+                target: { stream: "test_stream" },
+                pk: 1,
+                pkKey: "id",
+                isCancelled: expect.any(Object),
+                action: "foo",
+            });
+            expect(objectInstance.state.crud.executeAction).toHaveBeenCalledTimes(1);
+            expect(isRef(objectInstance.state.crud.executeAction.mock.calls[0][0].isCancelled)).toBe(true);
+            expect(unref(objectInstance.state.crud.executeAction.mock.calls[0][0].isCancelled)).toBe(false);
+        });
         scopedIt("errored", async function () {
             const pk = ref(1);
             const params = reactive({ fields });
@@ -1686,6 +1864,28 @@ describe("use/objectInstance.js", function () {
                 target: { stream: "test_stream" },
                 pk: 1,
                 pkKey: "unique",
+            });
+        });
+        scopedIt("passes additional args to delete and does not override", async function () {
+            const pk = ref(1);
+            const params = reactive({ fields });
+            const objectInstance = useObjectInstance({
+                props: {
+                    target: { stream: "test_stream" },
+                    pk,
+                    pkKey: "id",
+                    params,
+                },
+            });
+            objectInstance.state.crud.delete = vi.fn().mockResolvedValue(crudDeleteResolved);
+
+            await expect(objectInstance.delete({ reason: "cleanup", pk: 8 })).resolves.toBe(true);
+
+            expect(objectInstance.state.crud.delete).toHaveBeenCalledWith({
+                reason: "cleanup",
+                target: { stream: "test_stream" },
+                pk: 1,
+                pkKey: "id",
             });
             expect(objectInstance.state.crud.delete).toHaveBeenCalledTimes(1);
         });
