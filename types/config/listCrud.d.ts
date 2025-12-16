@@ -12,6 +12,12 @@ export function getListCrud(target: import("vue").UnwrapNestedRefs<ListCrudHandl
 export type ClearObjectsFn = import("../use/listInstance.js").ClearListFn;
 export type SetPaginateInfo = import("../use/listInstance.js").SetPaginateInfoFn;
 export type SetColumnTotals = import("../use/listInstance.js").SetColumnTotalsFn;
+/**
+ * Additional arguments that can be passed to list crud handlers.
+ */
+export type AdditionalListArgs = {
+    [key: string]: any;
+};
 export type ListArgsRaw = {
     /**
      * - The arguments to be passed to the crud handlers.
@@ -47,8 +53,8 @@ export type ListArgsRaw = {
      */
     setColumnTotals: SetColumnTotals;
 };
-export type ListArgs = ListArgsRaw & Partial<import("../use/cancellableIntent.js").CommonRunTracking>;
-export type BulkDeleteArgs = {
+export type ListArgs = ListArgsRaw & Partial<import("../use/cancellableIntent.js").CommonRunTracking> & AdditionalListArgs;
+export type BulkDeleteArgsRaw = {
     /**
      * - The arguments to be passed to the crud handlers.
      */
@@ -62,6 +68,7 @@ export type BulkDeleteArgs = {
      */
     pkKey: string;
 };
+export type BulkDeleteArgs = BulkDeleteArgsRaw & AdditionalListArgs;
 export type applyObjectEvent = (newOrUpdatedOrDeleteObject: import("../use/objectInstance.js").ExistingCrudObject | string, action: "create" | "update" | "delete") => void;
 export type ListSubscribeArgsRaw = {
     /**
@@ -86,8 +93,8 @@ export type ListSubscribeArgsRaw = {
      */
     isCancelled: Readonly<import("vue").Ref<boolean>>;
 };
-export type ListSubscribeArgs = ListSubscribeArgsRaw & Partial<import("../use/cancellableIntent.js").CommonRunTracking>;
-export type ExecuteActionArgs = {
+export type ListSubscribeArgs = ListSubscribeArgsRaw & Partial<import("../use/cancellableIntent.js").CommonRunTracking> & AdditionalListArgs;
+export type ExecuteActionArgsRaw = {
     /**
      * - The arguments to be passed to the crud handlers.
      */
@@ -105,6 +112,7 @@ export type ExecuteActionArgs = {
      */
     action: string;
 };
+export type ExecuteActionArgs = ExecuteActionArgsRaw & AdditionalListArgs;
 export type CrudListFn = (args: ListArgs) => import("../utils/cancellablePromise.js").MaybeCancellablePromise<void>;
 export type CrudBulkDeleteFn = (args: BulkDeleteArgs) => Promise<boolean>;
 export type CrudListSubscribeFn = (args: ListSubscribeArgs) => import("../utils/cancellablePromise.js").CancellablePromise<void>;
