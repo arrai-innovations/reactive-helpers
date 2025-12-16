@@ -25,6 +25,17 @@ jobs:
             - run:
                   name: Check generated types/docs are in sync
                   command: npm run docs:check
+    types-check:
+        executor: lts
+        working_directory: ~/project
+        steps:
+            - checkout
+            - run:
+                  name: Install dependencies
+                  command: npm ci
+            - run:
+                  name: Type declarations smoke test
+                  command: npm run types:check
 workflows:
     test:
         jobs:
@@ -42,6 +53,13 @@ workflows:
                   filters:
                       branches:
                           only: main
+            - types-check:
+                  name: types-check-main
+                  requires:
+                      - tests
+                  filters:
+                      branches:
+                          only: main
             - npm/coverage:
                   name: tests-no-badge
                   context: arrai-global
@@ -54,6 +72,16 @@ workflows:
                               - main
             - check-generated:
                   name: non-main-docs-and-types
+                  requires:
+                      - tests-no-badge
+                  filters:
+                      tags:
+                          only: /.*/
+                      branches:
+                          ignore:
+                              - main
+            - types-check:
+                  name: types-check-non-main
                   requires:
                       - tests-no-badge
                   filters:
