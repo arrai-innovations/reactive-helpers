@@ -117,9 +117,7 @@ Deletes objects from the list by pk, returning a promise to a boolean indicating
 
 ###### args?
 
-###### pks?
-
-`string`[]
+`object` & `Record`\<`string`, `any`\>
 
 ###### Returns
 
@@ -168,13 +166,7 @@ Initiates an action on all objects in the list, returning the response, or false
 
 ###### args
 
-###### action
-
-`string`
-
-###### pks?
-
-`string`[]
+`object` & `Record`\<`string`, `any`\>
 
 ###### Returns
 
@@ -199,6 +191,8 @@ Initiates a fetch to retrieve objects according to the CRUD configuration, retur
 ###### Parameters
 
 ###### args?
+
+`Record`\<`string`, `any`\>
 
 ###### Returns
 

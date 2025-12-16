@@ -124,6 +124,42 @@ A function to be used instead of the default crud update function.
 
 ***
 
+### ObjectExecuteActionArgs
+
+#### Properties
+
+##### action
+
+> **action**: `string`
+
+The action to execute.
+
+##### isCancelled
+
+> **isCancelled**: `Readonly`\<`Ref`\<`boolean`, `boolean`\>\>
+
+A ref to indicate if the request was cancelled.
+
+##### pk
+
+> **pk**: `string`
+
+The id of the objects to be acted upon.
+
+##### pkKey
+
+> **pkKey**: `string`
+
+The key name of the primary key.
+
+##### target
+
+> **target**: [`TargetArgs`](objectCrud.md#targetargs)
+
+The arguments to be passed to the crud handlers.
+
+***
+
 ### ObjectSubscribeArgsRaw
 
 #### Properties
@@ -374,7 +410,7 @@ The arguments to be passed to the delete function.
 
 ##### args
 
-`ExecuteActionArgs`
+[`ObjectExecuteActionArgs`](objectCrud.md#objectexecuteactionargs)
 
 The arguments to be passed to the executeAction function.
 
@@ -516,7 +552,7 @@ The arguments to be passed to the update function.
 
 ### RetrieveArgs
 
-> **RetrieveArgs**\<\>: [`RetrieveArgsRaw`](objectCrud.md#retrieveargsraw) & [`CommonRunTracking`](../use/cancellableIntent.md#commonruntracking)
+> **RetrieveArgs**\<\>: [`RetrieveArgsRaw`](objectCrud.md#retrieveargsraw) & `Partial`\<[`CommonRunTracking`](../use/cancellableIntent.md#commonruntracking)\>
 
 #### Type Parameters
 

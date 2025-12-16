@@ -77,7 +77,7 @@ export type RetrieveArgsRaw = {
      */
     isCancelled: Readonly<import("vue").Ref<boolean>>;
 };
-export type RetrieveArgs = RetrieveArgsRaw & import("../use/cancellableIntent.js").CommonRunTracking;
+export type RetrieveArgs = RetrieveArgsRaw & Partial<import("../use/cancellableIntent.js").CommonRunTracking>;
 export type UpdateArgs = {
     /**
      * - The arguments to be passed to the crud handlers.
@@ -146,6 +146,28 @@ export type PartialArgs = {
      */
     isCancelled: Readonly<import("vue").Ref<boolean>>;
 };
+export type ObjectExecuteActionArgs = {
+    /**
+     * - The arguments to be passed to the crud handlers.
+     */
+    target: import("../config/objectCrud.js").TargetArgs;
+    /**
+     * - The id of the objects to be acted upon.
+     */
+    pk: string;
+    /**
+     * - The key name of the primary key.
+     */
+    pkKey: string;
+    /**
+     * - The action to execute.
+     */
+    action: string;
+    /**
+     * - A ref to indicate if the request was cancelled.
+     */
+    isCancelled: Readonly<import("vue").Ref<boolean>>;
+};
 export type CrudSubscribeCallback = (data: import("../use/objectInstance.js").ExistingCrudObject, action: "delete" | "update" | "create") => any;
 export type ObjectSubscribeArgsRaw = {
     /**
@@ -182,7 +204,7 @@ export type CrudRetrieveFn = (args: RetrieveArgs) => CrudResponse;
 export type CrudUpdateFn = (args: UpdateArgs) => CrudResponse;
 export type CrudPatchFn = (args: PartialArgs) => CrudResponse;
 export type CrudDeleteFn = (args: DeleteArgs) => CrudResponse;
-export type CrudObjectExecuteActionFn = (args: ExecuteActionArgs) => CrudResponse;
+export type CrudObjectExecuteActionFn = (args: ObjectExecuteActionArgs) => CrudResponse;
 export type CrudObjectSubscribeFn = (args: ObjectSubscribeArgs) => import("../utils/cancellablePromise.js").CancellablePromise<void>;
 /**
  * Defines the CRUD-related handlers and additional utilities provided by the object instance.
