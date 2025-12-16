@@ -43,7 +43,7 @@ import { readonly } from "vue";
  */
 
 /**
- * @typedef {RetrieveArgsRaw & import('../use/cancellableIntent.js').CommonRunTracking} RetrieveArgs
+ * @typedef {RetrieveArgsRaw & Partial<import('../use/cancellableIntent.js').CommonRunTracking>} RetrieveArgs
  */
 
 /**
@@ -69,6 +69,15 @@ import { readonly } from "vue";
  * @property {string} pkKey - The key name of the primary key.
  * @property {{[key:string]: any}} partialObject - The data to be acted upon.
  * @property {{[key:string]: any}} params - The arguments to be passed to the retrieve function.
+ * @property {Readonly<import('vue').Ref<boolean>>} isCancelled - A ref to indicate if the request was cancelled.
+ */
+
+/**
+ * @typedef {object} ObjectExecuteActionArgs
+ * @property {import('../config/objectCrud.js').TargetArgs} target - The arguments to be passed to the crud handlers.
+ * @property {string} pk - The id of the objects to be acted upon.
+ * @property {string} pkKey - The key name of the primary key.
+ * @property {string} action - The action to execute.
  * @property {Readonly<import('vue').Ref<boolean>>} isCancelled - A ref to indicate if the request was cancelled.
  */
 
@@ -128,7 +137,7 @@ import { readonly } from "vue";
 
 /**
  * @callback CrudObjectExecuteActionFn
- * @param {ExecuteActionArgs} args - The arguments to be passed to the executeAction function.
+ * @param {ObjectExecuteActionArgs} args - The arguments to be passed to the executeAction function.
  * @returns {CrudResponse} - The response data from the delete function.
  */
 

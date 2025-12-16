@@ -160,9 +160,9 @@ export class ListInstanceError extends Error {
  * @property {(options?: ClearListOptions) => void} clearList - Clears the list objects and optionally keeps pagination, totals,
  *  or error state.
  * @property {() => string} getFakePk - Generates a unique fake pk for use within the list.
- * @property {() => import('../utils/cancellablePromise.js').MaybeCancellablePromise<boolean|never>} list - Initiates a fetch to retrieve objects according to the CRUD configuration, returning a promise to a boolean indicating success.
- * @property {(args: {pks?: string[]}) => Promise<boolean>} bulkDelete - Deletes objects from the list by pk, returning a promise to a boolean indicating success.
- * @property {() => Promise<object|string|false>} executeAction - Initiates an action on all objects in the list, returning the response, or false if the action failed.
+ * @property {(args?: Record<string, any>) => import('../utils/cancellablePromise.js').MaybeCancellablePromise<boolean|never>} list - Initiates a fetch to retrieve objects according to the CRUD configuration, returning a promise to a boolean indicating success.
+ * @property {(args?: {pks?: string[]} & Record<string, any>) => Promise<boolean>} bulkDelete - Deletes objects from the list by pk, returning a promise to a boolean indicating success.
+ * @property {(args: {action: string, pks?: string[]} & Record<string, any>) => Promise<object|string|false>} executeAction - Initiates an action on all objects in the list, returning the response, or false if the action failed.
  * @property {(info: PaginateInfo) => void} setPaginateInfo - The method to update pagination information.
  * @property {(total: ColumnTotals) => void} setColumnTotals - The method to update column totals.
  */
@@ -432,6 +432,7 @@ export function useListInstance({ props, handlers = {} }) {
             let listPromise = null;
             try {
                 const listCrudArgs = {
+                    ...args,
                     target: state.crud.args,
                     pkKey: state.pkKey,
                     params: state.params,
@@ -440,7 +441,6 @@ export function useListInstance({ props, handlers = {} }) {
                     isCancelled: readonly(isCancelled),
                     setPaginateInfo: self.setPaginateInfo,
                     setColumnTotals: self.setColumnTotals,
-                    ...args,
                 };
                 listPromise = state.crud.list(listCrudArgs);
             } catch (e) {
@@ -471,12 +471,10 @@ export function useListInstance({ props, handlers = {} }) {
             );
             return promises.list;
         },
-        bulkDelete: (args = {}) => {
+        bulkDelete: ({ pks, ...additionalArgs } = {}) => {
             if (state.loading) {
                 return Promise.reject(new ListInstanceError("already loading.", "already-loading"));
             }
-
-            let { pks, ...additionalArgs } = args;
             if (!pks) {
                 pks = Object.keys(state.objects);
             }
@@ -484,10 +482,10 @@ export function useListInstance({ props, handlers = {} }) {
             loadingError.clearError();
             return state.crud
                 .bulkDelete({
+                    ...additionalArgs,
                     target: state.crud.args,
                     pks,
                     pkKey: state.pkKey,
-                    ...additionalArgs,
                 })
                 .then(() => {
                     assignReactiveObject(state.objects, {});
@@ -502,11 +500,10 @@ export function useListInstance({ props, handlers = {} }) {
                     loadingError.clearLoading();
                 });
         },
-        executeAction: (args = {}) => {
+        executeAction: ({ pks, action, ...additionalArgs }) => {
             if (state.loading) {
                 return Promise.reject(new ListInstanceError("already loading.", "already-loading"));
             }
-            let { pks, ...additionalArgs } = args;
             if (!pks) {
                 pks = Object.keys(state.objects);
             }
@@ -514,10 +511,11 @@ export function useListInstance({ props, handlers = {} }) {
             loadingError.clearError();
             return state.crud
                 .executeAction({
+                    ...additionalArgs,
                     target: state.crud.args,
+                    action,
                     pks,
                     pkKey: state.pkKey,
-                    ...additionalArgs,
                 })
                 .then((/** @type {object|string} */ responseData) => {
                     loadingError.clearError();
