@@ -122,7 +122,7 @@ export function useObjectInstance({ props, handlers }: ObjectInstanceOptions): O
 /**
  * The raw state of the object instance.
  *
- * @typedef {ObjectInstanceRawMyState & Pick<import('./loadingError.js').LoadingErrorStatus, "loading" | "error" | "errored">} ObjectInstanceRawState
+ * @typedef {ObjectInstanceRawMyState & import('./loadingError.js').LoadingErrorProperties} ObjectInstanceRawState
  */
 /**
  * Manages a reactive state of an object including its CRUD status, loading states, and any operational errors.
@@ -152,7 +152,7 @@ export function useObjectInstance({ props, handlers }: ObjectInstanceOptions): O
  * The functions available on the object instance, including the ability to clear LoadingError errors.
  *
  * @typedef {(
- *     Pick<import('./loadingError.js').LoadingErrorStatus, "clearError"> &
+ *     import('./error.js').ErrorReadOnlyFunctions &
  *     ObjectInstanceMyFunctions
  * )} ObjectInstanceFunctions
  */
@@ -299,7 +299,7 @@ export type ObjectInstanceRawMyState = {
 /**
  * The raw state of the object instance.
  */
-export type ObjectInstanceRawState = ObjectInstanceRawMyState & Pick<import("./loadingError.js").LoadingErrorStatus, "loading" | "error" | "errored">;
+export type ObjectInstanceRawState = ObjectInstanceRawMyState & import("./loadingError.js").LoadingErrorProperties;
 /**
  * Manages a reactive state of an object including its CRUD status, loading states, and any operational errors.
  * Reactivity ensures that any changes in state immediately reflect in the UI components that depend on this state.
@@ -355,7 +355,7 @@ export type ObjectInstanceMyFunctions = {
 /**
  * The functions available on the object instance, including the ability to clear LoadingError errors.
  */
-export type ObjectInstanceFunctions = (Pick<import("./loadingError.js").LoadingErrorStatus, "clearError"> & ObjectInstanceMyFunctions);
+export type ObjectInstanceFunctions = (import("./error.js").ErrorReadOnlyFunctions & ObjectInstanceMyFunctions);
 /**
  * The properties of the object instance.
  */

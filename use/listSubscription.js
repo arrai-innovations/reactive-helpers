@@ -5,8 +5,8 @@ import inspect from "browser-util-inspect";
 import cloneDeep from "lodash-es/cloneDeep.js";
 import isEmpty from "lodash-es/isEmpty.js";
 import isObject from "lodash-es/isObject.js";
-import { reactive, toRef, toRefs } from "vue";
-import { useProxyLoadingError } from "./proxyLoadingError.js";
+import { reactive, ref, toRef, toRefs } from "vue";
+import { asWatchableLoadingError, useProxyLoadingError } from "./proxyLoadingError.js";
 import { refIfReactive } from "../utils/refIfReactive.js";
 
 /**
@@ -90,11 +90,15 @@ export class ListSubscriptionError extends Error {
  */
 
 /**
+ * @typedef {object} ListSubscriptionOwnOptions
+ * @property {import("./listInstance.js").ListInstance} [listInstance] - A list instance to use instead of creating one.
+ */
+
+/**
  * Defines the settings required to establish a list subscription, detailing how list instances should handle updates
  *  and subscriptions based on the given properties.
  *
- * @typedef {object & import("./listInstance.js").ListInstanceOptions} ListSubscriptionOptions
- * @property {import("./listInstance.js").ListInstance} listInstance - A list instance to use instead of creating one.
+ * @typedef {import("./listInstance.js").ListInstanceOptions & ListSubscriptionOwnOptions} ListSubscriptionOptions
  */
 
 /**
@@ -182,7 +186,7 @@ export function useListSubscription({ listInstance, props, handlers }) {
     const parentState = listInstance.state;
 
     const loadingError = useLoadingError();
-    const proxyLoadingError = useProxyLoadingError([loadingError, parentState]);
+    const proxyLoadingError = useProxyLoadingError([loadingError, asWatchableLoadingError(listInstance)]);
     // stand alone in order to avoid circular dependency between state & intents.
     const intendToList = refIfReactive(props, "intendToList", false);
     const intendToSubscribe = refIfReactive(props, "intendToSubscribe", false);
@@ -208,94 +212,100 @@ export function useListSubscription({ listInstance, props, handlers }) {
     const subscribeIntent = useCancellableIntent({
         awaitableWithCancel: ({ runId, isCurrentRun }) => {
             // this function cannot be async, or the resulting promise will lose its .cancel() method
+            const isCancelled = ref(false);
             loadingError.setLoading();
             let subscribePromise, catchPromise;
             try {
-                subscribePromise = parentState.crud.subscribe({
-                    runId,
-                    isCurrentRun,
-                    target: cloneDeep(parentState.crud.args),
-                    pkKey: parentState.pkKey,
-                    params: cloneDeep(parentState.params),
-                    applyObjectEvent: (
-                        /** @type {import('./objectInstance.js').ExistingCrudObject} */ data,
-                        /** @type {"create"|"update"|"delete"} */ action
-                    ) => {
-                        if (!data || (isObject(data) && isEmpty(data))) {
-                            throw new ListSubscriptionError(
-                                `got update with no data (${inspect(data)}), action: ${action}`,
-                                "empty-data"
-                            );
-                        }
-                        switch (action) {
-                            case "delete":
-                                try {
-                                    listInstance.deleteListObject(data);
-                                } catch (err) {
-                                    if (err.name === "ListInstanceError" && err.code === "missing-object") {
-                                        console.warn(
-                                            `deleteFromSubscription: delete for pk(${listInstance.state.pkKey}) not in objects (${inspect(data)}).`
-                                        );
-                                        return;
-                                    }
-                                    throw err;
-                                }
-                                break;
-                            case "create":
-                                if (!data[listInstance.state.pkKey]) {
-                                    throw new ListSubscriptionError(
-                                        `addFromSubscription: data missing pk(${listInstance.state.pkKey}).\n${inspect(data)}`,
-                                        "missing-pk"
-                                    );
-                                }
-                                try {
-                                    listInstance.addListObject(data);
-                                } catch (err) {
-                                    if (err.name === "ListInstanceError" && err.code === "duplicate-pk") {
-                                        console.warn(
-                                            `addFromSubscription: add for pk(${listInstance.state.pkKey}) already in objects (${data[listInstance.state.pkKey]}).`
-                                        );
-                                        return;
-                                    }
-                                    throw err;
-                                }
-                                break;
-                            case "update":
-                                if (!data[listInstance.state.pkKey]) {
-                                    throw new ListSubscriptionError(
-                                        `updateFromSubscription: data missing pk(${listInstance.state.pkKey}).\n${inspect(data)}`,
-                                        "missing-pk"
-                                    );
-                                }
-                                try {
-                                    listInstance.updateListObject(data);
-                                } catch (err) {
-                                    if (err.name === "ListInstanceError" && err.code === "missing-object") {
-                                        console.warn(
-                                            `updateFromSubscription: update for pk(${listInstance.state.pkKey}) not in objects (${data[listInstance.state.pkKey]}).`
-                                        );
-                                        return;
-                                    }
-                                    throw err;
-                                }
-                                break;
-                            default:
+                subscribePromise = /** @type {import('../utils/cancellablePromise.js').CancellablePromise<void>} */ (
+                    parentState.crud.subscribe({
+                        runId,
+                        isCurrentRun,
+                        target: cloneDeep(parentState.crud.args),
+                        pkKey: parentState.pkKey,
+                        params: cloneDeep(parentState.params),
+                        applyObjectEvent: (
+                            /** @type {import('./objectInstance.js').ExistingCrudObject} */ data,
+                            /** @type {"create"|"update"|"delete"} */ action
+                        ) => {
+                            if (!data || (isObject(data) && isEmpty(data))) {
                                 throw new ListSubscriptionError(
-                                    `got update for unknown action: ${action}\n${inspect(data)}`,
-                                    "unknown-action"
+                                    `got update with no data (${inspect(data)}), action: ${action}`,
+                                    "empty-data"
                                 );
-                        }
-                    },
-                });
-                // catching makes a new promise, we need to make sure the cancel method lives on.
-                catchPromise = subscribePromise
-                    .catch((/** @type {Error} */ err) => {
-                        console.error(err);
-                        loadingError.setError(err);
+                            }
+                            switch (action) {
+                                case "delete":
+                                    try {
+                                        listInstance.deleteListObject(data[parentState.pkKey]);
+                                    } catch (err) {
+                                        if (err.name === "ListInstanceError" && err.code === "missing-object") {
+                                            console.warn(
+                                                `deleteFromSubscription: delete for pk(${parentState.pkKey}) not in objects (${inspect(data)}).`
+                                            );
+                                            return;
+                                        }
+                                        throw err;
+                                    }
+                                    break;
+                                case "create":
+                                    if (!data[parentState.pkKey]) {
+                                        throw new ListSubscriptionError(
+                                            `addFromSubscription: data missing pk(${parentState.pkKey}).\n${inspect(data)}`,
+                                            "missing-pk"
+                                        );
+                                    }
+                                    try {
+                                        listInstance.addListObject(data);
+                                    } catch (err) {
+                                        if (err.name === "ListInstanceError" && err.code === "duplicate-pk") {
+                                            console.warn(
+                                                `addFromSubscription: add for pk(${parentState.pkKey}) already in objects (${data[listInstance.state.pkKey]}).`
+                                            );
+                                            return;
+                                        }
+                                        throw err;
+                                    }
+                                    break;
+                                case "update":
+                                    if (!data[parentState.pkKey]) {
+                                        throw new ListSubscriptionError(
+                                            `updateFromSubscription: data missing pk(${parentState.pkKey}).\n${inspect(data)}`,
+                                            "missing-pk"
+                                        );
+                                    }
+                                    try {
+                                        listInstance.updateListObject(data);
+                                    } catch (err) {
+                                        if (err.name === "ListInstanceError" && err.code === "missing-object") {
+                                            console.warn(
+                                                `updateFromSubscription: update for pk(${parentState.pkKey}) not in objects (${data[listInstance.state.pkKey]}).`
+                                            );
+                                            return;
+                                        }
+                                        throw err;
+                                    }
+                                    break;
+                                default:
+                                    throw new ListSubscriptionError(
+                                        `got update for unknown action: ${action}\n${inspect(data)}`,
+                                        "unknown-action"
+                                    );
+                            }
+                        },
+                        isCancelled,
                     })
-                    .finally(() => {
-                        loadingError.clearLoading();
-                    });
+                );
+                // catching makes a new promise, we need to make sure the cancel method lives on.
+                catchPromise = /** @type {import('../utils/cancellablePromise.js').CancellablePromise<void>} */ (
+                    subscribePromise
+                        .catch((/** @type {Error} */ err) => {
+                            console.error(err);
+                            loadingError.setError(err);
+                        })
+                        .finally(() => {
+                            loadingError.clearLoading();
+                        })
+                );
                 catchPromise.cancel = subscribePromise.cancel.bind(subscribePromise);
                 return catchPromise;
             } catch (err) {

@@ -73,7 +73,7 @@ import { refIfReactive } from "../utils/refIfReactive.js";
 /**
  * The raw state of the object instance.
  *
- * @typedef {ObjectInstanceRawMyState & Pick<import('./loadingError.js').LoadingErrorStatus, "loading" | "error" | "errored">} ObjectInstanceRawState
+ * @typedef {ObjectInstanceRawMyState & import('./loadingError.js').LoadingErrorProperties} ObjectInstanceRawState
  */
 
 /**
@@ -108,7 +108,7 @@ import { refIfReactive } from "../utils/refIfReactive.js";
  * The functions available on the object instance, including the ability to clear LoadingError errors.
  *
  * @typedef {(
- *     Pick<import('./loadingError.js').LoadingErrorStatus, "clearError"> &
+ *     import('./error.js').ErrorReadOnlyFunctions &
  *     ObjectInstanceMyFunctions
  * )} ObjectInstanceFunctions
  */

@@ -86,6 +86,18 @@ Whether the subscription is active.
 
 ***
 
+### ListSubscriptionOwnOptions
+
+#### Properties
+
+##### listInstance?
+
+> `optional` **listInstance**: [`ListInstance`](listInstance.md#listinstance)
+
+A list instance to use instead of creating one.
+
+***
+
 ### ListSubscriptionProperties
 
 #### Properties
@@ -284,7 +296,7 @@ The `CancellableIntent` instance managing if the subscription should be (un)subs
 
 ### ListSubscriptionOptions
 
-> **ListSubscriptionOptions**\<\>: `object` & [`ListInstanceOptions`](listInstance.md#listinstanceoptions)
+> **ListSubscriptionOptions**\<\>: [`ListInstanceOptions`](listInstance.md#listinstanceoptions) & [`ListSubscriptionOwnOptions`](listSubscription.md#listsubscriptionownoptions)
 
 #### Type Parameters
 
@@ -317,7 +329,7 @@ A composition function that creates a reactive object that manages a list of obj
 
 ##### options
 
-`any`
+[`ListSubscriptionOptions`](listSubscription.md#listsubscriptionoptions)
 
 The options for the list subscription.
 

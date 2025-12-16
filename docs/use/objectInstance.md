@@ -625,7 +625,7 @@ The update function.
 
 ### ObjectInstanceFunctions
 
-> **ObjectInstanceFunctions**\<\>: `Pick`\<[`LoadingErrorStatus`](loadingError.md#loadingerrorstatus), `"clearError"`\> & [`ObjectInstanceMyFunctions`](objectInstance.md#objectinstancemyfunctions)
+> **ObjectInstanceFunctions**\<\>: [`ErrorReadOnlyFunctions`](error.md#errorreadonlyfunctions) & [`ObjectInstanceMyFunctions`](objectInstance.md#objectinstancemyfunctions)
 
 #### Type Parameters
 
@@ -647,7 +647,7 @@ The update function.
 
 ### ObjectInstanceRawState
 
-> **ObjectInstanceRawState**\<\>: [`ObjectInstanceRawMyState`](objectInstance.md#objectinstancerawmystate) & `Pick`\<[`LoadingErrorStatus`](loadingError.md#loadingerrorstatus), `"loading"` \| `"error"` \| `"errored"`\>
+> **ObjectInstanceRawState**\<\>: [`ObjectInstanceRawMyState`](objectInstance.md#objectinstancerawmystate) & [`LoadingErrorProperties`](loadingError.md#loadingerrorproperties)
 
 #### Type Parameters
 
