@@ -27,7 +27,7 @@ jobs:
                   command: npm run docs:check
             - run:
                   name: Type declarations smoke test
-                  command: npm run types:check
+                  command: npm run types:check -- --skip-gen
 workflows:
     test:
         jobs:

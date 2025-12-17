@@ -33,7 +33,8 @@
         "docs": "node make_type_doc.js",
         "docs:check": "node check_type_doc.js",
         "docs:clean": "node clean_type_doc.js",
-        "types:check": "npm run docs && npx --no-install tsc -p tsconfig.dts.json"
+        "types": "node make_types.js",
+        "types:check": "node check_types.js"
     },
     "repository": {
         "type": "git",
