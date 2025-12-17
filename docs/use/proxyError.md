@@ -16,9 +16,9 @@
 
 ***
 
-### SeperateStateError
+### SeparateStateError
 
-> **SeperateStateError**\<\>: `object` & [`ErrorReadOnlyFunctions`](error.md#errorreadonlyfunctions)
+> **SeparateStateError**\<\>: `object` & [`ErrorReadOnlyFunctions`](error.md#errorreadonlyfunctions)
 
 #### Type declaration
 
@@ -49,7 +49,7 @@ Accepts either an object with a `state` property or an object that already expos
 
 ##### source
 
-`MaybeRef`\<[`WatchableError`](proxyError.md#watchableerror) \| [`SeperateStateError`](proxyError.md#seperatestateerror)\>
+`MaybeRef`\<[`WatchableError`](proxyError.md#watchableerror) \| [`SeparateStateError`](proxyError.md#separatestateerror)\>
 
 The source object to adapt.
 

@@ -38,7 +38,7 @@ export function useProxyError(errors) {
 }
 
 /**
- * @typedef {{ state: import('vue').Reactive<import('./error.js').ErrorProperties> } & import('./error.js').ErrorReadOnlyFunctions} SeperateStateError
+ * @typedef {{ state: import('vue').Reactive<import('./error.js').ErrorProperties> } & import('./error.js').ErrorReadOnlyFunctions} SeparateStateError
  */
 
 /**
@@ -46,7 +46,7 @@ export function useProxyError(errors) {
  * Accepts either an object with a `state` property or an object that already exposes error/errored/clearError.
  *
  * @param {import('vue').MaybeRef<
- *     SeperateStateError |
+ *     SeparateStateError |
  *     WatchableError
  * >} source - The source object to adapt.
  * @returns {WatchableError} - The adapted WatchableError object.

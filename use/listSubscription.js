@@ -260,7 +260,7 @@ export function useListSubscription({ listInstance, props, handlers }) {
                                     } catch (err) {
                                         if (err.name === "ListInstanceError" && err.code === "duplicate-pk") {
                                             console.warn(
-                                                `addFromSubscription: add for pk(${parentState.pkKey}) already in objects (${data[listInstance.state.pkKey]}).`
+                                                `addFromSubscription: add for pk(${parentState.pkKey}) already in objects (${data[parentState.pkKey]}).`
                                             );
                                             return;
                                         }
@@ -279,7 +279,7 @@ export function useListSubscription({ listInstance, props, handlers }) {
                                     } catch (err) {
                                         if (err.name === "ListInstanceError" && err.code === "missing-object") {
                                             console.warn(
-                                                `updateFromSubscription: update for pk(${parentState.pkKey}) not in objects (${data[listInstance.state.pkKey]}).`
+                                                `updateFromSubscription: update for pk(${parentState.pkKey}) not in objects (${data[parentState.pkKey]}).`
                                             );
                                             return;
                                         }
