@@ -210,7 +210,7 @@ The default arguments for the crud handlers.
 
 ### AdditionalListArgs
 
-> **AdditionalListArgs**\<\>: `object`
+> **AdditionalListArgs**\<\> = `object`
 
 #### Type Parameters
 
@@ -244,7 +244,7 @@ The default arguments for the crud handlers.
 
 ### BulkDeleteArgs
 
-> **BulkDeleteArgs**\<\>: [`BulkDeleteArgsRaw`](listCrud.md#bulkdeleteargsraw) & [`AdditionalListArgs`](listCrud.md#additionallistargs)
+> **BulkDeleteArgs**\<\> = [`BulkDeleteArgsRaw`](#bulkdeleteargsraw) & [`AdditionalListArgs`](#additionallistargs)
 
 #### Type Parameters
 
@@ -350,7 +350,7 @@ The arguments to be passed to the crud handlers.
 
 ### ExecuteActionArgs
 
-> **ExecuteActionArgs**\<\>: [`ExecuteActionArgsRaw`](listCrud.md#executeactionargsraw) & [`AdditionalListArgs`](listCrud.md#additionallistargs)
+> **ExecuteActionArgs**\<\> = [`ExecuteActionArgsRaw`](#executeactionargsraw) & [`AdditionalListArgs`](#additionallistargs)
 
 #### Type Parameters
 
@@ -358,7 +358,7 @@ The arguments to be passed to the crud handlers.
 
 ### ListArgs
 
-> **ListArgs**\<\>: [`ListArgsRaw`](listCrud.md#listargsraw) & `Partial`\<[`CommonRunTracking`](../use/cancellableIntent.md#commonruntracking)\> & [`AdditionalListArgs`](listCrud.md#additionallistargs)
+> **ListArgs**\<\> = [`ListArgsRaw`](#listargsraw) & `Partial`\<[`CommonRunTracking`](../use/cancellableIntent.md#commonruntracking)\> & [`AdditionalListArgs`](#additionallistargs)
 
 #### Type Parameters
 
@@ -366,7 +366,7 @@ The arguments to be passed to the crud handlers.
 
 ### ListSubscribeArgs
 
-> **ListSubscribeArgs**\<\>: [`ListSubscribeArgsRaw`](listCrud.md#listsubscribeargsraw) & `Partial`\<[`CommonRunTracking`](../use/cancellableIntent.md#commonruntracking)\> & [`AdditionalListArgs`](listCrud.md#additionallistargs)
+> **ListSubscribeArgs**\<\> = [`ListSubscribeArgsRaw`](#listsubscribeargsraw) & `Partial`\<[`CommonRunTracking`](../use/cancellableIntent.md#commonruntracking)\> & [`AdditionalListArgs`](#additionallistargs)
 
 #### Type Parameters
 

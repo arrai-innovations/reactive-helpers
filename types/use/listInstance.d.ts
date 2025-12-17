@@ -412,7 +412,7 @@ export type ListInstanceMyFunctions = {
         pks?: import("../config/commonCrud.js").Pk[];
     } & import("../config/listCrud.js").AdditionalListArgs) => Promise<boolean>;
     /**
-     * - Initiates an action on all objects in the list, returning the response, or false if the action failed.
+     * - Initiates an action on all objects in the list, returning the response, or null if the action failed.
      */
     executeAction: (args: {
         action: string;

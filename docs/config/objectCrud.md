@@ -94,7 +94,7 @@ A function to be used instead of the default crud delete function.
 
 ##### executeAction?
 
-> `optional` **executeAction**: [`CrudObjectExecuteActionFn`](objectCrud.md#crudobjectexecuteactionfn)
+> `optional` **executeAction**: [`CrudObjectExecuteActionFn`](#crudobjectexecuteactionfn)
 
 The  function to execute a certain action on an object.
 
@@ -154,7 +154,7 @@ The key name of the primary key.
 
 ##### target
 
-> **target**: [`TargetArgs`](objectCrud.md#targetargs)
+> **target**: [`TargetArgs`](#targetargs)
 
 The arguments to be passed to the crud handlers.
 
@@ -362,7 +362,7 @@ The arguments to be passed to the crud handlers.
 
 ### AdditionalCrudArgs
 
-> **AdditionalCrudArgs**\<\>: `object`
+> **AdditionalCrudArgs**\<\> = `object`
 
 #### Type Parameters
 
@@ -374,7 +374,7 @@ The arguments to be passed to the crud handlers.
 
 ### CreateArgs
 
-> **CreateArgs**\<\>: [`CreateArgsRaw`](objectCrud.md#createargsraw) & [`AdditionalCrudArgs`](objectCrud.md#additionalcrudargs)
+> **CreateArgs**\<\> = [`CreateArgsRaw`](#createargsraw) & [`AdditionalCrudArgs`](#additionalcrudargs)
 
 #### Type Parameters
 
@@ -422,7 +422,7 @@ The arguments to be passed to the delete function.
 
 ### CrudObjectExecuteActionFn()
 
-> **CrudObjectExecuteActionFn**\<\>: (`args`) => [`CrudResponse`](objectCrud.md#crudresponse)
+> **CrudObjectExecuteActionFn**\<\> = (`args`) => [`CrudResponse`](#crudresponse)
 
 #### Type Parameters
 
@@ -430,13 +430,13 @@ The arguments to be passed to the delete function.
 
 ##### args
 
-[`ObjectExecuteActionArgs`](objectCrud.md#objectexecuteactionargs)
+[`ObjectExecuteActionArgs`](#objectexecuteactionargs)
 
 The arguments to be passed to the executeAction function.
 
 #### Returns
 
-[`CrudResponse`](objectCrud.md#crudresponse)
+[`CrudResponse`](#crudresponse)
 
 ***
 
@@ -556,7 +556,7 @@ The arguments to be passed to the update function.
 
 ### DeleteArgs
 
-> **DeleteArgs**\<\>: [`DeleteArgsRaw`](objectCrud.md#deleteargsraw) & [`AdditionalCrudArgs`](objectCrud.md#additionalcrudargs)
+> **DeleteArgs**\<\> = [`DeleteArgsRaw`](#deleteargsraw) & [`AdditionalCrudArgs`](#additionalcrudargs)
 
 #### Type Parameters
 
@@ -564,7 +564,7 @@ The arguments to be passed to the update function.
 
 ### ObjectExecuteActionArgs
 
-> **ObjectExecuteActionArgs**\<\>: [`ObjectExecuteActionArgsRaw`](objectCrud.md#objectexecuteactionargsraw) & [`AdditionalCrudArgs`](objectCrud.md#additionalcrudargs)
+> **ObjectExecuteActionArgs**\<\> = [`ObjectExecuteActionArgsRaw`](#objectexecuteactionargsraw) & [`AdditionalCrudArgs`](#additionalcrudargs)
 
 #### Type Parameters
 
@@ -572,7 +572,7 @@ The arguments to be passed to the update function.
 
 ### ObjectSubscribeArgs
 
-> **ObjectSubscribeArgs**\<\>: [`ObjectSubscribeArgsRaw`](objectCrud.md#objectsubscribeargsraw) & [`CommonRunTracking`](../use/cancellableIntent.md#commonruntracking) & [`AdditionalCrudArgs`](objectCrud.md#additionalcrudargs)
+> **ObjectSubscribeArgs**\<\> = [`ObjectSubscribeArgsRaw`](#objectsubscribeargsraw) & [`CommonRunTracking`](../use/cancellableIntent.md#commonruntracking) & [`AdditionalCrudArgs`](#additionalcrudargs)
 
 #### Type Parameters
 
@@ -588,7 +588,7 @@ The arguments to be passed to the update function.
 
 ### PartialArgs
 
-> **PartialArgs**\<\>: [`PartialArgsRaw`](objectCrud.md#partialargsraw) & [`AdditionalCrudArgs`](objectCrud.md#additionalcrudargs)
+> **PartialArgs**\<\> = [`PartialArgsRaw`](#partialargsraw) & [`AdditionalCrudArgs`](#additionalcrudargs)
 
 #### Type Parameters
 
@@ -596,7 +596,7 @@ The arguments to be passed to the update function.
 
 ### RetrieveArgs
 
-> **RetrieveArgs**\<\>: [`RetrieveArgsRaw`](objectCrud.md#retrieveargsraw) & `Partial`\<[`CommonRunTracking`](../use/cancellableIntent.md#commonruntracking)\> & [`AdditionalCrudArgs`](objectCrud.md#additionalcrudargs)
+> **RetrieveArgs**\<\> = [`RetrieveArgsRaw`](#retrieveargsraw) & `Partial`\<[`CommonRunTracking`](../use/cancellableIntent.md#commonruntracking)\> & [`AdditionalCrudArgs`](#additionalcrudargs)
 
 #### Type Parameters
 
@@ -616,7 +616,7 @@ The arguments to be passed to the update function.
 
 ### UpdateArgs
 
-> **UpdateArgs**\<\>: [`UpdateArgsRaw`](objectCrud.md#updateargsraw) & [`AdditionalCrudArgs`](objectCrud.md#additionalcrudargs)
+> **UpdateArgs**\<\> = [`UpdateArgsRaw`](#updateargsraw) & [`AdditionalCrudArgs`](#additionalcrudargs)
 
 #### Type Parameters
 

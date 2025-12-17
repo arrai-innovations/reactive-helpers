@@ -87,7 +87,7 @@ Called to turn the current object into a new object on the server.
 
 ###### args
 
-[`ObjectInstanceCreateArgs`](objectInstance.md#objectinstancecreateargs) & [`AdditionalArgs`](objectInstance.md#additionalargs)
+[`ObjectInstanceCreateArgs`](#objectinstancecreateargs) & [`AdditionalArgs`](#additionalargs)
 
 ###### Returns
 
@@ -95,7 +95,7 @@ Called to turn the current object into a new object on the server.
 
 ##### delete()
 
-> **delete**: (`args`?) => [`MaybeCancellablePromise`](../utils/cancellablePromise.md#maybecancellablepromiset)\<`boolean`\>
+> **delete**: (`args?`) => [`MaybeCancellablePromise`](../utils/cancellablePromise.md#maybecancellablepromise)\<`boolean`\>
 
 Called to delete the current object on the server.
 
@@ -103,15 +103,15 @@ Called to delete the current object on the server.
 
 ###### args?
 
-[`AdditionalArgs`](objectInstance.md#additionalargs)
+[`AdditionalArgs`](#additionalargs)
 
 ###### Returns
 
-[`MaybeCancellablePromise`](../utils/cancellablePromise.md#maybecancellablepromiset)\<`boolean`\>
+[`MaybeCancellablePromise`](../utils/cancellablePromise.md#maybecancellablepromise)\<`boolean`\>
 
 ##### executeAction()
 
-> **executeAction**: (`args`) => [`MaybeCancellablePromise`](../utils/cancellablePromise.md#maybecancellablepromiset)\<`boolean`\>
+> **executeAction**: (`args`) => [`MaybeCancellablePromise`](../utils/cancellablePromise.md#maybecancellablepromise)\<`boolean`\>
 
 Called to execute certain action on the current object.
 
@@ -119,7 +119,7 @@ Called to execute certain action on the current object.
 
 ###### args
 
-`object` & [`AdditionalArgs`](objectInstance.md#additionalargs)
+`object` & [`AdditionalArgs`](#additionalargs)
 
 ###### Returns
 
@@ -135,7 +135,7 @@ Called to patch the current object on the server.
 
 ###### args
 
-[`ObjectInstancePatchArgs`](objectInstance.md#objectinstancepatchargs) & [`AdditionalArgs`](objectInstance.md#additionalargs)
+[`ObjectInstancePatchArgs`](#objectinstancepatchargs) & [`AdditionalArgs`](#additionalargs)
 
 ###### Returns
 
@@ -151,7 +151,7 @@ Called to retrieve the current object by pk from the server.
 
 ###### args?
 
-`Partial`\<[`CommonRunTracking`](cancellableIntent.md#commonruntracking)\> & [`AdditionalArgs`](objectInstance.md#additionalargs)
+`Partial`\<[`CommonRunTracking`](cancellableIntent.md#commonruntracking)\> & [`AdditionalArgs`](#additionalargs)
 
 ###### Returns
 
@@ -167,7 +167,7 @@ Called to update the current object on the server.
 
 ###### args
 
-[`ObjectInstanceUpdateArgs`](objectInstance.md#objectinstanceupdateargs) & [`AdditionalArgs`](objectInstance.md#additionalargs)
+[`ObjectInstanceUpdateArgs`](#objectinstanceupdateargs) & [`AdditionalArgs`](#additionalargs)
 
 ###### Returns
 
@@ -559,7 +559,7 @@ The update function.
 
 ### AdditionalArgs
 
-> **AdditionalArgs**\<\>: `object`
+> **AdditionalArgs**\<\> = `object`
 
 #### Type Parameters
 
