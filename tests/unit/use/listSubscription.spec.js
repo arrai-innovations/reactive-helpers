@@ -137,6 +137,7 @@ describe("use/listSubscription.spec.js", function () {
             expect(crudSubscribe).toHaveBeenCalledWith({
                 runId: expect.any(Number),
                 isCurrentRun: expect.any(Function),
+                isCancelled: expect.any(Object), // ref
                 target: { stream: "test_stream" },
                 pkKey: "id",
                 params: { user: 1, fields },
@@ -158,7 +159,7 @@ describe("use/listSubscription.spec.js", function () {
 
             expect(listSubscription.listInstance.state.objects).toEqual({
                 1: {
-                    id: "1",
+                    id: 1,
                     __str__: "foo",
                     name: "foo",
                 },
@@ -175,7 +176,7 @@ describe("use/listSubscription.spec.js", function () {
 
             expect(listSubscription.listInstance.state.objects).toEqual({
                 1: {
-                    id: "1",
+                    id: 1,
                     __str__: "foot",
                     fame: "foot",
                 },
@@ -216,6 +217,7 @@ describe("use/listSubscription.spec.js", function () {
             expect(crudSubscribe).toHaveBeenCalledWith({
                 runId: expect.any(Number),
                 isCurrentRun: expect.any(Function),
+                isCancelled: expect.any(Object), // ref
                 target: { stream: "test_stream" },
                 pkKey: "id",
                 params: { user: 1, fields },
@@ -286,7 +288,7 @@ describe("use/listSubscription.spec.js", function () {
 
             expect(listSubscription.listInstance.state.objects).toEqual({
                 1: {
-                    id: "1",
+                    id: 1,
                     __str__: "foo",
                     name: "foo",
                 },
@@ -362,6 +364,7 @@ describe("use/listSubscription.spec.js", function () {
             expect(crudSubscribe).toHaveBeenCalledWith({
                 runId: expect.any(Number),
                 isCurrentRun: expect.any(Function),
+                isCancelled: expect.any(Object), // ref
                 target: { stream: "test_stream" },
                 pkKey: "id",
                 params: { user: 1, fields },
@@ -406,6 +409,7 @@ describe("use/listSubscription.spec.js", function () {
             expect(crudSubscribe).toHaveBeenCalledWith({
                 runId: expect.any(Number),
                 isCurrentRun: expect.any(Function),
+                isCancelled: expect.any(Object), // ref
                 target: { stream: "test_stream" },
                 pkKey: "id",
                 params: { user: 1, fields },
@@ -443,6 +447,7 @@ describe("use/listSubscription.spec.js", function () {
             expect(crudSubscribe).toHaveBeenCalledWith({
                 runId: expect.any(Number),
                 isCurrentRun: expect.any(Function),
+                isCancelled: expect.any(Object), // ref
                 target: { stream: "test_stream" },
                 pkKey: "id",
                 params: { user: 1, fields },
@@ -461,7 +466,7 @@ describe("use/listSubscription.spec.js", function () {
 
             expect(listInstance.state.objects).toEqual({
                 1: {
-                    id: "1",
+                    id: 1,
                     __str__: "foo",
                     name: "foo",
                 },
@@ -478,7 +483,7 @@ describe("use/listSubscription.spec.js", function () {
 
             expect(listInstance.state.objects).toEqual({
                 1: {
-                    id: "1",
+                    id: 1,
                     __str__: "foot",
                     fame: "foot",
                 },
@@ -514,6 +519,7 @@ describe("use/listSubscription.spec.js", function () {
             expect(crudSubscribe).toHaveBeenCalledWith({
                 runId: expect.any(Number),
                 isCurrentRun: expect.any(Function),
+                isCancelled: expect.any(Object), // ref
                 target: { stream: "test_stream" },
                 pkKey: "id",
                 params: { user: 1, fields },
@@ -536,6 +542,7 @@ describe("use/listSubscription.spec.js", function () {
             expect(crudSubscribe).toHaveBeenCalledWith({
                 runId: expect.any(Number),
                 isCurrentRun: expect.any(Function),
+                isCancelled: expect.any(Object), // ref
                 target: { stream: "test_stream" },
                 params: { user: 2, fields: ["name"] },
                 pkKey: "id",
@@ -704,6 +711,7 @@ describe("use/listSubscription.spec.js", function () {
         expect(crudSubscribe).toHaveBeenCalledWith({
             runId: expect.any(Number),
             isCurrentRun: expect.any(Function),
+            isCancelled: expect.any(Object), // ref
             target: { stream: "test_stream" },
             pkKey: "hash",
             params: { user: 1, fields },
@@ -727,7 +735,7 @@ describe("use/listSubscription.spec.js", function () {
 
         expect(listSubscription.listInstance.state.objects).toEqual({
             1: {
-                hash: "1",
+                hash: 1,
                 __str__: "blur",
                 name: "blur",
             },
@@ -744,7 +752,7 @@ describe("use/listSubscription.spec.js", function () {
 
         expect(listSubscription.listInstance.state.objects).toEqual({
             1: {
-                hash: "1",
+                hash: 1,
                 __str__: "blur",
                 fame: "blur",
             },

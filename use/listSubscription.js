@@ -236,7 +236,8 @@ export function useListSubscription({ listInstance, props, handlers }) {
                             switch (action) {
                                 case "delete":
                                     try {
-                                        listInstance.deleteListObject(data[parentState.pkKey]);
+                                        const pkValue = isObject(data) ? data[parentState.pkKey] : data;
+                                        listInstance.deleteListObject(pkValue);
                                     } catch (err) {
                                         if (err.name === "ListInstanceError" && err.code === "missing-object") {
                                             console.warn(
