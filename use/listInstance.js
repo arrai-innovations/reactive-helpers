@@ -59,7 +59,7 @@ export class ListInstanceError extends Error {
 /**
  * The objects by pk.
  *
- * @typedef {{[pk: string]: import('../use/objectInstance.js').ExistingCrudObject}} ObjectsByPk
+ * @typedef {{[pk: import('../config/commonCrud.js').Pk]: import('../use/objectInstance.js').ExistingCrudObject}} ObjectsByPk
  */
 
 /**
@@ -71,7 +71,7 @@ export class ListInstanceError extends Error {
 /**
  * The order of the objects in the list.
  *
- * @typedef {import('vue').ComputedRef<string[]>} ListOrder
+ * @typedef {import('vue').ComputedRef<import('../config/commonCrud.js').Pk[]>} ListOrder
  */
 
 /**
@@ -84,7 +84,7 @@ export class ListInstanceError extends Error {
  */
 
 /**
- * @typedef {Map<string, import('vue').Reactive<import('../use/objectInstance.js').ExistingCrudObject>>} ObjectsMap
+ * @typedef {Map<import('../config/commonCrud.js').Pk, import('vue').Reactive<import('../use/objectInstance.js').ExistingCrudObject>>} ObjectsMap
  */
 
 /**
@@ -156,13 +156,13 @@ export class ListInstanceError extends Error {
  * @property {PushObjectsFn} pushObjects - Customizable callback for handling new objects per page.
  * @property {(object: import('../use/objectInstance.js').ExistingCrudObject) => void} addListObject - Adds an object to the list.
  * @property {(object: import('../use/objectInstance.js').ExistingCrudObject) => void} updateListObject - Updates an object in the list.
- * @property {(objectId: string) => void} deleteListObject - Deletes an object from the list by pk.
+ * @property {(objectId: import('../config/commonCrud.js').PkInput) => void} deleteListObject - Deletes an object from the list by pk.
  * @property {(options?: ClearListOptions) => void} clearList - Clears the list objects and optionally keeps pagination, totals,
  *  or error state.
- * @property {() => string} getFakePk - Generates a unique fake pk for use within the list.
- * @property {(args?: {[key: string]: any}) => import('../utils/cancellablePromise.js').MaybeCancellablePromise<boolean|never>} list - Initiates a fetch to retrieve objects according to the CRUD configuration, returning a promise to a boolean indicating success.
- * @property {(args?: {pks?: string[], [key: string]: any}) => Promise<boolean>} bulkDelete - Deletes objects from the list by pk, returning a promise to a boolean indicating success.
- * @property {(args: {action: string, pks?: string[], [key: string]: any}) => Promise<object|string|false>} executeAction - Initiates an action on all objects in the list, returning the response, or false if the action failed.
+ * @property {() => import('../config/commonCrud.js').Pk} getFakePk - Generates a unique fake pk for use within the list.
+ * @property {(args?: import('../config/listCrud.js').AdditionalListArgs) => import('../utils/cancellablePromise.js').MaybeCancellablePromise<boolean|never>} list - Initiates a fetch to retrieve objects according to the CRUD configuration, returning a promise to a boolean indicating success.
+ * @property {(args?: {pks?: import('../config/commonCrud.js').Pk[]} & import('../config/listCrud.js').AdditionalListArgs) => Promise<boolean>} bulkDelete - Deletes objects from the list by pk, returning a promise to a boolean indicating success.
+ * @property {(args: {action: string, pks?: import('../config/commonCrud.js').Pk[]} & import('../config/listCrud.js').AdditionalListArgs) => Promise<object|string|boolean|null>} executeAction - Initiates an action on all objects in the list, returning the response, or null if the action failed.
  * @property {(info: PaginateInfo) => void} setPaginateInfo - The method to update pagination information.
  * @property {(total: ColumnTotals) => void} setColumnTotals - The method to update column totals.
  */
@@ -262,7 +262,7 @@ export function useListInstance({ props, handlers = {} }) {
 
     const [_objectsProxy, _objectsMapProxy] = es.run(() => {
         // ### do not use this directly, because we proxy `set` to make sure that values are reactive ###
-        /** @type {import('vue').Reactive<Map<string, import('../use/objectInstance.js').ExistingCrudObject>>} */
+        /** @type {import('vue').Reactive<Map<import('../config/commonCrud.js').Pk, import('../use/objectInstance.js').ExistingCrudObject>>} */
         const _objectsMap = shallowReactive(new Map()); // maps are ordered, if you don't clear lists, you need to insert pages in order.
 
         // ### this is a proxy to make the map behave like an object for reactivity ###
@@ -530,36 +530,39 @@ export function useListInstance({ props, handlers = {} }) {
                 });
         },
         addListObject: (object) => {
+            const pk = String(object[state.pkKey]);
             if (!object[state.pkKey]) {
                 throw new ListInstanceError(
                     `addListObject: object missing pk(${state.pkKey}).\n${inspect(object)}`,
                     "missing-pk"
                 );
             }
-            if (object[state.pkKey] in state.objects) {
+            if (pk in state.objects) {
                 throw new ListInstanceError(
-                    `addListObject: list already has object for pk(${state.pkKey}): ${inspect(object[state.pkKey])}`,
+                    `addListObject: list already has object for pk(${state.pkKey}): ${inspect(pk)}`,
                     "duplicate-pk"
                 );
             }
-            state.objects[object[state.pkKey]] = object;
+            state.objects[pk] = object;
         },
         updateListObject: (object) => {
+            const pk = String(object[state.pkKey]);
             if (!object[state.pkKey]) {
                 throw new ListInstanceError(
                     `updateListObject: object missing pk(${state.pkKey}).\n${inspect(object)}`,
                     "missing-pk"
                 );
             }
-            if (!(object[state.pkKey] in state.objects)) {
+            if (!(pk in state.objects)) {
                 throw new ListInstanceError(
-                    `updateListObject: list missing object for update by pk(${state.pkKey}): ${inspect(object[state.pkKey])}`,
+                    `updateListObject: list missing object for update by pk(${state.pkKey}): ${inspect(pk)}`,
                     "missing-object"
                 );
             }
-            assignReactiveObject(state.objects[object[state.pkKey]], object);
+            assignReactiveObject(state.objects[pk], object);
         },
-        deleteListObject: (pk) => {
+        deleteListObject: (pkInput) => {
+            const pk = String(pkInput);
             if (!(pk in state.objects)) {
                 throw new ListInstanceError(
                     `deleteListObject: list missing object for removal by pk(${state.pkKey}): ${inspect(pk)}`,
@@ -586,7 +589,8 @@ export function useListInstance({ props, handlers = {} }) {
         getFakePk: () => getFakePk(state.objects, state.pkKey),
         pushObjects: (newObjects) => {
             newObjects.forEach((newObject) => {
-                if (newObject[state.pkKey] in state.objects) {
+                const pk = String(newObject[state.pkKey]);
+                if (pk in state.objects) {
                     self.updateListObject.call(this, newObject);
                 } else {
                     self.addListObject.call(this, newObject);

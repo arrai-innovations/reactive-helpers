@@ -172,7 +172,7 @@ describe("use/objectInstance.js", function () {
             expect({ ...objectInstance.state.object }).toEqual(crudRetrieveResolved);
             expect(objectInstance.state.crud.retrieve).toHaveBeenCalledWith({
                 target: { stream: "test_stream" },
-                pk: 1,
+                pk: "1",
                 pkKey: "id",
                 params: { fields: ["id", "__str__", "name"] },
                 isCancelled: expect.any(Object),
@@ -220,7 +220,7 @@ describe("use/objectInstance.js", function () {
             expect({ ...objectInstance.state.object }).toEqual(crudRetrieveResolvedNonStandardPrimaryKey);
             expect(objectInstance.state.crud.retrieve).toHaveBeenCalledWith({
                 target: { stream: "test_stream" },
-                pk: 1,
+                pk: "1",
                 pkKey: "unique",
                 params: { fields: ["id", "__str__", "name"] },
                 isCancelled: expect.any(Object),
@@ -293,7 +293,7 @@ describe("use/objectInstance.js", function () {
             expect({ ...objectInstance.state.object }).toEqual(crudRetrieveResolved);
             expect(objectInstance.state.crud.retrieve).toHaveBeenCalledWith({
                 target: { stream: "test_stream" },
-                pk: 1,
+                pk: "1",
                 pkKey: "id",
                 params: { fields: ["id", "__str__", "name"] },
                 isCancelled: expect.any(Object),
@@ -337,7 +337,7 @@ describe("use/objectInstance.js", function () {
             expect({ ...objectInstance.state.object }).toEqual({});
             expect(objectInstance.state.crud.retrieve).toHaveBeenCalledWith({
                 target: { stream: "test_stream" },
-                pk: 1,
+                pk: "1",
                 pkKey: "id",
                 params: { fields: ["id", "__str__", "name"] },
                 isCancelled: expect.any(Object),
@@ -383,7 +383,7 @@ describe("use/objectInstance.js", function () {
             expect({ ...objectInstance.state.object }).toEqual({});
             expect(objectInstance.state.crud.retrieve).toHaveBeenCalledWith({
                 target: { stream: "test_stream" },
-                pk: 1,
+                pk: "1",
                 pkKey: "pk",
                 params: { fields: ["id", "__str__", "name"] },
                 isCancelled: expect.any(Object),
@@ -448,7 +448,7 @@ describe("use/objectInstance.js", function () {
             expect(firstPromise).toBe(secondPromise);
             expect(objectInstance.state.crud.retrieve).toHaveBeenCalledWith({
                 target: { stream: "test_stream" },
-                pk: 1,
+                pk: "1",
                 pkKey: "id",
                 params: { fields: ["id", "__str__", "name"] },
                 isCancelled: expect.any(Object),
@@ -1336,7 +1336,7 @@ describe("use/objectInstance.js", function () {
                 target: {
                     stream: "test_stream",
                 },
-                pk: 1,
+                pk: "1",
                 pkKey: "id",
                 partialObject: {
                     id: 1,
@@ -1436,7 +1436,7 @@ describe("use/objectInstance.js", function () {
                 target: {
                     stream: "test_stream",
                 },
-                pk: 1,
+                pk: "1",
                 pkKey: "unique",
                 partialObject: {
                     unique: 1,
@@ -1492,7 +1492,7 @@ describe("use/objectInstance.js", function () {
                 target: {
                     stream: "test_stream",
                 },
-                pk: 1,
+                pk: "1",
                 pkKey: "id",
                 partialObject: {
                     id: 1,
@@ -1548,7 +1548,7 @@ describe("use/objectInstance.js", function () {
                 target: {
                     stream: "test_stream",
                 },
-                pk: 1,
+                pk: "1",
                 pkKey: "pk",
                 partialObject: {
                     id: 1,
@@ -1593,7 +1593,7 @@ describe("use/objectInstance.js", function () {
                 target: {
                     stream: "test_stream",
                 },
-                pk: 1,
+                pk: "1",
                 pkKey: "id",
                 partialObject: {
                     id: 1,
@@ -1862,7 +1862,7 @@ describe("use/objectInstance.js", function () {
             await expect(returnsPromise).resolves.toBe(true);
             expect(objectInstance.state.crud.delete).toHaveBeenCalledWith({
                 target: { stream: "test_stream" },
-                pk: 1,
+                pk: "1",
                 pkKey: "unique",
             });
         });
@@ -1937,7 +1937,7 @@ describe("use/objectInstance.js", function () {
             await expect(returnsPromise).resolves.toBe(false);
             expect(objectInstance.state.crud.delete).toHaveBeenCalledWith({
                 target: { stream: "test_stream" },
-                pk: 1,
+                pk: "1",
                 pkKey: "id",
             });
             expect(objectInstance.state.crud.delete).toHaveBeenCalledTimes(1);
@@ -1990,7 +1990,7 @@ describe("use/objectInstance.js", function () {
             await expect(returnsPromise).resolves.toBe(false);
             expect(objectInstance.state.crud.delete).toHaveBeenCalledWith({
                 target: { stream: "test_stream" },
-                pk: 1,
+                pk: "1",
                 pkKey: "unique",
             });
             expect(objectInstance.state.crud.delete).toHaveBeenCalledTimes(1);
@@ -2013,7 +2013,7 @@ describe("use/objectInstance.js", function () {
             expect(() => objectInstance.delete()).toThrow(new ObjectError("already loading.", "already-loading"));
             expect(objectInstance.state.crud.delete).toHaveBeenCalledWith({
                 target: { stream: "test_stream" },
-                pk: 1,
+                pk: "1",
                 pkKey: "id",
             });
             expect(objectInstance.state.crud.delete).toHaveBeenCalledTimes(1);
@@ -2036,7 +2036,7 @@ describe("use/objectInstance.js", function () {
 
             expect(objectInstance.state.crud.delete).toHaveBeenCalledWith({
                 target: { stream: "test_stream" },
-                pk: 1,
+                pk: "1",
                 pkKey: "id",
             });
             expect(objectInstance.state.crud.delete).toHaveBeenCalledTimes(1);

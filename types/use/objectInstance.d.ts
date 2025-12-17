@@ -92,7 +92,7 @@ export function useObjectInstance({ props, handlers }: ObjectInstanceOptions): O
  * Reactive arguments to be passed to the object instance.
  *
  * @typedef {object} ObjectInstanceRawProps
- * @property {string} [pk] - The pk of the object, optional to support creating new objects.
+ * @property {import('../config/commonCrud.js').PkInput} [pk] - The pk of the object, optional to support creating new objects.
  * @property {string} pkKey - The pk key of the object.
  * @property {object} params - The arguments to be passed to the retrieve function.
  * @property {import('../config/objectCrud.js').ObjectTarget} target - The arguments to be passed to the crud handlers.
@@ -113,7 +113,7 @@ export function useObjectInstance({ props, handlers }: ObjectInstanceOptions): O
  *
  * @typedef {object} ObjectInstanceRawMyState
  * @property {import('vue').Reactive<ObjectInstanceRawStateCrud>} crud - The crud handlers.
- * @property {import('vue').Ref<string|undefined>} pk - The pk of the object.
+ * @property {import('vue').Ref<import('../config/commonCrud.js').Pk|undefined>} pk - The pk of the object.
  * @property {import('vue').Ref<string|undefined>} pkKey - The pk key of the object.
  * @property {import('vue').Ref<{[key:string]: any}>} params - The arguments to be passed to the retrieve function.
  * @property {import('vue').Reactive<CrudObject>} object - The object.
@@ -217,7 +217,7 @@ export type ObjectInstanceRawProps = {
     /**
      * - The pk of the object, optional to support creating new objects.
      */
-    pk?: string;
+    pk?: import("../config/commonCrud.js").PkInput;
     /**
      * - The pk key of the object.
      */
@@ -276,7 +276,7 @@ export type ObjectInstanceRawMyState = {
     /**
      * - The pk of the object.
      */
-    pk: import("vue").Ref<string | undefined>;
+    pk: import("vue").Ref<import("../config/commonCrud.js").Pk | undefined>;
     /**
      * - The pk key of the object.
      */

@@ -16,3 +16,23 @@ export const refIfReactive = (source, property, defaultValue) => {
     }
     return computed(() => unref(source?.[property]) ?? defaultValue);
 };
+
+/**
+ * Returns a ref to a pk property, coercing string|number input to string output.
+ * Returns undefined if the source pk is null/undefined.
+ *
+ * @param {object | undefined | null} source - The source object containing the pk.
+ * @param {string} [property="pk"] - The property name to access.
+ * @param {import('../config/commonCrud.js').Pk | null} [defaultValue=null] - The default value if missing.
+ * @returns {import('vue').ComputedRef<import('../config/commonCrud.js').Pk | undefined>} A computed ref that coerces to string.
+ */
+export const pkRefIfReactive = (source, property = "pk", defaultValue = null) => {
+    const rawRef = refIfReactive(source, property, defaultValue);
+    return computed(() => {
+        const value = unref(rawRef);
+        if (value === null || value === undefined) {
+            return undefined;
+        }
+        return String(value);
+    });
+};

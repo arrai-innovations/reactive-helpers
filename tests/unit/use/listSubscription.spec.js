@@ -158,7 +158,7 @@ describe("use/listSubscription.spec.js", function () {
 
             expect(listSubscription.listInstance.state.objects).toEqual({
                 1: {
-                    id: 1,
+                    id: "1",
                     __str__: "foo",
                     name: "foo",
                 },
@@ -175,7 +175,7 @@ describe("use/listSubscription.spec.js", function () {
 
             expect(listSubscription.listInstance.state.objects).toEqual({
                 1: {
-                    id: 1,
+                    id: "1",
                     __str__: "foot",
                     fame: "foot",
                 },
@@ -286,7 +286,7 @@ describe("use/listSubscription.spec.js", function () {
 
             expect(listSubscription.listInstance.state.objects).toEqual({
                 1: {
-                    id: 1,
+                    id: "1",
                     __str__: "foo",
                     name: "foo",
                 },
@@ -461,7 +461,7 @@ describe("use/listSubscription.spec.js", function () {
 
             expect(listInstance.state.objects).toEqual({
                 1: {
-                    id: 1,
+                    id: "1",
                     __str__: "foo",
                     name: "foo",
                 },
@@ -478,7 +478,7 @@ describe("use/listSubscription.spec.js", function () {
 
             expect(listInstance.state.objects).toEqual({
                 1: {
-                    id: 1,
+                    id: "1",
                     __str__: "foot",
                     fame: "foot",
                 },
@@ -727,7 +727,7 @@ describe("use/listSubscription.spec.js", function () {
 
         expect(listSubscription.listInstance.state.objects).toEqual({
             1: {
-                hash: 1,
+                hash: "1",
                 __str__: "blur",
                 name: "blur",
             },
@@ -744,7 +744,7 @@ describe("use/listSubscription.spec.js", function () {
 
         expect(listSubscription.listInstance.state.objects).toEqual({
             1: {
-                hash: 1,
+                hash: "1",
                 __str__: "blur",
                 fame: "blur",
             },

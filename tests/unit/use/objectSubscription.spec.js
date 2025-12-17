@@ -368,7 +368,7 @@ describe("use/objectSubscription.js", function () {
             expect(globalRetrieve).toHaveBeenCalledTimes(1);
             expect(globalRetrieve).toHaveBeenCalledWith(
                 expect.objectContaining({
-                    pk: 1,
+                    pk: "1",
                     pkKey: "id",
                     params: { fields },
                     isCancelled: expect.any(Object),
@@ -402,7 +402,7 @@ describe("use/objectSubscription.js", function () {
             expect(globalSubscribe).toHaveBeenCalledTimes(1);
             expect(globalSubscribe).toHaveBeenCalledWith(
                 expect.objectContaining({
-                    pk: 1,
+                    pk: "1",
                     pkKey: "id",
                     params: { fields },
                     isCancelled: expect.any(Object),

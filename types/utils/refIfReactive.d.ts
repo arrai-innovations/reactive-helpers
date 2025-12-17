@@ -1,1 +1,2 @@
 export function refIfReactive<T, K extends keyof T>(source: (T & object) | undefined | null, property: K, defaultValue?: T[K]): import("vue").ComputedRef<T[K]> | import("vue").Ref<T[K]>;
+export function pkRefIfReactive(source: object | undefined | null, property?: string, defaultValue?: import("../config/commonCrud.js").Pk | null): import("vue").ComputedRef<import("../config/commonCrud.js").Pk | undefined>;

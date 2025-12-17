@@ -35,7 +35,7 @@ import { computed, effectScope, nextTick, reactive, ref, toRef, toRefs, unref, w
  * The raw state for a list calculated.
  *
  * @typedef {object} ListCalculatedRawState - The raw state for a list calculated property.
- * @property {{[pk: string]: {[rule: string]: import('vue').ComputedRef<any>}}} calculatedObjects - The calculated objects.
+ * @property {{[pk: import('../config/commonCrud.js').Pk]: {[rule: string]: import('vue').ComputedRef<any>}}} calculatedObjects - The calculated objects.
  * @property {ListCalculatedRules} calculatedObjectsRules - The rules for the calculated objects.
  * @property {boolean} calculatedObjectsParentStateObjectsWatchRunning - Whether the parent state objects watch is running.
  * @property {boolean} calculatedObjectsWatchRunning - Whether the calculated objects watch is running.

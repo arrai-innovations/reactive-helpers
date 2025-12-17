@@ -5,6 +5,18 @@ import isFunction from "lodash-es/isFunction.js";
 import { refIfReactive } from "../utils/refIfReactive.js";
 
 /**
+ * Primary key type accepted as input (will be coerced to string).
+ *
+ * @typedef {string | number} PkInput
+ */
+
+/**
+ * Primary key type used for storage and output (always a string).
+ *
+ * @typedef {string} Pk
+ */
+
+/**
  * @param {string} name - The name of the method.
  * @returns {(...args: any[]) => import('../utils/cancellablePromise.js').MaybeCancellablePromise<any>} - A function that returns a rejected promise with an error message.
  */
