@@ -53,13 +53,6 @@ workflows:
                   filters:
                       branches:
                           only: main
-            - types-check:
-                  name: types-check-main
-                  requires:
-                      - tests
-                  filters:
-                      branches:
-                          only: main
             - npm/coverage:
                   name: tests-no-badge
                   context: arrai-global
@@ -81,15 +74,10 @@ workflows:
                           ignore:
                               - main
             - types-check:
-                  name: types-check-non-main
-                  requires:
-                      - tests-no-badge
+                  name: types-check
                   filters:
                       tags:
                           only: /.*/
-                      branches:
-                          ignore:
-                              - main
             - npm/publish:
                   name: publish
                   context: arrai-private-package-publishing
