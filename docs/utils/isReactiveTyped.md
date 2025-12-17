@@ -14,7 +14,9 @@
 
 #### Type Parameters
 
-• **T** *extends* `unknown`
+##### T
+
+`T` *extends* `unknown`
 
 #### Parameters
 

@@ -16,7 +16,7 @@ Options to configure the behavior of the list calculated properties.
 
 ##### calculatedObjectsRules
 
-> **calculatedObjectsRules**: `Ref`\<[`ListCalculatedRules`](listCalculated.md#listcalculatedrules), [`ListCalculatedRules`](listCalculated.md#listcalculatedrules)\>
+> **calculatedObjectsRules**: `Ref`\<[`ListCalculatedRules`](#listcalculatedrules), [`ListCalculatedRules`](#listcalculatedrules)\>
 
 A reactive reference to rules used for dynamic calculations
  within list objects. Proper setup of this reference ensures that updates are managed reactively, including deep
@@ -42,7 +42,7 @@ CRUD handlers and their configurations for the list.
 
 ###### crud.args
 
-> **args**: `Reactive`\<\{\} \| [`TargetArgs`](../config/objectCrud.md#targetargs)\>
+> **args**: `Reactive`\<\{ \} \| [`TargetArgs`](../config/objectCrud.md#targetargs)\>
 
 The arguments to be passed to the crud handlers.
 
@@ -234,7 +234,7 @@ CRUD handlers and their configurations for the list.
 
 ###### crud.args
 
-> **args**: `Reactive`\<\{\} \| [`TargetArgs`](../config/objectCrud.md#targetargs)\>
+> **args**: `Reactive`\<\{ \} \| [`TargetArgs`](../config/objectCrud.md#targetargs)\>
 
 The arguments to be passed to the crud handlers.
 
@@ -424,7 +424,7 @@ Whether the parent state objects watch is running.
 
 ###### calculatedObjectsRules
 
-> **calculatedObjectsRules**: [`ListCalculatedRules`](listCalculated.md#listcalculatedrules)
+> **calculatedObjectsRules**: [`ListCalculatedRules`](#listcalculatedrules)
 
 The rules for the calculated objects.
 
@@ -454,7 +454,7 @@ CRUD handlers and their configurations for the list.
 
 ###### crud.args
 
-> **args**: `Reactive`\<\{\} \| [`TargetArgs`](../config/objectCrud.md#targetargs)\>
+> **args**: `Reactive`\<\{ \} \| [`TargetArgs`](../config/objectCrud.md#targetargs)\>
 
 The arguments to be passed to the crud handlers.
 
@@ -656,7 +656,7 @@ Whether the parent state objects watch is running.
 
 ##### calculatedObjectsRules
 
-> **calculatedObjectsRules**: [`ListCalculatedRules`](listCalculated.md#listcalculatedrules)
+> **calculatedObjectsRules**: [`ListCalculatedRules`](#listcalculatedrules)
 
 The rules for the calculated objects.
 
@@ -682,7 +682,7 @@ Whether the list is running.
 
 ### ListCalculated
 
-> **ListCalculated**\<\>: [`ListCalculatedProperties`](listCalculated.md#listcalculatedproperties)
+> **ListCalculated**\<\> = [`ListCalculatedProperties`](#listcalculatedproperties)
 
 #### Type Parameters
 
@@ -690,7 +690,7 @@ Whether the list is running.
 
 ### ListCalculatedParentRawState
 
-> **ListCalculatedParentRawState**\<\>: [`ListInstanceRawState`](listInstance.md#listinstancerawstate) & `Partial`\<[`ListSubscriptionRawState`](listSubscription.md#listsubscriptionrawstate)\> & `Partial`\<[`ListRelatedRawState`](listRelated.md#listrelatedrawstate)\>
+> **ListCalculatedParentRawState**\<\> = [`ListInstanceRawState`](listInstance.md#listinstancerawstate) & `Partial`\<[`ListSubscriptionRawState`](listSubscription.md#listsubscriptionrawstate)\> & `Partial`\<[`ListRelatedRawState`](listRelated.md#listrelatedrawstate)\>
 
 #### Type Parameters
 
@@ -698,7 +698,7 @@ Whether the list is running.
 
 ### ListCalculatedParentState
 
-> **ListCalculatedParentState**\<\>: `UnwrapNestedRefs`
+> **ListCalculatedParentState**\<\> = `UnwrapNestedRefs`
 
 #### Type Parameters
 
@@ -706,7 +706,7 @@ Whether the list is running.
 
 ### ListCalculatedRules
 
-> **ListCalculatedRules**\<\>: `object`
+> **ListCalculatedRules**\<\> = `object`
 
 #### Type Parameters
 
@@ -718,7 +718,7 @@ Whether the list is running.
 
 ### ListCalculatedState
 
-> **ListCalculatedState**\<\>: `UnwrapNestedRefs`
+> **ListCalculatedState**\<\> = `UnwrapNestedRefs`
 
 #### Type Parameters
 
@@ -726,7 +726,7 @@ Whether the list is running.
 
 ### useListCalculated()
 
-> **useListCalculated**(`options`): [`ListCalculatedProperties`](listCalculated.md#listcalculatedproperties)
+> **useListCalculated**(`options`): [`ListCalculatedProperties`](#listcalculatedproperties)
 
 Initializes and manages a calculated properties object for lists. This function sets up reactive states and computations
 that dynamically update as specified in `calculatedObjectsRules`. It is used to add derived properties to list items,
@@ -738,7 +738,7 @@ consistency in dynamic UIs.
 
 ##### options
 
-[`ListCalculatedOptions`](listCalculated.md#listcalculatedoptions)
+[`ListCalculatedOptions`](#listcalculatedoptions)
 
 Configuration options including the parent state and rules for dynamically
  generating calculated properties. This setup allows the system to handle calculations as part of the list management
@@ -746,7 +746,7 @@ Configuration options including the parent state and rules for dynamically
 
 #### Returns
 
-[`ListCalculatedProperties`](listCalculated.md#listcalculatedproperties)
+[`ListCalculatedProperties`](#listcalculatedproperties)
 
 - A reactive instance that manages and provides access to calculated properties within the
  list, facilitating real-time updates and complex dependency management across multiple components.

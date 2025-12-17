@@ -10,7 +10,7 @@
 
 ### MaybeRefWatchableError
 
-> **MaybeRefWatchableError**\<\>: `MaybeRef`
+> **MaybeRefWatchableError**\<\> = `MaybeRef`
 
 #### Type Parameters
 
@@ -18,9 +18,9 @@
 
 ### SeparateStateError
 
-> **SeparateStateError**\<\>: `object` & [`ErrorReadOnlyFunctions`](error.md#errorreadonlyfunctions)
+> **SeparateStateError**\<\> = `object` & [`ErrorReadOnlyFunctions`](error.md#errorreadonlyfunctions)
 
-#### Type declaration
+#### Type Declaration
 
 ##### state
 
@@ -32,7 +32,7 @@
 
 ### WatchableError
 
-> **WatchableError**\<\>: [`ReadonlyErrorStatus`](error.md#readonlyerrorstatus) \| `Reactive`
+> **WatchableError**\<\> = [`ReadonlyErrorStatus`](error.md#readonlyerrorstatus) \| `Reactive`
 
 #### Type Parameters
 
@@ -40,7 +40,7 @@
 
 ### asWatchableError()
 
-> **asWatchableError**(`source`): [`WatchableError`](proxyError.md#watchableerror)
+> **asWatchableError**(`source`): [`WatchableError`](#watchableerror)
 
 Adapt an object with reactive error state into a WatchableError shape.
 Accepts either an object with a `state` property or an object that already exposes error/errored/clearError.
@@ -49,13 +49,13 @@ Accepts either an object with a `state` property or an object that already expos
 
 ##### source
 
-`MaybeRef`\<[`WatchableError`](proxyError.md#watchableerror) \| [`SeparateStateError`](proxyError.md#separatestateerror)\>
+`MaybeRef`\<[`WatchableError`](#watchableerror) \| [`SeparateStateError`](#separatestateerror)\>
 
 The source object to adapt.
 
 #### Returns
 
-[`WatchableError`](proxyError.md#watchableerror)
+[`WatchableError`](#watchableerror)
 
 - The adapted WatchableError object.
 
@@ -71,7 +71,7 @@ A composable function for aggregating error state across multiple sources.
 
 ##### errors
 
-`MaybeRef`\<`MaybeRef`\<[`WatchableError`](proxyError.md#watchableerror)\>[]\>
+`MaybeRef`\<`MaybeRef`\<[`WatchableError`](#watchableerror)\>[]\>
 
 The error states to monitor.
 

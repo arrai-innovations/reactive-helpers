@@ -19,9 +19,9 @@ when there are issues such as invalid input, network failures, or permissions is
 
 #### Constructors
 
-##### new ObjectError()
+##### Constructor
 
-> **new ObjectError**(`message`, `code`): [`ObjectError`](objectInstance.md#objecterror)
+> **new ObjectError**(`message`, `code`): [`ObjectError`](#objecterror)
 
 Creates an instance of ObjectError.
 
@@ -41,7 +41,7 @@ The error code.
 
 ###### Returns
 
-[`ObjectError`](objectInstance.md#objecterror)
+[`ObjectError`](#objecterror)
 
 ###### Overrides
 
@@ -79,7 +79,7 @@ Called to clear the object state.
 
 ##### create()
 
-> **create**: (`args`) => [`MaybeCancellablePromise`](../utils/cancellablePromise.md#maybecancellablepromiset)\<`boolean`\>
+> **create**: (`args`) => [`MaybeCancellablePromise`](../utils/cancellablePromise.md#maybecancellablepromise)\<`boolean`\>
 
 Called to turn the current object into a new object on the server.
 
@@ -91,7 +91,7 @@ Called to turn the current object into a new object on the server.
 
 ###### Returns
 
-[`MaybeCancellablePromise`](../utils/cancellablePromise.md#maybecancellablepromiset)\<`boolean`\>
+[`MaybeCancellablePromise`](../utils/cancellablePromise.md#maybecancellablepromise)\<`boolean`\>
 
 ##### delete()
 
@@ -123,11 +123,11 @@ Called to execute certain action on the current object.
 
 ###### Returns
 
-[`MaybeCancellablePromise`](../utils/cancellablePromise.md#maybecancellablepromiset)\<`boolean`\>
+[`MaybeCancellablePromise`](../utils/cancellablePromise.md#maybecancellablepromise)\<`boolean`\>
 
 ##### patch()
 
-> **patch**: (`args`) => [`MaybeCancellablePromise`](../utils/cancellablePromise.md#maybecancellablepromiset)\<`boolean`\>
+> **patch**: (`args`) => [`MaybeCancellablePromise`](../utils/cancellablePromise.md#maybecancellablepromise)\<`boolean`\>
 
 Called to patch the current object on the server.
 
@@ -139,11 +139,11 @@ Called to patch the current object on the server.
 
 ###### Returns
 
-[`MaybeCancellablePromise`](../utils/cancellablePromise.md#maybecancellablepromiset)\<`boolean`\>
+[`MaybeCancellablePromise`](../utils/cancellablePromise.md#maybecancellablepromise)\<`boolean`\>
 
 ##### retrieve()
 
-> **retrieve**: (`args`?) => [`MaybeCancellablePromise`](../utils/cancellablePromise.md#maybecancellablepromiset)\<`boolean`\>
+> **retrieve**: (`args?`) => [`MaybeCancellablePromise`](../utils/cancellablePromise.md#maybecancellablepromise)\<`boolean`\>
 
 Called to retrieve the current object by pk from the server.
 
@@ -155,11 +155,11 @@ Called to retrieve the current object by pk from the server.
 
 ###### Returns
 
-[`MaybeCancellablePromise`](../utils/cancellablePromise.md#maybecancellablepromiset)\<`boolean`\>
+[`MaybeCancellablePromise`](../utils/cancellablePromise.md#maybecancellablepromise)\<`boolean`\>
 
 ##### update()
 
-> **update**: (`args`) => [`MaybeCancellablePromise`](../utils/cancellablePromise.md#maybecancellablepromiset)\<`boolean`\>
+> **update**: (`args`) => [`MaybeCancellablePromise`](../utils/cancellablePromise.md#maybecancellablepromise)\<`boolean`\>
 
 Called to update the current object on the server.
 
@@ -171,7 +171,7 @@ Called to update the current object on the server.
 
 ###### Returns
 
-[`MaybeCancellablePromise`](../utils/cancellablePromise.md#maybecancellablepromiset)\<`boolean`\>
+[`MaybeCancellablePromise`](../utils/cancellablePromise.md#maybecancellablepromise)\<`boolean`\>
 
 ***
 
@@ -283,7 +283,7 @@ The crud handlers.
 
 ###### crud.args
 
-> **args**: `Reactive`\<\{\} \| [`TargetArgs`](../config/objectCrud.md#targetargs)\>
+> **args**: `Reactive`\<\{ \} \| [`TargetArgs`](../config/objectCrud.md#targetargs)\>
 
 The arguments to be passed to the crud handlers.
 
@@ -355,7 +355,7 @@ Whether the component is loading.
 
 ###### object
 
-> **object**: `Reactive`\<[`CrudObject`](objectInstance.md#crudobject)\>
+> **object**: `Reactive`\<[`CrudObject`](#crudobject)\>
 
 The object.
 
@@ -395,7 +395,7 @@ The crud handlers.
 
 ###### args
 
-> **args**: `Reactive`\<\{\} \| [`TargetArgs`](../config/objectCrud.md#targetargs)\>
+> **args**: `Reactive`\<\{ \} \| [`TargetArgs`](../config/objectCrud.md#targetargs)\>
 
 The arguments to be passed to the crud handlers.
 
@@ -449,13 +449,13 @@ Whether the object is deleted.
 
 ##### object
 
-> **object**: `Reactive`\<[`CrudObject`](objectInstance.md#crudobject)\>
+> **object**: `Reactive`\<[`CrudObject`](#crudobject)\>
 
 The object.
 
 ##### params
 
-> **params**: `Ref`\<\{\}, \{\}\>
+> **params**: `Ref`\<\{\[`key`: `string`\]: `any`; \}, \{\[`key`: `string`\]: `any`; \}\>
 
 The arguments to be passed to the retrieve function.
 
@@ -509,7 +509,7 @@ The arguments to be passed to the crud handlers.
 
 ##### args
 
-> **args**: `Reactive`\<\{\} \| [`TargetArgs`](../config/objectCrud.md#targetargs)\>
+> **args**: `Reactive`\<\{ \} \| [`TargetArgs`](../config/objectCrud.md#targetargs)\>
 
 The arguments to be passed to the crud handlers.
 
@@ -571,7 +571,7 @@ The update function.
 
 ### CrudObject
 
-> **CrudObject**\<\>: [`ExistingCrudObject`](objectInstance.md#existingcrudobject) \| [`NewCrudObject`](objectInstance.md#newcrudobject)
+> **CrudObject**\<\> = [`ExistingCrudObject`](#existingcrudobject) \| [`NewCrudObject`](#newcrudobject)
 
 #### Type Parameters
 
@@ -579,7 +579,7 @@ The update function.
 
 ### ExistingCrudObject
 
-> **ExistingCrudObject**\<\>: `object`
+> **ExistingCrudObject**\<\> = `object`
 
 #### Type Parameters
 
@@ -591,7 +591,7 @@ The update function.
 
 ### NewCrudObject
 
-> **NewCrudObject**\<\>: `object`
+> **NewCrudObject**\<\> = `object`
 
 #### Type Parameters
 
@@ -603,7 +603,7 @@ The update function.
 
 ### ObjectInstance
 
-> **ObjectInstance**\<\>: [`ObjectInstanceFunctions`](objectInstance.md#objectinstancefunctions) & [`ObjectInstanceProperties`](objectInstance.md#objectinstanceproperties)
+> **ObjectInstance**\<\> = [`ObjectInstanceFunctions`](#objectinstancefunctions) & [`ObjectInstanceProperties`](#objectinstanceproperties)
 
 #### Type Parameters
 
@@ -611,21 +611,21 @@ The update function.
 
 ### ObjectInstanceCreateArgs
 
-> **ObjectInstanceCreateArgs**\<\>: `object`
+> **ObjectInstanceCreateArgs**\<\> = `object`
 
 #### Type Parameters
 
-#### Type declaration
+#### Type Declaration
 
 ##### object
 
-> **object**: [`NewCrudObject`](objectInstance.md#newcrudobject)
+> **object**: [`NewCrudObject`](#newcrudobject)
 
 ***
 
 ### ObjectInstanceFunctions
 
-> **ObjectInstanceFunctions**\<\>: [`ErrorReadOnlyFunctions`](error.md#errorreadonlyfunctions) & [`ObjectInstanceMyFunctions`](objectInstance.md#objectinstancemyfunctions)
+> **ObjectInstanceFunctions**\<\> = [`ErrorReadOnlyFunctions`](error.md#errorreadonlyfunctions) & [`ObjectInstanceMyFunctions`](#objectinstancemyfunctions)
 
 #### Type Parameters
 
@@ -633,21 +633,21 @@ The update function.
 
 ### ObjectInstancePatchArgs
 
-> **ObjectInstancePatchArgs**\<\>: `object`
+> **ObjectInstancePatchArgs**\<\> = `object`
 
 #### Type Parameters
 
-#### Type declaration
+#### Type Declaration
 
 ##### partialObject
 
-> **partialObject**: [`ExistingCrudObject`](objectInstance.md#existingcrudobject)
+> **partialObject**: [`ExistingCrudObject`](#existingcrudobject)
 
 ***
 
 ### ObjectInstanceRawState
 
-> **ObjectInstanceRawState**\<\>: [`ObjectInstanceRawMyState`](objectInstance.md#objectinstancerawmystate) & [`LoadingErrorProperties`](loadingError.md#loadingerrorproperties)
+> **ObjectInstanceRawState**\<\> = [`ObjectInstanceRawMyState`](#objectinstancerawmystate) & [`LoadingErrorProperties`](loadingError.md#loadingerrorproperties)
 
 #### Type Parameters
 
@@ -655,7 +655,7 @@ The update function.
 
 ### ObjectInstanceState
 
-> **ObjectInstanceState**\<\>: `Reactive`
+> **ObjectInstanceState**\<\> = `Reactive`
 
 #### Type Parameters
 
@@ -663,15 +663,15 @@ The update function.
 
 ### ObjectInstanceUpdateArgs
 
-> **ObjectInstanceUpdateArgs**\<\>: `object`
+> **ObjectInstanceUpdateArgs**\<\> = `object`
 
 #### Type Parameters
 
-#### Type declaration
+#### Type Declaration
 
 ##### object
 
-> **object**: [`ExistingCrudObject`](objectInstance.md#existingcrudobject)
+> **object**: [`ExistingCrudObject`](#existingcrudobject)
 
 ## Variables
 
@@ -689,7 +689,7 @@ The update function.
 
 ### useObjectInstance()
 
-> **useObjectInstance**(`options`): [`ObjectInstance`](objectInstance.md#objectinstance)
+> **useObjectInstance**(`options`): [`ObjectInstance`](#objectinstance)
 
 Initializes an object instance to manage CRUD operations. This setup includes reactive state management
 and handlers to perform create, retrieve, update, delete, and patch operations based on provided CRUD
@@ -699,13 +699,13 @@ configurations and arguments.
 
 ##### options
 
-[`ObjectInstanceOptions`](objectInstance.md#objectinstanceoptions)
+[`ObjectInstanceOptions`](#objectinstanceoptions)
 
 The options to be passed to useObjectInstance.
 
 #### Returns
 
-[`ObjectInstance`](objectInstance.md#objectinstance)
+[`ObjectInstance`](#objectinstance)
 
 - An object used to manage create, retrieve, update, delete, patch, and executeAction operations.
 

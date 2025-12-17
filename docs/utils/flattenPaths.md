@@ -10,7 +10,7 @@
 
 ### flattenPaths()
 
-> **flattenPaths**(`arrayOrObject`, `options`?): `string`[]
+> **flattenPaths**(`arrayOrObject`, `options?`): `string`[]
 
 Turn an array or object into an array of path strings. Recurses for any found arrays or objects.
 

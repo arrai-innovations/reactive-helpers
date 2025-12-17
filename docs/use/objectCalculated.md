@@ -26,7 +26,7 @@ The crud handlers.
 
 ###### crud.args
 
-> **args**: `Reactive`\<\{\} \| [`TargetArgs`](../config/objectCrud.md#targetargs)\>
+> **args**: `Reactive`\<\{ \} \| [`TargetArgs`](../config/objectCrud.md#targetargs)\>
 
 The arguments to be passed to the crud handlers.
 
@@ -200,7 +200,7 @@ The calculated object.
 
 ###### calculatedObjectRules
 
-> **calculatedObjectRules**: [`ObjectCalculatedRules`](objectCalculated.md#objectcalculatedrules)
+> **calculatedObjectRules**: [`ObjectCalculatedRules`](#objectcalculatedrules)
 
 The calculated object rules.
 
@@ -224,7 +224,7 @@ The crud handlers.
 
 ###### crud.args
 
-> **args**: `Reactive`\<\{\} \| [`TargetArgs`](../config/objectCrud.md#targetargs)\>
+> **args**: `Reactive`\<\{ \} \| [`TargetArgs`](../config/objectCrud.md#targetargs)\>
 
 The arguments to be passed to the crud handlers.
 
@@ -398,7 +398,7 @@ Stops composition's effects and cleans up resources.
 
 ##### calculatedObjectRules
 
-> **calculatedObjectRules**: `Ref`\<[`ObjectCalculatedRules`](objectCalculated.md#objectcalculatedrules), [`ObjectCalculatedRules`](objectCalculated.md#objectcalculatedrules)\>
+> **calculatedObjectRules**: `Ref`\<[`ObjectCalculatedRules`](#objectcalculatedrules), [`ObjectCalculatedRules`](#objectcalculatedrules)\>
 
 The calculated object rules.
 
@@ -422,7 +422,7 @@ The calculated object.
 
 ##### calculatedObjectRules
 
-> **calculatedObjectRules**: [`ObjectCalculatedRules`](objectCalculated.md#objectcalculatedrules)
+> **calculatedObjectRules**: [`ObjectCalculatedRules`](#objectcalculatedrules)
 
 The calculated object rules.
 
@@ -454,7 +454,7 @@ Whether the object calculated is running.
 
 ### ObjectCalculated
 
-> **ObjectCalculated**\<\>: [`ObjectCalculatedProperties`](objectCalculated.md#objectcalculatedproperties)
+> **ObjectCalculated**\<\> = [`ObjectCalculatedProperties`](#objectcalculatedproperties)
 
 #### Type Parameters
 
@@ -462,13 +462,13 @@ Whether the object calculated is running.
 
 ### ObjectCalculatedOptions
 
-> **ObjectCalculatedOptions**\<\>: `object` & [`ObjectCalculatedRawProps`](objectCalculated.md#objectcalculatedrawprops)
+> **ObjectCalculatedOptions**\<\> = `object` & [`ObjectCalculatedRawProps`](#objectcalculatedrawprops)
 
-#### Type declaration
+#### Type Declaration
 
 ##### parentState
 
-> **parentState**: [`ObjectCalculatedParentState`](objectCalculated.md#objectcalculatedparentstate)
+> **parentState**: [`ObjectCalculatedParentState`](#objectcalculatedparentstate)
 
 #### Type Parameters
 
@@ -476,7 +476,7 @@ Whether the object calculated is running.
 
 ### ObjectCalculatedParentRawState
 
-> **ObjectCalculatedParentRawState**\<\>: [`ObjectInstanceRawState`](objectInstance.md#objectinstancerawstate) & `Partial`\<[`ObjectSubscriptionRawState`](objectSubscription.md#objectsubscriptionrawstate)\> & `Partial`\<[`ObjectRelatedRawState`](objectRelated.md#objectrelatedrawstate)\>
+> **ObjectCalculatedParentRawState**\<\> = [`ObjectInstanceRawState`](objectInstance.md#objectinstancerawstate) & `Partial`\<[`ObjectSubscriptionRawState`](objectSubscription.md#objectsubscriptionrawstate)\> & `Partial`\<[`ObjectRelatedRawState`](objectRelated.md#objectrelatedrawstate)\>
 
 #### Type Parameters
 
@@ -484,7 +484,7 @@ Whether the object calculated is running.
 
 ### ObjectCalculatedParentState
 
-> **ObjectCalculatedParentState**\<\>: `UnwrapNestedRefs`
+> **ObjectCalculatedParentState**\<\> = `UnwrapNestedRefs`
 
 The object calculated options.
 
@@ -494,7 +494,7 @@ The object calculated options.
 
 ### ObjectCalculatedRules
 
-> **ObjectCalculatedRules**\<\>: `object`
+> **ObjectCalculatedRules**\<\> = `object`
 
 #### Type Parameters
 
@@ -506,7 +506,7 @@ The object calculated options.
 
 ### ObjectCalculatedState
 
-> **ObjectCalculatedState**\<\>: `UnwrapNestedRefs`
+> **ObjectCalculatedState**\<\> = `UnwrapNestedRefs`
 
 #### Type Parameters
 
@@ -526,7 +526,7 @@ The object calculated options.
 
 ### useObjectCalculated()
 
-> **useObjectCalculated**(`options`): [`ObjectCalculatedProperties`](objectCalculated.md#objectcalculatedproperties)
+> **useObjectCalculated**(`options`): [`ObjectCalculatedProperties`](#objectcalculatedproperties)
 
 Vue Composition API composable function for object calculated.
 
@@ -534,13 +534,13 @@ Vue Composition API composable function for object calculated.
 
 ##### options
 
-[`ObjectCalculatedOptions`](objectCalculated.md#objectcalculatedoptions)
+[`ObjectCalculatedOptions`](#objectcalculatedoptions)
 
 The object calculated options.
 
 #### Returns
 
-[`ObjectCalculatedProperties`](objectCalculated.md#objectcalculatedproperties)
+[`ObjectCalculatedProperties`](#objectcalculatedproperties)
 
 - The object calculated instance.
 

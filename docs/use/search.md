@@ -212,13 +212,13 @@ Limit of results.
 
 ##### customDocumentOptions
 
-> **customDocumentOptions**: [`DocumentOptions`](search.md#documentoptions)
+> **customDocumentOptions**: [`DocumentOptions`](#documentoptions)
 
 FlexSearch.Document options.
 
 ##### customSearchOptions
 
-> **customSearchOptions**: [`SearchOptions`](search.md#searchoptions)
+> **customSearchOptions**: [`SearchOptions`](#searchoptions)
 
 Search options.
 
@@ -242,13 +242,13 @@ The number of times the search has been called.
 
 ##### customDocumentOptions
 
-> **customDocumentOptions**: [`DocumentOptions`](search.md#documentoptions)
+> **customDocumentOptions**: [`DocumentOptions`](#documentoptions)
 
 FlexSearch.Document options.
 
 ##### customSearchOptions
 
-> **customSearchOptions**: [`SearchOptions`](search.md#searchoptions)
+> **customSearchOptions**: [`SearchOptions`](#searchoptions)
 
 Search options.
 
@@ -292,7 +292,7 @@ Whether the search is currently running.
 
 ### useSearch()
 
-> **useSearch**(`options`): [`SearchInstance`](search.md#searchinstance)
+> **useSearch**(`options`): [`SearchInstance`](#searchinstance)
 
 A reactive wrapper around FlexSearch.Index.
 
@@ -304,7 +304,7 @@ Options.
 
 ###### props
 
-[`SearchProps`](search.md#searchprops)
+[`SearchProps`](#searchprops)
 
 Props.
 
@@ -316,6 +316,6 @@ Throttle wait time.
 
 #### Returns
 
-[`SearchInstance`](search.md#searchinstance)
+[`SearchInstance`](#searchinstance)
 
 - The instance.

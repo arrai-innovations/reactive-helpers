@@ -10,7 +10,7 @@
 
 ### MaybeRefWatchableLoadingError
 
-> **MaybeRefWatchableLoadingError**\<\>: `MaybeRef`
+> **MaybeRefWatchableLoadingError**\<\> = `MaybeRef`
 
 #### Type Parameters
 
@@ -18,7 +18,7 @@
 
 ### ProxyLoadingError
 
-> **ProxyLoadingError**\<\>: [`LoadingProperties`](loading.md#loadingproperties) & [`ReadonlyErrorStatus`](error.md#readonlyerrorstatus)
+> **ProxyLoadingError**\<\> = [`LoadingProperties`](loading.md#loadingproperties) & [`ReadonlyErrorStatus`](error.md#readonlyerrorstatus)
 
 #### Type Parameters
 
@@ -26,9 +26,9 @@
 
 ### SeparateStateLoadingError
 
-> **SeparateStateLoadingError**\<\>: `object` & [`ErrorReadOnlyFunctions`](error.md#errorreadonlyfunctions)
+> **SeparateStateLoadingError**\<\> = `object` & [`ErrorReadOnlyFunctions`](error.md#errorreadonlyfunctions)
 
-#### Type declaration
+#### Type Declaration
 
 ##### state
 
@@ -40,7 +40,7 @@
 
 ### WatchableLoadingError
 
-> **WatchableLoadingError**\<\>: [`WatchableLoading`](proxyLoading.md#watchableloading) & [`WatchableError`](proxyError.md#watchableerror)
+> **WatchableLoadingError**\<\> = [`WatchableLoading`](proxyLoading.md#watchableloading) & [`WatchableError`](proxyError.md#watchableerror)
 
 #### Type Parameters
 
@@ -48,7 +48,7 @@
 
 ### asWatchableLoadingError()
 
-> **asWatchableLoadingError**(`source`): [`WatchableLoadingError`](proxyLoadingError.md#watchableloadingerror)
+> **asWatchableLoadingError**(`source`): [`WatchableLoadingError`](#watchableloadingerror)
 
 Adapt an object that exposes loading/error state and clearError into a WatchableLoadingError shape.
 
@@ -56,13 +56,13 @@ Adapt an object that exposes loading/error state and clearError into a Watchable
 
 ##### source
 
-`MaybeRef`\<[`WatchableLoadingError`](proxyLoadingError.md#watchableloadingerror) \| [`SeparateStateLoadingError`](proxyLoadingError.md#separatestateloadingerror)\>
+`MaybeRef`\<[`WatchableLoadingError`](#watchableloadingerror) \| [`SeparateStateLoadingError`](#separatestateloadingerror)\>
 
 The source object to adapt.
 
 #### Returns
 
-[`WatchableLoadingError`](proxyLoadingError.md#watchableloadingerror)
+[`WatchableLoadingError`](#watchableloadingerror)
 
 - The adapted WatchableLoadingError object.
 
@@ -70,7 +70,7 @@ The source object to adapt.
 
 ### useProxyLoadingError()
 
-> **useProxyLoadingError**(`loadingErrors`): [`ProxyLoadingError`](proxyLoadingError.md#proxyloadingerror)
+> **useProxyLoadingError**(`loadingErrors`): [`ProxyLoadingError`](#proxyloadingerror)
 
 A composable function combining aggregated loading and error state. Use `asWatchableLoadingError` to convert <List|Object><Instance|Subscription> to WatchableLoadingError.
 
@@ -78,12 +78,12 @@ A composable function combining aggregated loading and error state. Use `asWatch
 
 ##### loadingErrors
 
-`MaybeRef`\<`MaybeRef`\<[`WatchableLoadingError`](proxyLoadingError.md#watchableloadingerror)\>[]\>
+`MaybeRef`\<`MaybeRef`\<[`WatchableLoadingError`](#watchableloadingerror)\>[]\>
 
 The loading and error states to monitor.
 
 #### Returns
 
-[`ProxyLoadingError`](proxyLoadingError.md#proxyloadingerror)
+[`ProxyLoadingError`](#proxyloadingerror)
 
 - An object containing aggregated reactive fields and actions for both loading and error state.

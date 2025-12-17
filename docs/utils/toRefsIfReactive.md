@@ -16,7 +16,9 @@
 
 ##### Type Parameters
 
-• **T** *extends* `unknown`
+###### T
+
+`T` *extends* `unknown`
 
 ##### Parameters
 
@@ -38,7 +40,9 @@ The source reactive object.
 
 ##### Type Parameters
 
-• **T** *extends* `unknown`
+###### T
+
+`T` *extends* `unknown`
 
 ##### Parameters
 

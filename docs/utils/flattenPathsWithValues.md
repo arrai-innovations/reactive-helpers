@@ -10,7 +10,7 @@
 
 ### flattenPathsWithValues()
 
-> **flattenPathsWithValues**(`arrayOrObject`, `options`?): `object`
+> **flattenPathsWithValues**(`arrayOrObject`, `options?`): `object`
 
 Turn an array or object into an array of `[path, value]` pairs (for primitives)
 and a list of container paths (for arrays and objects).

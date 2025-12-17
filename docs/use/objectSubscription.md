@@ -18,9 +18,9 @@ Custom error for handling issues related to object subscriptions.
 
 #### Constructors
 
-##### new ObjectSubscriptionError()
+##### Constructor
 
-> **new ObjectSubscriptionError**(`message`, `code`): [`ObjectSubscriptionError`](objectSubscription.md#objectsubscriptionerror)
+> **new ObjectSubscriptionError**(`message`, `code`): [`ObjectSubscriptionError`](#objectsubscriptionerror)
 
 Create a new ObjectSubscriptionError.
 
@@ -40,7 +40,7 @@ The error code.
 
 ###### Returns
 
-[`ObjectSubscriptionError`](objectSubscription.md#objectsubscriptionerror)
+[`ObjectSubscriptionError`](#objectsubscriptionerror)
 
 ###### Overrides
 
@@ -92,7 +92,7 @@ The crud handlers.
 
 ###### crud.args
 
-> **args**: `Reactive`\<\{\} \| [`TargetArgs`](../config/objectCrud.md#targetargs)\>
+> **args**: `Reactive`\<\{ \} \| [`TargetArgs`](../config/objectCrud.md#targetargs)\>
 
 The arguments to be passed to the crud handlers.
 
@@ -364,7 +364,7 @@ The crud handlers.
 
 ###### crud.args
 
-> **args**: `Reactive`\<\{\} \| [`TargetArgs`](../config/objectCrud.md#targetargs)\>
+> **args**: `Reactive`\<\{ \} \| [`TargetArgs`](../config/objectCrud.md#targetargs)\>
 
 The arguments to be passed to the crud handlers.
 
@@ -542,7 +542,7 @@ Whether the object is subscribed.
 
 ### ObjectSubscription
 
-> **ObjectSubscription**\<\>: [`ObjectSubscriptionProperties`](objectSubscription.md#objectsubscriptionproperties) & [`ObjectSubscriptionFunctions`](objectSubscription.md#objectsubscriptionfunctions)
+> **ObjectSubscription**\<\> = [`ObjectSubscriptionProperties`](#objectsubscriptionproperties) & [`ObjectSubscriptionFunctions`](#objectsubscriptionfunctions)
 
 #### Type Parameters
 
@@ -550,7 +550,7 @@ Whether the object is subscribed.
 
 ### ObjectSubscriptionOptions
 
-> **ObjectSubscriptionOptions**\<\>: [`ObjectSubscriptionOwnOptions`](objectSubscription.md#objectsubscriptionownoptions) & [`ObjectInstanceOptions`](objectInstance.md#objectinstanceoptions)
+> **ObjectSubscriptionOptions**\<\> = [`ObjectSubscriptionOwnOptions`](#objectsubscriptionownoptions) & [`ObjectInstanceOptions`](objectInstance.md#objectinstanceoptions)
 
 #### Type Parameters
 
@@ -558,7 +558,7 @@ Whether the object is subscribed.
 
 ### ObjectSubscriptionState
 
-> **ObjectSubscriptionState**\<\>: `Reactive`
+> **ObjectSubscriptionState**\<\> = `Reactive`
 
 #### Type Parameters
 
@@ -578,7 +578,7 @@ Whether the object is subscribed.
 
 ### useObjectSubscription()
 
-> **useObjectSubscription**(`options`): [`ObjectSubscription`](objectSubscription.md#objectsubscription)
+> **useObjectSubscription**(`options`): [`ObjectSubscription`](#objectsubscription)
 
 Initializes an object subscription to manage object state and reactivity, including subscription status and errors.
 
@@ -586,13 +586,13 @@ Initializes an object subscription to manage object state and reactivity, includ
 
 ##### options
 
-[`ObjectSubscriptionOptions`](objectSubscription.md#objectsubscriptionoptions)
+[`ObjectSubscriptionOptions`](#objectsubscriptionoptions)
 
 Options for initializing the object subscription.
 
 #### Returns
 
-[`ObjectSubscription`](objectSubscription.md#objectsubscription)
+[`ObjectSubscription`](#objectsubscription)
 
 - An object containing the subscription state, properties, and handlers.
 

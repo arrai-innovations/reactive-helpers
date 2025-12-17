@@ -26,7 +26,7 @@ The crud handlers.
 
 ###### crud.args
 
-> **args**: `Reactive`\<\{\} \| [`TargetArgs`](../config/objectCrud.md#targetargs)\>
+> **args**: `Reactive`\<\{ \} \| [`TargetArgs`](../config/objectCrud.md#targetargs)\>
 
 The arguments to be passed to the crud handlers.
 
@@ -156,7 +156,7 @@ The crud handlers.
 
 ###### crud.args
 
-> **args**: `Reactive`\<\{\} \| [`TargetArgs`](../config/objectCrud.md#targetargs)\>
+> **args**: `Reactive`\<\{ \} \| [`TargetArgs`](../config/objectCrud.md#targetargs)\>
 
 The arguments to be passed to the crud handlers.
 
@@ -284,7 +284,7 @@ The related objects, indexed by the key in the related object.
 
 ###### relatedObjectRules
 
-> **relatedObjectRules**: [`ObjectRelatedRawRules`](objectRelated.md#objectrelatedrawrules)
+> **relatedObjectRules**: [`ObjectRelatedRawRules`](#objectrelatedrawrules)
 
 The rules for defining relationships for the managed object to other collections of objects.
 
@@ -330,7 +330,7 @@ Stops all effects of the object related instance.
 
 ##### relatedObjectRules
 
-> **relatedObjectRules**: `Ref`\<[`ObjectRelatedRawRules`](objectRelated.md#objectrelatedrawrules), [`ObjectRelatedRawRules`](objectRelated.md#objectrelatedrawrules)\>
+> **relatedObjectRules**: `Ref`\<[`ObjectRelatedRawRules`](#objectrelatedrawrules), [`ObjectRelatedRawRules`](#objectrelatedrawrules)\>
 
 The rules for defining relationships for the managed object to other collections of objects.
 
@@ -358,7 +358,7 @@ The related objects, indexed by the key in the related object.
 
 ##### relatedObjectRules
 
-> **relatedObjectRules**: [`ObjectRelatedRawRules`](objectRelated.md#objectrelatedrawrules)
+> **relatedObjectRules**: [`ObjectRelatedRawRules`](#objectrelatedrawrules)
 
 The rules for defining relationships for the managed object to other collections of objects.
 
@@ -408,7 +408,7 @@ The key in the managed object that corresponds to the key in the related object.
 
 ### ObjectRelated
 
-> **ObjectRelated**\<\>: [`ObjectRelatedProperties`](objectRelated.md#objectrelatedproperties)
+> **ObjectRelated**\<\> = [`ObjectRelatedProperties`](#objectrelatedproperties)
 
 #### Type Parameters
 
@@ -416,13 +416,13 @@ The key in the managed object that corresponds to the key in the related object.
 
 ### ObjectRelatedOptions
 
-> **ObjectRelatedOptions**\<\>: `object` & [`ObjectRelatedRawProps`](objectRelated.md#objectrelatedrawprops)
+> **ObjectRelatedOptions**\<\> = `object` & [`ObjectRelatedRawProps`](#objectrelatedrawprops)
 
-#### Type declaration
+#### Type Declaration
 
 ##### parentState
 
-> **parentState**: [`ObjectRelatedParentState`](objectRelated.md#objectrelatedparentstate)
+> **parentState**: [`ObjectRelatedParentState`](#objectrelatedparentstate)
 
 #### Type Parameters
 
@@ -430,7 +430,7 @@ The key in the managed object that corresponds to the key in the related object.
 
 ### ObjectRelatedParentRawState
 
-> **ObjectRelatedParentRawState**\<\>: [`ObjectInstanceRawState`](objectInstance.md#objectinstancerawstate) & `Partial`\<[`ObjectSubscriptionRawState`](objectSubscription.md#objectsubscriptionrawstate)\>
+> **ObjectRelatedParentRawState**\<\> = [`ObjectInstanceRawState`](objectInstance.md#objectinstancerawstate) & `Partial`\<[`ObjectSubscriptionRawState`](objectSubscription.md#objectsubscriptionrawstate)\>
 
 #### Type Parameters
 
@@ -438,7 +438,7 @@ The key in the managed object that corresponds to the key in the related object.
 
 ### ObjectRelatedParentState
 
-> **ObjectRelatedParentState**\<\>: `UnwrapNestedRefs`
+> **ObjectRelatedParentState**\<\> = `UnwrapNestedRefs`
 
 #### Type Parameters
 
@@ -446,19 +446,19 @@ The key in the managed object that corresponds to the key in the related object.
 
 ### ObjectRelatedRawRules
 
-> **ObjectRelatedRawRules**\<\>: `object`
+> **ObjectRelatedRawRules**\<\> = `object`
 
 #### Type Parameters
 
 #### Index Signature
 
-\[`rule`: `string`\]: [`ObjectRelatedRule`](objectRelated.md#objectrelatedrule)
+\[`rule`: `string`\]: [`ObjectRelatedRule`](#objectrelatedrule)
 
 ***
 
 ### ObjectRelatedState
 
-> **ObjectRelatedState**\<\>: `UnwrapNestedRefs`
+> **ObjectRelatedState**\<\> = `UnwrapNestedRefs`
 
 #### Type Parameters
 
@@ -478,7 +478,7 @@ The key in the managed object that corresponds to the key in the related object.
 
 ### useObjectRelated()
 
-> **useObjectRelated**(`options`): [`ObjectRelatedProperties`](objectRelated.md#objectrelatedproperties)
+> **useObjectRelated**(`options`): [`ObjectRelatedProperties`](#objectrelatedproperties)
 
 Creates an object related reactive object.
 
@@ -486,13 +486,13 @@ Creates an object related reactive object.
 
 ##### options
 
-[`ObjectRelatedOptions`](objectRelated.md#objectrelatedoptions)
+[`ObjectRelatedOptions`](#objectrelatedoptions)
 
 The options for the object related reactive object.
 
 #### Returns
 
-[`ObjectRelatedProperties`](objectRelated.md#objectrelatedproperties)
+[`ObjectRelatedProperties`](#objectrelatedproperties)
 
 - The object related reactive object.
 

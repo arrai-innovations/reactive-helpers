@@ -10,7 +10,7 @@
 
 ### MaybeRefWatchableLoading
 
-> **MaybeRefWatchableLoading**\<\>: `MaybeRef`
+> **MaybeRefWatchableLoading**\<\> = `MaybeRef`
 
 #### Type Parameters
 
@@ -18,7 +18,7 @@
 
 ### WatchableLoading
 
-> **WatchableLoading**\<\>: [`LoadingProperties`](loading.md#loadingproperties) \| `Reactive`
+> **WatchableLoading**\<\> = [`LoadingProperties`](loading.md#loadingproperties) \| `Reactive`
 
 #### Type Parameters
 
@@ -26,7 +26,7 @@
 
 ### asWatchableLoading()
 
-> **asWatchableLoading**(`source`): [`WatchableLoading`](proxyLoading.md#watchableloading)
+> **asWatchableLoading**(`source`): [`WatchableLoading`](#watchableloading)
 
 Adapt an object with reactive loading state into a WatchableLoading shape.
 Accepts either an object with a `state` property or an object that already exposes `loading`.
@@ -35,13 +35,13 @@ Accepts either an object with a `state` property or an object that already expos
 
 ##### source
 
-`MaybeRef`\<[`WatchableLoading`](proxyLoading.md#watchableloading) \| \{ `state`: [`WatchableLoading`](proxyLoading.md#watchableloading); \}\>
+`MaybeRef`\<[`WatchableLoading`](#watchableloading) \| \{ `state`: [`WatchableLoading`](#watchableloading); \}\>
 
 The source object to adapt.
 
 #### Returns
 
-[`WatchableLoading`](proxyLoading.md#watchableloading)
+[`WatchableLoading`](#watchableloading)
 
 - The adapted WatchableLoading object.
 
@@ -57,7 +57,7 @@ A composable function for aggregating loading state across multiple sources.
 
 ##### loadings
 
-`MaybeRef`\<`MaybeRef`\<[`WatchableLoading`](proxyLoading.md#watchableloading)\>[]\>
+`MaybeRef`\<`MaybeRef`\<[`WatchableLoading`](#watchableloading)\>[]\>
 
 The loading states to monitor.
 

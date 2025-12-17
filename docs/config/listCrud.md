@@ -68,7 +68,7 @@ The arguments to be passed to the crud handlers.
 
 ##### clearObjects
 
-> **clearObjects**: [`ClearObjectsFn`](listCrud.md#clearobjectsfn)
+> **clearObjects**: [`ClearObjectsFn`](#clearobjectsfn)
 
 The method to call to clear the objects.
 
@@ -99,13 +99,13 @@ The method to call with new page(s) of data received.
 
 ##### setColumnTotals
 
-> **setColumnTotals**: [`SetColumnTotals`](listCrud.md#setcolumntotals-1)
+> **setColumnTotals**: [`SetColumnTotals`](#setcolumntotals-1)
 
 The method to update column totals.
 
 ##### setPaginateInfo
 
-> **setPaginateInfo**: [`SetPaginateInfo`](listCrud.md#setpaginateinfo-1)
+> **setPaginateInfo**: [`SetPaginateInfo`](#setpaginateinfo-1)
 
 The method to update pagination information.
 
@@ -123,25 +123,25 @@ The arguments to be passed to the crud handlers.
 
 ##### bulkDelete?
 
-> `optional` **bulkDelete**: [`CrudBulkDeleteFn`](listCrud.md#crudbulkdeletefn)
+> `optional` **bulkDelete**: [`CrudBulkDeleteFn`](#crudbulkdeletefn)
 
 The delete function to bulk delete a list of items.
 
 ##### executeAction?
 
-> `optional` **executeAction**: [`CrudExecuteActionFn`](listCrud.md#crudexecuteactionfn)
+> `optional` **executeAction**: [`CrudExecuteActionFn`](#crudexecuteactionfn)
 
 The  function to execute a certain action on a list of items.
 
 ##### list?
 
-> `optional` **list**: [`CrudListFn`](listCrud.md#crudlistfn)
+> `optional` **list**: [`CrudListFn`](#crudlistfn)
 
 The list function to get a list of items.
 
 ##### subscribe?
 
-> `optional` **subscribe**: [`CrudListSubscribeFn`](listCrud.md#crudlistsubscribefn)
+> `optional` **subscribe**: [`CrudListSubscribeFn`](#crudlistsubscribefn)
 
 The subscribe function to get a subscription to a list of items.
 
@@ -153,7 +153,7 @@ The subscribe function to get a subscription to a list of items.
 
 ##### applyObjectEvent
 
-> **applyObjectEvent**: [`applyObjectEvent`](listCrud.md#applyobjectevent-1)
+> **applyObjectEvent**: [`applyObjectEvent`](#applyobjectevent-1)
 
 The method to call when new data is received.
 
@@ -222,7 +222,7 @@ The default arguments for the crud handlers.
 
 ### applyObjectEvent()
 
-> **applyObjectEvent**\<\>: (`newOrUpdatedOrDeleteObject`, `action`) => `void`
+> **applyObjectEvent**\<\> = (`newOrUpdatedOrDeleteObject`, `action`) => `void`
 
 #### Type Parameters
 
@@ -252,7 +252,7 @@ The default arguments for the crud handlers.
 
 ### ClearObjectsFn()
 
-> **ClearObjectsFn**\<\>: (`options`?) => `void`
+> **ClearObjectsFn**\<\> = (`options?`) => `void`
 
 #### Type Parameters
 
@@ -270,7 +270,7 @@ The default arguments for the crud handlers.
 
 ### CrudBulkDeleteFn()
 
-> **CrudBulkDeleteFn**\<\>: (`args`) => `Promise`\<`boolean`\>
+> **CrudBulkDeleteFn**\<\> = (`args`) => `Promise`\<`boolean`\>
 
 #### Type Parameters
 
@@ -278,7 +278,7 @@ The default arguments for the crud handlers.
 
 ##### args
 
-[`BulkDeleteArgs`](listCrud.md#bulkdeleteargs)
+[`BulkDeleteArgs`](#bulkdeleteargs)
 
 The arguments to be passed to the crud handlers.
 
@@ -290,7 +290,7 @@ The arguments to be passed to the crud handlers.
 
 ### CrudExecuteActionFn()
 
-> **CrudExecuteActionFn**\<\>: (`args`) => `Promise`\<`object` \| `string` \| `null`\>
+> **CrudExecuteActionFn**\<\> = (`args`) => `Promise`\<`object` \| `string` \| `null`\>
 
 #### Type Parameters
 
@@ -298,7 +298,7 @@ The arguments to be passed to the crud handlers.
 
 ##### args
 
-[`ExecuteActionArgs`](listCrud.md#executeactionargs)
+[`ExecuteActionArgs`](#executeactionargs)
 
 The arguments to be passed to the crud handlers.
 
@@ -310,7 +310,7 @@ The arguments to be passed to the crud handlers.
 
 ### CrudListFn()
 
-> **CrudListFn**\<\>: (`args`) => [`MaybeCancellablePromise`](../utils/cancellablePromise.md#maybecancellablepromiset)
+> **CrudListFn**\<\> = (`args`) => [`MaybeCancellablePromise`](../utils/cancellablePromise.md#maybecancellablepromise)
 
 #### Type Parameters
 
@@ -318,19 +318,19 @@ The arguments to be passed to the crud handlers.
 
 ##### args
 
-[`ListArgs`](listCrud.md#listargs)
+[`ListArgs`](#listargs)
 
 The arguments to be passed to the crud handlers.
 
 #### Returns
 
-[`MaybeCancellablePromise`](../utils/cancellablePromise.md#maybecancellablepromiset)
+[`MaybeCancellablePromise`](../utils/cancellablePromise.md#maybecancellablepromise)
 
 ***
 
 ### CrudListSubscribeFn()
 
-> **CrudListSubscribeFn**\<\>: (`args`) => [`CancellablePromise`](../utils/cancellablePromise.md#cancellablepromiset)
+> **CrudListSubscribeFn**\<\> = (`args`) => [`CancellablePromise`](../utils/cancellablePromise.md#cancellablepromise)
 
 #### Type Parameters
 
@@ -338,13 +338,13 @@ The arguments to be passed to the crud handlers.
 
 ##### args
 
-[`ListSubscribeArgs`](listCrud.md#listsubscribeargs)
+[`ListSubscribeArgs`](#listsubscribeargs)
 
 The arguments to be passed to the crud handlers.
 
 #### Returns
 
-[`CancellablePromise`](../utils/cancellablePromise.md#cancellablepromiset)
+[`CancellablePromise`](../utils/cancellablePromise.md#cancellablepromise)
 
 ***
 
@@ -374,7 +374,7 @@ The arguments to be passed to the crud handlers.
 
 ### SetColumnTotals()
 
-> **SetColumnTotals**\<\>: (`total`) => `void`
+> **SetColumnTotals**\<\> = (`total`) => `void`
 
 #### Type Parameters
 
@@ -392,7 +392,7 @@ The arguments to be passed to the crud handlers.
 
 ### SetPaginateInfo()
 
-> **SetPaginateInfo**\<\>: (`info`) => `void`
+> **SetPaginateInfo**\<\> = (`info`) => `void`
 
 #### Type Parameters
 
@@ -410,7 +410,7 @@ The arguments to be passed to the crud handlers.
 
 ### defaultListCrud
 
-> `const` **defaultListCrud**: `Readonly`\<[`ListCrudHandlers`](listCrud.md#listcrudhandlers)\>
+> `const` **defaultListCrud**: `Readonly`\<[`ListCrudHandlers`](#listcrudhandlers)\>
 
 The default list crud handlers.
 
@@ -436,25 +436,25 @@ The default arguments for the crud handlers.
 
 ###### bulkDelete?
 
-[`CrudBulkDeleteFn`](listCrud.md#crudbulkdeletefn)
+[`CrudBulkDeleteFn`](#crudbulkdeletefn)
 
 The delete function to bulk delete a list of items.
 
 ###### executeAction?
 
-[`CrudExecuteActionFn`](listCrud.md#crudexecuteactionfn)
+[`CrudExecuteActionFn`](#crudexecuteactionfn)
 
 The  function to execute a certain action on a list of items.
 
 ###### list?
 
-[`CrudListFn`](listCrud.md#crudlistfn)
+[`CrudListFn`](#crudlistfn)
 
 The list function to get a list of items.
 
 ###### subscribe?
 
-[`CrudListSubscribeFn`](listCrud.md#crudlistsubscribefn)
+[`CrudListSubscribeFn`](#crudlistsubscribefn)
 
 The subscribe function to get a subscription to a list of items.
 
@@ -464,13 +464,13 @@ The options for the default crud.
 
 ###### handlers?
 
-[`ListCrudHandlers`](listCrud.md#listcrudhandlers)
+[`ListCrudHandlers`](#listcrudhandlers)
 
 The functions to set for the crud.
 
 ###### props?
 
-\{ `target`: `any`; \}
+\{ `target?`: `any`; \}
 
 The props to set for the crud.
 
@@ -500,7 +500,7 @@ Set the list and subscribe handlers for the default crud.
 
 ##### options
 
-[`ListCrudHandlers`](listCrud.md#listcrudhandlers) & `Partial`\<[`ListTarget`](listCrud.md#listtarget)\>
+[`ListCrudHandlers`](#listcrudhandlers) & `Partial`\<[`ListTarget`](#listtarget)\>
 
 The options for the default crud.
 

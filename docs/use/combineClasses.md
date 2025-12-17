@@ -10,7 +10,7 @@
 
 ### CSSClasses
 
-> **CSSClasses**\<\>: `string` \| `string`[] \| \{\} \| `Ref`
+> **CSSClasses**\<\> = `string` \| `string`[] \| \{\[`key`: `string`\]: `boolean` \| `Ref`\<`boolean`, `boolean`\>; \} \| `Ref`
 
 #### Type Parameters
 
@@ -28,7 +28,7 @@ Normalize various ways of specifying CSS classes into an object for use in Vue.j
 
 ##### classes
 
-...[`CSSClasses`](combineClasses.md#cssclasses)[]
+...[`CSSClasses`](#cssclasses)[]
 
 A mixed array containing multiple ways of specifying CSS classes.
 

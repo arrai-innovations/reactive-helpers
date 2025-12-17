@@ -16,7 +16,9 @@ Unwraps Vue refs and proxies to get the raw value.
 
 #### Type Parameters
 
-• **T**
+##### T
+
+`T`
 
 #### Parameters
 

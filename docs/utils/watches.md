@@ -15,9 +15,9 @@ This class uses immediate watchers to react to changes and supports a timeout to
 
 #### Constructors
 
-##### new AwaitNot()
+##### Constructor
 
-> **new AwaitNot**(`options`): [`AwaitNot`](watches.md#awaitnot)
+> **new AwaitNot**(`options`): [`AwaitNot`](#awaitnot)
 
 Initializes the AwaitNot with specified options for reactive property watching and timeout settings.
 
@@ -59,7 +59,7 @@ The timeout in milliseconds before the promise is rejected.
 
 ###### Returns
 
-[`AwaitNot`](watches.md#awaitnot)
+[`AwaitNot`](#awaitnot)
 
 #### Properties
 
@@ -69,7 +69,7 @@ The timeout in milliseconds before the promise is rejected.
 
 ##### falseISW
 
-> **falseISW**: [`ImmediateStopWatch`](watches.md#immediatestopwatch)
+> **falseISW**: [`ImmediateStopWatch`](#immediatestopwatch)
 
 ##### promise
 
@@ -81,7 +81,7 @@ The timeout in milliseconds before the promise is rejected.
 
 ##### reject()
 
-> **reject**: (`reason`?) => `void`
+> **reject**: (`reason?`) => `void`
 
 ###### Parameters
 
@@ -109,15 +109,15 @@ The timeout in milliseconds before the promise is rejected.
 
 ##### timeout
 
-> **timeout**: [`AwaitTimeout`](watches.md#awaittimeout)
+> **timeout**: [`AwaitTimeout`](#awaittimeout)
 
 ##### timeoutError
 
-> **timeoutError**: [`AwaitNotError`](watches.md#awaitnoterror)
+> **timeoutError**: [`AwaitNotError`](#awaitnoterror)
 
 ##### trueISW
 
-> **trueISW**: [`ImmediateStopWatch`](watches.md#immediatestopwatch)
+> **trueISW**: [`ImmediateStopWatch`](#immediatestopwatch)
 
 #### Methods
 
@@ -154,9 +154,9 @@ The error thrown when an AwaitNot operation times out.
 
 #### Constructors
 
-##### new AwaitNotError()
+##### Constructor
 
-> **new AwaitNotError**(`message`, `code`): [`AwaitNotError`](watches.md#awaitnoterror)
+> **new AwaitNotError**(`message`, `code`): [`AwaitNotError`](#awaitnoterror)
 
 ###### Parameters
 
@@ -170,7 +170,7 @@ The error thrown when an AwaitNot operation times out.
 
 ###### Returns
 
-[`AwaitNotError`](watches.md#awaitnoterror)
+[`AwaitNotError`](#awaitnoterror)
 
 ###### Overrides
 
@@ -204,9 +204,9 @@ if an operation takes too long or cancel the timeout based on certain conditions
 
 #### Constructors
 
-##### new AwaitTimeout()
+##### Constructor
 
-> **new AwaitTimeout**(`options`): [`AwaitTimeout`](watches.md#awaittimeout)
+> **new AwaitTimeout**(`options`): [`AwaitTimeout`](#awaittimeout)
 
 Creates an instance of AwaitTimeout with a specified timeout duration.
 
@@ -224,13 +224,13 @@ The timeout in milliseconds.
 
 ###### Returns
 
-[`AwaitTimeout`](watches.md#awaittimeout)
+[`AwaitTimeout`](#awaittimeout)
 
 #### Properties
 
 ##### cancelledError
 
-> **cancelledError**: [`AwaitTimeoutError`](watches.md#awaittimeouterror)
+> **cancelledError**: [`AwaitTimeoutError`](#awaittimeouterror)
 
 ##### promise
 
@@ -238,7 +238,7 @@ The timeout in milliseconds.
 
 ##### reject()
 
-> **reject**: (`reason`?) => `void`
+> **reject**: (`reason?`) => `void`
 
 ###### Parameters
 
@@ -306,9 +306,9 @@ The error thrown when an AwaitTimeout operation times out.
 
 #### Constructors
 
-##### new AwaitTimeoutError()
+##### Constructor
 
-> **new AwaitTimeoutError**(`message`, `code`): [`AwaitTimeoutError`](watches.md#awaittimeouterror)
+> **new AwaitTimeoutError**(`message`, `code`): [`AwaitTimeoutError`](#awaittimeouterror)
 
 ###### Parameters
 
@@ -322,7 +322,7 @@ The error thrown when an AwaitTimeout operation times out.
 
 ###### Returns
 
-[`AwaitTimeoutError`](watches.md#awaittimeouterror)
+[`AwaitTimeoutError`](#awaittimeouterror)
 
 ###### Overrides
 
@@ -354,13 +354,13 @@ based on conditions encountered during the initial execution of the watch functi
 
 #### Constructors
 
-##### new ImmediateStopWatch()
+##### Constructor
 
-> **new ImmediateStopWatch**(): [`ImmediateStopWatch`](watches.md#immediatestopwatch)
+> **new ImmediateStopWatch**(): [`ImmediateStopWatch`](#immediatestopwatch)
 
 ###### Returns
 
-[`ImmediateStopWatch`](watches.md#immediatestopwatch)
+[`ImmediateStopWatch`](#immediatestopwatch)
 
 #### Properties
 
@@ -372,7 +372,7 @@ based on conditions encountered during the initial execution of the watch functi
 
 ##### start()
 
-> **start**(`watchSources`, `watchFunc`, `watchFuncArgs`?, `watchOptions`?): `void`
+> **start**(`watchSources`, `watchFunc`, `watchFuncArgs?`, `watchOptions?`): `void`
 
 Starts the watch.
 

@@ -14,7 +14,7 @@
 
 ##### clearError
 
-> **clearError**: [`ClearErrorFn`](error.md#clearerrorfn)
+> **clearError**: [`ClearErrorFn`](#clearerrorfn)
 
 Clear the error state.
 
@@ -60,7 +60,7 @@ Whether an error has occurred.
 
 ##### clearError
 
-> **clearError**: [`ClearErrorFn`](error.md#clearerrorfn)
+> **clearError**: [`ClearErrorFn`](#clearerrorfn)
 
 Clear the error state.
 
@@ -68,7 +68,7 @@ Clear the error state.
 
 ### ClearErrorFn()
 
-> **ClearErrorFn**\<\>: () => `void`
+> **ClearErrorFn**\<\> = () => `void`
 
 #### Type Parameters
 
@@ -80,7 +80,7 @@ Clear the error state.
 
 ### ErroredReadonlyRef
 
-> **ErroredReadonlyRef**\<\>: `Readonly`\<[`ErroredRef`](error.md#erroredref)\>
+> **ErroredReadonlyRef**\<\> = `Readonly`\<[`ErroredRef`](#erroredref)\>
 
 #### Type Parameters
 
@@ -88,7 +88,7 @@ Clear the error state.
 
 ### ErroredRef
 
-> **ErroredRef**\<\>: `Ref`
+> **ErroredRef**\<\> = `Ref`
 
 #### Type Parameters
 
@@ -96,7 +96,7 @@ Clear the error state.
 
 ### ErrorReadonlyRef
 
-> **ErrorReadonlyRef**\<\>: `Readonly`\<[`ErrorRef`](error.md#errorref)\>
+> **ErrorReadonlyRef**\<\> = `Readonly`\<[`ErrorRef`](#errorref)\>
 
 #### Type Parameters
 
@@ -104,7 +104,7 @@ Clear the error state.
 
 ### ErrorRef
 
-> **ErrorRef**\<\>: `Ref`
+> **ErrorRef**\<\> = `Ref`
 
 #### Type Parameters
 
@@ -112,7 +112,7 @@ Clear the error state.
 
 ### ErrorStatus
 
-> **ErrorStatus**\<\>: [`ErrorProperties`](error.md#errorproperties) & [`ErrorFunctions`](error.md#errorfunctions)
+> **ErrorStatus**\<\> = [`ErrorProperties`](#errorproperties) & [`ErrorFunctions`](#errorfunctions)
 
 #### Type Parameters
 
@@ -120,7 +120,7 @@ Clear the error state.
 
 ### ReadonlyErrorStatus
 
-> **ReadonlyErrorStatus**\<\>: [`ErrorProperties`](error.md#errorproperties) & [`ErrorReadOnlyFunctions`](error.md#errorreadonlyfunctions)
+> **ReadonlyErrorStatus**\<\> = [`ErrorProperties`](#errorproperties) & [`ErrorReadOnlyFunctions`](#errorreadonlyfunctions)
 
 #### Type Parameters
 
@@ -128,12 +128,12 @@ Clear the error state.
 
 ### useError()
 
-> **useError**(): [`ErrorStatus`](error.md#errorstatus)
+> **useError**(): [`ErrorStatus`](#errorstatus)
 
 A composable function for managing error state.
 
 #### Returns
 
-[`ErrorStatus`](error.md#errorstatus)
+[`ErrorStatus`](#errorstatus)
 
 - An object containing reactive fields and actions for error state.

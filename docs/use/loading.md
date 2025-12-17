@@ -48,7 +48,7 @@ Whether the component is loading.
 
 ### LoadingReadonlyRef
 
-> **LoadingReadonlyRef**\<\>: `Readonly`\<[`LoadingRef`](loading.md#loadingref)\>
+> **LoadingReadonlyRef**\<\> = `Readonly`\<[`LoadingRef`](#loadingref)\>
 
 #### Type Parameters
 
@@ -56,7 +56,7 @@ Whether the component is loading.
 
 ### LoadingRef
 
-> **LoadingRef**\<\>: `Ref`
+> **LoadingRef**\<\> = `Ref`
 
 #### Type Parameters
 
@@ -64,7 +64,7 @@ Whether the component is loading.
 
 ### LoadingStatus
 
-> **LoadingStatus**\<\>: [`LoadingProperties`](loading.md#loadingproperties) & [`LoadingFunctions`](loading.md#loadingfunctions)
+> **LoadingStatus**\<\> = [`LoadingProperties`](#loadingproperties) & [`LoadingFunctions`](#loadingfunctions)
 
 #### Type Parameters
 
@@ -72,12 +72,12 @@ Whether the component is loading.
 
 ### useLoading()
 
-> **useLoading**(): [`LoadingStatus`](loading.md#loadingstatus)
+> **useLoading**(): [`LoadingStatus`](#loadingstatus)
 
 A composable function for managing loading state.
 
 #### Returns
 
-[`LoadingStatus`](loading.md#loadingstatus)
+[`LoadingStatus`](#loadingstatus)
 
 - An object containing reactive fields and actions for loading state.

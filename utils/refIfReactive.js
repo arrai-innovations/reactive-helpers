@@ -7,8 +7,8 @@ import { computed, isReactive, toRef, unref } from "vue";
  * @template {keyof T} K
  * @param {T & object | undefined | null} source - The source object.
  * @param {K} property - The property to access.
- * @param {T[K]} [defaultValue] - The default value to use if source or property is missing.
- * @returns {import('vue').ComputedRef<T[K]> | import('vue').Ref<T[K]>} The ref to the property if the source is reactive, otherwise the unrefed value.
+ * @param {T[K] | undefined} [defaultValue] - The default value to use if source or property is missing.
+ * @returns {import('vue').ComputedRef<T[K] | undefined> | import('vue').Ref<T[K] | undefined>} The ref to the property if the source is reactive; otherwise a computed that can be undefined when missing.
  */
 export const refIfReactive = (source, property, defaultValue) => {
     if (source && isReactive(source)) {

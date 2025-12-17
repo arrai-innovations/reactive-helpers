@@ -10,7 +10,7 @@
 
 ### pkRefIfReactive()
 
-> **pkRefIfReactive**(`source`, `property`?, `defaultValue`?): `ComputedRef`\<`string`\>
+> **pkRefIfReactive**(`source`, `property?`, `defaultValue?`): `ComputedRef`\<`string`\>
 
 Returns a ref to a pk property, coercing string|number input to string output.
 Returns undefined if the source pk is null/undefined.
@@ -45,15 +45,19 @@ A computed ref that coerces to string.
 
 ### refIfReactive()
 
-> **refIfReactive**\<`T`, `K`\>(`source`, `property`, `defaultValue`?): `ComputedRef`\<`T`\[`K`\]\> \| `Ref`\<`T`\[`K`\], `T`\[`K`\]\>
+> **refIfReactive**\<`T`, `K`\>(`source`, `property`, `defaultValue?`): `ComputedRef`\<`T`\[`K`\]\> \| `Ref`\<`T`\[`K`\], `T`\[`K`\]\>
 
 Returns a ref to a property if the source is reactive, otherwise returns the unrefed value.
 
 #### Type Parameters
 
-• **T**
+##### T
 
-• **K** *extends* `string` \| `number` \| `symbol`
+`T`
+
+##### K
+
+`K` *extends* `string` \| `number` \| `symbol`
 
 #### Parameters
 
@@ -79,4 +83,4 @@ The default value to use if source or property is missing.
 
 `ComputedRef`\<`T`\[`K`\]\> \| `Ref`\<`T`\[`K`\], `T`\[`K`\]\>
 
-The ref to the property if the source is reactive, otherwise the unrefed value.
+The ref to the property if the source is reactive; otherwise a computed that can be undefined when missing.

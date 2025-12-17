@@ -14,7 +14,7 @@
 
 ##### orderByRules
 
-> **orderByRules**: [`OrderByRule`](listSort.md#orderbyrule)[] \| `Ref`\<[`OrderByRule`](listSort.md#orderbyrule)[], [`OrderByRule`](listSort.md#orderbyrule)[]\>
+> **orderByRules**: [`OrderByRule`](#orderbyrule)[] \| `Ref`\<[`OrderByRule`](#orderbyrule)[], [`OrderByRule`](#orderbyrule)[]\>
 
 Rules defining how the list should be sorted, including key and direction.
 
@@ -78,7 +78,7 @@ CRUD handlers and their configurations for the list.
 
 ###### crud.args
 
-> **args**: `Reactive`\<\{\} \| [`TargetArgs`](../config/objectCrud.md#targetargs)\>
+> **args**: `Reactive`\<\{ \} \| [`TargetArgs`](../config/objectCrud.md#targetargs)\>
 
 The arguments to be passed to the crud handlers.
 
@@ -359,7 +359,7 @@ CRUD handlers and their configurations for the list.
 
 ###### crud.args
 
-> **args**: `Reactive`\<\{\} \| [`TargetArgs`](../config/objectCrud.md#targetargs)\>
+> **args**: `Reactive`\<\{ \} \| [`TargetArgs`](../config/objectCrud.md#targetargs)\>
 
 The arguments to be passed to the crud handlers.
 
@@ -628,7 +628,7 @@ CRUD handlers and their configurations for the list.
 
 ###### crud.args
 
-> **args**: `Reactive`\<\{\} \| [`TargetArgs`](../config/objectCrud.md#targetargs)\>
+> **args**: `Reactive`\<\{ \} \| [`TargetArgs`](../config/objectCrud.md#targetargs)\>
 
 The arguments to be passed to the crud handlers.
 
@@ -873,7 +873,7 @@ Flags indicating whether each sort criterion is in descending order.
 
 ##### orderByRules
 
-> **orderByRules**: [`OrderByRule`](listSort.md#orderbyrule)[]
+> **orderByRules**: [`OrderByRule`](#orderbyrule)[]
 
 Current sorting rules applied to the list.
 
@@ -881,7 +881,7 @@ Current sorting rules applied to the list.
 
 ### ListSort
 
-> **ListSort**\<\>: [`ListSortProperties`](listSort.md#listsortproperties)
+> **ListSort**\<\> = [`ListSortProperties`](#listsortproperties)
 
 #### Type Parameters
 
@@ -889,7 +889,7 @@ Current sorting rules applied to the list.
 
 ### ListSortParentRawState
 
-> **ListSortParentRawState**\<\>: [`ListInstanceRawState`](listInstance.md#listinstancerawstate) & `Partial`\<[`ListSubscriptionRawState`](listSubscription.md#listsubscriptionrawstate)\> & `Partial`\<[`ListRelatedRawState`](listRelated.md#listrelatedrawstate)\> & `Partial`\<[`ListCalculatedRawState`](listCalculated.md#listcalculatedrawstate)\> & `Partial`\<[`ListFilterRawState`](listFilter.md#listfilterrawstate)\> & `Partial`\<[`ListSearchRawState`](listSearch.md#listsearchrawstate)\>
+> **ListSortParentRawState**\<\> = [`ListInstanceRawState`](listInstance.md#listinstancerawstate) & `Partial`\<[`ListSubscriptionRawState`](listSubscription.md#listsubscriptionrawstate)\> & `Partial`\<[`ListRelatedRawState`](listRelated.md#listrelatedrawstate)\> & `Partial`\<[`ListCalculatedRawState`](listCalculated.md#listcalculatedrawstate)\> & `Partial`\<[`ListFilterRawState`](listFilter.md#listfilterrawstate)\> & `Partial`\<[`ListSearchRawState`](listSearch.md#listsearchrawstate)\>
 
 #### Type Parameters
 
@@ -897,7 +897,7 @@ Current sorting rules applied to the list.
 
 ### ListSortParentState
 
-> **ListSortParentState**\<\>: `UnwrapNestedRefs`
+> **ListSortParentState**\<\> = `UnwrapNestedRefs`
 
 #### Type Parameters
 
@@ -905,7 +905,7 @@ Current sorting rules applied to the list.
 
 ### ListSortState
 
-> **ListSortState**\<\>: `UnwrapNestedRefs`
+> **ListSortState**\<\> = `UnwrapNestedRefs`
 
 #### Type Parameters
 
@@ -913,11 +913,11 @@ Current sorting rules applied to the list.
 
 ### OrderByRule
 
-> **OrderByRule**\<\>: `object`
+> **OrderByRule**\<\> = `object`
 
 #### Type Parameters
 
-#### Type declaration
+#### Type Declaration
 
 ##### desc?
 
@@ -939,7 +939,7 @@ Current sorting rules applied to the list.
 
 ###### state
 
-[`ListSortState`](listSort.md#listsortstate)
+[`ListSortState`](#listsortstate)
 
 ###### Returns
 
@@ -980,7 +980,7 @@ which sorting operations are processed, enhancing performance on large lists.
 
 ### useListSort()
 
-> **useListSort**(`options`): [`ListSortProperties`](listSort.md#listsortproperties)
+> **useListSort**(`options`): [`ListSortProperties`](#listsortproperties)
 
 Initializes and manages sorting for a list of objects. This function sets up a reactive sorting mechanism
 that automatically updates the sort order of the list based on specified criteria. It supports multiple sorting
@@ -991,13 +991,13 @@ various data types and structures.
 
 ##### options
 
-[`ListSortOptions`](listSort.md#listsortoptions)
+[`ListSortOptions`](#listsortoptions)
 
 The configuration options for initializing the list sort instance.
 
 #### Returns
 
-[`ListSortProperties`](listSort.md#listsortproperties)
+[`ListSortProperties`](#listsortproperties)
 
 The initialized list sort instance, including reactive state and utilities to manage list sorting.
 

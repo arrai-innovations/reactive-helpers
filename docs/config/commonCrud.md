@@ -10,7 +10,7 @@
 
 ### Pk
 
-> **Pk**\<\>: `string`
+> **Pk**\<\> = `string`
 
 #### Type Parameters
 
@@ -18,7 +18,7 @@
 
 ### PkInput
 
-> **PkInput**\<\>: `string` \| `number`
+> **PkInput**\<\> = `string` \| `number`
 
 #### Type Parameters
 
@@ -26,7 +26,7 @@
 
 ### assignCrud()
 
-> **assignCrud**(`target`, `defaultCrud`, `options`?): `void`
+> **assignCrud**(`target`, `defaultCrud`, `options?`): `void`
 
 Assigns the default CRUD handlers to the target object.
 
@@ -102,7 +102,7 @@ Which ones need required cancellation.
 
 ### missingMethod()
 
-> **missingMethod**(`name`): (...`args`) => [`MaybeCancellablePromise`](../utils/cancellablePromise.md#maybecancellablepromiset)\<`any`\>
+> **missingMethod**(`name`): (...`args`) => [`MaybeCancellablePromise`](../utils/cancellablePromise.md#maybecancellablepromise)\<`any`\>
 
 #### Parameters
 
@@ -114,9 +114,9 @@ The name of the method.
 
 #### Returns
 
-`Function`
-
 - A function that returns a rejected promise with an error message.
+
+> (...`args`): [`MaybeCancellablePromise`](../utils/cancellablePromise.md#maybecancellablepromise)\<`any`\>
 
 ##### Parameters
 
@@ -126,13 +126,13 @@ The name of the method.
 
 ##### Returns
 
-[`MaybeCancellablePromise`](../utils/cancellablePromise.md#maybecancellablepromiset)\<`any`\>
+[`MaybeCancellablePromise`](../utils/cancellablePromise.md#maybecancellablepromise)\<`any`\>
 
 ***
 
 ### requiredCancelMissingMethod()
 
-> **requiredCancelMissingMethod**(`name`): (...`_args`) => [`CancellablePromise`](../utils/cancellablePromise.md#cancellablepromiset)\<`void`\>
+> **requiredCancelMissingMethod**(`name`): (...`_args`) => [`CancellablePromise`](../utils/cancellablePromise.md#cancellablepromise)\<`void`\>
 
 #### Parameters
 
@@ -144,9 +144,9 @@ The name of the method.
 
 #### Returns
 
-`Function`
-
 - A function that returns a rejected promise with an error message.
+
+> (...`_args`): [`CancellablePromise`](../utils/cancellablePromise.md#cancellablepromise)\<`void`\>
 
 ##### Parameters
 
@@ -156,4 +156,4 @@ The name of the method.
 
 ##### Returns
 
-[`CancellablePromise`](../utils/cancellablePromise.md#cancellablepromiset)\<`void`\>
+[`CancellablePromise`](../utils/cancellablePromise.md#cancellablepromise)\<`void`\>
