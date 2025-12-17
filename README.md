@@ -83,3 +83,14 @@ Since v21.0.0, the changelog is available in the [CHANGELOG.md](./CHANGELOG.md) 
     ```bash
     $ npm run docs
     ```
+
+6. Type-only workflows:
+
+    - Generate types without docs:
+        ```bash
+        $ npm run types
+        ```
+    - Smoke-check emitted types without regenerating:
+        ```bash
+        $ npm run types:check -- --skip-gen
+        ```
