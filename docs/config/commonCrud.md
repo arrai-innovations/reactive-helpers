@@ -6,6 +6,22 @@
 
 # config/commonCrud
 
+## Type Aliases
+
+### Pk
+
+> **Pk**\<\>: `string`
+
+#### Type Parameters
+
+***
+
+### PkInput
+
+> **PkInput**\<\>: `string` \| `number`
+
+#### Type Parameters
+
 ## Functions
 
 ### assignCrud()

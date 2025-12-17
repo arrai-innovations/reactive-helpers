@@ -50,7 +50,7 @@ The arguments to be passed to the retrieve function.
 
 ###### pk?
 
-> `optional` **pk**: `string`
+> `optional` **pk**: [`PkInput`](../config/commonCrud.md#pkinput)
 
 The pk of the object, optional to support creating new objects.
 

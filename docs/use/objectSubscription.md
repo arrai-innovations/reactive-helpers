@@ -232,6 +232,108 @@ Clears any errors related to the subscription, and resets the loading state.
 
 ***
 
+### ObjectSubscriptionOwnOptions
+
+#### Properties
+
+##### handlers?
+
+> `optional` **handlers**: [`ObjectCrudHandlers`](../config/objectCrud.md#objectcrudhandlers)
+
+The handlers to be passed to useObjectInstance.
+
+##### objectInstance?
+
+> `optional` **objectInstance**: [`ObjectInstance`](objectInstance.md#objectinstance)
+
+An object instance to use instead of creating a new one.
+
+##### props
+
+> **props**: `object`
+
+The reactive args to be passed to useObjectInstance.
+
+###### intendToRetrieve
+
+> **intendToRetrieve**: `boolean`
+
+Whether the object intends to retrieve.
+
+###### intendToSubscribe
+
+> **intendToSubscribe**: `boolean`
+
+Whether the object intends to subscribe.
+
+###### params
+
+> **params**: `any`
+
+The arguments to be passed to the retrieve function.
+
+###### pk?
+
+> `optional` **pk**: [`PkInput`](../config/commonCrud.md#pkinput)
+
+The pk of the object, optional to support creating new objects.
+
+###### pkKey
+
+> **pkKey**: `string`
+
+The pk key of the object.
+
+###### target
+
+> **target**: `object`
+
+The arguments to be passed to the crud handlers.
+
+###### target.args
+
+> **args**: [`TargetArgs`](../config/objectCrud.md#targetargs)
+
+The arguments to be passed to the crud handlers.
+
+###### target.create?
+
+> `optional` **create**: [`CrudCreateFn`](../config/objectCrud.md#crudcreatefn)
+
+A function to be used instead of the default crud create function.
+
+###### target.delete?
+
+> `optional` **delete**: [`CrudDeleteFn`](../config/objectCrud.md#cruddeletefn)
+
+A function to be used instead of the default crud delete function.
+
+###### target.patch?
+
+> `optional` **patch**: [`CrudPatchFn`](../config/objectCrud.md#crudpatchfn)
+
+A function to be used instead of the default crud patch function.
+
+###### target.retrieve?
+
+> `optional` **retrieve**: [`CrudRetrieveFn`](../config/objectCrud.md#crudretrievefn)
+
+A function to be used instead of the default crud retrieve function.
+
+###### target.subscribe?
+
+> `optional` **subscribe**: [`CrudObjectSubscribeFn`](../config/objectCrud.md#crudobjectsubscribefn)
+
+A function to be used instead of the default crud subscribe function.
+
+###### target.update?
+
+> `optional` **update**: [`CrudUpdateFn`](../config/objectCrud.md#crudupdatefn)
+
+A function to be used instead of the default crud update function.
+
+***
+
 ### ObjectSubscriptionProperties
 
 #### Properties
@@ -448,7 +550,7 @@ Whether the object is subscribed.
 
 ### ObjectSubscriptionOptions
 
-> **ObjectSubscriptionOptions**\<\>: `object` & [`ObjectInstanceOptions`](objectInstance.md#objectinstanceoptions)
+> **ObjectSubscriptionOptions**\<\>: [`ObjectSubscriptionOwnOptions`](objectSubscription.md#objectsubscriptionownoptions) & [`ObjectInstanceOptions`](objectInstance.md#objectinstanceoptions)
 
 #### Type Parameters
 
@@ -484,7 +586,7 @@ Initializes an object subscription to manage object state and reactivity, includ
 
 ##### options
 
-`any`
+[`ObjectSubscriptionOptions`](objectSubscription.md#objectsubscriptionoptions)
 
 Options for initializing the object subscription.
 

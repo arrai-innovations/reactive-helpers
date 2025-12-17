@@ -150,7 +150,7 @@ Deletes an object from the list by pk.
 
 ###### objectId
 
-`string`
+[`PkInput`](../config/commonCrud.md#pkinput)
 
 ###### Returns
 
@@ -584,7 +584,7 @@ The total records.
 
 ### ObjectsMap
 
-> **ObjectsMap**\<\>: `Map`\<`string`, `Reactive`\>
+> **ObjectsMap**\<\>: `Map`\<[`Pk`](../config/commonCrud.md#pk), `Reactive`\>
 
 #### Type Parameters
 

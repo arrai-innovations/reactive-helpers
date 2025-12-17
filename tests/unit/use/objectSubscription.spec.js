@@ -438,7 +438,7 @@ describe("use/objectSubscription.js", function () {
 
             sub.state.intendToSubscribe = false;
             await flushPromises();
-            subscribe.cancel.resolve(true);
+            subscribe.cancel.resolve();
             await poll(() => sub.state.subscribed === false);
 
             expect(isCancelledRef.value).toBe(true);
@@ -596,6 +596,7 @@ describe("use/objectSubscription.js", function () {
                 // @ts-ignore - we're testing the error case
                 useObjectSubscription({
                     objectInstance,
+                    // @ts-expect-error testing missing pk/flags/target for props typing
                     props: {
                         params: {
                             fields,
@@ -617,50 +618,62 @@ describe("use/objectSubscription.js", function () {
             });
             expect(() => {
                 // @ts-ignore - we're testing the error case
-                useObjectSubscription({ objectInstance, props: { pk: 1 } });
+                useObjectSubscription({
+                    objectInstance,
+                    // @ts-expect-error testing missing params/flags/target for props typing
+                    props: { pk: 1 },
+                });
             }).toThrow("params not in props, you must at least define the key first for intendTo* to react.");
         });
     });
     scopedIt("useObjectSubscriptions", async function () {
         const objectSubscriptionA = useObjectSubscription({
             props: {
-                target: { stream: "test_streamA" },
+                target: { args: { stream: "test_streamA" } },
                 pk: 1,
                 pkKey: "id",
                 params: {
                     fields,
                 },
+                intendToRetrieve: true,
+                intendToSubscribe: true,
             },
         });
         const objectSubscriptionB = useObjectSubscription({
             props: {
-                target: { stream: "test_streamB" },
+                target: { args: { stream: "test_streamB" } },
                 pk: 2,
                 pkKey: "id",
                 params: {
                     fields,
                 },
+                intendToRetrieve: true,
+                intendToSubscribe: true,
             },
         });
         const objSubs = useObjectSubscriptions({
             A: {
                 props: {
-                    target: { stream: "test_streamA" },
+                    target: { args: { stream: "test_streamA" } },
                     pk: 1,
                     pkKey: "id",
                     params: {
                         fields,
                     },
+                    intendToRetrieve: true,
+                    intendToSubscribe: true,
                 },
             },
             B: {
                 props: {
-                    target: { stream: "test_streamB" },
+                    target: { args: { stream: "test_streamB" } },
                     pk: 2,
                     pkKey: "id",
                     params: {
                         fields,
                     },
+                    intendToRetrieve: true,
+                    intendToSubscribe: true,
                 },
             },
         });
