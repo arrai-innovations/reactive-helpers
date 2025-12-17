@@ -1,7 +1,7 @@
 import { assignReactiveObject } from "../utils/assignReactiveObject.js";
 import { useCancellableIntent } from "./cancellableIntent.js";
 import { useObjectInstance } from "./objectInstance.js";
-import { computed, reactive, ref, toRefs } from "vue";
+import { computed, reactive, readonly, ref, toRefs } from "vue";
 import { refIfReactive } from "../utils/refIfReactive.js";
 import { asWatchableError, useProxyError } from "./proxyError.js";
 import { loadingCombine } from "../utils/loadingCombine.js";
@@ -247,7 +247,7 @@ export function useObjectSubscription({ objectInstance, props, handlers }) {
                 }
             };
             const parentState = objectInstance.state;
-            return parentState.crud.subscribe({
+            const subscribePromise = parentState.crud.subscribe({
                 runId,
                 isCurrentRun,
                 target: parentState.crud.args,
@@ -255,8 +255,17 @@ export function useObjectSubscription({ objectInstance, props, handlers }) {
                 pkKey: parentState.pkKey,
                 params: state.params,
                 callback: subscribeCallback,
-                isCancelled,
+                isCancelled: readonly(isCancelled),
             });
+            if (subscribePromise?.cancel) {
+                const originalCancel = subscribePromise.cancel.bind(subscribePromise);
+                const cancelWithFlag = async (/** @type {any} */ reason) => {
+                    isCancelled.value = true;
+                    return originalCancel(reason);
+                };
+                subscribePromise.cancel = cancelWithFlag;
+            }
+            return subscribePromise;
         },
         watchArguments: {
             intendToSubscribe,

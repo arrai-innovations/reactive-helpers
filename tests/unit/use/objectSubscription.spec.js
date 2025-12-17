@@ -409,6 +409,40 @@ describe("use/objectSubscription.js", function () {
                 })
             );
         });
+        scopedIt("sets isCancelled to true when subscription is cancelled", async () => {
+            const { setObjectCrud } = await import("../../../config/objectCrud.js");
+            const subscribe = new CancellableResolvable();
+            const globalSubscribe = vi.fn().mockReturnValueOnce(subscribe.promise);
+            setObjectCrud({
+                retrieve: vi.fn(),
+                subscribe: globalSubscribe,
+                args: { stream: "test_streamA" },
+                create: vi.fn(),
+                update: vi.fn(),
+                patch: vi.fn(),
+                delete: vi.fn(),
+            });
+            const props = getProps({
+                pk: 1,
+                pkKey: "id",
+                params: { fields },
+                intendToSubscribe: true,
+            });
+
+            const sub = useObjectSubscription({ props }); // no handlers
+
+            await flushPromises();
+            const isCancelledRef = globalSubscribe.mock.calls[0][0].isCancelled;
+            expect(isCancelledRef.__v_isReadonly).toBe(true);
+            expect(isCancelledRef.value).toBe(false);
+
+            sub.state.intendToSubscribe = false;
+            await flushPromises();
+            subscribe.cancel.resolve(true);
+            await poll(() => sub.state.subscribed === false);
+
+            expect(isCancelledRef.value).toBe(true);
+        });
     });
     scopedIt("uses custom pkKey in global retrieve and subscribe", async function () {
         const handlers = getHandlers();

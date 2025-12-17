@@ -5,7 +5,7 @@ import inspect from "browser-util-inspect";
 import cloneDeep from "lodash-es/cloneDeep.js";
 import isEmpty from "lodash-es/isEmpty.js";
 import isObject from "lodash-es/isObject.js";
-import { reactive, ref, toRef, toRefs } from "vue";
+import { reactive, readonly, ref, toRef, toRefs } from "vue";
 import { asWatchableLoadingError, useProxyLoadingError } from "./proxyLoadingError.js";
 import { refIfReactive } from "../utils/refIfReactive.js";
 
@@ -293,7 +293,7 @@ export function useListSubscription({ listInstance, props, handlers }) {
                                     );
                             }
                         },
-                        isCancelled,
+                        isCancelled: readonly(isCancelled),
                     })
                 );
                 // catching makes a new promise, we need to make sure the cancel method lives on.
@@ -307,7 +307,14 @@ export function useListSubscription({ listInstance, props, handlers }) {
                             loadingError.clearLoading();
                         })
                 );
-                catchPromise.cancel = subscribePromise.cancel.bind(subscribePromise);
+                if (subscribePromise.cancel) {
+                    const originalCancel = subscribePromise.cancel.bind(subscribePromise);
+                    const cancelWithFlag = async (/** @type {any} */ reason) => {
+                        isCancelled.value = true;
+                        return originalCancel(reason);
+                    };
+                    catchPromise.cancel = cancelWithFlag;
+                }
                 return catchPromise;
             } catch (err) {
                 console.error(err);
