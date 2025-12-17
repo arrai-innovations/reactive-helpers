@@ -8,7 +8,7 @@
 
 ## Interfaces
 
-### BulkDeleteArgs
+### BulkDeleteArgsRaw
 
 #### Properties
 
@@ -32,7 +32,7 @@ The arguments to be passed to the crud handlers.
 
 ***
 
-### ExecuteActionArgs
+### ExecuteActionArgsRaw
 
 #### Properties
 
@@ -208,6 +208,18 @@ The default arguments for the crud handlers.
 
 ## Type Aliases
 
+### AdditionalListArgs
+
+> **AdditionalListArgs**\<\>: `object`
+
+#### Type Parameters
+
+#### Index Signature
+
+\[`key`: `string`\]: `any`
+
+***
+
 ### applyObjectEvent()
 
 > **applyObjectEvent**\<\>: (`newOrUpdatedOrDeleteObject`, `action`) => `void`
@@ -227,6 +239,14 @@ The default arguments for the crud handlers.
 #### Returns
 
 `void`
+
+***
+
+### BulkDeleteArgs
+
+> **BulkDeleteArgs**\<\>: [`BulkDeleteArgsRaw`](listCrud.md#bulkdeleteargsraw) & [`AdditionalListArgs`](listCrud.md#additionallistargs)
+
+#### Type Parameters
 
 ***
 
@@ -328,9 +348,17 @@ The arguments to be passed to the crud handlers.
 
 ***
 
+### ExecuteActionArgs
+
+> **ExecuteActionArgs**\<\>: [`ExecuteActionArgsRaw`](listCrud.md#executeactionargsraw) & [`AdditionalListArgs`](listCrud.md#additionallistargs)
+
+#### Type Parameters
+
+***
+
 ### ListArgs
 
-> **ListArgs**\<\>: [`ListArgsRaw`](listCrud.md#listargsraw) & `Partial`\<[`CommonRunTracking`](../use/cancellableIntent.md#commonruntracking)\>
+> **ListArgs**\<\>: [`ListArgsRaw`](listCrud.md#listargsraw) & `Partial`\<[`CommonRunTracking`](../use/cancellableIntent.md#commonruntracking)\> & [`AdditionalListArgs`](listCrud.md#additionallistargs)
 
 #### Type Parameters
 
@@ -338,7 +366,7 @@ The arguments to be passed to the crud handlers.
 
 ### ListSubscribeArgs
 
-> **ListSubscribeArgs**\<\>: [`ListSubscribeArgsRaw`](listCrud.md#listsubscribeargsraw) & `Partial`\<[`CommonRunTracking`](../use/cancellableIntent.md#commonruntracking)\>
+> **ListSubscribeArgs**\<\>: [`ListSubscribeArgsRaw`](listCrud.md#listsubscribeargsraw) & `Partial`\<[`CommonRunTracking`](../use/cancellableIntent.md#commonruntracking)\> & [`AdditionalListArgs`](listCrud.md#additionallistargs)
 
 #### Type Parameters
 

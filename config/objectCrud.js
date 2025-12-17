@@ -13,6 +13,12 @@ import { readonly } from "vue";
  */
 
 /**
+ * Additional arguments that can be passed to CRUD handlers.
+ *
+ * @typedef {{[key:string]: any}} AdditionalCrudArgs
+ */
+
+/**
  * Defines the CRUD-related handlers and additional utilities provided by the object instance.
  *
  * @typedef {object} ObjectTargetProperties
@@ -25,12 +31,16 @@ import { readonly } from "vue";
  */
 
 /**
- * @typedef {object} CreateArgs
+ * @typedef {object} CreateArgsRaw
  * @property {TargetArgs} target - The arguments to be passed to the crud handlers.
  * @property {{[key:string]: any}} object - The data to be acted upon.
  * @property {{[key:string]: any}} params - The arguments to be passed to the retrieve function.
  * @property {string} pkKey - The key name of the primary key.
  * @property {Readonly<import('vue').Ref<boolean>>} isCancelled - A ref to indicate if the request was cancelled.
+ */
+
+/**
+ * @typedef {CreateArgsRaw & AdditionalCrudArgs} CreateArgs
  */
 
 /**
@@ -43,11 +53,11 @@ import { readonly } from "vue";
  */
 
 /**
- * @typedef {RetrieveArgsRaw & import('../use/cancellableIntent.js').CommonRunTracking} RetrieveArgs
+ * @typedef {RetrieveArgsRaw & Partial<import('../use/cancellableIntent.js').CommonRunTracking> & AdditionalCrudArgs} RetrieveArgs
  */
 
 /**
- * @typedef {object} UpdateArgs
+ * @typedef {object} UpdateArgsRaw
  * @property {TargetArgs} target - The arguments to be passed to the crud handlers.
  * @property {import('../use/objectInstance.js').ExistingCrudObject} object - The data to be acted upon.
  * @property {{[key:string]: any}} params - The arguments to be passed to the retrieve function.
@@ -56,20 +66,44 @@ import { readonly } from "vue";
  */
 
 /**
- * @typedef {object} DeleteArgs
+ * @typedef {UpdateArgsRaw & AdditionalCrudArgs} UpdateArgs
+ */
+
+/**
+ * @typedef {object} DeleteArgsRaw
  * @property {TargetArgs} target - The arguments to be passed to the crud handlers.
  * @property {string} pk - The pk of the object to be acted upon.
  * @property {string} pkKey - The key name of the primary key.
  */
 
 /**
- * @typedef {object} PartialArgs
+ * @typedef {DeleteArgsRaw & AdditionalCrudArgs} DeleteArgs
+ */
+
+/**
+ * @typedef {object} PartialArgsRaw
  * @property {TargetArgs} target - The arguments to be passed to the crud handlers.
  * @property {string} pk - The pk of the object to be acted upon.
  * @property {string} pkKey - The key name of the primary key.
  * @property {{[key:string]: any}} partialObject - The data to be acted upon.
  * @property {{[key:string]: any}} params - The arguments to be passed to the retrieve function.
  * @property {Readonly<import('vue').Ref<boolean>>} isCancelled - A ref to indicate if the request was cancelled.
+ */
+/**
+ * @typedef {PartialArgsRaw & AdditionalCrudArgs} PartialArgs
+ */
+
+/**
+ * @typedef {object} ObjectExecuteActionArgsRaw
+ * @property {import('../config/objectCrud.js').TargetArgs} target - The arguments to be passed to the crud handlers.
+ * @property {string} pk - The id of the objects to be acted upon.
+ * @property {string} pkKey - The key name of the primary key.
+ * @property {string} action - The action to execute.
+ * @property {Readonly<import('vue').Ref<boolean>>} isCancelled - A ref to indicate if the request was cancelled.
+ */
+
+/**
+ * @typedef {ObjectExecuteActionArgsRaw & AdditionalCrudArgs} ObjectExecuteActionArgs
  */
 
 /**
@@ -89,7 +123,7 @@ import { readonly } from "vue";
  */
 
 /**
- * @typedef {ObjectSubscribeArgsRaw & import('../use/cancellableIntent.js').CommonRunTracking} ObjectSubscribeArgs
+ * @typedef {ObjectSubscribeArgsRaw & import('../use/cancellableIntent.js').CommonRunTracking & AdditionalCrudArgs} ObjectSubscribeArgs
  */
 
 /**
@@ -127,6 +161,12 @@ import { readonly } from "vue";
  */
 
 /**
+ * @callback CrudObjectExecuteActionFn
+ * @param {ObjectExecuteActionArgs} args - The arguments to be passed to the executeAction function.
+ * @returns {CrudResponse} - The response data from the delete function.
+ */
+
+/**
  * @callback CrudObjectSubscribeFn
  * @param {ObjectSubscribeArgs} args - The arguments to be passed to the subscribe function.
  * @returns {import('../utils/cancellablePromise.js').CancellablePromise<void>} - The cancellable promise.
@@ -142,6 +182,8 @@ import { readonly } from "vue";
  * @property {CrudDeleteFn} [delete] - A function to be used instead of the default crud delete function.
  * @property {CrudPatchFn} [patch] - A function to be used instead of the default crud patch function.
  * @property {CrudObjectSubscribeFn} [subscribe] - A function to be used instead of the default crud subscribe function.
+ * @property {CrudObjectExecuteActionFn} [executeAction] - The  function to execute a certain action on an object.
+ *
  */
 
 /**
@@ -152,7 +194,7 @@ import { readonly } from "vue";
  */
 
 const _defaultCrud = createDefaultCrud(
-    ["retrieve", "create", "update", "patch", "delete", "subscribe"],
+    ["retrieve", "create", "update", "patch", "delete", "subscribe", "executeAction"],
     new Set(["subscribe"])
 );
 

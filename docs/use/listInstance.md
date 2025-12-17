@@ -109,13 +109,13 @@ Adds an object to the list.
 
 ##### bulkDelete()
 
-> **bulkDelete**: (`args`) => `Promise`\<`boolean`\>
+> **bulkDelete**: (`args`?) => `Promise`\<`boolean`\>
 
 Deletes objects from the list by pk, returning a promise to a boolean indicating success.
 
 ###### Parameters
 
-###### args
+###### args?
 
 ###### pks?
 
@@ -160,9 +160,21 @@ Deletes an object from the list by pk.
 
 ##### executeAction()
 
-> **executeAction**: () => `Promise`\<`any`\>
+> **executeAction**: (`args`) => `Promise`\<`any`\>
 
 Initiates an action on all objects in the list, returning the response, or false if the action failed.
+
+###### Parameters
+
+###### args
+
+###### action
+
+`string`
+
+###### pks?
+
+`string`[]
 
 ###### Returns
 
@@ -180,9 +192,13 @@ Generates a unique fake pk for use within the list.
 
 ##### list()
 
-> **list**: () => [`MaybeCancellablePromise`](../utils/cancellablePromise.md#maybecancellablepromiset)\<`boolean`\>
+> **list**: (`args`?) => [`MaybeCancellablePromise`](../utils/cancellablePromise.md#maybecancellablepromiset)\<`boolean`\>
 
 Initiates a fetch to retrieve objects according to the CRUD configuration, returning a promise to a boolean indicating success.
+
+###### Parameters
+
+###### args?
 
 ###### Returns
 

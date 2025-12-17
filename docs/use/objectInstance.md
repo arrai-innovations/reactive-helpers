@@ -87,7 +87,7 @@ Called to turn the current object into a new object on the server.
 
 ###### args
 
-[`ObjectInstanceCreateArgs`](objectInstance.md#objectinstancecreateargs)
+[`ObjectInstanceCreateArgs`](objectInstance.md#objectinstancecreateargs) & [`AdditionalArgs`](objectInstance.md#additionalargs)
 
 ###### Returns
 
@@ -95,9 +95,31 @@ Called to turn the current object into a new object on the server.
 
 ##### delete()
 
-> **delete**: () => [`MaybeCancellablePromise`](../utils/cancellablePromise.md#maybecancellablepromiset)\<`boolean`\>
+> **delete**: (`args`?) => [`MaybeCancellablePromise`](../utils/cancellablePromise.md#maybecancellablepromiset)\<`boolean`\>
 
 Called to delete the current object on the server.
+
+###### Parameters
+
+###### args?
+
+[`AdditionalArgs`](objectInstance.md#additionalargs)
+
+###### Returns
+
+[`MaybeCancellablePromise`](../utils/cancellablePromise.md#maybecancellablepromiset)\<`boolean`\>
+
+##### executeAction()
+
+> **executeAction**: (`args`) => [`MaybeCancellablePromise`](../utils/cancellablePromise.md#maybecancellablepromiset)\<`boolean`\>
+
+Called to execute certain action on the current object.
+
+###### Parameters
+
+###### args
+
+`object` & [`AdditionalArgs`](objectInstance.md#additionalargs)
 
 ###### Returns
 
@@ -113,7 +135,7 @@ Called to patch the current object on the server.
 
 ###### args
 
-[`ObjectInstancePatchArgs`](objectInstance.md#objectinstancepatchargs)
+[`ObjectInstancePatchArgs`](objectInstance.md#objectinstancepatchargs) & [`AdditionalArgs`](objectInstance.md#additionalargs)
 
 ###### Returns
 
@@ -129,7 +151,7 @@ Called to retrieve the current object by pk from the server.
 
 ###### args?
 
-[`CommonRunTracking`](cancellableIntent.md#commonruntracking)
+`Partial`\<[`CommonRunTracking`](cancellableIntent.md#commonruntracking)\> & [`AdditionalArgs`](objectInstance.md#additionalargs)
 
 ###### Returns
 
@@ -145,7 +167,7 @@ Called to update the current object on the server.
 
 ###### args
 
-[`ObjectInstanceUpdateArgs`](objectInstance.md#objectinstanceupdateargs)
+[`ObjectInstanceUpdateArgs`](objectInstance.md#objectinstanceupdateargs) & [`AdditionalArgs`](objectInstance.md#additionalargs)
 
 ###### Returns
 
@@ -211,6 +233,12 @@ A function to be used instead of the default crud create function.
 
 A function to be used instead of the default crud delete function.
 
+###### target.executeAction?
+
+> `optional` **executeAction**: [`CrudObjectExecuteActionFn`](../config/objectCrud.md#crudobjectexecuteactionfn)
+
+The  function to execute a certain action on an object.
+
 ###### target.patch?
 
 > `optional` **patch**: [`CrudPatchFn`](../config/objectCrud.md#crudpatchfn)
@@ -270,6 +298,12 @@ The create function.
 > **delete**: [`CrudDeleteFn`](../config/objectCrud.md#cruddeletefn)
 
 The delete function.
+
+###### crud.executeAction
+
+> **executeAction**: [`CrudObjectExecuteActionFn`](../config/objectCrud.md#crudobjectexecuteactionfn)
+
+The executeAction function.
 
 ###### crud.patch
 
@@ -376,6 +410,12 @@ The create function.
 > **delete**: [`CrudDeleteFn`](../config/objectCrud.md#cruddeletefn)
 
 The delete function.
+
+###### executeAction
+
+> **executeAction**: [`CrudObjectExecuteActionFn`](../config/objectCrud.md#crudobjectexecuteactionfn)
+
+The executeAction function.
 
 ###### patch
 
@@ -485,6 +525,12 @@ The create function.
 
 The delete function.
 
+##### executeAction
+
+> **executeAction**: [`CrudObjectExecuteActionFn`](../config/objectCrud.md#crudobjectexecuteactionfn)
+
+The executeAction function.
+
 ##### patch
 
 > **patch**: [`CrudPatchFn`](../config/objectCrud.md#crudpatchfn)
@@ -510,6 +556,18 @@ The subscribe function.
 The update function.
 
 ## Type Aliases
+
+### AdditionalArgs
+
+> **AdditionalArgs**\<\>: `object`
+
+#### Type Parameters
+
+#### Index Signature
+
+\[`key`: `string`\]: `any`
+
+***
 
 ### CrudObject
 
@@ -649,7 +707,7 @@ The options to be passed to useObjectInstance.
 
 [`ObjectInstance`](objectInstance.md#objectinstance)
 
-- An object used to manage create, retrieve, update, delete, and patch operations.
+- An object used to manage create, retrieve, update, delete, patch, and executeAction operations.
 
 #### Example
 

@@ -19,6 +19,13 @@ import { readonly } from "vue";
 /**
  * @typedef {import("../use/listInstance.js").SetColumnTotalsFn} SetColumnTotals
  */
+
+/**
+ * Additional arguments that can be passed to list crud handlers.
+ *
+ * @typedef {{[key:string]: any}} AdditionalListArgs
+ */
+
 /**
  * @typedef {object} ListArgsRaw
  * @property {import('../config/objectCrud.js').TargetArgs} target - The arguments to be passed to the crud handlers.
@@ -33,14 +40,18 @@ import { readonly } from "vue";
  */
 
 /**
- * @typedef {ListArgsRaw & Partial<import('../use/cancellableIntent.js').CommonRunTracking>} ListArgs
+ * @typedef {ListArgsRaw & Partial<import('../use/cancellableIntent.js').CommonRunTracking> & AdditionalListArgs} ListArgs
  */
 
 /**
- * @typedef {object} BulkDeleteArgs
+ * @typedef {object} BulkDeleteArgsRaw
  * @property {import('../config/objectCrud.js').TargetArgs} target - The arguments to be passed to the crud handlers.
  * @property {string[]} pks - The ids of the objects to be deleted.
  * @property {string} pkKey - The key name of the primary key.
+ */
+
+/**
+ * @typedef {BulkDeleteArgsRaw & AdditionalListArgs} BulkDeleteArgs
  */
 
 /**
@@ -61,15 +72,19 @@ import { readonly } from "vue";
  */
 
 /**
- * @typedef {ListSubscribeArgsRaw & Partial<import('../use/cancellableIntent.js').CommonRunTracking>} ListSubscribeArgs
+ * @typedef {ListSubscribeArgsRaw & Partial<import('../use/cancellableIntent.js').CommonRunTracking> & AdditionalListArgs } ListSubscribeArgs
  */
 
 /**
- * @typedef {object} ExecuteActionArgs
+ * @typedef {object} ExecuteActionArgsRaw
  * @property {import('../config/objectCrud.js').TargetArgs} target - The arguments to be passed to the crud handlers.
  * @property {string[]} pks - The ids of the objects to be acted upon.
  * @property {string} pkKey - The key name of the primary key.
  * @property {string} action - The action to execute.
+ */
+
+/**
+ * @typedef {ExecuteActionArgsRaw  & AdditionalListArgs } ExecuteActionArgs
  */
 
 /**

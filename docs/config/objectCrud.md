@@ -8,7 +8,7 @@
 
 ## Interfaces
 
-### CreateArgs
+### CreateArgsRaw
 
 #### Properties
 
@@ -52,7 +52,7 @@ The arguments to be passed to the crud handlers.
 
 ***
 
-### DeleteArgs
+### DeleteArgsRaw
 
 #### Properties
 
@@ -92,6 +92,12 @@ A function to be used instead of the default crud create function.
 
 A function to be used instead of the default crud delete function.
 
+##### executeAction?
+
+> `optional` **executeAction**: [`CrudObjectExecuteActionFn`](objectCrud.md#crudobjectexecuteactionfn)
+
+The  function to execute a certain action on an object.
+
 ##### patch?
 
 > `optional` **patch**: [`CrudPatchFn`](objectCrud.md#crudpatchfn)
@@ -115,6 +121,42 @@ A function to be used instead of the default crud subscribe function.
 > `optional` **update**: [`CrudUpdateFn`](objectCrud.md#crudupdatefn)
 
 A function to be used instead of the default crud update function.
+
+***
+
+### ObjectExecuteActionArgsRaw
+
+#### Properties
+
+##### action
+
+> **action**: `string`
+
+The action to execute.
+
+##### isCancelled
+
+> **isCancelled**: `Readonly`\<`Ref`\<`boolean`, `boolean`\>\>
+
+A ref to indicate if the request was cancelled.
+
+##### pk
+
+> **pk**: `string`
+
+The id of the objects to be acted upon.
+
+##### pkKey
+
+> **pkKey**: `string`
+
+The key name of the primary key.
+
+##### target
+
+> **target**: [`TargetArgs`](objectCrud.md#targetargs)
+
+The arguments to be passed to the crud handlers.
 
 ***
 
@@ -188,7 +230,7 @@ The arguments to be passed to the crud handlers.
 
 ***
 
-### PartialArgs
+### PartialArgsRaw
 
 #### Properties
 
@@ -278,7 +320,7 @@ The arguments to be passed to the crud handlers.
 
 ***
 
-### UpdateArgs
+### UpdateArgsRaw
 
 #### Properties
 
@@ -318,6 +360,26 @@ The arguments to be passed to the crud handlers.
 
 ## Type Aliases
 
+### AdditionalCrudArgs
+
+> **AdditionalCrudArgs**\<\>: `object`
+
+#### Type Parameters
+
+#### Index Signature
+
+\[`key`: `string`\]: `any`
+
+***
+
+### CreateArgs
+
+> **CreateArgs**\<\>: [`CreateArgsRaw`](objectCrud.md#createargsraw) & [`AdditionalCrudArgs`](objectCrud.md#additionalcrudargs)
+
+#### Type Parameters
+
+***
+
 ### CrudCreateFn()
 
 > **CrudCreateFn**\<\>: (`args`) => [`CrudResponse`](objectCrud.md#crudresponse)
@@ -351,6 +413,26 @@ The arguments to be passed to the create function.
 [`DeleteArgs`](objectCrud.md#deleteargs)
 
 The arguments to be passed to the delete function.
+
+#### Returns
+
+[`CrudResponse`](objectCrud.md#crudresponse)
+
+***
+
+### CrudObjectExecuteActionFn()
+
+> **CrudObjectExecuteActionFn**\<\>: (`args`) => [`CrudResponse`](objectCrud.md#crudresponse)
+
+#### Type Parameters
+
+#### Parameters
+
+##### args
+
+[`ObjectExecuteActionArgs`](objectCrud.md#objectexecuteactionargs)
+
+The arguments to be passed to the executeAction function.
 
 #### Returns
 
@@ -472,9 +554,25 @@ The arguments to be passed to the update function.
 
 ***
 
+### DeleteArgs
+
+> **DeleteArgs**\<\>: [`DeleteArgsRaw`](objectCrud.md#deleteargsraw) & [`AdditionalCrudArgs`](objectCrud.md#additionalcrudargs)
+
+#### Type Parameters
+
+***
+
+### ObjectExecuteActionArgs
+
+> **ObjectExecuteActionArgs**\<\>: [`ObjectExecuteActionArgsRaw`](objectCrud.md#objectexecuteactionargsraw) & [`AdditionalCrudArgs`](objectCrud.md#additionalcrudargs)
+
+#### Type Parameters
+
+***
+
 ### ObjectSubscribeArgs
 
-> **ObjectSubscribeArgs**\<\>: [`ObjectSubscribeArgsRaw`](objectCrud.md#objectsubscribeargsraw) & [`CommonRunTracking`](../use/cancellableIntent.md#commonruntracking)
+> **ObjectSubscribeArgs**\<\>: [`ObjectSubscribeArgsRaw`](objectCrud.md#objectsubscribeargsraw) & [`CommonRunTracking`](../use/cancellableIntent.md#commonruntracking) & [`AdditionalCrudArgs`](objectCrud.md#additionalcrudargs)
 
 #### Type Parameters
 
@@ -488,9 +586,17 @@ The arguments to be passed to the update function.
 
 ***
 
+### PartialArgs
+
+> **PartialArgs**\<\>: [`PartialArgsRaw`](objectCrud.md#partialargsraw) & [`AdditionalCrudArgs`](objectCrud.md#additionalcrudargs)
+
+#### Type Parameters
+
+***
+
 ### RetrieveArgs
 
-> **RetrieveArgs**\<\>: [`RetrieveArgsRaw`](objectCrud.md#retrieveargsraw) & [`CommonRunTracking`](../use/cancellableIntent.md#commonruntracking)
+> **RetrieveArgs**\<\>: [`RetrieveArgsRaw`](objectCrud.md#retrieveargsraw) & `Partial`\<[`CommonRunTracking`](../use/cancellableIntent.md#commonruntracking)\> & [`AdditionalCrudArgs`](objectCrud.md#additionalcrudargs)
 
 #### Type Parameters
 
@@ -505,6 +611,14 @@ The arguments to be passed to the update function.
 #### Index Signature
 
 \[`key`: `string`\]: `any`
+
+***
+
+### UpdateArgs
+
+> **UpdateArgs**\<\>: [`UpdateArgsRaw`](objectCrud.md#updateargsraw) & [`AdditionalCrudArgs`](objectCrud.md#additionalcrudargs)
+
+#### Type Parameters
 
 ## Variables
 

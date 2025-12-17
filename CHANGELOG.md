@@ -2,6 +2,12 @@
 
 _Actions potentially required by implementers are marked with italics._
 
+## v21.1.0 (unreleased)
+
+### Features
+
+- List and Object CRUD methods now accept and forward additional arguments to their implementations, allowing consuming projects to pass application-specific options (e.g., dryRun, custom filters)
+
 ## v21.0.1 (2025-09-24)
 
 ### Features
