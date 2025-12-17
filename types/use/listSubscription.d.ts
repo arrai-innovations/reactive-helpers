@@ -48,11 +48,14 @@
  * @typedef {ListSubscriptionFunctions & ListSubscriptionProperties} ListSubscription
  */
 /**
+ * @typedef {object} ListSubscriptionOwnOptions
+ * @property {import("./listInstance.js").ListInstance} [listInstance] - A list instance to use instead of creating one.
+ */
+/**
  * Defines the settings required to establish a list subscription, detailing how list instances should handle updates
  *  and subscriptions based on the given properties.
  *
- * @typedef {object & import("./listInstance.js").ListInstanceOptions} ListSubscriptionOptions
- * @property {import("./listInstance.js").ListInstance} listInstance - A list instance to use instead of creating one.
+ * @typedef {import("./listInstance.js").ListInstanceOptions & ListSubscriptionOwnOptions} ListSubscriptionOptions
  */
 /**
  * A Vue composition function that creates multiple list subscriptions, and returns them as an object.
@@ -191,8 +194,14 @@ export type ListSubscriptionProperties = {
  * An instance of a list subscription, returned by `useListSubscription`.
  */
 export type ListSubscription = ListSubscriptionFunctions & ListSubscriptionProperties;
+export type ListSubscriptionOwnOptions = {
+    /**
+     * - A list instance to use instead of creating one.
+     */
+    listInstance?: import("./listInstance.js").ListInstance;
+};
 /**
  * Defines the settings required to establish a list subscription, detailing how list instances should handle updates
  *  and subscriptions based on the given properties.
  */
-export type ListSubscriptionOptions = object & import("./listInstance.js").ListInstanceOptions;
+export type ListSubscriptionOptions = import("./listInstance.js").ListInstanceOptions & ListSubscriptionOwnOptions;

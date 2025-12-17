@@ -8,7 +8,7 @@
 
 ## Interfaces
 
-### LoadingStatus
+### LoadingFunctions
 
 #### Properties
 
@@ -22,12 +22,6 @@ Set the loading state to false.
 
 `void`
 
-##### loading
-
-> **loading**: `Readonly`\<`Ref`\<`boolean`, `boolean`\>\>
-
-Whether the component is loading.
-
 ##### setLoading()
 
 > **setLoading**: () => `void`
@@ -38,11 +32,23 @@ Set the loading state to true.
 
 `void`
 
+***
+
+### LoadingProperties
+
+#### Properties
+
+##### loading
+
+> **loading**: `Readonly`\<`Ref`\<`boolean`, `boolean`\>\>
+
+Whether the component is loading.
+
 ## Type Aliases
 
 ### LoadingReadonlyRef
 
-> **LoadingReadonlyRef**\<\>: `Readonly`\<[`LoadingRef`](loading.md#loadingref)\>
+> **LoadingReadonlyRef**\<\> = `Readonly`\<[`LoadingRef`](#loadingref)\>
 
 #### Type Parameters
 
@@ -50,7 +56,15 @@ Set the loading state to true.
 
 ### LoadingRef
 
-> **LoadingRef**\<\>: `Ref`
+> **LoadingRef**\<\> = `Ref`
+
+#### Type Parameters
+
+***
+
+### LoadingStatus
+
+> **LoadingStatus**\<\> = [`LoadingProperties`](#loadingproperties) & [`LoadingFunctions`](#loadingfunctions)
 
 #### Type Parameters
 
@@ -58,12 +72,12 @@ Set the loading state to true.
 
 ### useLoading()
 
-> **useLoading**(): [`LoadingStatus`](loading.md#loadingstatus)
+> **useLoading**(): [`LoadingStatus`](#loadingstatus)
 
 A composable function for managing loading state.
 
 #### Returns
 
-[`LoadingStatus`](loading.md#loadingstatus)
+[`LoadingStatus`](#loadingstatus)
 
 - An object containing reactive fields and actions for loading state.

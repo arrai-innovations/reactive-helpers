@@ -8,15 +8,15 @@
 
 ## Type Aliases
 
-### CancellablePromise\<T\>
+### CancellablePromise
 
-> **CancellablePromise**\<`T`\>: `Promise`\<`T`\> & `object`
+> **CancellablePromise**\<`T`\> = `Promise`\<`T`\> & `object`
 
-#### Type declaration
+#### Type Declaration
 
 ##### cancel()
 
-> **cancel**: (`reason`?) => `Promise`\<`void`\> \| `void`
+> **cancel**: (`reason?`) => `Promise`\<`void`\> \| `void`
 
 ###### Parameters
 
@@ -30,19 +30,21 @@
 
 #### Type Parameters
 
-• **T**
+##### T
+
+`T`
 
 ***
 
-### MaybeCancellablePromise\<T\>
+### MaybeCancellablePromise
 
-> **MaybeCancellablePromise**\<`T`\>: `Promise`\<`T`\> & `object`
+> **MaybeCancellablePromise**\<`T`\> = `Promise`\<`T`\> & `object`
 
-#### Type declaration
+#### Type Declaration
 
 ##### cancel()?
 
-> `optional` **cancel**: (`reason`?) => `Promise`\<`void`\> \| `void`
+> `optional` **cancel**: (`reason?`) => `Promise`\<`void`\> \| `void`
 
 ###### Parameters
 
@@ -56,19 +58,23 @@
 
 #### Type Parameters
 
-• **T**
+##### T
+
+`T`
 
 ## Functions
 
 ### CancellablePromise()
 
-> **CancellablePromise**\<`T`\>(`promise`, `cancel`): [`CancellablePromise`](cancellablePromise.md#cancellablepromiset)\<`T`\>
+> **CancellablePromise**\<`T`\>(`promise`, `cancel`): [`CancellablePromise`](#cancellablepromise)\<`T`\>
 
 Creates a cancellable promise, mostly for easy of type checking.
 
 #### Type Parameters
 
-• **T**
+##### T
+
+`T`
 
 #### Parameters
 
@@ -86,7 +92,7 @@ The function to cancel the promise.
 
 #### Returns
 
-[`CancellablePromise`](cancellablePromise.md#cancellablepromiset)\<`T`\>
+[`CancellablePromise`](#cancellablepromise)\<`T`\>
 
 The cancellable promise.
 
@@ -94,13 +100,15 @@ The cancellable promise.
 
 ### wrapMaybeCancellable()
 
-> **wrapMaybeCancellable**\<`T`\>(`inner`, `cancel`): [`MaybeCancellablePromise`](cancellablePromise.md#maybecancellablepromiset)\<`T`\>
+> **wrapMaybeCancellable**\<`T`\>(`inner`, `cancel`): [`MaybeCancellablePromise`](#maybecancellablepromise)\<`T`\>
 
 Wraps a promise and optionally adds a cancel method if provided.
 
 #### Type Parameters
 
-• **T**
+##### T
+
+`T`
 
 #### Parameters
 
@@ -118,6 +126,6 @@ Optional cancel function.
 
 #### Returns
 
-[`MaybeCancellablePromise`](cancellablePromise.md#maybecancellablepromiset)\<`T`\>
+[`MaybeCancellablePromise`](#maybecancellablepromise)\<`T`\>
 
 The wrapped promise with an optional cancel method.

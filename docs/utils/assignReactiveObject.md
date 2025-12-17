@@ -18,9 +18,9 @@ Error thrown when an invalid value is passed to a function.
 
 #### Constructors
 
-##### new AssignReactiveObjectError()
+##### Constructor
 
-> **new AssignReactiveObjectError**(`message`, `code`): [`AssignReactiveObjectError`](assignReactiveObject.md#assignreactiveobjecterror)
+> **new AssignReactiveObjectError**(`message`, `code`): [`AssignReactiveObjectError`](#assignreactiveobjecterror)
 
 ###### Parameters
 
@@ -38,7 +38,7 @@ The error code.
 
 ###### Returns
 
-[`AssignReactiveObjectError`](assignReactiveObject.md#assignreactiveobjecterror)
+[`AssignReactiveObjectError`](#assignreactiveobjecterror)
 
 ###### Overrides
 
@@ -62,7 +62,7 @@ The error code.
 
 ### validateTargetAndSourceResult
 
-> **validateTargetAndSourceResult**\<\>: `object`
+> **validateTargetAndSourceResult**\<\> = `object`
 
 #### Type Parameters
 
@@ -70,7 +70,7 @@ The error code.
 
 ### ValidTargetOrSource
 
-> **ValidTargetOrSource**\<\>: `Ref` \| `object` \| `any`[]
+> **ValidTargetOrSource**\<\> = `Ref` \| `object` \| `any`[]
 
 targets and sources must be refs, objects, or arrays
 and refs must ultimately resolve to objects or arrays
@@ -81,7 +81,7 @@ and refs must ultimately resolve to objects or arrays
 
 ### addOrUpdateReactiveObject()
 
-> **addOrUpdateReactiveObject**(`target`, `source`, `exclude`?, `addedKeys`?, `sameKeys`?, `doNotSetUndefinedKeys`?): `boolean`
+> **addOrUpdateReactiveObject**(`target`, `source`, `exclude?`, `addedKeys?`, `sameKeys?`, `doNotSetUndefinedKeys?`): `boolean`
 
 Adds to a target the missing keys from a source, and updates a target with mutually shared keys from a source.
 
@@ -135,7 +135,7 @@ True if any keys were added or updated, false otherwise.
 
 ### addOrUpdateReactiveObjectDeep()
 
-> **addOrUpdateReactiveObjectDeep**(`target`, `source`, `exclude`?): `boolean`
+> **addOrUpdateReactiveObjectDeep**(`target`, `source`, `exclude?`): `boolean`
 
 Recursively change a target to match a source, where keys present in the source are added to the target, and
 keys present in both are updated in the target. Missing keys are not removed.
@@ -174,7 +174,7 @@ If either target or source are not ultimately objects or arrays.
 
 ### addReactiveObject()
 
-> **addReactiveObject**(`target`, `source`, `exclude`?, `addedKeys`?): `boolean`
+> **addReactiveObject**(`target`, `source`, `exclude?`, `addedKeys?`): `boolean`
 
 Adds to a target the missing keys from a source. `addedKeys` can be precalculated to avoid recalculation.
 
@@ -249,7 +249,7 @@ True if any keys were added, updated, or removed, false otherwise.
 
 ### assignReactiveObject()
 
-> **assignReactiveObject**(`target`, `source`, `exclude`?): `boolean`
+> **assignReactiveObject**(`target`, `source`, `exclude?`): `boolean`
 
 Change a target to match a source, where keys missing from the source are removed from the target,
 keys present in the source are added to the target, and keys present in both are updated in the target.
@@ -288,7 +288,7 @@ If either target or source are not ultimately objects or arrays.
 
 ### assignReactiveObjectDeep()
 
-> **assignReactiveObjectDeep**(`target`, `source`, `exclude`?): `boolean`
+> **assignReactiveObjectDeep**(`target`, `source`, `exclude?`): `boolean`
 
 Recursively change a target to match a source, where keys missing from the source are removed from the target,
 keys present in the source are added to the target, and keys present in both are updated in the target.
@@ -327,7 +327,7 @@ If either target or source are not ultimately objects or arrays.
 
 ### trimReactiveObject()
 
-> **trimReactiveObject**(`target`, `source`, `exclude`?, `removedKeys`?): `boolean`
+> **trimReactiveObject**(`target`, `source`, `exclude?`, `removedKeys?`): `boolean`
 
 Removes keys from a target that are not present in a source.
 
@@ -371,7 +371,7 @@ If either target or source are not ultimately objects or arrays.
 
 ### updateReactiveObject()
 
-> **updateReactiveObject**(`target`, `source`, `exclude`?, `sameKeys`?): `boolean`
+> **updateReactiveObject**(`target`, `source`, `exclude?`, `sameKeys?`): `boolean`
 
 Updates a target with mutually shared keys from a source. `sameKeys` can be precalculated to avoid recalculation.
 

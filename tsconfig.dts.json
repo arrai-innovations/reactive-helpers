@@ -1,0 +1,16 @@
+{
+    "compilerOptions": {
+        "noEmit": true,
+        "strict": true,
+        "noImplicitAny": true,
+        "skipLibCheck": false,
+        "module": "NodeNext",
+        "moduleResolution": "NodeNext",
+        "target": "ES2023",
+        "baseUrl": ".",
+        "paths": {
+            "@arrai-innovations/reactive-helpers": ["./types"]
+        }
+    },
+    "include": ["types/**/*.d.ts", "dts-smoke.ts"]
+}

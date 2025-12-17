@@ -50,7 +50,7 @@ The arguments to be passed to the retrieve function.
 
 ###### pk?
 
-> `optional` **pk**: `string`
+> `optional` **pk**: [`PkInput`](../config/commonCrud.md#pkinput)
 
 The pk of the object, optional to support creating new objects.
 
@@ -128,7 +128,7 @@ A function to be used instead of the default crud update function.
 
 ##### managed
 
-> **managed**: [`ObjectManaged`](object.md#objectmanaged)
+> **managed**: [`ObjectManaged`](#objectmanaged)
 
 The managed object.
 
@@ -174,7 +174,7 @@ The crud handlers.
 
 ###### crud.args
 
-> **args**: `Reactive`\<\{\} \| [`TargetArgs`](../config/objectCrud.md#targetargs)\>
+> **args**: `Reactive`\<\{ \} \| [`TargetArgs`](../config/objectCrud.md#targetargs)\>
 
 The arguments to be passed to the crud handlers.
 
@@ -344,11 +344,11 @@ Stop the effect scope of the managed object.
 
 ### ObjectManaged
 
-> **ObjectManaged**\<\>: `object`
+> **ObjectManaged**\<\> = `object`
 
 #### Type Parameters
 
-#### Type declaration
+#### Type Declaration
 
 ##### objectCalculated
 
@@ -370,7 +370,7 @@ Stop the effect scope of the managed object.
 
 ### ObjectManager
 
-> **ObjectManager**\<\>: [`ObjectManagerProperties`](object.md#objectmanagerproperties) & [`ObjectManagerFunctions`](object.md#objectmanagerfunctions)
+> **ObjectManager**\<\> = [`ObjectManagerProperties`](#objectmanagerproperties) & [`ObjectManagerFunctions`](#objectmanagerfunctions)
 
 #### Type Parameters
 
@@ -378,7 +378,7 @@ Stop the effect scope of the managed object.
 
 ### ObjectManagerFunctions
 
-> **ObjectManagerFunctions**\<\>: [`ObjectInstanceFunctions`](objectInstance.md#objectinstancefunctions) & [`ObjectSubscriptionFunctions`](objectSubscription.md#objectsubscriptionfunctions)
+> **ObjectManagerFunctions**\<\> = [`ObjectInstanceFunctions`](objectInstance.md#objectinstancefunctions) & [`ObjectSubscriptionFunctions`](objectSubscription.md#objectsubscriptionfunctions)
 
 #### Type Parameters
 
@@ -386,7 +386,7 @@ Stop the effect scope of the managed object.
 
 ### ObjectManagerProps
 
-> **ObjectManagerProps**\<\>: `UnwrapNestedRefs`
+> **ObjectManagerProps**\<\> = `UnwrapNestedRefs`
 
 #### Type Parameters
 
@@ -394,7 +394,7 @@ Stop the effect scope of the managed object.
 
 ### ObjectManagerRawProps
 
-> **ObjectManagerRawProps**\<\>: [`ObjectInstanceRawProps`](objectInstance.md#objectinstancerawprops) & [`ObjectSubscriptionRawProps`](objectSubscription.md#objectsubscriptionrawprops) & [`ObjectRelatedRawProps`](objectRelated.md#objectrelatedrawprops) & [`ObjectCalculatedRawProps`](objectCalculated.md#objectcalculatedrawprops)
+> **ObjectManagerRawProps**\<\> = [`ObjectInstanceRawProps`](objectInstance.md#objectinstancerawprops) & [`ObjectSubscriptionRawProps`](objectSubscription.md#objectsubscriptionrawprops) & [`ObjectRelatedRawProps`](objectRelated.md#objectrelatedrawprops) & [`ObjectCalculatedRawProps`](objectCalculated.md#objectcalculatedrawprops)
 
 #### Type Parameters
 
@@ -402,7 +402,7 @@ Stop the effect scope of the managed object.
 
 ### useObject()
 
-> **useObject**(`options`): [`ObjectManager`](object.md#objectmanager)
+> **useObject**(`options`): [`ObjectManager`](#objectmanager)
 
 Initializes a chain of useObject* functions, returning an object of them.
 
@@ -410,13 +410,13 @@ Initializes a chain of useObject* functions, returning an object of them.
 
 ##### options
 
-[`ObjectManagerOptions`](object.md#objectmanageroptions)
+[`ObjectManagerOptions`](#objectmanageroptions)
 
 The options to be passed to useObjectInstance, useObjectSubscription, useObjectRelated, and useObjectCalculated.
 
 #### Returns
 
-[`ObjectManager`](object.md#objectmanager)
+[`ObjectManager`](#objectmanager)
 
 - An object managing a chain of useObject* instances.
 

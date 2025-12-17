@@ -10,13 +10,15 @@
 
 ### cancellableFetch()
 
-> **cancellableFetch**\<`T`\>(`input`, `init`, `transform`): [`CancellablePromise`](cancellablePromise.md#cancellablepromiset)\<`T`\>
+> **cancellableFetch**\<`T`\>(`input`, `init`, `transform`): [`CancellablePromise`](cancellablePromise.md#cancellablepromise)\<`T`\>
 
 A wrapper around fetch that adds cancellation via AbortController and returns a CancellablePromise.
 
 #### Type Parameters
 
-• **T**
+##### T
+
+`T`
 
 #### Parameters
 
@@ -40,6 +42,6 @@ A function to transform the response.
 
 #### Returns
 
-[`CancellablePromise`](cancellablePromise.md#cancellablepromiset)\<`T`\>
+[`CancellablePromise`](cancellablePromise.md#cancellablepromise)\<`T`\>
 
 A cancellable promise that resolves to the transformed response.

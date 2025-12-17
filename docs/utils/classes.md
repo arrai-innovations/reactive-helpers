@@ -10,7 +10,7 @@
 
 ### BooleanOrRef
 
-> **BooleanOrRef**\<\>: `boolean` \| `Ref`
+> **BooleanOrRef**\<\> = `boolean` \| `Ref`
 
 #### Type Parameters
 
@@ -18,7 +18,7 @@
 
 ### CombinedClasses
 
-> **CombinedClasses**\<\>: `string` \| \{\} \| `object`[]
+> **CombinedClasses**\<\> = `string` \| \{\[`classnames`: `string`\]: `boolean` \| `Ref`\<`boolean`, `boolean`\>; \} \| `object`[]
 
 The normalized form of the CSS classes, either as a string of space-separated class names or an
 
@@ -28,7 +28,7 @@ The normalized form of the CSS classes, either as a string of space-separated cl
 
 ### CombinedClassesArgument
 
-> **CombinedClassesArgument**\<\>: `string` \| `string`[] \| `Set`\<`any`\> \| `Map`\<`any`, `any`\> \| `object` \| `Ref`
+> **CombinedClassesArgument**\<\> = `string` \| `string`[] \| `Set`\<`any`\> \| `Map`\<`any`, `any`\> \| `object` \| `Ref`
 
 #### Type Parameters
 
@@ -36,7 +36,7 @@ The normalized form of the CSS classes, either as a string of space-separated cl
 
 ### combineClasses()
 
-> **combineClasses**(...`classes`): [`CombinedClasses`](classes.md#combinedclasses)
+> **combineClasses**(...`classes`): [`CombinedClasses`](#combinedclasses)
 
 Combines and normalizes different formats of CSS class specifications into a single format suitable for Vue.js
  components. If objects are in the mix, objects are returned. Otherwise, a string is returned.
@@ -54,7 +54,7 @@ A variable list of class specifications.
 
 #### Returns
 
-[`CombinedClasses`](classes.md#combinedclasses)
+[`CombinedClasses`](#combinedclasses)
 
 - The normalized form of the CSS classes, either as a string or an object.
 

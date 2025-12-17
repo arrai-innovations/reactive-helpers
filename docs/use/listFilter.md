@@ -78,7 +78,7 @@ CRUD handlers and their configurations for the list.
 
 ###### crud.args
 
-> **args**: `Reactive`\<\{\} \| [`TargetArgs`](../config/objectCrud.md#targetargs)\>
+> **args**: `Reactive`\<\{ \} \| [`TargetArgs`](../config/objectCrud.md#targetargs)\>
 
 The arguments to be passed to the crud handlers.
 
@@ -304,7 +304,7 @@ CRUD handlers and their configurations for the list.
 
 ###### crud.args
 
-> **args**: `Reactive`\<\{\} \| [`TargetArgs`](../config/objectCrud.md#targetargs)\>
+> **args**: `Reactive`\<\{ \} \| [`TargetArgs`](../config/objectCrud.md#targetargs)\>
 
 The arguments to be passed to the crud handlers.
 
@@ -530,7 +530,7 @@ CRUD handlers and their configurations for the list.
 
 ###### crud.args
 
-> **args**: `Reactive`\<\{\} \| [`TargetArgs`](../config/objectCrud.md#targetargs)\>
+> **args**: `Reactive`\<\{ \} \| [`TargetArgs`](../config/objectCrud.md#targetargs)\>
 
 The arguments to be passed to the crud handlers.
 
@@ -734,7 +734,7 @@ Function to determine if an item should be excluded based on custom logic.
 
 ### ListFilter
 
-> **ListFilter**\<\>: [`ListFilterProperties`](listFilter.md#listfilterproperties)
+> **ListFilter**\<\> = [`ListFilterProperties`](#listfilterproperties)
 
 #### Type Parameters
 
@@ -742,7 +742,7 @@ Function to determine if an item should be excluded based on custom logic.
 
 ### ListFilterAllowedFilter
 
-> **ListFilterAllowedFilter**\<\>: `Function`
+> **ListFilterAllowedFilter**\<\> = `Function`
 
 A function that returns true if an item should be included.
 
@@ -752,7 +752,7 @@ A function that returns true if an item should be included.
 
 ### ListFilterExcludedFilter
 
-> **ListFilterExcludedFilter**\<\>: `Function`
+> **ListFilterExcludedFilter**\<\> = `Function`
 
 A function that returns true if an item should be excluded.
 
@@ -762,7 +762,7 @@ A function that returns true if an item should be excluded.
 
 ### ListFilterParentRawState
 
-> **ListFilterParentRawState**\<\>: [`ListInstanceRawState`](listInstance.md#listinstancerawstate) & `Partial`\<[`ListSubscriptionRawState`](listSubscription.md#listsubscriptionrawstate)\> & `Partial`\<[`ListRelatedRawState`](listRelated.md#listrelatedrawstate)\> & `Partial`\<[`ListCalculatedRawState`](listCalculated.md#listcalculatedrawstate)\>
+> **ListFilterParentRawState**\<\> = [`ListInstanceRawState`](listInstance.md#listinstancerawstate) & `Partial`\<[`ListSubscriptionRawState`](listSubscription.md#listsubscriptionrawstate)\> & `Partial`\<[`ListRelatedRawState`](listRelated.md#listrelatedrawstate)\> & `Partial`\<[`ListCalculatedRawState`](listCalculated.md#listcalculatedrawstate)\>
 
 #### Type Parameters
 
@@ -770,7 +770,7 @@ A function that returns true if an item should be excluded.
 
 ### ListFilterParentState
 
-> **ListFilterParentState**\<\>: `UnwrapNestedRefs`
+> **ListFilterParentState**\<\> = `UnwrapNestedRefs`
 
 #### Type Parameters
 
@@ -778,7 +778,7 @@ A function that returns true if an item should be excluded.
 
 ### ListFilterState
 
-> **ListFilterState**\<\>: `UnwrapNestedRefs`
+> **ListFilterState**\<\> = `UnwrapNestedRefs`
 
 #### Type Parameters
 
@@ -786,7 +786,7 @@ A function that returns true if an item should be excluded.
 
 ### ObjectsInOrderRefs
 
-> **ObjectsInOrderRefs**\<\>: `Ref`[]
+> **ObjectsInOrderRefs**\<\> = `Ref`[]
 
 #### Type Parameters
 
@@ -794,7 +794,7 @@ A function that returns true if an item should be excluded.
 
 ### useListFilter()
 
-> **useListFilter**(`options`): [`ListFilterProperties`](listFilter.md#listfilterproperties)
+> **useListFilter**(`options`): [`ListFilterProperties`](#listfilterproperties)
 
 Initializes and manages a list filter instance, setting up reactive states and dependencies
 to dynamically adjust the visible items based on the provided filter functions.
@@ -803,13 +803,13 @@ to dynamically adjust the visible items based on the provided filter functions.
 
 ##### options
 
-[`ListFilterOptions`](listFilter.md#listfilteroptions)
+[`ListFilterOptions`](#listfilteroptions)
 
 The options for the list filter including filters and parent state.
 
 #### Returns
 
-[`ListFilterProperties`](listFilter.md#listfilterproperties)
+[`ListFilterProperties`](#listfilterproperties)
 
 A fully configured list filter instance, providing reactive filtered results.
 

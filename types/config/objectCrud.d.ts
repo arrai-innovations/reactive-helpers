@@ -68,7 +68,7 @@ export type RetrieveArgsRaw = {
     /**
      * - The pk of the object to be acted upon.
      */
-    pk: string;
+    pk: import("./commonCrud.js").Pk;
     /**
      * - The key name of the primary key.
      */
@@ -118,7 +118,7 @@ export type DeleteArgsRaw = {
     /**
      * - The pk of the object to be acted upon.
      */
-    pk: string;
+    pk: import("./commonCrud.js").Pk;
     /**
      * - The key name of the primary key.
      */
@@ -133,7 +133,7 @@ export type PartialArgsRaw = {
     /**
      * - The pk of the object to be acted upon.
      */
-    pk: string;
+    pk: import("./commonCrud.js").Pk;
     /**
      * - The key name of the primary key.
      */
@@ -188,7 +188,7 @@ export type ObjectSubscribeArgsRaw = {
     /**
      * - The pk of the object to be acted upon.
      */
-    pk: string;
+    pk: import("./commonCrud.js").Pk;
     /**
      * - The key name of the primary key.
      */

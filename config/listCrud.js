@@ -46,7 +46,7 @@ import { readonly } from "vue";
 /**
  * @typedef {object} BulkDeleteArgsRaw
  * @property {import('../config/objectCrud.js').TargetArgs} target - The arguments to be passed to the crud handlers.
- * @property {string[]} pks - The ids of the objects to be deleted.
+ * @property {import('./commonCrud.js').Pk[]} pks - The ids of the objects to be deleted.
  * @property {string} pkKey - The key name of the primary key.
  */
 
@@ -78,7 +78,7 @@ import { readonly } from "vue";
 /**
  * @typedef {object} ExecuteActionArgsRaw
  * @property {import('../config/objectCrud.js').TargetArgs} target - The arguments to be passed to the crud handlers.
- * @property {string[]} pks - The ids of the objects to be acted upon.
+ * @property {import('./commonCrud.js').Pk[]} pks - The ids of the objects to be acted upon.
  * @property {string} pkKey - The key name of the primary key.
  * @property {string} action - The action to execute.
  */

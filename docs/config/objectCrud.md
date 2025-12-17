@@ -46,7 +46,7 @@ The key name of the primary key.
 
 ##### target
 
-> **target**: [`TargetArgs`](objectCrud.md#targetargs)
+> **target**: [`TargetArgs`](#targetargs)
 
 The arguments to be passed to the crud handlers.
 
@@ -70,7 +70,7 @@ The key name of the primary key.
 
 ##### target
 
-> **target**: [`TargetArgs`](objectCrud.md#targetargs)
+> **target**: [`TargetArgs`](#targetargs)
 
 The arguments to be passed to the crud handlers.
 
@@ -82,43 +82,43 @@ The arguments to be passed to the crud handlers.
 
 ##### create?
 
-> `optional` **create**: [`CrudCreateFn`](objectCrud.md#crudcreatefn)
+> `optional` **create**: [`CrudCreateFn`](#crudcreatefn)
 
 A function to be used instead of the default crud create function.
 
 ##### delete?
 
-> `optional` **delete**: [`CrudDeleteFn`](objectCrud.md#cruddeletefn)
+> `optional` **delete**: [`CrudDeleteFn`](#cruddeletefn)
 
 A function to be used instead of the default crud delete function.
 
 ##### executeAction?
 
-> `optional` **executeAction**: [`CrudObjectExecuteActionFn`](objectCrud.md#crudobjectexecuteactionfn)
+> `optional` **executeAction**: [`CrudObjectExecuteActionFn`](#crudobjectexecuteactionfn)
 
 The  function to execute a certain action on an object.
 
 ##### patch?
 
-> `optional` **patch**: [`CrudPatchFn`](objectCrud.md#crudpatchfn)
+> `optional` **patch**: [`CrudPatchFn`](#crudpatchfn)
 
 A function to be used instead of the default crud patch function.
 
 ##### retrieve?
 
-> `optional` **retrieve**: [`CrudRetrieveFn`](objectCrud.md#crudretrievefn)
+> `optional` **retrieve**: [`CrudRetrieveFn`](#crudretrievefn)
 
 A function to be used instead of the default crud retrieve function.
 
 ##### subscribe?
 
-> `optional` **subscribe**: [`CrudObjectSubscribeFn`](objectCrud.md#crudobjectsubscribefn)
+> `optional` **subscribe**: [`CrudObjectSubscribeFn`](#crudobjectsubscribefn)
 
 A function to be used instead of the default crud subscribe function.
 
 ##### update?
 
-> `optional` **update**: [`CrudUpdateFn`](objectCrud.md#crudupdatefn)
+> `optional` **update**: [`CrudUpdateFn`](#crudupdatefn)
 
 A function to be used instead of the default crud update function.
 
@@ -154,7 +154,7 @@ The key name of the primary key.
 
 ##### target
 
-> **target**: [`TargetArgs`](objectCrud.md#targetargs)
+> **target**: [`TargetArgs`](#targetargs)
 
 The arguments to be passed to the crud handlers.
 
@@ -166,7 +166,7 @@ The arguments to be passed to the crud handlers.
 
 ##### callback
 
-> **callback**: [`CrudSubscribeCallback`](objectCrud.md#crudsubscribecallback)
+> **callback**: [`CrudSubscribeCallback`](#crudsubscribecallback)
 
 The callback to be called when the object is updated.
 
@@ -200,7 +200,7 @@ The key name of the primary key.
 
 ##### target
 
-> **target**: [`TargetArgs`](objectCrud.md#targetargs)
+> **target**: [`TargetArgs`](#targetargs)
 
 The arguments to be passed to the crud handlers.
 
@@ -212,7 +212,7 @@ The arguments to be passed to the crud handlers.
 
 ##### target?
 
-> `optional` **target**: [`TargetArgs`](objectCrud.md#targetargs)
+> `optional` **target**: [`TargetArgs`](#targetargs)
 
 The arguments to be passed to the crud handlers.
 
@@ -224,7 +224,7 @@ The arguments to be passed to the crud handlers.
 
 ##### args
 
-> **args**: [`TargetArgs`](objectCrud.md#targetargs)
+> **args**: [`TargetArgs`](#targetargs)
 
 The arguments to be passed to the crud handlers.
 
@@ -274,7 +274,7 @@ The key name of the primary key.
 
 ##### target
 
-> **target**: [`TargetArgs`](objectCrud.md#targetargs)
+> **target**: [`TargetArgs`](#targetargs)
 
 The arguments to be passed to the crud handlers.
 
@@ -314,7 +314,7 @@ The key name of the primary key.
 
 ##### target
 
-> **target**: [`TargetArgs`](objectCrud.md#targetargs)
+> **target**: [`TargetArgs`](#targetargs)
 
 The arguments to be passed to the crud handlers.
 
@@ -354,7 +354,7 @@ The key name of the primary key.
 
 ##### target
 
-> **target**: [`TargetArgs`](objectCrud.md#targetargs)
+> **target**: [`TargetArgs`](#targetargs)
 
 The arguments to be passed to the crud handlers.
 
@@ -362,7 +362,7 @@ The arguments to be passed to the crud handlers.
 
 ### AdditionalCrudArgs
 
-> **AdditionalCrudArgs**\<\>: `object`
+> **AdditionalCrudArgs**\<\> = `object`
 
 #### Type Parameters
 
@@ -374,7 +374,7 @@ The arguments to be passed to the crud handlers.
 
 ### CreateArgs
 
-> **CreateArgs**\<\>: [`CreateArgsRaw`](objectCrud.md#createargsraw) & [`AdditionalCrudArgs`](objectCrud.md#additionalcrudargs)
+> **CreateArgs**\<\> = [`CreateArgsRaw`](#createargsraw) & [`AdditionalCrudArgs`](#additionalcrudargs)
 
 #### Type Parameters
 
@@ -382,7 +382,7 @@ The arguments to be passed to the crud handlers.
 
 ### CrudCreateFn()
 
-> **CrudCreateFn**\<\>: (`args`) => [`CrudResponse`](objectCrud.md#crudresponse)
+> **CrudCreateFn**\<\> = (`args`) => [`CrudResponse`](#crudresponse)
 
 #### Type Parameters
 
@@ -390,19 +390,19 @@ The arguments to be passed to the crud handlers.
 
 ##### args
 
-[`CreateArgs`](objectCrud.md#createargs)
+[`CreateArgs`](#createargs)
 
 The arguments to be passed to the create function.
 
 #### Returns
 
-[`CrudResponse`](objectCrud.md#crudresponse)
+[`CrudResponse`](#crudresponse)
 
 ***
 
 ### CrudDeleteFn()
 
-> **CrudDeleteFn**\<\>: (`args`) => [`CrudResponse`](objectCrud.md#crudresponse)
+> **CrudDeleteFn**\<\> = (`args`) => [`CrudResponse`](#crudresponse)
 
 #### Type Parameters
 
@@ -410,19 +410,19 @@ The arguments to be passed to the create function.
 
 ##### args
 
-[`DeleteArgs`](objectCrud.md#deleteargs)
+[`DeleteArgs`](#deleteargs)
 
 The arguments to be passed to the delete function.
 
 #### Returns
 
-[`CrudResponse`](objectCrud.md#crudresponse)
+[`CrudResponse`](#crudresponse)
 
 ***
 
 ### CrudObjectExecuteActionFn()
 
-> **CrudObjectExecuteActionFn**\<\>: (`args`) => [`CrudResponse`](objectCrud.md#crudresponse)
+> **CrudObjectExecuteActionFn**\<\> = (`args`) => [`CrudResponse`](#crudresponse)
 
 #### Type Parameters
 
@@ -430,19 +430,19 @@ The arguments to be passed to the delete function.
 
 ##### args
 
-[`ObjectExecuteActionArgs`](objectCrud.md#objectexecuteactionargs)
+[`ObjectExecuteActionArgs`](#objectexecuteactionargs)
 
 The arguments to be passed to the executeAction function.
 
 #### Returns
 
-[`CrudResponse`](objectCrud.md#crudresponse)
+[`CrudResponse`](#crudresponse)
 
 ***
 
 ### CrudObjectSubscribeFn()
 
-> **CrudObjectSubscribeFn**\<\>: (`args`) => [`CancellablePromise`](../utils/cancellablePromise.md#cancellablepromiset)
+> **CrudObjectSubscribeFn**\<\> = (`args`) => [`CancellablePromise`](../utils/cancellablePromise.md#cancellablepromise)
 
 #### Type Parameters
 
@@ -450,19 +450,19 @@ The arguments to be passed to the executeAction function.
 
 ##### args
 
-[`ObjectSubscribeArgs`](objectCrud.md#objectsubscribeargs)
+[`ObjectSubscribeArgs`](#objectsubscribeargs)
 
 The arguments to be passed to the subscribe function.
 
 #### Returns
 
-[`CancellablePromise`](../utils/cancellablePromise.md#cancellablepromiset)
+[`CancellablePromise`](../utils/cancellablePromise.md#cancellablepromise)
 
 ***
 
 ### CrudPatchFn()
 
-> **CrudPatchFn**\<\>: (`args`) => [`CrudResponse`](objectCrud.md#crudresponse)
+> **CrudPatchFn**\<\> = (`args`) => [`CrudResponse`](#crudresponse)
 
 #### Type Parameters
 
@@ -470,19 +470,19 @@ The arguments to be passed to the subscribe function.
 
 ##### args
 
-[`PartialArgs`](objectCrud.md#partialargs)
+[`PartialArgs`](#partialargs)
 
 The arguments to be passed to the patch function.
 
 #### Returns
 
-[`CrudResponse`](objectCrud.md#crudresponse)
+[`CrudResponse`](#crudresponse)
 
 ***
 
 ### CrudResponse
 
-> **CrudResponse**\<\>: [`MaybeCancellablePromise`](../utils/cancellablePromise.md#maybecancellablepromiset)
+> **CrudResponse**\<\> = [`MaybeCancellablePromise`](../utils/cancellablePromise.md#maybecancellablepromise)
 
 #### Type Parameters
 
@@ -490,7 +490,7 @@ The arguments to be passed to the patch function.
 
 ### CrudRetrieveFn()
 
-> **CrudRetrieveFn**\<\>: (`args`) => [`CrudResponse`](objectCrud.md#crudresponse)
+> **CrudRetrieveFn**\<\> = (`args`) => [`CrudResponse`](#crudresponse)
 
 #### Type Parameters
 
@@ -498,19 +498,19 @@ The arguments to be passed to the patch function.
 
 ##### args
 
-[`RetrieveArgs`](objectCrud.md#retrieveargs)
+[`RetrieveArgs`](#retrieveargs)
 
 The arguments to be passed to the retrieve function.
 
 #### Returns
 
-[`CrudResponse`](objectCrud.md#crudresponse)
+[`CrudResponse`](#crudresponse)
 
 ***
 
 ### CrudSubscribeCallback()
 
-> **CrudSubscribeCallback**\<\>: (`data`, `action`) => `any`
+> **CrudSubscribeCallback**\<\> = (`data`, `action`) => `any`
 
 #### Type Parameters
 
@@ -536,7 +536,7 @@ The action that was performed.
 
 ### CrudUpdateFn()
 
-> **CrudUpdateFn**\<\>: (`args`) => [`CrudResponse`](objectCrud.md#crudresponse)
+> **CrudUpdateFn**\<\> = (`args`) => [`CrudResponse`](#crudresponse)
 
 #### Type Parameters
 
@@ -544,19 +544,19 @@ The action that was performed.
 
 ##### args
 
-[`UpdateArgs`](objectCrud.md#updateargs)
+[`UpdateArgs`](#updateargs)
 
 The arguments to be passed to the update function.
 
 #### Returns
 
-[`CrudResponse`](objectCrud.md#crudresponse)
+[`CrudResponse`](#crudresponse)
 
 ***
 
 ### DeleteArgs
 
-> **DeleteArgs**\<\>: [`DeleteArgsRaw`](objectCrud.md#deleteargsraw) & [`AdditionalCrudArgs`](objectCrud.md#additionalcrudargs)
+> **DeleteArgs**\<\> = [`DeleteArgsRaw`](#deleteargsraw) & [`AdditionalCrudArgs`](#additionalcrudargs)
 
 #### Type Parameters
 
@@ -564,7 +564,7 @@ The arguments to be passed to the update function.
 
 ### ObjectExecuteActionArgs
 
-> **ObjectExecuteActionArgs**\<\>: [`ObjectExecuteActionArgsRaw`](objectCrud.md#objectexecuteactionargsraw) & [`AdditionalCrudArgs`](objectCrud.md#additionalcrudargs)
+> **ObjectExecuteActionArgs**\<\> = [`ObjectExecuteActionArgsRaw`](#objectexecuteactionargsraw) & [`AdditionalCrudArgs`](#additionalcrudargs)
 
 #### Type Parameters
 
@@ -572,7 +572,7 @@ The arguments to be passed to the update function.
 
 ### ObjectSubscribeArgs
 
-> **ObjectSubscribeArgs**\<\>: [`ObjectSubscribeArgsRaw`](objectCrud.md#objectsubscribeargsraw) & [`CommonRunTracking`](../use/cancellableIntent.md#commonruntracking) & [`AdditionalCrudArgs`](objectCrud.md#additionalcrudargs)
+> **ObjectSubscribeArgs**\<\> = [`ObjectSubscribeArgsRaw`](#objectsubscribeargsraw) & [`CommonRunTracking`](../use/cancellableIntent.md#commonruntracking) & [`AdditionalCrudArgs`](#additionalcrudargs)
 
 #### Type Parameters
 
@@ -580,7 +580,7 @@ The arguments to be passed to the update function.
 
 ### ObjectTarget
 
-> **ObjectTarget**\<\>: [`ObjectTargetProperties`](objectCrud.md#objecttargetproperties) & [`ObjectCrudHandlers`](objectCrud.md#objectcrudhandlers)
+> **ObjectTarget**\<\> = [`ObjectTargetProperties`](#objecttargetproperties) & [`ObjectCrudHandlers`](#objectcrudhandlers)
 
 #### Type Parameters
 
@@ -588,7 +588,7 @@ The arguments to be passed to the update function.
 
 ### PartialArgs
 
-> **PartialArgs**\<\>: [`PartialArgsRaw`](objectCrud.md#partialargsraw) & [`AdditionalCrudArgs`](objectCrud.md#additionalcrudargs)
+> **PartialArgs**\<\> = [`PartialArgsRaw`](#partialargsraw) & [`AdditionalCrudArgs`](#additionalcrudargs)
 
 #### Type Parameters
 
@@ -596,7 +596,7 @@ The arguments to be passed to the update function.
 
 ### RetrieveArgs
 
-> **RetrieveArgs**\<\>: [`RetrieveArgsRaw`](objectCrud.md#retrieveargsraw) & `Partial`\<[`CommonRunTracking`](../use/cancellableIntent.md#commonruntracking)\> & [`AdditionalCrudArgs`](objectCrud.md#additionalcrudargs)
+> **RetrieveArgs**\<\> = [`RetrieveArgsRaw`](#retrieveargsraw) & `Partial`\<[`CommonRunTracking`](../use/cancellableIntent.md#commonruntracking)\> & [`AdditionalCrudArgs`](#additionalcrudargs)
 
 #### Type Parameters
 
@@ -604,7 +604,7 @@ The arguments to be passed to the update function.
 
 ### TargetArgs
 
-> **TargetArgs**\<\>: `object`
+> **TargetArgs**\<\> = `object`
 
 #### Type Parameters
 
@@ -616,7 +616,7 @@ The arguments to be passed to the update function.
 
 ### UpdateArgs
 
-> **UpdateArgs**\<\>: [`UpdateArgsRaw`](objectCrud.md#updateargsraw) & [`AdditionalCrudArgs`](objectCrud.md#additionalcrudargs)
+> **UpdateArgs**\<\> = [`UpdateArgsRaw`](#updateargsraw) & [`AdditionalCrudArgs`](#additionalcrudargs)
 
 #### Type Parameters
 
@@ -624,7 +624,7 @@ The arguments to be passed to the update function.
 
 ### defaultObjectCrud
 
-> `const` **defaultObjectCrud**: `Readonly`\<[`ObjectCrudHandlers`](objectCrud.md#objectcrudhandlers)\>
+> `const` **defaultObjectCrud**: `Readonly`\<[`ObjectCrudHandlers`](#objectcrudhandlers)\>
 
 The default object crud handlers.
 
@@ -644,7 +644,7 @@ The reactive object you want to add the resulting crud to.
 
 ###### args
 
-[`TargetArgs`](objectCrud.md#targetargs)
+[`TargetArgs`](#targetargs)
 
 The arguments to be passed to the crud handlers.
 
@@ -654,19 +654,19 @@ The options for the reactive crud object.
 
 ###### handlers?
 
-[`ObjectCrudHandlers`](objectCrud.md#objectcrudhandlers)
+[`ObjectCrudHandlers`](#objectcrudhandlers)
 
 Any functions to override the default crud functions.
 
 ###### props?
 
-\{ `target`: [`TargetArgs`](objectCrud.md#targetargs); \}
+\{ `target?`: [`TargetArgs`](#targetargs); \}
 
 The props with any passed target.
 
 ###### props.target?
 
-[`TargetArgs`](objectCrud.md#targetargs)
+[`TargetArgs`](#targetargs)
 
 The arguments to be passed to the crud handlers.
 
@@ -690,7 +690,7 @@ Set the object crud handlers.
 
 ##### options
 
-[`ObjectTarget`](objectCrud.md#objecttarget)
+[`ObjectTarget`](#objecttarget)
 
 The options for the object crud handlers.
 

@@ -32,7 +32,9 @@
         "prepare": "npx --no-install husky",
         "docs": "node make_type_doc.js",
         "docs:check": "node check_type_doc.js",
-        "docs:clean": "node clean_type_doc.js"
+        "docs:clean": "node clean_type_doc.js",
+        "types": "node make_types.js",
+        "types:check": "node check_types.js"
     },
     "repository": {
         "type": "git",
@@ -70,8 +72,8 @@
         "jsdom": "^26.0.0",
         "lint-staged": "^15.2.8",
         "prettier": "^3.3.3",
-        "typedoc": "^0.27.1",
-        "typedoc-plugin-markdown": "^4.3.0",
+        "typedoc": "^0.28.15",
+        "typedoc-plugin-markdown": "^4.9.0",
         "typescript": "^5.5.4",
         "vitest": "^3.1.2"
     },

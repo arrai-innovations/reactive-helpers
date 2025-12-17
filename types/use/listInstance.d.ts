@@ -24,7 +24,7 @@
 /**
  * The objects by pk.
  *
- * @typedef {{[pk: string]: import('../use/objectInstance.js').ExistingCrudObject}} ObjectsByPk
+ * @typedef {{[pk: import('../config/commonCrud.js').Pk]: import('../use/objectInstance.js').ExistingCrudObject}} ObjectsByPk
  */
 /**
  * The objects in order, based on .order & .objects.
@@ -34,7 +34,7 @@
 /**
  * The order of the objects in the list.
  *
- * @typedef {import('vue').ComputedRef<string[]>} ListOrder
+ * @typedef {import('vue').ComputedRef<import('../config/commonCrud.js').Pk[]>} ListOrder
  */
 /**
  * @typedef {object} ListInstanceRawStateCrud
@@ -45,7 +45,7 @@
  * @property {import('../config/listCrud.js').CrudExecuteActionFn} executeAction - The execute action function.
  */
 /**
- * @typedef {Map<string, import('vue').Reactive<import('../use/objectInstance.js').ExistingCrudObject>>} ObjectsMap
+ * @typedef {Map<import('../config/commonCrud.js').Pk, import('vue').Reactive<import('../use/objectInstance.js').ExistingCrudObject>>} ObjectsMap
  */
 /**
  * @typedef {object} PaginateInfo
@@ -106,13 +106,13 @@
  * @property {PushObjectsFn} pushObjects - Customizable callback for handling new objects per page.
  * @property {(object: import('../use/objectInstance.js').ExistingCrudObject) => void} addListObject - Adds an object to the list.
  * @property {(object: import('../use/objectInstance.js').ExistingCrudObject) => void} updateListObject - Updates an object in the list.
- * @property {(objectId: string) => void} deleteListObject - Deletes an object from the list by pk.
+ * @property {(objectId: import('../config/commonCrud.js').PkInput) => void} deleteListObject - Deletes an object from the list by pk.
  * @property {(options?: ClearListOptions) => void} clearList - Clears the list objects and optionally keeps pagination, totals,
  *  or error state.
- * @property {() => string} getFakePk - Generates a unique fake pk for use within the list.
- * @property {(args?: {[key: string]: any}) => import('../utils/cancellablePromise.js').MaybeCancellablePromise<boolean|never>} list - Initiates a fetch to retrieve objects according to the CRUD configuration, returning a promise to a boolean indicating success.
- * @property {(args?: {pks?: string[], [key: string]: any}) => Promise<boolean>} bulkDelete - Deletes objects from the list by pk, returning a promise to a boolean indicating success.
- * @property {(args: {action: string, pks?: string[], [key: string]: any}) => Promise<object|string|false>} executeAction - Initiates an action on all objects in the list, returning the response, or false if the action failed.
+ * @property {() => import('../config/commonCrud.js').Pk} getFakePk - Generates a unique fake pk for use within the list.
+ * @property {(args?: import('../config/listCrud.js').AdditionalListArgs) => import('../utils/cancellablePromise.js').MaybeCancellablePromise<boolean|never>} list - Initiates a fetch to retrieve objects according to the CRUD configuration, returning a promise to a boolean indicating success.
+ * @property {(args?: {pks?: import('../config/commonCrud.js').Pk[]} & import('../config/listCrud.js').AdditionalListArgs) => Promise<boolean>} bulkDelete - Deletes objects from the list by pk, returning a promise to a boolean indicating success.
+ * @property {(args: {action: string, pks?: import('../config/commonCrud.js').Pk[]} & import('../config/listCrud.js').AdditionalListArgs) => Promise<object|string|boolean|null>} executeAction - Initiates an action on all objects in the list, returning the response, or null if the action failed.
  * @property {(info: PaginateInfo) => void} setPaginateInfo - The method to update pagination information.
  * @property {(total: ColumnTotals) => void} setColumnTotals - The method to update column totals.
  */
@@ -251,7 +251,7 @@ export type ListInstanceOptions = {
  * The objects by pk.
  */
 export type ObjectsByPk = {
-    [pk: string]: import("../use/objectInstance.js").ExistingCrudObject;
+    [pk: import("../config/commonCrud.js").Pk]: import("../use/objectInstance.js").ExistingCrudObject;
 };
 /**
  * The objects in order, based on .order & .objects.
@@ -260,7 +260,7 @@ export type ObjectsInOrder = import("vue").ComputedRef<import("../use/objectInst
 /**
  * The order of the objects in the list.
  */
-export type ListOrder = import("vue").ComputedRef<string[]>;
+export type ListOrder = import("vue").ComputedRef<import("../config/commonCrud.js").Pk[]>;
 export type ListInstanceRawStateCrud = {
     /**
      * - The arguments to be passed to the crud handlers.
@@ -283,7 +283,7 @@ export type ListInstanceRawStateCrud = {
      */
     executeAction: import("../config/listCrud.js").CrudExecuteActionFn;
 };
-export type ObjectsMap = Map<string, import("vue").Reactive<import("../use/objectInstance.js").ExistingCrudObject>>;
+export type ObjectsMap = Map<import("../config/commonCrud.js").Pk, import("vue").Reactive<import("../use/objectInstance.js").ExistingCrudObject>>;
 export type PaginateInfo = {
     /**
      * - The total records.
@@ -391,7 +391,7 @@ export type ListInstanceMyFunctions = {
     /**
      * - Deletes an object from the list by pk.
      */
-    deleteListObject: (objectId: string) => void;
+    deleteListObject: (objectId: import("../config/commonCrud.js").PkInput) => void;
     /**
      * - Clears the list objects and optionally keeps pagination, totals,
      * or error state.
@@ -400,28 +400,24 @@ export type ListInstanceMyFunctions = {
     /**
      * - Generates a unique fake pk for use within the list.
      */
-    getFakePk: () => string;
+    getFakePk: () => import("../config/commonCrud.js").Pk;
     /**
      * - Initiates a fetch to retrieve objects according to the CRUD configuration, returning a promise to a boolean indicating success.
      */
-    list: (args?: {
-        [key: string]: any;
-    }) => import("../utils/cancellablePromise.js").MaybeCancellablePromise<boolean | never>;
+    list: (args?: import("../config/listCrud.js").AdditionalListArgs) => import("../utils/cancellablePromise.js").MaybeCancellablePromise<boolean | never>;
     /**
      * - Deletes objects from the list by pk, returning a promise to a boolean indicating success.
      */
     bulkDelete: (args?: {
-        pks?: string[];
-        [key: string]: any;
-    }) => Promise<boolean>;
+        pks?: import("../config/commonCrud.js").Pk[];
+    } & import("../config/listCrud.js").AdditionalListArgs) => Promise<boolean>;
     /**
-     * - Initiates an action on all objects in the list, returning the response, or false if the action failed.
+     * - Initiates an action on all objects in the list, returning the response, or null if the action failed.
      */
     executeAction: (args: {
         action: string;
-        pks?: string[];
-        [key: string]: any;
-    }) => Promise<object | string | false>;
+        pks?: import("../config/commonCrud.js").Pk[];
+    } & import("../config/listCrud.js").AdditionalListArgs) => Promise<object | string | boolean | null>;
     /**
      * - The method to update pagination information.
      */

@@ -32,7 +32,7 @@ CRUD handlers and their configurations for the list.
 
 ###### crud.args
 
-> **args**: `Reactive`\<\{\} \| [`TargetArgs`](../config/objectCrud.md#targetargs)\>
+> **args**: `Reactive`\<\{ \} \| [`TargetArgs`](../config/objectCrud.md#targetargs)\>
 
 The arguments to be passed to the crud handlers.
 
@@ -140,7 +140,7 @@ Whether the subscription is active.
 
 ##### relatedObjectsRules
 
-> **relatedObjectsRules**: `Ref`\<[`ListRelatedRules`](listRelated.md#listrelatedrules), [`ListRelatedRules`](listRelated.md#listrelatedrules)\>
+> **relatedObjectsRules**: `Ref`\<[`ListRelatedRules`](#listrelatedrules), [`ListRelatedRules`](#listrelatedrules)\>
 
 The rules for the related objects.
 
@@ -170,7 +170,7 @@ CRUD handlers and their configurations for the list.
 
 ###### crud.args
 
-> **args**: `Reactive`\<\{\} \| [`TargetArgs`](../config/objectCrud.md#targetargs)\>
+> **args**: `Reactive`\<\{ \} \| [`TargetArgs`](../config/objectCrud.md#targetargs)\>
 
 The arguments to be passed to the crud handlers.
 
@@ -296,7 +296,7 @@ CRUD handlers and their configurations for the list.
 
 ###### crud.args
 
-> **args**: `Reactive`\<\{\} \| [`TargetArgs`](../config/objectCrud.md#targetargs)\>
+> **args**: `Reactive`\<\{ \} \| [`TargetArgs`](../config/objectCrud.md#targetargs)\>
 
 The arguments to be passed to the crud handlers.
 
@@ -434,7 +434,7 @@ Flags whether the watch on parent state objects is currently active, ensuring up
 
 ###### relatedObjectsRules
 
-> **relatedObjectsRules**: [`ListRelatedRules`](listRelated.md#listrelatedrules)
+> **relatedObjectsRules**: [`ListRelatedRules`](#listrelatedrules)
 
 Defines the rules for establishing relationships, such as foreign key links and sorting orders.
 
@@ -516,7 +516,7 @@ Flags whether the watch on parent state objects is currently active, ensuring up
 
 ##### relatedObjectsRules
 
-> **relatedObjectsRules**: [`ListRelatedRules`](listRelated.md#listrelatedrules)
+> **relatedObjectsRules**: [`ListRelatedRules`](#listrelatedrules)
 
 Defines the rules for establishing relationships, such as foreign key links and sorting orders.
 
@@ -567,7 +567,7 @@ Specifies the foreign key used to link objects across lists. Planned to be renam
 
 ### ListRelated
 
-> **ListRelated**\<\>: [`ListRelatedProperties`](listRelated.md#listrelatedproperties)
+> **ListRelated**\<\> = [`ListRelatedProperties`](#listrelatedproperties)
 
 #### Type Parameters
 
@@ -575,7 +575,7 @@ Specifies the foreign key used to link objects across lists. Planned to be renam
 
 ### ListRelatedParentRawState
 
-> **ListRelatedParentRawState**\<\>: [`ListInstanceRawState`](listInstance.md#listinstancerawstate) & `Partial`\<[`ListSubscriptionRawState`](listSubscription.md#listsubscriptionrawstate)\>
+> **ListRelatedParentRawState**\<\> = [`ListInstanceRawState`](listInstance.md#listinstancerawstate) & `Partial`\<[`ListSubscriptionRawState`](listSubscription.md#listsubscriptionrawstate)\>
 
 #### Type Parameters
 
@@ -583,7 +583,7 @@ Specifies the foreign key used to link objects across lists. Planned to be renam
 
 ### ListRelatedParentState
 
-> **ListRelatedParentState**\<\>: `UnwrapNestedRefs`
+> **ListRelatedParentState**\<\> = `UnwrapNestedRefs`
 
 #### Type Parameters
 
@@ -591,19 +591,19 @@ Specifies the foreign key used to link objects across lists. Planned to be renam
 
 ### ListRelatedRules
 
-> **ListRelatedRules**\<\>: `object`
+> **ListRelatedRules**\<\> = `object`
 
 #### Type Parameters
 
 #### Index Signature
 
-\[`rule`: `string`\]: [`ListRelatedRule`](listRelated.md#listrelatedrule)
+\[`rule`: `string`\]: [`ListRelatedRule`](#listrelatedrule)
 
 ***
 
 ### ListRelatedState
 
-> **ListRelatedState**\<\>: `UnwrapNestedRefs`
+> **ListRelatedState**\<\> = `UnwrapNestedRefs`
 
 #### Type Parameters
 
@@ -611,7 +611,7 @@ Specifies the foreign key used to link objects across lists. Planned to be renam
 
 ### useListRelated()
 
-> **useListRelated**(`options`): [`ListRelatedProperties`](listRelated.md#listrelatedproperties)
+> **useListRelated**(`options`): [`ListRelatedProperties`](#listrelatedproperties)
 
 Initializes and returns an instance of a related objects manager. This function sets up reactive states
 and computations that dynamically adjust as the parent list's state changes. It uses defined rules
@@ -622,14 +622,14 @@ state are reflected in the relationships defined by the rules.
 
 ##### options
 
-[`ListRelatedOptions`](listRelated.md#listrelatedoptions)
+[`ListRelatedOptions`](#listrelatedoptions)
 
 The configuration options including the parent state and rules for related
  objects.
 
 #### Returns
 
-[`ListRelatedProperties`](listRelated.md#listrelatedproperties)
+[`ListRelatedProperties`](#listrelatedproperties)
 
 - A reactive instance that manages related objects, providing real-time updates and
 maintaining the integrity of object relationships as per the specified rules.

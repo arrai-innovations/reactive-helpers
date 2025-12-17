@@ -1,9 +1,9 @@
 import { assignReactiveObject } from "../utils/assignReactiveObject.js";
 import { useCancellableIntent } from "./cancellableIntent.js";
 import { useObjectInstance } from "./objectInstance.js";
-import { computed, reactive, ref, toRef, toRefs } from "vue";
+import { computed, reactive, readonly, ref, toRefs } from "vue";
 import { refIfReactive } from "../utils/refIfReactive.js";
-import { useProxyError } from "./proxyError.js";
+import { asWatchableError, useProxyError } from "./proxyError.js";
 import { loadingCombine } from "../utils/loadingCombine.js";
 
 /**
@@ -91,14 +91,18 @@ export const objectSubscriptionFunctions = ["clearError"];
  */
 
 /**
- * Options for initializing an object subscription, including reactive props and non-reactive handlers.
- *
- * @typedef {object & import('./objectInstance.js').ObjectInstanceOptions} ObjectSubscriptionOptions
+ * @typedef {object} ObjectSubscriptionOwnOptions
  * @property {import('./objectInstance.js').ObjectInstance} [objectInstance] - An object instance to use instead of creating a new one.
  * @property {import('vue').UnwrapNestedRefs<(
  *     ObjectSubscriptionRawProps & import('./objectInstance.js').ObjectInstanceRawProps
  * )>} props - The reactive args to be passed to useObjectInstance.
- * @property {import('./objectInstance.js').ObjectInstanceHandlers} [handlers] - The handlers to be passed to useObjectInstance.
+ * @property {import('../config/objectCrud.js').ObjectCrudHandlers} [handlers] - The handlers to be passed to useObjectInstance.
+ */
+
+/**
+ * Options for initializing an object subscription, including reactive props and non-reactive handlers.
+ *
+ * @typedef {ObjectSubscriptionOwnOptions & import('./objectInstance.js').ObjectInstanceOptions} ObjectSubscriptionOptions
  */
 
 /**
@@ -200,14 +204,8 @@ export function useObjectSubscription({ objectInstance, props, handlers }) {
     const intendToRetrieve = refIfReactive(props, "intendToRetrieve", false);
     const intendToSubscribe = refIfReactive(props, "intendToSubscribe", false);
     const parentState = objectInstance.state;
-    /** @type {import('./proxyError.js').WatchableErrors} */
-    const errorStates = ref([
-        {
-            error: toRef(parentState, "error"),
-            errored: toRef(parentState, "errored"),
-            clearError: objectInstance.clearError,
-        },
-    ]);
+    /** @type {import('vue').Ref<import('./proxyError.js').WatchableError[]>} */
+    const errorStates = ref([asWatchableError(objectInstance)]);
     const proxyError = useProxyError(errorStates);
     const {
         crud: parentCrud,
@@ -249,7 +247,7 @@ export function useObjectSubscription({ objectInstance, props, handlers }) {
                 }
             };
             const parentState = objectInstance.state;
-            return parentState.crud.subscribe({
+            const subscribePromise = parentState.crud.subscribe({
                 runId,
                 isCurrentRun,
                 target: parentState.crud.args,
@@ -257,8 +255,17 @@ export function useObjectSubscription({ objectInstance, props, handlers }) {
                 pkKey: parentState.pkKey,
                 params: state.params,
                 callback: subscribeCallback,
-                isCancelled,
+                isCancelled: readonly(isCancelled),
             });
+            if (subscribePromise?.cancel) {
+                const originalCancel = subscribePromise.cancel.bind(subscribePromise);
+                const cancelWithFlag = async (/** @type {any} */ reason) => {
+                    isCancelled.value = true;
+                    return originalCancel(reason);
+                };
+                subscribePromise.cancel = cancelWithFlag;
+            }
+            return subscribePromise;
         },
         watchArguments: {
             intendToSubscribe,
@@ -272,16 +279,8 @@ export function useObjectSubscription({ objectInstance, props, handlers }) {
         // subscriptions persist until cancelled
         clearActiveOnResolved: false,
     });
-    errorStates.value.push({
-        error: toRef(retrieveIntent.state, "error"),
-        errored: toRef(retrieveIntent.state, "errored"),
-        clearError: retrieveIntent.clearError,
-    });
-    errorStates.value.push({
-        error: toRef(subscribeIntent.state, "error"),
-        errored: toRef(subscribeIntent.state, "errored"),
-        clearError: subscribeIntent.clearError,
-    });
+    errorStates.value.push(asWatchableError(retrieveIntent));
+    errorStates.value.push(asWatchableError(subscribeIntent));
     /** @type {ObjectSubscriptionState} */
     const state = reactive({
         crud: parentCrud,

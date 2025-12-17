@@ -10,7 +10,7 @@
 
 ### tryOnActivated()
 
-> **tryOnActivated**(`fn`, `target`?): `void`
+> **tryOnActivated**(`fn`, `target?`): `void`
 
 If there is an active component, set up an onActivated hook.
 
@@ -36,7 +36,7 @@ The target to call the function on.
 
 ### tryOnDeactivated()
 
-> **tryOnDeactivated**(`fn`, `target`?): `void`
+> **tryOnDeactivated**(`fn`, `target?`): `void`
 
 If there is an active component, set up an onDeactivated hook.
 

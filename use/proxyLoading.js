@@ -1,22 +1,35 @@
-import { computed, readonly, unref } from "vue";
+import { computed, unref } from "vue";
 import { loadingCombine } from "../utils/loadingCombine.js";
 
 /**
- * @typedef {Pick<import('./loading.js').LoadingStatus, "loading">} ReadonlyLoadingStatus
- * @typedef {import("vue").Ref<ReadonlyLoadingStatus>} RefLoadingStatus
- * @typedef {ReadonlyLoadingStatus | RefLoadingStatus} WatchableLoading
+ * @typedef {import('./loading.js').LoadingProperties | import("vue").Reactive<import('./loading.js').LoadingProperties>} WatchableLoading
+ * @typedef {import('vue').MaybeRef<WatchableLoading>} MaybeRefWatchableLoading
+ * @typedef {import('./loading.js').LoadingProperties} ReadonlyLoadingStatus
  */
 
 /**
  * A composable function for aggregating loading state across multiple sources.
  *
- * @param {WatchableLoading[]} loadings - The loading states to monitor.
+ * @param {import('vue').MaybeRef<MaybeRefWatchableLoading[]>} loadings - The loading states to monitor.
  * @returns {ReadonlyLoadingStatus} An object containing the aggregated loading field.
  */
 export function useProxyLoading(loadings) {
-    const loading = computed(() => loadingCombine(...unref(loadings).map((l) => unref(unref(l).loading))));
-
     return {
-        loading: readonly(loading),
+        loading: computed(() => loadingCombine(...unref(loadings).map((l) => unref(unref(l).loading)))),
     };
+}
+
+/**
+ * Adapt an object with reactive loading state into a WatchableLoading shape.
+ * Accepts either an object with a `state` property or an object that already exposes `loading`.
+ *
+ * @param {import('vue').MaybeRef<{ state: WatchableLoading } | WatchableLoading>} source - The source object to adapt.
+ * @returns {WatchableLoading} - The adapted WatchableLoading object.
+ */
+export function asWatchableLoading(source) {
+    const unwrappedSource = unref(source);
+    return (
+        /** @type {WatchableLoading} */
+        "state" in unwrappedSource ? unwrappedSource.state : unwrappedSource
+    );
 }

@@ -20,7 +20,7 @@ The list being filtered.
 
 ##### props?
 
-> `optional` **props**: [`ListSearchProps`](listSearch.md#listsearchprops)
+> `optional` **props**: [`ListSearchProps`](#listsearchprops)
 
 Reactive properties.
 
@@ -104,7 +104,7 @@ CRUD handlers and their configurations for the list.
 
 ###### crud.args
 
-> **args**: `Reactive`\<\{\} \| [`TargetArgs`](../config/objectCrud.md#targetargs)\>
+> **args**: `Reactive`\<\{ \} \| [`TargetArgs`](../config/objectCrud.md#targetargs)\>
 
 The arguments to be passed to the crud handlers.
 
@@ -390,7 +390,7 @@ CRUD handlers and their configurations for the list.
 
 ###### crud.args
 
-> **args**: `Reactive`\<\{\} \| [`TargetArgs`](../config/objectCrud.md#targetargs)\>
+> **args**: `Reactive`\<\{ \} \| [`TargetArgs`](../config/objectCrud.md#targetargs)\>
 
 The arguments to be passed to the crud handlers.
 
@@ -641,7 +641,7 @@ FlexSearch.Search options.
 
 ##### textSearchRules
 
-> **textSearchRules**: [`TextSearchRules`](listSearch.md#textsearchrules-3)
+> **textSearchRules**: [`TextSearchRules`](#textsearchrules-3)
 
 Rules for what to search for. Keys are the keys to search for, values are functions that take the object and return The value to search for.
 
@@ -760,7 +760,7 @@ The current value used for searching.
 
 ### ListSearch
 
-> **ListSearch**\<\>: [`ListSearchProperties`](listSearch.md#listsearchproperties)
+> **ListSearch**\<\> = [`ListSearchProperties`](#listsearchproperties)
 
 #### Type Parameters
 
@@ -768,7 +768,7 @@ The current value used for searching.
 
 ### ListSearchParentRawState
 
-> **ListSearchParentRawState**\<\>: [`ListInstanceRawState`](listInstance.md#listinstancerawstate) & `Partial`\<[`ListSubscriptionRawState`](listSubscription.md#listsubscriptionrawstate)\> & `Partial`\<[`ListRelatedRawState`](listRelated.md#listrelatedrawstate)\> & `Partial`\<[`ListCalculatedRawState`](listCalculated.md#listcalculatedrawstate)\> & `Partial`\<[`ListFilterRawState`](listFilter.md#listfilterrawstate)\>
+> **ListSearchParentRawState**\<\> = [`ListInstanceRawState`](listInstance.md#listinstancerawstate) & `Partial`\<[`ListSubscriptionRawState`](listSubscription.md#listsubscriptionrawstate)\> & `Partial`\<[`ListRelatedRawState`](listRelated.md#listrelatedrawstate)\> & `Partial`\<[`ListCalculatedRawState`](listCalculated.md#listcalculatedrawstate)\> & `Partial`\<[`ListFilterRawState`](listFilter.md#listfilterrawstate)\>
 
 #### Type Parameters
 
@@ -776,7 +776,7 @@ The current value used for searching.
 
 ### ListSearchParentState
 
-> **ListSearchParentState**\<\>: `UnwrapNestedRefs`
+> **ListSearchParentState**\<\> = `UnwrapNestedRefs`
 
 The parent state for a list search.
 
@@ -786,7 +786,7 @@ The parent state for a list search.
 
 ### ListSearchParentStateToRefs
 
-> **ListSearchParentStateToRefs**\<\>: `ToRefs`
+> **ListSearchParentStateToRefs**\<\> = `ToRefs`
 
 #### Type Parameters
 
@@ -794,7 +794,7 @@ The parent state for a list search.
 
 ### ListSearchState
 
-> **ListSearchState**\<\>: `UnwrapNestedRefs`
+> **ListSearchState**\<\> = `UnwrapNestedRefs`
 
 The state for a list search.
 
@@ -804,7 +804,7 @@ The state for a list search.
 
 ### TextSearchRules
 
-> **TextSearchRules**\<\>: `string` \| `string`[] \| `object`[]
+> **TextSearchRules**\<\> = `string` \| `string`[] \| `object`[]
 
 #### Type Parameters
 
@@ -812,7 +812,7 @@ The state for a list search.
 
 ### useListSearch()
 
-> **useListSearch**(`options`): [`ListSearchProperties`](listSearch.md#listsearchproperties)
+> **useListSearch**(`options`): [`ListSearchProperties`](#listsearchproperties)
 
 Creates a search functionality instance for a list, configuring reactive state and dependencies to
 dynamically update visible items based on provided search criteria and rules.
@@ -821,13 +821,13 @@ dynamically update visible items based on provided search criteria and rules.
 
 ##### options
 
-[`ListSearchInstanceOptions`](listSearch.md#listsearchinstanceoptions)
+[`ListSearchInstanceOptions`](#listsearchinstanceoptions)
 
 Configuration for initializing the list search.
 
 #### Returns
 
-[`ListSearchProperties`](listSearch.md#listsearchproperties)
+[`ListSearchProperties`](#listsearchproperties)
 
 The initialized list search instance with reactive state and utilities for search management.
 

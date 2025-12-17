@@ -18,9 +18,9 @@ Custom error class for use list errors.
 
 #### Constructors
 
-##### new ListError()
+##### Constructor
 
-> **new ListError**(`message`, `code`): [`ListError`](list.md#listerror)
+> **new ListError**(`message`, `code`): [`ListError`](#listerror)
 
 Creates a new ListError.
 
@@ -40,7 +40,7 @@ The error code.
 
 ###### Returns
 
-[`ListError`](list.md#listerror)
+[`ListError`](#listerror)
 
 ###### Overrides
 
@@ -68,7 +68,7 @@ The error code.
 
 ##### managed
 
-> **managed**: [`ListManaged`](list.md#listmanaged)
+> **managed**: [`ListManaged`](#listmanaged)
 
 A readonly reference to the managed list hooks.
 
@@ -132,7 +132,7 @@ CRUD handlers and their configurations for the list.
 
 ###### crud.args
 
-> **args**: `Reactive`\<\{\} \| [`TargetArgs`](../config/objectCrud.md#targetargs)\>
+> **args**: `Reactive`\<\{ \} \| [`TargetArgs`](../config/objectCrud.md#targetargs)\>
 
 The arguments to be passed to the crud handlers.
 
@@ -377,7 +377,7 @@ Additional handlers to be included in the list manager.
 
 ##### props
 
-> **props**: [`ListRawProps`](list.md#listrawprops)
+> **props**: [`ListRawProps`](#listrawprops)
 
 The properties for configuring the list.
 
@@ -493,7 +493,7 @@ Current text query used for filtering the list.
 
 ### ListFunctions
 
-> **ListFunctions**\<\>: [`ListInstanceFunctions`](listInstance.md#listinstancefunctions) & [`ListSubscriptionFunctions`](listSubscription.md#listsubscriptionfunctions)
+> **ListFunctions**\<\> = [`ListInstanceFunctions`](listInstance.md#listinstancefunctions) & [`ListSubscriptionFunctions`](listSubscription.md#listsubscriptionfunctions)
 
 #### Type Parameters
 
@@ -501,11 +501,11 @@ Current text query used for filtering the list.
 
 ### ListManaged
 
-> **ListManaged**\<\>: `object`
+> **ListManaged**\<\> = `object`
 
 #### Type Parameters
 
-#### Type declaration
+#### Type Declaration
 
 ##### listCalculated
 
@@ -539,7 +539,7 @@ Current text query used for filtering the list.
 
 ### ListManager
 
-> **ListManager**\<\>: [`ListFunctions`](list.md#listfunctions) & [`ListManagerProperties`](list.md#listmanagerproperties)
+> **ListManager**\<\> = [`ListFunctions`](#listfunctions) & [`ListManagerProperties`](#listmanagerproperties)
 
 #### Type Parameters
 
@@ -547,7 +547,7 @@ Current text query used for filtering the list.
 
 ### useList()
 
-> **useList**(`options`): [`ListManager`](list.md#listmanager)
+> **useList**(`options`): [`ListManager`](#listmanager)
 
 Creates and manages an enhanced list instance by orchestrating various list-related composables.
 It ensures seamless integration of all list functionalities such as sorting, searching, filtering, and advanced state management.
@@ -556,13 +556,13 @@ It ensures seamless integration of all list functionalities such as sorting, sea
 
 ##### options
 
-[`ListOptions`](list.md#listoptions)
+[`ListOptions`](#listoptions)
 
 The options for the list./.
 
 #### Returns
 
-[`ListManager`](list.md#listmanager)
+[`ListManager`](#listmanager)
 
 - The managed stack of list-related composable functions.
 

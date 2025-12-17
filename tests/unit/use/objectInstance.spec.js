@@ -172,7 +172,7 @@ describe("use/objectInstance.js", function () {
             expect({ ...objectInstance.state.object }).toEqual(crudRetrieveResolved);
             expect(objectInstance.state.crud.retrieve).toHaveBeenCalledWith({
                 target: { stream: "test_stream" },
-                pk: 1,
+                pk: "1",
                 pkKey: "id",
                 params: { fields: ["id", "__str__", "name"] },
                 isCancelled: expect.any(Object),
@@ -220,7 +220,7 @@ describe("use/objectInstance.js", function () {
             expect({ ...objectInstance.state.object }).toEqual(crudRetrieveResolvedNonStandardPrimaryKey);
             expect(objectInstance.state.crud.retrieve).toHaveBeenCalledWith({
                 target: { stream: "test_stream" },
-                pk: 1,
+                pk: "1",
                 pkKey: "unique",
                 params: { fields: ["id", "__str__", "name"] },
                 isCancelled: expect.any(Object),
@@ -249,7 +249,7 @@ describe("use/objectInstance.js", function () {
             expect(objectInstance.state.crud.retrieve).toHaveBeenCalledWith({
                 include: "extras",
                 target: { stream: "test_stream" },
-                pk: 1,
+                pk: "1",
                 pkKey: "id",
                 params: { fields: ["id", "__str__", "name"] },
                 isCancelled: expect.any(Object),
@@ -293,7 +293,7 @@ describe("use/objectInstance.js", function () {
             expect({ ...objectInstance.state.object }).toEqual(crudRetrieveResolved);
             expect(objectInstance.state.crud.retrieve).toHaveBeenCalledWith({
                 target: { stream: "test_stream" },
-                pk: 1,
+                pk: "1",
                 pkKey: "id",
                 params: { fields: ["id", "__str__", "name"] },
                 isCancelled: expect.any(Object),
@@ -337,7 +337,7 @@ describe("use/objectInstance.js", function () {
             expect({ ...objectInstance.state.object }).toEqual({});
             expect(objectInstance.state.crud.retrieve).toHaveBeenCalledWith({
                 target: { stream: "test_stream" },
-                pk: 1,
+                pk: "1",
                 pkKey: "id",
                 params: { fields: ["id", "__str__", "name"] },
                 isCancelled: expect.any(Object),
@@ -383,7 +383,7 @@ describe("use/objectInstance.js", function () {
             expect({ ...objectInstance.state.object }).toEqual({});
             expect(objectInstance.state.crud.retrieve).toHaveBeenCalledWith({
                 target: { stream: "test_stream" },
-                pk: 1,
+                pk: "1",
                 pkKey: "pk",
                 params: { fields: ["id", "__str__", "name"] },
                 isCancelled: expect.any(Object),
@@ -448,7 +448,7 @@ describe("use/objectInstance.js", function () {
             expect(firstPromise).toBe(secondPromise);
             expect(objectInstance.state.crud.retrieve).toHaveBeenCalledWith({
                 target: { stream: "test_stream" },
-                pk: 1,
+                pk: "1",
                 pkKey: "id",
                 params: { fields: ["id", "__str__", "name"] },
                 isCancelled: expect.any(Object),
@@ -465,7 +465,7 @@ describe("use/objectInstance.js", function () {
             const objectInstance = useObjectInstance({
                 props: {
                     target: { stream: "test_stream" },
-                    pk: 1,
+                    pk: "1",
                     pkKey: "id",
                     params: { fields },
                 },
@@ -862,7 +862,7 @@ describe("use/objectInstance.js", function () {
             const objectInstance = useObjectInstance({
                 props: {
                     target: { stream: "test_stream" },
-                    pk: 1,
+                    pk: "1",
                     pkKey: "id",
                     params: { fields },
                 },
@@ -1263,7 +1263,7 @@ describe("use/objectInstance.js", function () {
             const objectInstance = useObjectInstance({
                 props: {
                     target: { stream: "test_stream" },
-                    pk: 1,
+                    pk: "1",
                     pkKey: "id",
                     params: { fields },
                 },
@@ -1336,7 +1336,7 @@ describe("use/objectInstance.js", function () {
                 target: {
                     stream: "test_stream",
                 },
-                pk: 1,
+                pk: "1",
                 pkKey: "id",
                 partialObject: {
                     id: 1,
@@ -1378,7 +1378,7 @@ describe("use/objectInstance.js", function () {
                 target: {
                     stream: "test_stream",
                 },
-                pk: 1,
+                pk: "1",
                 pkKey: "id",
                 partialObject: {
                     id: 1,
@@ -1436,7 +1436,7 @@ describe("use/objectInstance.js", function () {
                 target: {
                     stream: "test_stream",
                 },
-                pk: 1,
+                pk: "1",
                 pkKey: "unique",
                 partialObject: {
                     unique: 1,
@@ -1492,7 +1492,7 @@ describe("use/objectInstance.js", function () {
                 target: {
                     stream: "test_stream",
                 },
-                pk: 1,
+                pk: "1",
                 pkKey: "id",
                 partialObject: {
                     id: 1,
@@ -1548,7 +1548,7 @@ describe("use/objectInstance.js", function () {
                 target: {
                     stream: "test_stream",
                 },
-                pk: 1,
+                pk: "1",
                 pkKey: "pk",
                 partialObject: {
                     id: 1,
@@ -1593,7 +1593,7 @@ describe("use/objectInstance.js", function () {
                 target: {
                     stream: "test_stream",
                 },
-                pk: 1,
+                pk: "1",
                 pkKey: "id",
                 partialObject: {
                     id: 1,
@@ -1610,7 +1610,7 @@ describe("use/objectInstance.js", function () {
             const objectInstance = useObjectInstance({
                 props: {
                     target: { stream: "test_stream" },
-                    pk: 1,
+                    pk: "1",
                     pkKey: "id",
                     params: { fields },
                 },
@@ -1672,7 +1672,7 @@ describe("use/objectInstance.js", function () {
             await expect(oiExecuteActionPromise).resolves.toBe(true);
             expect(objectInstance.state.crud.executeAction).toHaveBeenCalledWith({
                 target: { stream: "test_stream" },
-                pk: 1,
+                pk: "1",
                 pkKey: "id",
                 isCancelled: expect.any(Object),
                 action: "foo",
@@ -1702,7 +1702,7 @@ describe("use/objectInstance.js", function () {
             expect(objectInstance.state.crud.executeAction).toHaveBeenCalledWith({
                 priority: "high",
                 target: { stream: "test_stream" },
-                pk: 1,
+                pk: "1",
                 pkKey: "id",
                 isCancelled: expect.any(Object),
                 action: "foo",
@@ -1746,7 +1746,7 @@ describe("use/objectInstance.js", function () {
             await expect(oiExecuteActionPromise).resolves.toBe(false);
             expect(objectInstance.state.crud.executeAction).toHaveBeenCalledWith({
                 target: { stream: "test_stream" },
-                pk: 1,
+                pk: "1",
                 pkKey: "id",
                 isCancelled: expect.any(Object),
                 action: "foo",
@@ -1775,7 +1775,7 @@ describe("use/objectInstance.js", function () {
             );
             expect(objectInstance.state.crud.executeAction).toHaveBeenCalledWith({
                 target: { stream: "test_stream" },
-                pk: 1,
+                pk: "1",
                 pkKey: "id",
                 isCancelled: expect.any(Object),
                 action: "foo",
@@ -1788,7 +1788,7 @@ describe("use/objectInstance.js", function () {
             const objectInstance = useObjectInstance({
                 props: {
                     target: { stream: "test_stream" },
-                    pk: 1,
+                    pk: "1",
                     pkKey: "id",
                     params: { fields },
                 },
@@ -1862,7 +1862,7 @@ describe("use/objectInstance.js", function () {
             await expect(returnsPromise).resolves.toBe(true);
             expect(objectInstance.state.crud.delete).toHaveBeenCalledWith({
                 target: { stream: "test_stream" },
-                pk: 1,
+                pk: "1",
                 pkKey: "unique",
             });
         });
@@ -1884,7 +1884,7 @@ describe("use/objectInstance.js", function () {
             expect(objectInstance.state.crud.delete).toHaveBeenCalledWith({
                 reason: "cleanup",
                 target: { stream: "test_stream" },
-                pk: 1,
+                pk: "1",
                 pkKey: "id",
             });
             expect(objectInstance.state.crud.delete).toHaveBeenCalledTimes(1);
@@ -1937,7 +1937,7 @@ describe("use/objectInstance.js", function () {
             await expect(returnsPromise).resolves.toBe(false);
             expect(objectInstance.state.crud.delete).toHaveBeenCalledWith({
                 target: { stream: "test_stream" },
-                pk: 1,
+                pk: "1",
                 pkKey: "id",
             });
             expect(objectInstance.state.crud.delete).toHaveBeenCalledTimes(1);
@@ -1990,7 +1990,7 @@ describe("use/objectInstance.js", function () {
             await expect(returnsPromise).resolves.toBe(false);
             expect(objectInstance.state.crud.delete).toHaveBeenCalledWith({
                 target: { stream: "test_stream" },
-                pk: 1,
+                pk: "1",
                 pkKey: "unique",
             });
             expect(objectInstance.state.crud.delete).toHaveBeenCalledTimes(1);
@@ -2013,7 +2013,7 @@ describe("use/objectInstance.js", function () {
             expect(() => objectInstance.delete()).toThrow(new ObjectError("already loading.", "already-loading"));
             expect(objectInstance.state.crud.delete).toHaveBeenCalledWith({
                 target: { stream: "test_stream" },
-                pk: 1,
+                pk: "1",
                 pkKey: "id",
             });
             expect(objectInstance.state.crud.delete).toHaveBeenCalledTimes(1);
@@ -2022,7 +2022,7 @@ describe("use/objectInstance.js", function () {
             const objectInstance = useObjectInstance({
                 props: {
                     target: { stream: "test_stream" },
-                    pk: 1,
+                    pk: "1",
                     pkKey: "id",
                     params: { fields },
                 },
@@ -2036,7 +2036,7 @@ describe("use/objectInstance.js", function () {
 
             expect(objectInstance.state.crud.delete).toHaveBeenCalledWith({
                 target: { stream: "test_stream" },
-                pk: 1,
+                pk: "1",
                 pkKey: "id",
             });
             expect(objectInstance.state.crud.delete).toHaveBeenCalledTimes(1);
@@ -2048,7 +2048,7 @@ describe("use/objectInstance.js", function () {
             const objectInstance = useObjectInstance({
                 props: {
                     target: { stream: "test_stream" },
-                    pk: 1,
+                    pk: "1",
                     pkKey: "id",
                     params: { fields },
                 },
@@ -2074,7 +2074,7 @@ describe("use/objectInstance.js", function () {
             const objectInstance = useObjectInstance({
                 props: {
                     target: { stream: "test_stream" },
-                    pk: 1,
+                    pk: "1",
                     pkKey: "id",
                     params: { fields },
                 },
@@ -2096,7 +2096,7 @@ describe("use/objectInstance.js", function () {
         const objectInstanceA = useObjectInstance({
             props: {
                 target: { stream: "test_streamA" },
-                pk: 1,
+                pk: "1",
                 pkKey: "id",
                 params: {
                     fields,
@@ -2117,7 +2117,7 @@ describe("use/objectInstance.js", function () {
             A: {
                 props: {
                     target: { stream: "test_streamA" },
-                    pk: 1,
+                    pk: "1",
                     pkKey: "id",
                     params: {
                         fields,
@@ -2141,7 +2141,7 @@ describe("use/objectInstance.js", function () {
     scopedIt("useObjectInstance missing pkKey", async function () {
         const objectInstanceProps = {
             target: { stream: "test_streamA" },
-            pk: 1,
+            pk: "1",
             params: {
                 fields,
             },

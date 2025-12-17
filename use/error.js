@@ -9,13 +9,32 @@ import { readonly, ref } from "vue";
  */
 
 /**
- * The error state API.
- *
- * @typedef {object} ErrorStatus
+ * @typedef {object} ErrorProperties
  * @property {ErrorReadonlyRef} error - The error that occurred.
  * @property {ErroredReadonlyRef} errored - Whether an error has occurred.
+ */
+
+/**
+ * @typedef {object} ErrorFunctions
  * @property {(error: Error) => void} setError - Set the error state.
  * @property {ClearErrorFn} clearError - Clear the error state.
+ */
+
+/**
+ * Proxies can still clear errors but cannot set them directly.
+ *
+ * @typedef {object} ErrorReadOnlyFunctions
+ * @property {ClearErrorFn} clearError - Clear the error state.
+ */
+
+/**
+ * @typedef {ErrorProperties & ErrorReadOnlyFunctions} ReadonlyErrorStatus
+ */
+
+/**
+ * The error state API.
+ *
+ * @typedef {ErrorProperties & ErrorFunctions} ErrorStatus
  */
 
 /**

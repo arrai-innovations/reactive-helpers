@@ -34,7 +34,7 @@ If sameKeys option is true, return keys that are the same.
 
 ### keyDiff()
 
-> **keyDiff**(`newKeys`, `oldKeys`, `options`?): [`KeyDiffResult`](keyDiff.md#keydiffresult)
+> **keyDiff**(`newKeys`, `oldKeys`, `options?`): [`KeyDiffResult`](#keydiffresult)
 
 Calculate the difference between two arrays of keys, in terms of what keys
 are the same, what keys are removed, and what keys are added.
@@ -77,7 +77,7 @@ If true, return keys that are the same.
 
 #### Returns
 
-[`KeyDiffResult`](keyDiff.md#keydiffresult)
+[`KeyDiffResult`](#keydiffresult)
 
 - The differences.
 
@@ -85,7 +85,7 @@ If true, return keys that are the same.
 
 ### keyDiffDeep()
 
-> **keyDiffDeep**(`newObj`, `oldObj`, `options`?): [`KeyDiffResult`](keyDiff.md#keydiffresult)
+> **keyDiffDeep**(`newObj`, `oldObj`, `options?`): [`KeyDiffResult`](#keydiffresult)
 
 Calculate the difference between two objects, in terms of what keys are the same,
 what keys are removed, and what keys are added. Keys are sourced deeply in the objects.
@@ -112,6 +112,6 @@ Which differences are returned.
 
 #### Returns
 
-[`KeyDiffResult`](keyDiff.md#keydiffresult)
+[`KeyDiffResult`](#keydiffresult)
 
 - The differences.

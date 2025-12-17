@@ -18,9 +18,9 @@ Custom error class for list subscription errors.
 
 #### Constructors
 
-##### new ListSubscriptionError()
+##### Constructor
 
-> **new ListSubscriptionError**(`message`, `code`): [`ListSubscriptionError`](listSubscription.md#listsubscriptionerror)
+> **new ListSubscriptionError**(`message`, `code`): [`ListSubscriptionError`](#listsubscriptionerror)
 
 Creates a new ListSubscriptionError.
 
@@ -40,7 +40,7 @@ The error code.
 
 ###### Returns
 
-[`ListSubscriptionError`](listSubscription.md#listsubscriptionerror)
+[`ListSubscriptionError`](#listsubscriptionerror)
 
 ###### Overrides
 
@@ -86,6 +86,18 @@ Whether the subscription is active.
 
 ***
 
+### ListSubscriptionOwnOptions
+
+#### Properties
+
+##### listInstance?
+
+> `optional` **listInstance**: [`ListInstance`](listInstance.md#listinstance)
+
+A list instance to use instead of creating one.
+
+***
+
 ### ListSubscriptionProperties
 
 #### Properties
@@ -122,7 +134,7 @@ CRUD handlers and their configurations for the list.
 
 ###### crud.args
 
-> **args**: `Reactive`\<\{\} \| [`TargetArgs`](../config/objectCrud.md#targetargs)\>
+> **args**: `Reactive`\<\{ \} \| [`TargetArgs`](../config/objectCrud.md#targetargs)\>
 
 The arguments to be passed to the crud handlers.
 
@@ -238,7 +250,7 @@ The `CancellableIntent` instance managing if the subscription should be (un)subs
 
 ### ListInstanceStateRefs
 
-> **ListInstanceStateRefs**\<\>: `ToRefs`
+> **ListInstanceStateRefs**\<\> = `ToRefs`
 
 #### Type Parameters
 
@@ -246,7 +258,7 @@ The `CancellableIntent` instance managing if the subscription should be (un)subs
 
 ### ListSubscription
 
-> **ListSubscription**\<\>: [`ListSubscriptionFunctions`](listSubscription.md#listsubscriptionfunctions) & [`ListSubscriptionProperties`](listSubscription.md#listsubscriptionproperties)
+> **ListSubscription**\<\> = [`ListSubscriptionFunctions`](#listsubscriptionfunctions) & [`ListSubscriptionProperties`](#listsubscriptionproperties)
 
 #### Type Parameters
 
@@ -254,11 +266,11 @@ The `CancellableIntent` instance managing if the subscription should be (un)subs
 
 ### ListSubscriptionContext
 
-> **ListSubscriptionContext**\<\>: `object`
+> **ListSubscriptionContext**\<\> = `object`
 
 #### Type Parameters
 
-#### Type declaration
+#### Type Declaration
 
 ##### listInstance
 
@@ -270,13 +282,13 @@ The `CancellableIntent` instance managing if the subscription should be (un)subs
 
 ##### state
 
-> **state**: [`ListSubscriptionState`](listSubscription.md#listsubscriptionstate)
+> **state**: [`ListSubscriptionState`](#listsubscriptionstate)
 
 ***
 
 ### ListSubscriptionFunctions
 
-> **ListSubscriptionFunctions**\<\>: `Pick`\<[`LoadingErrorStatus`](loadingError.md#loadingerrorstatus), `"clearError"`\>
+> **ListSubscriptionFunctions**\<\> = `Pick`\<[`LoadingErrorStatus`](loadingError.md#loadingerrorstatus), `"clearError"`\>
 
 #### Type Parameters
 
@@ -284,7 +296,7 @@ The `CancellableIntent` instance managing if the subscription should be (un)subs
 
 ### ListSubscriptionOptions
 
-> **ListSubscriptionOptions**\<\>: `object` & [`ListInstanceOptions`](listInstance.md#listinstanceoptions)
+> **ListSubscriptionOptions**\<\> = [`ListInstanceOptions`](listInstance.md#listinstanceoptions) & [`ListSubscriptionOwnOptions`](#listsubscriptionownoptions)
 
 #### Type Parameters
 
@@ -292,7 +304,7 @@ The `CancellableIntent` instance managing if the subscription should be (un)subs
 
 ### ListSubscriptionRawState
 
-> **ListSubscriptionRawState**\<\>: [`ListSubscriptionMyState`](listSubscription.md#listsubscriptionmystate) & `Pick`\<[`LoadingErrorStatus`](loadingError.md#loadingerrorstatus), `"loading"` \| `"error"` \| `"errored"`\> & [`ListInstanceStateRefs`](listSubscription.md#listinstancestaterefs)
+> **ListSubscriptionRawState**\<\> = [`ListSubscriptionMyState`](#listsubscriptionmystate) & `Pick`\<[`LoadingErrorStatus`](loadingError.md#loadingerrorstatus), `"loading"` \| `"error"` \| `"errored"`\> & [`ListInstanceStateRefs`](#listinstancestaterefs)
 
 #### Type Parameters
 
@@ -300,7 +312,7 @@ The `CancellableIntent` instance managing if the subscription should be (un)subs
 
 ### ListSubscriptionState
 
-> **ListSubscriptionState**\<\>: `Reactive`
+> **ListSubscriptionState**\<\> = `Reactive`
 
 #### Type Parameters
 
@@ -308,7 +320,7 @@ The `CancellableIntent` instance managing if the subscription should be (un)subs
 
 ### useListSubscription()
 
-> **useListSubscription**(`options`): [`ListSubscription`](listSubscription.md#listsubscription)
+> **useListSubscription**(`options`): [`ListSubscription`](#listsubscription)
 
 A composition function that creates a reactive object that manages a list of objects, as returned by
 `useListInstance`, causing the list to be re-fetched as needed and listening for updates to the list.
@@ -317,13 +329,13 @@ A composition function that creates a reactive object that manages a list of obj
 
 ##### options
 
-`any`
+[`ListSubscriptionOptions`](#listsubscriptionoptions)
 
 The options for the list subscription.
 
 #### Returns
 
-[`ListSubscription`](listSubscription.md#listsubscription)
+[`ListSubscription`](#listsubscription)
 
 - Returns a robust list subscription object that manages a list instance with
  capabilities to subscribe and unsubscribe to data sources, alongside handling real-time data updates.

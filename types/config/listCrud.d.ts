@@ -62,7 +62,7 @@ export type BulkDeleteArgsRaw = {
     /**
      * - The ids of the objects to be deleted.
      */
-    pks: string[];
+    pks: import("./commonCrud.js").Pk[];
     /**
      * - The key name of the primary key.
      */
@@ -102,7 +102,7 @@ export type ExecuteActionArgsRaw = {
     /**
      * - The ids of the objects to be acted upon.
      */
-    pks: string[];
+    pks: import("./commonCrud.js").Pk[];
     /**
      * - The key name of the primary key.
      */

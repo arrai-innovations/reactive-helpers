@@ -41,18 +41,18 @@ import { computed, effectScope, nextTick, onScopeDispose, reactive, ref, toRef, 
  *
  * @typedef {object} ListRelatedRawState
  * @property {{
- *     [pk: string]: {
+ *     [pk: import('../config/commonCrud.js').Pk]: {
  *         [rule: string]: import('vue').ComputedRef<any>,
  *     },
  * }} relatedObjects - Stores computed references to related objects, allowing for dynamic access based on object pk and specific rules.
  * @property {ListRelatedRules} relatedObjectsRules - Defines the rules for establishing relationships, such as foreign key links and sorting orders.
  * @property {{
- *     [pk: string]: {
+ *     [pk: import('../config/commonCrud.js').Pk]: {
  *         [rule: string]: import('vue').ComputedRef<[object, string]>,
  *     },
  * }} objAndKeyForPkAndRule - Maps each object pk and rule to a tuple consisting of the related object and its respective key, facilitating direct data manipulation.
  * @property {{
- *     [pk: string]: {
+ *     [pk: import('../config/commonCrud.js').Pk]: {
  *         [rule: string]: import('vue').ComputedRef<any>,
  *     },
  * }} fkForPkAndRule - Maintains computed references to the foreign keys for each object pk and rule, crucial for navigating complex data relationships.

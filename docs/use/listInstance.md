@@ -19,9 +19,9 @@ Defines a custom error class specific to list instance operations, encapsulating
 
 #### Constructors
 
-##### new ListInstanceError()
+##### Constructor
 
-> **new ListInstanceError**(`message`, `code`): [`ListInstanceError`](listInstance.md#listinstanceerror)
+> **new ListInstanceError**(`message`, `code`): [`ListInstanceError`](#listinstanceerror)
 
 Creates an instance of ListInstanceError.
 
@@ -41,7 +41,7 @@ The error code.
 
 ###### Returns
 
-[`ListInstanceError`](listInstance.md#listinstanceerror)
+[`ListInstanceError`](#listinstanceerror)
 
 ###### Overrides
 
@@ -109,7 +109,7 @@ Adds an object to the list.
 
 ##### bulkDelete()
 
-> **bulkDelete**: (`args`?) => `Promise`\<`boolean`\>
+> **bulkDelete**: (`args?`) => `Promise`\<`boolean`\>
 
 Deletes objects from the list by pk, returning a promise to a boolean indicating success.
 
@@ -117,9 +117,7 @@ Deletes objects from the list by pk, returning a promise to a boolean indicating
 
 ###### args?
 
-###### pks?
-
-`string`[]
+`object` & [`AdditionalListArgs`](../config/listCrud.md#additionallistargs)
 
 ###### Returns
 
@@ -127,7 +125,7 @@ Deletes objects from the list by pk, returning a promise to a boolean indicating
 
 ##### clearList()
 
-> **clearList**: (`options`?) => `void`
+> **clearList**: (`options?`) => `void`
 
 Clears the list objects and optionally keeps pagination, totals,
  or error state.
@@ -136,7 +134,7 @@ Clears the list objects and optionally keeps pagination, totals,
 
 ###### options?
 
-[`ClearListOptions`](listInstance.md#clearlistoptions)
+[`ClearListOptions`](#clearlistoptions)
 
 ###### Returns
 
@@ -152,7 +150,7 @@ Deletes an object from the list by pk.
 
 ###### objectId
 
-`string`
+[`PkInput`](../config/commonCrud.md#pkinput)
 
 ###### Returns
 
@@ -162,19 +160,13 @@ Deletes an object from the list by pk.
 
 > **executeAction**: (`args`) => `Promise`\<`any`\>
 
-Initiates an action on all objects in the list, returning the response, or false if the action failed.
+Initiates an action on all objects in the list, returning the response, or null if the action failed.
 
 ###### Parameters
 
 ###### args
 
-###### action
-
-`string`
-
-###### pks?
-
-`string`[]
+`object` & [`AdditionalListArgs`](../config/listCrud.md#additionallistargs)
 
 ###### Returns
 
@@ -192,7 +184,7 @@ Generates a unique fake pk for use within the list.
 
 ##### list()
 
-> **list**: (`args`?) => [`MaybeCancellablePromise`](../utils/cancellablePromise.md#maybecancellablepromiset)\<`boolean`\>
+> **list**: (`args?`) => [`MaybeCancellablePromise`](../utils/cancellablePromise.md#maybecancellablepromise)\<`boolean`\>
 
 Initiates a fetch to retrieve objects according to the CRUD configuration, returning a promise to a boolean indicating success.
 
@@ -200,13 +192,15 @@ Initiates a fetch to retrieve objects according to the CRUD configuration, retur
 
 ###### args?
 
+[`AdditionalListArgs`](../config/listCrud.md#additionallistargs)
+
 ###### Returns
 
-[`MaybeCancellablePromise`](../utils/cancellablePromise.md#maybecancellablepromiset)\<`boolean`\>
+[`MaybeCancellablePromise`](../utils/cancellablePromise.md#maybecancellablepromise)\<`boolean`\>
 
 ##### pushObjects
 
-> **pushObjects**: [`PushObjectsFn`](listInstance.md#pushobjectsfn)
+> **pushObjects**: [`PushObjectsFn`](#pushobjectsfn)
 
 Customizable callback for handling new objects per page.
 
@@ -220,7 +214,7 @@ The method to update column totals.
 
 ###### total
 
-[`ColumnTotals`](listInstance.md#columntotals-1)
+[`ColumnTotals`](#columntotals-1)
 
 ###### Returns
 
@@ -236,7 +230,7 @@ The method to update pagination information.
 
 ###### info
 
-[`PaginateInfo`](listInstance.md#paginateinfo-1)
+[`PaginateInfo`](#paginateinfo-1)
 
 ###### Returns
 
@@ -354,7 +348,7 @@ Implementation specific arguments.
 
 ##### columnTotals
 
-> **columnTotals**: `ShallowReactive`\<[`ColumnTotals`](listInstance.md#columntotals-1)\>
+> **columnTotals**: `ShallowReactive`\<[`ColumnTotals`](#columntotals-1)\>
 
 Column totals for the list.
 
@@ -366,7 +360,7 @@ CRUD handlers and their configurations for the list.
 
 ###### args
 
-> **args**: `Reactive`\<\{\} \| [`TargetArgs`](../config/objectCrud.md#targetargs)\>
+> **args**: `Reactive`\<\{ \} \| [`TargetArgs`](../config/objectCrud.md#targetargs)\>
 
 The arguments to be passed to the crud handlers.
 
@@ -396,7 +390,7 @@ The subscribe function.
 
 ##### objects
 
-> **objects**: [`ObjectsByPk`](listInstance.md#objectsbypk)
+> **objects**: [`ObjectsByPk`](#objectsbypk)
 
 The list objects stored by their pks.
 
@@ -408,7 +402,7 @@ The objects in the order specified by the list.
 
 ##### objectsMap
 
-> **objectsMap**: [`ObjectsMap`](listInstance.md#objectsmap-1)
+> **objectsMap**: [`ObjectsMap`](#objectsmap-1)
 
 The map of objects stored by their pks.
 
@@ -420,7 +414,7 @@ The order of objects in the list.
 
 ##### paginateInfo
 
-> **paginateInfo**: `ShallowReactive`\<[`PaginateInfo`](listInstance.md#paginateinfo-1)\>
+> **paginateInfo**: `ShallowReactive`\<[`PaginateInfo`](#paginateinfo-1)\>
 
 Pagination information for the list.
 
@@ -444,7 +438,7 @@ The primary key field for the list objects.
 
 ##### args
 
-> **args**: `Reactive`\<\{\} \| [`TargetArgs`](../config/objectCrud.md#targetargs)\>
+> **args**: `Reactive`\<\{ \} \| [`TargetArgs`](../config/objectCrud.md#targetargs)\>
 
 The arguments to be passed to the crud handlers.
 
@@ -506,7 +500,7 @@ The total records.
 
 ### ColumnTotals
 
-> **ColumnTotals**\<\>: `object`
+> **ColumnTotals**\<\> = `object`
 
 #### Type Parameters
 
@@ -518,7 +512,7 @@ The total records.
 
 ### ListInstance
 
-> **ListInstance**\<\>: [`ListInstanceStateMixIn`](listInstance.md#listinstancestatemixin) & [`ListInstanceFunctions`](listInstance.md#listinstancefunctions)
+> **ListInstance**\<\> = [`ListInstanceStateMixIn`](#listinstancestatemixin) & [`ListInstanceFunctions`](#listinstancefunctions)
 
 #### Type Parameters
 
@@ -526,7 +520,7 @@ The total records.
 
 ### ListInstanceFunctions
 
-> **ListInstanceFunctions**\<\>: [`ListInstanceMyFunctions`](listInstance.md#listinstancemyfunctions) & `Pick`\<[`LoadingErrorStatus`](loadingError.md#loadingerrorstatus), `"clearError"`\>
+> **ListInstanceFunctions**\<\> = [`ListInstanceMyFunctions`](#listinstancemyfunctions) & `Pick`\<[`LoadingErrorStatus`](loadingError.md#loadingerrorstatus), `"clearError"`\>
 
 #### Type Parameters
 
@@ -534,7 +528,7 @@ The total records.
 
 ### ListInstanceRawState
 
-> **ListInstanceRawState**\<\>: [`ListInstanceRawMyState`](listInstance.md#listinstancerawmystate) & `Pick`\<[`LoadingErrorStatus`](loadingError.md#loadingerrorstatus), `"loading"` \| `"error"` \| `"errored"`\>
+> **ListInstanceRawState**\<\> = [`ListInstanceRawMyState`](#listinstancerawmystate) & `Pick`\<[`LoadingErrorStatus`](loadingError.md#loadingerrorstatus), `"loading"` \| `"error"` \| `"errored"`\>
 
 #### Type Parameters
 
@@ -542,7 +536,7 @@ The total records.
 
 ### ListInstanceState
 
-> **ListInstanceState**\<\>: `UnwrapNestedRefs`
+> **ListInstanceState**\<\> = `UnwrapNestedRefs`
 
 #### Type Parameters
 
@@ -550,21 +544,21 @@ The total records.
 
 ### ListInstanceStateMixIn
 
-> **ListInstanceStateMixIn**\<\>: `object`
+> **ListInstanceStateMixIn**\<\> = `object`
 
 #### Type Parameters
 
-#### Type declaration
+#### Type Declaration
 
 ##### state
 
-> **state**: [`ListInstanceState`](listInstance.md#listinstancestate)
+> **state**: [`ListInstanceState`](#listinstancestate)
 
 ***
 
 ### ListOrder
 
-> **ListOrder**\<\>: `ComputedRef`
+> **ListOrder**\<\> = `ComputedRef`
 
 #### Type Parameters
 
@@ -572,7 +566,7 @@ The total records.
 
 ### ObjectsByPk
 
-> **ObjectsByPk**\<\>: `object`
+> **ObjectsByPk**\<\> = `object`
 
 #### Type Parameters
 
@@ -584,7 +578,7 @@ The total records.
 
 ### ObjectsInOrder
 
-> **ObjectsInOrder**\<\>: `ComputedRef`
+> **ObjectsInOrder**\<\> = `ComputedRef`
 
 #### Type Parameters
 
@@ -592,7 +586,7 @@ The total records.
 
 ### ObjectsMap
 
-> **ObjectsMap**\<\>: `Map`\<`string`, `Reactive`\>
+> **ObjectsMap**\<\> = `Map`\<[`Pk`](../config/commonCrud.md#pk), `Reactive`\>
 
 #### Type Parameters
 
@@ -600,7 +594,7 @@ The total records.
 
 ### PushObjectsFn()
 
-> **PushObjectsFn**\<\>: (`newObjects`) => `void`
+> **PushObjectsFn**\<\> = (`newObjects`) => `void`
 
 #### Type Parameters
 
@@ -618,7 +612,7 @@ The total records.
 
 ### useListInstance()
 
-> **useListInstance**(`options`): [`ListInstance`](listInstance.md#listinstance)
+> **useListInstance**(`options`): [`ListInstance`](#listinstance)
 
 Creates and manages a reactive list of objects, providing utilities to add, update, delete, and fetch objects
  according to the specified CRUD operations.
@@ -627,14 +621,14 @@ Creates and manages a reactive list of objects, providing utilities to add, upda
 
 ##### options
 
-[`ListInstanceOptions`](listInstance.md#listinstanceoptions)
+[`ListInstanceOptions`](#listinstanceoptions)
 
 Specifies the configuration options for creating a list instance, including
  properties for CRUD operations and UI behaviors like page persistence.
 
 #### Returns
 
-[`ListInstance`](listInstance.md#listinstance)
+[`ListInstance`](#listinstance)
 
 The list instance.
 
@@ -712,9 +706,13 @@ An object of list instances.
 
 Renames and re-exports [ClearObjectsFn](../config/listCrud.md#clearobjectsfn)
 
+***
+
 ### SetColumnTotalsFn
 
 Renames and re-exports [SetColumnTotals](../config/listCrud.md#setcolumntotals-1)
+
+***
 
 ### SetPaginateInfoFn
 

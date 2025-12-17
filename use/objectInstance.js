@@ -3,7 +3,7 @@ import { assignReactiveObject } from "../utils/assignReactiveObject.js";
 import { useLoadingError } from "./loadingError.js";
 import { reactive, readonly, ref } from "vue";
 import { CancellablePromise, wrapMaybeCancellable } from "../utils/cancellablePromise.js";
-import { refIfReactive } from "../utils/refIfReactive.js";
+import { pkRefIfReactive, refIfReactive } from "../utils/refIfReactive.js";
 
 /**
  * A composition function to manage create, retrieve, update, delete, patch, and executeAction operations.
@@ -40,7 +40,7 @@ import { refIfReactive } from "../utils/refIfReactive.js";
  * Reactive arguments to be passed to the object instance.
  *
  * @typedef {object} ObjectInstanceRawProps
- * @property {string} [pk] - The pk of the object, optional to support creating new objects.
+ * @property {import('../config/commonCrud.js').PkInput} [pk] - The pk of the object, optional to support creating new objects.
  * @property {string} pkKey - The pk key of the object.
  * @property {object} params - The arguments to be passed to the retrieve function.
  * @property {import('../config/objectCrud.js').ObjectTarget} target - The arguments to be passed to the crud handlers.
@@ -63,7 +63,7 @@ import { refIfReactive } from "../utils/refIfReactive.js";
  *
  * @typedef {object} ObjectInstanceRawMyState
  * @property {import('vue').Reactive<ObjectInstanceRawStateCrud>} crud - The crud handlers.
- * @property {import('vue').Ref<string|undefined>} pk - The pk of the object.
+ * @property {import('vue').Ref<import('../config/commonCrud.js').Pk|undefined>} pk - The pk of the object.
  * @property {import('vue').Ref<string|undefined>} pkKey - The pk key of the object.
  * @property {import('vue').Ref<{[key:string]: any}>} params - The arguments to be passed to the retrieve function.
  * @property {import('vue').Reactive<CrudObject>} object - The object.
@@ -73,7 +73,7 @@ import { refIfReactive } from "../utils/refIfReactive.js";
 /**
  * The raw state of the object instance.
  *
- * @typedef {ObjectInstanceRawMyState & Pick<import('./loadingError.js').LoadingErrorStatus, "loading" | "error" | "errored">} ObjectInstanceRawState
+ * @typedef {ObjectInstanceRawMyState & import('./loadingError.js').LoadingErrorProperties} ObjectInstanceRawState
  */
 
 /**
@@ -108,7 +108,7 @@ import { refIfReactive } from "../utils/refIfReactive.js";
  * The functions available on the object instance, including the ability to clear LoadingError errors.
  *
  * @typedef {(
- *     Pick<import('./loadingError.js').LoadingErrorStatus, "clearError"> &
+ *     import('./error.js').ErrorReadOnlyFunctions &
  *     ObjectInstanceMyFunctions
  * )} ObjectInstanceFunctions
  */
@@ -258,7 +258,7 @@ export function useObjectInstance({ props, handlers = {} }) {
                     executeAction: defaultObjectCrud.executeAction,
                 },
             object: {},
-            pk: refIfReactive(props, "pk", null),
+            pk: pkRefIfReactive(props, "pk", null),
             pkKey: refIfReactive(props, "pkKey"),
             params: refIfReactive(props, "params", {}),
             loading: loadingError.loading,

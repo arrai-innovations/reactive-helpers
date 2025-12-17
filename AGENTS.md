@@ -27,6 +27,8 @@ This project uses [Vitest](https://vitest.dev/), ESLint, and Prettier.
 - **Generate types & documentation**: `npm run docs`
 - **Verify generated docs**: `npm run docs:check`
 - **Clean generated types/docs**: `npm run docs:clean`
+- **Generate types only**: `npm run types`
+- **Type smoke check without regenerating**: `npm run types:check -- --skip-gen`
 
 ## Conventions
 

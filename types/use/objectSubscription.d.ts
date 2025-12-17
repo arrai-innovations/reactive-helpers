@@ -43,14 +43,17 @@
  * @property {boolean|undefined} intendToSubscribe - Whether the object intends to subscribe.
  */
 /**
- * Options for initializing an object subscription, including reactive props and non-reactive handlers.
- *
- * @typedef {object & import('./objectInstance.js').ObjectInstanceOptions} ObjectSubscriptionOptions
+ * @typedef {object} ObjectSubscriptionOwnOptions
  * @property {import('./objectInstance.js').ObjectInstance} [objectInstance] - An object instance to use instead of creating a new one.
  * @property {import('vue').UnwrapNestedRefs<(
  *     ObjectSubscriptionRawProps & import('./objectInstance.js').ObjectInstanceRawProps
  * )>} props - The reactive args to be passed to useObjectInstance.
- * @property {import('./objectInstance.js').ObjectInstanceHandlers} [handlers] - The handlers to be passed to useObjectInstance.
+ * @property {import('../config/objectCrud.js').ObjectCrudHandlers} [handlers] - The handlers to be passed to useObjectInstance.
+ */
+/**
+ * Options for initializing an object subscription, including reactive props and non-reactive handlers.
+ *
+ * @typedef {ObjectSubscriptionOwnOptions & import('./objectInstance.js').ObjectInstanceOptions} ObjectSubscriptionOptions
  */
 /**
  * Initializes multiple object subscriptions based on provided arguments.
@@ -208,10 +211,24 @@ export type ObjectSubscriptionRawProps = {
      */
     intendToSubscribe: boolean | undefined;
 };
+export type ObjectSubscriptionOwnOptions = {
+    /**
+     * - An object instance to use instead of creating a new one.
+     */
+    objectInstance?: import("./objectInstance.js").ObjectInstance;
+    /**
+     * - The reactive args to be passed to useObjectInstance.
+     */
+    props: import("vue").UnwrapNestedRefs<(ObjectSubscriptionRawProps & import("./objectInstance.js").ObjectInstanceRawProps)>;
+    /**
+     * - The handlers to be passed to useObjectInstance.
+     */
+    handlers?: import("../config/objectCrud.js").ObjectCrudHandlers;
+};
 /**
  * Options for initializing an object subscription, including reactive props and non-reactive handlers.
  */
-export type ObjectSubscriptionOptions = object & import("./objectInstance.js").ObjectInstanceOptions;
+export type ObjectSubscriptionOptions = ObjectSubscriptionOwnOptions & import("./objectInstance.js").ObjectInstanceOptions;
 /**
  * The context bound to shared objectSubscription functions.
  */

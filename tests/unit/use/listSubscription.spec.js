@@ -137,6 +137,7 @@ describe("use/listSubscription.spec.js", function () {
             expect(crudSubscribe).toHaveBeenCalledWith({
                 runId: expect.any(Number),
                 isCurrentRun: expect.any(Function),
+                isCancelled: expect.any(Object), // ref
                 target: { stream: "test_stream" },
                 pkKey: "id",
                 params: { user: 1, fields },
@@ -186,6 +187,9 @@ describe("use/listSubscription.spec.js", function () {
             expect(listSubscription.listInstance.state.objects).toEqual({});
             expect(listSubscription.state.subscribed).toBe(true);
 
+            const isCancelledRef = crudSubscribe.mock.calls[0][0].isCancelled;
+            expect(isCancelledRef.__v_isReadonly).toBe(true);
+            expect(isCancelledRef.value).toBe(false);
             listSubscription.state.intendToSubscribe = false;
             // list should now be unaffected by manual changes to intendToSubscribe, as opposed to prior versions
             expect(listSubscription.state.intendToList).toBe(true);
@@ -196,6 +200,7 @@ describe("use/listSubscription.spec.js", function () {
                 prop: "active",
             });
             expect(crudSubscribeResolvable[0].promise.cancel).toHaveBeenCalledTimes(1);
+            expect(isCancelledRef.value).toBe(true);
             expect(listSubscription.state.subscribed).toBe(false);
         });
         scopedIt("missing data", async function () {
@@ -216,6 +221,7 @@ describe("use/listSubscription.spec.js", function () {
             expect(crudSubscribe).toHaveBeenCalledWith({
                 runId: expect.any(Number),
                 isCurrentRun: expect.any(Function),
+                isCancelled: expect.any(Object), // ref
                 target: { stream: "test_stream" },
                 pkKey: "id",
                 params: { user: 1, fields },
@@ -362,6 +368,7 @@ describe("use/listSubscription.spec.js", function () {
             expect(crudSubscribe).toHaveBeenCalledWith({
                 runId: expect.any(Number),
                 isCurrentRun: expect.any(Function),
+                isCancelled: expect.any(Object), // ref
                 target: { stream: "test_stream" },
                 pkKey: "id",
                 params: { user: 1, fields },
@@ -406,6 +413,7 @@ describe("use/listSubscription.spec.js", function () {
             expect(crudSubscribe).toHaveBeenCalledWith({
                 runId: expect.any(Number),
                 isCurrentRun: expect.any(Function),
+                isCancelled: expect.any(Object), // ref
                 target: { stream: "test_stream" },
                 pkKey: "id",
                 params: { user: 1, fields },
@@ -443,6 +451,7 @@ describe("use/listSubscription.spec.js", function () {
             expect(crudSubscribe).toHaveBeenCalledWith({
                 runId: expect.any(Number),
                 isCurrentRun: expect.any(Function),
+                isCancelled: expect.any(Object), // ref
                 target: { stream: "test_stream" },
                 pkKey: "id",
                 params: { user: 1, fields },
@@ -488,11 +497,15 @@ describe("use/listSubscription.spec.js", function () {
 
             expect(listInstance.state.objects).toEqual({});
 
+            const isCancelledRef = crudSubscribe.mock.calls[0][0].isCancelled;
+            expect(isCancelledRef.__v_isReadonly).toBe(true);
+            expect(isCancelledRef.value).toBe(false);
             listSubscription.state.intendToSubscribe = false;
             await flushPromises();
             crudSubscribeResolvable[0].cancel.resolve(true);
             await poll(() => !listSubscription.state.subscribed);
             expect(crudSubscribeResolvable[0].promise.cancel).toHaveBeenCalledTimes(1);
+            expect(isCancelledRef.value).toBe(true);
             expect(listSubscription.state.subscribed).toBe(false);
         });
         scopedIt("subscribe resubscribes when params change", async function () {
@@ -514,6 +527,7 @@ describe("use/listSubscription.spec.js", function () {
             expect(crudSubscribe).toHaveBeenCalledWith({
                 runId: expect.any(Number),
                 isCurrentRun: expect.any(Function),
+                isCancelled: expect.any(Object), // ref
                 target: { stream: "test_stream" },
                 pkKey: "id",
                 params: { user: 1, fields },
@@ -536,6 +550,7 @@ describe("use/listSubscription.spec.js", function () {
             expect(crudSubscribe).toHaveBeenCalledWith({
                 runId: expect.any(Number),
                 isCurrentRun: expect.any(Function),
+                isCancelled: expect.any(Object), // ref
                 target: { stream: "test_stream" },
                 params: { user: 2, fields: ["name"] },
                 pkKey: "id",
@@ -553,6 +568,9 @@ describe("use/listSubscription.spec.js", function () {
             crudSubscribeResolvable[1].cancel.resolve(true);
             await poll(() => !listSubscription.state.subscribed);
             expect(crudSubscribeResolvable[1].promise.cancel).toHaveBeenCalledTimes(1);
+            const isCancelledRef = crudSubscribe.mock.calls[0][0].isCancelled;
+            expect(isCancelledRef.__v_isReadonly).toBe(true);
+            expect(isCancelledRef.value).toBe(true);
             expect(listSubscription.state.subscribed).toBe(false);
         });
     });
@@ -704,6 +722,7 @@ describe("use/listSubscription.spec.js", function () {
         expect(crudSubscribe).toHaveBeenCalledWith({
             runId: expect.any(Number),
             isCurrentRun: expect.any(Function),
+            isCancelled: expect.any(Object), // ref
             target: { stream: "test_stream" },
             pkKey: "hash",
             params: { user: 1, fields },

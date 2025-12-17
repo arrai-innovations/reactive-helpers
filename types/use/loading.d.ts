@@ -3,12 +3,18 @@
  * @typedef {Readonly<LoadingRef>} LoadingReadonlyRef
  */
 /**
- * The loading state API.
- *
- * @typedef {object} LoadingStatus
+ * @typedef {object} LoadingProperties
  * @property {LoadingReadonlyRef} loading - Whether the component is loading.
+ */
+/**
+ * @typedef {object} LoadingFunctions
  * @property {() => void} setLoading - Set the loading state to true.
  * @property {() => void} clearLoading - Set the loading state to false.
+ */
+/**
+ * The loading state API.
+ *
+ * @typedef {LoadingProperties & LoadingFunctions} LoadingStatus
  */
 /**
  * A composable function for managing loading state.
@@ -18,14 +24,13 @@
 export function useLoading(): LoadingStatus;
 export type LoadingRef = import("vue").Ref<boolean | undefined>;
 export type LoadingReadonlyRef = Readonly<LoadingRef>;
-/**
- * The loading state API.
- */
-export type LoadingStatus = {
+export type LoadingProperties = {
     /**
      * - Whether the component is loading.
      */
     loading: LoadingReadonlyRef;
+};
+export type LoadingFunctions = {
     /**
      * - Set the loading state to true.
      */
@@ -35,3 +40,7 @@ export type LoadingStatus = {
      */
     clearLoading: () => void;
 };
+/**
+ * The loading state API.
+ */
+export type LoadingStatus = LoadingProperties & LoadingFunctions;
