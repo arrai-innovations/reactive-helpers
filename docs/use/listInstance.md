@@ -117,7 +117,9 @@ Deletes objects from the list by pk, returning a promise to a boolean indicating
 
 ###### args?
 
-`object` & `object`
+###### pks?
+
+`string`[]
 
 ###### Returns
 
@@ -166,7 +168,13 @@ Initiates an action on all objects in the list, returning the response, or false
 
 ###### args
 
-`object` & `object`
+###### action
+
+`string`
+
+###### pks?
+
+`string`[]
 
 ###### Returns
 

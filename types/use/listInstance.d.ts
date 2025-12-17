@@ -111,8 +111,8 @@
  *  or error state.
  * @property {() => string} getFakePk - Generates a unique fake pk for use within the list.
  * @property {(args?: {[key: string]: any}) => import('../utils/cancellablePromise.js').MaybeCancellablePromise<boolean|never>} list - Initiates a fetch to retrieve objects according to the CRUD configuration, returning a promise to a boolean indicating success.
- * @property {(args?: {pks?: string[]} & {[key: string]: any}) => Promise<boolean>} bulkDelete - Deletes objects from the list by pk, returning a promise to a boolean indicating success.
- * @property {(args: {action: string, pks?: string[]} & {[key: string]: any}) => Promise<object|string|false>} executeAction - Initiates an action on all objects in the list, returning the response, or false if the action failed.
+ * @property {(args?: {pks?: string[], [key: string]: any}) => Promise<boolean>} bulkDelete - Deletes objects from the list by pk, returning a promise to a boolean indicating success.
+ * @property {(args: {action: string, pks?: string[], [key: string]: any}) => Promise<object|string|false>} executeAction - Initiates an action on all objects in the list, returning the response, or false if the action failed.
  * @property {(info: PaginateInfo) => void} setPaginateInfo - The method to update pagination information.
  * @property {(total: ColumnTotals) => void} setColumnTotals - The method to update column totals.
  */
@@ -412,7 +412,6 @@ export type ListInstanceMyFunctions = {
      */
     bulkDelete: (args?: {
         pks?: string[];
-    } & {
         [key: string]: any;
     }) => Promise<boolean>;
     /**
@@ -421,7 +420,6 @@ export type ListInstanceMyFunctions = {
     executeAction: (args: {
         action: string;
         pks?: string[];
-    } & {
         [key: string]: any;
     }) => Promise<object | string | false>;
     /**
