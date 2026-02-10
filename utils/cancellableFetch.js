@@ -11,9 +11,29 @@ import { CancellablePromise } from "./cancellablePromise.js";
  */
 export function cancellableFetch(input, init, transform) {
     const controller = new AbortController();
+    const externalSignal = init?.signal;
     const signal = controller.signal;
+    let cleanupExternalSignal = () => {};
 
-    const basePromise = fetch(input, { ...init, signal }).then(transform);
+    if (externalSignal) {
+        if (externalSignal.aborted) {
+            controller.abort(externalSignal.reason);
+        } else {
+            const handleAbort = () => {
+                controller.abort(externalSignal.reason);
+            };
+            externalSignal.addEventListener("abort", handleAbort, { once: true });
+            cleanupExternalSignal = () => {
+                externalSignal.removeEventListener("abort", handleAbort);
+            };
+        }
+    }
+
+    const basePromise = fetch(input, { ...init, signal })
+        .then(transform)
+        .finally(() => {
+            cleanupExternalSignal();
+        });
 
     return CancellablePromise(basePromise, async (/** @type {any} */ reason) => {
         controller.abort(reason);

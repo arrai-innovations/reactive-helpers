@@ -2,7 +2,13 @@
 
 _Actions potentially required by implementers are marked with italics._
 
-## v21.1.0 (unreleased)
+## v21.1.1 (unreleased)
+
+### Fixes
+
+- `cancellableFetch` now honors caller-provided `init.signal` while preserving `.cancel()` behavior, so external aborts correctly cancel the underlying fetch.
+
+## v21.1.0 (2025-12-17)
 
 ### Features
 

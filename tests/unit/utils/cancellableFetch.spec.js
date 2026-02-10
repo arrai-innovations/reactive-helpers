@@ -54,4 +54,22 @@ describe("utils/cancellableFetch", () => {
         expect(abortSpy).toHaveBeenCalledWith("stop");
         expect(transform).not.toHaveBeenCalled();
     });
+
+    it("aborts the fetch when the caller-provided signal aborts", async () => {
+        const fetchMock = vi.fn().mockImplementation((_, { signal }) => {
+            return new Promise((resolve, reject) => {
+                signal.addEventListener("abort", () => reject(new Error("external-aborted")), { once: true });
+            });
+        });
+        global.fetch = fetchMock;
+
+        const externalController = new AbortController();
+        const transform = vi.fn();
+        const promise = cancellableFetch("/api", { signal: externalController.signal }, transform);
+
+        externalController.abort("external-stop");
+
+        await expect(promise).rejects.toThrow("external-aborted");
+        expect(transform).not.toHaveBeenCalled();
+    });
 });
