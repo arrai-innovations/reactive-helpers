@@ -2,7 +2,7 @@ version: 2.1
 orbs:
     eslint: arrai/eslint@8.1.0
     prettier: arrai/prettier@5.10.0
-    npm: arrai/npm@3.1.0
+    npm: arrai/npm@3.2.0
     github: arrai/github@5.0.0
 executors:
     lts:
@@ -67,7 +67,7 @@ workflows:
                               - main
             - npm/publish:
                   name: publish
-                  context: arrai-private-package-publishing
+                  context: arrai-global
                   requires:
                       - non-main-docs-and-types
                   filters:
