@@ -5,6 +5,9 @@
     "main": "index.js",
     "type": "module",
     "types": "types/index.d.ts",
+    "publishConfig": {
+        "registry": "https://npm.arrai.dev/"
+    },
     "exports": {
         ".": {
             "import": "./index.js",
