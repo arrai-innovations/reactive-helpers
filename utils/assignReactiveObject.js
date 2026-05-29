@@ -113,7 +113,7 @@ function reactiveReplaceKeys(target, source, keys, exclude) {
             if (targetIsReactive && sourceIsReactive) {
                 const targetPropRaw = unref(toRef(target, key));
                 const sourcePropRaw = unref(toRef(source, key));
-                if (targetPropRaw === sourcePropRaw) {
+                if (targetPropRaw === sourcePropRaw && sourcePropRaw !== undefined) {
                     continue;
                 }
                 target[key] = toRef(source, key);

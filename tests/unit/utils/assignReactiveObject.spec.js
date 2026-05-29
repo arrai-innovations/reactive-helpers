@@ -100,6 +100,24 @@ describe("utils/assignReactiveObject", function () {
                     tes.stop();
                 }
             });
+            it("establishes a reactive link even when both target and source values start as undefined", function () {
+                // Bug: when target[key] and source[key] are both undefined, the equality check
+                // (targetPropRaw === sourcePropRaw) short-circuited before toRef was assigned,
+                // so the reactive link was never created and later changes to source were not reflected.
+                const target = reactive({ loading: undefined });
+                const source = reactive({ loading: undefined });
+
+                assignReactiveObject(target, source);
+
+                source.loading = true;
+                expect(target.loading).toBe(true);
+
+                source.loading = false;
+                expect(target.loading).toBe(false);
+
+                source.loading = undefined;
+                expect(target.loading).toBe(undefined);
+            });
             it("does nothing when all targets are objectlike and already point to the source", function () {
                 const target = reactive({
                     a: undefined,
