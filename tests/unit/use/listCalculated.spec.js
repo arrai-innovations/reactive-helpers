@@ -77,6 +77,31 @@ describe("use/listCalculated", () => {
             },
         });
     });
+    scopedIt("running resolves when calculatedObjectsRules is empty and objects are present", async () => {
+        // Bug: `return` inside the for..of loop in calculatedObjectsWatch exited the whole function
+        // before reaching nextTick(() => { state.calculatedObjectsWatchRunning = false }), leaving
+        // `running` permanently true (list views never finished loading).
+        // Fix: `continue` skips the current object and lets the loop complete normally.
+        const listInstance = useListInstance({ props: { pkKey: "id" } });
+        listInstance.addListObject({ id: 1, name: "one" });
+        listInstance.addListObject({ id: 2, name: "two" });
+        listInstance.addListObject({ id: 3, name: "three" });
+
+        const listCalculated = useListCalculated({
+            parentState: listInstance.state,
+            calculatedObjectsRules: {},
+        });
+
+        const anr = new AwaitNot({
+            obj: listCalculated.state,
+            prop: "running",
+        });
+        anr.start();
+        await anr.promise;
+
+        expect(listCalculated.state.running).toBe(false);
+        expect(Object.keys(listCalculated.state.objects)).toEqual(["1", "2", "3"]);
+    });
     scopedIt("should allow calculated objects to return results based on related objects", async () => {
         const mainListInstance = useListInstance({ props: { pkKey: "id" } });
         const relatedListInstance = useListInstance({ props: { pkKey: "id" } });
