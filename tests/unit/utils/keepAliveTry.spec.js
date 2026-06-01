@@ -11,7 +11,7 @@ import { onActivated, onDeactivated } from "vue";
 import { getLifeCycleTarget } from "@vueuse/core";
 
 describe("utils/keepAliveTry", () => {
-    const getLifeCycleTargetMock = /** @type {import('vitest').Mock<any, any>} */ (getLifeCycleTarget);
+    const getLifeCycleTargetMock = /** @type {import('vitest').Mock} */ (getLifeCycleTarget);
     beforeEach(() => {
         vi.resetAllMocks();
     });

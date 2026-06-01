@@ -1,22 +1,22 @@
 import { cancellableFetch } from "../../../utils/cancellableFetch.js";
 import { describe, it, expect, vi, afterEach, beforeEach } from "vitest";
 
-const originalFetch = global.fetch;
+const originalFetch = globalThis.fetch;
 
 beforeEach(() => {
-    global.fetch = originalFetch;
+    globalThis.fetch = originalFetch;
 });
 
 afterEach(() => {
     vi.restoreAllMocks();
-    global.fetch = originalFetch;
+    globalThis.fetch = originalFetch;
 });
 
 describe("utils/cancellableFetch", () => {
     it("fetches and transforms the response", async () => {
         const abortSpy = vi.spyOn(AbortController.prototype, "abort");
         const fetchMock = vi.fn().mockResolvedValue("resp");
-        global.fetch = fetchMock;
+        globalThis.fetch = fetchMock;
 
         const transform = vi.fn().mockResolvedValue("done");
         const init = { method: "POST" };
@@ -43,7 +43,7 @@ describe("utils/cancellableFetch", () => {
                 signal.addEventListener("abort", () => reject(new Error("aborted")), { once: true });
             });
         });
-        global.fetch = fetchMock;
+        globalThis.fetch = fetchMock;
 
         const transform = vi.fn();
         const promise = cancellableFetch("/api", {}, transform);
@@ -61,7 +61,7 @@ describe("utils/cancellableFetch", () => {
                 signal.addEventListener("abort", () => reject(new Error("external-aborted")), { once: true });
             });
         });
-        global.fetch = fetchMock;
+        globalThis.fetch = fetchMock;
 
         const externalController = new AbortController();
         const transform = vi.fn();
