@@ -107,7 +107,8 @@ describe("utils/assignReactiveObject", function () {
                 const target = reactive({ loading: undefined });
                 const source = reactive({ loading: undefined });
 
-                assignReactiveObject(target, source);
+                expect(assignReactiveObject(target, source)).toBe(true);
+                expect(assignReactiveObject(target, source)).toBe(false);
 
                 source.loading = true;
                 expect(target.loading).toBe(true);
