@@ -92,7 +92,7 @@ export class AwaitTimeout {
     resolve: (value: any) => void;
     reject: (reason?: any) => void;
     timeout: number;
-    timeoutId: NodeJS.Timeout;
+    timeoutId: number;
     cancelledError: AwaitTimeoutError;
     /**
      * Starts the timeout process. If the timeout duration is reached without being stopped, the promise resolves.

@@ -334,6 +334,29 @@ describe("use/useListSort", () => {
             expect(listSort.state.objectsInOrder).toEqual(testOrder4.map((id) => listInstance.state.objects[id]));
         });
     });
+    scopedIt("state.objects is populated when orderByRules is undefined", async () => {
+        const listInstance = useListInstance({
+            props: reactive({ pkKey: "id" }),
+        });
+        const listSort = useListSort({
+            parentState: listInstance.state,
+            // orderByRules intentionally omitted (undefined)
+        });
+        expect(listSort.state.order).toEqual([]);
+        expect(listSort.state.objectsInOrder).toEqual([]);
+
+        listInstance.addListObject({ id: 1, name: "one" });
+        listInstance.addListObject({ id: 2, name: "two" });
+        listInstance.addListObject({ id: 3, name: "three" });
+
+        await nextTick();
+
+        // objects must be populated — bug caused them to be empty when orderByRules was undefined
+        expect(Object.keys(listSort.state.objects)).toEqual(["1", "2", "3"]);
+        // order and objectsInOrder should pass through parent's order unchanged
+        expect(listSort.state.order).toEqual(["1", "2", "3"]);
+        expect(listSort.state.objectsInOrder.map((obj) => obj.id)).toEqual([1, 2, 3]);
+    });
     scopedIt("pass through correctly when parentState changes their order", async () => {
         const listInstance = useListInstance({
             props: reactive({ pkKey: "id" }),

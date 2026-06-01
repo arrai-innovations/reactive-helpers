@@ -2,7 +2,7 @@ import { keyDiff } from "./keyDiff.js";
 import inspect from "browser-util-inspect";
 import isArray from "lodash-es/isArray.js";
 import isObject from "lodash-es/isObject.js";
-import { isReactive, isRef, toRef, unref } from "vue";
+import { isReactive, isRef, toRaw, toRef, unref } from "vue";
 import isSet from "lodash-es/isSet.js";
 import isMap from "lodash-es/isMap.js";
 import isPlainObject from "lodash-es/isPlainObject.js";
@@ -113,7 +113,7 @@ function reactiveReplaceKeys(target, source, keys, exclude) {
             if (targetIsReactive && sourceIsReactive) {
                 const targetPropRaw = unref(toRef(target, key));
                 const sourcePropRaw = unref(toRef(source, key));
-                if (targetPropRaw === sourcePropRaw) {
+                if (targetPropRaw === sourcePropRaw && (sourcePropRaw !== undefined || isRef(toRaw(target)[key]))) {
                     continue;
                 }
                 target[key] = toRef(source, key);

@@ -197,23 +197,25 @@ export function useListSort({ parentState, orderByRules, sortThrottleWait = defa
                 if (!obj) {
                     return [];
                 }
-                return internalState.orderByRules
-                    ?.filter((r) => r && r.key)
-                    .map((r) => {
-                        if (!r) {
-                            return undefined;
-                        }
-                        if (r.keyFn) {
-                            return r.keyFn(obj, parentState);
-                        }
-                        if (r.key.startsWith("relatedItem.")) {
-                            return get(parentState.relatedObjects?.[pk], r.key.slice(12));
-                        }
-                        if (r.key.startsWith("calculatedItem.")) {
-                            return get(parentState.calculatedObjects?.[pk], r.key.slice(15));
-                        }
-                        return get(obj, r.key);
-                    });
+                return (
+                    internalState.orderByRules
+                        ?.filter((r) => r && r.key)
+                        .map((r) => {
+                            if (!r) {
+                                return undefined;
+                            }
+                            if (r.keyFn) {
+                                return r.keyFn(obj, parentState);
+                            }
+                            if (r.key.startsWith("relatedItem.")) {
+                                return get(parentState.relatedObjects?.[pk], r.key.slice(12));
+                            }
+                            if (r.key.startsWith("calculatedItem.")) {
+                                return get(parentState.calculatedObjects?.[pk], r.key.slice(15));
+                            }
+                            return get(obj, r.key);
+                        }) ?? []
+                );
             })
         );
         criteriaMap[pk] = { scope, crit };

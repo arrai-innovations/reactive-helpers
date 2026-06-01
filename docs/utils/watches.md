@@ -270,7 +270,7 @@ The timeout in milliseconds.
 
 ##### timeoutId
 
-> **timeoutId**: `Timeout`
+> **timeoutId**: `number`
 
 #### Methods
 

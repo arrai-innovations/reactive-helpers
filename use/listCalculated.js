@@ -228,7 +228,7 @@ export function useListCalculated({ parentState, calculatedObjectsRules }) {
                 ));
             } else {
                 if (isEmpty(calculatedObjectsObject)) {
-                    return;
+                    continue;
                 }
                 removedRuleKeys = Object.keys(calculatedObjectsObject);
                 addedRuleKeys = [];
