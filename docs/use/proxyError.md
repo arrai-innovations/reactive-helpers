@@ -10,7 +10,7 @@
 
 ### MaybeRefWatchableError
 
-> **MaybeRefWatchableError** = `MaybeRef`
+> **MaybeRefWatchableError** = `MaybeRefOrGetter`
 
 #### Type Parameters
 
@@ -71,7 +71,7 @@ A composable function for aggregating error state across multiple sources.
 
 ##### errors
 
-`MaybeRef`\<`MaybeRef`\<[`WatchableError`](#watchableerror)\>[]\>
+`MaybeRefOrGetter`\<`MaybeRefOrGetter`\<[`WatchableError`](#watchableerror)\>[]\>
 
 The error states to monitor.
 

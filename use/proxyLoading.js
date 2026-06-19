@@ -1,21 +1,21 @@
-import { computed, unref } from "vue";
+import { computed, toValue, unref } from "vue";
 import { loadingCombine } from "../utils/loadingCombine.js";
 
 /**
  * @typedef {import('./loading.js').LoadingProperties | import("vue").Reactive<import('./loading.js').LoadingProperties>} WatchableLoading
- * @typedef {import('vue').MaybeRef<WatchableLoading>} MaybeRefWatchableLoading
+ * @typedef {import('vue').MaybeRefOrGetter<WatchableLoading>} MaybeRefWatchableLoading
  * @typedef {import('./loading.js').LoadingProperties} ReadonlyLoadingStatus
  */
 
 /**
  * A composable function for aggregating loading state across multiple sources.
  *
- * @param {import('vue').MaybeRef<MaybeRefWatchableLoading[]>} loadings - The loading states to monitor.
+ * @param {import('vue').MaybeRefOrGetter<MaybeRefWatchableLoading[]>} loadings - The loading states to monitor.
  * @returns {ReadonlyLoadingStatus} An object containing the aggregated loading field.
  */
 export function useProxyLoading(loadings) {
     return {
-        loading: computed(() => loadingCombine(...unref(loadings).map((l) => unref(unref(l).loading)))),
+        loading: computed(() => loadingCombine(...toValue(loadings).map((l) => unref(toValue(l).loading)))),
     };
 }
 

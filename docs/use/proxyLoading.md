@@ -10,7 +10,7 @@
 
 ### MaybeRefWatchableLoading
 
-> **MaybeRefWatchableLoading** = `MaybeRef`
+> **MaybeRefWatchableLoading** = `MaybeRefOrGetter`
 
 #### Type Parameters
 
@@ -57,7 +57,7 @@ A composable function for aggregating loading state across multiple sources.
 
 ##### loadings
 
-`MaybeRef`\<`MaybeRef`\<[`WatchableLoading`](#watchableloading)\>[]\>
+`MaybeRefOrGetter`\<`MaybeRefOrGetter`\<[`WatchableLoading`](#watchableloading)\>[]\>
 
 The loading states to monitor.
 

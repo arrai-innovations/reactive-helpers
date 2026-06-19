@@ -5,21 +5,23 @@ import { unref } from "vue";
 
 /**
  * @typedef {import('./proxyLoading.js').WatchableLoading & import('./proxyError.js').WatchableError} WatchableLoadingError
- * @typedef {import('vue').MaybeRef<WatchableLoadingError>} MaybeRefWatchableLoadingError
+ * @typedef {import('vue').MaybeRefOrGetter<WatchableLoadingError>} MaybeRefWatchableLoadingError
  * @typedef {import('./loading.js').LoadingProperties & import('./error.js').ReadonlyErrorStatus} ProxyLoadingError
  */
 
 /**
  * A composable function combining aggregated loading and error state. Use `asWatchableLoadingError` to convert <List|Object><Instance|Subscription> to WatchableLoadingError.
  *
- * @param {import('vue').MaybeRef<MaybeRefWatchableLoadingError[]>} loadingErrors - The loading and error states to monitor.
+ * @param {import('vue').MaybeRefOrGetter<MaybeRefWatchableLoadingError[]>} loadingErrors - The loading and error states to monitor.
  * @returns {ProxyLoadingError} - An object containing aggregated reactive fields and actions for both loading and error state.
  */
 export function useProxyLoadingError(loadingErrors) {
-    const unwrappedLoadingErrors = unref(loadingErrors);
+    // Pass `loadingErrors` through unchanged so the lower-level composables normalize it
+    // inside their computed effects. Unwrapping the outer ref/getter here would freeze the
+    // collection at call time, so replacing `loadingErrors.value` would not be observed.
     return {
-        ...useProxyLoading(unwrappedLoadingErrors),
-        ...useProxyError(unwrappedLoadingErrors),
+        ...useProxyLoading(loadingErrors),
+        ...useProxyError(loadingErrors),
     };
 }
 

@@ -62,4 +62,38 @@ describe("useProxyLoadingError", () => {
         expect(proxyLoadingError.errored.value).toBe(true); // One source has an error
         expect(proxyLoadingError.error.value).toBe(error); // Error is aggregated
     });
+
+    scopedIt("should track replacement of a ref-wrapped collection", () => {
+        const sources = ref([loadingError1]);
+        const proxyLoadingError = useProxyLoadingError(sources);
+        expect(proxyLoadingError.loading.value).toBe(false);
+        expect(proxyLoadingError.errored.value).toBe(false);
+
+        loadingError2.loading.value = true;
+        loadingError2.errored.value = true;
+        const error = new Error("Replaced Error");
+        loadingError2.error.value = error;
+        sources.value = [loadingError2];
+
+        expect(proxyLoadingError.loading.value).toBe(true);
+        expect(proxyLoadingError.errored.value).toBe(true);
+        expect(proxyLoadingError.error.value).toBe(error);
+    });
+
+    scopedIt("should track a getter-provided collection", () => {
+        const sources = ref([loadingError1]);
+        const proxyLoadingError = useProxyLoadingError(() => sources.value);
+        expect(proxyLoadingError.loading.value).toBe(false);
+
+        loadingError2.loading.value = true;
+        sources.value = [loadingError1, loadingError2];
+
+        expect(proxyLoadingError.loading.value).toBe(true);
+    });
+
+    scopedIt("should accept getter-provided collection entries", () => {
+        loadingError2.loading.value = true;
+        const proxyLoadingError = useProxyLoadingError([() => loadingError1, () => loadingError2]);
+        expect(proxyLoadingError.loading.value).toBe(true);
+    });
 });
