@@ -2,11 +2,43 @@
 
 _Actions potentially required by implementers are marked with italics._
 
-## v21.1.1 (unreleased)
+## v21.1.4 (2026-06-19)
+
+### Features
+
+- Object delete CRUD handlers now receive a readonly `isCancelled` ref, consistent with the other cancellable object operations.
+
+### Fixes
+
+- Deliberately cancelled list and object CRUD requests no longer populate error state when their promises reject.
+- `useCancellableIntent` now associates cancellation with the correct run and clears active state after cancelled promises settle.
+
+## v21.1.3 (2026-06-01)
+
+### Fixes
+
+- `useListSort` now passes through parent objects when `orderByRules` is undefined.
+- `useListCalculated` no longer leaves `state.running` permanently true when objects are present but no calculated rules are configured.
+- `assignReactiveObject` now establishes reactive links when matching source and target values initially contain `undefined`.
+- Repeated `assignReactiveObject` calls now preserve previously linked refs.
+
+### Maintenance
+
+- Updated Vitest and its coverage packages to v4.1.7.
+- Updated generated types, documentation, and documentation generation tests.
+
+## v21.1.2 (2026-05-26)
+
+Version 21.1.1 was prepared but not tagged. Its changes are included in this release.
 
 ### Fixes
 
 - `cancellableFetch` now honors caller-provided `init.signal` while preserving `.cancel()` behavior, so external aborts correctly cancel the underlying fetch.
+
+### Maintenance
+
+- Updated the `lodash-es` peer dependency and refreshed development dependencies to address known vulnerabilities.
+- Updated package publishing configuration for trusted publishing.
 
 ## v21.1.0 (2025-12-17)
 
