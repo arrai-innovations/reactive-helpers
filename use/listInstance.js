@@ -454,7 +454,10 @@ export function useListInstance({ props, handlers = {} }) {
                         return true;
                     })
                     .catch((/** @type {Error} */ error) => {
-                        loadingError.setError(error);
+                        // A deliberate cancellation rejects with the cancel reason; that is not an error.
+                        if (!isCancelled.value) {
+                            loadingError.setError(error);
+                        }
                         return false;
                     })
                     .finally(() => {

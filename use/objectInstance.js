@@ -305,7 +305,10 @@ export function useObjectInstance({ props, handlers = {} }) {
                         return true;
                     })
                     .catch((/** @type {Error} */ error) => {
-                        loadingError.setError(error);
+                        // A deliberate cancellation rejects with the cancel reason; that is not an error.
+                        if (!isCancelled.value) {
+                            loadingError.setError(error);
+                        }
                         return false;
                     })
                     .finally(() => {
@@ -358,7 +361,10 @@ export function useObjectInstance({ props, handlers = {} }) {
                         return true;
                     })
                     .catch((/** @type {Error} */ error) => {
-                        loadingError.setError(error);
+                        // A deliberate cancellation rejects with the cancel reason; that is not an error.
+                        if (!isCancelled.value) {
+                            loadingError.setError(error);
+                        }
                         return false;
                     })
                     .finally(() => {
@@ -401,7 +407,10 @@ export function useObjectInstance({ props, handlers = {} }) {
                         return true;
                     })
                     .catch((/** @type {Error} */ error) => {
-                        loadingError.setError(error);
+                        // A deliberate cancellation rejects with the cancel reason; that is not an error.
+                        if (!isCancelled.value) {
+                            loadingError.setError(error);
+                        }
                         return false;
                     })
                     .finally(() => {
@@ -425,11 +434,13 @@ export function useObjectInstance({ props, handlers = {} }) {
             }
             loadingError.setLoading();
             loadingError.clearError();
+            const isCancelled = ref(false);
             const deletePromise = state.crud.delete({
                 ...args,
                 target: state.crud.args,
                 pk: state.pk,
                 pkKey: state.pkKey,
+                isCancelled: readonly(isCancelled),
             });
             return wrapMaybeCancellable(
                 deletePromise
@@ -439,7 +450,10 @@ export function useObjectInstance({ props, handlers = {} }) {
                         return true;
                     })
                     .catch((/** @type {Error} */ error) => {
-                        loadingError.setError(error);
+                        // A deliberate cancellation rejects with the cancel reason; that is not an error.
+                        if (!isCancelled.value) {
+                            loadingError.setError(error);
+                        }
                         return false;
                     })
                     .finally(() => {
@@ -447,6 +461,7 @@ export function useObjectInstance({ props, handlers = {} }) {
                     }),
                 deletePromise.cancel
                     ? async (/** @type {any} */ reason) => {
+                          isCancelled.value = true;
                           await deletePromise.cancel?.(reason);
                           loadingError.clearLoading();
                       }
@@ -479,7 +494,10 @@ export function useObjectInstance({ props, handlers = {} }) {
                         return true;
                     })
                     .catch((/** @type {Error} */ error) => {
-                        loadingError.setError(error);
+                        // A deliberate cancellation rejects with the cancel reason; that is not an error.
+                        if (!isCancelled.value) {
+                            loadingError.setError(error);
+                        }
                         return false;
                     })
                     .finally(() => {
@@ -515,7 +533,10 @@ export function useObjectInstance({ props, handlers = {} }) {
                         return true;
                     })
                     .catch((/** @type {Error} */ error) => {
-                        loadingError.setError(error);
+                        // A deliberate cancellation rejects with the cancel reason; that is not an error.
+                        if (!isCancelled.value) {
+                            loadingError.setError(error);
+                        }
                         return false;
                     })
                     .finally(() => {

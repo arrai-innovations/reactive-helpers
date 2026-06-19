@@ -123,6 +123,10 @@ export type DeleteArgsRaw = {
      * - The key name of the primary key.
      */
     pkKey: string;
+    /**
+     * - A ref to indicate if the request was cancelled.
+     */
+    isCancelled: Readonly<import("vue").Ref<boolean>>;
 };
 export type DeleteArgs = DeleteArgsRaw & AdditionalCrudArgs;
 export type PartialArgsRaw = {

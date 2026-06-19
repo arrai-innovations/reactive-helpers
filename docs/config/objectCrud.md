@@ -56,6 +56,12 @@ The arguments to be passed to the crud handlers.
 
 #### Properties
 
+##### isCancelled
+
+> **isCancelled**: `Readonly`\<`Ref`\<`boolean`, `boolean`\>\>
+
+A ref to indicate if the request was cancelled.
+
 ##### pk
 
 > **pk**: `string`
