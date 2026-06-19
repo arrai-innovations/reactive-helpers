@@ -20,19 +20,19 @@ The list being filtered.
 
 ##### props?
 
-> `optional` **props**: [`ListSearchProps`](#listsearchprops)
+> `optional` **props?**: [`ListSearchProps`](#listsearchprops)
 
 Reactive properties.
 
 ##### showAllWhenEmpty?
 
-> `optional` **showAllWhenEmpty**: `boolean`
+> `optional` **showAllWhenEmpty?**: `boolean`
 
 Whether to show all items when the search is empty.
 
 ##### throttle?
 
-> `optional` **throttle**: `number`
+> `optional` **throttle?**: `number`
 
 Throttle wait time.
 
@@ -52,13 +52,13 @@ The parent state.
 
 ###### allowedFilter?
 
-> `optional` **allowedFilter**: `Function`
+> `optional` **allowedFilter?**: `Function`
 
 Function to determine if an item should be included based on custom logic.
 
 ###### calculatedObjects?
 
-> `optional` **calculatedObjects**: `object`
+> `optional` **calculatedObjects?**: `object`
 
 The calculated objects.
 
@@ -68,25 +68,25 @@ The calculated objects.
 
 ###### calculatedObjectsParentStateObjectsWatchRunning?
 
-> `optional` **calculatedObjectsParentStateObjectsWatchRunning**: `boolean`
+> `optional` **calculatedObjectsParentStateObjectsWatchRunning?**: `boolean`
 
 Whether the parent state objects watch is running.
 
 ###### calculatedObjectsRules?
 
-> `optional` **calculatedObjectsRules**: [`ListCalculatedRules`](listCalculated.md#listcalculatedrules)
+> `optional` **calculatedObjectsRules?**: [`ListCalculatedRules`](listCalculated.md#listcalculatedrules)
 
 The rules for the calculated objects.
 
 ###### calculatedObjectsWatchRunning?
 
-> `optional` **calculatedObjectsWatchRunning**: `boolean`
+> `optional` **calculatedObjectsWatchRunning?**: `boolean`
 
 Whether the calculated objects watch is running.
 
 ###### calculatedRunning?
 
-> `optional` **calculatedRunning**: `boolean`
+> `optional` **calculatedRunning?**: `boolean`
 
 Whether the calculated properties are running.
 
@@ -146,13 +146,13 @@ Whether an error has occurred.
 
 ###### excludedFilter?
 
-> `optional` **excludedFilter**: `Function`
+> `optional` **excludedFilter?**: `Function`
 
 Function to determine if an item should be excluded based on custom logic.
 
 ###### fkForPkAndRule?
 
-> `optional` **fkForPkAndRule**: `object`
+> `optional` **fkForPkAndRule?**: `object`
 
 Maintains computed references to the foreign keys for each object pk and rule, crucial for navigating complex data relationships.
 
@@ -162,13 +162,13 @@ Maintains computed references to the foreign keys for each object pk and rule, c
 
 ###### intendToList?
 
-> `optional` **intendToList**: `boolean`
+> `optional` **intendToList?**: `boolean`
 
 If this is true, the list should be fetched, or re-fetched if arguments change.
 
 ###### intendToSubscribe?
 
-> `optional` **intendToSubscribe**: `boolean`
+> `optional` **intendToSubscribe?**: `boolean`
 
 If this is true, the subscription should start or restart if arguments change.
 
@@ -180,7 +180,7 @@ Whether the component is loading.
 
 ###### objAndKeyForPkAndRule?
 
-> `optional` **objAndKeyForPkAndRule**: `object`
+> `optional` **objAndKeyForPkAndRule?**: `object`
 
 Maps each object pk and rule to a tuple consisting of the related object and its respective key, facilitating direct data manipulation.
 
@@ -232,7 +232,7 @@ The primary key field for the list objects.
 
 ###### relatedObjects?
 
-> `optional` **relatedObjects**: `object`
+> `optional` **relatedObjects?**: `object`
 
 Stores computed references to related objects, allowing for dynamic access based on object pk and specific rules.
 
@@ -242,37 +242,37 @@ Stores computed references to related objects, allowing for dynamic access based
 
 ###### relatedObjectsParentStateObjectsWatchRunning?
 
-> `optional` **relatedObjectsParentStateObjectsWatchRunning**: `boolean`
+> `optional` **relatedObjectsParentStateObjectsWatchRunning?**: `boolean`
 
 Flags whether the watch on parent state objects is currently active, ensuring updates trigger as needed.
 
 ###### relatedObjectsRules?
 
-> `optional` **relatedObjectsRules**: [`ListRelatedRules`](listRelated.md#listrelatedrules)
+> `optional` **relatedObjectsRules?**: [`ListRelatedRules`](listRelated.md#listrelatedrules)
 
 Defines the rules for establishing relationships, such as foreign key links and sorting orders.
 
 ###### relatedObjectsWatchRunning?
 
-> `optional` **relatedObjectsWatchRunning**: `boolean`
+> `optional` **relatedObjectsWatchRunning?**: `boolean`
 
 Indicates if watches on the related objects themselves are active, managing updates efficiently.
 
 ###### relatedRunning?
 
-> `optional` **relatedRunning**: `boolean`
+> `optional` **relatedRunning?**: `boolean`
 
 Signals whether any computations related to object relationships are currently in progress.
 
 ###### running?
 
-> `optional` **running**: `boolean`
+> `optional` **running?**: `boolean`
 
 General flag that indicates if the list-related logic is processing, used to manage UI feedback or prevent concurrent operations.
 
 ###### subscribed?
 
-> `optional` **subscribed**: `boolean`
+> `optional` **subscribed?**: `boolean`
 
 Whether the subscription is active.
 
@@ -296,7 +296,7 @@ FlexSearch.Search options.
 
 ###### customSearchOptions.limit?
 
-> `optional` **limit**: `any`
+> `optional` **limit?**: `any`
 
 FlexSearch.Search options.
 
@@ -314,13 +314,13 @@ The value to search for.
 
 ##### showAllWhenEmpty?
 
-> `optional` **showAllWhenEmpty**: `boolean`
+> `optional` **showAllWhenEmpty?**: `boolean`
 
 Whether to show all items when the search is empty.
 
 ##### throttle?
 
-> `optional` **throttle**: `number`
+> `optional` **throttle?**: `number`
 
 The throttle.
 
@@ -338,13 +338,13 @@ The state.
 
 ###### allowedFilter?
 
-> `optional` **allowedFilter**: `Function`
+> `optional` **allowedFilter?**: `Function`
 
 Function to determine if an item should be included based on custom logic.
 
 ###### calculatedObjects?
 
-> `optional` **calculatedObjects**: `object`
+> `optional` **calculatedObjects?**: `object`
 
 The calculated objects.
 
@@ -354,25 +354,25 @@ The calculated objects.
 
 ###### calculatedObjectsParentStateObjectsWatchRunning?
 
-> `optional` **calculatedObjectsParentStateObjectsWatchRunning**: `boolean`
+> `optional` **calculatedObjectsParentStateObjectsWatchRunning?**: `boolean`
 
 Whether the parent state objects watch is running.
 
 ###### calculatedObjectsRules?
 
-> `optional` **calculatedObjectsRules**: [`ListCalculatedRules`](listCalculated.md#listcalculatedrules)
+> `optional` **calculatedObjectsRules?**: [`ListCalculatedRules`](listCalculated.md#listcalculatedrules)
 
 The rules for the calculated objects.
 
 ###### calculatedObjectsWatchRunning?
 
-> `optional` **calculatedObjectsWatchRunning**: `boolean`
+> `optional` **calculatedObjectsWatchRunning?**: `boolean`
 
 Whether the calculated objects watch is running.
 
 ###### calculatedRunning?
 
-> `optional` **calculatedRunning**: `boolean`
+> `optional` **calculatedRunning?**: `boolean`
 
 Whether the calculated properties are running.
 
@@ -444,13 +444,13 @@ Whether an error has occurred.
 
 ###### excludedFilter?
 
-> `optional` **excludedFilter**: `Function`
+> `optional` **excludedFilter?**: `Function`
 
 Function to determine if an item should be excluded based on custom logic.
 
 ###### fkForPkAndRule?
 
-> `optional` **fkForPkAndRule**: `object`
+> `optional` **fkForPkAndRule?**: `object`
 
 Maintains computed references to the foreign keys for each object pk and rule, crucial for navigating complex data relationships.
 
@@ -460,13 +460,13 @@ Maintains computed references to the foreign keys for each object pk and rule, c
 
 ###### intendToList?
 
-> `optional` **intendToList**: `boolean`
+> `optional` **intendToList?**: `boolean`
 
 If this is true, the list should be fetched, or re-fetched if arguments change.
 
 ###### intendToSubscribe?
 
-> `optional` **intendToSubscribe**: `boolean`
+> `optional` **intendToSubscribe?**: `boolean`
 
 If this is true, the subscription should start or restart if arguments change.
 
@@ -478,7 +478,7 @@ Whether the component is loading.
 
 ###### objAndKeyForPkAndRule?
 
-> `optional` **objAndKeyForPkAndRule**: `object`
+> `optional` **objAndKeyForPkAndRule?**: `object`
 
 Maps each object pk and rule to a tuple consisting of the related object and its respective key, facilitating direct data manipulation.
 
@@ -536,7 +536,7 @@ The primary key field for the list objects.
 
 ###### relatedObjects?
 
-> `optional` **relatedObjects**: `object`
+> `optional` **relatedObjects?**: `object`
 
 Stores computed references to related objects, allowing for dynamic access based on object pk and specific rules.
 
@@ -546,25 +546,25 @@ Stores computed references to related objects, allowing for dynamic access based
 
 ###### relatedObjectsParentStateObjectsWatchRunning?
 
-> `optional` **relatedObjectsParentStateObjectsWatchRunning**: `boolean`
+> `optional` **relatedObjectsParentStateObjectsWatchRunning?**: `boolean`
 
 Flags whether the watch on parent state objects is currently active, ensuring updates trigger as needed.
 
 ###### relatedObjectsRules?
 
-> `optional` **relatedObjectsRules**: [`ListRelatedRules`](listRelated.md#listrelatedrules)
+> `optional` **relatedObjectsRules?**: [`ListRelatedRules`](listRelated.md#listrelatedrules)
 
 Defines the rules for establishing relationships, such as foreign key links and sorting orders.
 
 ###### relatedObjectsWatchRunning?
 
-> `optional` **relatedObjectsWatchRunning**: `boolean`
+> `optional` **relatedObjectsWatchRunning?**: `boolean`
 
 Indicates if watches on the related objects themselves are active, managing updates efficiently.
 
 ###### relatedRunning?
 
-> `optional` **relatedRunning**: `boolean`
+> `optional` **relatedRunning?**: `boolean`
 
 Signals whether any computations related to object relationships are currently in progress.
 
@@ -582,7 +582,7 @@ Flag indicating if a search has been performed.
 
 ###### subscribed?
 
-> `optional` **subscribed**: `boolean`
+> `optional` **subscribed?**: `boolean`
 
 Whether the subscription is active.
 
@@ -599,7 +599,7 @@ Rules defining how text search should be applied on list items. Each rule
 
 The current value used for searching.
 
-##### stop()
+##### stop
 
 > **stop**: () => `void`
 
@@ -635,7 +635,7 @@ FlexSearch.Search options.
 
 ###### limit?
 
-> `optional` **limit**: `any`
+> `optional` **limit?**: `any`
 
 FlexSearch.Search options.
 
@@ -673,7 +673,7 @@ FlexSearch.Search options.
 
 ###### limit?
 
-> `optional` **limit**: `any`
+> `optional` **limit?**: `any`
 
 FlexSearch.Search options.
 
@@ -760,7 +760,7 @@ The current value used for searching.
 
 ### ListSearch
 
-> **ListSearch**\<\> = [`ListSearchProperties`](#listsearchproperties)
+> **ListSearch** = [`ListSearchProperties`](#listsearchproperties)
 
 #### Type Parameters
 
@@ -768,7 +768,7 @@ The current value used for searching.
 
 ### ListSearchParentRawState
 
-> **ListSearchParentRawState**\<\> = [`ListInstanceRawState`](listInstance.md#listinstancerawstate) & `Partial`\<[`ListSubscriptionRawState`](listSubscription.md#listsubscriptionrawstate)\> & `Partial`\<[`ListRelatedRawState`](listRelated.md#listrelatedrawstate)\> & `Partial`\<[`ListCalculatedRawState`](listCalculated.md#listcalculatedrawstate)\> & `Partial`\<[`ListFilterRawState`](listFilter.md#listfilterrawstate)\>
+> **ListSearchParentRawState** = [`ListInstanceRawState`](listInstance.md#listinstancerawstate) & `Partial`\<[`ListSubscriptionRawState`](listSubscription.md#listsubscriptionrawstate)\> & `Partial`\<[`ListRelatedRawState`](listRelated.md#listrelatedrawstate)\> & `Partial`\<[`ListCalculatedRawState`](listCalculated.md#listcalculatedrawstate)\> & `Partial`\<[`ListFilterRawState`](listFilter.md#listfilterrawstate)\>
 
 #### Type Parameters
 
@@ -776,7 +776,7 @@ The current value used for searching.
 
 ### ListSearchParentState
 
-> **ListSearchParentState**\<\> = `UnwrapNestedRefs`
+> **ListSearchParentState** = `UnwrapNestedRefs`
 
 The parent state for a list search.
 
@@ -786,7 +786,7 @@ The parent state for a list search.
 
 ### ListSearchParentStateToRefs
 
-> **ListSearchParentStateToRefs**\<\> = `ToRefs`
+> **ListSearchParentStateToRefs** = `ToRefs`
 
 #### Type Parameters
 
@@ -794,7 +794,7 @@ The parent state for a list search.
 
 ### ListSearchState
 
-> **ListSearchState**\<\> = `UnwrapNestedRefs`
+> **ListSearchState** = `UnwrapNestedRefs`
 
 The state for a list search.
 
@@ -804,7 +804,7 @@ The state for a list search.
 
 ### TextSearchRules
 
-> **TextSearchRules**\<\> = `string` \| `string`[] \| `object`[]
+> **TextSearchRules** = `string` \| `string`[] \| `object`[]
 
 #### Type Parameters
 

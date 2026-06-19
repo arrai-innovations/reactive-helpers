@@ -220,7 +220,7 @@ The subscribe intent.
 
 #### Properties
 
-##### clearError()
+##### clearError
 
 > **clearError**: () => `void`
 
@@ -238,13 +238,13 @@ Clears any errors related to the subscription, and resets the loading state.
 
 ##### handlers?
 
-> `optional` **handlers**: [`ObjectCrudHandlers`](../config/objectCrud.md#objectcrudhandlers)
+> `optional` **handlers?**: [`ObjectCrudHandlers`](../config/objectCrud.md#objectcrudhandlers)
 
 The handlers to be passed to useObjectInstance.
 
 ##### objectInstance?
 
-> `optional` **objectInstance**: [`ObjectInstance`](objectInstance.md#objectinstance)
+> `optional` **objectInstance?**: [`ObjectInstance`](objectInstance.md#objectinstance)
 
 An object instance to use instead of creating a new one.
 
@@ -274,7 +274,7 @@ The arguments to be passed to the retrieve function.
 
 ###### pk?
 
-> `optional` **pk**: [`PkInput`](../config/commonCrud.md#pkinput)
+> `optional` **pk?**: [`PkInput`](../config/commonCrud.md#pkinput)
 
 The pk of the object, optional to support creating new objects.
 
@@ -298,43 +298,43 @@ The arguments to be passed to the crud handlers.
 
 ###### target.create?
 
-> `optional` **create**: [`CrudCreateFn`](../config/objectCrud.md#crudcreatefn)
+> `optional` **create?**: [`CrudCreateFn`](../config/objectCrud.md#crudcreatefn)
 
 A function to be used instead of the default crud create function.
 
 ###### target.delete?
 
-> `optional` **delete**: [`CrudDeleteFn`](../config/objectCrud.md#cruddeletefn)
+> `optional` **delete?**: [`CrudDeleteFn`](../config/objectCrud.md#cruddeletefn)
 
 A function to be used instead of the default crud delete function.
 
 ###### target.executeAction?
 
-> `optional` **executeAction**: [`CrudObjectExecuteActionFn`](../config/objectCrud.md#crudobjectexecuteactionfn)
+> `optional` **executeAction?**: [`CrudObjectExecuteActionFn`](../config/objectCrud.md#crudobjectexecuteactionfn)
 
 The  function to execute a certain action on an object.
 
 ###### target.patch?
 
-> `optional` **patch**: [`CrudPatchFn`](../config/objectCrud.md#crudpatchfn)
+> `optional` **patch?**: [`CrudPatchFn`](../config/objectCrud.md#crudpatchfn)
 
 A function to be used instead of the default crud patch function.
 
 ###### target.retrieve?
 
-> `optional` **retrieve**: [`CrudRetrieveFn`](../config/objectCrud.md#crudretrievefn)
+> `optional` **retrieve?**: [`CrudRetrieveFn`](../config/objectCrud.md#crudretrievefn)
 
 A function to be used instead of the default crud retrieve function.
 
 ###### target.subscribe?
 
-> `optional` **subscribe**: [`CrudObjectSubscribeFn`](../config/objectCrud.md#crudobjectsubscribefn)
+> `optional` **subscribe?**: [`CrudObjectSubscribeFn`](../config/objectCrud.md#crudobjectsubscribefn)
 
 A function to be used instead of the default crud subscribe function.
 
 ###### target.update?
 
-> `optional` **update**: [`CrudUpdateFn`](../config/objectCrud.md#crudupdatefn)
+> `optional` **update?**: [`CrudUpdateFn`](../config/objectCrud.md#crudupdatefn)
 
 A function to be used instead of the default crud update function.
 
@@ -486,7 +486,7 @@ The pk key of the object.
 
 Whether the object is subscribed.
 
-##### stop()
+##### stop
 
 > **stop**: () => `void`
 
@@ -548,7 +548,7 @@ Whether the object is subscribed.
 
 ### ObjectSubscription
 
-> **ObjectSubscription**\<\> = [`ObjectSubscriptionProperties`](#objectsubscriptionproperties) & [`ObjectSubscriptionFunctions`](#objectsubscriptionfunctions)
+> **ObjectSubscription** = [`ObjectSubscriptionProperties`](#objectsubscriptionproperties) & [`ObjectSubscriptionFunctions`](#objectsubscriptionfunctions)
 
 #### Type Parameters
 
@@ -556,7 +556,7 @@ Whether the object is subscribed.
 
 ### ObjectSubscriptionOptions
 
-> **ObjectSubscriptionOptions**\<\> = [`ObjectSubscriptionOwnOptions`](#objectsubscriptionownoptions) & [`ObjectInstanceOptions`](objectInstance.md#objectinstanceoptions)
+> **ObjectSubscriptionOptions** = [`ObjectSubscriptionOwnOptions`](#objectsubscriptionownoptions) & [`ObjectInstanceOptions`](objectInstance.md#objectinstanceoptions)
 
 #### Type Parameters
 
@@ -564,7 +564,7 @@ Whether the object is subscribed.
 
 ### ObjectSubscriptionState
 
-> **ObjectSubscriptionState**\<\> = `Reactive`
+> **ObjectSubscriptionState** = `Reactive`
 
 #### Type Parameters
 

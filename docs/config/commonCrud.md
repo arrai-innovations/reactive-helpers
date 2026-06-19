@@ -10,7 +10,7 @@
 
 ### Pk
 
-> **Pk**\<\> = `string`
+> **Pk** = `string`
 
 #### Type Parameters
 
@@ -18,7 +18,7 @@
 
 ### PkInput
 
-> **PkInput**\<\> = `string` \| `number`
+> **PkInput** = `string` \| `number`
 
 #### Type Parameters
 
@@ -74,7 +74,7 @@ The valid keys for the handlers.
 
 ### createDefaultCrud()
 
-> **createDefaultCrud**(`keys`, `cancellableKeys`): `any`
+> **createDefaultCrud**(`keys`, `cancellableKeys?`): `any`
 
 Creates a default CRUD object with the given keys.
 
@@ -86,7 +86,7 @@ Creates a default CRUD object with the given keys.
 
 The CRUD function keys.
 
-##### cancellableKeys
+##### cancellableKeys?
 
 `Set`\<`string`\> = `...`
 
@@ -116,17 +116,7 @@ The name of the method.
 
 - A function that returns a rejected promise with an error message.
 
-> (...`args`): [`MaybeCancellablePromise`](../utils/cancellablePromise.md#maybecancellablepromise)\<`any`\>
-
-##### Parameters
-
-###### args
-
-...`any`[]
-
-##### Returns
-
-[`MaybeCancellablePromise`](../utils/cancellablePromise.md#maybecancellablepromise)\<`any`\>
+(...`args`) => [`MaybeCancellablePromise`](../utils/cancellablePromise.md#maybecancellablepromise)\<`any`\>
 
 ***
 
@@ -146,14 +136,4 @@ The name of the method.
 
 - A function that returns a rejected promise with an error message.
 
-> (...`_args`): [`CancellablePromise`](../utils/cancellablePromise.md#cancellablepromise)\<`void`\>
-
-##### Parameters
-
-###### \_args
-
-...`any`[]
-
-##### Returns
-
-[`CancellablePromise`](../utils/cancellablePromise.md#cancellablepromise)\<`void`\>
+(...`_args`) => [`CancellablePromise`](../utils/cancellablePromise.md#cancellablepromise)\<`void`\>

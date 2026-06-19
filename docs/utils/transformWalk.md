@@ -10,7 +10,7 @@
 
 ### transformWalk()
 
-> **transformWalk**(`obj`, `transformFn`, `path`): `any`
+> **transformWalk**(`obj`, `transformFn`, `path?`): `any`
 
 Recursively walks through an object's values and applies a transformation function to each value.
 The value recursed into is the transformed value, not the original value.
@@ -29,7 +29,7 @@ The object to start walking from.
 
 The function to transform each value.
 
-##### path
+##### path?
 
 `string` = `""`
 

@@ -10,7 +10,7 @@
 
 ### CSSClasses
 
-> **CSSClasses**\<\> = `string` \| `string`[] \| \{\[`key`: `string`\]: `boolean` \| `Ref`\<`boolean`, `boolean`\>; \} \| `Ref`
+> **CSSClasses** = `string` \| `string`[] \| \{\[`key`: `string`\]: `boolean` \| `Ref`\<`boolean`, `boolean`\>; \} \| `Ref`
 
 #### Type Parameters
 

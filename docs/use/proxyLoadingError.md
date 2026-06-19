@@ -10,7 +10,7 @@
 
 ### MaybeRefWatchableLoadingError
 
-> **MaybeRefWatchableLoadingError**\<\> = `MaybeRef`
+> **MaybeRefWatchableLoadingError** = `MaybeRef`
 
 #### Type Parameters
 
@@ -18,7 +18,7 @@
 
 ### ProxyLoadingError
 
-> **ProxyLoadingError**\<\> = [`LoadingProperties`](loading.md#loadingproperties) & [`ReadonlyErrorStatus`](error.md#readonlyerrorstatus)
+> **ProxyLoadingError** = [`LoadingProperties`](loading.md#loadingproperties) & [`ReadonlyErrorStatus`](error.md#readonlyerrorstatus)
 
 #### Type Parameters
 
@@ -26,7 +26,7 @@
 
 ### SeparateStateLoadingError
 
-> **SeparateStateLoadingError**\<\> = `object` & [`ErrorReadOnlyFunctions`](error.md#errorreadonlyfunctions)
+> **SeparateStateLoadingError** = `object` & [`ErrorReadOnlyFunctions`](error.md#errorreadonlyfunctions)
 
 #### Type Declaration
 
@@ -40,7 +40,7 @@
 
 ### WatchableLoadingError
 
-> **WatchableLoadingError**\<\> = [`WatchableLoading`](proxyLoading.md#watchableloading) & [`WatchableError`](proxyError.md#watchableerror)
+> **WatchableLoadingError** = [`WatchableLoading`](proxyLoading.md#watchableloading) & [`WatchableError`](proxyError.md#watchableerror)
 
 #### Type Parameters
 

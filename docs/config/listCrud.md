@@ -123,25 +123,25 @@ The arguments to be passed to the crud handlers.
 
 ##### bulkDelete?
 
-> `optional` **bulkDelete**: [`CrudBulkDeleteFn`](#crudbulkdeletefn)
+> `optional` **bulkDelete?**: [`CrudBulkDeleteFn`](#crudbulkdeletefn)
 
 The delete function to bulk delete a list of items.
 
 ##### executeAction?
 
-> `optional` **executeAction**: [`CrudExecuteActionFn`](#crudexecuteactionfn)
+> `optional` **executeAction?**: [`CrudExecuteActionFn`](#crudexecuteactionfn)
 
 The  function to execute a certain action on a list of items.
 
 ##### list?
 
-> `optional` **list**: [`CrudListFn`](#crudlistfn)
+> `optional` **list?**: [`CrudListFn`](#crudlistfn)
 
 The list function to get a list of items.
 
 ##### subscribe?
 
-> `optional` **subscribe**: [`CrudListSubscribeFn`](#crudlistsubscribefn)
+> `optional` **subscribe?**: [`CrudListSubscribeFn`](#crudlistsubscribefn)
 
 The subscribe function to get a subscription to a list of items.
 
@@ -202,7 +202,7 @@ The default arguments for the crud handlers.
 
 ##### target?
 
-> `optional` **target**: `any`
+> `optional` **target?**: `any`
 
 The default arguments for the crud handlers.
 
@@ -210,7 +210,7 @@ The default arguments for the crud handlers.
 
 ### AdditionalListArgs
 
-> **AdditionalListArgs**\<\> = `object`
+> **AdditionalListArgs** = `object`
 
 #### Type Parameters
 
@@ -220,9 +220,9 @@ The default arguments for the crud handlers.
 
 ***
 
-### applyObjectEvent()
+### applyObjectEvent
 
-> **applyObjectEvent**\<\> = (`newOrUpdatedOrDeleteObject`, `action`) => `void`
+> **applyObjectEvent** = (`newOrUpdatedOrDeleteObject`, `action`) => `void`
 
 #### Type Parameters
 
@@ -230,11 +230,11 @@ The default arguments for the crud handlers.
 
 ##### newOrUpdatedOrDeleteObject
 
-[`ExistingCrudObject`](../use/objectInstance.md#existingcrudobject) | `string`
+[`ExistingCrudObject`](../use/objectInstance.md#existingcrudobject) \| `string`
 
 ##### action
 
-`"create"` | `"update"` | `"delete"`
+`"create"` \| `"update"` \| `"delete"`
 
 #### Returns
 
@@ -244,15 +244,15 @@ The default arguments for the crud handlers.
 
 ### BulkDeleteArgs
 
-> **BulkDeleteArgs**\<\> = [`BulkDeleteArgsRaw`](#bulkdeleteargsraw) & [`AdditionalListArgs`](#additionallistargs)
+> **BulkDeleteArgs** = [`BulkDeleteArgsRaw`](#bulkdeleteargsraw) & [`AdditionalListArgs`](#additionallistargs)
 
 #### Type Parameters
 
 ***
 
-### ClearObjectsFn()
+### ClearObjectsFn
 
-> **ClearObjectsFn**\<\> = (`options?`) => `void`
+> **ClearObjectsFn** = (`options?`) => `void`
 
 #### Type Parameters
 
@@ -268,9 +268,9 @@ The default arguments for the crud handlers.
 
 ***
 
-### CrudBulkDeleteFn()
+### CrudBulkDeleteFn
 
-> **CrudBulkDeleteFn**\<\> = (`args`) => `Promise`\<`boolean`\>
+> **CrudBulkDeleteFn** = (`args`) => `Promise`\<`boolean`\>
 
 #### Type Parameters
 
@@ -288,9 +288,9 @@ The arguments to be passed to the crud handlers.
 
 ***
 
-### CrudExecuteActionFn()
+### CrudExecuteActionFn
 
-> **CrudExecuteActionFn**\<\> = (`args`) => `Promise`\<`object` \| `string` \| `null`\>
+> **CrudExecuteActionFn** = (`args`) => `Promise`\<`object` \| `string` \| `null`\>
 
 #### Type Parameters
 
@@ -308,9 +308,9 @@ The arguments to be passed to the crud handlers.
 
 ***
 
-### CrudListFn()
+### CrudListFn
 
-> **CrudListFn**\<\> = (`args`) => [`MaybeCancellablePromise`](../utils/cancellablePromise.md#maybecancellablepromise)
+> **CrudListFn** = (`args`) => [`MaybeCancellablePromise`](../utils/cancellablePromise.md#maybecancellablepromise)
 
 #### Type Parameters
 
@@ -328,9 +328,9 @@ The arguments to be passed to the crud handlers.
 
 ***
 
-### CrudListSubscribeFn()
+### CrudListSubscribeFn
 
-> **CrudListSubscribeFn**\<\> = (`args`) => [`CancellablePromise`](../utils/cancellablePromise.md#cancellablepromise)
+> **CrudListSubscribeFn** = (`args`) => [`CancellablePromise`](../utils/cancellablePromise.md#cancellablepromise)
 
 #### Type Parameters
 
@@ -350,7 +350,7 @@ The arguments to be passed to the crud handlers.
 
 ### ExecuteActionArgs
 
-> **ExecuteActionArgs**\<\> = [`ExecuteActionArgsRaw`](#executeactionargsraw) & [`AdditionalListArgs`](#additionallistargs)
+> **ExecuteActionArgs** = [`ExecuteActionArgsRaw`](#executeactionargsraw) & [`AdditionalListArgs`](#additionallistargs)
 
 #### Type Parameters
 
@@ -358,7 +358,7 @@ The arguments to be passed to the crud handlers.
 
 ### ListArgs
 
-> **ListArgs**\<\> = [`ListArgsRaw`](#listargsraw) & `Partial`\<[`CommonRunTracking`](../use/cancellableIntent.md#commonruntracking)\> & [`AdditionalListArgs`](#additionallistargs)
+> **ListArgs** = [`ListArgsRaw`](#listargsraw) & `Partial`\<[`CommonRunTracking`](../use/cancellableIntent.md#commonruntracking)\> & [`AdditionalListArgs`](#additionallistargs)
 
 #### Type Parameters
 
@@ -366,15 +366,15 @@ The arguments to be passed to the crud handlers.
 
 ### ListSubscribeArgs
 
-> **ListSubscribeArgs**\<\> = [`ListSubscribeArgsRaw`](#listsubscribeargsraw) & `Partial`\<[`CommonRunTracking`](../use/cancellableIntent.md#commonruntracking)\> & [`AdditionalListArgs`](#additionallistargs)
+> **ListSubscribeArgs** = [`ListSubscribeArgsRaw`](#listsubscribeargsraw) & `Partial`\<[`CommonRunTracking`](../use/cancellableIntent.md#commonruntracking)\> & [`AdditionalListArgs`](#additionallistargs)
 
 #### Type Parameters
 
 ***
 
-### SetColumnTotals()
+### SetColumnTotals
 
-> **SetColumnTotals**\<\> = (`total`) => `void`
+> **SetColumnTotals** = (`total`) => `void`
 
 #### Type Parameters
 
@@ -390,9 +390,9 @@ The arguments to be passed to the crud handlers.
 
 ***
 
-### SetPaginateInfo()
+### SetPaginateInfo
 
-> **SetPaginateInfo**\<\> = (`info`) => `void`
+> **SetPaginateInfo** = (`info`) => `void`
 
 #### Type Parameters
 

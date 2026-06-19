@@ -24,9 +24,9 @@ The object to modify.
 
 ##### path
 
-The key to delete.
+`string` \| (`string` \| `number` \| `symbol`)[]
 
-`string` | (`string` \| `number` \| `symbol`)[]
+The key to delete.
 
 #### Returns
 
@@ -46,9 +46,9 @@ Split a string into an array of keys.
 
 ##### string
 
-The string to split.
+`string` \| (`string` \| `number` \| `symbol`)[]
 
-`string` | (`string` \| `number` \| `symbol`)[]
+The string to split.
 
 ##### object
 

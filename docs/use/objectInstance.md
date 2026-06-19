@@ -67,7 +67,7 @@ The error code.
 
 #### Properties
 
-##### clear()
+##### clear
 
 > **clear**: () => `void`
 
@@ -77,7 +77,7 @@ Called to clear the object state.
 
 `void`
 
-##### create()
+##### create
 
 > **create**: (`args`) => [`MaybeCancellablePromise`](../utils/cancellablePromise.md#maybecancellablepromise)\<`boolean`\>
 
@@ -93,7 +93,7 @@ Called to turn the current object into a new object on the server.
 
 [`MaybeCancellablePromise`](../utils/cancellablePromise.md#maybecancellablepromise)\<`boolean`\>
 
-##### delete()
+##### delete
 
 > **delete**: (`args?`) => [`MaybeCancellablePromise`](../utils/cancellablePromise.md#maybecancellablepromise)\<`boolean`\>
 
@@ -109,7 +109,7 @@ Called to delete the current object on the server.
 
 [`MaybeCancellablePromise`](../utils/cancellablePromise.md#maybecancellablepromise)\<`boolean`\>
 
-##### executeAction()
+##### executeAction
 
 > **executeAction**: (`args`) => [`MaybeCancellablePromise`](../utils/cancellablePromise.md#maybecancellablepromise)\<`boolean`\>
 
@@ -125,7 +125,7 @@ Called to execute certain action on the current object.
 
 [`MaybeCancellablePromise`](../utils/cancellablePromise.md#maybecancellablepromise)\<`boolean`\>
 
-##### patch()
+##### patch
 
 > **patch**: (`args`) => [`MaybeCancellablePromise`](../utils/cancellablePromise.md#maybecancellablepromise)\<`boolean`\>
 
@@ -141,7 +141,7 @@ Called to patch the current object on the server.
 
 [`MaybeCancellablePromise`](../utils/cancellablePromise.md#maybecancellablepromise)\<`boolean`\>
 
-##### retrieve()
+##### retrieve
 
 > **retrieve**: (`args?`) => [`MaybeCancellablePromise`](../utils/cancellablePromise.md#maybecancellablepromise)\<`boolean`\>
 
@@ -157,7 +157,7 @@ Called to retrieve the current object by pk from the server.
 
 [`MaybeCancellablePromise`](../utils/cancellablePromise.md#maybecancellablepromise)\<`boolean`\>
 
-##### update()
+##### update
 
 > **update**: (`args`) => [`MaybeCancellablePromise`](../utils/cancellablePromise.md#maybecancellablepromise)\<`boolean`\>
 
@@ -181,7 +181,7 @@ Called to update the current object on the server.
 
 ##### handlers?
 
-> `optional` **handlers**: [`ObjectCrudHandlers`](../config/objectCrud.md#objectcrudhandlers)
+> `optional` **handlers?**: [`ObjectCrudHandlers`](../config/objectCrud.md#objectcrudhandlers)
 
 An object of custom crud handlers to use instead of the defaults.
 
@@ -199,7 +199,7 @@ The arguments to be passed to the retrieve function.
 
 ###### pk?
 
-> `optional` **pk**: [`PkInput`](../config/commonCrud.md#pkinput)
+> `optional` **pk?**: [`PkInput`](../config/commonCrud.md#pkinput)
 
 The pk of the object, optional to support creating new objects.
 
@@ -223,43 +223,43 @@ The arguments to be passed to the crud handlers.
 
 ###### target.create?
 
-> `optional` **create**: [`CrudCreateFn`](../config/objectCrud.md#crudcreatefn)
+> `optional` **create?**: [`CrudCreateFn`](../config/objectCrud.md#crudcreatefn)
 
 A function to be used instead of the default crud create function.
 
 ###### target.delete?
 
-> `optional` **delete**: [`CrudDeleteFn`](../config/objectCrud.md#cruddeletefn)
+> `optional` **delete?**: [`CrudDeleteFn`](../config/objectCrud.md#cruddeletefn)
 
 A function to be used instead of the default crud delete function.
 
 ###### target.executeAction?
 
-> `optional` **executeAction**: [`CrudObjectExecuteActionFn`](../config/objectCrud.md#crudobjectexecuteactionfn)
+> `optional` **executeAction?**: [`CrudObjectExecuteActionFn`](../config/objectCrud.md#crudobjectexecuteactionfn)
 
 The  function to execute a certain action on an object.
 
 ###### target.patch?
 
-> `optional` **patch**: [`CrudPatchFn`](../config/objectCrud.md#crudpatchfn)
+> `optional` **patch?**: [`CrudPatchFn`](../config/objectCrud.md#crudpatchfn)
 
 A function to be used instead of the default crud patch function.
 
 ###### target.retrieve?
 
-> `optional` **retrieve**: [`CrudRetrieveFn`](../config/objectCrud.md#crudretrievefn)
+> `optional` **retrieve?**: [`CrudRetrieveFn`](../config/objectCrud.md#crudretrievefn)
 
 A function to be used instead of the default crud retrieve function.
 
 ###### target.subscribe?
 
-> `optional` **subscribe**: [`CrudObjectSubscribeFn`](../config/objectCrud.md#crudobjectsubscribefn)
+> `optional` **subscribe?**: [`CrudObjectSubscribeFn`](../config/objectCrud.md#crudobjectsubscribefn)
 
 A function to be used instead of the default crud subscribe function.
 
 ###### target.update?
 
-> `optional` **update**: [`CrudUpdateFn`](../config/objectCrud.md#crudupdatefn)
+> `optional` **update?**: [`CrudUpdateFn`](../config/objectCrud.md#crudupdatefn)
 
 A function to be used instead of the default crud update function.
 
@@ -485,7 +485,7 @@ The arguments to be passed to the retrieve function.
 
 ##### pk?
 
-> `optional` **pk**: [`PkInput`](../config/commonCrud.md#pkinput)
+> `optional` **pk?**: [`PkInput`](../config/commonCrud.md#pkinput)
 
 The pk of the object, optional to support creating new objects.
 
@@ -559,7 +559,7 @@ The update function.
 
 ### AdditionalArgs
 
-> **AdditionalArgs**\<\> = `object`
+> **AdditionalArgs** = `object`
 
 #### Type Parameters
 
@@ -571,7 +571,7 @@ The update function.
 
 ### CrudObject
 
-> **CrudObject**\<\> = [`ExistingCrudObject`](#existingcrudobject) \| [`NewCrudObject`](#newcrudobject)
+> **CrudObject** = [`ExistingCrudObject`](#existingcrudobject) \| [`NewCrudObject`](#newcrudobject)
 
 #### Type Parameters
 
@@ -579,7 +579,7 @@ The update function.
 
 ### ExistingCrudObject
 
-> **ExistingCrudObject**\<\> = `object`
+> **ExistingCrudObject** = `object`
 
 #### Type Parameters
 
@@ -591,7 +591,7 @@ The update function.
 
 ### NewCrudObject
 
-> **NewCrudObject**\<\> = `object`
+> **NewCrudObject** = `object`
 
 #### Type Parameters
 
@@ -603,7 +603,7 @@ The update function.
 
 ### ObjectInstance
 
-> **ObjectInstance**\<\> = [`ObjectInstanceFunctions`](#objectinstancefunctions) & [`ObjectInstanceProperties`](#objectinstanceproperties)
+> **ObjectInstance** = [`ObjectInstanceFunctions`](#objectinstancefunctions) & [`ObjectInstanceProperties`](#objectinstanceproperties)
 
 #### Type Parameters
 
@@ -611,7 +611,7 @@ The update function.
 
 ### ObjectInstanceCreateArgs
 
-> **ObjectInstanceCreateArgs**\<\> = `object`
+> **ObjectInstanceCreateArgs** = `object`
 
 #### Type Parameters
 
@@ -625,7 +625,7 @@ The update function.
 
 ### ObjectInstanceFunctions
 
-> **ObjectInstanceFunctions**\<\> = [`ErrorReadOnlyFunctions`](error.md#errorreadonlyfunctions) & [`ObjectInstanceMyFunctions`](#objectinstancemyfunctions)
+> **ObjectInstanceFunctions** = [`ErrorReadOnlyFunctions`](error.md#errorreadonlyfunctions) & [`ObjectInstanceMyFunctions`](#objectinstancemyfunctions)
 
 #### Type Parameters
 
@@ -633,7 +633,7 @@ The update function.
 
 ### ObjectInstancePatchArgs
 
-> **ObjectInstancePatchArgs**\<\> = `object`
+> **ObjectInstancePatchArgs** = `object`
 
 #### Type Parameters
 
@@ -647,7 +647,7 @@ The update function.
 
 ### ObjectInstanceRawState
 
-> **ObjectInstanceRawState**\<\> = [`ObjectInstanceRawMyState`](#objectinstancerawmystate) & [`LoadingErrorProperties`](loadingError.md#loadingerrorproperties)
+> **ObjectInstanceRawState** = [`ObjectInstanceRawMyState`](#objectinstancerawmystate) & [`LoadingErrorProperties`](loadingError.md#loadingerrorproperties)
 
 #### Type Parameters
 
@@ -655,7 +655,7 @@ The update function.
 
 ### ObjectInstanceState
 
-> **ObjectInstanceState**\<\> = `Reactive`
+> **ObjectInstanceState** = `Reactive`
 
 #### Type Parameters
 
@@ -663,7 +663,7 @@ The update function.
 
 ### ObjectInstanceUpdateArgs
 
-> **ObjectInstanceUpdateArgs**\<\> = `object`
+> **ObjectInstanceUpdateArgs** = `object`
 
 #### Type Parameters
 

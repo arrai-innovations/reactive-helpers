@@ -88,43 +88,43 @@ The arguments to be passed to the crud handlers.
 
 ##### create?
 
-> `optional` **create**: [`CrudCreateFn`](#crudcreatefn)
+> `optional` **create?**: [`CrudCreateFn`](#crudcreatefn)
 
 A function to be used instead of the default crud create function.
 
 ##### delete?
 
-> `optional` **delete**: [`CrudDeleteFn`](#cruddeletefn)
+> `optional` **delete?**: [`CrudDeleteFn`](#cruddeletefn)
 
 A function to be used instead of the default crud delete function.
 
 ##### executeAction?
 
-> `optional` **executeAction**: [`CrudObjectExecuteActionFn`](#crudobjectexecuteactionfn)
+> `optional` **executeAction?**: [`CrudObjectExecuteActionFn`](#crudobjectexecuteactionfn)
 
 The  function to execute a certain action on an object.
 
 ##### patch?
 
-> `optional` **patch**: [`CrudPatchFn`](#crudpatchfn)
+> `optional` **patch?**: [`CrudPatchFn`](#crudpatchfn)
 
 A function to be used instead of the default crud patch function.
 
 ##### retrieve?
 
-> `optional` **retrieve**: [`CrudRetrieveFn`](#crudretrievefn)
+> `optional` **retrieve?**: [`CrudRetrieveFn`](#crudretrievefn)
 
 A function to be used instead of the default crud retrieve function.
 
 ##### subscribe?
 
-> `optional` **subscribe**: [`CrudObjectSubscribeFn`](#crudobjectsubscribefn)
+> `optional` **subscribe?**: [`CrudObjectSubscribeFn`](#crudobjectsubscribefn)
 
 A function to be used instead of the default crud subscribe function.
 
 ##### update?
 
-> `optional` **update**: [`CrudUpdateFn`](#crudupdatefn)
+> `optional` **update?**: [`CrudUpdateFn`](#crudupdatefn)
 
 A function to be used instead of the default crud update function.
 
@@ -218,7 +218,7 @@ The arguments to be passed to the crud handlers.
 
 ##### target?
 
-> `optional` **target**: [`TargetArgs`](#targetargs)
+> `optional` **target?**: [`TargetArgs`](#targetargs)
 
 The arguments to be passed to the crud handlers.
 
@@ -368,7 +368,7 @@ The arguments to be passed to the crud handlers.
 
 ### AdditionalCrudArgs
 
-> **AdditionalCrudArgs**\<\> = `object`
+> **AdditionalCrudArgs** = `object`
 
 #### Type Parameters
 
@@ -380,15 +380,15 @@ The arguments to be passed to the crud handlers.
 
 ### CreateArgs
 
-> **CreateArgs**\<\> = [`CreateArgsRaw`](#createargsraw) & [`AdditionalCrudArgs`](#additionalcrudargs)
+> **CreateArgs** = [`CreateArgsRaw`](#createargsraw) & [`AdditionalCrudArgs`](#additionalcrudargs)
 
 #### Type Parameters
 
 ***
 
-### CrudCreateFn()
+### CrudCreateFn
 
-> **CrudCreateFn**\<\> = (`args`) => [`CrudResponse`](#crudresponse)
+> **CrudCreateFn** = (`args`) => [`CrudResponse`](#crudresponse)
 
 #### Type Parameters
 
@@ -406,9 +406,9 @@ The arguments to be passed to the create function.
 
 ***
 
-### CrudDeleteFn()
+### CrudDeleteFn
 
-> **CrudDeleteFn**\<\> = (`args`) => [`CrudResponse`](#crudresponse)
+> **CrudDeleteFn** = (`args`) => [`CrudResponse`](#crudresponse)
 
 #### Type Parameters
 
@@ -426,9 +426,9 @@ The arguments to be passed to the delete function.
 
 ***
 
-### CrudObjectExecuteActionFn()
+### CrudObjectExecuteActionFn
 
-> **CrudObjectExecuteActionFn**\<\> = (`args`) => [`CrudResponse`](#crudresponse)
+> **CrudObjectExecuteActionFn** = (`args`) => [`CrudResponse`](#crudresponse)
 
 #### Type Parameters
 
@@ -446,9 +446,9 @@ The arguments to be passed to the executeAction function.
 
 ***
 
-### CrudObjectSubscribeFn()
+### CrudObjectSubscribeFn
 
-> **CrudObjectSubscribeFn**\<\> = (`args`) => [`CancellablePromise`](../utils/cancellablePromise.md#cancellablepromise)
+> **CrudObjectSubscribeFn** = (`args`) => [`CancellablePromise`](../utils/cancellablePromise.md#cancellablepromise)
 
 #### Type Parameters
 
@@ -466,9 +466,9 @@ The arguments to be passed to the subscribe function.
 
 ***
 
-### CrudPatchFn()
+### CrudPatchFn
 
-> **CrudPatchFn**\<\> = (`args`) => [`CrudResponse`](#crudresponse)
+> **CrudPatchFn** = (`args`) => [`CrudResponse`](#crudresponse)
 
 #### Type Parameters
 
@@ -488,15 +488,15 @@ The arguments to be passed to the patch function.
 
 ### CrudResponse
 
-> **CrudResponse**\<\> = [`MaybeCancellablePromise`](../utils/cancellablePromise.md#maybecancellablepromise)
+> **CrudResponse** = [`MaybeCancellablePromise`](../utils/cancellablePromise.md#maybecancellablepromise)
 
 #### Type Parameters
 
 ***
 
-### CrudRetrieveFn()
+### CrudRetrieveFn
 
-> **CrudRetrieveFn**\<\> = (`args`) => [`CrudResponse`](#crudresponse)
+> **CrudRetrieveFn** = (`args`) => [`CrudResponse`](#crudresponse)
 
 #### Type Parameters
 
@@ -514,9 +514,9 @@ The arguments to be passed to the retrieve function.
 
 ***
 
-### CrudSubscribeCallback()
+### CrudSubscribeCallback
 
-> **CrudSubscribeCallback**\<\> = (`data`, `action`) => `any`
+> **CrudSubscribeCallback** = (`data`, `action`) => `any`
 
 #### Type Parameters
 
@@ -530,9 +530,9 @@ The data to be passed to the callback.
 
 ##### action
 
-The action that was performed.
+`"delete"` \| `"update"` \| `"create"`
 
-`"delete"` | `"update"` | `"create"`
+The action that was performed.
 
 #### Returns
 
@@ -540,9 +540,9 @@ The action that was performed.
 
 ***
 
-### CrudUpdateFn()
+### CrudUpdateFn
 
-> **CrudUpdateFn**\<\> = (`args`) => [`CrudResponse`](#crudresponse)
+> **CrudUpdateFn** = (`args`) => [`CrudResponse`](#crudresponse)
 
 #### Type Parameters
 
@@ -562,7 +562,7 @@ The arguments to be passed to the update function.
 
 ### DeleteArgs
 
-> **DeleteArgs**\<\> = [`DeleteArgsRaw`](#deleteargsraw) & [`AdditionalCrudArgs`](#additionalcrudargs)
+> **DeleteArgs** = [`DeleteArgsRaw`](#deleteargsraw) & [`AdditionalCrudArgs`](#additionalcrudargs)
 
 #### Type Parameters
 
@@ -570,7 +570,7 @@ The arguments to be passed to the update function.
 
 ### ObjectExecuteActionArgs
 
-> **ObjectExecuteActionArgs**\<\> = [`ObjectExecuteActionArgsRaw`](#objectexecuteactionargsraw) & [`AdditionalCrudArgs`](#additionalcrudargs)
+> **ObjectExecuteActionArgs** = [`ObjectExecuteActionArgsRaw`](#objectexecuteactionargsraw) & [`AdditionalCrudArgs`](#additionalcrudargs)
 
 #### Type Parameters
 
@@ -578,7 +578,7 @@ The arguments to be passed to the update function.
 
 ### ObjectSubscribeArgs
 
-> **ObjectSubscribeArgs**\<\> = [`ObjectSubscribeArgsRaw`](#objectsubscribeargsraw) & [`CommonRunTracking`](../use/cancellableIntent.md#commonruntracking) & [`AdditionalCrudArgs`](#additionalcrudargs)
+> **ObjectSubscribeArgs** = [`ObjectSubscribeArgsRaw`](#objectsubscribeargsraw) & [`CommonRunTracking`](../use/cancellableIntent.md#commonruntracking) & [`AdditionalCrudArgs`](#additionalcrudargs)
 
 #### Type Parameters
 
@@ -586,7 +586,7 @@ The arguments to be passed to the update function.
 
 ### ObjectTarget
 
-> **ObjectTarget**\<\> = [`ObjectTargetProperties`](#objecttargetproperties) & [`ObjectCrudHandlers`](#objectcrudhandlers)
+> **ObjectTarget** = [`ObjectTargetProperties`](#objecttargetproperties) & [`ObjectCrudHandlers`](#objectcrudhandlers)
 
 #### Type Parameters
 
@@ -594,7 +594,7 @@ The arguments to be passed to the update function.
 
 ### PartialArgs
 
-> **PartialArgs**\<\> = [`PartialArgsRaw`](#partialargsraw) & [`AdditionalCrudArgs`](#additionalcrudargs)
+> **PartialArgs** = [`PartialArgsRaw`](#partialargsraw) & [`AdditionalCrudArgs`](#additionalcrudargs)
 
 #### Type Parameters
 
@@ -602,7 +602,7 @@ The arguments to be passed to the update function.
 
 ### RetrieveArgs
 
-> **RetrieveArgs**\<\> = [`RetrieveArgsRaw`](#retrieveargsraw) & `Partial`\<[`CommonRunTracking`](../use/cancellableIntent.md#commonruntracking)\> & [`AdditionalCrudArgs`](#additionalcrudargs)
+> **RetrieveArgs** = [`RetrieveArgsRaw`](#retrieveargsraw) & `Partial`\<[`CommonRunTracking`](../use/cancellableIntent.md#commonruntracking)\> & [`AdditionalCrudArgs`](#additionalcrudargs)
 
 #### Type Parameters
 
@@ -610,7 +610,7 @@ The arguments to be passed to the update function.
 
 ### TargetArgs
 
-> **TargetArgs**\<\> = `object`
+> **TargetArgs** = `object`
 
 #### Type Parameters
 
@@ -622,7 +622,7 @@ The arguments to be passed to the update function.
 
 ### UpdateArgs
 
-> **UpdateArgs**\<\> = [`UpdateArgsRaw`](#updateargsraw) & [`AdditionalCrudArgs`](#additionalcrudargs)
+> **UpdateArgs** = [`UpdateArgsRaw`](#updateargsraw) & [`AdditionalCrudArgs`](#additionalcrudargs)
 
 #### Type Parameters
 

@@ -12,7 +12,7 @@
 
 #### Properties
 
-##### clearLoading()
+##### clearLoading
 
 > **clearLoading**: () => `void`
 
@@ -22,7 +22,7 @@ Set the loading state to false.
 
 `void`
 
-##### setLoading()
+##### setLoading
 
 > **setLoading**: () => `void`
 
@@ -48,7 +48,7 @@ Whether the component is loading.
 
 ### LoadingReadonlyRef
 
-> **LoadingReadonlyRef**\<\> = `Readonly`\<[`LoadingRef`](#loadingref)\>
+> **LoadingReadonlyRef** = `Readonly`\<[`LoadingRef`](#loadingref)\>
 
 #### Type Parameters
 
@@ -56,7 +56,7 @@ Whether the component is loading.
 
 ### LoadingRef
 
-> **LoadingRef**\<\> = `Ref`
+> **LoadingRef** = `Ref`
 
 #### Type Parameters
 
@@ -64,7 +64,7 @@ Whether the component is loading.
 
 ### LoadingStatus
 
-> **LoadingStatus**\<\> = [`LoadingProperties`](#loadingproperties) & [`LoadingFunctions`](#loadingfunctions)
+> **LoadingStatus** = [`LoadingProperties`](#loadingproperties) & [`LoadingFunctions`](#loadingfunctions)
 
 #### Type Parameters
 

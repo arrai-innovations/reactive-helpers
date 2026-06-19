@@ -69,19 +69,19 @@ The error code.
 
 ##### keepColumnTotals?
 
-> `optional` **keepColumnTotals**: `boolean`
+> `optional` **keepColumnTotals?**: `boolean`
 
 When true, keep the current column totals.
 
 ##### keepError?
 
-> `optional` **keepError**: `boolean`
+> `optional` **keepError?**: `boolean`
 
 When true, keep the current error state.
 
 ##### keepPagination?
 
-> `optional` **keepPagination**: `boolean`
+> `optional` **keepPagination?**: `boolean`
 
 When true, keep the current pagination information.
 
@@ -91,7 +91,7 @@ When true, keep the current pagination information.
 
 #### Properties
 
-##### addListObject()
+##### addListObject
 
 > **addListObject**: (`object`) => `void`
 
@@ -107,7 +107,7 @@ Adds an object to the list.
 
 `void`
 
-##### bulkDelete()
+##### bulkDelete
 
 > **bulkDelete**: (`args?`) => `Promise`\<`boolean`\>
 
@@ -123,7 +123,7 @@ Deletes objects from the list by pk, returning a promise to a boolean indicating
 
 `Promise`\<`boolean`\>
 
-##### clearList()
+##### clearList
 
 > **clearList**: (`options?`) => `void`
 
@@ -140,7 +140,7 @@ Clears the list objects and optionally keeps pagination, totals,
 
 `void`
 
-##### deleteListObject()
+##### deleteListObject
 
 > **deleteListObject**: (`objectId`) => `void`
 
@@ -156,7 +156,7 @@ Deletes an object from the list by pk.
 
 `void`
 
-##### executeAction()
+##### executeAction
 
 > **executeAction**: (`args`) => `Promise`\<`any`\>
 
@@ -172,7 +172,7 @@ Initiates an action on all objects in the list, returning the response, or null 
 
 `Promise`\<`any`\>
 
-##### getFakePk()
+##### getFakePk
 
 > **getFakePk**: () => `string`
 
@@ -182,7 +182,7 @@ Generates a unique fake pk for use within the list.
 
 `string`
 
-##### list()
+##### list
 
 > **list**: (`args?`) => [`MaybeCancellablePromise`](../utils/cancellablePromise.md#maybecancellablepromise)\<`boolean`\>
 
@@ -204,7 +204,7 @@ Initiates a fetch to retrieve objects according to the CRUD configuration, retur
 
 Customizable callback for handling new objects per page.
 
-##### setColumnTotals()
+##### setColumnTotals
 
 > **setColumnTotals**: (`total`) => `void`
 
@@ -220,7 +220,7 @@ The method to update column totals.
 
 `void`
 
-##### setPaginateInfo()
+##### setPaginateInfo
 
 > **setPaginateInfo**: (`info`) => `void`
 
@@ -236,7 +236,7 @@ The method to update pagination information.
 
 `void`
 
-##### updateListObject()
+##### updateListObject
 
 > **updateListObject**: (`object`) => `void`
 
@@ -260,34 +260,34 @@ Updates an object in the list.
 
 ##### handlers?
 
-> `optional` **handlers**: `object`
+> `optional` **handlers?**: `object`
 
 Default implementation are used as set by `setListCrud`.
 
 ###### bulkDelete?
 
-> `optional` **bulkDelete**: [`CrudBulkDeleteFn`](../config/listCrud.md#crudbulkdeletefn)
+> `optional` **bulkDelete?**: [`CrudBulkDeleteFn`](../config/listCrud.md#crudbulkdeletefn)
 
 Provide the implementation for the bulkDelete
  function.
 
 ###### executeAction?
 
-> `optional` **executeAction**: [`CrudExecuteActionFn`](../config/listCrud.md#crudexecuteactionfn)
+> `optional` **executeAction?**: [`CrudExecuteActionFn`](../config/listCrud.md#crudexecuteactionfn)
 
 Provide the implementation for the executeAction
  function.
 
 ###### list?
 
-> `optional` **list**: [`CrudListFn`](../config/listCrud.md#crudlistfn)
+> `optional` **list?**: [`CrudListFn`](../config/listCrud.md#crudlistfn)
 
 Provide the implementation for the list
  function.
 
 ###### subscribe?
 
-> `optional` **subscribe**: [`CrudListSubscribeFn`](../config/listCrud.md#crudlistsubscribefn)
+> `optional` **subscribe?**: [`CrudListSubscribeFn`](../config/listCrud.md#crudlistsubscribefn)
 
 Provide the implementation for the
  subscribe function.
@@ -474,25 +474,25 @@ The subscribe function.
 
 ##### page?
 
-> `optional` **page**: `number`
+> `optional` **page?**: `number`
 
 The page you are giving us results for.
 
 ##### perPage?
 
-> `optional` **perPage**: `number`
+> `optional` **perPage?**: `number`
 
 The per page.
 
 ##### totalPages?
 
-> `optional` **totalPages**: `number`
+> `optional` **totalPages?**: `number`
 
 The total pages.
 
 ##### totalRecords?
 
-> `optional` **totalRecords**: `number`
+> `optional` **totalRecords?**: `number`
 
 The total records.
 
@@ -500,7 +500,7 @@ The total records.
 
 ### ColumnTotals
 
-> **ColumnTotals**\<\> = `object`
+> **ColumnTotals** = `object`
 
 #### Type Parameters
 
@@ -512,7 +512,7 @@ The total records.
 
 ### ListInstance
 
-> **ListInstance**\<\> = [`ListInstanceStateMixIn`](#listinstancestatemixin) & [`ListInstanceFunctions`](#listinstancefunctions)
+> **ListInstance** = [`ListInstanceStateMixIn`](#listinstancestatemixin) & [`ListInstanceFunctions`](#listinstancefunctions)
 
 #### Type Parameters
 
@@ -520,7 +520,7 @@ The total records.
 
 ### ListInstanceFunctions
 
-> **ListInstanceFunctions**\<\> = [`ListInstanceMyFunctions`](#listinstancemyfunctions) & `Pick`\<[`LoadingErrorStatus`](loadingError.md#loadingerrorstatus), `"clearError"`\>
+> **ListInstanceFunctions** = [`ListInstanceMyFunctions`](#listinstancemyfunctions) & `Pick`\<[`LoadingErrorStatus`](loadingError.md#loadingerrorstatus), `"clearError"`\>
 
 #### Type Parameters
 
@@ -528,7 +528,7 @@ The total records.
 
 ### ListInstanceRawState
 
-> **ListInstanceRawState**\<\> = [`ListInstanceRawMyState`](#listinstancerawmystate) & `Pick`\<[`LoadingErrorStatus`](loadingError.md#loadingerrorstatus), `"loading"` \| `"error"` \| `"errored"`\>
+> **ListInstanceRawState** = [`ListInstanceRawMyState`](#listinstancerawmystate) & `Pick`\<[`LoadingErrorStatus`](loadingError.md#loadingerrorstatus), `"loading"` \| `"error"` \| `"errored"`\>
 
 #### Type Parameters
 
@@ -536,7 +536,7 @@ The total records.
 
 ### ListInstanceState
 
-> **ListInstanceState**\<\> = `UnwrapNestedRefs`
+> **ListInstanceState** = `UnwrapNestedRefs`
 
 #### Type Parameters
 
@@ -544,7 +544,7 @@ The total records.
 
 ### ListInstanceStateMixIn
 
-> **ListInstanceStateMixIn**\<\> = `object`
+> **ListInstanceStateMixIn** = `object`
 
 #### Type Parameters
 
@@ -558,7 +558,7 @@ The total records.
 
 ### ListOrder
 
-> **ListOrder**\<\> = `ComputedRef`
+> **ListOrder** = `ComputedRef`
 
 #### Type Parameters
 
@@ -566,7 +566,7 @@ The total records.
 
 ### ObjectsByPk
 
-> **ObjectsByPk**\<\> = `object`
+> **ObjectsByPk** = `object`
 
 #### Type Parameters
 
@@ -578,7 +578,7 @@ The total records.
 
 ### ObjectsInOrder
 
-> **ObjectsInOrder**\<\> = `ComputedRef`
+> **ObjectsInOrder** = `ComputedRef`
 
 #### Type Parameters
 
@@ -586,15 +586,15 @@ The total records.
 
 ### ObjectsMap
 
-> **ObjectsMap**\<\> = `Map`\<[`Pk`](../config/commonCrud.md#pk), `Reactive`\>
+> **ObjectsMap** = `Map`\<[`Pk`](../config/commonCrud.md#pk), `Reactive`\>
 
 #### Type Parameters
 
 ***
 
-### PushObjectsFn()
+### PushObjectsFn
 
-> **PushObjectsFn**\<\> = (`newObjects`) => `void`
+> **PushObjectsFn** = (`newObjects`) => `void`
 
 #### Type Parameters
 

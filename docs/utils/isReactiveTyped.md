@@ -22,9 +22,9 @@
 
 ##### v
 
-The value to check.
+`T` \| `Reactive`\<`T`\>
 
-`T` | `Reactive`\<`T`\>
+The value to check.
 
 #### Returns
 

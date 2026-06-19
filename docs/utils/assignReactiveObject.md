@@ -62,7 +62,7 @@ The error code.
 
 ### validateTargetAndSourceResult
 
-> **validateTargetAndSourceResult**\<\> = `object`
+> **validateTargetAndSourceResult** = `object`
 
 #### Type Parameters
 
@@ -70,7 +70,7 @@ The error code.
 
 ### ValidTargetOrSource
 
-> **ValidTargetOrSource**\<\> = `Ref` \| `object` \| `any`[]
+> **ValidTargetOrSource** = `Ref` \| `object` \| `any`[]
 
 targets and sources must be refs, objects, or arrays
 and refs must ultimately resolve to objects or arrays
@@ -107,17 +107,17 @@ Keys to exclude from the addition or update.
 
 ##### addedKeys?
 
+`any`[] \| `Set`\<`any`\>
+
 Precaulcated array of keys to add, if available. Otherwise, the
 keys will be calculated.
 
-`any`[] | `Set`\<`any`\>
-
 ##### sameKeys?
+
+`any`[] \| `Set`\<`any`\>
 
 Precaulcated array of keys to update, if available. Otherwise, the
 keys will be calculated.
-
-`any`[] | `Set`\<`any`\>
 
 ##### doNotSetUndefinedKeys?
 
@@ -200,10 +200,10 @@ Keys to exclude from the addition.
 
 ##### addedKeys?
 
+`any`[] \| `Set`\<`any`\>
+
 Precaulcated array of keys to add, if available. Otherwise, the
 keys will be calculated.
-
-`any`[] | `Set`\<`any`\>
 
 #### Returns
 
@@ -353,9 +353,9 @@ Keys to exclude from removal.
 
 ##### removedKeys?
 
-An array to store removed keys.
+`any`[] \| `Set`\<`any`\>
 
-`any`[] | `Set`\<`any`\>
+An array to store removed keys.
 
 #### Returns
 
@@ -397,10 +397,10 @@ Keys to exclude from the update.
 
 ##### sameKeys?
 
+`any`[] \| `Set`\<`any`\>
+
 Precaulcated array of keys to update, if available. Otherwise, the
 keys will be calculated.
-
-`any`[] | `Set`\<`any`\>
 
 #### Returns
 

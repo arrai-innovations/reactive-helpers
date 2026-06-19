@@ -10,7 +10,7 @@
 
 ### MaybeRefWatchableError
 
-> **MaybeRefWatchableError**\<\> = `MaybeRef`
+> **MaybeRefWatchableError** = `MaybeRef`
 
 #### Type Parameters
 
@@ -18,7 +18,7 @@
 
 ### SeparateStateError
 
-> **SeparateStateError**\<\> = `object` & [`ErrorReadOnlyFunctions`](error.md#errorreadonlyfunctions)
+> **SeparateStateError** = `object` & [`ErrorReadOnlyFunctions`](error.md#errorreadonlyfunctions)
 
 #### Type Declaration
 
@@ -32,7 +32,7 @@
 
 ### WatchableError
 
-> **WatchableError**\<\> = [`ReadonlyErrorStatus`](error.md#readonlyerrorstatus) \| `Reactive`
+> **WatchableError** = [`ReadonlyErrorStatus`](error.md#readonlyerrorstatus) \| `Reactive`
 
 #### Type Parameters
 

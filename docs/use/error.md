@@ -18,7 +18,7 @@
 
 Clear the error state.
 
-##### setError()
+##### setError
 
 > **setError**: (`error`) => `void`
 
@@ -66,9 +66,9 @@ Clear the error state.
 
 ## Type Aliases
 
-### ClearErrorFn()
+### ClearErrorFn
 
-> **ClearErrorFn**\<\> = () => `void`
+> **ClearErrorFn** = () => `void`
 
 #### Type Parameters
 
@@ -80,7 +80,7 @@ Clear the error state.
 
 ### ErroredReadonlyRef
 
-> **ErroredReadonlyRef**\<\> = `Readonly`\<[`ErroredRef`](#erroredref)\>
+> **ErroredReadonlyRef** = `Readonly`\<[`ErroredRef`](#erroredref)\>
 
 #### Type Parameters
 
@@ -88,7 +88,7 @@ Clear the error state.
 
 ### ErroredRef
 
-> **ErroredRef**\<\> = `Ref`
+> **ErroredRef** = `Ref`
 
 #### Type Parameters
 
@@ -96,7 +96,7 @@ Clear the error state.
 
 ### ErrorReadonlyRef
 
-> **ErrorReadonlyRef**\<\> = `Readonly`\<[`ErrorRef`](#errorref)\>
+> **ErrorReadonlyRef** = `Readonly`\<[`ErrorRef`](#errorref)\>
 
 #### Type Parameters
 
@@ -104,7 +104,7 @@ Clear the error state.
 
 ### ErrorRef
 
-> **ErrorRef**\<\> = `Ref`
+> **ErrorRef** = `Ref`
 
 #### Type Parameters
 
@@ -112,7 +112,7 @@ Clear the error state.
 
 ### ErrorStatus
 
-> **ErrorStatus**\<\> = [`ErrorProperties`](#errorproperties) & [`ErrorFunctions`](#errorfunctions)
+> **ErrorStatus** = [`ErrorProperties`](#errorproperties) & [`ErrorFunctions`](#errorfunctions)
 
 #### Type Parameters
 
@@ -120,7 +120,7 @@ Clear the error state.
 
 ### ReadonlyErrorStatus
 
-> **ReadonlyErrorStatus**\<\> = [`ErrorProperties`](#errorproperties) & [`ErrorReadOnlyFunctions`](#errorreadonlyfunctions)
+> **ReadonlyErrorStatus** = [`ErrorProperties`](#errorproperties) & [`ErrorReadOnlyFunctions`](#errorreadonlyfunctions)
 
 #### Type Parameters
 

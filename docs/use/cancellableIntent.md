@@ -120,19 +120,19 @@ The function that returns a promise that can be cancelled. Receives the run ID a
 
 ##### clearActiveOnResolved?
 
-> `optional` **clearActiveOnResolved**: `boolean`
+> `optional` **clearActiveOnResolved?**: `boolean`
 
 Whether to clear the active state when the promise resolves.
 
 ##### guardArguments?
 
-> `optional` **guardArguments**: `any`
+> `optional` **guardArguments?**: `any`
 
 The reactive object to watch for truthiness before running the intent.
 
 ##### watchArguments?
 
-> `optional` **watchArguments**: `any`
+> `optional` **watchArguments?**: `any`
 
 The reactive object to watch for changes.
 
@@ -222,7 +222,7 @@ Whether there are resolving intents.
 
 The watch arguments.
 
-##### stop()
+##### stop
 
 > **stop**: () => `void`
 
@@ -234,9 +234,9 @@ Stop the cancellable intent.
 
 ## Type Aliases
 
-### AwaitableWithCancel()
+### AwaitableWithCancel
 
-> **AwaitableWithCancel**\<\> = (`runTracking`) => [`MaybeCancellablePromise`](../utils/cancellablePromise.md#maybecancellablepromise)
+> **AwaitableWithCancel** = (`runTracking`) => [`MaybeCancellablePromise`](../utils/cancellablePromise.md#maybecancellablepromise)
 
 A function that returns a promise that can be cancelled. The return value of the promise is not used.
 
@@ -256,7 +256,7 @@ A function that returns a promise that can be cancelled. The return value of the
 
 ### CancelFn
 
-> **CancelFn**\<\> = `Function`
+> **CancelFn** = `Function`
 
 #### Type Parameters
 
@@ -264,7 +264,7 @@ A function that returns a promise that can be cancelled. The return value of the
 
 ### CancellableIntent
 
-> **CancellableIntent**\<\> = [`MyCancellableIntent`](#mycancellableintent) & [`ErrorReadOnlyFunctions`](error.md#errorreadonlyfunctions)
+> **CancellableIntent** = [`MyCancellableIntent`](#mycancellableintent) & [`ErrorReadOnlyFunctions`](error.md#errorreadonlyfunctions)
 
 The instance of the cancellable intent.
 
@@ -274,7 +274,7 @@ The instance of the cancellable intent.
 
 ### CancellableIntentRawState
 
-> **CancellableIntentRawState**\<\> = [`CancellableIntentMyState`](#cancellableintentmystate) & [`ErrorProperties`](error.md#errorproperties)
+> **CancellableIntentRawState** = [`CancellableIntentMyState`](#cancellableintentmystate) & [`ErrorProperties`](error.md#errorproperties)
 
 The raw state of the cancellable intent.
 
@@ -284,7 +284,7 @@ The raw state of the cancellable intent.
 
 ### CancellableIntentState
 
-> **CancellableIntentState**\<\> = `Reactive`
+> **CancellableIntentState** = `Reactive`
 
 The state of the cancellable intent.
 
@@ -292,9 +292,9 @@ The state of the cancellable intent.
 
 ***
 
-### IsCurrentRunFn()
+### IsCurrentRunFn
 
-> **IsCurrentRunFn**\<\> = () => `boolean`
+> **IsCurrentRunFn** = () => `boolean`
 
 A function that checks if the current run ID matches the last run ID.
 
@@ -308,7 +308,7 @@ A function that checks if the current run ID matches the last run ID.
 
 ### RunId
 
-> **RunId**\<\> = `number`
+> **RunId** = `number`
 
 A unique identifier for a single execution ("run") of an intent.
 This is incremented each time `watchArguments` change and the intent re-triggers.
@@ -320,7 +320,7 @@ Enables distinguishing results or effects from overlapping async runs.
 
 ### WatchGuardArguments
 
-> **WatchGuardArguments**\<\> = `UnwrapNestedRefs` \| \{\[`key`: `string`\]: `Ref`\<`any`, `any`\>; \}
+> **WatchGuardArguments** = `UnwrapNestedRefs` \| \{\[`key`: `string`\]: `Ref`\<`any`, `any`\>; \}
 
 The reactive object to watch for changes.
 

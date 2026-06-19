@@ -14,19 +14,19 @@
 
 ##### addedKeys?
 
-> `optional` **addedKeys**: `Set`\<`string`\>
+> `optional` **addedKeys?**: `Set`\<`string`\>
 
 If addedKeys option is true, return keys that are added.
 
 ##### removedKeys?
 
-> `optional` **removedKeys**: `Set`\<`string`\>
+> `optional` **removedKeys?**: `Set`\<`string`\>
 
 If removedKeys option is true, return keys that are removed.
 
 ##### sameKeys?
 
-> `optional` **sameKeys**: `Set`\<`string`\>
+> `optional` **sameKeys?**: `Set`\<`string`\>
 
 If sameKeys option is true, return keys that are the same.
 
@@ -43,15 +43,15 @@ are the same, what keys are removed, and what keys are added.
 
 ##### newKeys
 
-Keys to consider as new.
+`string`[] \| `Set`\<`string`\>
 
-`string`[] | `Set`\<`string`\>
+Keys to consider as new.
 
 ##### oldKeys
 
-Keys to consider as old.
+`string`[] \| `Set`\<`string`\>
 
-`string`[] | `Set`\<`string`\>
+Keys to consider as old.
 
 ##### options?
 

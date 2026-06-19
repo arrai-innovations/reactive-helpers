@@ -10,7 +10,7 @@
 
 ### BooleanOrRef
 
-> **BooleanOrRef**\<\> = `boolean` \| `Ref`
+> **BooleanOrRef** = `boolean` \| `Ref`
 
 #### Type Parameters
 
@@ -18,7 +18,7 @@
 
 ### CombinedClasses
 
-> **CombinedClasses**\<\> = `string` \| \{\[`classnames`: `string`\]: `boolean` \| `Ref`\<`boolean`, `boolean`\>; \} \| `object`[]
+> **CombinedClasses** = `string` \| \{\[`classnames`: `string`\]: `boolean` \| `Ref`\<`boolean`, `boolean`\>; \} \| `object`[]
 
 The normalized form of the CSS classes, either as a string of space-separated class names or an
 
@@ -28,7 +28,7 @@ The normalized form of the CSS classes, either as a string of space-separated cl
 
 ### CombinedClassesArgument
 
-> **CombinedClassesArgument**\<\> = `string` \| `string`[] \| `Set`\<`any`\> \| `Map`\<`any`, `any`\> \| `object` \| `Ref`
+> **CombinedClassesArgument** = `string` \| `string`[] \| `Set`\<`any`\> \| `Map`\<`any`, `any`\> \| `object` \| `Ref`
 
 #### Type Parameters
 

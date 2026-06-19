@@ -50,7 +50,7 @@ The arguments to be passed to the retrieve function.
 
 ###### pk?
 
-> `optional` **pk**: [`PkInput`](../config/commonCrud.md#pkinput)
+> `optional` **pk?**: [`PkInput`](../config/commonCrud.md#pkinput)
 
 The pk of the object, optional to support creating new objects.
 
@@ -80,43 +80,43 @@ The arguments to be passed to the crud handlers.
 
 ###### target.create?
 
-> `optional` **create**: [`CrudCreateFn`](../config/objectCrud.md#crudcreatefn)
+> `optional` **create?**: [`CrudCreateFn`](../config/objectCrud.md#crudcreatefn)
 
 A function to be used instead of the default crud create function.
 
 ###### target.delete?
 
-> `optional` **delete**: [`CrudDeleteFn`](../config/objectCrud.md#cruddeletefn)
+> `optional` **delete?**: [`CrudDeleteFn`](../config/objectCrud.md#cruddeletefn)
 
 A function to be used instead of the default crud delete function.
 
 ###### target.executeAction?
 
-> `optional` **executeAction**: [`CrudObjectExecuteActionFn`](../config/objectCrud.md#crudobjectexecuteactionfn)
+> `optional` **executeAction?**: [`CrudObjectExecuteActionFn`](../config/objectCrud.md#crudobjectexecuteactionfn)
 
 The  function to execute a certain action on an object.
 
 ###### target.patch?
 
-> `optional` **patch**: [`CrudPatchFn`](../config/objectCrud.md#crudpatchfn)
+> `optional` **patch?**: [`CrudPatchFn`](../config/objectCrud.md#crudpatchfn)
 
 A function to be used instead of the default crud patch function.
 
 ###### target.retrieve?
 
-> `optional` **retrieve**: [`CrudRetrieveFn`](../config/objectCrud.md#crudretrievefn)
+> `optional` **retrieve?**: [`CrudRetrieveFn`](../config/objectCrud.md#crudretrievefn)
 
 A function to be used instead of the default crud retrieve function.
 
 ###### target.subscribe?
 
-> `optional` **subscribe**: [`CrudObjectSubscribeFn`](../config/objectCrud.md#crudobjectsubscribefn)
+> `optional` **subscribe?**: [`CrudObjectSubscribeFn`](../config/objectCrud.md#crudobjectsubscribefn)
 
 A function to be used instead of the default crud subscribe function.
 
 ###### target.update?
 
-> `optional` **update**: [`CrudUpdateFn`](../config/objectCrud.md#crudupdatefn)
+> `optional` **update?**: [`CrudUpdateFn`](../config/objectCrud.md#crudupdatefn)
 
 A function to be used instead of the default crud update function.
 
@@ -240,13 +240,13 @@ Whether an error has occurred.
 
 ###### intendToRetrieve?
 
-> `optional` **intendToRetrieve**: `boolean`
+> `optional` **intendToRetrieve?**: `boolean`
 
 Whether the object intends to retrieve.
 
 ###### intendToSubscribe?
 
-> `optional` **intendToSubscribe**: `boolean`
+> `optional` **intendToSubscribe?**: `boolean`
 
 Whether the object intends to subscribe.
 
@@ -292,7 +292,7 @@ The pk key of the object.
 
 ###### relatedObject?
 
-> `optional` **relatedObject**: `object`
+> `optional` **relatedObject?**: `object`
 
 The related objects, indexed by the key in the related object.
 
@@ -302,19 +302,19 @@ The related objects, indexed by the key in the related object.
 
 ###### relatedObjectRules?
 
-> `optional` **relatedObjectRules**: [`ObjectRelatedRawRules`](objectRelated.md#objectrelatedrawrules)
+> `optional` **relatedObjectRules?**: [`ObjectRelatedRawRules`](objectRelated.md#objectrelatedrawrules)
 
 The rules for defining relationships for the managed object to other collections of objects.
 
 ###### relatedObjectWatchRunning?
 
-> `optional` **relatedObjectWatchRunning**: `boolean`
+> `optional` **relatedObjectWatchRunning?**: `boolean`
 
 Whether the related object watch is running.
 
 ###### relatedRunning?
 
-> `optional` **relatedRunning**: `boolean`
+> `optional` **relatedRunning?**: `boolean`
 
 Whether the related objects are loading.
 
@@ -326,11 +326,11 @@ Whether the related objects are loading or the parent state is loading.
 
 ###### subscribed?
 
-> `optional` **subscribed**: `boolean`
+> `optional` **subscribed?**: `boolean`
 
 Whether the object is subscribed.
 
-##### stop()
+##### stop
 
 > **stop**: () => `void`
 
@@ -344,7 +344,7 @@ Stop the effect scope of the managed object.
 
 ### ObjectManaged
 
-> **ObjectManaged**\<\> = `object`
+> **ObjectManaged** = `object`
 
 #### Type Parameters
 
@@ -370,7 +370,7 @@ Stop the effect scope of the managed object.
 
 ### ObjectManager
 
-> **ObjectManager**\<\> = [`ObjectManagerProperties`](#objectmanagerproperties) & [`ObjectManagerFunctions`](#objectmanagerfunctions)
+> **ObjectManager** = [`ObjectManagerProperties`](#objectmanagerproperties) & [`ObjectManagerFunctions`](#objectmanagerfunctions)
 
 #### Type Parameters
 
@@ -378,7 +378,7 @@ Stop the effect scope of the managed object.
 
 ### ObjectManagerFunctions
 
-> **ObjectManagerFunctions**\<\> = [`ObjectInstanceFunctions`](objectInstance.md#objectinstancefunctions) & [`ObjectSubscriptionFunctions`](objectSubscription.md#objectsubscriptionfunctions)
+> **ObjectManagerFunctions** = [`ObjectInstanceFunctions`](objectInstance.md#objectinstancefunctions) & [`ObjectSubscriptionFunctions`](objectSubscription.md#objectsubscriptionfunctions)
 
 #### Type Parameters
 
@@ -386,7 +386,7 @@ Stop the effect scope of the managed object.
 
 ### ObjectManagerProps
 
-> **ObjectManagerProps**\<\> = `UnwrapNestedRefs`
+> **ObjectManagerProps** = `UnwrapNestedRefs`
 
 #### Type Parameters
 
@@ -394,7 +394,7 @@ Stop the effect scope of the managed object.
 
 ### ObjectManagerRawProps
 
-> **ObjectManagerRawProps**\<\> = [`ObjectInstanceRawProps`](objectInstance.md#objectinstancerawprops) & [`ObjectSubscriptionRawProps`](objectSubscription.md#objectsubscriptionrawprops) & [`ObjectRelatedRawProps`](objectRelated.md#objectrelatedrawprops) & [`ObjectCalculatedRawProps`](objectCalculated.md#objectcalculatedrawprops)
+> **ObjectManagerRawProps** = [`ObjectInstanceRawProps`](objectInstance.md#objectinstancerawprops) & [`ObjectSubscriptionRawProps`](objectSubscription.md#objectsubscriptionrawprops) & [`ObjectRelatedRawProps`](objectRelated.md#objectrelatedrawprops) & [`ObjectCalculatedRawProps`](objectCalculated.md#objectcalculatedrawprops)
 
 #### Type Parameters
 

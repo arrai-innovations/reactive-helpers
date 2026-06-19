@@ -74,13 +74,13 @@ Whether an error has occurred.
 
 ###### intendToList?
 
-> `optional` **intendToList**: `boolean`
+> `optional` **intendToList?**: `boolean`
 
 If this is true, the list should be fetched, or re-fetched if arguments change.
 
 ###### intendToSubscribe?
 
-> `optional` **intendToSubscribe**: `boolean`
+> `optional` **intendToSubscribe?**: `boolean`
 
 If this is true, the subscription should start or restart if arguments change.
 
@@ -134,7 +134,7 @@ The primary key field for the list objects.
 
 ###### subscribed?
 
-> `optional` **subscribed**: `boolean`
+> `optional` **subscribed?**: `boolean`
 
 Whether the subscription is active.
 
@@ -212,13 +212,13 @@ Whether an error has occurred.
 
 ###### intendToList?
 
-> `optional` **intendToList**: `boolean`
+> `optional` **intendToList?**: `boolean`
 
 If this is true, the list should be fetched, or re-fetched if arguments change.
 
 ###### intendToSubscribe?
 
-> `optional` **intendToSubscribe**: `boolean`
+> `optional` **intendToSubscribe?**: `boolean`
 
 If this is true, the subscription should start or restart if arguments change.
 
@@ -272,7 +272,7 @@ The primary key field for the list objects.
 
 ###### subscribed?
 
-> `optional` **subscribed**: `boolean`
+> `optional` **subscribed?**: `boolean`
 
 Whether the subscription is active.
 
@@ -348,13 +348,13 @@ Maintains computed references to the foreign keys for each object pk and rule, c
 
 ###### intendToList?
 
-> `optional` **intendToList**: `boolean`
+> `optional` **intendToList?**: `boolean`
 
 If this is true, the list should be fetched, or re-fetched if arguments change.
 
 ###### intendToSubscribe?
 
-> `optional` **intendToSubscribe**: `boolean`
+> `optional` **intendToSubscribe?**: `boolean`
 
 If this is true, the subscription should start or restart if arguments change.
 
@@ -458,11 +458,11 @@ General flag that indicates if the list-related logic is processing, used to man
 
 ###### subscribed?
 
-> `optional` **subscribed**: `boolean`
+> `optional` **subscribed?**: `boolean`
 
 Whether the subscription is active.
 
-##### stop()
+##### stop
 
 > **stop**: () => `void`
 
@@ -552,7 +552,7 @@ The objects that can be related based on the foreign key.
 
 ##### order?
 
-> `optional` **order**: `string`[]
+> `optional` **order?**: `string`[]
 
 Specifies the order in which related objects should be sorted, if applicable.
 
@@ -567,7 +567,7 @@ Specifies the foreign key used to link objects across lists. Planned to be renam
 
 ### ListRelated
 
-> **ListRelated**\<\> = [`ListRelatedProperties`](#listrelatedproperties)
+> **ListRelated** = [`ListRelatedProperties`](#listrelatedproperties)
 
 #### Type Parameters
 
@@ -575,7 +575,7 @@ Specifies the foreign key used to link objects across lists. Planned to be renam
 
 ### ListRelatedParentRawState
 
-> **ListRelatedParentRawState**\<\> = [`ListInstanceRawState`](listInstance.md#listinstancerawstate) & `Partial`\<[`ListSubscriptionRawState`](listSubscription.md#listsubscriptionrawstate)\>
+> **ListRelatedParentRawState** = [`ListInstanceRawState`](listInstance.md#listinstancerawstate) & `Partial`\<[`ListSubscriptionRawState`](listSubscription.md#listsubscriptionrawstate)\>
 
 #### Type Parameters
 
@@ -583,7 +583,7 @@ Specifies the foreign key used to link objects across lists. Planned to be renam
 
 ### ListRelatedParentState
 
-> **ListRelatedParentState**\<\> = `UnwrapNestedRefs`
+> **ListRelatedParentState** = `UnwrapNestedRefs`
 
 #### Type Parameters
 
@@ -591,7 +591,7 @@ Specifies the foreign key used to link objects across lists. Planned to be renam
 
 ### ListRelatedRules
 
-> **ListRelatedRules**\<\> = `object`
+> **ListRelatedRules** = `object`
 
 #### Type Parameters
 
@@ -603,7 +603,7 @@ Specifies the foreign key used to link objects across lists. Planned to be renam
 
 ### ListRelatedState
 
-> **ListRelatedState**\<\> = `UnwrapNestedRefs`
+> **ListRelatedState** = `UnwrapNestedRefs`
 
 #### Type Parameters
 

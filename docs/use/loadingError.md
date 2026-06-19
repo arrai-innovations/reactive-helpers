@@ -10,7 +10,7 @@
 
 ### LoadingErrorFunctions
 
-> **LoadingErrorFunctions**\<\> = [`LoadingFunctions`](loading.md#loadingfunctions) & [`ErrorFunctions`](error.md#errorfunctions)
+> **LoadingErrorFunctions** = [`LoadingFunctions`](loading.md#loadingfunctions) & [`ErrorFunctions`](error.md#errorfunctions)
 
 #### Type Parameters
 
@@ -18,7 +18,7 @@
 
 ### LoadingErrorProperties
 
-> **LoadingErrorProperties**\<\> = [`LoadingProperties`](loading.md#loadingproperties) & [`ErrorProperties`](error.md#errorproperties)
+> **LoadingErrorProperties** = [`LoadingProperties`](loading.md#loadingproperties) & [`ErrorProperties`](error.md#errorproperties)
 
 #### Type Parameters
 
@@ -26,7 +26,7 @@
 
 ### LoadingErrorStatus
 
-> **LoadingErrorStatus**\<\> = [`LoadingErrorProperties`](#loadingerrorproperties) & [`LoadingErrorFunctions`](#loadingerrorfunctions)
+> **LoadingErrorStatus** = [`LoadingErrorProperties`](#loadingerrorproperties) & [`LoadingErrorFunctions`](#loadingerrorfunctions)
 
 #### Type Parameters
 

@@ -84,7 +84,7 @@ Whether an error has occurred.
 
 ###### fkForPkAndRule?
 
-> `optional` **fkForPkAndRule**: `object`
+> `optional` **fkForPkAndRule?**: `object`
 
 Maintains computed references to the foreign keys for each object pk and rule, crucial for navigating complex data relationships.
 
@@ -94,13 +94,13 @@ Maintains computed references to the foreign keys for each object pk and rule, c
 
 ###### intendToList?
 
-> `optional` **intendToList**: `boolean`
+> `optional` **intendToList?**: `boolean`
 
 If this is true, the list should be fetched, or re-fetched if arguments change.
 
 ###### intendToSubscribe?
 
-> `optional` **intendToSubscribe**: `boolean`
+> `optional` **intendToSubscribe?**: `boolean`
 
 If this is true, the subscription should start or restart if arguments change.
 
@@ -112,7 +112,7 @@ Whether the component is loading.
 
 ###### objAndKeyForPkAndRule?
 
-> `optional` **objAndKeyForPkAndRule**: `object`
+> `optional` **objAndKeyForPkAndRule?**: `object`
 
 Maps each object pk and rule to a tuple consisting of the related object and its respective key, facilitating direct data manipulation.
 
@@ -164,7 +164,7 @@ The primary key field for the list objects.
 
 ###### relatedObjects?
 
-> `optional` **relatedObjects**: `object`
+> `optional` **relatedObjects?**: `object`
 
 Stores computed references to related objects, allowing for dynamic access based on object pk and specific rules.
 
@@ -174,37 +174,37 @@ Stores computed references to related objects, allowing for dynamic access based
 
 ###### relatedObjectsParentStateObjectsWatchRunning?
 
-> `optional` **relatedObjectsParentStateObjectsWatchRunning**: `boolean`
+> `optional` **relatedObjectsParentStateObjectsWatchRunning?**: `boolean`
 
 Flags whether the watch on parent state objects is currently active, ensuring updates trigger as needed.
 
 ###### relatedObjectsRules?
 
-> `optional` **relatedObjectsRules**: [`ListRelatedRules`](listRelated.md#listrelatedrules)
+> `optional` **relatedObjectsRules?**: [`ListRelatedRules`](listRelated.md#listrelatedrules)
 
 Defines the rules for establishing relationships, such as foreign key links and sorting orders.
 
 ###### relatedObjectsWatchRunning?
 
-> `optional` **relatedObjectsWatchRunning**: `boolean`
+> `optional` **relatedObjectsWatchRunning?**: `boolean`
 
 Indicates if watches on the related objects themselves are active, managing updates efficiently.
 
 ###### relatedRunning?
 
-> `optional` **relatedRunning**: `boolean`
+> `optional` **relatedRunning?**: `boolean`
 
 Signals whether any computations related to object relationships are currently in progress.
 
 ###### running?
 
-> `optional` **running**: `boolean`
+> `optional` **running?**: `boolean`
 
 General flag that indicates if the list-related logic is processing, used to manage UI feedback or prevent concurrent operations.
 
 ###### subscribed?
 
-> `optional` **subscribed**: `boolean`
+> `optional` **subscribed?**: `boolean`
 
 Whether the subscription is active.
 
@@ -276,7 +276,7 @@ Whether an error has occurred.
 
 ###### fkForPkAndRule?
 
-> `optional` **fkForPkAndRule**: `object`
+> `optional` **fkForPkAndRule?**: `object`
 
 Maintains computed references to the foreign keys for each object pk and rule, crucial for navigating complex data relationships.
 
@@ -286,13 +286,13 @@ Maintains computed references to the foreign keys for each object pk and rule, c
 
 ###### intendToList?
 
-> `optional` **intendToList**: `boolean`
+> `optional` **intendToList?**: `boolean`
 
 If this is true, the list should be fetched, or re-fetched if arguments change.
 
 ###### intendToSubscribe?
 
-> `optional` **intendToSubscribe**: `boolean`
+> `optional` **intendToSubscribe?**: `boolean`
 
 If this is true, the subscription should start or restart if arguments change.
 
@@ -304,7 +304,7 @@ Whether the component is loading.
 
 ###### objAndKeyForPkAndRule?
 
-> `optional` **objAndKeyForPkAndRule**: `object`
+> `optional` **objAndKeyForPkAndRule?**: `object`
 
 Maps each object pk and rule to a tuple consisting of the related object and its respective key, facilitating direct data manipulation.
 
@@ -356,7 +356,7 @@ The primary key field for the list objects.
 
 ###### relatedObjects?
 
-> `optional` **relatedObjects**: `object`
+> `optional` **relatedObjects?**: `object`
 
 Stores computed references to related objects, allowing for dynamic access based on object pk and specific rules.
 
@@ -366,37 +366,37 @@ Stores computed references to related objects, allowing for dynamic access based
 
 ###### relatedObjectsParentStateObjectsWatchRunning?
 
-> `optional` **relatedObjectsParentStateObjectsWatchRunning**: `boolean`
+> `optional` **relatedObjectsParentStateObjectsWatchRunning?**: `boolean`
 
 Flags whether the watch on parent state objects is currently active, ensuring updates trigger as needed.
 
 ###### relatedObjectsRules?
 
-> `optional` **relatedObjectsRules**: [`ListRelatedRules`](listRelated.md#listrelatedrules)
+> `optional` **relatedObjectsRules?**: [`ListRelatedRules`](listRelated.md#listrelatedrules)
 
 Defines the rules for establishing relationships, such as foreign key links and sorting orders.
 
 ###### relatedObjectsWatchRunning?
 
-> `optional` **relatedObjectsWatchRunning**: `boolean`
+> `optional` **relatedObjectsWatchRunning?**: `boolean`
 
 Indicates if watches on the related objects themselves are active, managing updates efficiently.
 
 ###### relatedRunning?
 
-> `optional` **relatedRunning**: `boolean`
+> `optional` **relatedRunning?**: `boolean`
 
 Signals whether any computations related to object relationships are currently in progress.
 
 ###### running?
 
-> `optional` **running**: `boolean`
+> `optional` **running?**: `boolean`
 
 General flag that indicates if the list-related logic is processing, used to manage UI feedback or prevent concurrent operations.
 
 ###### subscribed?
 
-> `optional` **subscribed**: `boolean`
+> `optional` **subscribed?**: `boolean`
 
 Whether the subscription is active.
 
@@ -496,7 +496,7 @@ Whether an error has occurred.
 
 ###### fkForPkAndRule?
 
-> `optional` **fkForPkAndRule**: `object`
+> `optional` **fkForPkAndRule?**: `object`
 
 Maintains computed references to the foreign keys for each object pk and rule, crucial for navigating complex data relationships.
 
@@ -506,13 +506,13 @@ Maintains computed references to the foreign keys for each object pk and rule, c
 
 ###### intendToList?
 
-> `optional` **intendToList**: `boolean`
+> `optional` **intendToList?**: `boolean`
 
 If this is true, the list should be fetched, or re-fetched if arguments change.
 
 ###### intendToSubscribe?
 
-> `optional` **intendToSubscribe**: `boolean`
+> `optional` **intendToSubscribe?**: `boolean`
 
 If this is true, the subscription should start or restart if arguments change.
 
@@ -524,7 +524,7 @@ Whether the component is loading.
 
 ###### objAndKeyForPkAndRule?
 
-> `optional` **objAndKeyForPkAndRule**: `object`
+> `optional` **objAndKeyForPkAndRule?**: `object`
 
 Maps each object pk and rule to a tuple consisting of the related object and its respective key, facilitating direct data manipulation.
 
@@ -576,7 +576,7 @@ The primary key field for the list objects.
 
 ###### relatedObjects?
 
-> `optional` **relatedObjects**: `object`
+> `optional` **relatedObjects?**: `object`
 
 Stores computed references to related objects, allowing for dynamic access based on object pk and specific rules.
 
@@ -586,25 +586,25 @@ Stores computed references to related objects, allowing for dynamic access based
 
 ###### relatedObjectsParentStateObjectsWatchRunning?
 
-> `optional` **relatedObjectsParentStateObjectsWatchRunning**: `boolean`
+> `optional` **relatedObjectsParentStateObjectsWatchRunning?**: `boolean`
 
 Flags whether the watch on parent state objects is currently active, ensuring updates trigger as needed.
 
 ###### relatedObjectsRules?
 
-> `optional` **relatedObjectsRules**: [`ListRelatedRules`](listRelated.md#listrelatedrules)
+> `optional` **relatedObjectsRules?**: [`ListRelatedRules`](listRelated.md#listrelatedrules)
 
 Defines the rules for establishing relationships, such as foreign key links and sorting orders.
 
 ###### relatedObjectsWatchRunning?
 
-> `optional` **relatedObjectsWatchRunning**: `boolean`
+> `optional` **relatedObjectsWatchRunning?**: `boolean`
 
 Indicates if watches on the related objects themselves are active, managing updates efficiently.
 
 ###### relatedRunning?
 
-> `optional` **relatedRunning**: `boolean`
+> `optional` **relatedRunning?**: `boolean`
 
 Signals whether any computations related to object relationships are currently in progress.
 
@@ -616,11 +616,11 @@ General flag that indicates if the list-related logic is processing, used to man
 
 ###### subscribed?
 
-> `optional` **subscribed**: `boolean`
+> `optional` **subscribed?**: `boolean`
 
 Whether the subscription is active.
 
-##### stop()
+##### stop
 
 > **stop**: () => `void`
 
@@ -682,7 +682,7 @@ Whether the list is running.
 
 ### ListCalculated
 
-> **ListCalculated**\<\> = [`ListCalculatedProperties`](#listcalculatedproperties)
+> **ListCalculated** = [`ListCalculatedProperties`](#listcalculatedproperties)
 
 #### Type Parameters
 
@@ -690,7 +690,7 @@ Whether the list is running.
 
 ### ListCalculatedParentRawState
 
-> **ListCalculatedParentRawState**\<\> = [`ListInstanceRawState`](listInstance.md#listinstancerawstate) & `Partial`\<[`ListSubscriptionRawState`](listSubscription.md#listsubscriptionrawstate)\> & `Partial`\<[`ListRelatedRawState`](listRelated.md#listrelatedrawstate)\>
+> **ListCalculatedParentRawState** = [`ListInstanceRawState`](listInstance.md#listinstancerawstate) & `Partial`\<[`ListSubscriptionRawState`](listSubscription.md#listsubscriptionrawstate)\> & `Partial`\<[`ListRelatedRawState`](listRelated.md#listrelatedrawstate)\>
 
 #### Type Parameters
 
@@ -698,7 +698,7 @@ Whether the list is running.
 
 ### ListCalculatedParentState
 
-> **ListCalculatedParentState**\<\> = `UnwrapNestedRefs`
+> **ListCalculatedParentState** = `UnwrapNestedRefs`
 
 #### Type Parameters
 
@@ -706,7 +706,7 @@ Whether the list is running.
 
 ### ListCalculatedRules
 
-> **ListCalculatedRules**\<\> = `object`
+> **ListCalculatedRules** = `object`
 
 #### Type Parameters
 
@@ -718,7 +718,7 @@ Whether the list is running.
 
 ### ListCalculatedState
 
-> **ListCalculatedState**\<\> = `UnwrapNestedRefs`
+> **ListCalculatedState** = `UnwrapNestedRefs`
 
 #### Type Parameters
 

@@ -14,7 +14,7 @@
 
 #### Type Declaration
 
-##### cancel()
+##### cancel
 
 > **cancel**: (`reason?`) => `Promise`\<`void`\> \| `void`
 
@@ -42,9 +42,9 @@
 
 #### Type Declaration
 
-##### cancel()?
+##### cancel?
 
-> `optional` **cancel**: (`reason?`) => `Promise`\<`void`\> \| `void`
+> `optional` **cancel?**: (`reason?`) => `Promise`\<`void`\> \| `void`
 
 ###### Parameters
 
@@ -86,7 +86,7 @@ The promise to be cancellable.
 
 ##### cancel
 
-() => `void` \| `Promise`\<`void`\>
+(`reason?`) => `void` \| `Promise`\<`void`\>
 
 The function to cancel the promise.
 
@@ -120,7 +120,7 @@ The inner promise to wrap.
 
 ##### cancel
 
-() => `void` \| `Promise`\<`void`\>
+(`reason?`) => `void` \| `Promise`\<`void`\>
 
 Optional cancel function.
 

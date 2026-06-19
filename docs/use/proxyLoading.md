@@ -10,7 +10,7 @@
 
 ### MaybeRefWatchableLoading
 
-> **MaybeRefWatchableLoading**\<\> = `MaybeRef`
+> **MaybeRefWatchableLoading** = `MaybeRef`
 
 #### Type Parameters
 
@@ -18,7 +18,7 @@
 
 ### WatchableLoading
 
-> **WatchableLoading**\<\> = [`LoadingProperties`](loading.md#loadingproperties) \| `Reactive`
+> **WatchableLoading** = [`LoadingProperties`](loading.md#loadingproperties) \| `Reactive`
 
 #### Type Parameters
 

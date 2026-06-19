@@ -79,7 +79,7 @@ The timeout in milliseconds before the promise is rejected.
 
 > **ref**: `Readonly`\<`Ref`\<`any`, `any`\>\>
 
-##### reject()
+##### reject
 
 > **reject**: (`reason?`) => `void`
 
@@ -93,7 +93,7 @@ The timeout in milliseconds before the promise is rejected.
 
 `void`
 
-##### resolve()
+##### resolve
 
 > **resolve**: (`value`) => `void`
 
@@ -236,7 +236,7 @@ The timeout in milliseconds.
 
 > **promise**: `Promise`\<`any`\>
 
-##### reject()
+##### reject
 
 > **reject**: (`reason?`) => `void`
 
@@ -250,7 +250,7 @@ The timeout in milliseconds.
 
 `void`
 
-##### resolve()
+##### resolve
 
 > **resolve**: (`value`) => `void`
 
@@ -380,9 +380,9 @@ Starts the watch.
 
 ###### watchSources
 
-The source(s) to watch.
+`WatchSource`\<`any`\> \| `WatchSource`\<`any`\>[]
 
-`WatchSource`\<`any`\> | `WatchSource`\<`any`\>[]
+The source(s) to watch.
 
 ###### watchFunc
 

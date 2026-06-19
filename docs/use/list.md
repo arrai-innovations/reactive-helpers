@@ -80,13 +80,13 @@ Represents the final reactive state in the list processing chain.
 
 ###### allowedFilter?
 
-> `optional` **allowedFilter**: `Function`
+> `optional` **allowedFilter?**: `Function`
 
 Function to determine if an item should be included based on custom logic.
 
 ###### calculatedObjects?
 
-> `optional` **calculatedObjects**: `object`
+> `optional` **calculatedObjects?**: `object`
 
 The calculated objects.
 
@@ -96,25 +96,25 @@ The calculated objects.
 
 ###### calculatedObjectsParentStateObjectsWatchRunning?
 
-> `optional` **calculatedObjectsParentStateObjectsWatchRunning**: `boolean`
+> `optional` **calculatedObjectsParentStateObjectsWatchRunning?**: `boolean`
 
 Whether the parent state objects watch is running.
 
 ###### calculatedObjectsRules?
 
-> `optional` **calculatedObjectsRules**: [`ListCalculatedRules`](listCalculated.md#listcalculatedrules)
+> `optional` **calculatedObjectsRules?**: [`ListCalculatedRules`](listCalculated.md#listcalculatedrules)
 
 The rules for the calculated objects.
 
 ###### calculatedObjectsWatchRunning?
 
-> `optional` **calculatedObjectsWatchRunning**: `boolean`
+> `optional` **calculatedObjectsWatchRunning?**: `boolean`
 
 Whether the calculated objects watch is running.
 
 ###### calculatedRunning?
 
-> `optional` **calculatedRunning**: `boolean`
+> `optional` **calculatedRunning?**: `boolean`
 
 Whether the calculated properties are running.
 
@@ -162,13 +162,13 @@ The subscribe function.
 
 ###### customDocumentOptions?
 
-> `optional` **customDocumentOptions**: `any`
+> `optional` **customDocumentOptions?**: `any`
 
 Configuration options for the search document, used by FlexSearch.
 
 ###### customSearchOptions?
 
-> `optional` **customSearchOptions**: `any`
+> `optional` **customSearchOptions?**: `any`
 
 Additional search options for FlexSearch.
 
@@ -186,13 +186,13 @@ Whether an error has occurred.
 
 ###### excludedFilter?
 
-> `optional` **excludedFilter**: `Function`
+> `optional` **excludedFilter?**: `Function`
 
 Function to determine if an item should be excluded based on custom logic.
 
 ###### fkForPkAndRule?
 
-> `optional` **fkForPkAndRule**: `object`
+> `optional` **fkForPkAndRule?**: `object`
 
 Maintains computed references to the foreign keys for each object pk and rule, crucial for navigating complex data relationships.
 
@@ -202,13 +202,13 @@ Maintains computed references to the foreign keys for each object pk and rule, c
 
 ###### intendToList?
 
-> `optional` **intendToList**: `boolean`
+> `optional` **intendToList?**: `boolean`
 
 If this is true, the list should be fetched, or re-fetched if arguments change.
 
 ###### intendToSubscribe?
 
-> `optional` **intendToSubscribe**: `boolean`
+> `optional` **intendToSubscribe?**: `boolean`
 
 If this is true, the subscription should start or restart if arguments change.
 
@@ -220,7 +220,7 @@ Whether the component is loading.
 
 ###### objAndKeyForPkAndRule?
 
-> `optional` **objAndKeyForPkAndRule**: `object`
+> `optional` **objAndKeyForPkAndRule?**: `object`
 
 Maps each object pk and rule to a tuple consisting of the related object and its respective key, facilitating direct data manipulation.
 
@@ -230,7 +230,7 @@ Maps each object pk and rule to a tuple consisting of the related object and its
 
 ###### objectIndexes?
 
-> `optional` **objectIndexes**: `any`
+> `optional` **objectIndexes?**: `any`
 
 Indexes built for quick search across objects based on rules.
 
@@ -290,7 +290,7 @@ The primary key field for the list objects.
 
 ###### relatedObjects?
 
-> `optional` **relatedObjects**: `object`
+> `optional` **relatedObjects?**: `object`
 
 Stores computed references to related objects, allowing for dynamic access based on object pk and specific rules.
 
@@ -300,60 +300,60 @@ Stores computed references to related objects, allowing for dynamic access based
 
 ###### relatedObjectsParentStateObjectsWatchRunning?
 
-> `optional` **relatedObjectsParentStateObjectsWatchRunning**: `boolean`
+> `optional` **relatedObjectsParentStateObjectsWatchRunning?**: `boolean`
 
 Flags whether the watch on parent state objects is currently active, ensuring updates trigger as needed.
 
 ###### relatedObjectsRules?
 
-> `optional` **relatedObjectsRules**: [`ListRelatedRules`](listRelated.md#listrelatedrules)
+> `optional` **relatedObjectsRules?**: [`ListRelatedRules`](listRelated.md#listrelatedrules)
 
 Defines the rules for establishing relationships, such as foreign key links and sorting orders.
 
 ###### relatedObjectsWatchRunning?
 
-> `optional` **relatedObjectsWatchRunning**: `boolean`
+> `optional` **relatedObjectsWatchRunning?**: `boolean`
 
 Indicates if watches on the related objects themselves are active, managing updates efficiently.
 
 ###### relatedRunning?
 
-> `optional` **relatedRunning**: `boolean`
+> `optional` **relatedRunning?**: `boolean`
 
 Signals whether any computations related to object relationships are currently in progress.
 
 ###### running?
 
-> `optional` **running**: `boolean`
+> `optional` **running?**: `boolean`
 
 General flag that indicates if the list-related logic is processing, used to manage UI feedback or prevent concurrent operations.
 
 ###### searched?
 
-> `optional` **searched**: `boolean`
+> `optional` **searched?**: `boolean`
 
 Flag indicating if a search has been performed.
 
 ###### subscribed?
 
-> `optional` **subscribed**: `boolean`
+> `optional` **subscribed?**: `boolean`
 
 Whether the subscription is active.
 
 ###### textSearchRules?
 
-> `optional` **textSearchRules**: `any`
+> `optional` **textSearchRules?**: `any`
 
 Rules defining how text search should be applied on list items. Each rule
  specifies a key and a function to extract the searchable text.
 
 ###### textSearchValue?
 
-> `optional` **textSearchValue**: `string`
+> `optional` **textSearchValue?**: `string`
 
 The current value used for searching.
 
-##### stop()
+##### stop
 
 > **stop**: () => `void`
 
@@ -371,7 +371,7 @@ A function to stop the effect scope and clean up resources.
 
 ##### handlers?
 
-> `optional` **handlers**: [`ListCrudHandlers`](../config/listCrud.md#listcrudhandlers)
+> `optional` **handlers?**: [`ListCrudHandlers`](../config/listCrud.md#listcrudhandlers)
 
 Additional handlers to be included in the list manager.
 
@@ -383,19 +383,19 @@ The properties for configuring the list.
 
 ##### searchShowAllWhenEmpty?
 
-> `optional` **searchShowAllWhenEmpty**: `boolean`
+> `optional` **searchShowAllWhenEmpty?**: `boolean`
 
 Indicates whether all items should be shown when the search query is empty.
 
 ##### searchThrottle?
 
-> `optional` **searchThrottle**: `number`
+> `optional` **searchThrottle?**: `number`
 
 The throttle time for text search.
 
 ##### sortThrottleWait?
 
-> `optional` **sortThrottleWait**: `number`
+> `optional` **sortThrottleWait?**: `number`
 
 The throttle time for sorting.
 
@@ -493,7 +493,7 @@ Current text query used for filtering the list.
 
 ### ListFunctions
 
-> **ListFunctions**\<\> = [`ListInstanceFunctions`](listInstance.md#listinstancefunctions) & [`ListSubscriptionFunctions`](listSubscription.md#listsubscriptionfunctions)
+> **ListFunctions** = [`ListInstanceFunctions`](listInstance.md#listinstancefunctions) & [`ListSubscriptionFunctions`](listSubscription.md#listsubscriptionfunctions)
 
 #### Type Parameters
 
@@ -501,7 +501,7 @@ Current text query used for filtering the list.
 
 ### ListManaged
 
-> **ListManaged**\<\> = `object`
+> **ListManaged** = `object`
 
 #### Type Parameters
 
@@ -539,7 +539,7 @@ Current text query used for filtering the list.
 
 ### ListManager
 
-> **ListManager**\<\> = [`ListFunctions`](#listfunctions) & [`ListManagerProperties`](#listmanagerproperties)
+> **ListManager** = [`ListFunctions`](#listfunctions) & [`ListManagerProperties`](#listmanagerproperties)
 
 #### Type Parameters
 

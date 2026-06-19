@@ -92,7 +92,7 @@ Whether the subscription is active.
 
 ##### listInstance?
 
-> `optional` **listInstance**: [`ListInstance`](listInstance.md#listinstance)
+> `optional` **listInstance?**: [`ListInstance`](listInstance.md#listinstance)
 
 A list instance to use instead of creating one.
 
@@ -250,7 +250,7 @@ The `CancellableIntent` instance managing if the subscription should be (un)subs
 
 ### ListInstanceStateRefs
 
-> **ListInstanceStateRefs**\<\> = `ToRefs`
+> **ListInstanceStateRefs** = `ToRefs`
 
 #### Type Parameters
 
@@ -258,7 +258,7 @@ The `CancellableIntent` instance managing if the subscription should be (un)subs
 
 ### ListSubscription
 
-> **ListSubscription**\<\> = [`ListSubscriptionFunctions`](#listsubscriptionfunctions) & [`ListSubscriptionProperties`](#listsubscriptionproperties)
+> **ListSubscription** = [`ListSubscriptionFunctions`](#listsubscriptionfunctions) & [`ListSubscriptionProperties`](#listsubscriptionproperties)
 
 #### Type Parameters
 
@@ -266,7 +266,7 @@ The `CancellableIntent` instance managing if the subscription should be (un)subs
 
 ### ListSubscriptionContext
 
-> **ListSubscriptionContext**\<\> = `object`
+> **ListSubscriptionContext** = `object`
 
 #### Type Parameters
 
@@ -288,7 +288,7 @@ The `CancellableIntent` instance managing if the subscription should be (un)subs
 
 ### ListSubscriptionFunctions
 
-> **ListSubscriptionFunctions**\<\> = `Pick`\<[`LoadingErrorStatus`](loadingError.md#loadingerrorstatus), `"clearError"`\>
+> **ListSubscriptionFunctions** = `Pick`\<[`LoadingErrorStatus`](loadingError.md#loadingerrorstatus), `"clearError"`\>
 
 #### Type Parameters
 
@@ -296,7 +296,7 @@ The `CancellableIntent` instance managing if the subscription should be (un)subs
 
 ### ListSubscriptionOptions
 
-> **ListSubscriptionOptions**\<\> = [`ListInstanceOptions`](listInstance.md#listinstanceoptions) & [`ListSubscriptionOwnOptions`](#listsubscriptionownoptions)
+> **ListSubscriptionOptions** = [`ListInstanceOptions`](listInstance.md#listinstanceoptions) & [`ListSubscriptionOwnOptions`](#listsubscriptionownoptions)
 
 #### Type Parameters
 
@@ -304,7 +304,7 @@ The `CancellableIntent` instance managing if the subscription should be (un)subs
 
 ### ListSubscriptionRawState
 
-> **ListSubscriptionRawState**\<\> = [`ListSubscriptionMyState`](#listsubscriptionmystate) & `Pick`\<[`LoadingErrorStatus`](loadingError.md#loadingerrorstatus), `"loading"` \| `"error"` \| `"errored"`\> & [`ListInstanceStateRefs`](#listinstancestaterefs)
+> **ListSubscriptionRawState** = [`ListSubscriptionMyState`](#listsubscriptionmystate) & `Pick`\<[`LoadingErrorStatus`](loadingError.md#loadingerrorstatus), `"loading"` \| `"error"` \| `"errored"`\> & [`ListInstanceStateRefs`](#listinstancestaterefs)
 
 #### Type Parameters
 
@@ -312,7 +312,7 @@ The `CancellableIntent` instance managing if the subscription should be (un)subs
 
 ### ListSubscriptionState
 
-> **ListSubscriptionState**\<\> = `Reactive`
+> **ListSubscriptionState** = `Reactive`
 
 #### Type Parameters
 

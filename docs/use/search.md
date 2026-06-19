@@ -26,7 +26,7 @@ Fields to index. Can be a single string, an array of strings, or an array of obj
 
 ##### minLength?
 
-> `optional` **minLength**: `number`
+> `optional` **minLength?**: `number`
 
 Minimum length of a token to be indexed.
 
@@ -44,7 +44,7 @@ The document field to use as a tag. Default is false, can be set to a string.
 
 ##### tokenizer?
 
-> `optional` **tokenizer**: `string`
+> `optional` **tokenizer?**: `string`
 
 Specifies the tokenizer to use.
 
@@ -110,7 +110,7 @@ Fields to index. Can be a single string, an array of strings, or an array of obj
 
 ###### customDocumentOptions.minLength?
 
-> `optional` **minLength**: `number`
+> `optional` **minLength?**: `number`
 
 Minimum length of a token to be indexed.
 
@@ -128,7 +128,7 @@ The document field to use as a tag. Default is false, can be set to a string.
 
 ###### customDocumentOptions.tokenizer?
 
-> `optional` **tokenizer**: `string`
+> `optional` **tokenizer?**: `string`
 
 Specifies the tokenizer to use.
 

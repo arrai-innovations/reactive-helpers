@@ -92,13 +92,13 @@ Whether an error has occurred.
 
 ###### intendToRetrieve?
 
-> `optional` **intendToRetrieve**: `boolean`
+> `optional` **intendToRetrieve?**: `boolean`
 
 Whether the object intends to retrieve.
 
 ###### intendToSubscribe?
 
-> `optional` **intendToSubscribe**: `boolean`
+> `optional` **intendToSubscribe?**: `boolean`
 
 Whether the object intends to subscribe.
 
@@ -126,7 +126,7 @@ The arguments to be passed to the retrieve function.
 
 ###### parentStateObjectWatchRunning?
 
-> `optional` **parentStateObjectWatchRunning**: `boolean`
+> `optional` **parentStateObjectWatchRunning?**: `boolean`
 
 Whether the parent state object watch is running.
 
@@ -144,7 +144,7 @@ The pk key of the object.
 
 ###### relatedObject?
 
-> `optional` **relatedObject**: `object`
+> `optional` **relatedObject?**: `object`
 
 The related objects, indexed by the key in the related object.
 
@@ -154,31 +154,31 @@ The related objects, indexed by the key in the related object.
 
 ###### relatedObjectRules?
 
-> `optional` **relatedObjectRules**: [`ObjectRelatedRawRules`](objectRelated.md#objectrelatedrawrules)
+> `optional` **relatedObjectRules?**: [`ObjectRelatedRawRules`](objectRelated.md#objectrelatedrawrules)
 
 The rules for defining relationships for the managed object to other collections of objects.
 
 ###### relatedObjectWatchRunning?
 
-> `optional` **relatedObjectWatchRunning**: `boolean`
+> `optional` **relatedObjectWatchRunning?**: `boolean`
 
 Whether the related object watch is running.
 
 ###### relatedRunning?
 
-> `optional` **relatedRunning**: `boolean`
+> `optional` **relatedRunning?**: `boolean`
 
 Whether the related objects are loading.
 
 ###### running?
 
-> `optional` **running**: `boolean`
+> `optional` **running?**: `boolean`
 
 Whether the related objects are loading or the parent state is loading.
 
 ###### subscribed?
 
-> `optional` **subscribed**: `boolean`
+> `optional` **subscribed?**: `boolean`
 
 Whether the object is subscribed.
 
@@ -290,13 +290,13 @@ Whether an error has occurred.
 
 ###### intendToRetrieve?
 
-> `optional` **intendToRetrieve**: `boolean`
+> `optional` **intendToRetrieve?**: `boolean`
 
 Whether the object intends to retrieve.
 
 ###### intendToSubscribe?
 
-> `optional` **intendToSubscribe**: `boolean`
+> `optional` **intendToSubscribe?**: `boolean`
 
 Whether the object intends to subscribe.
 
@@ -342,7 +342,7 @@ The pk key of the object.
 
 ###### relatedObject?
 
-> `optional` **relatedObject**: `object`
+> `optional` **relatedObject?**: `object`
 
 The related objects, indexed by the key in the related object.
 
@@ -352,19 +352,19 @@ The related objects, indexed by the key in the related object.
 
 ###### relatedObjectRules?
 
-> `optional` **relatedObjectRules**: [`ObjectRelatedRawRules`](objectRelated.md#objectrelatedrawrules)
+> `optional` **relatedObjectRules?**: [`ObjectRelatedRawRules`](objectRelated.md#objectrelatedrawrules)
 
 The rules for defining relationships for the managed object to other collections of objects.
 
 ###### relatedObjectWatchRunning?
 
-> `optional` **relatedObjectWatchRunning**: `boolean`
+> `optional` **relatedObjectWatchRunning?**: `boolean`
 
 Whether the related object watch is running.
 
 ###### relatedRunning?
 
-> `optional` **relatedRunning**: `boolean`
+> `optional` **relatedRunning?**: `boolean`
 
 Whether the related objects are loading.
 
@@ -376,11 +376,11 @@ Whether the related objects are loading or the parent state is loading.
 
 ###### subscribed?
 
-> `optional` **subscribed**: `boolean`
+> `optional` **subscribed?**: `boolean`
 
 Whether the object is subscribed.
 
-##### stop()
+##### stop
 
 > **stop**: () => `void`
 
@@ -454,7 +454,7 @@ Whether the object calculated is running.
 
 ### ObjectCalculated
 
-> **ObjectCalculated**\<\> = [`ObjectCalculatedProperties`](#objectcalculatedproperties)
+> **ObjectCalculated** = [`ObjectCalculatedProperties`](#objectcalculatedproperties)
 
 #### Type Parameters
 
@@ -462,7 +462,7 @@ Whether the object calculated is running.
 
 ### ObjectCalculatedOptions
 
-> **ObjectCalculatedOptions**\<\> = `object` & [`ObjectCalculatedRawProps`](#objectcalculatedrawprops)
+> **ObjectCalculatedOptions** = `object` & [`ObjectCalculatedRawProps`](#objectcalculatedrawprops)
 
 #### Type Declaration
 
@@ -476,7 +476,7 @@ Whether the object calculated is running.
 
 ### ObjectCalculatedParentRawState
 
-> **ObjectCalculatedParentRawState**\<\> = [`ObjectInstanceRawState`](objectInstance.md#objectinstancerawstate) & `Partial`\<[`ObjectSubscriptionRawState`](objectSubscription.md#objectsubscriptionrawstate)\> & `Partial`\<[`ObjectRelatedRawState`](objectRelated.md#objectrelatedrawstate)\>
+> **ObjectCalculatedParentRawState** = [`ObjectInstanceRawState`](objectInstance.md#objectinstancerawstate) & `Partial`\<[`ObjectSubscriptionRawState`](objectSubscription.md#objectsubscriptionrawstate)\> & `Partial`\<[`ObjectRelatedRawState`](objectRelated.md#objectrelatedrawstate)\>
 
 #### Type Parameters
 
@@ -484,7 +484,7 @@ Whether the object calculated is running.
 
 ### ObjectCalculatedParentState
 
-> **ObjectCalculatedParentState**\<\> = `UnwrapNestedRefs`
+> **ObjectCalculatedParentState** = `UnwrapNestedRefs`
 
 The object calculated options.
 
@@ -494,7 +494,7 @@ The object calculated options.
 
 ### ObjectCalculatedRules
 
-> **ObjectCalculatedRules**\<\> = `object`
+> **ObjectCalculatedRules** = `object`
 
 #### Type Parameters
 
@@ -506,7 +506,7 @@ The object calculated options.
 
 ### ObjectCalculatedState
 
-> **ObjectCalculatedState**\<\> = `UnwrapNestedRefs`
+> **ObjectCalculatedState** = `UnwrapNestedRefs`
 
 #### Type Parameters
 

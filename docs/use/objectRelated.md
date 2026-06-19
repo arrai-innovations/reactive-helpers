@@ -92,13 +92,13 @@ Whether an error has occurred.
 
 ###### intendToRetrieve?
 
-> `optional` **intendToRetrieve**: `boolean`
+> `optional` **intendToRetrieve?**: `boolean`
 
 Whether the object intends to retrieve.
 
 ###### intendToSubscribe?
 
-> `optional` **intendToSubscribe**: `boolean`
+> `optional` **intendToSubscribe?**: `boolean`
 
 Whether the object intends to subscribe.
 
@@ -138,7 +138,7 @@ The pk key of the object.
 
 ###### subscribed?
 
-> `optional` **subscribed**: `boolean`
+> `optional` **subscribed?**: `boolean`
 
 Whether the object is subscribed.
 
@@ -222,13 +222,13 @@ Whether an error has occurred.
 
 ###### intendToRetrieve?
 
-> `optional` **intendToRetrieve**: `boolean`
+> `optional` **intendToRetrieve?**: `boolean`
 
 Whether the object intends to retrieve.
 
 ###### intendToSubscribe?
 
-> `optional` **intendToSubscribe**: `boolean`
+> `optional` **intendToSubscribe?**: `boolean`
 
 Whether the object intends to subscribe.
 
@@ -308,11 +308,11 @@ Whether the related objects are loading or the parent state is loading.
 
 ###### subscribed?
 
-> `optional` **subscribed**: `boolean`
+> `optional` **subscribed?**: `boolean`
 
 Whether the object is subscribed.
 
-##### stop()
+##### stop
 
 > **stop**: () => `void`
 
@@ -408,7 +408,7 @@ The key in the managed object that corresponds to the key in the related object.
 
 ### ObjectRelated
 
-> **ObjectRelated**\<\> = [`ObjectRelatedProperties`](#objectrelatedproperties)
+> **ObjectRelated** = [`ObjectRelatedProperties`](#objectrelatedproperties)
 
 #### Type Parameters
 
@@ -416,7 +416,7 @@ The key in the managed object that corresponds to the key in the related object.
 
 ### ObjectRelatedOptions
 
-> **ObjectRelatedOptions**\<\> = `object` & [`ObjectRelatedRawProps`](#objectrelatedrawprops)
+> **ObjectRelatedOptions** = `object` & [`ObjectRelatedRawProps`](#objectrelatedrawprops)
 
 #### Type Declaration
 
@@ -430,7 +430,7 @@ The key in the managed object that corresponds to the key in the related object.
 
 ### ObjectRelatedParentRawState
 
-> **ObjectRelatedParentRawState**\<\> = [`ObjectInstanceRawState`](objectInstance.md#objectinstancerawstate) & `Partial`\<[`ObjectSubscriptionRawState`](objectSubscription.md#objectsubscriptionrawstate)\>
+> **ObjectRelatedParentRawState** = [`ObjectInstanceRawState`](objectInstance.md#objectinstancerawstate) & `Partial`\<[`ObjectSubscriptionRawState`](objectSubscription.md#objectsubscriptionrawstate)\>
 
 #### Type Parameters
 
@@ -438,7 +438,7 @@ The key in the managed object that corresponds to the key in the related object.
 
 ### ObjectRelatedParentState
 
-> **ObjectRelatedParentState**\<\> = `UnwrapNestedRefs`
+> **ObjectRelatedParentState** = `UnwrapNestedRefs`
 
 #### Type Parameters
 
@@ -446,7 +446,7 @@ The key in the managed object that corresponds to the key in the related object.
 
 ### ObjectRelatedRawRules
 
-> **ObjectRelatedRawRules**\<\> = `object`
+> **ObjectRelatedRawRules** = `object`
 
 #### Type Parameters
 
@@ -458,7 +458,7 @@ The key in the managed object that corresponds to the key in the related object.
 
 ### ObjectRelatedState
 
-> **ObjectRelatedState**\<\> = `UnwrapNestedRefs`
+> **ObjectRelatedState** = `UnwrapNestedRefs`
 
 #### Type Parameters
 

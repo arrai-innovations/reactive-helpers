@@ -10,7 +10,7 @@
 
 ### getFakePk()
 
-> **getFakePk**(`arraySetMapOrObject`, `key`): `string`
+> **getFakePk**(`arraySetMapOrObject`, `key?`): `string`
 
 Get a fake pk that is not in the array, set, map, or object. The fake pk is negative number, so they can be
 differentiated from real ids. They are returned as strings, as javascript object property keys are always strings.
@@ -26,7 +26,7 @@ The array, set, map, or object to check for the fake pk.
  A set is assumed to be a set of ids.
  A map or object is assumed to be an object with keys that are ids.
 
-##### key
+##### key?
 
 `string` = `"id"`
 
