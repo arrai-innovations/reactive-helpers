@@ -1,37 +1,109 @@
 version: 2.1
+
 orbs:
-    eslint: arrai/eslint@8.1.0
-    prettier: arrai/prettier@5.10.0
-    npm: arrai/npm@3.3.0
     github: arrai/github@5.0.0
-executors:
-    lts:
-        environment:
-            LANG: en_US.UTF-8
-        docker:
-            - image: cimg/node:lts
+    lintinator: arrai/lintinator@dev:js-lefthook
+    pnpm: arrai/pnpm@1.0.1
+    utils: arrai/utils@1.22.0
+
 jobs:
     check-generated:
-        executor: lts
+        executor: pnpm/lts
         working_directory: ~/project
         steps:
             - checkout
+            - pnpm/install_pnpm
+            - restore_cache:
+                  keys:
+                      - pnpm-v1-{{ arch }}-{{ checksum "pnpm-lock.yaml" }}
             - run:
                   name: Install dependencies
-                  command: npm ci
+                  command: pnpm install --frozen-lockfile
+            - save_cache:
+                  paths:
+                      - ~/.local/share/pnpm/store
+                  key: pnpm-v1-{{ arch }}-{{ checksum "pnpm-lock.yaml" }}
             - run:
                   name: Generate types and docs
-                  command: npm run docs
+                  command: pnpm run docs
             - run:
                   name: Check generated types/docs are in sync
-                  command: npm run docs:check
+                  command: pnpm run docs:check
             - run:
                   name: Type declarations smoke test
-                  command: npm run types:check -- --skip-gen
+                  command: pnpm run types:check -- --skip-gen
+
+    coverage:
+        parameters:
+            create_badges:
+                type: boolean
+                default: true
+        executor: pnpm/lts
+        resource_class: medium
+        circleci_ip_ranges: true
+        steps:
+            - checkout
+            - utils/add_ssh_config
+            - pnpm/install_pnpm
+            - utils/add_npm_config:
+                  registry: npm.arrai.dev
+                  token: $NPM_ARRAI_DEV_TOKEN
+                  scopes: |
+                      @arrai-innovations:registry=https://npm.arrai.dev/
+            - restore_cache:
+                  keys:
+                      - pnpm-v1-{{ arch }}-{{ checksum "pnpm-lock.yaml" }}
+            - run:
+                  name: Install dependencies
+                  command: pnpm install --frozen-lockfile
+            - save_cache:
+                  paths:
+                      - ~/.local/share/pnpm/store
+                  key: pnpm-v1-{{ arch }}-{{ checksum "pnpm-lock.yaml" }}
+            - run:
+                  name: Run tests with coverage
+                  command: pnpm coverage
+            - utils/rsync_folder:
+                  when: always
+                  folder: ~/project/coverage/
+                  remote_folder: ${CIRCLE_BRANCH}/coverage_${CIRCLE_JOB}
+                  host: docs
+            - when:
+                  condition: <<parameters.create_badges>>
+                  steps:
+                      - utils/make_status_shield:
+                            when: on_fail
+                            status: errors
+                            color: red
+                            logo: Node.js
+                      - utils/make_status_shield:
+                            when: on_success
+                            status: passed
+                            color: brightgreen
+                            logo: Node.js
+                      - utils/rsync_file:
+                            when: always
+                            file: ~/status.svg
+                            remote_file: ${CIRCLE_BRANCH}/${CIRCLE_JOB}.svg
+                            host: docs
+                      - run:
+                            name: Create coverage report
+                            when: always
+                            command: |
+                                jq 'if (.total.branches.pct | type) == "number" and (.total.statements.pct | type) == "number" then ((.total.branches.pct + .total.statements.pct) / 2) else 0 end | floor' coverage/coverage-summary.json > /tmp/.coveragep
+                      - utils/make_coverage_shield:
+                            when: always
+                            link: https://${DOCS_HOST}/${CIRCLE_PROJECT_REPONAME}/artifacts/${CIRCLE_BRANCH}/coverage_${CIRCLE_JOB}/
+                      - utils/rsync_file:
+                            when: always
+                            file: /tmp/coverage.svg
+                            remote_file: ${CIRCLE_BRANCH}/${CIRCLE_JOB}.coverage.svg
+                            host: docs
+
 workflows:
     test:
         jobs:
-            - npm/coverage:
+            - coverage:
                   name: tests
                   context: arrai-global
                   filters:
@@ -45,7 +117,7 @@ workflows:
                   filters:
                       branches:
                           only: main
-            - npm/coverage:
+            - coverage:
                   name: tests-no-badge
                   context: arrai-global
                   create_badges: false
@@ -65,12 +137,13 @@ workflows:
                       branches:
                           ignore:
                               - main
-            - npm/publish:
+            - pnpm/publish:
                   name: publish
                   context: arrai-global
-                  oidc: false
-                  registry: npm.arrai.dev
-                  token: $NPM_ARRAI_DEV_TOKEN
+                  npm_registry: npm.arrai.dev
+                  npm_token: $NPM_ARRAI_DEV_TOKEN
+                  npm_scopes: |
+                      @arrai-innovations:registry=https://npm.arrai.dev/
                   requires:
                       - non-main-docs-and-types
                   filters:
@@ -82,71 +155,84 @@ workflows:
                   name: release_on_github
                   context: arrai-global
                   requires:
-                      - non-main-docs-and-types
+                      - publish
                   filters:
                       tags:
                           only: /.*/
                       branches:
                           ignore: /.*/
+
     lint:
         jobs:
-            - eslint/eslint_fixed_ip:
-                  name: eslint
+            - lintinator/lint_python_fixed_ip:
+                  name: lint
                   context: arrai-global
-                  files: "."
-                  wd: "."
-                  config:
+                  executor: lintinator/node-lts
+                  hooks: prettier eslint
+                  hook_manager: lefthook
+                  install_deps: false
+                  setup:
+                      - pnpm/install_pnpm
+                      - utils/add_npm_config:
+                            registry: npm.arrai.dev
+                            token: $NPM_ARRAI_DEV_TOKEN
+                            scopes: |
+                                @arrai-innovations:registry=https://npm.arrai.dev/
                       - run:
-                            name: NPM
-                            command: npm ci
+                            name: Install dependencies
+                            command: pnpm install --frozen-lockfile
                   filters:
                       branches:
                           only:
                               - main
-            - eslint/eslint:
-                  name: eslint-no-badge
-                  files: "."
-                  wd: "."
-                  config:
-                      - run:
-                            name: NPM
-                            command: npm ci
-                  create_badges: false
-                  filters:
-                      branches:
-                          ignore:
-                              - main
-            - prettier/code_style_fixed_ip:
-                  name: prettier
+            - lintinator/lint_python:
+                  name: lint-no-badge
                   context: arrai-global
-                  filters:
-                      branches:
-                          only:
-                              - main
-            - prettier/code_style:
-                  name: prettier-no-badge
+                  executor: lintinator/node-lts
+                  hooks: prettier eslint
+                  hook_manager: lefthook
+                  install_deps: false
                   create_badges: false
+                  setup:
+                      - pnpm/install_pnpm
+                      - utils/add_npm_config:
+                            registry: npm.arrai.dev
+                            token: $NPM_ARRAI_DEV_TOKEN
+                            scopes: |
+                                @arrai-innovations:registry=https://npm.arrai.dev/
+                      - run:
+                            name: Install dependencies
+                            command: pnpm install --frozen-lockfile
                   filters:
                       branches:
                           ignore:
                               - main
+
     audit:
         jobs:
-            - npm/audit_fixed_ip:
+            - pnpm/audit_fixed_ip:
                   name: audit
-                  context:
-                      - arrai-global
+                  context: arrai-global
+                  executor: pnpm/lts
                   skip_dev: false
+                  npm_registry: npm.arrai.dev
+                  npm_token: $NPM_ARRAI_DEV_TOKEN
+                  npm_scopes: |
+                      @arrai-innovations:registry=https://npm.arrai.dev/
                   filters:
                       branches:
                           only:
                               - main
-            - npm/audit:
+            - pnpm/audit:
                   name: audit-no-badge
-                  context:
-                      - arrai-global
+                  context: arrai-global
+                  executor: pnpm/lts
                   skip_dev: false
                   create_badges: false
+                  npm_registry: npm.arrai.dev
+                  npm_token: $NPM_ARRAI_DEV_TOKEN
+                  npm_scopes: |
+                      @arrai-innovations:registry=https://npm.arrai.dev/
                   filters:
                       branches:
                           ignore:
