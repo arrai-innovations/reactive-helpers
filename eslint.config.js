@@ -2,11 +2,11 @@ import js from "@eslint/js";
 import globals from "globals";
 import pluginVue from "eslint-plugin-vue";
 import eslintConfigPrettier from "eslint-config-prettier";
+import vueSkipFormatting from "@vue/eslint-config-prettier/skip-formatting";
 import jsdoc from "eslint-plugin-jsdoc";
-import { FlatCompat } from "@eslint/eslintrc";
-import vitest from "eslint-plugin-vitest";
+import vitest from "@vitest/eslint-plugin";
+import noAutofix from "eslint-plugin-no-autofix";
 
-const compat = new FlatCompat({ baseDirectory: import.meta.dirname });
 export default [
     { ignores: [".prettierrc.js", "typedoc-local-plugins", "docs"] },
     {
@@ -26,10 +26,8 @@ export default [
             ...pluginVue.configs["flat/recommended"].reduce((acc, config) => {
                 return { ...acc, plugins: { ...acc.plugins, ...config.plugins } };
             }).plugins,
-            ...compat.extends("@vue/eslint-config-prettier/skip-formatting").reduce((acc, config) => {
-                return { ...acc, plugins: { ...acc.plugins, ...config.plugins } };
-            }, {}).plugins,
             ...jsdoc.configs["flat/recommended-typescript-flavor-error"].plugins,
+            "no-autofix": noAutofix,
         },
         settings: {
             jsdoc: {
@@ -42,16 +40,13 @@ export default [
                 return { ...acc, rules: { ...acc.rules, ...config.rules } };
             }, {}).rules,
             ...eslintConfigPrettier.rules,
-            ...compat.extends("@vue/eslint-config-prettier/skip-formatting").reduce((acc, config) => {
-                return {
-                    ...acc,
-                    rules: {
-                        ...acc.rules,
-                        ...config.rules,
-                    },
-                };
-            }, {}).rules,
+            ...vueSkipFormatting.rules,
             ...jsdoc.configs["flat/recommended-typescript-flavor-error"].rules,
+            // newer eslint-plugin-jsdoc adds these to the recommended set; this library
+            // intentionally uses `any`/`Function`/`{}` in its JSDoc-as-types, so keep them off.
+            "jsdoc/reject-any-type": "off",
+            "jsdoc/reject-function-type": "off",
+            "jsdoc/ts-no-empty-object-type": "off",
             "no-console": "off",
             "no-debugger": process.env.NODE_ENV === "production" ? "error" : "off",
             "space-before-function-paren": [
@@ -89,12 +84,11 @@ export default [
             "jsdoc/require-description-complete-sentence": "error",
             "jsdoc/require-hyphen-before-param-description": "error",
             "jsdoc/require-param": "error",
-            "jsdoc/require-property": [
-                "error",
-                {
-                    enableFixer: false,
-                },
-            ],
+            // newer eslint-plugin-jsdoc dropped require-property's `enableFixer` option, and its
+            // fixer inserts empty @property stubs (a hazard with IDE fix-on-save). Route it through
+            // no-autofix so it still reports but cannot autofix.
+            "jsdoc/require-property": "off",
+            "no-autofix/jsdoc/require-property": "error",
             "jsdoc/tag-lines": [
                 "error",
                 "always",
@@ -120,6 +114,24 @@ export default [
             ...vitest.configs.recommended.rules,
             "vitest/no-conditional-expect": "off",
             "vitest/valid-expect": "off", // we want to use expect(value, message).toBe(expected), which is not supported by this rule
+            // tests run through the scopedIt() wrapper (tests/unit/scopedIt.js); teach the
+            // rule to treat it as a test block so expect() calls inside it aren't "standalone".
+            "vitest/no-standalone-expect": [
+                "error",
+                {
+                    additionalTestBlockFunctions: [
+                        "scopedIt",
+                        "scopedIt.only",
+                        "scopedIt.skip",
+                        "scopedIt.concurrent",
+                        "scopedIt.sequential",
+                        "scopedIt.fails",
+                        "scopedIt.todo",
+                        "scopedIt.each",
+                        "scopedIt.for",
+                    ],
+                },
+            ],
         },
     },
 ];

@@ -92,6 +92,7 @@ scopedIt.each = createScopedEach(); // base
  * @param {Array} cases - The cases to run the test with.
  */
 scopedIt.for = (cases) => {
+    // eslint-disable-next-line vitest/expect-expect, vitest/valid-title -- building the test fn, not invoking a test
     const forFn = it.for(cases);
 
     const register = (name, maybeOptionsOrFn, maybeFnOrNothing) => {

@@ -1,7 +1,5 @@
 import { deepUnref as _deepUnref } from "vue-deepunref";
 
-/* eslint-disable jsdoc/valid-types */
-
 /**
  * Recursively unwraps refs from a nested object, array, or primitive.
  *
@@ -15,8 +13,6 @@ import { deepUnref as _deepUnref } from "vue-deepunref";
  *       : T
  * } DeepUnwrap
  */
-
-/* eslint-enable jsdoc/valid-types */
 
 /**
  * Safe, recursively-typed deep unref.
