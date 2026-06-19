@@ -17,7 +17,7 @@
  *
  * @template T
  * @param {Promise<T>} promise - The promise to be cancellable.
- * @param {() => (Promise<void>|void)} cancel - The function to cancel the promise.
+ * @param {(reason?: any) => (Promise<void>|void)} cancel - The function to cancel the promise.
  * @returns {CancellablePromise<T>} The cancellable promise.
  */
 export const CancellablePromise = (promise, cancel) => {
@@ -52,7 +52,7 @@ CancellablePromise.resolve = (value) => {
  *
  * @template T
  * @param {Promise<T>} inner - The inner promise to wrap.
- * @param {(() => Promise<void> | void)=} cancel - Optional cancel function.
+ * @param {((reason?: any) => Promise<void> | void)=} cancel - Optional cancel function.
  * @returns {MaybeCancellablePromise<T>} The wrapped promise with an optional cancel method.
  */
 export function wrapMaybeCancellable(inner, cancel) {

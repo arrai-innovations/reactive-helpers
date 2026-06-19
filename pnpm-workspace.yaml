@@ -1,0 +1,10 @@
+packages: []
+
+overrides:
+    "form-data@>=4.0.0 <4.0.6": ">=4.0.6 <5"
+    "js-yaml@<=4.1.1": ">=4.2.0 <5"
+    "markdown-it@<=14.1.1": ">=14.2.0 <15"
+    "vite@>=8.0.0 <=8.0.15": ">=8.0.16 <9"
+
+allowBuilds:
+    lefthook: false

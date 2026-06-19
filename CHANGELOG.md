@@ -13,6 +13,11 @@ _Actions potentially required by implementers are marked with italics._
 - Deliberately cancelled list and object CRUD requests no longer populate error state when their promises reject.
 - `useCancellableIntent` now associates cancellation with the correct run and clears active state after cancelled promises settle.
 
+### Maintenance
+
+- Migrated development, audit, and publishing workflows from npm to pnpm.
+- Replaced Husky and lint-staged with Lefthook.
+
 ## v21.1.3 (2026-06-01)
 
 ### Fixes
