@@ -25,7 +25,7 @@ async function main() {
     }
 
     console.log(`[${scriptName}] ${BLUE}Running smoke test...${RESET}`);
-    run("npx --no-install tsc -p tsconfig.dts.json");
+    run("pnpm exec tsc -p tsconfig.dts.json");
     console.log(`[${scriptName}] ${BLUE}Smoke test passed${RESET}`);
 }
 

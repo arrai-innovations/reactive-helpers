@@ -4,31 +4,31 @@ This project uses [Vitest](https://vitest.dev/), ESLint, and Prettier.
 
 ## Environment
 
-- `npm install --dev` will be run before you arrive. All dependencies are available offline.
-- Running `npm install --dev` also sets up [Husky](https://typicode.github.io/husky/) for Git hooks.
+- `pnpm install` will be run before you arrive. All dependencies are available offline.
+- Running `pnpm install` also sets up [Lefthook](https://github.com/evilmartians/lefthook) for Git hooks.
 
 ## Commit Requirements
 
 - Commit messages must conform to the [Conventional Commits](https://www.conventionalcommits.org/en/v1.0.0/) specification and pass `commitlint`.
-- [`lint-staged`](https://github.com/okonet/lint-staged) runs ESLint and Prettier on staged files before each commit.
-- CI runs Prettier across the entire repository. To avoid formatting-related failures, run `npm run prettier` before committing.
+- Lefthook runs ESLint and Prettier on staged files before each commit.
+- CI runs Prettier across the entire repository. To avoid formatting-related failures, run `pnpm prettier` before committing.
 - The configured Prettier plugin also sorts imports automatically.
 
 ## Useful Scripts
 
-- **Run tests**: `npm test run`
-- **Run tests with coverage**: `npm run coverage`
+- **Run tests**: `pnpm test run`
+- **Run tests with coverage**: `pnpm coverage`
 
     - Text coverage output will be shown in the console.
     - An HTML report is produced in `coverage/`.
 
-- **Lint**: `npm run eslint`
-- **Format**: `npm run prettier`
-- **Generate types & documentation**: `npm run docs`
-- **Verify generated docs**: `npm run docs:check`
-- **Clean generated types/docs**: `npm run docs:clean`
-- **Generate types only**: `npm run types`
-- **Type smoke check without regenerating**: `npm run types:check -- --skip-gen`
+- **Lint**: `pnpm eslint`
+- **Format**: `pnpm prettier`
+- **Generate types & documentation**: `pnpm run docs`
+- **Verify generated docs**: `pnpm run docs:check`
+- **Clean generated types/docs**: `pnpm run docs:clean`
+- **Generate types only**: `pnpm run types`
+- **Type smoke check without regenerating**: `pnpm run types:check -- --skip-gen`
 
 ## Conventions
 
