@@ -8,7 +8,7 @@ cleanup() {
   rm -rf "${TEMP_DIR}"
 }
 trap cleanup EXIT
-npx --no-install typedoc --out "${TEMP_DIR}" --plugin typedoc-plugin-markdown --disableSources
+pnpm exec typedoc --out "${TEMP_DIR}" --plugin typedoc-plugin-markdown --disableSources
 set +e
 diff -u -r "${TEMP_DIR}" ./docs > /dev/null
 diff_exit_code=$?

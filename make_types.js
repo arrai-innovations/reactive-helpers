@@ -16,7 +16,7 @@ function run(cmd, opts = {}) {
 }
 
 async function main() {
-    run("npx --no-install tsc");
+    run("pnpm exec tsc");
     console.log(`[${scriptName}] ${BLUE}Types generated in types/${RESET}`);
 }
 
