@@ -3,11 +3,11 @@
  *
  * @template T
  * @param {Promise<T>} inner - The inner promise to wrap.
- * @param {(() => Promise<void> | void)=} cancel - Optional cancel function.
+ * @param {((reason?: any) => Promise<void> | void)=} cancel - Optional cancel function.
  * @returns {MaybeCancellablePromise<T>} The wrapped promise with an optional cancel method.
  */
-export function wrapMaybeCancellable<T>(inner: Promise<T>, cancel?: (() => Promise<void> | void) | undefined): MaybeCancellablePromise<T>;
-export function CancellablePromise<T>(promise: Promise<T>, cancel: () => (Promise<void> | void)): CancellablePromise<T>;
+export function wrapMaybeCancellable<T>(inner: Promise<T>, cancel?: ((reason?: any) => Promise<void> | void) | undefined): MaybeCancellablePromise<T>;
+export function CancellablePromise<T>(promise: Promise<T>, cancel: (reason?: any) => (Promise<void> | void)): CancellablePromise<T>;
 /**
  * A Promise that can be cancelled.
  */
