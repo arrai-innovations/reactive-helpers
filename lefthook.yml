@@ -24,6 +24,8 @@ pre-commit:
             exclude:
                 - "**/node_modules/**"
                 - "**/coverage/**"
+                - "types/**"
+                - "**/*.d.ts"
             run: pnpm exec eslint --cache --fix {staged_files}
         fix-prettier:
             stage_fixed: true
