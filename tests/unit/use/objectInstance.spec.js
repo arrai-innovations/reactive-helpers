@@ -1,6 +1,6 @@
 import { assignReactiveObject } from "../../../utils/assignReactiveObject.js";
 import flushPromises from "flush-promises";
-import { isRef, nextTick, reactive, ref, unref } from "vue";
+import { isReadonly, isRef, nextTick, reactive, ref, unref } from "vue";
 import { deepUnref } from "../../../utils/deepUnref.js";
 import { CancellablePromise } from "../../../utils/cancellablePromise.js";
 import { scopedIt } from "../scopedIt.js";
@@ -347,6 +347,44 @@ describe("use/objectInstance.js", function () {
             expect(unref(objectInstance.state.crud.retrieve.mock.calls[0][0].isCancelled)).toBe(false);
             const returnValue = await oiRetrieveResolve;
             expect(returnValue).toBe(false);
+        });
+        scopedIt("does not error when the in-flight retrieve is cancelled", async function () {
+            const pk = ref(1);
+            const params = reactive({ fields });
+            const objectInstance = useObjectInstance({
+                props: {
+                    target: { stream: "test_stream" },
+                    pk,
+                    pkKey: "id",
+                    params,
+                },
+            });
+            objectInstance.state.crud.retrieve = vi.fn();
+            /** @type {(err: any) => void} */
+            let crudRetrieveReject;
+            const crudRetrieveCancel = vi.fn();
+            const crudRetrievePromise = CancellablePromise(
+                new Promise((resolve, reject) => {
+                    crudRetrieveReject = reject;
+                }),
+                crudRetrieveCancel
+            );
+            objectInstance.state.crud.retrieve.mockReturnValueOnce(crudRetrievePromise);
+
+            const oiRetrieve = objectInstance.retrieve();
+            expect(objectInstance.state.errored).toBe(false);
+
+            // Cancelling sets isCancelled before the underlying request aborts; the abort then rejects
+            // the crud promise with the cancel reason. That deliberate cancellation is not an error.
+            const cancelResult = oiRetrieve.cancel("Intent watch cancelled");
+            // @ts-ignore - crudRetrieveReject is assigned synchronously in the promise executor
+            crudRetrieveReject("Intent watch cancelled");
+            await flushPromises();
+            await cancelResult;
+
+            expect(objectInstance.state.error).toBeNullError();
+            expect(objectInstance.state.errored).toBe(false);
+            expect(crudRetrieveCancel).toHaveBeenCalledWith("Intent watch cancelled");
         });
         scopedIt("errored with non-matching pkKey", async function () {
             const pk = ref(1);
@@ -1864,6 +1902,7 @@ describe("use/objectInstance.js", function () {
                 target: { stream: "test_stream" },
                 pk: "1",
                 pkKey: "unique",
+                isCancelled: expect.any(Object),
             });
         });
         scopedIt("passes additional args to delete and does not override", async function () {
@@ -1886,6 +1925,7 @@ describe("use/objectInstance.js", function () {
                 target: { stream: "test_stream" },
                 pk: "1",
                 pkKey: "id",
+                isCancelled: expect.any(Object),
             });
             expect(objectInstance.state.crud.delete).toHaveBeenCalledTimes(1);
         });
@@ -1939,6 +1979,7 @@ describe("use/objectInstance.js", function () {
                 target: { stream: "test_stream" },
                 pk: "1",
                 pkKey: "id",
+                isCancelled: expect.any(Object),
             });
             expect(objectInstance.state.crud.delete).toHaveBeenCalledTimes(1);
         });
@@ -1992,6 +2033,7 @@ describe("use/objectInstance.js", function () {
                 target: { stream: "test_stream" },
                 pk: "1",
                 pkKey: "unique",
+                isCancelled: expect.any(Object),
             });
             expect(objectInstance.state.crud.delete).toHaveBeenCalledTimes(1);
         });
@@ -2015,6 +2057,7 @@ describe("use/objectInstance.js", function () {
                 target: { stream: "test_stream" },
                 pk: "1",
                 pkKey: "id",
+                isCancelled: expect.any(Object),
             });
             expect(objectInstance.state.crud.delete).toHaveBeenCalledTimes(1);
         });
@@ -2038,6 +2081,7 @@ describe("use/objectInstance.js", function () {
                 target: { stream: "test_stream" },
                 pk: "1",
                 pkKey: "id",
+                isCancelled: expect.any(Object),
             });
             expect(objectInstance.state.crud.delete).toHaveBeenCalledTimes(1);
 
@@ -2054,19 +2098,38 @@ describe("use/objectInstance.js", function () {
                 },
             });
 
-            let cancelFnCalled = false;
-            const testPromise = CancellablePromise(new Promise(() => {}), () => {
-                cancelFnCalled = true;
-                return Promise.resolve();
-            });
+            /** @type {(err: any) => void} */
+            let deleteReject;
+            const cancelFn = vi.fn(() => Promise.resolve());
+            const testPromise = CancellablePromise(
+                new Promise((resolve, reject) => {
+                    deleteReject = reject;
+                }),
+                cancelFn
+            );
 
             objectInstance.state.crud.delete = vi.fn().mockReturnValueOnce(testPromise);
 
             const result = objectInstance.delete();
+            const passedIsCancelled = objectInstance.state.crud.delete.mock.calls[0][0].isCancelled;
 
-            await result.cancel();
+            expect(isRef(passedIsCancelled)).toBe(true);
+            expect(isReadonly(passedIsCancelled)).toBe(true);
+            expect(unref(passedIsCancelled)).toBe(false);
 
-            expect(cancelFnCalled).toBe(true);
+            const cancelResult = result.cancel("Intent watch cancelled");
+            // @ts-ignore - deleteReject is assigned synchronously in the promise executor
+            deleteReject("Intent watch cancelled");
+            await flushPromises();
+            await cancelResult;
+
+            await expect(result).resolves.toBe(false);
+            expect(unref(passedIsCancelled)).toBe(true);
+            expect(objectInstance.state.error).toBeNullError();
+            expect(objectInstance.state.errored).toBe(false);
+            expect(objectInstance.state.loading).toBe(false);
+            expect(objectInstance.state.deleted).toBe(false);
+            expect(cancelFn).toHaveBeenCalledWith("Intent watch cancelled");
         });
     });
     describe("clear", () => {

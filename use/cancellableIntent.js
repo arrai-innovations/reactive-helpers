@@ -184,7 +184,13 @@ export function useCancellableIntent({
         guardArguments: readonly(internalState.guardArguments),
     });
     let previousWatchValues = null,
-        cancelFunction = null;
+        cancelFunction = null,
+        // The run id whose in-flight promise `cancelFunction` would cancel. Paired with cancelFunction
+        // so a deliberate cancel can mark exactly which run it is tearing down.
+        cancelFunctionRunId = null;
+    // Run ids cancelled on purpose (via instance.cancel). Their promises reject with the cancel
+    // reason, which is not an error, so the run's catch handler skips setError for these.
+    const cancelledRunIds = new Set();
 
     const doIntentWatch = () => {
         loadingError.clearError();
@@ -225,8 +231,10 @@ export function useCancellableIntent({
 
         if (awaitablePromise.cancel) {
             cancelFunction = awaitablePromise.cancel.bind(awaitablePromise);
+            cancelFunctionRunId = thisRunId;
         } else {
             cancelFunction = null;
+            cancelFunctionRunId = null;
         }
         // we don't want to await this, because we want to be able to cancel it
         awaitablePromise
@@ -237,11 +245,21 @@ export function useCancellableIntent({
                 }
             })
             .catch(async (err) => {
+                // A deliberate cancellation (instance.cancel) rejects this run's promise with the
+                // cancel reason; that is the intended outcome, not an error, so don't surface it.
+                if (cancelledRunIds.delete(thisRunId)) {
+                    if (state.clearActiveOnResolved) {
+                        internalState.activeCount--;
+                    }
+                    return;
+                }
                 const cancelPromise = instance.cancel("Error in awaitableWithCancel", true);
                 loadingError.setError(err);
                 await cancelPromise;
             })
             .finally(() => {
+                // Drop any stale marker for this run (e.g. cancelled after it had already resolved).
+                cancelledRunIds.delete(thisRunId);
                 internalState.resolvingCount--;
             });
     };
@@ -316,7 +334,13 @@ export function useCancellableIntent({
         cancel: async (/** @type {any} */ reason, forceClearActive = false) => {
             if (cancelFunction) {
                 const toCancel = cancelFunction;
+                const runId = cancelFunctionRunId;
                 cancelFunction = null;
+                cancelFunctionRunId = null;
+                // Mark this run as deliberately cancelled so its rejection is not treated as an error.
+                if (runId !== null) {
+                    cancelledRunIds.add(runId);
+                }
                 if (!state.clearActiveOnResolved || forceClearActive) {
                     internalState.activeCount--;
                 }

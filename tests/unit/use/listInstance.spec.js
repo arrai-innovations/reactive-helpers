@@ -389,6 +389,39 @@ describe("use/listInstance.spec.js", function () {
             });
             expect(globalList).toHaveBeenCalledTimes(1);
         });
+        scopedIt("does not error when the in-flight list is cancelled", async function () {
+            const params = reactive({
+                user: 1,
+                fields,
+            });
+            const listInstance = useListInstance({
+                props: { pkKey: "id", params },
+            });
+            /** @type {(err: any) => void} */
+            let crudListReject;
+            const crudListPromise = CancellablePromise(
+                new Promise((resolve, reject) => {
+                    crudListReject = reject;
+                }),
+                globalListCancel
+            );
+            globalList.mockImplementation(() => crudListPromise);
+
+            const liList = listInstance.list();
+            await nextTick();
+            expect(listInstance.state.errored).toBe(false);
+
+            // Cancelling sets isCancelled before the underlying request aborts; the abort then rejects
+            // the crud promise with the cancel reason. That deliberate cancellation is not an error.
+            const cancelResult = liList.cancel("Intent watch cancelled");
+            crudListReject("Intent watch cancelled");
+            await flushPromises();
+            await cancelResult;
+
+            expect(listInstance.state.error).toBeNullError();
+            expect(listInstance.state.errored).toBe(false);
+            expect(globalListCancel).toHaveBeenCalledWith("Intent watch cancelled");
+        });
         scopedIt("success (custom stream)", async function () {
             const params = reactive({
                 user: 1,

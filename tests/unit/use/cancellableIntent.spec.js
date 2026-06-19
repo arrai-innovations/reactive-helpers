@@ -81,6 +81,54 @@ describe("use/cancellableIntent", () => {
             expect(subscribeIntent.state.active).toBe(false);
             expect(subscribeIntent.state.resolving).toBe(false);
         });
+
+        scopedIt("does not set error state when a cancelled run's promise rejects with the cancel reason", async () => {
+            let testArgRef = ref(1);
+            const runs = [];
+            const subscribeIntent = useCancellableIntent({
+                awaitableWithCancel: () => {
+                    let resolve, reject;
+                    const promise = CancellablePromise(
+                        new Promise((res, rej) => {
+                            resolve = res;
+                            reject = rej;
+                        }),
+                        vi.fn(() => Promise.resolve())
+                    );
+                    runs.push({ promise, resolve, reject });
+                    return promise;
+                },
+                watchArguments: reactive({
+                    testArg: testArgRef,
+                }),
+                clearActiveOnResolved: true,
+            });
+            await flushPromises();
+            expect(runs).toHaveLength(1);
+
+            // Changing the watch args cancels the in-flight run.
+            testArgRef.value = 2;
+            await flushPromises();
+            expect(runs[0].promise.cancel).toHaveBeenCalledTimes(1);
+            expect(runs).toHaveLength(2);
+
+            // A real cancel (AbortController.abort(reason)) rejects the run's promise with the cancel
+            // reason. That deliberate cancellation is the intended outcome, not an error, so it must
+            // not land in the error state (which previously surfaced as a spurious error and a
+            // Sentry report downstream).
+            runs[0].reject("Intent watch cancelled");
+            await flushPromises();
+
+            expect(subscribeIntent.state.errored).toBe(false);
+            expect(subscribeIntent.state.error).toBe(null);
+            expect(subscribeIntent.state.active).toBe(true);
+
+            runs[1].resolve(true);
+            await flushPromises();
+
+            expect(subscribeIntent.state.active).toBe(false);
+            expect(subscribeIntent.state.resolving).toBe(false);
+        });
     });
 
     describe("Delay", () => {

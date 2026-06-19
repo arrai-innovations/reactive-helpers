@@ -74,6 +74,7 @@ import { readonly } from "vue";
  * @property {TargetArgs} target - The arguments to be passed to the crud handlers.
  * @property {import('./commonCrud.js').Pk} pk - The pk of the object to be acted upon.
  * @property {string} pkKey - The key name of the primary key.
+ * @property {Readonly<import('vue').Ref<boolean>>} isCancelled - A ref to indicate if the request was cancelled.
  */
 
 /**
