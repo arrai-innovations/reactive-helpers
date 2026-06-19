@@ -39,7 +39,7 @@ pre-commit:
             glob: "**/*.md"
             exclude:
                 - "**/AGENTS.md"
-            run: pnpm exec doctoc --github -u {staged_files}
+            run: pnpm exec doctoc --github -u --loglevel error {staged_files}
         circleci-config:
             glob: ".circleci/*.yml"
             run: |
