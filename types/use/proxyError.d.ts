@@ -1,14 +1,14 @@
 /**
  * @typedef {import('./error.js').ReadonlyErrorStatus | import("vue").Reactive<import('./error.js').ReadonlyErrorStatus>} WatchableError
- * @typedef {import('vue').MaybeRef<WatchableError>} MaybeRefWatchableError
+ * @typedef {import('vue').MaybeRefOrGetter<WatchableError>} MaybeRefWatchableError
  */
 /**
  * A composable function for aggregating error state across multiple sources.
  *
- * @param {import('vue').MaybeRef<MaybeRefWatchableError[]>} errors - The error states to monitor.
+ * @param {import('vue').MaybeRefOrGetter<MaybeRefWatchableError[]>} errors - The error states to monitor.
  * @returns {import('./error.js').ReadonlyErrorStatus} An object containing aggregated reactive fields and actions for error state.
  */
-export function useProxyError(errors: import("vue").MaybeRef<MaybeRefWatchableError[]>): import("./error.js").ReadonlyErrorStatus;
+export function useProxyError(errors: import("vue").MaybeRefOrGetter<MaybeRefWatchableError[]>): import("./error.js").ReadonlyErrorStatus;
 /**
  * @typedef {{ state: import('vue').Reactive<import('./error.js').ErrorProperties> } & import('./error.js').ErrorReadOnlyFunctions} SeparateStateError
  */
@@ -24,7 +24,7 @@ export function useProxyError(errors: import("vue").MaybeRef<MaybeRefWatchableEr
  */
 export function asWatchableError(source: import("vue").MaybeRef<SeparateStateError | WatchableError>): WatchableError;
 export type WatchableError = import("./error.js").ReadonlyErrorStatus | import("vue").Reactive<import("./error.js").ReadonlyErrorStatus>;
-export type MaybeRefWatchableError = import("vue").MaybeRef<WatchableError>;
+export type MaybeRefWatchableError = import("vue").MaybeRefOrGetter<WatchableError>;
 export type SeparateStateError = {
     state: import("vue").Reactive<import("./error.js").ErrorProperties>;
 } & import("./error.js").ErrorReadOnlyFunctions;

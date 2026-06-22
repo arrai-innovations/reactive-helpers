@@ -10,7 +10,7 @@
 
 ### MaybeRefWatchableLoadingError
 
-> **MaybeRefWatchableLoadingError** = `MaybeRef`
+> **MaybeRefWatchableLoadingError** = `MaybeRefOrGetter`
 
 #### Type Parameters
 
@@ -78,7 +78,7 @@ A composable function combining aggregated loading and error state. Use `asWatch
 
 ##### loadingErrors
 
-`MaybeRef`\<`MaybeRef`\<[`WatchableLoadingError`](#watchableloadingerror)\>[]\>
+`MaybeRefOrGetter`\<`MaybeRefOrGetter`\<[`WatchableLoadingError`](#watchableloadingerror)\>[]\>
 
 The loading and error states to monitor.
 

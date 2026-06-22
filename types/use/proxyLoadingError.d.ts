@@ -1,15 +1,15 @@
 /**
  * @typedef {import('./proxyLoading.js').WatchableLoading & import('./proxyError.js').WatchableError} WatchableLoadingError
- * @typedef {import('vue').MaybeRef<WatchableLoadingError>} MaybeRefWatchableLoadingError
+ * @typedef {import('vue').MaybeRefOrGetter<WatchableLoadingError>} MaybeRefWatchableLoadingError
  * @typedef {import('./loading.js').LoadingProperties & import('./error.js').ReadonlyErrorStatus} ProxyLoadingError
  */
 /**
  * A composable function combining aggregated loading and error state. Use `asWatchableLoadingError` to convert <List|Object><Instance|Subscription> to WatchableLoadingError.
  *
- * @param {import('vue').MaybeRef<MaybeRefWatchableLoadingError[]>} loadingErrors - The loading and error states to monitor.
+ * @param {import('vue').MaybeRefOrGetter<MaybeRefWatchableLoadingError[]>} loadingErrors - The loading and error states to monitor.
  * @returns {ProxyLoadingError} - An object containing aggregated reactive fields and actions for both loading and error state.
  */
-export function useProxyLoadingError(loadingErrors: import("vue").MaybeRef<MaybeRefWatchableLoadingError[]>): ProxyLoadingError;
+export function useProxyLoadingError(loadingErrors: import("vue").MaybeRefOrGetter<MaybeRefWatchableLoadingError[]>): ProxyLoadingError;
 /**
  * @typedef {{ state: import('vue').Reactive<import('./error.js').ErrorProperties> } & import('./error.js').ErrorReadOnlyFunctions} SeparateStateLoadingError
  */
@@ -21,7 +21,7 @@ export function useProxyLoadingError(loadingErrors: import("vue").MaybeRef<Maybe
  */
 export function asWatchableLoadingError(source: import("vue").MaybeRef<SeparateStateLoadingError | WatchableLoadingError>): WatchableLoadingError;
 export type WatchableLoadingError = import("./proxyLoading.js").WatchableLoading & import("./proxyError.js").WatchableError;
-export type MaybeRefWatchableLoadingError = import("vue").MaybeRef<WatchableLoadingError>;
+export type MaybeRefWatchableLoadingError = import("vue").MaybeRefOrGetter<WatchableLoadingError>;
 export type ProxyLoadingError = import("./loading.js").LoadingProperties & import("./error.js").ReadonlyErrorStatus;
 export type SeparateStateLoadingError = {
     state: import("vue").Reactive<import("./error.js").ErrorProperties>;

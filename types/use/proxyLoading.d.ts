@@ -1,15 +1,15 @@
 /**
  * @typedef {import('./loading.js').LoadingProperties | import("vue").Reactive<import('./loading.js').LoadingProperties>} WatchableLoading
- * @typedef {import('vue').MaybeRef<WatchableLoading>} MaybeRefWatchableLoading
+ * @typedef {import('vue').MaybeRefOrGetter<WatchableLoading>} MaybeRefWatchableLoading
  * @typedef {import('./loading.js').LoadingProperties} ReadonlyLoadingStatus
  */
 /**
  * A composable function for aggregating loading state across multiple sources.
  *
- * @param {import('vue').MaybeRef<MaybeRefWatchableLoading[]>} loadings - The loading states to monitor.
+ * @param {import('vue').MaybeRefOrGetter<MaybeRefWatchableLoading[]>} loadings - The loading states to monitor.
  * @returns {ReadonlyLoadingStatus} An object containing the aggregated loading field.
  */
-export function useProxyLoading(loadings: import("vue").MaybeRef<MaybeRefWatchableLoading[]>): ReadonlyLoadingStatus;
+export function useProxyLoading(loadings: import("vue").MaybeRefOrGetter<MaybeRefWatchableLoading[]>): ReadonlyLoadingStatus;
 /**
  * Adapt an object with reactive loading state into a WatchableLoading shape.
  * Accepts either an object with a `state` property or an object that already exposes `loading`.
@@ -21,5 +21,5 @@ export function asWatchableLoading(source: import("vue").MaybeRef<{
     state: WatchableLoading;
 } | WatchableLoading>): WatchableLoading;
 export type WatchableLoading = import("./loading.js").LoadingProperties | import("vue").Reactive<import("./loading.js").LoadingProperties>;
-export type MaybeRefWatchableLoading = import("vue").MaybeRef<WatchableLoading>;
+export type MaybeRefWatchableLoading = import("vue").MaybeRefOrGetter<WatchableLoading>;
 export type ReadonlyLoadingStatus = import("./loading.js").LoadingProperties;

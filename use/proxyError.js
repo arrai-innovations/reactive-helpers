@@ -1,30 +1,30 @@
-import { computed, readonly, unref } from "vue";
+import { computed, readonly, toValue, unref } from "vue";
 import identity from "lodash-es/identity.js";
 import { toRefsIfReactive } from "../utils/toRefsIfReactive.js";
 
 /**
  * @typedef {import('./error.js').ReadonlyErrorStatus | import("vue").Reactive<import('./error.js').ReadonlyErrorStatus>} WatchableError
- * @typedef {import('vue').MaybeRef<WatchableError>} MaybeRefWatchableError
+ * @typedef {import('vue').MaybeRefOrGetter<WatchableError>} MaybeRefWatchableError
  */
 
 /**
  * A composable function for aggregating error state across multiple sources.
  *
- * @param {import('vue').MaybeRef<MaybeRefWatchableError[]>} errors - The error states to monitor.
+ * @param {import('vue').MaybeRefOrGetter<MaybeRefWatchableError[]>} errors - The error states to monitor.
  * @returns {import('./error.js').ReadonlyErrorStatus} An object containing aggregated reactive fields and actions for error state.
  */
 export function useProxyError(errors) {
     const error = computed(
         () =>
             /** @type {Error|null} */
-            unref(errors)
-                .map((e) => unref(unref(e).error))
+            toValue(errors)
+                .map((e) => unref(toValue(e).error))
                 .find(identity) || null
     );
 
     const errored = computed(() => {
-        return unref(errors)
-            .map((e) => unref(unref(e).errored))
+        return toValue(errors)
+            .map((e) => unref(toValue(e).errored))
             .some(identity);
     });
 
@@ -32,7 +32,7 @@ export function useProxyError(errors) {
         error: readonly(error),
         errored: readonly(errored),
         clearError: () => {
-            unref(errors).forEach((e) => unref(unref(e)).clearError());
+            toValue(errors).forEach((e) => toValue(e).clearError());
         },
     };
 }
