@@ -41,7 +41,7 @@ function isDocsOutOfDate(temp, target) {
 async function main() {
     run("pnpm exec tsc");
 
-    run(`pnpm exec typedoc --out "${tempDir}" --plugin typedoc-plugin-markdown --disableSources`);
+    run(`pnpm exec typedoc --out "${tempDir}"`);
 
     if (isDocsOutOfDate(tempDir, docsDir)) {
         console.log(`[${scriptName}] ${BLUE}Updating docs...${RESET}`);
