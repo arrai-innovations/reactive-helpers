@@ -4,6 +4,7 @@ import os from "os";
 import path from "path";
 import { execSync } from "child_process";
 import { fileURLToPath } from "url";
+import { stripTypedefSeparatorDashes } from "./strip_typedef_dashes.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const scriptName = path.basename(__filename);
@@ -40,6 +41,7 @@ function isDocsOutOfDate(temp, target) {
 
 async function main() {
     run("pnpm exec tsc");
+    stripTypedefSeparatorDashes(path.resolve("types"));
 
     run(`pnpm exec typedoc --out "${tempDir}"`);
 
