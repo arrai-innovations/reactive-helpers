@@ -120,40 +120,40 @@ export class ListSubscriptionError extends Error {
     code: string;
 }
 /**
- * - The raw state of a list subscription.
+ * The raw state of a list subscription.
  */
 export type ListSubscriptionMyState = {
     /**
-     * - If this is true, the list should be fetched, or re-fetched if arguments change.
+     * If this is true, the list should be fetched, or re-fetched if arguments change.
      */
     intendToList: import("vue").Ref<boolean> | boolean;
     /**
-     * - If this is true, the subscription should start or restart if arguments change.
+     * If this is true, the subscription should start or restart if arguments change.
      */
     intendToSubscribe: import("vue").Ref<boolean> | boolean;
     /**
-     * - Whether the subscription is active.
+     * Whether the subscription is active.
      */
     subscribed: import("vue").Ref<boolean>;
 };
 /**
- * - The list instance's reactive state converted to individual Vue refs.
+ * The list instance's reactive state converted to individual Vue refs.
  */
 export type ListInstanceStateRefs = import("vue").ToRefs<import("./listInstance.js").ListInstanceState>;
 /**
- * - The raw state of a list subscription, including the state from the list instance.
+ * The raw state of a list subscription, including the state from the list instance.
  */
 export type ListSubscriptionRawState = ListSubscriptionMyState & (Pick<import("./loadingError.js").LoadingErrorStatus, "loading" | "error" | "errored">) & ListInstanceStateRefs;
 /**
- * - A reactive object that manages a list of objects, as returned by `useListInstance`.
+ * A reactive object that manages a list of objects, as returned by `useListInstance`.
  */
 export type ListSubscriptionState = import("vue").Reactive<ListSubscriptionRawState>;
 /**
- * - The methods available on a list subscription.
+ * The methods available on a list subscription.
  */
 export type ListSubscriptionFunctions = Pick<import("./loadingError.js").LoadingErrorStatus, "clearError">;
 /**
- * - The context (state, list instance, and loading/error status) bound to the shared list subscription functions.
+ * The context (state, list instance, and loading/error status) bound to the shared list subscription functions.
  */
 export type ListSubscriptionContext = {
     state: ListSubscriptionState;
@@ -161,40 +161,40 @@ export type ListSubscriptionContext = {
     loadingError: import("./loadingError.js").LoadingErrorStatus;
 };
 /**
- * - The properties of a list subscription.
+ * The properties of a list subscription.
  */
 export type ListSubscriptionProperties = {
     /**
-     * - The reactive state of the list subscription.
+     * The reactive state of the list subscription.
      */
     state: ListSubscriptionState;
     /**
-     * - The list instance used by the subscription.
+     * The list instance used by the subscription.
      */
     listInstance: import("./listInstance.js").ListInstance;
     /**
-     * - The `CancellableIntent` instance managing if the list should be (re)fetched.
+     * The `CancellableIntent` instance managing if the list should be (re)fetched.
      */
     listIntent: import("./cancellableIntent.js").CancellableIntent;
     /**
-     * - The `CancellableIntent` instance managing if the subscription should be (un)subscribed.
+     * The `CancellableIntent` instance managing if the subscription should be (un)subscribed.
      */
     subscribeIntent: import("./cancellableIntent.js").CancellableIntent;
 };
 /**
- * - An instance of a list subscription, returned by `useListSubscription`.
+ * An instance of a list subscription, returned by `useListSubscription`.
  */
 export type ListSubscription = ListSubscriptionFunctions & ListSubscriptionProperties;
 /**
- * - The options specific to a list subscription, namely an optional pre-built list instance to reuse.
+ * The options specific to a list subscription, namely an optional pre-built list instance to reuse.
  */
 export type ListSubscriptionOwnOptions = {
     /**
-     * - A list instance to use instead of creating one.
+     * A list instance to use instead of creating one.
      */
     listInstance?: import("./listInstance.js").ListInstance;
 };
 /**
- * - Defines the settings required to establish a list subscription, detailing how list instances should handle updates and subscriptions based on the given properties.
+ * Defines the settings required to establish a list subscription, detailing how list instances should handle updates and subscriptions based on the given properties.
  */
 export type ListSubscriptionOptions = import("./listInstance.js").ListInstanceOptions & ListSubscriptionOwnOptions;

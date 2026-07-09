@@ -116,7 +116,7 @@ export function useListSorts(listSortArgs: {
  */
 export function useListSort({ parentState, orderByRules, sortThrottleWait }: ListSortOptions): ListSort;
 /**
- * - Describes a rule for ordering elements in a list. Each rule can directly reference a property of the list items, or define a function to compute the value used for sorting. Rules can be configured to sort in ascending or descending order and can utilize locale-aware string comparison if necessary.
+ * Describes a rule for ordering elements in a list. Each rule can directly reference a property of the list items, or define a function to compute the value used for sorting. Rules can be configured to sort in ascending or descending order and can utilize locale-aware string comparison if necessary.
  */
 export type OrderByRule = {
     key: string;
@@ -125,65 +125,65 @@ export type OrderByRule = {
     localeCompare?: boolean;
 };
 /**
- * - Represents the raw state used by the list sorting functionality. Includes all configurations and state necessary to manage sorting operations within a Vue application.
+ * Represents the raw state used by the list sorting functionality. Includes all configurations and state necessary to manage sorting operations within a Vue application.
  */
 export type ListSortRawState = {
     /**
-     * - Current sorting rules applied to the list.
+     * Current sorting rules applied to the list.
      */
     orderByRules: OrderByRule[];
     /**
-     * - Flags indicating whether each sort criterion is in descending order.
+     * Flags indicating whether each sort criterion is in descending order.
      */
     orderByDesc: boolean[];
 };
 /**
- * - The raw, pre-unwrapped parent state consumed by the list sort mixin, aggregating the upstream list composable states.
+ * The raw, pre-unwrapped parent state consumed by the list sort mixin, aggregating the upstream list composable states.
  */
 export type ListSortParentRawState = (import("./listInstance.js").ListInstanceRawState & Partial<import("./listSubscription.js").ListSubscriptionRawState> & Partial<import("./listRelated.js").ListRelatedRawState> & Partial<import("./listCalculated.js").ListCalculatedRawState> & Partial<import("./listFilter.js").ListFilterRawState> & Partial<import("./listSearch.js").ListSearchRawState>);
 /**
- * - The unwrapped reactive parent state consumed by the list sort mixin.
+ * The unwrapped reactive parent state consumed by the list sort mixin.
  */
 export type ListSortParentState = import("vue").UnwrapNestedRefs<ListSortParentRawState>;
 /**
- * - The reactive state used by the list sorting functionality. Includes all configurations and state necessary to manage sorting operations within a Vue application.
+ * The reactive state used by the list sorting functionality. Includes all configurations and state necessary to manage sorting operations within a Vue application.
  */
 export type ListSortState = import("vue").UnwrapNestedRefs<ListSortParentRawState & ListSortRawState>;
 /**
- * - The configuration options for initializing a list sort instance.
+ * The configuration options for initializing a list sort instance.
  */
 export type ListSortOptions = {
     /**
-     * - The parent state containing the list data and any associated state needed for sorting.
+     * The parent state containing the list data and any associated state needed for sorting.
      */
     parentState: ListSortParentState;
     /**
-     * - Rules defining how the list should be sorted, including key and direction.
+     * Rules defining how the list should be sorted, including key and direction.
      */
     orderByRules: OrderByRule[] | import("vue").Ref<OrderByRule[]>;
     /**
-     * - Optional throttle wait time to limit the frequency of sort operations, enhancing performance.
+     * Optional throttle wait time to limit the frequency of sort operations, enhancing performance.
      */
     sortThrottleWait: number | symbol;
 };
 /**
- * - The properties available on a list sort instance.
+ * The properties available on a list sort instance.
  */
 export type ListSortProperties = {
     /**
-     * - The reactive state for the list sort.
+     * The reactive state for the list sort.
      */
     state: ListSortState;
     /**
-     * - The parent state.
+     * The parent state.
      */
     parentState: ListSortParentState;
     /**
-     * - A function to stop the effect scope and clean up resources.
+     * A function to stop the effect scope and clean up resources.
      */
     stop: () => void;
 };
 /**
- * - The list sort instance, including reactive state and utilities to manage list sorting operations.
+ * The list sort instance, including reactive state and utilities to manage list sorting operations.
  */
 export type ListSort = ListSortProperties;

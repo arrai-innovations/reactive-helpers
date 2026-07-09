@@ -38,7 +38,7 @@
  */
 export function useCombineClasses(...classes: (CSSClasses)[]): import("vue").Ref<import("../utils/classes.js").CombinedClasses>;
 /**
- * - The accepted ways of specifying CSS classes to useCombineClasses (a string, array, class-map, or ref thereof).
+ * The accepted ways of specifying CSS classes to useCombineClasses (a string, array, class-map, or ref thereof).
  */
 export type CSSClasses = (string | string[] | {
     [key: string]: boolean | import("vue").Ref<boolean>;

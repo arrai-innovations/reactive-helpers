@@ -26,93 +26,93 @@ export function useLists(listOptions: {
 };
 export function useList({ props, handlers, searchThrottle, sortThrottleWait, searchShowAllWhenEmpty }: ListOptions): ListManager;
 /**
- * - Defines properties for configuring the list management system.
+ * Defines properties for configuring the list management system.
  */
 export type ListRawProps = {
     /**
-     * - The arguments to pass to the registered list crud handlers, related to the list itself.
+     * The arguments to pass to the registered list crud handlers, related to the list itself.
      */
     params: object;
     /**
-     * - The primary key for the list items.
+     * The primary key for the list items.
      */
     pkKey: string;
     /**
-     * - General arguments to pass to the registered list crud handlers, often related to endpoints.
+     * General arguments to pass to the registered list crud handlers, often related to endpoints.
      */
     target: object;
     /**
-     * - Indicates whether the list should be fetched immediately.
+     * Indicates whether the list should be fetched immediately.
      */
     intendToList: boolean;
     /**
-     * - Indicates whether changes to the list should be subscribed to.
+     * Indicates whether changes to the list should be subscribed to.
      */
     intendToSubscribe: boolean;
     /**
-     * - Defines rules for associating related objects with list items.
+     * Defines rules for associating related objects with list items.
      */
     relatedObjectsRules: import("./listRelated.js").ListRelatedRules;
     /**
-     * - Defines rules for dynamically calculating properties of list items.
+     * Defines rules for dynamically calculating properties of list items.
      */
     calculatedObjectsRules: import("./listCalculated.js").ListCalculatedRules;
     /**
-     * - Function or rule to determine if an item should be included based on inclusion criteria.
+     * Function or rule to determine if an item should be included based on inclusion criteria.
      */
     allowedFilter: import("./listFilter.js").ListFilterAllowedFilter;
     /**
-     * - Function or rule to determine if an item should be excluded based on exclusion criteria.
+     * Function or rule to determine if an item should be excluded based on exclusion criteria.
      */
     excludedFilter: import("./listFilter.js").ListFilterExcludedFilter;
     /**
-     * - Defines the properties and conditions used to filter the list via text search.
+     * Defines the properties and conditions used to filter the list via text search.
      */
     textSearchRules: import("./listSearch.js").TextSearchRules;
     /**
-     * - Current text query used for filtering the list.
+     * Current text query used for filtering the list.
      */
     textSearchValue: string;
     /**
-     * - FlexSearch document configuration options for advanced searching capabilities.
+     * FlexSearch document configuration options for advanced searching capabilities.
      */
     customDocumentOptions: object;
     /**
-     * - Additional search options for FlexSearch.
+     * Additional search options for FlexSearch.
      */
     customSearchOptions: object;
     /**
-     * - Sorting rules that define the order of list items.
+     * Sorting rules that define the order of list items.
      */
     orderByRules: import("./listSort.js").OrderByRule[];
 };
 /**
- * - The configuration options used to create a fully managed list via useList.
+ * The configuration options used to create a fully managed list via useList.
  */
 export type ListOptions = {
     /**
-     * - The properties for configuring the list.
+     * The properties for configuring the list.
      */
     props: ListRawProps;
     /**
-     * - Additional handlers to be included in the list manager.
+     * Additional handlers to be included in the list manager.
      */
     handlers?: import("../config/listCrud.js").ListCrudHandlers;
     /**
-     * - The throttle time for text search.
+     * The throttle time for text search.
      */
     searchThrottle?: number;
     /**
-     * - The throttle time for sorting.
+     * The throttle time for sorting.
      */
     sortThrottleWait?: number;
     /**
-     * - Indicates whether all items should be shown when the search query is empty.
+     * Indicates whether all items should be shown when the search query is empty.
      */
     searchShowAllWhenEmpty?: boolean;
 };
 /**
- * - Holds references to instances of all list-related composables, facilitating direct access and management.
+ * Holds references to instances of all list-related composables, facilitating direct access and management.
  */
 export type ListManaged = {
     listInstance: import("./listInstance.js").ListInstance;
@@ -124,27 +124,27 @@ export type ListManaged = {
     listSort: import("./listSort.js").ListSort;
 };
 /**
- * - Aggregates all functions provided by various list-related composables, allowing for a unified approach to calling these methods.
+ * Aggregates all functions provided by various list-related composables, allowing for a unified approach to calling these methods.
  */
 export type ListFunctions = (import("./listInstance.js").ListInstanceFunctions & import("./listSubscription.js").ListSubscriptionFunctions);
 /**
- * - Encapsulates properties relevant to the overall management of list-related hooks, including state, direct access to hooks, and scoped effects.
+ * Encapsulates properties relevant to the overall management of list-related hooks, including state, direct access to hooks, and scoped effects.
  */
 export type ListManagerProperties = {
     /**
-     * - A readonly reference to the managed list hooks.
+     * A readonly reference to the managed list hooks.
      */
     managed: ListManaged;
     /**
-     * - Represents the final reactive state in the list processing chain.
+     * Represents the final reactive state in the list processing chain.
      */
     state: import("./listSort.js").ListSortState;
     /**
-     * - A function to stop the effect scope and clean up resources.
+     * A function to stop the effect scope and clean up resources.
      */
     stop: () => void;
 };
 /**
- * - Combines functionality and properties to represent a fully managed list instance, orchestrating various functionalities such as sorting, searching, filtering, and state management.
+ * Combines functionality and properties to represent a fully managed list instance, orchestrating various functionalities such as sorting, searching, filtering, and state management.
  */
 export type ListManager = ListFunctions & ListManagerProperties;

@@ -163,104 +163,104 @@ export const objectRelatedStateKeys: string[];
 /** @internal */
 export const objectRelatedFunctions: any[];
 /**
- * - The members (state, parentState, stop) contributed by the object related composable.
+ * The members (state, parentState, stop) contributed by the object related composable.
  */
 export type ObjectRelatedProperties = {
     /**
-     * - The state of the object related instance.
+     * The state of the object related instance.
      */
     state: ObjectRelatedState;
     /**
-     * - The parent state.
+     * The parent state.
      */
     parentState: ObjectRelatedParentState;
     /**
-     * - Stops all effects of the object related instance.
+     * Stops all effects of the object related instance.
      */
     stop: () => void;
 };
 /**
- * - An instance of an object related reactive object.
+ * An instance of an object related reactive object.
  */
 export type ObjectRelated = ObjectRelatedProperties;
 /**
- * - Non-parent state options for useObjectRelated.
+ * Non-parent state options for useObjectRelated.
  */
 export type ObjectRelatedRawProps = {
     /**
-     * - The rules for defining relationships for the managed object to other collections of objects.
+     * The rules for defining relationships for the managed object to other collections of objects.
      */
     relatedObjectRules: import("vue").Ref<ObjectRelatedRawRules>;
 };
 /**
- * - Options for useObjectRelated.
+ * Options for useObjectRelated.
  */
 export type ObjectRelatedOptions = {
     parentState: ObjectRelatedParentState;
 } & ObjectRelatedRawProps;
 /**
- * - The rule for defining relationships for the managed object to other collections of objects.
+ * The rule for defining relationships for the managed object to other collections of objects.
  */
 export type ObjectRelatedRule = {
     /**
-     * - The key in the managed object that corresponds to the key in the related object.
+     * The key in the managed object that corresponds to the key in the related object.
      */
     pkKey: string;
     /**
-     * - The related objects, indexed by the key in the related object.
+     * The related objects, indexed by the key in the related object.
      */
     objects: import("./listInstance.js").ObjectsByPk;
     /**
-     * - The order of the related objects, if the related objects are an array.
+     * The order of the related objects, if the related objects are an array.
      */
     order: string[];
 };
 /**
- * - The rules for defining relationships for the managed object to other collections of objects.
+ * The rules for defining relationships for the managed object to other collections of objects.
  */
 export type ObjectRelatedRawRules = {
     [rule: string]: ObjectRelatedRule;
 };
 /**
- * - The raw reactive state of the object related composable, holding its rules, computed relations, and running flags.
+ * The raw reactive state of the object related composable, holding its rules, computed relations, and running flags.
  */
 export type ObjectRelatedRawState = {
     /**
-     * - The rules for defining relationships for the managed object to other collections of objects.
+     * The rules for defining relationships for the managed object to other collections of objects.
      */
     relatedObjectRules: ObjectRelatedRawRules;
     /**
-     * - The related objects, indexed by the key in the related object.
+     * The related objects, indexed by the key in the related object.
      */
     relatedObject: {
         [rule: string]: import("vue").ComputedRef<any>;
     };
     /**
-     * - Whether the related object watch is running.
+     * Whether the related object watch is running.
      */
     relatedObjectWatchRunning: boolean;
     /**
-     * - Whether the parent state object watch is running.
+     * Whether the parent state object watch is running.
      */
     parentStateObjectWatchRunning: boolean;
     /**
-     * - Whether the related objects are loading.
+     * Whether the related objects are loading.
      */
     relatedRunning: boolean;
     /**
-     * - Whether the related objects are loading or the parent state is loading.
+     * Whether the related objects are loading or the parent state is loading.
      */
     running: boolean;
 };
 /**
- * - The raw, pre-unwrapped parent state consumed by the object related mixin (object instance plus optional subscription state).
+ * The raw, pre-unwrapped parent state consumed by the object related mixin (object instance plus optional subscription state).
  */
 export type ObjectRelatedParentRawState = (import("./objectInstance.js").ObjectInstanceRawState & Partial<import("./objectSubscription.js").ObjectSubscriptionRawState>);
 /**
- * - The unwrapped reactive parent state consumed by the object related mixin.
+ * The unwrapped reactive parent state consumed by the object related mixin.
  */
 export type ObjectRelatedParentState = import("vue").UnwrapNestedRefs<ObjectRelatedParentRawState>;
 /**
- * - The unwrapped reactive state of the object related composable, combining the parent state with its own related state.
+ * The unwrapped reactive state of the object related composable, combining the parent state with its own related state.
  */
 export type ObjectRelatedState = import("vue").UnwrapNestedRefs<(ObjectRelatedParentRawState & ObjectRelatedRawState)>;

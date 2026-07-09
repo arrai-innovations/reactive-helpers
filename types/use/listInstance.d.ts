@@ -191,32 +191,32 @@ export class ListInstanceError extends Error {
     code: string;
 }
 /**
- * - The reactive arguments for the list instance.
+ * The reactive arguments for the list instance.
  */
 export type ListInstanceProps = {
     /**
-     * - The primary key field for the list objects.
+     * The primary key field for the list objects.
      */
     pkKey: string;
     /**
-     * - The arguments passed to the server.
+     * The arguments passed to the server.
      */
     params: object;
     /**
-     * - Implementation specific arguments.
+     * Implementation specific arguments.
      */
     target: object;
 };
 /**
- * - The configuration options used to create a list instance.
+ * The configuration options used to create a list instance.
  */
 export type ListInstanceOptions = {
     /**
-     * - The props for the list instance.
+     * The props for the list instance.
      */
     props: import("vue").UnwrapNestedRefs<ListInstanceProps>;
     /**
-     * - Default implementation are used as set by `setListCrud`.
+     * Default implementation are used as set by `setListCrud`.
      */
     handlers?: {
         list?: import("../config/listCrud.js").CrudListFn;
@@ -226,223 +226,223 @@ export type ListInstanceOptions = {
     };
 };
 /**
- * - The objects by pk.
+ * The objects by pk.
  */
 export type ObjectsByPk = {
     [pk: import("../config/commonCrud.js").Pk]: import("../use/objectInstance.js").ExistingCrudObject;
 };
 /**
- * - The objects in order, based on .order & .objects.
+ * The objects in order, based on .order & .objects.
  */
 export type ObjectsInOrder = import("vue").ComputedRef<import("../use/objectInstance.js").ExistingCrudObject[]>;
 /**
- * - The order of the objects in the list.
+ * The order of the objects in the list.
  */
 export type ListOrder = import("vue").ComputedRef<import("../config/commonCrud.js").Pk[]>;
 /**
- * - The raw CRUD handlers and target args stored in a list instance's reactive state.
+ * The raw CRUD handlers and target args stored in a list instance's reactive state.
  */
 export type ListInstanceRawStateCrud = {
     /**
-     * - The arguments to be passed to the crud handlers.
+     * The arguments to be passed to the crud handlers.
      */
     args: import("vue").Reactive<import("../config/objectCrud.js").TargetArgs | {}>;
     /**
-     * - The list function.
+     * The list function.
      */
     list: import("../config/listCrud.js").CrudListFn;
     /**
-     * - The subscribe function.
+     * The subscribe function.
      */
     subscribe: import("../config/listCrud.js").CrudListSubscribeFn;
     /**
-     * - The bulk delete function.
+     * The bulk delete function.
      */
     bulkDelete: import("../config/listCrud.js").CrudBulkDeleteFn;
     /**
-     * - The execute action function.
+     * The execute action function.
      */
     executeAction: import("../config/listCrud.js").CrudExecuteActionFn;
 };
 /**
- * - A Map of primary keys to the list's reactive existing objects.
+ * A Map of primary keys to the list's reactive existing objects.
  */
 export type ObjectsMap = Map<import("../config/commonCrud.js").Pk, import("vue").Reactive<import("../use/objectInstance.js").ExistingCrudObject>>;
 /**
- * - Pagination details for a list, including total records, total pages, per-page count, and current page.
+ * Pagination details for a list, including total records, total pages, per-page count, and current page.
  */
 export type PaginateInfo = {
     /**
-     * - The total records.
+     * The total records.
      */
     totalRecords?: number;
     /**
-     * - The total pages.
+     * The total pages.
      */
     totalPages?: number;
     /**
-     * - The per page.
+     * The per page.
      */
     perPage?: number;
     /**
-     * - The page you are giving us results for.
+     * The page you are giving us results for.
      */
     page?: number;
 };
 /**
- * - A map of column names to their aggregate total values for a list.
+ * A map of column names to their aggregate total values for a list.
  */
 export type ColumnTotals = {
     [key: string]: number | string;
 };
 /**
- * - The raw state object for the list instance, defining the reactive properties and their types.
+ * The raw state object for the list instance, defining the reactive properties and their types.
  */
 export type ListInstanceRawMyState = {
     /**
-     * - CRUD handlers and their configurations for the list.
+     * CRUD handlers and their configurations for the list.
      */
     crud: import("vue").Reactive<ListInstanceRawStateCrud>;
     /**
-     * - The primary key field for the list objects.
+     * The primary key field for the list objects.
      */
     pkKey: string;
     /**
-     * - Arguments passed to the server for listing operations.
+     * Arguments passed to the server for listing operations.
      */
     params: object;
     /**
-     * - The map of objects stored by their pks.
+     * The map of objects stored by their pks.
      */
     objectsMap: ObjectsMap;
     /**
-     * - The list objects stored by their pks.
+     * The list objects stored by their pks.
      */
     objects: ObjectsByPk;
     /**
-     * - The order of objects in the list.
+     * The order of objects in the list.
      */
     order: ListOrder;
     /**
-     * - The objects in the order specified by the list.
+     * The objects in the order specified by the list.
      */
     objectsInOrder: ObjectsInOrder;
     /**
-     * - Pagination information for the list.
+     * Pagination information for the list.
      */
     paginateInfo: import("vue").ShallowReactive<PaginateInfo>;
     /**
-     * - Column totals for the list.
+     * Column totals for the list.
      */
     columnTotals: import("vue").ShallowReactive<ColumnTotals>;
 };
 /**
- * - The raw, pre-unwrapped state of a list instance, combining its own state with loading and error status.
+ * The raw, pre-unwrapped state of a list instance, combining its own state with loading and error status.
  */
 export type ListInstanceRawState = ListInstanceRawMyState & Pick<import("./loadingError.js").LoadingErrorStatus, "loading" | "error" | "errored">;
 /**
- * - Defines the reactive state used by the list instance.
+ * Defines the reactive state used by the list instance.
  */
 export type ListInstanceState = import("vue").UnwrapNestedRefs<ListInstanceRawState>;
 /**
- * - Signature for the function that pushes a page of newly received objects into the list.
+ * Signature for the function that pushes a page of newly received objects into the list.
  */
 export type PushObjectsFn = (newObjects: import("../use/objectInstance.js").ExistingCrudObject[]) => void;
 /**
- * - Options to control which reactive state is reset when clearing the list.
+ * Options to control which reactive state is reset when clearing the list.
  */
 export type ClearListOptions = {
     /**
-     * - When true, keep the current pagination information.
+     * When true, keep the current pagination information.
      */
     keepPagination?: boolean;
     /**
-     * - When true, keep the current column totals.
+     * When true, keep the current column totals.
      */
     keepColumnTotals?: boolean;
     /**
-     * - When true, keep the current error state.
+     * When true, keep the current error state.
      */
     keepError?: boolean;
 };
 /**
- * - Signature for the handler that clears the objects held by the list.
+ * Signature for the handler that clears the objects held by the list.
  */
 export type ClearListFn = (options?: ClearListOptions) => void;
 /**
- * - Signature for the handler that updates the list's pagination information.
+ * Signature for the handler that updates the list's pagination information.
  */
 export type SetPaginateInfoFn = (info: PaginateInfo) => void;
 /**
- * - Signature for the handler that updates the list's column totals.
+ * Signature for the handler that updates the list's column totals.
  */
 export type SetColumnTotalsFn = (total: ColumnTotals) => void;
 /**
- * - Defines the methods provided by the list instance for managing objects in the list.
+ * Defines the methods provided by the list instance for managing objects in the list.
  */
 export type ListInstanceMyFunctions = {
     /**
-     * - Customizable callback for handling new objects per page.
+     * Customizable callback for handling new objects per page.
      */
     pushObjects: PushObjectsFn;
     /**
-     * - Adds an object to the list.
+     * Adds an object to the list.
      */
     addListObject: (object: import("../use/objectInstance.js").ExistingCrudObject) => void;
     /**
-     * - Updates an object in the list.
+     * Updates an object in the list.
      */
     updateListObject: (object: import("../use/objectInstance.js").ExistingCrudObject) => void;
     /**
-     * - Deletes an object from the list by pk.
+     * Deletes an object from the list by pk.
      */
     deleteListObject: (objectId: import("../config/commonCrud.js").PkInput) => void;
     /**
-     * - Clears the list objects and optionally keeps pagination, totals,
+     * Clears the list objects and optionally keeps pagination, totals,
      * or error state.
      */
     clearList: (options?: ClearListOptions) => void;
     /**
-     * - Generates a unique fake pk for use within the list.
+     * Generates a unique fake pk for use within the list.
      */
     getFakePk: () => import("../config/commonCrud.js").Pk;
     /**
-     * - Initiates a fetch to retrieve objects according to the CRUD configuration, returning a promise to a boolean indicating success.
+     * Initiates a fetch to retrieve objects according to the CRUD configuration, returning a promise to a boolean indicating success.
      */
     list: (args?: import("../config/listCrud.js").AdditionalListArgs) => import("../utils/cancellablePromise.js").MaybeCancellablePromise<boolean | never>;
     /**
-     * - Deletes objects from the list by pk, returning a promise to a boolean indicating success.
+     * Deletes objects from the list by pk, returning a promise to a boolean indicating success.
      */
     bulkDelete: (args?: {
         pks?: import("../config/commonCrud.js").Pk[];
     } & import("../config/listCrud.js").AdditionalListArgs) => Promise<boolean>;
     /**
-     * - Initiates an action on all objects in the list, returning the response, or null if the action failed.
+     * Initiates an action on all objects in the list, returning the response, or null if the action failed.
      */
     executeAction: (args: {
         action: string;
         pks?: import("../config/commonCrud.js").Pk[];
     } & import("../config/listCrud.js").AdditionalListArgs) => Promise<object | string | boolean | null>;
     /**
-     * - The method to update pagination information.
+     * The method to update pagination information.
      */
     setPaginateInfo: (info: PaginateInfo) => void;
     /**
-     * - The method to update column totals.
+     * The method to update column totals.
      */
     setColumnTotals: (total: ColumnTotals) => void;
 };
 /**
- * - The methods contributed by the list instance, including its CRUD operations plus clearError.
+ * The methods contributed by the list instance, including its CRUD operations plus clearError.
  */
 export type ListInstanceFunctions = ListInstanceMyFunctions & Pick<import("./loadingError.js").LoadingErrorStatus, "clearError">;
 /**
- * - Helper type to facilitate the combination of state and functions into a single type.
+ * Helper type to facilitate the combination of state and functions into a single type.
  */
 export type ListInstanceStateMixIn = {
     state: ListInstanceState;
 };
 /**
- * - The list instance, combining state management and functional operations for managing a list of objects.
+ * The list instance, combining state management and functional operations for managing a list of objects.
  */
 export type ListInstance = ListInstanceStateMixIn & ListInstanceFunctions;

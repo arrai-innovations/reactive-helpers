@@ -42,19 +42,19 @@ export function keyDiff(newKeys: string[] | Set<string>, oldKeys: string[] | Set
  */
 export function keyDiffDeep(newObj: object, oldObj: object, options?: object): KeyDiffResult;
 /**
- * - Result object of keyDiff and keyDiffDeep.
+ * Result object of keyDiff and keyDiffDeep.
  */
 export type KeyDiffResult = {
     /**
-     * - If sameKeys option is true, return keys that are the same.
+     * If sameKeys option is true, return keys that are the same.
      */
     sameKeys?: Set<string>;
     /**
-     * - If removedKeys option is true, return keys that are removed.
+     * If removedKeys option is true, return keys that are removed.
      */
     removedKeys?: Set<string>;
     /**
-     * - If addedKeys option is true, return keys that are added.
+     * If addedKeys option is true, return keys that are added.
      */
     addedKeys?: Set<string>;
 };

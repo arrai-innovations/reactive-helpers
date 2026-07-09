@@ -101,77 +101,77 @@ export function useListFilters(listFilterArgs: {
  */
 export function useListFilter({ parentState, allowedFilter, excludedFilter }: ListFilterOptions): ListFilter;
 /**
- * - An array of Vue refs to the list's existing objects in their current order.
+ * An array of Vue refs to the list's existing objects in their current order.
  */
 export type ObjectsInOrderRefs = import("vue").Ref<import("../use/objectInstance.js").ExistingCrudObject>[];
 /**
- * - A function that returns true if an item should be included.
+ * A function that returns true if an item should be included.
  */
 export type ListFilterAllowedFilter = Function;
 /**
- * - A function that returns true if an item should be excluded.
+ * A function that returns true if an item should be excluded.
  */
 export type ListFilterExcludedFilter = Function;
 /**
- * - Defines the structure of the reactive state used by the list filter. This state includes both filters and the results of applying these filters to a list.
+ * Defines the structure of the reactive state used by the list filter. This state includes both filters and the results of applying these filters to a list.
  */
 export type ListFilterRawState = {
     /**
-     * - Function to determine if an item should be included based on custom logic.
+     * Function to determine if an item should be included based on custom logic.
      */
     allowedFilter?: ListFilterAllowedFilter;
     /**
-     * - Function to determine if an item should be excluded based on custom logic.
+     * Function to determine if an item should be excluded based on custom logic.
      */
     excludedFilter?: ListFilterExcludedFilter;
 };
 /**
- * - The raw, pre-unwrapped parent state consumed by the list filter mixin, aggregating the upstream list composable states.
+ * The raw, pre-unwrapped parent state consumed by the list filter mixin, aggregating the upstream list composable states.
  */
 export type ListFilterParentRawState = (import("./listInstance.js").ListInstanceRawState & Partial<import("./listSubscription.js").ListSubscriptionRawState> & Partial<import("./listRelated.js").ListRelatedRawState> & Partial<import("./listCalculated.js").ListCalculatedRawState>);
 /**
- * - The parent state for a list filter.
+ * The parent state for a list filter.
  */
 export type ListFilterParentState = import("vue").UnwrapNestedRefs<(ListFilterParentRawState)>;
 /**
- * - Describes the combined state from various list-related composables that might interact with the list filter.
+ * Describes the combined state from various list-related composables that might interact with the list filter.
  */
 export type ListFilterState = import("vue").UnwrapNestedRefs<ListFilterParentRawState & ListFilterRawState>;
 /**
- * - Configuration options for initializing a list filter. Includes references to the parent state and filter functions.
+ * Configuration options for initializing a list filter. Includes references to the parent state and filter functions.
  */
 export type ListFilterOptions = {
     /**
-     * - The parent state.
+     * The parent state.
      */
     parentState: ListFilterParentState;
     /**
-     * - A function that returns true if an item should be included, which can be reactive.
+     * A function that returns true if an item should be included, which can be reactive.
      */
     allowedFilter?: import("vue").Ref<Function> | Function;
     /**
-     * - A function that returns true if an item should be excluded, which can be reactive.
+     * A function that returns true if an item should be excluded, which can be reactive.
      */
     excludedFilter?: import("vue").Ref<Function> | Function;
 };
 /**
- * - The properties of a list filter, including its state and associated Vue composition API utilities.
+ * The properties of a list filter, including its state and associated Vue composition API utilities.
  */
 export type ListFilterProperties = {
     /**
-     * - The reactive state managing the filter logic and results.
+     * The reactive state managing the filter logic and results.
      */
     state: ListFilterState;
     /**
-     * - The state of the list being filtered.
+     * The state of the list being filtered.
      */
     parentState: ListFilterParentState;
     /**
-     * - A function to stop the effect scope and clean up resources.
+     * A function to stop the effect scope and clean up resources.
      */
     stop: () => void;
 };
 /**
- * - Represents an instance of a list filter, including its state and associated Vue composition API utilities.
+ * Represents an instance of a list filter, including its state and associated Vue composition API utilities.
  */
 export type ListFilter = ListFilterProperties;

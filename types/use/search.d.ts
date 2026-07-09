@@ -17,131 +17,131 @@ export function useSearch({ props, throttle }: {
     throttle?: number;
 }): SearchInstance;
 /**
- * - A reactive object for passing document options or search options to useSearch.
+ * A reactive object for passing document options or search options to useSearch.
  */
 export type SearchProps = {
     /**
-     * - FlexSearch.Document options.
+     * FlexSearch.Document options.
      */
     customDocumentOptions: DocumentOptions;
     /**
-     * - Search options.
+     * Search options.
      */
     customSearchOptions: SearchOptions;
     /**
-     * - The primary key field.
+     * The primary key field.
      */
     pkKey: string;
 };
 /**
- * - FlexSearch.Document search options.
+ * FlexSearch.Document search options.
  */
 export type SearchOptions = {
     /**
-     * - Limit of results.
+     * Limit of results.
      */
     limit: number;
 };
 /**
- * - Configuration options for creating a document in FlexSearch.
+ * Configuration options for creating a document in FlexSearch.
  */
 export type DocumentOptions = {
     /**
-     * - The document field to use as an identifier. Populated from `pkKey`.
+     * The document field to use as an identifier. Populated from `pkKey`.
      */
     id: string;
     /**
-     * - The document field to use as a tag. Default is false, can be set to a string.
+     * The document field to use as a tag. Default is false, can be set to a string.
      */
     tag: boolean | string;
     /**
-     * - Fields to index. Can be a single string, an array of strings, or an array of objects specifying custom index options.
+     * Fields to index. Can be a single string, an array of strings, or an array of objects specifying custom index options.
      */
     index: string | string[] | object[];
     /**
-     * - Specifies if and what document fields to store. Can be false, a string, or an array of strings. Default is false.
+     * Specifies if and what document fields to store. Can be false, a string, or an array of strings. Default is false.
      */
     store: boolean | string | string[];
     /**
-     * - Specifies the tokenizer to use.
+     * Specifies the tokenizer to use.
      */
     tokenizer?: string;
     /**
-     * - Minimum length of a token to be indexed.
+     * Minimum length of a token to be indexed.
      */
     minLength?: number;
 };
 /**
- * - The raw reactive state of a search instance (query, results, status flags, and search options).
+ * The raw reactive state of a search instance (query, results, status flags, and search options).
  */
 export type SearchRawState = {
     /**
-     * - The search string.
+     * The search string.
      */
     search: string;
     /**
-     * - The results, where the keys are the ids of the objects that match, and the values are true.
+     * The results, where the keys are the ids of the objects that match, and the values are true.
      */
     results: object;
     /**
-     * - Whether the search has been performed.
+     * Whether the search has been performed.
      */
     searched: boolean;
     /**
-     * - Whether the search is currently running.
+     * Whether the search is currently running.
      */
     searching: boolean;
     /**
-     * - FlexSearch.Document options.
+     * FlexSearch.Document options.
      */
     customDocumentOptions: DocumentOptions;
     /**
-     * - Search options.
+     * Search options.
      */
     customSearchOptions: SearchOptions;
     /**
-     * - The number of times the search has been called.
+     * The number of times the search has been called.
      */
     called: number;
     /**
-     * - The number of times the search has been called, but has not yet returned.
+     * The number of times the search has been called, but has not yet returned.
      */
     pending: number;
     /**
-     * - Whether the search is currently running or has pending calls.
+     * Whether the search is currently running or has pending calls.
      */
     running: boolean;
 };
 /**
- * - The reactive search instance returned by useSearch, exposing its state, index mutators, event target, and stop.
+ * The reactive search instance returned by useSearch, exposing its state, index mutators, event target, and stop.
  */
 export type SearchInstance = {
     /**
-     * - The state.
+     * The state.
      */
     state: import("vue").UnwrapNestedRefs<SearchRawState>;
     /**
-     * - Add an index.
+     * Add an index.
      */
     addIndex: Function;
     /**
-     * - Update an index.
+     * Update an index.
      */
     updateIndex: Function;
     /**
-     * - Remove an index.
+     * Remove an index.
      */
     removeIndex: Function;
     /**
-     * - Clear the index.
+     * Clear the index.
      */
     clearIndex: Function;
     /**
-     * - An event target.
+     * An event target.
      */
     events: EventTarget;
     /**
-     * - Stop the effect scope.
+     * Stop the effect scope.
      */
     stop: Function;
 };

@@ -24,15 +24,15 @@ export function useProxyError(errors: import("vue").MaybeRefOrGetter<MaybeRefWat
  */
 export function asWatchableError(source: import("vue").MaybeRef<SeparateStateError | WatchableError>): WatchableError;
 /**
- * - An error source (a possibly-reactive readonly error status) that useProxyError can aggregate.
+ * An error source (a possibly-reactive readonly error status) that useProxyError can aggregate.
  */
 export type WatchableError = import("./error.js").ReadonlyErrorStatus | import("vue").Reactive<import("./error.js").ReadonlyErrorStatus>;
 /**
- * - A watchable error source that may itself be wrapped in a ref or getter.
+ * A watchable error source that may itself be wrapped in a ref or getter.
  */
 export type MaybeRefWatchableError = import("vue").MaybeRefOrGetter<WatchableError>;
 /**
- * - An error source whose reactive properties live under a state member, alongside its clearError action.
+ * An error source whose reactive properties live under a state member, alongside its clearError action.
  */
 export type SeparateStateError = {
     state: import("vue").Reactive<import("./error.js").ErrorProperties>;

@@ -21,19 +21,19 @@ export function useProxyLoadingError(loadingErrors: import("vue").MaybeRefOrGett
  */
 export function asWatchableLoadingError(source: import("vue").MaybeRef<SeparateStateLoadingError | WatchableLoadingError>): WatchableLoadingError;
 /**
- * - A combined loading-and-error source that useProxyLoadingError can aggregate.
+ * A combined loading-and-error source that useProxyLoadingError can aggregate.
  */
 export type WatchableLoadingError = import("./proxyLoading.js").WatchableLoading & import("./proxyError.js").WatchableError;
 /**
- * - A watchable combined loading-and-error source that may itself be wrapped in a ref or getter.
+ * A watchable combined loading-and-error source that may itself be wrapped in a ref or getter.
  */
 export type MaybeRefWatchableLoadingError = import("vue").MaybeRefOrGetter<WatchableLoadingError>;
 /**
- * - The aggregated loading and error state returned by useProxyLoadingError.
+ * The aggregated loading and error state returned by useProxyLoadingError.
  */
 export type ProxyLoadingError = import("./loading.js").LoadingProperties & import("./error.js").ReadonlyErrorStatus;
 /**
- * - A combined loading-and-error source whose reactive properties live under a state member, alongside its clearError action.
+ * A combined loading-and-error source whose reactive properties live under a state member, alongside its clearError action.
  */
 export type SeparateStateLoadingError = {
     state: import("vue").Reactive<import("./error.js").ErrorProperties>;

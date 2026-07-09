@@ -10,14 +10,14 @@
  */
 export function useLoadingError(): LoadingErrorStatus;
 /**
- * - The combined reactive loading and error state members contributed by the useLoadingError composable.
+ * The combined reactive loading and error state members contributed by the useLoadingError composable.
  */
 export type LoadingErrorProperties = import("./loading.js").LoadingProperties & import("./error.js").ErrorProperties;
 /**
- * - The combined loading and error state actions contributed by the useLoadingError composable.
+ * The combined loading and error state actions contributed by the useLoadingError composable.
  */
 export type LoadingErrorFunctions = import("./loading.js").LoadingFunctions & import("./error.js").ErrorFunctions;
 /**
- * - The combined loading and error state API (properties plus actions) returned by useLoadingError.
+ * The combined loading and error state API (properties plus actions) returned by useLoadingError.
  */
 export type LoadingErrorStatus = LoadingErrorProperties & LoadingErrorFunctions;

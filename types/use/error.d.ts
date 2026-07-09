@@ -32,65 +32,65 @@
  */
 export function useError(): ErrorStatus;
 /**
- * - Signature for the function that clears the current error state.
+ * Signature for the function that clears the current error state.
  */
 export type ClearErrorFn = () => void;
 /**
- * - A Vue ref holding the current error, or null when there is none.
+ * A Vue ref holding the current error, or null when there is none.
  */
 export type ErrorRef = import("vue").Ref<Error | null>;
 /**
- * - A Vue ref to the boolean indicating whether an error has occurred.
+ * A Vue ref to the boolean indicating whether an error has occurred.
  */
 export type ErroredRef = import("vue").Ref<boolean>;
 /**
- * - A readonly Vue ref holding the current error, or null when there is none.
+ * A readonly Vue ref holding the current error, or null when there is none.
  */
 export type ErrorReadonlyRef = Readonly<ErrorRef>;
 /**
- * - A readonly Vue ref to the boolean indicating whether an error has occurred.
+ * A readonly Vue ref to the boolean indicating whether an error has occurred.
  */
 export type ErroredReadonlyRef = Readonly<ErroredRef>;
 /**
- * - The reactive error-state members (error and errored) contributed by the useError composable.
+ * The reactive error-state members (error and errored) contributed by the useError composable.
  */
 export type ErrorProperties = {
     /**
-     * - The error that occurred.
+     * The error that occurred.
      */
     error: ErrorReadonlyRef;
     /**
-     * - Whether an error has occurred.
+     * Whether an error has occurred.
      */
     errored: ErroredReadonlyRef;
 };
 /**
- * - The error-state actions (setError, clearError) contributed by the useError composable.
+ * The error-state actions (setError, clearError) contributed by the useError composable.
  */
 export type ErrorFunctions = {
     /**
-     * - Set the error state.
+     * Set the error state.
      */
     setError: (error: Error) => void;
     /**
-     * - Clear the error state.
+     * Clear the error state.
      */
     clearError: ClearErrorFn;
 };
 /**
- * - Proxies can still clear errors but cannot set them directly.
+ * Proxies can still clear errors but cannot set them directly.
  */
 export type ErrorReadOnlyFunctions = {
     /**
-     * - Clear the error state.
+     * Clear the error state.
      */
     clearError: ClearErrorFn;
 };
 /**
- * - The readonly error-state API (error and errored plus clearError) exposed to consumers and proxies.
+ * The readonly error-state API (error and errored plus clearError) exposed to consumers and proxies.
  */
 export type ReadonlyErrorStatus = ErrorProperties & ErrorReadOnlyFunctions;
 /**
- * - The error state API.
+ * The error state API.
  */
 export type ErrorStatus = ErrorProperties & ErrorFunctions;

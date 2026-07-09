@@ -112,6 +112,6 @@ export class AssignReactiveObjectError extends Error {
  */
 export type ValidTargetOrSource = import("vue").Ref<object | any[]> | object | any[];
 /**
- * - The validated target and source values returned by the reactive-object assignment validator.
+ * The validated target and source values returned by the reactive-object assignment validator.
  */
 export type validateTargetAndSourceResult = object;

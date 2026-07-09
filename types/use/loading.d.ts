@@ -21,36 +21,36 @@
  */
 export function useLoading(): LoadingStatus;
 /**
- * - A Vue ref to the loading flag, which is a boolean or undefined.
+ * A Vue ref to the loading flag, which is a boolean or undefined.
  */
 export type LoadingRef = import("vue").Ref<boolean | undefined>;
 /**
- * - A readonly Vue ref to the loading flag, which is a boolean or undefined.
+ * A readonly Vue ref to the loading flag, which is a boolean or undefined.
  */
 export type LoadingReadonlyRef = Readonly<LoadingRef>;
 /**
- * - The reactive loading-state member (loading) contributed by the useLoading composable.
+ * The reactive loading-state member (loading) contributed by the useLoading composable.
  */
 export type LoadingProperties = {
     /**
-     * - Whether the component is loading.
+     * Whether the component is loading.
      */
     loading: LoadingReadonlyRef;
 };
 /**
- * - The loading-state actions (setLoading, clearLoading) contributed by the useLoading composable.
+ * The loading-state actions (setLoading, clearLoading) contributed by the useLoading composable.
  */
 export type LoadingFunctions = {
     /**
-     * - Set the loading state to true.
+     * Set the loading state to true.
      */
     setLoading: () => void;
     /**
-     * - Set the loading state to false.
+     * Set the loading state to false.
      */
     clearLoading: () => void;
 };
 /**
- * - The loading state API.
+ * The loading state API.
  */
 export type LoadingStatus = LoadingProperties & LoadingFunctions;

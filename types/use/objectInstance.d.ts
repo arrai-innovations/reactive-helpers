@@ -162,204 +162,204 @@ export const objectInstanceStateKeys: string[];
 /** @internal */
 export const objectInstanceFunctions: string[];
 /**
- * - The object being managed by the instance. It must include a primary key field as identifying property, matching the name provided to the object/list's `pkKey` value, which is not known statically.
+ * The object being managed by the instance. It must include a primary key field as identifying property, matching the name provided to the object/list's `pkKey` value, which is not known statically.
  */
 export type ExistingCrudObject = {
     [key: string]: any;
 };
 /**
- * - The object you would like an object instance to create for you.
+ * The object you would like an object instance to create for you.
  */
 export type NewCrudObject = {
     [key: string]: any;
 };
 /**
- * - An object managed by an object instance, either an existing object or a new object to be created.
+ * An object managed by an object instance, either an existing object or a new object to be created.
  */
 export type CrudObject = ExistingCrudObject | NewCrudObject;
 /**
- * - Arguments to be passed to the object instance.
+ * Arguments to be passed to the object instance.
  */
 export type ObjectInstanceOptions = {
     /**
-     * - The reactive configuration object.
+     * The reactive configuration object.
      */
     props: import("vue").UnwrapNestedRefs<ObjectInstanceRawProps>;
     /**
-     * - An object of custom crud handlers to use instead of the defaults.
+     * An object of custom crud handlers to use instead of the defaults.
      */
     handlers?: import("../config/objectCrud.js").ObjectCrudHandlers;
 };
 /**
- * - Reactive arguments to be passed to the object instance.
+ * Reactive arguments to be passed to the object instance.
  */
 export type ObjectInstanceRawProps = {
     /**
-     * - The pk of the object, optional to support creating new objects.
+     * The pk of the object, optional to support creating new objects.
      */
     pk?: import("../config/commonCrud.js").PkInput;
     /**
-     * - The pk key of the object.
+     * The pk key of the object.
      */
     pkKey: string;
     /**
-     * - The arguments to be passed to the retrieve function.
+     * The arguments to be passed to the retrieve function.
      */
     params: object;
     /**
-     * - The arguments to be passed to the crud handlers.
+     * The arguments to be passed to the crud handlers.
      */
     target: import("../config/objectCrud.js").ObjectTarget;
 };
 /**
- * - The raw CRUD handlers and target args stored in an object instance's reactive state.
+ * The raw CRUD handlers and target args stored in an object instance's reactive state.
  */
 export type ObjectInstanceRawStateCrud = {
     /**
-     * - The arguments to be passed to the crud handlers.
+     * The arguments to be passed to the crud handlers.
      */
     args: import("vue").Reactive<import("../config/objectCrud.js").TargetArgs | {}>;
     /**
-     * - The create function.
+     * The create function.
      */
     create: import("../config/objectCrud.js").CrudCreateFn;
     /**
-     * - The retrieve function.
+     * The retrieve function.
      */
     retrieve: import("../config/objectCrud.js").CrudRetrieveFn;
     /**
-     * - The update function.
+     * The update function.
      */
     update: import("../config/objectCrud.js").CrudUpdateFn;
     /**
-     * - The patch function.
+     * The patch function.
      */
     patch: import("../config/objectCrud.js").CrudPatchFn;
     /**
-     * - The delete function.
+     * The delete function.
      */
     delete: import("../config/objectCrud.js").CrudDeleteFn;
     /**
-     * - The subscribe function.
+     * The subscribe function.
      */
     subscribe: import("../config/objectCrud.js").CrudObjectSubscribeFn;
     /**
-     * - The executeAction function.
+     * The executeAction function.
      */
     executeAction: import("../config/objectCrud.js").CrudObjectExecuteActionFn;
 };
 /**
- * - The raw state of the object instance.
+ * The raw state of the object instance.
  */
 export type ObjectInstanceRawMyState = {
     /**
-     * - The crud handlers.
+     * The crud handlers.
      */
     crud: import("vue").Reactive<ObjectInstanceRawStateCrud>;
     /**
-     * - The pk of the object.
+     * The pk of the object.
      */
     pk: import("vue").Ref<import("../config/commonCrud.js").Pk | undefined>;
     /**
-     * - The pk key of the object.
+     * The pk key of the object.
      */
     pkKey: import("vue").Ref<string | undefined>;
     /**
-     * - The arguments to be passed to the retrieve function.
+     * The arguments to be passed to the retrieve function.
      */
     params: import("vue").Ref<{
         [key: string]: any;
     }>;
     /**
-     * - The object.
+     * The object.
      */
     object: import("vue").Reactive<CrudObject>;
     /**
-     * - Whether the object is deleted.
+     * Whether the object is deleted.
      */
     deleted: boolean;
 };
 /**
- * - The raw state of the object instance.
+ * The raw state of the object instance.
  */
 export type ObjectInstanceRawState = ObjectInstanceRawMyState & import("./loadingError.js").LoadingErrorProperties;
 /**
- * - Manages a reactive state of an object including its CRUD status, loading states, and any operational errors. Reactivity ensures that any changes in state immediately reflect in the UI components that depend on this state.
+ * Manages a reactive state of an object including its CRUD status, loading states, and any operational errors. Reactivity ensures that any changes in state immediately reflect in the UI components that depend on this state.
  */
 export type ObjectInstanceState = import("vue").Reactive<ObjectInstanceRawState>;
 /**
- * - The argument shape for an object instance's create operation, carrying the new object to create.
+ * The argument shape for an object instance's create operation, carrying the new object to create.
  */
 export type ObjectInstanceCreateArgs = {
     object: NewCrudObject;
 };
 /**
- * - The argument shape for an object instance's update operation, carrying the existing object to update.
+ * The argument shape for an object instance's update operation, carrying the existing object to update.
  */
 export type ObjectInstanceUpdateArgs = {
     object: ExistingCrudObject;
 };
 /**
- * - The argument shape for an object instance's patch operation, carrying the partial object to apply.
+ * The argument shape for an object instance's patch operation, carrying the partial object to apply.
  */
 export type ObjectInstancePatchArgs = {
     partialObject: ExistingCrudObject;
 };
 /**
- * - Arbitrary extra arguments forwarded through to an object instance's CRUD operations.
+ * Arbitrary extra arguments forwarded through to an object instance's CRUD operations.
  */
 export type AdditionalArgs = {
     [key: string]: any;
 };
 /**
- * - The functions available on the object instance.
+ * The functions available on the object instance.
  */
 export type ObjectInstanceMyFunctions = {
     /**
-     * - Called to turn the current object into a new object on the server.
+     * Called to turn the current object into a new object on the server.
      */
     create: (args: ObjectInstanceCreateArgs & AdditionalArgs) => import("../utils/cancellablePromise.js").MaybeCancellablePromise<boolean | never>;
     /**
-     * - Called to retrieve the current object by pk from the server.
+     * Called to retrieve the current object by pk from the server.
      */
     retrieve: (args?: Partial<import("./cancellableIntent.js").CommonRunTracking> & AdditionalArgs) => import("../utils/cancellablePromise.js").MaybeCancellablePromise<boolean | never>;
     /**
-     * - Called to update the current object on the server.
+     * Called to update the current object on the server.
      */
     update: (args: ObjectInstanceUpdateArgs & AdditionalArgs) => import("../utils/cancellablePromise.js").MaybeCancellablePromise<boolean | never>;
     /**
-     * - Called to delete the current object on the server.
+     * Called to delete the current object on the server.
      */
     delete: (args?: AdditionalArgs) => import("../utils/cancellablePromise.js").MaybeCancellablePromise<boolean | never>;
     /**
-     * - Called to patch the current object on the server.
+     * Called to patch the current object on the server.
      */
     patch: (args: ObjectInstancePatchArgs & AdditionalArgs) => import("../utils/cancellablePromise.js").MaybeCancellablePromise<boolean | never>;
     /**
-     * - Called to execute certain action on the current object.
+     * Called to execute certain action on the current object.
      */
     executeAction: (args: {
         action: string;
     } & AdditionalArgs) => import("../utils/cancellablePromise.js").MaybeCancellablePromise<boolean | never>;
     /**
-     * - Called to clear the object state.
+     * Called to clear the object state.
      */
     clear: () => void;
 };
 /**
- * - The functions available on the object instance, including the ability to clear LoadingError errors.
+ * The functions available on the object instance, including the ability to clear LoadingError errors.
  */
 export type ObjectInstanceFunctions = (import("./error.js").ErrorReadOnlyFunctions & ObjectInstanceMyFunctions);
 /**
- * - The properties of the object instance.
+ * The properties of the object instance.
  */
 export type ObjectInstanceProperties = {
     /**
-     * - The state of the object instance.
+     * The state of the object instance.
      */
     state: ObjectInstanceState;
 };
 /**
- * - The instance of the object instance.
+ * The instance of the object instance.
  */
 export type ObjectInstance = ObjectInstanceFunctions & ObjectInstanceProperties;

@@ -126,86 +126,86 @@ export const objectCalculatedStateKeys: string[];
 /** @internal */
 export const objectCalculatedFunctions: any[];
 /**
- * - The object calculated state keys.
+ * The object calculated state keys.
  */
 export type ObjectCalculatedRules = {
     [ruleKey: string]: (object: any, relatedObject: any) => any;
 };
 /**
- * - The raw state for object calculated.
+ * The raw state for object calculated.
  */
 export type ObjectCalculatedRawState = {
     /**
-     * - The calculated object rules.
+     * The calculated object rules.
      */
     calculatedObjectRules: ObjectCalculatedRules;
     /**
-     * - The calculated object.
+     * The calculated object.
      */
     calculatedObject: {
         [ruleKey: string]: import("vue").ComputedRef<any>;
     };
     /**
-     * - Whether the calculated object watch is running.
+     * Whether the calculated object watch is running.
      */
     calculatedObjectWatchRunning: boolean;
     /**
-     * - Whether the parent state object watch is running.
+     * Whether the parent state object watch is running.
      */
     parentStateObjectWatchRunning: boolean;
     /**
-     * - Whether the calculated is running.
+     * Whether the calculated is running.
      */
     calculatedRunning: boolean;
     /**
-     * - Whether the object calculated is running.
+     * Whether the object calculated is running.
      */
     running: import("vue").Ref<boolean>;
 };
 /**
- * - The raw, pre-unwrapped parent state consumed by the object calculated mixin, aggregating the upstream object composable states.
+ * The raw, pre-unwrapped parent state consumed by the object calculated mixin, aggregating the upstream object composable states.
  */
 export type ObjectCalculatedParentRawState = (import("./objectInstance.js").ObjectInstanceRawState & Partial<import("./objectSubscription.js").ObjectSubscriptionRawState> & Partial<import("./objectRelated.js").ObjectRelatedRawState>);
 /**
- * - The object calculated options.
+ * The object calculated options.
  */
 export type ObjectCalculatedParentState = import("vue").UnwrapNestedRefs<(ObjectCalculatedParentRawState)>;
 /**
- * - The state for object calculated.
+ * The state for object calculated.
  */
 export type ObjectCalculatedState = import("vue").UnwrapNestedRefs<ObjectCalculatedParentRawState & ObjectCalculatedRawState>;
 /**
- * - The properties for object calculated.
+ * The properties for object calculated.
  */
 export type ObjectCalculatedProperties = {
     /**
-     * - The parent state.
+     * The parent state.
      */
     parentState: ObjectCalculatedParentState;
     /**
-     * - The object calculated state.
+     * The object calculated state.
      */
     state: ObjectCalculatedState;
     /**
-     * - Stops composition's effects and cleans up resources.
+     * Stops composition's effects and cleans up resources.
      */
     stop: () => void;
 };
 /**
- * - The object calculated instance.
+ * The object calculated instance.
  */
 export type ObjectCalculated = ObjectCalculatedProperties;
 /**
- * - The consumer-supplied props for the object calculated composable, namely the calculated-object rules ref.
+ * The consumer-supplied props for the object calculated composable, namely the calculated-object rules ref.
  */
 export type ObjectCalculatedRawProps = {
     /**
-     * - The calculated object rules.
+     * The calculated object rules.
      */
     calculatedObjectRules: import("vue").Ref<ObjectCalculatedRules>;
 };
 /**
- * - The options used to create an object calculated instance (the parent state plus the calculated-object rules).
+ * The options used to create an object calculated instance (the parent state plus the calculated-object rules).
  */
 export type ObjectCalculatedOptions = ({
     parentState: ObjectCalculatedParentState;

@@ -159,35 +159,35 @@ export function useListRelateds(listRelatedArgs: {
  */
 export function useListRelated({ parentState, relatedObjectsRules }: ListRelatedOptions): ListRelated;
 /**
- * - The rule for defining relationships for objects in a list.
+ * The rule for defining relationships for objects in a list.
  */
 export type ListRelatedRule = {
     /**
-     * - Specifies the foreign key used to link objects across lists. Planned to be renamed to
+     * Specifies the foreign key used to link objects across lists. Planned to be renamed to
      * 'fkKey' to better reflect its usage.
      */
     pkKey: string;
     /**
-     * - Specifies the order in which related objects should be sorted, if applicable.
+     * Specifies the order in which related objects should be sorted, if applicable.
      */
     order?: string[];
     /**
-     * - The objects that can be related based on the foreign key.
+     * The objects that can be related based on the foreign key.
      */
     objects: import("./listInstance.js").ObjectsByPk;
 };
 /**
- * - The rules for defining relationships among objects in a list.
+ * The rules for defining relationships among objects in a list.
  */
 export type ListRelatedRules = {
     [rule: string]: ListRelatedRule;
 };
 /**
- * - Represents the internal state used by the list related composition function. It manages and computes the relationships between objects based on specified rules, providing real-time updates to related objects as the parent state changes.
+ * Represents the internal state used by the list related composition function. It manages and computes the relationships between objects based on specified rules, providing real-time updates to related objects as the parent state changes.
  */
 export type ListRelatedRawState = {
     /**
-     * - Stores computed references to related objects, allowing for dynamic access based on object pk and specific rules.
+     * Stores computed references to related objects, allowing for dynamic access based on object pk and specific rules.
      */
     relatedObjects: {
         [pk: import("../config/commonCrud.js").Pk]: {
@@ -195,11 +195,11 @@ export type ListRelatedRawState = {
         };
     };
     /**
-     * - Defines the rules for establishing relationships, such as foreign key links and sorting orders.
+     * Defines the rules for establishing relationships, such as foreign key links and sorting orders.
      */
     relatedObjectsRules: ListRelatedRules;
     /**
-     * - Maps each object pk and rule to a tuple consisting of the related object and its respective key, facilitating direct data manipulation.
+     * Maps each object pk and rule to a tuple consisting of the related object and its respective key, facilitating direct data manipulation.
      */
     objAndKeyForPkAndRule: {
         [pk: import("../config/commonCrud.js").Pk]: {
@@ -207,7 +207,7 @@ export type ListRelatedRawState = {
         };
     };
     /**
-     * - Maintains computed references to the foreign keys for each object pk and rule, crucial for navigating complex data relationships.
+     * Maintains computed references to the foreign keys for each object pk and rule, crucial for navigating complex data relationships.
      */
     fkForPkAndRule: {
         [pk: import("../config/commonCrud.js").Pk]: {
@@ -215,65 +215,65 @@ export type ListRelatedRawState = {
         };
     };
     /**
-     * - Flags whether the watch on parent state objects is currently active, ensuring updates trigger as needed.
+     * Flags whether the watch on parent state objects is currently active, ensuring updates trigger as needed.
      */
     relatedObjectsParentStateObjectsWatchRunning: boolean;
     /**
-     * - Indicates if watches on the related objects themselves are active, managing updates efficiently.
+     * Indicates if watches on the related objects themselves are active, managing updates efficiently.
      */
     relatedObjectsWatchRunning: boolean;
     /**
-     * - Signals whether any computations related to object relationships are currently in progress.
+     * Signals whether any computations related to object relationships are currently in progress.
      */
     relatedRunning: boolean;
     /**
-     * - General flag that indicates if the list-related logic is processing, used to manage UI feedback or prevent concurrent operations.
+     * General flag that indicates if the list-related logic is processing, used to manage UI feedback or prevent concurrent operations.
      */
     running: import("vue").Ref<boolean>;
 };
 /**
- * - The raw state properties for a parent of a list related property.
+ * The raw state properties for a parent of a list related property.
  */
 export type ListRelatedParentRawState = (import("./listInstance.js").ListInstanceRawState & Partial<import("./listSubscription.js").ListSubscriptionRawState>);
 /**
- * - The type for a parentState object.
+ * The type for a parentState object.
  */
 export type ListRelatedParentState = import("vue").UnwrapNestedRefs<ListRelatedParentRawState>;
 /**
- * - The state for a list related property.
+ * The state for a list related property.
  */
 export type ListRelatedState = import("vue").UnwrapNestedRefs<ListRelatedParentRawState & ListRelatedRawState>;
 /**
- * - The options for the list related composition function.
+ * The options for the list related composition function.
  */
 export type ListRelatedOptions = {
     /**
-     * - The parent state object.
+     * The parent state object.
      */
     parentState: ListRelatedParentState;
     /**
-     * - The rules for the related objects.
+     * The rules for the related objects.
      */
     relatedObjectsRules: import("vue").Ref<ListRelatedRules>;
 };
 /**
- * - The properties for the list related composition function.
+ * The properties for the list related composition function.
  */
 export type ListRelatedProperties = {
     /**
-     * - The state for the list related property.
+     * The state for the list related property.
      */
     state: ListRelatedState;
     /**
-     * - The parent state object.
+     * The parent state object.
      */
     parentState: ListRelatedParentState;
     /**
-     * - Stops all effects of the list related property.
+     * Stops all effects of the list related property.
      */
     stop: () => void;
 };
 /**
- * - An instance of `useListRelated`.
+ * An instance of `useListRelated`.
  */
 export type ListRelated = ListRelatedProperties;
