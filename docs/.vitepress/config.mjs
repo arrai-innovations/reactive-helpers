@@ -1,10 +1,11 @@
 import fs from "node:fs";
 import path from "node:path";
-import { fileURLToPath } from "node:url";
+import { fileURLToPath, pathToFileURL } from "node:url";
 import { defineConfig } from "vitepress";
 
-// docsRoot is the VitePress source root (the `docs/` directory).
-const docsRoot = fileURLToPath(new URL("..", import.meta.url));
+// configDir is docs/.vitepress; docsRoot is the VitePress source root (docs/).
+const configDir = fileURLToPath(new URL(".", import.meta.url));
+const docsRoot = path.resolve(configDir, "..");
 const referenceRoot = path.join(docsRoot, "reference");
 
 // Env-driven base so CI can publish per-major under a subpath
@@ -42,6 +43,21 @@ const buildReferenceSidebar = () => {
     return [{ text: "Reference", items: [{ text: "Overview", link: "/reference/" }] }, ...groups];
 };
 
+// Optional, gitignored local dev-server overrides (HTTPS, HMR host, etc.) so a
+// developer can serve the docs over TLS on their own hostname without touching
+// committed config. Copy config.local.example.mjs to config.local.mjs; when it
+// is absent (the common case) the server just uses http on localhost. The
+// export is merged into vite.server / vite.preview below.
+const loadLocalDevConfig = async () => {
+    const localPath = path.join(configDir, "config.local.mjs");
+    if (!fs.existsSync(localPath)) {
+        return {};
+    }
+    return (await import(pathToFileURL(localPath).href)).default ?? {};
+};
+
+const local = await loadLocalDevConfig();
+
 export default defineConfig({
     title: "reactive-helpers",
     description: "Vue 3 composition utilities for reactive lists, objects, and loading/error state.",
@@ -77,5 +93,12 @@ export default defineConfig({
         },
         socialLinks: [{ icon: "github", link: "https://github.com/arrai-innovations/reactive-helpers" }],
         search: { provider: "local" },
+    },
+    vite: {
+        // host: true binds all interfaces; allowedHosts: true accepts custom
+        // hostnames (e.g. behind a reverse proxy). config.local.mjs can add
+        // https and an hmr host on top.
+        server: { host: true, allowedHosts: true, ...local.server },
+        preview: { host: true, ...local.preview },
     },
 });

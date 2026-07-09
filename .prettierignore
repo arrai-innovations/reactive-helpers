@@ -5,3 +5,5 @@ coverage
 docs/reference
 site
 types
+**/.vitepress/cache
+**/.vitepress/.temp
