@@ -1,6 +1,6 @@
 {
     "entryPoints": ["config/**/*.js", "use/**/*.js", "utils/**/*.js"],
-    "out": "docs",
+    "out": "docs/reference",
     "excludeExternals": true,
     "excludePrivate": true,
     "excludeProtected": true,
@@ -9,6 +9,9 @@
     "readme": "none",
     "disableSources": true,
     "outputFileStrategy": "modules",
+    "entryFileName": "index",
+    "hidePageHeader": true,
+    "hideBreadcrumbs": true,
     "validation": {
         "notExported": true,
         "invalidLink": true,

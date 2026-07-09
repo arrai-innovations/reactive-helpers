@@ -10,7 +10,7 @@ const BLUE = "\u001b[1;38;2;0;119;247m";
 const ORANGE = "\u001b[1;38;2;255;127;0m";
 const RESET = "\u001b[0m";
 
-const docsDir = path.resolve("docs");
+const docsDir = path.resolve("docs/reference");
 const typesDir = path.resolve("types");
 const sourceRoots = [path.resolve(".")];
 
@@ -60,7 +60,7 @@ async function main() {
         if (!docFile.endsWith(".md")) {
             continue;
         }
-        if (path.basename(docFile) === "README.md") {
+        if (path.basename(docFile) === "index.md") {
             continue;
         }
 

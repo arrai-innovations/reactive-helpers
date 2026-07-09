@@ -44,7 +44,7 @@ reaches your backend), so the package stays transport agnostic.
 
 Most list and object composables also ship a plural batch variant (for example `useListInstances`,
 `useObjectInstances`) for creating several keyed instances at once. See the full API in
-[docs/README.md](./docs/README.md).
+[docs/reference/index.md](./docs/reference/index.md).
 
 ## Requirements
 
@@ -119,8 +119,8 @@ console.log(contacts.state.objects);
 To share one data layer across every instance instead of passing `handlers` each time, register defaults once with
 `setListCrud` (and `setObjectCrud` for object instances).
 
-See [docs/README.md](./docs/README.md) for the full list of modules, composables, and utilities, along with their
-arguments and properties.
+See [docs/reference/index.md](./docs/reference/index.md) for the full list of modules, composables, and utilities,
+along with their arguments and properties.
 
 ## Changelog
 

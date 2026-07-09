@@ -2,5 +2,6 @@ node_modules
 package.json
 pnpm-lock.yaml
 coverage
-docs
+docs/reference
+site
 types

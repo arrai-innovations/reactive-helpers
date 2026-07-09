@@ -2,6 +2,13 @@
 node_modules
 /dist
 
+# vitepress docs site build output
+/site
+
+# vitepress cache/temp
+docs/.vitepress/cache
+docs/.vitepress/.temp
+
 # e2e coverage
 coverage
 # unit coverage

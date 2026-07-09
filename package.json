@@ -37,6 +37,9 @@
         "docs": "node make_type_doc.js",
         "docs:check": "node check_type_doc.js",
         "docs:clean": "node clean_type_doc.js",
+        "docs:site:dev": "vitepress dev docs",
+        "docs:site:build": "vitepress build docs",
+        "docs:site:preview": "vitepress preview docs",
         "types": "node make_types.js",
         "types:check": "node check_types.js"
     },
@@ -79,6 +82,7 @@
         "typedoc-plugin-markdown": "^4.12.0",
         "typescript": "^5.9.3",
         "vite": "^8.0.16",
+        "vitepress": "^1.6.4",
         "vitest": "^4.1.9",
         "vue-eslint-parser": "^10.4.1"
     },
