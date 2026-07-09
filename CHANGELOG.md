@@ -2,6 +2,30 @@
 
 _Actions potentially required by implementers are marked with italics._
 
+## v22.0.0 (2026-07-09)
+
+First open-source release. There are no runtime or API changes from v21.1.4; this release relicenses the package and moves it to the public npm registry.
+
+### Licensing and Distribution
+
+- Relicensed from UNLICENSED to BSD-3-Clause, and added a `LICENSE` file.
+- _Now published to the public npm registry. Implementers installing from a private registry should update their configuration to resolve `@arrai-innovations/reactive-helpers` from npmjs.org._
+
+### Documentation
+
+- Public types, composables, and utilities now render their descriptions in the generated documentation; previously many descriptions were dropped.
+- Internal registry plumbing is hidden from the documentation. It remains in the emitted type declarations, so the consumer type surface is unchanged.
+- Expanded the README with a features overview, requirements, usage examples, and contributing and license sections.
+
+### Types
+
+- Removed the stray leading `-` from the start of generated declaration comments, so editor hover text reads cleanly.
+
+### Maintenance
+
+- Documentation generation now fails the build when a public declaration is undocumented.
+- Publishing uses npm OIDC trusted publishing.
+
 ## v21.1.4 (2026-06-19)
 
 ### Features
