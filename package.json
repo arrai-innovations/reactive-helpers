@@ -44,7 +44,7 @@
         "url": "git+https://github.com/arrai-innovations/reactive-helpers.git"
     },
     "author": "Arrai Innovations Inc. <developers@arrai.com>",
-    "license": "UNLICENSED",
+    "license": "BSD-3-Clause",
     "bugs": {
         "url": "https://github.com/arrai-innovations/reactive-helpers/issues"
     },
