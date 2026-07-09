@@ -7,5 +7,12 @@
     "plugin": ["typedoc-plugin-markdown", "./typedoc-local-plugins/customize-output.js"],
     "readme": "none",
     "disableSources": true,
-    "outputFileStrategy": "modules"
+    "outputFileStrategy": "modules",
+    "validation": {
+        "notExported": true,
+        "invalidLink": true,
+        "rewrittenLink": true,
+        "notDocumented": false
+    },
+    "treatValidationWarningsAsErrors": true
 }
