@@ -5,7 +5,7 @@
 ![ESLint](https://docs.arrai.dev/reactive-helpers/artifacts/main/eslint.svg)
 ![Prettier](https://docs.arrai.dev/reactive-helpers/artifacts/main/prettier.svg)
 ![Audit](https://docs.arrai.dev/reactive-helpers/artifacts/main/pnpm-audit.svg)
-[![License: BSD-3-Clause](https://img.shields.io/badge/License-BSD_3--Clause-blue.svg)](./LICENSE)
+[![License: BSD-3-Clause](https://img.shields.io/badge/License-BSD--3--Clause-blue.svg?style=for-the-badge)](./LICENSE)
 
 Vue.js 3 composition utilities to manage reactive lists, objects, loading and error state, and the small helpers that
 support them. The composables give you reactive state plus actions; you supply the data layer (how a list or object
