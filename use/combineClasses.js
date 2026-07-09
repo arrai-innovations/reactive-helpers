@@ -21,7 +21,7 @@ const isRefOrReactive = (v) => isRef(v) || isReactive(v);
  *     string[] |
  *     { [key: string]: boolean | import("vue").Ref<boolean> } |
  *     import("vue").Ref<string | string[]>
- * )} CSSClasses
+ * )} CSSClasses - The accepted ways of specifying CSS classes to useCombineClasses (a string, array, class-map, or ref thereof).
  */
 
 /**

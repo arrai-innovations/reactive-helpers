@@ -12,6 +12,8 @@
 
 > **BooleanOrRef** = `boolean` \| `Ref`
 
+A boolean value or a Vue ref to a boolean.
+
 #### Type Parameters
 
 ***
@@ -29,6 +31,8 @@ The normalized form of the CSS classes, either as a string of space-separated cl
 ### CombinedClassesArgument
 
 > **CombinedClassesArgument** = `string` \| `string`[] \| `Set`\<`any`\> \| `Map`\<`any`, `any`\> \| `object` \| `Ref`
+
+A single class-specifying argument accepted by combineClasses (a string, array, set, map, object, or ref).
 
 #### Type Parameters
 

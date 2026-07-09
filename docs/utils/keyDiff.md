@@ -10,6 +10,8 @@
 
 ### KeyDiffResult
 
+Result object of keyDiff and keyDiffDeep.
+
 #### Properties
 
 ##### addedKeys?

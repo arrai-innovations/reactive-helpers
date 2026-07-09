@@ -1,29 +1,24 @@
 /**
- * @typedef {object} ObjectRelatedProperties
+ * @typedef {object} ObjectRelatedProperties - The members (state, parentState, stop) contributed by the object related composable.
  * @property {ObjectRelatedState} state - The state of the object related instance.
  * @property {ObjectRelatedParentState} parentState - The parent state.
  * @property {() => void} stop - Stops all effects of the object related instance.
  *
  */
 /**
- * An instance of an object related reactive object.
- *
- * @typedef {ObjectRelatedProperties} ObjectRelated
+ * @typedef {ObjectRelatedProperties} ObjectRelated - An instance of an object related reactive object.
  */
 /**
- * Non-parent state options for useObjectRelated.
- *
- * @typedef {object} ObjectRelatedRawProps
+ * @typedef {object} ObjectRelatedRawProps - Non-parent state options for useObjectRelated.
  * @property {import('vue').Ref<ObjectRelatedRawRules>} relatedObjectRules - The rules for defining relationships for the managed object to other collections of objects.
  */
 /**
- * Options for useObjectRelated.
- *
  * @typedef {{
  *     parentState: ObjectRelatedParentState,
- * } & ObjectRelatedRawProps} ObjectRelatedOptions
+ * } & ObjectRelatedRawProps} ObjectRelatedOptions - Options for useObjectRelated.
  */
 /**
+ * Creates multiple object related instances keyed by name from a map of options.
  *
  * @param {{
  *     [key: string]: ObjectRelatedOptions
@@ -119,24 +114,20 @@ export function useObjectRelated({ parentState, relatedObjectRules }: ObjectRela
  * @module use/objectRelated.js
  */
 /**
- * The rule for defining relationships for the managed object to other collections of objects.
- *
- * @typedef {object} ObjectRelatedRule
+ * @typedef {object} ObjectRelatedRule - The rule for defining relationships for the managed object to other collections of objects.
  * @property {string} pkKey - The key in the managed object that corresponds to the key in the related object.
  * @property {import('./listInstance.js').ObjectsByPk} objects - The related objects, indexed by the key in the related object.
  * @property {string[]} order - The order of the related objects, if the related objects are an array.
  */
 /**
- * The rules for defining relationships for the managed object to other collections of objects.
- *
  * @typedef {{
  *     [rule: string]: ObjectRelatedRule,
- * }} ObjectRelatedRawRules
+ * }} ObjectRelatedRawRules - The rules for defining relationships for the managed object to other collections of objects.
  */
 /**
  *
  *
- * @typedef {object} ObjectRelatedRawState
+ * @typedef {object} ObjectRelatedRawState - The raw reactive state of the object related composable, holding its rules, computed relations, and running flags.
  * @property {ObjectRelatedRawRules} relatedObjectRules - The rules for defining relationships for the managed object to other collections of objects.
  * @property {{
  *     [rule: string]: import('vue').ComputedRef<any>,
@@ -152,12 +143,12 @@ export function useObjectRelated({ parentState, relatedObjectRules }: ObjectRela
  * @typedef {(
  *    import('./objectInstance.js').ObjectInstanceRawState &
  *    Partial<import('./objectSubscription.js').ObjectSubscriptionRawState>
- * )} ObjectRelatedParentRawState
+ * )} ObjectRelatedParentRawState - The raw, pre-unwrapped parent state consumed by the object related mixin (object instance plus optional subscription state).
  */
 /**
  *
  *
- * @typedef {import('vue').UnwrapNestedRefs<ObjectRelatedParentRawState>} ObjectRelatedParentState
+ * @typedef {import('vue').UnwrapNestedRefs<ObjectRelatedParentRawState>} ObjectRelatedParentState - The unwrapped reactive parent state consumed by the object related mixin.
  */
 /**
  *
@@ -165,10 +156,15 @@ export function useObjectRelated({ parentState, relatedObjectRules }: ObjectRela
  * @typedef {import('vue').UnwrapNestedRefs<(
  *     ObjectRelatedParentRawState &
  *     ObjectRelatedRawState
- * )>} ObjectRelatedState
+ * )>} ObjectRelatedState - The unwrapped reactive state of the object related composable, combining the parent state with its own related state.
  */
+/** @internal */
 export const objectRelatedStateKeys: string[];
+/** @internal */
 export const objectRelatedFunctions: any[];
+/**
+ * - The members (state, parentState, stop) contributed by the object related composable.
+ */
 export type ObjectRelatedProperties = {
     /**
      * - The state of the object related instance.
@@ -184,11 +180,11 @@ export type ObjectRelatedProperties = {
     stop: () => void;
 };
 /**
- * An instance of an object related reactive object.
+ * - An instance of an object related reactive object.
  */
 export type ObjectRelated = ObjectRelatedProperties;
 /**
- * Non-parent state options for useObjectRelated.
+ * - Non-parent state options for useObjectRelated.
  */
 export type ObjectRelatedRawProps = {
     /**
@@ -197,13 +193,13 @@ export type ObjectRelatedRawProps = {
     relatedObjectRules: import("vue").Ref<ObjectRelatedRawRules>;
 };
 /**
- * Options for useObjectRelated.
+ * - Options for useObjectRelated.
  */
 export type ObjectRelatedOptions = {
     parentState: ObjectRelatedParentState;
 } & ObjectRelatedRawProps;
 /**
- * The rule for defining relationships for the managed object to other collections of objects.
+ * - The rule for defining relationships for the managed object to other collections of objects.
  */
 export type ObjectRelatedRule = {
     /**
@@ -220,11 +216,14 @@ export type ObjectRelatedRule = {
     order: string[];
 };
 /**
- * The rules for defining relationships for the managed object to other collections of objects.
+ * - The rules for defining relationships for the managed object to other collections of objects.
  */
 export type ObjectRelatedRawRules = {
     [rule: string]: ObjectRelatedRule;
 };
+/**
+ * - The raw reactive state of the object related composable, holding its rules, computed relations, and running flags.
+ */
 export type ObjectRelatedRawState = {
     /**
      * - The rules for defining relationships for the managed object to other collections of objects.
@@ -253,6 +252,15 @@ export type ObjectRelatedRawState = {
      */
     running: boolean;
 };
+/**
+ * - The raw, pre-unwrapped parent state consumed by the object related mixin (object instance plus optional subscription state).
+ */
 export type ObjectRelatedParentRawState = (import("./objectInstance.js").ObjectInstanceRawState & Partial<import("./objectSubscription.js").ObjectSubscriptionRawState>);
+/**
+ * - The unwrapped reactive parent state consumed by the object related mixin.
+ */
 export type ObjectRelatedParentState = import("vue").UnwrapNestedRefs<ObjectRelatedParentRawState>;
+/**
+ * - The unwrapped reactive state of the object related composable, combining the parent state with its own related state.
+ */
 export type ObjectRelatedState = import("vue").UnwrapNestedRefs<(ObjectRelatedParentRawState & ObjectRelatedRawState)>;

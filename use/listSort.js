@@ -35,23 +35,16 @@ export function setListSortDefaultOptions({ sortThrottleWait }) {
 }
 
 /**
- * Describes a rule for ordering elements in a list. Each rule can directly reference a property of the list items,
- * or define a function to compute the value used for sorting. Rules can be configured to sort in ascending or descending
- * order and can utilize locale-aware string comparison if necessary.
- *
  * @typedef {{
  *     key: string,
  *     keyFn?: (object: any, state: ListSortState) => any,
  *     desc?: boolean,
  *     localeCompare?: boolean
- * }} OrderByRule
+ * }} OrderByRule - Describes a rule for ordering elements in a list. Each rule can directly reference a property of the list items, or define a function to compute the value used for sorting. Rules can be configured to sort in ascending or descending order and can utilize locale-aware string comparison if necessary.
  */
 
 /**
- * Represents the raw state used by the list sorting functionality. Includes all configurations and state necessary
- * to manage sorting operations within a Vue application.
- *
- * @typedef {object} ListSortRawState
+ * @typedef {object} ListSortRawState - Represents the raw state used by the list sorting functionality. Includes all configurations and state necessary to manage sorting operations within a Vue application.
  * @property {OrderByRule[]} orderByRules - Current sorting rules applied to the list.
  * @property {boolean[]} orderByDesc - Flags indicating whether each sort criterion is in descending order.
  */
@@ -66,36 +59,29 @@ export function setListSortDefaultOptions({ sortThrottleWait }) {
  *     Partial<import('./listCalculated.js').ListCalculatedRawState> &
  *     Partial<import('./listFilter.js').ListFilterRawState> &
  *     Partial<import('./listSearch.js').ListSearchRawState>
- * )} ListSortParentRawState
+ * )} ListSortParentRawState - The raw, pre-unwrapped parent state consumed by the list sort mixin, aggregating the upstream list composable states.
  */
 
 /**
- * @typedef {import('vue').UnwrapNestedRefs<ListSortParentRawState>} ListSortParentState
+ * @typedef {import('vue').UnwrapNestedRefs<ListSortParentRawState>} ListSortParentState - The unwrapped reactive parent state consumed by the list sort mixin.
  */
 
 /**
- * The reactive state used by the list sorting functionality. Includes all configurations and state necessary to manage
- * sorting operations within a Vue application.
- *
  * @typedef {import('vue').UnwrapNestedRefs<
  *     ListSortParentRawState &
  *     ListSortRawState
- * >} ListSortState
+ * >} ListSortState - The reactive state used by the list sorting functionality. Includes all configurations and state necessary to manage sorting operations within a Vue application.
  */
 
 /**
- * The configuration options for initializing a list sort instance.
- *
- * @typedef {object} ListSortOptions
+ * @typedef {object} ListSortOptions - The configuration options for initializing a list sort instance.
  * @property {ListSortParentState} parentState - The parent state containing the list data and any associated state needed for sorting.
  * @property {OrderByRule[]|import('vue').Ref<OrderByRule[]>} orderByRules - Rules defining how the list should be sorted, including key and direction.
  * @property {number | symbol} sortThrottleWait - Optional throttle wait time to limit the frequency of sort operations, enhancing performance.
  */
 
 /**
- * The properties available on a list sort instance.
- *
- * @typedef {object} ListSortProperties
+ * @typedef {object} ListSortProperties - The properties available on a list sort instance.
  * @property {ListSortState} state - The reactive state for the list sort.
  * @property {ListSortParentState} parentState - The parent state.
  * @property {() => void} stop - A function to stop the effect scope and clean up resources.
@@ -104,9 +90,7 @@ export function setListSortDefaultOptions({ sortThrottleWait }) {
 // if we provided functions, we would add a typedef and mix them into ListSort
 
 /**
- * The list sort instance, including reactive state and utilities to manage list sorting operations.
- *
- * @typedef {ListSortProperties} ListSort
+ * @typedef {ListSortProperties} ListSort - The list sort instance, including reactive state and utilities to manage list sorting operations.
  */
 
 /**

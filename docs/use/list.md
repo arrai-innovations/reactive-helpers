@@ -64,6 +64,8 @@ The error code.
 
 ### ListManagerProperties
 
+Encapsulates properties relevant to the overall management of list-related hooks, including state, direct access to hooks, and scoped effects.
+
 #### Properties
 
 ##### managed
@@ -367,6 +369,8 @@ A function to stop the effect scope and clean up resources.
 
 ### ListOptions
 
+The configuration options used to create a fully managed list via useList.
+
 #### Properties
 
 ##### handlers?
@@ -402,6 +406,8 @@ The throttle time for sorting.
 ***
 
 ### ListRawProps
+
+Defines properties for configuring the list management system.
 
 #### Properties
 
@@ -495,6 +501,8 @@ Current text query used for filtering the list.
 
 > **ListFunctions** = [`ListInstanceFunctions`](listInstance.md#listinstancefunctions) & [`ListSubscriptionFunctions`](listSubscription.md#listsubscriptionfunctions)
 
+Aggregates all functions provided by various list-related composables, allowing for a unified approach to calling these methods.
+
 #### Type Parameters
 
 ***
@@ -502,6 +510,8 @@ Current text query used for filtering the list.
 ### ListManaged
 
 > **ListManaged** = `object`
+
+Holds references to instances of all list-related composables, facilitating direct access and management.
 
 #### Type Parameters
 
@@ -540,6 +550,8 @@ Current text query used for filtering the list.
 ### ListManager
 
 > **ListManager** = [`ListFunctions`](#listfunctions) & [`ListManagerProperties`](#listmanagerproperties)
+
+Combines functionality and properties to represent a fully managed list instance, orchestrating various functionalities such as sorting, searching, filtering, and state management.
 
 #### Type Parameters
 

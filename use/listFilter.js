@@ -11,7 +11,7 @@ import { computed, effectScope, isRef, reactive, toRef, toRefs, unref, watch } f
  */
 
 /**
- * @typedef {import('vue').Ref<import('../use/objectInstance.js').ExistingCrudObject>[]} ObjectsInOrderRefs
+ * @typedef {import('vue').Ref<import('../use/objectInstance.js').ExistingCrudObject>[]} ObjectsInOrderRefs - An array of Vue refs to the list's existing objects in their current order.
  */
 
 /**
@@ -23,10 +23,7 @@ import { computed, effectScope, isRef, reactive, toRef, toRefs, unref, watch } f
  */
 
 /**
- * Defines the structure of the reactive state used by the list filter. This state includes both filters and
- * the results of applying these filters to a list.
- *
- * @typedef {object} ListFilterRawState
+ * @typedef {object} ListFilterRawState - Defines the structure of the reactive state used by the list filter. This state includes both filters and the results of applying these filters to a list.
  * @property {ListFilterAllowedFilter} [allowedFilter] - Function to determine if an item should be included based on custom logic.
  * @property {ListFilterExcludedFilter} [excludedFilter] - Function to determine if an item should be excluded based on custom logic.
  */
@@ -39,39 +36,31 @@ import { computed, effectScope, isRef, reactive, toRef, toRefs, unref, watch } f
  *     Partial<import('./listSubscription.js').ListSubscriptionRawState> &
  *     Partial<import('./listRelated.js').ListRelatedRawState> &
  *     Partial<import('./listCalculated.js').ListCalculatedRawState>
- * )} ListFilterParentRawState
+ * )} ListFilterParentRawState - The raw, pre-unwrapped parent state consumed by the list filter mixin, aggregating the upstream list composable states.
  */
 
 /**
- * The parent state for a list filter.
- *
  * @typedef {import('vue').UnwrapNestedRefs<(
  *     ListFilterParentRawState
- * )>} ListFilterParentState
+ * )>} ListFilterParentState - The parent state for a list filter.
  */
 
 /**
- * Describes the combined state from various list-related composables that might interact with the list filter.
- *
  * @typedef {import('vue').UnwrapNestedRefs<
  *     ListFilterParentRawState &
  *     ListFilterRawState
- * >} ListFilterState
+ * >} ListFilterState - Describes the combined state from various list-related composables that might interact with the list filter.
  */
 
 /**
- * Configuration options for initializing a list filter. Includes references to the parent state and filter functions.
- *
- * @typedef {object} ListFilterOptions
+ * @typedef {object} ListFilterOptions - Configuration options for initializing a list filter. Includes references to the parent state and filter functions.
  * @property {ListFilterParentState} parentState - The parent state.
  * @property {import('vue').Ref<Function>|Function} [allowedFilter] - A function that returns true if an item should be included, which can be reactive.
  * @property {import('vue').Ref<Function>|Function} [excludedFilter] - A function that returns true if an item should be excluded, which can be reactive.
  */
 
 /**
- * The properties of a list filter, including its state and associated Vue composition API utilities.
- *
- * @typedef {object} ListFilterProperties
+ * @typedef {object} ListFilterProperties - The properties of a list filter, including its state and associated Vue composition API utilities.
  * @property {ListFilterState} state - The reactive state managing the filter logic and results.
  * @property {ListFilterParentState} parentState - The state of the list being filtered.
  * @property {() => void} stop - A function to stop the effect scope and clean up resources.
@@ -80,9 +69,7 @@ import { computed, effectScope, isRef, reactive, toRef, toRefs, unref, watch } f
 // if we provided functions, we would add a typedef and mix them into ListFilter
 
 /**
- * Represents an instance of a list filter, including its state and associated Vue composition API utilities.
- *
- * @typedef {ListFilterProperties} ListFilter
+ * @typedef {ListFilterProperties} ListFilter - Represents an instance of a list filter, including its state and associated Vue composition API utilities.
  *
  */
 

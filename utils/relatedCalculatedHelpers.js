@@ -1,4 +1,6 @@
+/** @internal */
 export const relatedItemRegex = /^relatedItem\./;
+/** @internal */
 export const calculatedItemRegex = /^calculatedItem\./;
 
 /**

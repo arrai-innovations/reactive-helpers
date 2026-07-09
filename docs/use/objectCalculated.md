@@ -10,6 +10,8 @@
 
 ### ObjectCalculatedProperties
 
+The properties for object calculated.
+
 #### Properties
 
 ##### parentState
@@ -394,6 +396,8 @@ Stops composition's effects and cleans up resources.
 
 ### ObjectCalculatedRawProps
 
+The consumer-supplied props for the object calculated composable, namely the calculated-object rules ref.
+
 #### Properties
 
 ##### calculatedObjectRules
@@ -456,6 +460,8 @@ Whether the object calculated is running.
 
 > **ObjectCalculated** = [`ObjectCalculatedProperties`](#objectcalculatedproperties)
 
+The object calculated instance.
+
 #### Type Parameters
 
 ***
@@ -463,6 +469,8 @@ Whether the object calculated is running.
 ### ObjectCalculatedOptions
 
 > **ObjectCalculatedOptions** = `object` & [`ObjectCalculatedRawProps`](#objectcalculatedrawprops)
+
+The options used to create an object calculated instance (the parent state plus the calculated-object rules).
 
 #### Type Declaration
 
@@ -477,6 +485,8 @@ Whether the object calculated is running.
 ### ObjectCalculatedParentRawState
 
 > **ObjectCalculatedParentRawState** = [`ObjectInstanceRawState`](objectInstance.md#objectinstancerawstate) & `Partial`\<[`ObjectSubscriptionRawState`](objectSubscription.md#objectsubscriptionrawstate)\> & `Partial`\<[`ObjectRelatedRawState`](objectRelated.md#objectrelatedrawstate)\>
+
+The raw, pre-unwrapped parent state consumed by the object calculated mixin, aggregating the upstream object composable states.
 
 #### Type Parameters
 
@@ -496,6 +506,8 @@ The object calculated options.
 
 > **ObjectCalculatedRules** = `object`
 
+The object calculated state keys.
+
 #### Type Parameters
 
 #### Index Signature
@@ -508,19 +520,9 @@ The object calculated options.
 
 > **ObjectCalculatedState** = `UnwrapNestedRefs`
 
+The state for object calculated.
+
 #### Type Parameters
-
-## Variables
-
-### objectCalculatedFunctions
-
-> `const` **objectCalculatedFunctions**: `any`[] = `[]`
-
-***
-
-### objectCalculatedStateKeys
-
-> `const` **objectCalculatedStateKeys**: `string`[]
 
 ## Functions
 

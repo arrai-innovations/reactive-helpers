@@ -14,11 +14,9 @@ import { computed, effectScope, nextTick, onScopeDispose, reactive, ref, toRef, 
  */
 
 /**
- * The object calculated state keys.
- *
  * @typedef {{
  *     [ruleKey: string]: (object: any, relatedObject: any) => any
- * }} ObjectCalculatedRules
+ * }} ObjectCalculatedRules - The object calculated state keys.
  */
 
 /**
@@ -40,7 +38,7 @@ import { computed, effectScope, nextTick, onScopeDispose, reactive, ref, toRef, 
  *     import('./objectInstance.js').ObjectInstanceRawState &
  *     Partial<import('./objectSubscription.js').ObjectSubscriptionRawState> &
  *     Partial<import('./objectRelated.js').ObjectRelatedRawState>
- * )} ObjectCalculatedParentRawState
+ * )} ObjectCalculatedParentRawState - The raw, pre-unwrapped parent state consumed by the object calculated mixin, aggregating the upstream object composable states.
  */
 
 /**
@@ -52,18 +50,14 @@ import { computed, effectScope, nextTick, onScopeDispose, reactive, ref, toRef, 
  */
 
 /**
- * The state for object calculated.
- *
  * @typedef {import('vue').UnwrapNestedRefs<
  *   ObjectCalculatedParentRawState &
  *   ObjectCalculatedRawState
- * >} ObjectCalculatedState
+ * >} ObjectCalculatedState - The state for object calculated.
  */
 
 /**
- * The properties for object calculated.
- *
- * @typedef {object} ObjectCalculatedProperties
+ * @typedef {object} ObjectCalculatedProperties - The properties for object calculated.
  * @property {ObjectCalculatedParentState} parentState - The parent state.
  * @property {ObjectCalculatedState} state - The object calculated state.
  * @property {() => void} stop - Stops composition's effects and cleans up resources.
@@ -72,15 +66,13 @@ import { computed, effectScope, nextTick, onScopeDispose, reactive, ref, toRef, 
 // if we provided functions, we would add a typedef and mix them into ObjectCalculated
 
 /**
- * The object calculated instance.
- *
- * @typedef {ObjectCalculatedProperties} ObjectCalculated
+ * @typedef {ObjectCalculatedProperties} ObjectCalculated - The object calculated instance.
  */
 
 /**
  *
  *
- * @typedef {object} ObjectCalculatedRawProps
+ * @typedef {object} ObjectCalculatedRawProps - The consumer-supplied props for the object calculated composable, namely the calculated-object rules ref.
  * @property {import('vue').Ref<ObjectCalculatedRules>} calculatedObjectRules - The calculated object rules.
  */
 
@@ -88,9 +80,10 @@ import { computed, effectScope, nextTick, onScopeDispose, reactive, ref, toRef, 
  *
  * @typedef {({
  *     parentState: ObjectCalculatedParentState,
- * } & ObjectCalculatedRawProps)} ObjectCalculatedOptions
+ * } & ObjectCalculatedRawProps)} ObjectCalculatedOptions - The options used to create an object calculated instance (the parent state plus the calculated-object rules).
  */
 
+/** @internal */
 export const objectCalculatedStateKeys = [
     "calculatedObject",
     "calculatedObjectRules",
@@ -100,6 +93,7 @@ export const objectCalculatedStateKeys = [
     // "running",
 ];
 
+/** @internal */
 export const objectCalculatedFunctions = [];
 
 /**

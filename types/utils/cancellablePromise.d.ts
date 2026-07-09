@@ -9,7 +9,7 @@
 export function wrapMaybeCancellable<T>(inner: Promise<T>, cancel?: ((reason?: any) => Promise<void> | void) | undefined): MaybeCancellablePromise<T>;
 export function CancellablePromise<T>(promise: Promise<T>, cancel: (reason?: any) => (Promise<void> | void)): CancellablePromise<T>;
 /**
- * A Promise that can be cancelled.
+ * - A promise augmented with a cancel method to abort the pending operation.
  */
 export type CancellablePromise<T> = Promise<T> & {
     cancel: (reason?: any) => Promise<void> | void;
@@ -32,7 +32,7 @@ export namespace CancellablePromise {
     function resolve<T_1>(value: T_1): MaybeCancellablePromise<T_1>;
 }
 /**
- * A possibly cancellable promise.
+ * - A promise that may optionally carry a cancel method to abort the pending operation.
  */
 export type MaybeCancellablePromise<T> = Promise<T> & {
     cancel?: (reason?: any) => Promise<void> | void;

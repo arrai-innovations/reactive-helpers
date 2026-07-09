@@ -8,9 +8,7 @@
  * @module use/listSearch.js
  */
 /**
- * Represents the raw reactive state used by the list search functionality.
- *
- * @typedef {object} ListSearchRawState
+ * @typedef {object} ListSearchRawState - Represents the raw reactive state used by the list search functionality.
  * @property {import('./listInstance.js').ObjectsByPk} objects - Currently filtered objects based on the search.
  * @property {import('./listInstance.js').ObjectsInOrder} objectsInOrder - The list of objects sorted according to the current search criteria.
  * @property {import('./listInstance.js').ListOrder} order - The current sort order of object pks after search have been applied.
@@ -32,13 +30,13 @@
  *     Partial<import('./listRelated.js').ListRelatedRawState> &
  *     Partial<import('./listCalculated.js').ListCalculatedRawState> &
  *     Partial<import('./listFilter.js').ListFilterRawState>
- * )} ListSearchParentRawState
+ * )} ListSearchParentRawState - The raw, pre-unwrapped parent state consumed by the list search mixin, aggregating the upstream list composable states.
  */
 /**
  * @typedef {import('vue').UnwrapNestedRefs<ListSearchParentRawState>} ListSearchParentState - The parent state for a list search.
  */
 /**
- *  @typedef {import('vue').ToRefs<ListSearchParentState>} ListSearchParentStateToRefs
+ *  @typedef {import('vue').ToRefs<ListSearchParentState>} ListSearchParentStateToRefs - The parent list-search state converted to individual Vue refs.
  */
 /**
  * @typedef {import('vue').UnwrapNestedRefs<
@@ -66,17 +64,13 @@
  * @property {boolean} [showAllWhenEmpty=true] - Whether to show all items when the search is empty.
  */
 /**
- * The properties on a list search instance.
- *
- * @typedef {object} ListSearchProperties
+ * @typedef {object} ListSearchProperties - The properties on a list search instance.
  * @property {ListSearchState} state - The state.
  * @property {import('./search.js').SearchInstance} textSearchIndex - The text search index.
  * @property {() => void} stop - Stops the effect scope and cleans up resources.
  */
 /**
- * The provided list search instance, containing properties and functions.
- *
- * @typedef {ListSearchProperties} ListSearch
+ * @typedef {ListSearchProperties} ListSearch - The provided list search instance, containing properties and functions.
  */
 /**
  * Helper function that initializes multiple list search instances from given configurations. This is typically used
@@ -95,13 +89,10 @@ export function useListSearches(listSearchArgs: {
     [key: string]: ListSearch;
 };
 /**
- * FlexSearch.Document options, specifically for .index. Their documentation isn't very clear on this.
- * Typically, it would be a list of dot-separated keys to index.
- *
- * @typedef {string | string[] | object[]} TextSearchRules
+ * @typedef {string | string[] | object[]} TextSearchRules - FlexSearch.Document options, specifically for .index. Their documentation isn't very clear on this. Typically, it would be a list of dot-separated keys to index.
  */
 /**
- * @typedef {object} ListSearchProps
+ * @typedef {object} ListSearchProps - The consumer-supplied props configuring a list's text search (rules, value, and FlexSearch options).
  * @property {TextSearchRules} textSearchRules - Rules for what to search for. Keys are the keys to search for, values are functions that take the object and return The value to search for.
  * @property {string} textSearchValue - The value to search for.
  * @property {object} customDocumentOptions - FlexSearch.Document options.
@@ -109,7 +100,7 @@ export function useListSearches(listSearchArgs: {
  * @property {object} [customSearchOptions.limit=1000] - FlexSearch.Search options.
  */
 /**
- * @typedef {object} ListSearchInstanceOptions
+ * @typedef {object} ListSearchInstanceOptions - The configuration options used to create a list search instance.
  * @property {object} parentState - The list being filtered.
  * @property {ListSearchProps} [props] - Reactive properties.
  * @property {number} [throttle=500] - Throttle wait time.
@@ -145,7 +136,7 @@ export function useListSearches(listSearchArgs: {
  */
 export function useListSearch({ parentState, props, throttle, showAllWhenEmpty }: ListSearchInstanceOptions): ListSearch;
 /**
- * Represents the raw reactive state used by the list search functionality.
+ * - Represents the raw reactive state used by the list search functionality.
  */
 export type ListSearchRawState = {
     /**
@@ -190,11 +181,17 @@ export type ListSearchRawState = {
      */
     running: import("vue").ComputedRef<boolean>;
 };
+/**
+ * - The raw, pre-unwrapped parent state consumed by the list search mixin, aggregating the upstream list composable states.
+ */
 export type ListSearchParentRawState = (import("./listInstance.js").ListInstanceRawState & Partial<import("./listSubscription.js").ListSubscriptionRawState> & Partial<import("./listRelated.js").ListRelatedRawState> & Partial<import("./listCalculated.js").ListCalculatedRawState> & Partial<import("./listFilter.js").ListFilterRawState>);
 /**
  * - The parent state for a list search.
  */
 export type ListSearchParentState = import("vue").UnwrapNestedRefs<ListSearchParentRawState>;
+/**
+ * - The parent list-search state converted to individual Vue refs.
+ */
 export type ListSearchParentStateToRefs = import("vue").ToRefs<ListSearchParentState>;
 /**
  * - The state for a list search.
@@ -245,7 +242,7 @@ export type ListSearchOptions = {
     showAllWhenEmpty?: boolean;
 };
 /**
- * The properties on a list search instance.
+ * - The properties on a list search instance.
  */
 export type ListSearchProperties = {
     /**
@@ -262,14 +259,16 @@ export type ListSearchProperties = {
     stop: () => void;
 };
 /**
- * The provided list search instance, containing properties and functions.
+ * - The provided list search instance, containing properties and functions.
  */
 export type ListSearch = ListSearchProperties;
 /**
- * FlexSearch.Document options, specifically for .index. Their documentation isn't very clear on this.
- * Typically, it would be a list of dot-separated keys to index.
+ * - FlexSearch.Document options, specifically for .index. Their documentation isn't very clear on this. Typically, it would be a list of dot-separated keys to index.
  */
 export type TextSearchRules = string | string[] | object[];
+/**
+ * - The consumer-supplied props configuring a list's text search (rules, value, and FlexSearch options).
+ */
 export type ListSearchProps = {
     /**
      * - Rules for what to search for. Keys are the keys to search for, values are functions that take the object and return The value to search for.
@@ -290,6 +289,9 @@ export type ListSearchProps = {
         limit?: object;
     };
 };
+/**
+ * - The configuration options used to create a list search instance.
+ */
 export type ListSearchInstanceOptions = {
     /**
      * - The list being filtered.

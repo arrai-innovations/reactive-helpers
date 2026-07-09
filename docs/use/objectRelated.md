@@ -10,6 +10,8 @@
 
 ### ObjectRelatedProperties
 
+The members (state, parentState, stop) contributed by the object related composable.
+
 #### Properties
 
 ##### parentState
@@ -326,6 +328,8 @@ Stops all effects of the object related instance.
 
 ### ObjectRelatedRawProps
 
+Non-parent state options for useObjectRelated.
+
 #### Properties
 
 ##### relatedObjectRules
@@ -337,6 +341,8 @@ The rules for defining relationships for the managed object to other collections
 ***
 
 ### ObjectRelatedRawState
+
+The raw reactive state of the object related composable, holding its rules, computed relations, and running flags.
 
 #### Properties
 
@@ -384,6 +390,8 @@ Whether the related objects are loading or the parent state is loading.
 
 ### ObjectRelatedRule
 
+The rule for defining relationships for the managed object to other collections of objects.
+
 #### Properties
 
 ##### objects
@@ -410,6 +418,8 @@ The key in the managed object that corresponds to the key in the related object.
 
 > **ObjectRelated** = [`ObjectRelatedProperties`](#objectrelatedproperties)
 
+An instance of an object related reactive object.
+
 #### Type Parameters
 
 ***
@@ -417,6 +427,8 @@ The key in the managed object that corresponds to the key in the related object.
 ### ObjectRelatedOptions
 
 > **ObjectRelatedOptions** = `object` & [`ObjectRelatedRawProps`](#objectrelatedrawprops)
+
+Options for useObjectRelated.
 
 #### Type Declaration
 
@@ -432,6 +444,8 @@ The key in the managed object that corresponds to the key in the related object.
 
 > **ObjectRelatedParentRawState** = [`ObjectInstanceRawState`](objectInstance.md#objectinstancerawstate) & `Partial`\<[`ObjectSubscriptionRawState`](objectSubscription.md#objectsubscriptionrawstate)\>
 
+The raw, pre-unwrapped parent state consumed by the object related mixin (object instance plus optional subscription state).
+
 #### Type Parameters
 
 ***
@@ -440,6 +454,8 @@ The key in the managed object that corresponds to the key in the related object.
 
 > **ObjectRelatedParentState** = `UnwrapNestedRefs`
 
+The unwrapped reactive parent state consumed by the object related mixin.
+
 #### Type Parameters
 
 ***
@@ -447,6 +463,8 @@ The key in the managed object that corresponds to the key in the related object.
 ### ObjectRelatedRawRules
 
 > **ObjectRelatedRawRules** = `object`
+
+The rules for defining relationships for the managed object to other collections of objects.
 
 #### Type Parameters
 
@@ -460,19 +478,9 @@ The key in the managed object that corresponds to the key in the related object.
 
 > **ObjectRelatedState** = `UnwrapNestedRefs`
 
+The unwrapped reactive state of the object related composable, combining the parent state with its own related state.
+
 #### Type Parameters
-
-## Variables
-
-### objectRelatedFunctions
-
-> `const` **objectRelatedFunctions**: `any`[] = `[]`
-
-***
-
-### objectRelatedStateKeys
-
-> `const` **objectRelatedStateKeys**: `string`[]
 
 ## Functions
 
@@ -571,6 +579,8 @@ const objectRelated = useObjectRelated(objectRelatedProps);
 ### useObjectRelateds()
 
 > **useObjectRelateds**(`objectRelatedArgs`): `object`
+
+Creates multiple object related instances keyed by name from a map of options.
 
 #### Parameters
 

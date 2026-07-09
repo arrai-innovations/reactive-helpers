@@ -64,6 +64,8 @@ The error code.
 
 ### ListSubscriptionMyState
 
+The raw state of a list subscription.
+
 #### Properties
 
 ##### intendToList
@@ -88,6 +90,8 @@ Whether the subscription is active.
 
 ### ListSubscriptionOwnOptions
 
+The options specific to a list subscription, namely an optional pre-built list instance to reuse.
+
 #### Properties
 
 ##### listInstance?
@@ -99,6 +103,8 @@ A list instance to use instead of creating one.
 ***
 
 ### ListSubscriptionProperties
+
+The properties of a list subscription.
 
 #### Properties
 
@@ -252,6 +258,8 @@ The `CancellableIntent` instance managing if the subscription should be (un)subs
 
 > **ListInstanceStateRefs** = `ToRefs`
 
+The list instance's reactive state converted to individual Vue refs.
+
 #### Type Parameters
 
 ***
@@ -260,6 +268,8 @@ The `CancellableIntent` instance managing if the subscription should be (un)subs
 
 > **ListSubscription** = [`ListSubscriptionFunctions`](#listsubscriptionfunctions) & [`ListSubscriptionProperties`](#listsubscriptionproperties)
 
+An instance of a list subscription, returned by `useListSubscription`.
+
 #### Type Parameters
 
 ***
@@ -267,6 +277,8 @@ The `CancellableIntent` instance managing if the subscription should be (un)subs
 ### ListSubscriptionContext
 
 > **ListSubscriptionContext** = `object`
+
+The context (state, list instance, and loading/error status) bound to the shared list subscription functions.
 
 #### Type Parameters
 
@@ -290,6 +302,8 @@ The `CancellableIntent` instance managing if the subscription should be (un)subs
 
 > **ListSubscriptionFunctions** = `Pick`\<[`LoadingErrorStatus`](loadingError.md#loadingerrorstatus), `"clearError"`\>
 
+The methods available on a list subscription.
+
 #### Type Parameters
 
 ***
@@ -297,6 +311,8 @@ The `CancellableIntent` instance managing if the subscription should be (un)subs
 ### ListSubscriptionOptions
 
 > **ListSubscriptionOptions** = [`ListInstanceOptions`](listInstance.md#listinstanceoptions) & [`ListSubscriptionOwnOptions`](#listsubscriptionownoptions)
+
+Defines the settings required to establish a list subscription, detailing how list instances should handle updates and subscriptions based on the given properties.
 
 #### Type Parameters
 
@@ -306,6 +322,8 @@ The `CancellableIntent` instance managing if the subscription should be (un)subs
 
 > **ListSubscriptionRawState** = [`ListSubscriptionMyState`](#listsubscriptionmystate) & `Pick`\<[`LoadingErrorStatus`](loadingError.md#loadingerrorstatus), `"loading"` \| `"error"` \| `"errored"`\> & [`ListInstanceStateRefs`](#listinstancestaterefs)
 
+The raw state of a list subscription, including the state from the list instance.
+
 #### Type Parameters
 
 ***
@@ -313,6 +331,8 @@ The `CancellableIntent` instance managing if the subscription should be (un)subs
 ### ListSubscriptionState
 
 > **ListSubscriptionState** = `Reactive`
+
+A reactive object that manages a list of objects, as returned by `useListInstance`.
 
 #### Type Parameters
 

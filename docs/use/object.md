@@ -10,6 +10,8 @@
 
 ### ObjectManagerOptions
 
+Defines the non-reactive handlers that can be passed to an object instance.
+
 #### Properties
 
 ##### handlers
@@ -123,6 +125,8 @@ A function to be used instead of the default crud update function.
 ***
 
 ### ObjectManagerProperties
+
+Defines the properties available on an object manager.
 
 #### Properties
 
@@ -346,6 +350,8 @@ Stop the effect scope of the managed object.
 
 > **ObjectManaged** = `object`
 
+Defines the managed object, containing the managed object instance, subscription, related objects, and calculated objects.
+
 #### Type Parameters
 
 #### Type Declaration
@@ -372,6 +378,8 @@ Stop the effect scope of the managed object.
 
 > **ObjectManager** = [`ObjectManagerProperties`](#objectmanagerproperties) & [`ObjectManagerFunctions`](#objectmanagerfunctions)
 
+The fully managed object returned by useObject, combining its properties and functions.
+
 #### Type Parameters
 
 ***
@@ -379,6 +387,8 @@ Stop the effect scope of the managed object.
 ### ObjectManagerFunctions
 
 > **ObjectManagerFunctions** = [`ObjectInstanceFunctions`](objectInstance.md#objectinstancefunctions) & [`ObjectSubscriptionFunctions`](objectSubscription.md#objectsubscriptionfunctions)
+
+Defines the functions provided by the object manager.
 
 #### Type Parameters
 
@@ -388,6 +398,8 @@ Stop the effect scope of the managed object.
 
 > **ObjectManagerProps** = `UnwrapNestedRefs`
 
+Defines the reactive properties that can be passed to an object instance.
+
 #### Type Parameters
 
 ***
@@ -395,6 +407,8 @@ Stop the effect scope of the managed object.
 ### ObjectManagerRawProps
 
 > **ObjectManagerRawProps** = [`ObjectInstanceRawProps`](objectInstance.md#objectinstancerawprops) & [`ObjectSubscriptionRawProps`](objectSubscription.md#objectsubscriptionrawprops) & [`ObjectRelatedRawProps`](objectRelated.md#objectrelatedrawprops) & [`ObjectCalculatedRawProps`](objectCalculated.md#objectcalculatedrawprops)
+
+Defines the raw reactive properties that can be passed to an object instance.
 
 #### Type Parameters
 

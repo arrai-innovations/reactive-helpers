@@ -1,25 +1,23 @@
 import { readonly, ref } from "vue";
 
 /**
- * @typedef {import("vue").Ref<boolean|undefined>} LoadingRef
- * @typedef {Readonly<LoadingRef>} LoadingReadonlyRef
+ * @typedef {import("vue").Ref<boolean|undefined>} LoadingRef - A Vue ref to the loading flag, which is a boolean or undefined.
+ * @typedef {Readonly<LoadingRef>} LoadingReadonlyRef - A readonly Vue ref to the loading flag, which is a boolean or undefined.
  */
 
 /**
- * @typedef {object} LoadingProperties
+ * @typedef {object} LoadingProperties - The reactive loading-state member (loading) contributed by the useLoading composable.
  * @property {LoadingReadonlyRef} loading - Whether the component is loading.
  */
 
 /**
- * @typedef {object} LoadingFunctions
+ * @typedef {object} LoadingFunctions - The loading-state actions (setLoading, clearLoading) contributed by the useLoading composable.
  * @property {() => void} setLoading - Set the loading state to true.
  * @property {() => void} clearLoading - Set the loading state to false.
  */
 
 /**
- * The loading state API.
- *
- * @typedef {LoadingProperties & LoadingFunctions} LoadingStatus
+ * @typedef {LoadingProperties & LoadingFunctions} LoadingStatus - The loading state API.
  */
 
 /**

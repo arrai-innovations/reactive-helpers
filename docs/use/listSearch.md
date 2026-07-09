@@ -10,6 +10,8 @@
 
 ### ListSearchInstanceOptions
 
+The configuration options used to create a list search instance.
+
 #### Properties
 
 ##### parentState
@@ -328,6 +330,8 @@ The throttle.
 
 ### ListSearchProperties
 
+The properties on a list search instance.
+
 #### Properties
 
 ##### state
@@ -619,6 +623,8 @@ The text search index.
 
 ### ListSearchProps
 
+The consumer-supplied props configuring a list's text search (rules, value, and FlexSearch options).
+
 #### Properties
 
 ##### customDocumentOptions
@@ -693,6 +699,8 @@ The value to search for.
 
 ### ListSearchRawState
 
+Represents the raw reactive state used by the list search functionality.
+
 #### Properties
 
 ##### customDocumentOptions
@@ -762,6 +770,8 @@ The current value used for searching.
 
 > **ListSearch** = [`ListSearchProperties`](#listsearchproperties)
 
+The provided list search instance, containing properties and functions.
+
 #### Type Parameters
 
 ***
@@ -769,6 +779,8 @@ The current value used for searching.
 ### ListSearchParentRawState
 
 > **ListSearchParentRawState** = [`ListInstanceRawState`](listInstance.md#listinstancerawstate) & `Partial`\<[`ListSubscriptionRawState`](listSubscription.md#listsubscriptionrawstate)\> & `Partial`\<[`ListRelatedRawState`](listRelated.md#listrelatedrawstate)\> & `Partial`\<[`ListCalculatedRawState`](listCalculated.md#listcalculatedrawstate)\> & `Partial`\<[`ListFilterRawState`](listFilter.md#listfilterrawstate)\>
+
+The raw, pre-unwrapped parent state consumed by the list search mixin, aggregating the upstream list composable states.
 
 #### Type Parameters
 
@@ -788,6 +800,8 @@ The parent state for a list search.
 
 > **ListSearchParentStateToRefs** = `ToRefs`
 
+The parent list-search state converted to individual Vue refs.
+
 #### Type Parameters
 
 ***
@@ -805,6 +819,8 @@ The state for a list search.
 ### TextSearchRules
 
 > **TextSearchRules** = `string` \| `string`[] \| `object`[]
+
+FlexSearch.Document options, specifically for .index. Their documentation isn't very clear on this. Typically, it would be a list of dot-separated keys to index.
 
 #### Type Parameters
 

@@ -10,6 +10,8 @@
 
 ### CreateArgsRaw
 
+Raw arguments for an object create operation before additional CRUD arguments are merged in.
+
 #### Properties
 
 ##### isCancelled
@@ -54,6 +56,8 @@ The arguments to be passed to the crud handlers.
 
 ### DeleteArgsRaw
 
+Raw arguments for an object delete operation before additional CRUD arguments are merged in.
+
 #### Properties
 
 ##### isCancelled
@@ -83,6 +87,8 @@ The arguments to be passed to the crud handlers.
 ***
 
 ### ObjectCrudHandlers
+
+Defines the CRUD-related handlers and additional utilities provided by the object instance.
 
 #### Properties
 
@@ -132,6 +138,8 @@ A function to be used instead of the default crud update function.
 
 ### ObjectExecuteActionArgsRaw
 
+Raw arguments for a single-object execute-action operation before additional CRUD arguments are merged in.
+
 #### Properties
 
 ##### action
@@ -167,6 +175,8 @@ The arguments to be passed to the crud handlers.
 ***
 
 ### ObjectSubscribeArgsRaw
+
+Raw arguments for a single-object subscribe operation before run-tracking and additional CRUD arguments are merged in.
 
 #### Properties
 
@@ -214,6 +224,8 @@ The arguments to be passed to the crud handlers.
 
 ### ObjectTargetOption
 
+Optional target arguments passed through to the object CRUD handlers.
+
 #### Properties
 
 ##### target?
@@ -226,6 +238,8 @@ The arguments to be passed to the crud handlers.
 
 ### ObjectTargetProperties
 
+Defines the CRUD-related handlers and additional utilities provided by the object instance.
+
 #### Properties
 
 ##### args
@@ -237,6 +251,8 @@ The arguments to be passed to the crud handlers.
 ***
 
 ### PartialArgsRaw
+
+Raw arguments for an object patch (partial update) operation before additional CRUD arguments are merged in.
 
 #### Properties
 
@@ -288,6 +304,8 @@ The arguments to be passed to the crud handlers.
 
 ### RetrieveArgsRaw
 
+Raw arguments for an object retrieve operation before run-tracking and additional CRUD arguments are merged in.
+
 #### Properties
 
 ##### isCancelled
@@ -327,6 +345,8 @@ The arguments to be passed to the crud handlers.
 ***
 
 ### UpdateArgsRaw
+
+Raw arguments for an object update operation before additional CRUD arguments are merged in.
 
 #### Properties
 
@@ -370,6 +390,8 @@ The arguments to be passed to the crud handlers.
 
 > **AdditionalCrudArgs** = `object`
 
+Additional arguments that can be passed to CRUD handlers.
+
 #### Type Parameters
 
 #### Index Signature
@@ -382,6 +404,8 @@ The arguments to be passed to the crud handlers.
 
 > **CreateArgs** = [`CreateArgsRaw`](#createargsraw) & [`AdditionalCrudArgs`](#additionalcrudargs)
 
+Arguments for an object create operation, combining the raw arguments with any additional CRUD arguments.
+
 #### Type Parameters
 
 ***
@@ -389,6 +413,8 @@ The arguments to be passed to the crud handlers.
 ### CrudCreateFn
 
 > **CrudCreateFn** = (`args`) => [`CrudResponse`](#crudresponse)
+
+Signature for the handler that creates an object in the backing store.
 
 #### Type Parameters
 
@@ -410,6 +436,8 @@ The arguments to be passed to the create function.
 
 > **CrudDeleteFn** = (`args`) => [`CrudResponse`](#crudresponse)
 
+Signature for the handler that deletes an object from the backing store.
+
 #### Type Parameters
 
 #### Parameters
@@ -429,6 +457,8 @@ The arguments to be passed to the delete function.
 ### CrudObjectExecuteActionFn
 
 > **CrudObjectExecuteActionFn** = (`args`) => [`CrudResponse`](#crudresponse)
+
+Signature for the handler that executes an action on a single object in the backing store.
 
 #### Type Parameters
 
@@ -450,6 +480,8 @@ The arguments to be passed to the executeAction function.
 
 > **CrudObjectSubscribeFn** = (`args`) => [`CancellablePromise`](../utils/cancellablePromise.md#cancellablepromise)
 
+Signature for the handler that subscribes to changes on a single object in the backing store.
+
 #### Type Parameters
 
 #### Parameters
@@ -469,6 +501,8 @@ The arguments to be passed to the subscribe function.
 ### CrudPatchFn
 
 > **CrudPatchFn** = (`args`) => [`CrudResponse`](#crudresponse)
+
+Signature for the handler that partially updates (patches) an object in the backing store.
 
 #### Type Parameters
 
@@ -490,6 +524,8 @@ The arguments to be passed to the patch function.
 
 > **CrudResponse** = [`MaybeCancellablePromise`](../utils/cancellablePromise.md#maybecancellablepromise)
 
+The value returned by an object CRUD handler, a possibly-cancellable promise resolving to an object or string.
+
 #### Type Parameters
 
 ***
@@ -497,6 +533,8 @@ The arguments to be passed to the patch function.
 ### CrudRetrieveFn
 
 > **CrudRetrieveFn** = (`args`) => [`CrudResponse`](#crudresponse)
+
+Signature for the handler that retrieves an object from the backing store.
 
 #### Type Parameters
 
@@ -517,6 +555,8 @@ The arguments to be passed to the retrieve function.
 ### CrudSubscribeCallback
 
 > **CrudSubscribeCallback** = (`data`, `action`) => `any`
+
+Callback invoked with the changed object and the action (create, update, or delete) when a subscribed object changes.
 
 #### Type Parameters
 
@@ -544,6 +584,8 @@ The action that was performed.
 
 > **CrudUpdateFn** = (`args`) => [`CrudResponse`](#crudresponse)
 
+Signature for the handler that updates an object in the backing store.
+
 #### Type Parameters
 
 #### Parameters
@@ -564,6 +606,8 @@ The arguments to be passed to the update function.
 
 > **DeleteArgs** = [`DeleteArgsRaw`](#deleteargsraw) & [`AdditionalCrudArgs`](#additionalcrudargs)
 
+Arguments for an object delete operation, combining the raw arguments with any additional CRUD arguments.
+
 #### Type Parameters
 
 ***
@@ -571,6 +615,8 @@ The arguments to be passed to the update function.
 ### ObjectExecuteActionArgs
 
 > **ObjectExecuteActionArgs** = [`ObjectExecuteActionArgsRaw`](#objectexecuteactionargsraw) & [`AdditionalCrudArgs`](#additionalcrudargs)
+
+Arguments for a single-object execute-action operation, combining the raw arguments with any additional CRUD arguments.
 
 #### Type Parameters
 
@@ -580,6 +626,8 @@ The arguments to be passed to the update function.
 
 > **ObjectSubscribeArgs** = [`ObjectSubscribeArgsRaw`](#objectsubscribeargsraw) & [`CommonRunTracking`](../use/cancellableIntent.md#commonruntracking) & [`AdditionalCrudArgs`](#additionalcrudargs)
 
+Arguments for a single-object subscribe operation, combining the raw arguments with run-tracking and any additional CRUD arguments.
+
 #### Type Parameters
 
 ***
@@ -587,6 +635,8 @@ The arguments to be passed to the update function.
 ### ObjectTarget
 
 > **ObjectTarget** = [`ObjectTargetProperties`](#objecttargetproperties) & [`ObjectCrudHandlers`](#objectcrudhandlers)
+
+The CRUD arguments.
 
 #### Type Parameters
 
@@ -596,6 +646,8 @@ The arguments to be passed to the update function.
 
 > **PartialArgs** = [`PartialArgsRaw`](#partialargsraw) & [`AdditionalCrudArgs`](#additionalcrudargs)
 
+Arguments for an object patch (partial update) operation, combining the raw arguments with any additional CRUD arguments.
+
 #### Type Parameters
 
 ***
@@ -604,6 +656,8 @@ The arguments to be passed to the update function.
 
 > **RetrieveArgs** = [`RetrieveArgsRaw`](#retrieveargsraw) & `Partial`\<[`CommonRunTracking`](../use/cancellableIntent.md#commonruntracking)\> & [`AdditionalCrudArgs`](#additionalcrudargs)
 
+Arguments for an object retrieve operation, combining the raw arguments with run-tracking and any additional CRUD arguments.
+
 #### Type Parameters
 
 ***
@@ -611,6 +665,8 @@ The arguments to be passed to the update function.
 ### TargetArgs
 
 > **TargetArgs** = `object`
+
+Implementation-specific arguments passed through to the CRUD handlers, such as endpoint identifiers.
 
 #### Type Parameters
 
@@ -623,6 +679,8 @@ The arguments to be passed to the update function.
 ### UpdateArgs
 
 > **UpdateArgs** = [`UpdateArgsRaw`](#updateargsraw) & [`AdditionalCrudArgs`](#additionalcrudargs)
+
+Arguments for an object update operation, combining the raw arguments with any additional CRUD arguments.
 
 #### Type Parameters
 

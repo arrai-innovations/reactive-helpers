@@ -15,16 +15,12 @@ const unionReduce = (accumulator, currentValue) => {
 };
 
 /**
- * FlexSearch.Document search options.
- *
- * @typedef {object} SearchOptions
+ * @typedef {object} SearchOptions - FlexSearch.Document search options.
  * @property {number} limit - Limit of results.
  */
 
 /**
- * Configuration options for creating a document in FlexSearch.
- *
- * @typedef {object} DocumentOptions
+ * @typedef {object} DocumentOptions - Configuration options for creating a document in FlexSearch.
  * @property {string} id - The document field to use as an identifier. Populated from `pkKey`.
  * @property {boolean|string} tag - The document field to use as a tag. Default is false, can be set to a string.
  * @property {string | string[] | object[]} index - Fields to index. Can be a single string, an array of strings, or an array of objects specifying custom index options.
@@ -34,7 +30,7 @@ const unionReduce = (accumulator, currentValue) => {
  */
 
 /**
- * @typedef {object} SearchRawState
+ * @typedef {object} SearchRawState - The raw reactive state of a search instance (query, results, status flags, and search options).
  * @property {string} search - The search string.
  * @property {object} results - The results, where the keys are the ids of the objects that match, and the values are true.
  * @property {boolean} searched - Whether the search has been performed.
@@ -47,7 +43,7 @@ const unionReduce = (accumulator, currentValue) => {
  */
 
 /**
- * @typedef {object} SearchInstance
+ * @typedef {object} SearchInstance - The reactive search instance returned by useSearch, exposing its state, index mutators, event target, and stop.
  * @property {import('vue').UnwrapNestedRefs<SearchRawState>} state - The state.
  * @property {Function} addIndex - Add an index.
  * @property {Function} updateIndex - Update an index.
@@ -65,9 +61,7 @@ const defaultDocumentOptions = {
 };
 
 /**
- * A reactive object for passing document options or search options to useSearch.
- *
- * @typedef {object} SearchProps
+ * @typedef {object} SearchProps - A reactive object for passing document options or search options to useSearch.
  * @property {DocumentOptions} customDocumentOptions - FlexSearch.Document options.
  * @property {SearchOptions} customSearchOptions - Search options.
  * @property {string} pkKey - The primary key field.

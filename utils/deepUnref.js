@@ -11,7 +11,7 @@ import { deepUnref as _deepUnref } from "vue-deepunref";
  *     : T extends object
  *       ? { [K in keyof T]: DeepUnwrap<T[K]> }
  *       : T
- * } DeepUnwrap
+ * } DeepUnwrap - A recursive type that unwraps Vue refs from a nested object, array, or primitive.
  */
 
 /**

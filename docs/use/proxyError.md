@@ -12,6 +12,8 @@
 
 > **MaybeRefWatchableError** = `MaybeRefOrGetter`
 
+A watchable error source that may itself be wrapped in a ref or getter.
+
 #### Type Parameters
 
 ***
@@ -19,6 +21,8 @@
 ### SeparateStateError
 
 > **SeparateStateError** = `object` & [`ErrorReadOnlyFunctions`](error.md#errorreadonlyfunctions)
+
+An error source whose reactive properties live under a state member, alongside its clearError action.
 
 #### Type Declaration
 
@@ -33,6 +37,8 @@
 ### WatchableError
 
 > **WatchableError** = [`ReadonlyErrorStatus`](error.md#readonlyerrorstatus) \| `Reactive`
+
+An error source (a possibly-reactive readonly error status) that useProxyError can aggregate.
 
 #### Type Parameters
 

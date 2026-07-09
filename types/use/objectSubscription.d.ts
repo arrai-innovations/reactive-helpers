@@ -1,29 +1,21 @@
 /**
- * The raw state of the object subscription.
- *
- * @typedef {object} ObjectSubscriptionRawState
+ * @typedef {object} ObjectSubscriptionRawState - The raw state of the object subscription.
  * @property {import('vue').Ref<boolean>} intendToRetrieve - Whether the object intends to retrieve.
  * @property {import('vue').Ref<boolean>} intendToSubscribe - Whether the object intends to subscribe.
  * @property {import('vue').Ref<boolean|undefined>} subscribed - Whether the object is subscribed.
  */
 /**
- * The state of the object subscription, including both subscription and object instance states.
- *
  * @typedef {import('vue').Reactive<
  *     ObjectSubscriptionRawState &
  *     import('./objectInstance.js').ObjectInstanceRawState
- * >} ObjectSubscriptionState
+ * >} ObjectSubscriptionState - The state of the object subscription, including both subscription and object instance states.
  */
 /**
- * Functions available for object subscription management.
- *
- * @typedef {object} ObjectSubscriptionFunctions
+ * @typedef {object} ObjectSubscriptionFunctions - Functions available for object subscription management.
  * @property {() => void} clearError - Clears any errors related to the subscription, and resets the loading state.
  */
 /**
- * Properties of the object subscription.
- *
- * @typedef {object} ObjectSubscriptionProperties
+ * @typedef {object} ObjectSubscriptionProperties - Properties of the object subscription.
  * @property {ObjectSubscriptionState} state - The object instance properties.
  * @property {import('./objectInstance.js').ObjectInstance} objectInstance - The object instance.
  * @property {import('./cancellableIntent.js').CancellableIntent} subscribeIntent - The subscribe intent.
@@ -31,19 +23,15 @@
  * @property {() => void} stop - Stops the subscription reactive effects.
  */
 /**
- * The object subscription instance, combining state, properties, and functions.
- *
- * @typedef {ObjectSubscriptionProperties & ObjectSubscriptionFunctions} ObjectSubscription
+ * @typedef {ObjectSubscriptionProperties & ObjectSubscriptionFunctions} ObjectSubscription - The object subscription instance, combining state, properties, and functions.
  */
 /**
- * Raw props for the object subscription.
- *
- * @typedef {object} ObjectSubscriptionRawProps
+ * @typedef {object} ObjectSubscriptionRawProps - Raw props for the object subscription.
  * @property {boolean|undefined} intendToRetrieve - Whether the object intends to retrieve.
  * @property {boolean|undefined} intendToSubscribe - Whether the object intends to subscribe.
  */
 /**
- * @typedef {object} ObjectSubscriptionOwnOptions
+ * @typedef {object} ObjectSubscriptionOwnOptions - The options specific to an object subscription (reactive props, an optional instance to reuse, and handlers).
  * @property {import('./objectInstance.js').ObjectInstance} [objectInstance] - An object instance to use instead of creating a new one.
  * @property {import('vue').UnwrapNestedRefs<(
  *     ObjectSubscriptionRawProps & import('./objectInstance.js').ObjectInstanceRawProps
@@ -51,9 +39,7 @@
  * @property {import('../config/objectCrud.js').ObjectCrudHandlers} [handlers] - The handlers to be passed to useObjectInstance.
  */
 /**
- * Options for initializing an object subscription, including reactive props and non-reactive handlers.
- *
- * @typedef {ObjectSubscriptionOwnOptions & import('./objectInstance.js').ObjectInstanceOptions} ObjectSubscriptionOptions
+ * @typedef {ObjectSubscriptionOwnOptions & import('./objectInstance.js').ObjectInstanceOptions} ObjectSubscriptionOptions - Options for initializing an object subscription, including reactive props and non-reactive handlers.
  */
 /**
  * Initializes multiple object subscriptions based on provided arguments.
@@ -67,9 +53,7 @@ export function useObjectSubscriptions(subscriptionArgs: {
     [key: string]: ObjectSubscription;
 };
 /**
- * The context bound to shared objectSubscription functions.
- *
- * @typedef {object} ObjectSubscriptionContext
+ * @typedef {object} ObjectSubscriptionContext - The context bound to shared objectSubscription functions.
  * @property {ObjectSubscriptionState} state - The object subscription state.
  * @property {import('./objectInstance.js').ObjectInstance} objectInstance - The object instance.
  * @property {import('./cancellableIntent.js').CancellableIntent} subscribeIntent - The subscribe intent.
@@ -137,10 +121,12 @@ export class ObjectSubscriptionError extends Error {
     constructor(message: string, code: string);
     code: string;
 }
+/** @internal */
 export const objectSubscriptionStateKeys: string[];
+/** @internal */
 export const objectSubscriptionFunctions: string[];
 /**
- * The raw state of the object subscription.
+ * - The raw state of the object subscription.
  */
 export type ObjectSubscriptionRawState = {
     /**
@@ -157,11 +143,11 @@ export type ObjectSubscriptionRawState = {
     subscribed: import("vue").Ref<boolean | undefined>;
 };
 /**
- * The state of the object subscription, including both subscription and object instance states.
+ * - The state of the object subscription, including both subscription and object instance states.
  */
 export type ObjectSubscriptionState = import("vue").Reactive<ObjectSubscriptionRawState & import("./objectInstance.js").ObjectInstanceRawState>;
 /**
- * Functions available for object subscription management.
+ * - Functions available for object subscription management.
  */
 export type ObjectSubscriptionFunctions = {
     /**
@@ -170,7 +156,7 @@ export type ObjectSubscriptionFunctions = {
     clearError: () => void;
 };
 /**
- * Properties of the object subscription.
+ * - Properties of the object subscription.
  */
 export type ObjectSubscriptionProperties = {
     /**
@@ -195,11 +181,11 @@ export type ObjectSubscriptionProperties = {
     stop: () => void;
 };
 /**
- * The object subscription instance, combining state, properties, and functions.
+ * - The object subscription instance, combining state, properties, and functions.
  */
 export type ObjectSubscription = ObjectSubscriptionProperties & ObjectSubscriptionFunctions;
 /**
- * Raw props for the object subscription.
+ * - Raw props for the object subscription.
  */
 export type ObjectSubscriptionRawProps = {
     /**
@@ -211,6 +197,9 @@ export type ObjectSubscriptionRawProps = {
      */
     intendToSubscribe: boolean | undefined;
 };
+/**
+ * - The options specific to an object subscription (reactive props, an optional instance to reuse, and handlers).
+ */
 export type ObjectSubscriptionOwnOptions = {
     /**
      * - An object instance to use instead of creating a new one.
@@ -226,11 +215,11 @@ export type ObjectSubscriptionOwnOptions = {
     handlers?: import("../config/objectCrud.js").ObjectCrudHandlers;
 };
 /**
- * Options for initializing an object subscription, including reactive props and non-reactive handlers.
+ * - Options for initializing an object subscription, including reactive props and non-reactive handlers.
  */
 export type ObjectSubscriptionOptions = ObjectSubscriptionOwnOptions & import("./objectInstance.js").ObjectInstanceOptions;
 /**
- * The context bound to shared objectSubscription functions.
+ * - The context bound to shared objectSubscription functions.
  */
 export type ObjectSubscriptionContext = {
     /**

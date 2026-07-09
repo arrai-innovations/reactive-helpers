@@ -33,36 +33,28 @@ export class ListSubscriptionError extends Error {
 }
 
 /**
- * The raw state of a list subscription.
- *
- * @typedef {object} ListSubscriptionMyState
+ * @typedef {object} ListSubscriptionMyState - The raw state of a list subscription.
  * @property {import('vue').Ref<boolean>|boolean} intendToList - If this is true, the list should be fetched, or re-fetched if arguments change.
  * @property {import('vue').Ref<boolean>|boolean} intendToSubscribe - If this is true, the subscription should start or restart if arguments change.
  * @property {import('vue').Ref<boolean>} subscribed - Whether the subscription is active.
  */
 
 /**
- * @typedef {import('vue').ToRefs<import('./listInstance.js').ListInstanceState>} ListInstanceStateRefs
+ * @typedef {import('vue').ToRefs<import('./listInstance.js').ListInstanceState>} ListInstanceStateRefs - The list instance's reactive state converted to individual Vue refs.
  */
 
 /**
- * The raw state of a list subscription, including the state from the list instance.
- *
  * @typedef {ListSubscriptionMyState & (
  *     Pick<import('./loadingError.js').LoadingErrorStatus, "loading" | "error" | "errored">
- * ) & ListInstanceStateRefs} ListSubscriptionRawState
+ * ) & ListInstanceStateRefs} ListSubscriptionRawState - The raw state of a list subscription, including the state from the list instance.
  */
 
 /**
- * A reactive object that manages a list of objects, as returned by `useListInstance`.
- *
- * @typedef {import('vue').Reactive<ListSubscriptionRawState>} ListSubscriptionState
+ * @typedef {import('vue').Reactive<ListSubscriptionRawState>} ListSubscriptionState - A reactive object that manages a list of objects, as returned by `useListInstance`.
  */
 
 /**
- * The methods available on a list subscription.
- *
- * @typedef {Pick<import('./loadingError.js').LoadingErrorStatus, "clearError">} ListSubscriptionFunctions
+ * @typedef {Pick<import('./loadingError.js').LoadingErrorStatus, "clearError">} ListSubscriptionFunctions - The methods available on a list subscription.
  */
 
 /**
@@ -70,13 +62,11 @@ export class ListSubscriptionError extends Error {
  *     state: ListSubscriptionState,
  *     listInstance: import('./listInstance.js').ListInstance,
  *     loadingError: import('./loadingError.js').LoadingErrorStatus,
- * }} ListSubscriptionContext
+ * }} ListSubscriptionContext - The context (state, list instance, and loading/error status) bound to the shared list subscription functions.
  */
 
 /**
- * The properties of a list subscription.
- *
- * @typedef {object} ListSubscriptionProperties
+ * @typedef {object} ListSubscriptionProperties - The properties of a list subscription.
  * @property {ListSubscriptionState} state - The reactive state of the list subscription.
  * @property {import('./listInstance.js').ListInstance} listInstance - The list instance used by the subscription.
  * @property {import('./cancellableIntent.js').CancellableIntent} listIntent - The `CancellableIntent` instance managing if the list should be (re)fetched.
@@ -84,21 +74,16 @@ export class ListSubscriptionError extends Error {
  */
 
 /**
- * An instance of a list subscription, returned by `useListSubscription`.
- *
- * @typedef {ListSubscriptionFunctions & ListSubscriptionProperties} ListSubscription
+ * @typedef {ListSubscriptionFunctions & ListSubscriptionProperties} ListSubscription - An instance of a list subscription, returned by `useListSubscription`.
  */
 
 /**
- * @typedef {object} ListSubscriptionOwnOptions
+ * @typedef {object} ListSubscriptionOwnOptions - The options specific to a list subscription, namely an optional pre-built list instance to reuse.
  * @property {import("./listInstance.js").ListInstance} [listInstance] - A list instance to use instead of creating one.
  */
 
 /**
- * Defines the settings required to establish a list subscription, detailing how list instances should handle updates
- *  and subscriptions based on the given properties.
- *
- * @typedef {import("./listInstance.js").ListInstanceOptions & ListSubscriptionOwnOptions} ListSubscriptionOptions
+ * @typedef {import("./listInstance.js").ListInstanceOptions & ListSubscriptionOwnOptions} ListSubscriptionOptions - Defines the settings required to establish a list subscription, detailing how list instances should handle updates and subscriptions based on the given properties.
  */
 
 /**

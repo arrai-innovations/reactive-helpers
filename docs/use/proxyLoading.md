@@ -12,6 +12,8 @@
 
 > **MaybeRefWatchableLoading** = `MaybeRefOrGetter`
 
+A watchable loading source that may itself be wrapped in a ref or getter.
+
 #### Type Parameters
 
 ***
@@ -19,6 +21,8 @@
 ### WatchableLoading
 
 > **WatchableLoading** = [`LoadingProperties`](loading.md#loadingproperties) \| `Reactive`
+
+A loading source (possibly-reactive loading properties) that useProxyLoading can aggregate.
 
 #### Type Parameters
 

@@ -12,6 +12,8 @@
 
 > **MaybeRefWatchableLoadingError** = `MaybeRefOrGetter`
 
+A watchable combined loading-and-error source that may itself be wrapped in a ref or getter.
+
 #### Type Parameters
 
 ***
@@ -20,6 +22,8 @@
 
 > **ProxyLoadingError** = [`LoadingProperties`](loading.md#loadingproperties) & [`ReadonlyErrorStatus`](error.md#readonlyerrorstatus)
 
+The aggregated loading and error state returned by useProxyLoadingError.
+
 #### Type Parameters
 
 ***
@@ -27,6 +31,8 @@
 ### SeparateStateLoadingError
 
 > **SeparateStateLoadingError** = `object` & [`ErrorReadOnlyFunctions`](error.md#errorreadonlyfunctions)
+
+A combined loading-and-error source whose reactive properties live under a state member, alongside its clearError action.
 
 #### Type Declaration
 
@@ -41,6 +47,8 @@
 ### WatchableLoadingError
 
 > **WatchableLoadingError** = [`WatchableLoading`](proxyLoading.md#watchableloading) & [`WatchableError`](proxyError.md#watchableerror)
+
+A combined loading-and-error source that useProxyLoadingError can aggregate.
 
 #### Type Parameters
 

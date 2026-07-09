@@ -6,18 +6,6 @@
 
 # utils/relatedCalculatedHelpers
 
-## Variables
-
-### calculatedItemRegex
-
-> `const` **calculatedItemRegex**: `RegExp`
-
-***
-
-### relatedItemRegex
-
-> `const` **relatedItemRegex**: `RegExp`
-
 ## Functions
 
 ### getObjectRelatedByKey()

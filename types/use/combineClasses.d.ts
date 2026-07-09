@@ -4,7 +4,7 @@
  *     string[] |
  *     { [key: string]: boolean | import("vue").Ref<boolean> } |
  *     import("vue").Ref<string | string[]>
- * )} CSSClasses
+ * )} CSSClasses - The accepted ways of specifying CSS classes to useCombineClasses (a string, array, class-map, or ref thereof).
  */
 /**
  * Normalize various ways of specifying CSS classes into an object for use in Vue.js with reactivity. If refs are
@@ -37,6 +37,9 @@
  *  preserve order of operations in reactive contexts.
  */
 export function useCombineClasses(...classes: (CSSClasses)[]): import("vue").Ref<import("../utils/classes.js").CombinedClasses>;
+/**
+ * - The accepted ways of specifying CSS classes to useCombineClasses (a string, array, class-map, or ref thereof).
+ */
 export type CSSClasses = (string | string[] | {
     [key: string]: boolean | import("vue").Ref<boolean>;
 } | import("vue").Ref<string | string[]>);

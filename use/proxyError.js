@@ -3,8 +3,8 @@ import identity from "lodash-es/identity.js";
 import { toRefsIfReactive } from "../utils/toRefsIfReactive.js";
 
 /**
- * @typedef {import('./error.js').ReadonlyErrorStatus | import("vue").Reactive<import('./error.js').ReadonlyErrorStatus>} WatchableError
- * @typedef {import('vue').MaybeRefOrGetter<WatchableError>} MaybeRefWatchableError
+ * @typedef {import('./error.js').ReadonlyErrorStatus | import("vue").Reactive<import('./error.js').ReadonlyErrorStatus>} WatchableError - An error source (a possibly-reactive readonly error status) that useProxyError can aggregate.
+ * @typedef {import('vue').MaybeRefOrGetter<WatchableError>} MaybeRefWatchableError - A watchable error source that may itself be wrapped in a ref or getter.
  */
 
 /**
@@ -38,7 +38,7 @@ export function useProxyError(errors) {
 }
 
 /**
- * @typedef {{ state: import('vue').Reactive<import('./error.js').ErrorProperties> } & import('./error.js').ErrorReadOnlyFunctions} SeparateStateError
+ * @typedef {{ state: import('vue').Reactive<import('./error.js').ErrorProperties> } & import('./error.js').ErrorReadOnlyFunctions} SeparateStateError - An error source whose reactive properties live under a state member, alongside its clearError action.
  */
 
 /**

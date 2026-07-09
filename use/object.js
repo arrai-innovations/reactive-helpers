@@ -14,48 +14,38 @@ import { effectScope, shallowReactive, shallowReadonly, toRef } from "vue";
  */
 
 /**
- * Defines the raw reactive properties that can be passed to an object instance.
- *
  * @typedef {(
  *     import('./objectInstance.js').ObjectInstanceRawProps &
  *     import('./objectSubscription.js').ObjectSubscriptionRawProps &
  *     import('./objectRelated.js').ObjectRelatedRawProps &
  *     import('./objectCalculated.js').ObjectCalculatedRawProps
- * )} ObjectManagerRawProps
+ * )} ObjectManagerRawProps - Defines the raw reactive properties that can be passed to an object instance.
  */
 
 /**
- * Defines the reactive properties that can be passed to an object instance.
- *
- * @typedef {import('vue').UnwrapNestedRefs<ObjectManagerRawProps>} ObjectManagerProps
+ * @typedef {import('vue').UnwrapNestedRefs<ObjectManagerRawProps>} ObjectManagerProps - Defines the reactive properties that can be passed to an object instance.
  */
 
 /**
- * Defines the non-reactive handlers that can be passed to an object instance.
- *
- * @typedef {object} ObjectManagerOptions
+ * @typedef {object} ObjectManagerOptions - Defines the non-reactive handlers that can be passed to an object instance.
  * @property {ObjectManagerProps} props - The reactive properties to be passed to the object instance.
  * @property {import('../config/objectCrud.js').ObjectCrudHandlers} handlers - The non-reactive handlers to be passed to the object instance.
  */
 
 /**
- * Defines the managed object, containing the managed object instance, subscription, related objects, and calculated objects.
- *
  * @typedef {{
  *     objectInstance: import('./objectInstance.js').ObjectInstance,
  *     objectSubscription: import('./objectSubscription.js').ObjectSubscription,
  *     objectRelated: import('./objectRelated.js').ObjectRelated,
  *     objectCalculated: import('./objectCalculated.js').ObjectCalculated,
- * }} ObjectManaged
+ * }} ObjectManaged - Defines the managed object, containing the managed object instance, subscription, related objects, and calculated objects.
  */
 
 /**
- * Defines the functions provided by the object manager.
- *
  * @typedef {(
  *     import('./objectInstance.js').ObjectInstanceFunctions
  *     & import('./objectSubscription.js').ObjectSubscriptionFunctions
- * )} ObjectManagerFunctions
+ * )} ObjectManagerFunctions - Defines the functions provided by the object manager.
  * @property {Function} clearError - Clears the error state of the managed subscription and instance.
  * @property {Function} clear - Clears the managed instance & any error state.
  */
@@ -64,9 +54,7 @@ import { effectScope, shallowReactive, shallowReadonly, toRef } from "vue";
 // & import('./objectCalculated.js').ObjectCalculatedFunctions
 
 /**
- * Defines the properties available on an object manager.
- *
- * @typedef {object} ObjectManagerProperties
+ * @typedef {object} ObjectManagerProperties - Defines the properties available on an object manager.
  * @property {ObjectManaged} managed - The managed object.
  * @property {import('./objectCalculated.js').ObjectCalculatedState} state - The state of the managed object.
  * @property {() => void} stop - Stop the effect scope of the managed object.
@@ -74,7 +62,7 @@ import { effectScope, shallowReactive, shallowReadonly, toRef } from "vue";
 
 /**
  *
- * @typedef {ObjectManagerProperties & ObjectManagerFunctions} ObjectManager
+ * @typedef {ObjectManagerProperties & ObjectManagerFunctions} ObjectManager - The fully managed object returned by useObject, combining its properties and functions.
  */
 
 /**

@@ -32,18 +32,14 @@ export class ListInstanceError extends Error {
 }
 
 /**
- * The reactive arguments for the list instance.
- *
- * @typedef {object} ListInstanceProps
+ * @typedef {object} ListInstanceProps - The reactive arguments for the list instance.
  * @property {string} pkKey - The primary key field for the list objects.
  * @property {object} params - The arguments passed to the server.
  * @property {object} target - Implementation specific arguments.
  */
 
 /**
- * The configuration options used to create a list instance.
- *
- * @typedef {object} ListInstanceOptions
+ * @typedef {object} ListInstanceOptions - The configuration options used to create a list instance.
  * @property {import('vue').UnwrapNestedRefs<ListInstanceProps>} props - The props for the list instance.
  * @property {object} [handlers] - Default implementation are used as set by `setListCrud`.
  * @property {import('../config/listCrud.js').CrudListFn} [handlers.list] - Provide the implementation for the list
@@ -57,25 +53,19 @@ export class ListInstanceError extends Error {
  */
 
 /**
- * The objects by pk.
- *
- * @typedef {{[pk: import('../config/commonCrud.js').Pk]: import('../use/objectInstance.js').ExistingCrudObject}} ObjectsByPk
+ * @typedef {{[pk: import('../config/commonCrud.js').Pk]: import('../use/objectInstance.js').ExistingCrudObject}} ObjectsByPk - The objects by pk.
  */
 
 /**
- * The objects in order, based on .order & .objects.
- *
- * @typedef {import('vue').ComputedRef<import('../use/objectInstance.js').ExistingCrudObject[]>} ObjectsInOrder
+ * @typedef {import('vue').ComputedRef<import('../use/objectInstance.js').ExistingCrudObject[]>} ObjectsInOrder - The objects in order, based on .order & .objects.
  */
 
 /**
- * The order of the objects in the list.
- *
- * @typedef {import('vue').ComputedRef<import('../config/commonCrud.js').Pk[]>} ListOrder
+ * @typedef {import('vue').ComputedRef<import('../config/commonCrud.js').Pk[]>} ListOrder - The order of the objects in the list.
  */
 
 /**
- * @typedef {object} ListInstanceRawStateCrud
+ * @typedef {object} ListInstanceRawStateCrud - The raw CRUD handlers and target args stored in a list instance's reactive state.
  * @property {import('vue').Reactive<import('../config/objectCrud.js').TargetArgs|{}>} args - The arguments to be passed to the crud handlers.
  * @property {import('../config/listCrud.js').CrudListFn} list - The list function.
  * @property {import('../config/listCrud.js').CrudListSubscribeFn} subscribe - The subscribe function.
@@ -84,11 +74,11 @@ export class ListInstanceError extends Error {
  */
 
 /**
- * @typedef {Map<import('../config/commonCrud.js').Pk, import('vue').Reactive<import('../use/objectInstance.js').ExistingCrudObject>>} ObjectsMap
+ * @typedef {Map<import('../config/commonCrud.js').Pk, import('vue').Reactive<import('../use/objectInstance.js').ExistingCrudObject>>} ObjectsMap - A Map of primary keys to the list's reactive existing objects.
  */
 
 /**
- * @typedef {object} PaginateInfo
+ * @typedef {object} PaginateInfo - Pagination details for a list, including total records, total pages, per-page count, and current page.
  * @property {number} [totalRecords] - The total records.
  * @property {number} [totalPages] - The total pages.
  * @property {number} [perPage] - The per page.
@@ -96,13 +86,11 @@ export class ListInstanceError extends Error {
  */
 
 /**
- * @typedef {{ [key: string]: number | string }} ColumnTotals
+ * @typedef {{ [key: string]: number | string }} ColumnTotals - A map of column names to their aggregate total values for a list.
  */
 
 /**
- * The raw state object for the list instance, defining the reactive properties and their types.
- *
- * @typedef {object} ListInstanceRawMyState
+ * @typedef {object} ListInstanceRawMyState - The raw state object for the list instance, defining the reactive properties and their types.
  * @property {import('vue').Reactive<ListInstanceRawStateCrud>} crud - CRUD handlers and their configurations for the list.
  * @property {string} pkKey - The primary key field for the list objects.
  * @property {object} params - Arguments passed to the server for listing operations.
@@ -115,44 +103,38 @@ export class ListInstanceError extends Error {
  */
 
 /**
- * @typedef {ListInstanceRawMyState & Pick<import('./loadingError.js').LoadingErrorStatus, "loading" | "error" | "errored">} ListInstanceRawState
+ * @typedef {ListInstanceRawMyState & Pick<import('./loadingError.js').LoadingErrorStatus, "loading" | "error" | "errored">} ListInstanceRawState - The raw, pre-unwrapped state of a list instance, combining its own state with loading and error status.
  */
 
 /**
- * Defines the reactive state used by the list instance.
- *
- * @typedef {import('vue').UnwrapNestedRefs<ListInstanceRawState>} ListInstanceState
+ * @typedef {import('vue').UnwrapNestedRefs<ListInstanceRawState>} ListInstanceState - Defines the reactive state used by the list instance.
  */
 
 /**
- * @typedef {(newObjects: import('../use/objectInstance.js').ExistingCrudObject[]) => void} PushObjectsFn
+ * @typedef {(newObjects: import('../use/objectInstance.js').ExistingCrudObject[]) => void} PushObjectsFn - Signature for the function that pushes a page of newly received objects into the list.
  */
 
 /**
- * Options to control which reactive state is reset when clearing the list.
- *
- * @typedef {object} ClearListOptions
+ * @typedef {object} ClearListOptions - Options to control which reactive state is reset when clearing the list.
  * @property {boolean} [keepPagination] - When true, keep the current pagination information.
  * @property {boolean} [keepColumnTotals] - When true, keep the current column totals.
  * @property {boolean} [keepError] - When true, keep the current error state.
  */
 
 /**
- * @typedef {(options?: ClearListOptions) => void} ClearListFn
+ * @typedef {(options?: ClearListOptions) => void} ClearListFn - Signature for the handler that clears the objects held by the list.
  */
 
 /**
- * @typedef {(info: PaginateInfo) => void} SetPaginateInfoFn
+ * @typedef {(info: PaginateInfo) => void} SetPaginateInfoFn - Signature for the handler that updates the list's pagination information.
  */
 
 /**
- * @typedef {(total: ColumnTotals) => void} SetColumnTotalsFn
+ * @typedef {(total: ColumnTotals) => void} SetColumnTotalsFn - Signature for the handler that updates the list's column totals.
  */
 
 /**
- * Defines the methods provided by the list instance for managing objects in the list.
- *
- * @typedef {object} ListInstanceMyFunctions
+ * @typedef {object} ListInstanceMyFunctions - Defines the methods provided by the list instance for managing objects in the list.
  * @property {PushObjectsFn} pushObjects - Customizable callback for handling new objects per page.
  * @property {(object: import('../use/objectInstance.js').ExistingCrudObject) => void} addListObject - Adds an object to the list.
  * @property {(object: import('../use/objectInstance.js').ExistingCrudObject) => void} updateListObject - Updates an object in the list.
@@ -168,19 +150,15 @@ export class ListInstanceError extends Error {
  */
 
 /**
- * @typedef {ListInstanceMyFunctions & Pick<import('./loadingError.js').LoadingErrorStatus, "clearError">} ListInstanceFunctions
+ * @typedef {ListInstanceMyFunctions & Pick<import('./loadingError.js').LoadingErrorStatus, "clearError">} ListInstanceFunctions - The methods contributed by the list instance, including its CRUD operations plus clearError.
  */
 
 /**
- * Helper type to facilitate the combination of state and functions into a single type.
- *
- * @typedef {{state: ListInstanceState}} ListInstanceStateMixIn
+ * @typedef {{state: ListInstanceState}} ListInstanceStateMixIn - Helper type to facilitate the combination of state and functions into a single type.
  */
 
 /**
- * The list instance, combining state management and functional operations for managing a list of objects.
- *
- * @typedef {ListInstanceStateMixIn & ListInstanceFunctions} ListInstance
+ * @typedef {ListInstanceStateMixIn & ListInstanceFunctions} ListInstance - The list instance, combining state management and functional operations for managing a list of objects.
  */
 
 /**

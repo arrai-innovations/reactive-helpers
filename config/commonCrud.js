@@ -5,18 +5,15 @@ import isFunction from "lodash-es/isFunction.js";
 import { refIfReactive } from "../utils/refIfReactive.js";
 
 /**
- * Primary key type accepted as input (will be coerced to string).
- *
- * @typedef {string | number} PkInput
+ * @typedef {string | number} PkInput - Primary key type accepted as input (will be coerced to string).
  */
 
 /**
- * Primary key type used for storage and output (always a string).
- *
- * @typedef {string} Pk
+ * @typedef {string} Pk - Primary key type used for storage and output (always a string).
  */
 
 /**
+ * @internal
  * @param {string} name - The name of the method.
  * @returns {(...args: any[]) => import('../utils/cancellablePromise.js').MaybeCancellablePromise<any>} - A function that returns a rejected promise with an error message.
  */
@@ -26,6 +23,7 @@ export const missingMethod = (name) => () =>
 // HACK: eslint, tsc, webstorm all can't agree on how to do this right
 // noinspection JSValidateTypes,JSUnusedLocalSymbols
 /**
+ * @internal
  * @param {string} name - The name of the method.
  * @returns {(
  *     (..._args: any[]) => import('../utils/cancellablePromise.js').CancellablePromise<void>

@@ -4,6 +4,7 @@
     "excludeExternals": true,
     "excludePrivate": true,
     "excludeProtected": true,
+    "excludeInternal": true,
     "plugin": ["typedoc-plugin-markdown"],
     "readme": "none",
     "disableSources": true,
@@ -12,7 +13,8 @@
         "notExported": true,
         "invalidLink": true,
         "rewrittenLink": true,
-        "notDocumented": false
+        "notDocumented": true
     },
+    "requiredToBeDocumented": ["Enum", "EnumMember", "Variable", "Class", "Interface", "TypeAlias"],
     "treatValidationWarningsAsErrors": true
 }

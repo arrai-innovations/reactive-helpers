@@ -212,6 +212,8 @@ Whether the subscription is active.
 
 ### ListCalculatedProperties
 
+The properties for the list computed composition function.
+
 #### Properties
 
 ##### parentState
@@ -684,6 +686,8 @@ Whether the list is running.
 
 > **ListCalculated** = [`ListCalculatedProperties`](#listcalculatedproperties)
 
+The instance of `useListCalculated`.
+
 #### Type Parameters
 
 ***
@@ -691,6 +695,8 @@ Whether the list is running.
 ### ListCalculatedParentRawState
 
 > **ListCalculatedParentRawState** = [`ListInstanceRawState`](listInstance.md#listinstancerawstate) & `Partial`\<[`ListSubscriptionRawState`](listSubscription.md#listsubscriptionrawstate)\> & `Partial`\<[`ListRelatedRawState`](listRelated.md#listrelatedrawstate)\>
+
+The raw parent state for a list calculated.
 
 #### Type Parameters
 
@@ -700,6 +706,8 @@ Whether the list is running.
 
 > **ListCalculatedParentState** = `UnwrapNestedRefs`
 
+Represents a combined reactive state that includes properties from list related, subscription, and instance modules.
+
 #### Type Parameters
 
 ***
@@ -707,6 +715,8 @@ Whether the list is running.
 ### ListCalculatedRules
 
 > **ListCalculatedRules** = `object`
+
+Defines rules for dynamically calculating new properties for objects in a list. Each rule is a function that takes an object from the list, optionally its related objects, and previously calculated properties to compute a new property. These functions are reactive and re-evaluate when underlying dependencies change.
 
 #### Type Parameters
 
@@ -719,6 +729,8 @@ Whether the list is running.
 ### ListCalculatedState
 
 > **ListCalculatedState** = `UnwrapNestedRefs`
+
+The state for a list calculated property.
 
 #### Type Parameters
 

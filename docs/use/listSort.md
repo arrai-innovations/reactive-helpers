@@ -10,6 +10,8 @@
 
 ### ListSortOptions
 
+The configuration options for initializing a list sort instance.
+
 #### Properties
 
 ##### orderByRules
@@ -296,6 +298,8 @@ Optional throttle wait time to limit the frequency of sort operations, enhancing
 ***
 
 ### ListSortProperties
+
+The properties available on a list sort instance.
 
 #### Properties
 
@@ -863,6 +867,8 @@ A function to stop the effect scope and clean up resources.
 
 ### ListSortRawState
 
+Represents the raw state used by the list sorting functionality. Includes all configurations and state necessary to manage sorting operations within a Vue application.
+
 #### Properties
 
 ##### orderByDesc
@@ -883,6 +889,8 @@ Current sorting rules applied to the list.
 
 > **ListSort** = [`ListSortProperties`](#listsortproperties)
 
+The list sort instance, including reactive state and utilities to manage list sorting operations.
+
 #### Type Parameters
 
 ***
@@ -890,6 +898,8 @@ Current sorting rules applied to the list.
 ### ListSortParentRawState
 
 > **ListSortParentRawState** = [`ListInstanceRawState`](listInstance.md#listinstancerawstate) & `Partial`\<[`ListSubscriptionRawState`](listSubscription.md#listsubscriptionrawstate)\> & `Partial`\<[`ListRelatedRawState`](listRelated.md#listrelatedrawstate)\> & `Partial`\<[`ListCalculatedRawState`](listCalculated.md#listcalculatedrawstate)\> & `Partial`\<[`ListFilterRawState`](listFilter.md#listfilterrawstate)\> & `Partial`\<[`ListSearchRawState`](listSearch.md#listsearchrawstate)\>
+
+The raw, pre-unwrapped parent state consumed by the list sort mixin, aggregating the upstream list composable states.
 
 #### Type Parameters
 
@@ -899,6 +909,8 @@ Current sorting rules applied to the list.
 
 > **ListSortParentState** = `UnwrapNestedRefs`
 
+The unwrapped reactive parent state consumed by the list sort mixin.
+
 #### Type Parameters
 
 ***
@@ -907,6 +919,8 @@ Current sorting rules applied to the list.
 
 > **ListSortState** = `UnwrapNestedRefs`
 
+The reactive state used by the list sorting functionality. Includes all configurations and state necessary to manage sorting operations within a Vue application.
+
 #### Type Parameters
 
 ***
@@ -914,6 +928,8 @@ Current sorting rules applied to the list.
 ### OrderByRule
 
 > **OrderByRule** = `object`
+
+Describes a rule for ordering elements in a list. Each rule can directly reference a property of the list items, or define a function to compute the value used for sorting. Rules can be configured to sort in ascending or descending order and can utilize locale-aware string comparison if necessary.
 
 #### Type Parameters
 

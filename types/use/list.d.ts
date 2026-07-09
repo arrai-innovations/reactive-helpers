@@ -26,7 +26,7 @@ export function useLists(listOptions: {
 };
 export function useList({ props, handlers, searchThrottle, sortThrottleWait, searchShowAllWhenEmpty }: ListOptions): ListManager;
 /**
- * Defines properties for configuring the list management system.
+ * - Defines properties for configuring the list management system.
  */
 export type ListRawProps = {
     /**
@@ -86,6 +86,9 @@ export type ListRawProps = {
      */
     orderByRules: import("./listSort.js").OrderByRule[];
 };
+/**
+ * - The configuration options used to create a fully managed list via useList.
+ */
 export type ListOptions = {
     /**
      * - The properties for configuring the list.
@@ -109,7 +112,7 @@ export type ListOptions = {
     searchShowAllWhenEmpty?: boolean;
 };
 /**
- * Holds references to instances of all list-related composables, facilitating direct access and management.
+ * - Holds references to instances of all list-related composables, facilitating direct access and management.
  */
 export type ListManaged = {
     listInstance: import("./listInstance.js").ListInstance;
@@ -121,12 +124,11 @@ export type ListManaged = {
     listSort: import("./listSort.js").ListSort;
 };
 /**
- * Aggregates all functions provided by various list-related composables, allowing for a unified approach to calling these methods.
+ * - Aggregates all functions provided by various list-related composables, allowing for a unified approach to calling these methods.
  */
 export type ListFunctions = (import("./listInstance.js").ListInstanceFunctions & import("./listSubscription.js").ListSubscriptionFunctions);
 /**
- * Encapsulates properties relevant to the overall management of list-related hooks, including state, direct access to hooks,
- * and scoped effects.
+ * - Encapsulates properties relevant to the overall management of list-related hooks, including state, direct access to hooks, and scoped effects.
  */
 export type ListManagerProperties = {
     /**
@@ -143,7 +145,6 @@ export type ListManagerProperties = {
     stop: () => void;
 };
 /**
- * Combines functionality and properties to represent a fully managed list instance,
- * orchestrating various functionalities such as sorting, searching, filtering, and state management.
+ * - Combines functionality and properties to represent a fully managed list instance, orchestrating various functionalities such as sorting, searching, filtering, and state management.
  */
 export type ListManager = ListFunctions & ListManagerProperties;

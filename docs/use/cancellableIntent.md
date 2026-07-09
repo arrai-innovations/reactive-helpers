@@ -140,6 +140,8 @@ The reactive object to watch for changes.
 
 ### CommonRunTracking
 
+The common run tracking arguments.
+
 #### Properties
 
 ##### isCurrentRun
@@ -257,6 +259,8 @@ A function that returns a promise that can be cancelled. The return value of the
 ### CancelFn
 
 > **CancelFn** = `Function`
+
+Cancel function signature for cancellable intent.
 
 #### Type Parameters
 

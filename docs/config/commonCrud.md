@@ -12,6 +12,8 @@
 
 > **Pk** = `string`
 
+Primary key type used for storage and output (always a string).
+
 #### Type Parameters
 
 ***
@@ -19,6 +21,8 @@
 ### PkInput
 
 > **PkInput** = `string` \| `number`
+
+Primary key type accepted as input (will be coerced to string).
 
 #### Type Parameters
 
@@ -97,43 +101,3 @@ Which ones need required cancellation.
 `any`
 
 - The default CRUD object.
-
-***
-
-### missingMethod()
-
-> **missingMethod**(`name`): (...`args`) => [`MaybeCancellablePromise`](../utils/cancellablePromise.md#maybecancellablepromise)\<`any`\>
-
-#### Parameters
-
-##### name
-
-`string`
-
-The name of the method.
-
-#### Returns
-
-- A function that returns a rejected promise with an error message.
-
-(...`args`) => [`MaybeCancellablePromise`](../utils/cancellablePromise.md#maybecancellablepromise)\<`any`\>
-
-***
-
-### requiredCancelMissingMethod()
-
-> **requiredCancelMissingMethod**(`name`): (...`_args`) => [`CancellablePromise`](../utils/cancellablePromise.md#cancellablepromise)\<`void`\>
-
-#### Parameters
-
-##### name
-
-`string`
-
-The name of the method.
-
-#### Returns
-
-- A function that returns a rejected promise with an error message.
-
-(...`_args`) => [`CancellablePromise`](../utils/cancellablePromise.md#cancellablepromise)\<`void`\>

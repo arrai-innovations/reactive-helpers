@@ -10,6 +10,8 @@
 
 ### DocumentOptions
 
+Configuration options for creating a document in FlexSearch.
+
 #### Properties
 
 ##### id
@@ -51,6 +53,8 @@ Specifies the tokenizer to use.
 ***
 
 ### SearchInstance
+
+The reactive search instance returned by useSearch, exposing its state, index mutators, event target, and stop.
 
 #### Properties
 
@@ -196,6 +200,8 @@ Update an index.
 
 ### SearchOptions
 
+FlexSearch.Document search options.
+
 #### Properties
 
 ##### limit
@@ -207,6 +213,8 @@ Limit of results.
 ***
 
 ### SearchProps
+
+A reactive object for passing document options or search options to useSearch.
 
 #### Properties
 
@@ -231,6 +239,8 @@ The primary key field.
 ***
 
 ### SearchRawState
+
+The raw reactive state of a search instance (query, results, status flags, and search options).
 
 #### Properties
 

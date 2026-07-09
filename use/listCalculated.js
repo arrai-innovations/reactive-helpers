@@ -14,10 +14,6 @@ import { computed, effectScope, nextTick, reactive, ref, toRef, toRefs, unref, w
  */
 
 /**
- * Defines rules for dynamically calculating new properties for objects in a list. Each rule is a function that takes an
- *  object from the list, optionally its related objects, and previously calculated properties to compute a new
- *  property. These functions are reactive and re-evaluate when underlying dependencies change.
- *
  * @typedef {{
  *     [rule: string]: (
  *         object: import('../use/objectInstance.js').ExistingCrudObject,
@@ -28,7 +24,7 @@ import { computed, effectScope, nextTick, reactive, ref, toRef, toRefs, unref, w
  *             [rule: string]: import('vue').ComputedRef<any>,
  *         }
  *     ) => any,
- * }}  ListCalculatedRules
+ * }}  ListCalculatedRules - Defines rules for dynamically calculating new properties for objects in a list. Each rule is a function that takes an object from the list, optionally its related objects, and previously calculated properties to compute a new property. These functions are reactive and re-evaluate when underlying dependencies change.
  */
 
 /**
@@ -45,33 +41,26 @@ import { computed, effectScope, nextTick, reactive, ref, toRef, toRefs, unref, w
  */
 
 /**
- * The raw parent state for a list calculated.
- *
  * @typedef {(
  *     import('./listInstance.js').ListInstanceRawState &
  *     Partial<import('./listSubscription.js').ListSubscriptionRawState> &
  *     Partial<import('./listRelated.js').ListRelatedRawState>
- * )} ListCalculatedParentRawState
+ * )} ListCalculatedParentRawState - The raw parent state for a list calculated.
  */
 
 /**
- * The state for a list calculated property.
- *
  * @typedef {import('vue').UnwrapNestedRefs<
  *     ListCalculatedParentRawState &
  *     ListCalculatedRawState
- * >} ListCalculatedState
+ * >} ListCalculatedState - The state for a list calculated property.
  */
 
 /**
- * Represents a combined reactive state that includes properties from list related,
- *  subscription, and instance modules.
- *
  * @typedef {import('vue').UnwrapNestedRefs<(
  *     import('./listInstance.js').ListInstanceRawState &
  *     Partial<import('./listSubscription.js').ListSubscriptionRawState> &
  *     Partial<import('./listRelated.js').ListRelatedRawState>
- * )>} ListCalculatedParentState
+ * )>} ListCalculatedParentState - Represents a combined reactive state that includes properties from list related, subscription, and instance modules.
  */
 
 /**
@@ -85,9 +74,7 @@ import { computed, effectScope, nextTick, reactive, ref, toRef, toRefs, unref, w
  */
 
 /**
- * The properties for the list computed composition function.
- *
- * @typedef {object} ListCalculatedProperties
+ * @typedef {object} ListCalculatedProperties - The properties for the list computed composition function.
  * @property {ListCalculatedState} state - The state for the list calculated property.
  * @property {ListCalculatedParentState} parentState - The parent state object.
  * @property {() => void} stop - Stops composition's effects and cleans up resources.
@@ -96,9 +83,7 @@ import { computed, effectScope, nextTick, reactive, ref, toRef, toRefs, unref, w
 // if we provided functions, we would add a typedef and mix them into ListCalculated
 
 /**
- * The instance of `useListCalculated`.
- *
- * @typedef {ListCalculatedProperties} ListCalculated
+ * @typedef {ListCalculatedProperties} ListCalculated - The instance of `useListCalculated`.
  */
 
 /**

@@ -4,9 +4,9 @@ import { toRefsIfReactive } from "../utils/toRefsIfReactive.js";
 import { unref } from "vue";
 
 /**
- * @typedef {import('./proxyLoading.js').WatchableLoading & import('./proxyError.js').WatchableError} WatchableLoadingError
- * @typedef {import('vue').MaybeRefOrGetter<WatchableLoadingError>} MaybeRefWatchableLoadingError
- * @typedef {import('./loading.js').LoadingProperties & import('./error.js').ReadonlyErrorStatus} ProxyLoadingError
+ * @typedef {import('./proxyLoading.js').WatchableLoading & import('./proxyError.js').WatchableError} WatchableLoadingError - A combined loading-and-error source that useProxyLoadingError can aggregate.
+ * @typedef {import('vue').MaybeRefOrGetter<WatchableLoadingError>} MaybeRefWatchableLoadingError - A watchable combined loading-and-error source that may itself be wrapped in a ref or getter.
+ * @typedef {import('./loading.js').LoadingProperties & import('./error.js').ReadonlyErrorStatus} ProxyLoadingError - The aggregated loading and error state returned by useProxyLoadingError.
  */
 
 /**
@@ -26,7 +26,7 @@ export function useProxyLoadingError(loadingErrors) {
 }
 
 /**
- * @typedef {{ state: import('vue').Reactive<import('./error.js').ErrorProperties> } & import('./error.js').ErrorReadOnlyFunctions} SeparateStateLoadingError
+ * @typedef {{ state: import('vue').Reactive<import('./error.js').ErrorProperties> } & import('./error.js').ErrorReadOnlyFunctions} SeparateStateLoadingError - A combined loading-and-error source whose reactive properties live under a state member, alongside its clearError action.
  */
 /**
  * Adapt an object that exposes loading/error state and clearError into a WatchableLoadingError shape.

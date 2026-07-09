@@ -17,11 +17,11 @@ import isMap from "lodash-es/isMap.js";
  */
 
 /**
- * @typedef { boolean | import("vue").Ref<boolean> } BooleanOrRef
+ * @typedef { boolean | import("vue").Ref<boolean> } BooleanOrRef - A boolean value or a Vue ref to a boolean.
  */
 
 /**
- * @typedef {string | string[] | Set<any> | Map<any, any> | object | import("vue").Ref<any>} CombinedClassesArgument
+ * @typedef {string | string[] | Set<any> | Map<any, any> | object | import("vue").Ref<any>} CombinedClassesArgument - A single class-specifying argument accepted by combineClasses (a string, array, set, map, object, or ref).
  */
 
 /**

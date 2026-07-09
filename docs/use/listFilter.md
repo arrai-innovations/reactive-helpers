@@ -10,6 +10,8 @@
 
 ### ListFilterOptions
 
+Configuration options for initializing a list filter. Includes references to the parent state and filter functions.
+
 #### Properties
 
 ##### allowedFilter?
@@ -247,6 +249,8 @@ Whether the subscription is active.
 ***
 
 ### ListFilterProperties
+
+The properties of a list filter, including its state and associated Vue composition API utilities.
 
 #### Properties
 
@@ -716,6 +720,8 @@ A function to stop the effect scope and clean up resources.
 
 ### ListFilterRawState
 
+Defines the structure of the reactive state used by the list filter. This state includes both filters and the results of applying these filters to a list.
+
 #### Properties
 
 ##### allowedFilter?
@@ -735,6 +741,8 @@ Function to determine if an item should be excluded based on custom logic.
 ### ListFilter
 
 > **ListFilter** = [`ListFilterProperties`](#listfilterproperties)
+
+Represents an instance of a list filter, including its state and associated Vue composition API utilities.
 
 #### Type Parameters
 
@@ -764,6 +772,8 @@ A function that returns true if an item should be excluded.
 
 > **ListFilterParentRawState** = [`ListInstanceRawState`](listInstance.md#listinstancerawstate) & `Partial`\<[`ListSubscriptionRawState`](listSubscription.md#listsubscriptionrawstate)\> & `Partial`\<[`ListRelatedRawState`](listRelated.md#listrelatedrawstate)\> & `Partial`\<[`ListCalculatedRawState`](listCalculated.md#listcalculatedrawstate)\>
 
+The raw, pre-unwrapped parent state consumed by the list filter mixin, aggregating the upstream list composable states.
+
 #### Type Parameters
 
 ***
@@ -771,6 +781,8 @@ A function that returns true if an item should be excluded.
 ### ListFilterParentState
 
 > **ListFilterParentState** = `UnwrapNestedRefs`
+
+The parent state for a list filter.
 
 #### Type Parameters
 
@@ -780,6 +792,8 @@ A function that returns true if an item should be excluded.
 
 > **ListFilterState** = `UnwrapNestedRefs`
 
+Describes the combined state from various list-related composables that might interact with the list filter.
+
 #### Type Parameters
 
 ***
@@ -787,6 +801,8 @@ A function that returns true if an item should be excluded.
 ### ObjectsInOrderRefs
 
 > **ObjectsInOrderRefs** = `Ref`[]
+
+An array of Vue refs to the list's existing objects in their current order.
 
 #### Type Parameters
 

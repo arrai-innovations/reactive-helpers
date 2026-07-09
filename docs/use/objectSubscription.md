@@ -64,6 +64,8 @@ The error code.
 
 ### ObjectSubscriptionContext
 
+The context bound to shared objectSubscription functions.
+
 #### Properties
 
 ##### objectInstance
@@ -218,6 +220,8 @@ The subscribe intent.
 
 ### ObjectSubscriptionFunctions
 
+Functions available for object subscription management.
+
 #### Properties
 
 ##### clearError
@@ -233,6 +237,8 @@ Clears any errors related to the subscription, and resets the loading state.
 ***
 
 ### ObjectSubscriptionOwnOptions
+
+The options specific to an object subscription (reactive props, an optional instance to reuse, and handlers).
 
 #### Properties
 
@@ -341,6 +347,8 @@ A function to be used instead of the default crud update function.
 ***
 
 ### ObjectSubscriptionProperties
+
+Properties of the object subscription.
 
 #### Properties
 
@@ -506,6 +514,8 @@ The subscribe intent.
 
 ### ObjectSubscriptionRawProps
 
+Raw props for the object subscription.
+
 #### Properties
 
 ##### intendToRetrieve
@@ -523,6 +533,8 @@ Whether the object intends to subscribe.
 ***
 
 ### ObjectSubscriptionRawState
+
+The raw state of the object subscription.
 
 #### Properties
 
@@ -550,6 +562,8 @@ Whether the object is subscribed.
 
 > **ObjectSubscription** = [`ObjectSubscriptionProperties`](#objectsubscriptionproperties) & [`ObjectSubscriptionFunctions`](#objectsubscriptionfunctions)
 
+The object subscription instance, combining state, properties, and functions.
+
 #### Type Parameters
 
 ***
@@ -557,6 +571,8 @@ Whether the object is subscribed.
 ### ObjectSubscriptionOptions
 
 > **ObjectSubscriptionOptions** = [`ObjectSubscriptionOwnOptions`](#objectsubscriptionownoptions) & [`ObjectInstanceOptions`](objectInstance.md#objectinstanceoptions)
+
+Options for initializing an object subscription, including reactive props and non-reactive handlers.
 
 #### Type Parameters
 
@@ -566,19 +582,9 @@ Whether the object is subscribed.
 
 > **ObjectSubscriptionState** = `Reactive`
 
+The state of the object subscription, including both subscription and object instance states.
+
 #### Type Parameters
-
-## Variables
-
-### objectSubscriptionFunctions
-
-> `const` **objectSubscriptionFunctions**: `string`[]
-
-***
-
-### objectSubscriptionStateKeys
-
-> `const` **objectSubscriptionStateKeys**: `string`[]
 
 ## Functions
 

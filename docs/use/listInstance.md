@@ -65,6 +65,8 @@ The error code.
 
 ### ClearListOptions
 
+Options to control which reactive state is reset when clearing the list.
+
 #### Properties
 
 ##### keepColumnTotals?
@@ -88,6 +90,8 @@ When true, keep the current pagination information.
 ***
 
 ### ListInstanceMyFunctions
+
+Defines the methods provided by the list instance for managing objects in the list.
 
 #### Properties
 
@@ -256,6 +260,8 @@ Updates an object in the list.
 
 ### ListInstanceOptions
 
+The configuration options used to create a list instance.
+
 #### Properties
 
 ##### handlers?
@@ -320,6 +326,8 @@ Implementation specific arguments.
 
 ### ListInstanceProps
 
+The reactive arguments for the list instance.
+
 #### Properties
 
 ##### params
@@ -343,6 +351,8 @@ Implementation specific arguments.
 ***
 
 ### ListInstanceRawMyState
+
+The raw state object for the list instance, defining the reactive properties and their types.
 
 #### Properties
 
@@ -434,6 +444,8 @@ The primary key field for the list objects.
 
 ### ListInstanceRawStateCrud
 
+The raw CRUD handlers and target args stored in a list instance's reactive state.
+
 #### Properties
 
 ##### args
@@ -470,6 +482,8 @@ The subscribe function.
 
 ### PaginateInfo
 
+Pagination details for a list, including total records, total pages, per-page count, and current page.
+
 #### Properties
 
 ##### page?
@@ -502,6 +516,8 @@ The total records.
 
 > **ColumnTotals** = `object`
 
+A map of column names to their aggregate total values for a list.
+
 #### Type Parameters
 
 #### Index Signature
@@ -514,6 +530,8 @@ The total records.
 
 > **ListInstance** = [`ListInstanceStateMixIn`](#listinstancestatemixin) & [`ListInstanceFunctions`](#listinstancefunctions)
 
+The list instance, combining state management and functional operations for managing a list of objects.
+
 #### Type Parameters
 
 ***
@@ -521,6 +539,8 @@ The total records.
 ### ListInstanceFunctions
 
 > **ListInstanceFunctions** = [`ListInstanceMyFunctions`](#listinstancemyfunctions) & `Pick`\<[`LoadingErrorStatus`](loadingError.md#loadingerrorstatus), `"clearError"`\>
+
+The methods contributed by the list instance, including its CRUD operations plus clearError.
 
 #### Type Parameters
 
@@ -530,6 +550,8 @@ The total records.
 
 > **ListInstanceRawState** = [`ListInstanceRawMyState`](#listinstancerawmystate) & `Pick`\<[`LoadingErrorStatus`](loadingError.md#loadingerrorstatus), `"loading"` \| `"error"` \| `"errored"`\>
 
+The raw, pre-unwrapped state of a list instance, combining its own state with loading and error status.
+
 #### Type Parameters
 
 ***
@@ -538,6 +560,8 @@ The total records.
 
 > **ListInstanceState** = `UnwrapNestedRefs`
 
+Defines the reactive state used by the list instance.
+
 #### Type Parameters
 
 ***
@@ -545,6 +569,8 @@ The total records.
 ### ListInstanceStateMixIn
 
 > **ListInstanceStateMixIn** = `object`
+
+Helper type to facilitate the combination of state and functions into a single type.
 
 #### Type Parameters
 
@@ -560,6 +586,8 @@ The total records.
 
 > **ListOrder** = `ComputedRef`
 
+The order of the objects in the list.
+
 #### Type Parameters
 
 ***
@@ -567,6 +595,8 @@ The total records.
 ### ObjectsByPk
 
 > **ObjectsByPk** = `object`
+
+The objects by pk.
 
 #### Type Parameters
 
@@ -580,6 +610,8 @@ The total records.
 
 > **ObjectsInOrder** = `ComputedRef`
 
+The objects in order, based on .order & .objects.
+
 #### Type Parameters
 
 ***
@@ -588,6 +620,8 @@ The total records.
 
 > **ObjectsMap** = `Map`\<[`Pk`](../config/commonCrud.md#pk), `Reactive`\>
 
+A Map of primary keys to the list's reactive existing objects.
+
 #### Type Parameters
 
 ***
@@ -595,6 +629,8 @@ The total records.
 ### PushObjectsFn
 
 > **PushObjectsFn** = (`newObjects`) => `void`
+
+Signature for the function that pushes a page of newly received objects into the list.
 
 #### Type Parameters
 

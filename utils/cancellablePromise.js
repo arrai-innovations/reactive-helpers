@@ -2,14 +2,14 @@
  * A Promise that can be cancelled.
  *
  * @template T
- * @typedef {Promise<T> & { cancel: (reason?: any) => Promise<void> | void }} CancellablePromise
+ * @typedef {Promise<T> & { cancel: (reason?: any) => Promise<void> | void }} CancellablePromise - A promise augmented with a cancel method to abort the pending operation.
  */
 
 /**
  * A possibly cancellable promise.
  *
  * @template T
- * @typedef {Promise<T> & { cancel?: (reason?: any) => Promise<void> | void }} MaybeCancellablePromise
+ * @typedef {Promise<T> & { cancel?: (reason?: any) => Promise<void> | void }} MaybeCancellablePromise - A promise that may optionally carry a cancel method to abort the pending operation.
  */
 
 /**

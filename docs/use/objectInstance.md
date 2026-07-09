@@ -65,6 +65,8 @@ The error code.
 
 ### ObjectInstanceMyFunctions
 
+The functions available on the object instance.
+
 #### Properties
 
 ##### clear
@@ -177,6 +179,8 @@ Called to update the current object on the server.
 
 ### ObjectInstanceOptions
 
+Arguments to be passed to the object instance.
+
 #### Properties
 
 ##### handlers?
@@ -266,6 +270,8 @@ A function to be used instead of the default crud update function.
 ***
 
 ### ObjectInstanceProperties
+
+The properties of the object instance.
 
 #### Properties
 
@@ -385,6 +391,8 @@ The pk key of the object.
 
 ### ObjectInstanceRawMyState
 
+The raw state of the object instance.
+
 #### Properties
 
 ##### crud
@@ -475,6 +483,8 @@ The pk key of the object.
 
 ### ObjectInstanceRawProps
 
+Reactive arguments to be passed to the object instance.
+
 #### Properties
 
 ##### params
@@ -504,6 +514,8 @@ The arguments to be passed to the crud handlers.
 ***
 
 ### ObjectInstanceRawStateCrud
+
+The raw CRUD handlers and target args stored in an object instance's reactive state.
 
 #### Properties
 
@@ -561,6 +573,8 @@ The update function.
 
 > **AdditionalArgs** = `object`
 
+Arbitrary extra arguments forwarded through to an object instance's CRUD operations.
+
 #### Type Parameters
 
 #### Index Signature
@@ -573,6 +587,8 @@ The update function.
 
 > **CrudObject** = [`ExistingCrudObject`](#existingcrudobject) \| [`NewCrudObject`](#newcrudobject)
 
+An object managed by an object instance, either an existing object or a new object to be created.
+
 #### Type Parameters
 
 ***
@@ -580,6 +596,8 @@ The update function.
 ### ExistingCrudObject
 
 > **ExistingCrudObject** = `object`
+
+The object being managed by the instance. It must include a primary key field as identifying property, matching the name provided to the object/list's `pkKey` value, which is not known statically.
 
 #### Type Parameters
 
@@ -593,6 +611,8 @@ The update function.
 
 > **NewCrudObject** = `object`
 
+The object you would like an object instance to create for you.
+
 #### Type Parameters
 
 #### Index Signature
@@ -605,6 +625,8 @@ The update function.
 
 > **ObjectInstance** = [`ObjectInstanceFunctions`](#objectinstancefunctions) & [`ObjectInstanceProperties`](#objectinstanceproperties)
 
+The instance of the object instance.
+
 #### Type Parameters
 
 ***
@@ -612,6 +634,8 @@ The update function.
 ### ObjectInstanceCreateArgs
 
 > **ObjectInstanceCreateArgs** = `object`
+
+The argument shape for an object instance's create operation, carrying the new object to create.
 
 #### Type Parameters
 
@@ -627,6 +651,8 @@ The update function.
 
 > **ObjectInstanceFunctions** = [`ErrorReadOnlyFunctions`](error.md#errorreadonlyfunctions) & [`ObjectInstanceMyFunctions`](#objectinstancemyfunctions)
 
+The functions available on the object instance, including the ability to clear LoadingError errors.
+
 #### Type Parameters
 
 ***
@@ -634,6 +660,8 @@ The update function.
 ### ObjectInstancePatchArgs
 
 > **ObjectInstancePatchArgs** = `object`
+
+The argument shape for an object instance's patch operation, carrying the partial object to apply.
 
 #### Type Parameters
 
@@ -649,6 +677,8 @@ The update function.
 
 > **ObjectInstanceRawState** = [`ObjectInstanceRawMyState`](#objectinstancerawmystate) & [`LoadingErrorProperties`](loadingError.md#loadingerrorproperties)
 
+The raw state of the object instance.
+
 #### Type Parameters
 
 ***
@@ -656,6 +686,8 @@ The update function.
 ### ObjectInstanceState
 
 > **ObjectInstanceState** = `Reactive`
+
+Manages a reactive state of an object including its CRUD status, loading states, and any operational errors. Reactivity ensures that any changes in state immediately reflect in the UI components that depend on this state.
 
 #### Type Parameters
 
@@ -665,6 +697,8 @@ The update function.
 
 > **ObjectInstanceUpdateArgs** = `object`
 
+The argument shape for an object instance's update operation, carrying the existing object to update.
+
 #### Type Parameters
 
 #### Type Declaration
@@ -672,18 +706,6 @@ The update function.
 ##### object
 
 > **object**: [`ExistingCrudObject`](#existingcrudobject)
-
-## Variables
-
-### objectInstanceFunctions
-
-> `const` **objectInstanceFunctions**: `string`[]
-
-***
-
-### objectInstanceStateKeys
-
-> `const` **objectInstanceStateKeys**: `string`[]
 
 ## Functions
 

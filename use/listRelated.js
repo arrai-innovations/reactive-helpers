@@ -18,9 +18,7 @@ import { computed, effectScope, nextTick, onScopeDispose, reactive, ref, toRef, 
 
 // todo: pkKey is misnamed, it should be fkKey... this will be a major breaking change
 /**
- * The rule for defining relationships for objects in a list.
- *
- * @typedef {object} ListRelatedRule
+ * @typedef {object} ListRelatedRule - The rule for defining relationships for objects in a list.
  * @property {string} pkKey - Specifies the foreign key used to link objects across lists. Planned to be renamed to
  *  'fkKey' to better reflect its usage.
  * @property {string[]} [order] - Specifies the order in which related objects should be sorted, if applicable.
@@ -28,18 +26,13 @@ import { computed, effectScope, nextTick, onScopeDispose, reactive, ref, toRef, 
  */
 
 /**
- * The rules for defining relationships among objects in a list.
- *
  * @typedef {{
  *     [rule: string]: ListRelatedRule,
- * }} ListRelatedRules
+ * }} ListRelatedRules - The rules for defining relationships among objects in a list.
  */
 
 /**
- * Represents the internal state used by the list related composition function. It manages and computes the relationships
- * between objects based on specified rules, providing real-time updates to related objects as the parent state changes.
- *
- * @typedef {object} ListRelatedRawState
+ * @typedef {object} ListRelatedRawState - Represents the internal state used by the list related composition function. It manages and computes the relationships between objects based on specified rules, providing real-time updates to related objects as the parent state changes.
  * @property {{
  *     [pk: import('../config/commonCrud.js').Pk]: {
  *         [rule: string]: import('vue').ComputedRef<any>,
@@ -63,41 +56,31 @@ import { computed, effectScope, nextTick, onScopeDispose, reactive, ref, toRef, 
  */
 
 /**
- * The raw state properties for a parent of a list related property.
- *
  * @typedef {(
  *     import('./listInstance.js').ListInstanceRawState &
  *     Partial<import('./listSubscription.js').ListSubscriptionRawState>
- * )} ListRelatedParentRawState
+ * )} ListRelatedParentRawState - The raw state properties for a parent of a list related property.
  */
 
 /**
- * The type for a parentState object.
- *
- * @typedef {import('vue').UnwrapNestedRefs<ListRelatedParentRawState>} ListRelatedParentState
+ * @typedef {import('vue').UnwrapNestedRefs<ListRelatedParentRawState>} ListRelatedParentState - The type for a parentState object.
  */
 
 /**
- * The state for a list related property.
- *
  * @typedef {import('vue').UnwrapNestedRefs<
  *     ListRelatedParentRawState &
  *     ListRelatedRawState
- * >} ListRelatedState
+ * >} ListRelatedState - The state for a list related property.
  */
 
 /**
- * The options for the list related composition function.
- *
- * @typedef {object} ListRelatedOptions
+ * @typedef {object} ListRelatedOptions - The options for the list related composition function.
  * @property {ListRelatedParentState} parentState - The parent state object.
  * @property {import('vue').Ref<ListRelatedRules>} relatedObjectsRules - The rules for the related objects.
  */
 
 /**
- * The properties for the list related composition function.
- *
- * @typedef {object} ListRelatedProperties
+ * @typedef {object} ListRelatedProperties - The properties for the list related composition function.
  * @property {ListRelatedState} state - The state for the list related property.
  * @property {ListRelatedParentState} parentState - The parent state object.
  * @property {() => void} stop - Stops all effects of the list related property.
@@ -106,9 +89,7 @@ import { computed, effectScope, nextTick, onScopeDispose, reactive, ref, toRef, 
 // if we provided functions, we would add a typedef and mix them into ListRelated
 
 /**
- * An instance of `useListRelated`.
- *
- * @typedef {ListRelatedProperties} ListRelated
+ * @typedef {ListRelatedProperties} ListRelated - An instance of `useListRelated`.
  */
 
 /**

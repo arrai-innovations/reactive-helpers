@@ -10,6 +10,8 @@
 
 ### ErrorFunctions
 
+The error-state actions (setError, clearError) contributed by the useError composable.
+
 #### Properties
 
 ##### clearError
@@ -38,6 +40,8 @@ Set the error state.
 
 ### ErrorProperties
 
+The reactive error-state members (error and errored) contributed by the useError composable.
+
 #### Properties
 
 ##### error
@@ -56,6 +60,8 @@ Whether an error has occurred.
 
 ### ErrorReadOnlyFunctions
 
+Proxies can still clear errors but cannot set them directly.
+
 #### Properties
 
 ##### clearError
@@ -70,6 +76,8 @@ Clear the error state.
 
 > **ClearErrorFn** = () => `void`
 
+Signature for the function that clears the current error state.
+
 #### Type Parameters
 
 #### Returns
@@ -82,6 +90,8 @@ Clear the error state.
 
 > **ErroredReadonlyRef** = `Readonly`\<[`ErroredRef`](#erroredref)\>
 
+A readonly Vue ref to the boolean indicating whether an error has occurred.
+
 #### Type Parameters
 
 ***
@@ -89,6 +99,8 @@ Clear the error state.
 ### ErroredRef
 
 > **ErroredRef** = `Ref`
+
+A Vue ref to the boolean indicating whether an error has occurred.
 
 #### Type Parameters
 
@@ -98,6 +110,8 @@ Clear the error state.
 
 > **ErrorReadonlyRef** = `Readonly`\<[`ErrorRef`](#errorref)\>
 
+A readonly Vue ref holding the current error, or null when there is none.
+
 #### Type Parameters
 
 ***
@@ -105,6 +119,8 @@ Clear the error state.
 ### ErrorRef
 
 > **ErrorRef** = `Ref`
+
+A Vue ref holding the current error, or null when there is none.
 
 #### Type Parameters
 
@@ -114,6 +130,8 @@ Clear the error state.
 
 > **ErrorStatus** = [`ErrorProperties`](#errorproperties) & [`ErrorFunctions`](#errorfunctions)
 
+The error state API.
+
 #### Type Parameters
 
 ***
@@ -121,6 +139,8 @@ Clear the error state.
 ### ReadonlyErrorStatus
 
 > **ReadonlyErrorStatus** = [`ErrorProperties`](#errorproperties) & [`ErrorReadOnlyFunctions`](#errorreadonlyfunctions)
+
+The readonly error-state API (error and errored plus clearError) exposed to consumers and proxies.
 
 #### Type Parameters
 

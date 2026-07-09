@@ -1,7 +1,5 @@
 /**
- * A reactive object for passing document options or search options to useSearch.
- *
- * @typedef {object} SearchProps
+ * @typedef {object} SearchProps - A reactive object for passing document options or search options to useSearch.
  * @property {DocumentOptions} customDocumentOptions - FlexSearch.Document options.
  * @property {SearchOptions} customSearchOptions - Search options.
  * @property {string} pkKey - The primary key field.
@@ -19,7 +17,7 @@ export function useSearch({ props, throttle }: {
     throttle?: number;
 }): SearchInstance;
 /**
- * A reactive object for passing document options or search options to useSearch.
+ * - A reactive object for passing document options or search options to useSearch.
  */
 export type SearchProps = {
     /**
@@ -36,7 +34,7 @@ export type SearchProps = {
     pkKey: string;
 };
 /**
- * FlexSearch.Document search options.
+ * - FlexSearch.Document search options.
  */
 export type SearchOptions = {
     /**
@@ -45,7 +43,7 @@ export type SearchOptions = {
     limit: number;
 };
 /**
- * Configuration options for creating a document in FlexSearch.
+ * - Configuration options for creating a document in FlexSearch.
  */
 export type DocumentOptions = {
     /**
@@ -73,6 +71,9 @@ export type DocumentOptions = {
      */
     minLength?: number;
 };
+/**
+ * - The raw reactive state of a search instance (query, results, status flags, and search options).
+ */
 export type SearchRawState = {
     /**
      * - The search string.
@@ -111,6 +112,9 @@ export type SearchRawState = {
      */
     running: boolean;
 };
+/**
+ * - The reactive search instance returned by useSearch, exposing its state, index mutators, event target, and stop.
+ */
 export type SearchInstance = {
     /**
      * - The state.

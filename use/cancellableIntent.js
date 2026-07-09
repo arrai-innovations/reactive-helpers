@@ -56,9 +56,7 @@ export class CancellableIntentError extends Error {
  */
 
 /**
- * The common run tracking arguments.
- *
- * @typedef {object} CommonRunTracking
+ * @typedef {object} CommonRunTracking - The common run tracking arguments.
  * @property {RunId} runId - The unique identifier for your run.
  * @property {IsCurrentRunFn} isCurrentRun - A function that checks if the current run ID matches your run ID.
  */
@@ -80,9 +78,7 @@ export class CancellableIntentError extends Error {
  */
 
 /**
- * Cancel function signature for cancellable intent.
- *
- * @typedef {Function} CancelFn
+ * @typedef {Function} CancelFn - Cancel function signature for cancellable intent.
  * @param {any} reason - The reason for cancellation.
  * @param {boolean} [forceClearActive=false] - Whether to force clear the active state.
  * @returns {Promise<void>} - A promise that resolves when the cancellation is complete.

@@ -64,6 +64,8 @@ The error code.
 
 > **validateTargetAndSourceResult** = `object`
 
+The validated target and source values returned by the reactive-object assignment validator.
+
 #### Type Parameters
 
 ***

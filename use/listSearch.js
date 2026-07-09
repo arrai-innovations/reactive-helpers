@@ -21,9 +21,7 @@ import { refIfReactive } from "../utils/refIfReactive.js";
  */
 
 /**
- * Represents the raw reactive state used by the list search functionality.
- *
- * @typedef {object} ListSearchRawState
+ * @typedef {object} ListSearchRawState - Represents the raw reactive state used by the list search functionality.
  * @property {import('./listInstance.js').ObjectsByPk} objects - Currently filtered objects based on the search.
  * @property {import('./listInstance.js').ObjectsInOrder} objectsInOrder - The list of objects sorted according to the current search criteria.
  * @property {import('./listInstance.js').ListOrder} order - The current sort order of object pks after search have been applied.
@@ -46,7 +44,7 @@ import { refIfReactive } from "../utils/refIfReactive.js";
  *     Partial<import('./listRelated.js').ListRelatedRawState> &
  *     Partial<import('./listCalculated.js').ListCalculatedRawState> &
  *     Partial<import('./listFilter.js').ListFilterRawState>
- * )} ListSearchParentRawState
+ * )} ListSearchParentRawState - The raw, pre-unwrapped parent state consumed by the list search mixin, aggregating the upstream list composable states.
  */
 
 /**
@@ -54,7 +52,7 @@ import { refIfReactive } from "../utils/refIfReactive.js";
  */
 
 /**
- *  @typedef {import('vue').ToRefs<ListSearchParentState>} ListSearchParentStateToRefs
+ *  @typedef {import('vue').ToRefs<ListSearchParentState>} ListSearchParentStateToRefs - The parent list-search state converted to individual Vue refs.
  */
 
 /**
@@ -86,9 +84,7 @@ import { refIfReactive } from "../utils/refIfReactive.js";
  */
 
 /**
- * The properties on a list search instance.
- *
- * @typedef {object} ListSearchProperties
+ * @typedef {object} ListSearchProperties - The properties on a list search instance.
  * @property {ListSearchState} state - The state.
  * @property {import('./search.js').SearchInstance} textSearchIndex - The text search index.
  * @property {() => void} stop - Stops the effect scope and cleans up resources.
@@ -97,9 +93,7 @@ import { refIfReactive } from "../utils/refIfReactive.js";
 // if we provided functions, we would add a typedef and mix them into ListSearch
 
 /**
- * The provided list search instance, containing properties and functions.
- *
- * @typedef {ListSearchProperties} ListSearch
+ * @typedef {ListSearchProperties} ListSearch - The provided list search instance, containing properties and functions.
  */
 
 /**
@@ -123,14 +117,11 @@ export function useListSearches(listSearchArgs) {
 }
 
 /**
- * FlexSearch.Document options, specifically for .index. Their documentation isn't very clear on this.
- * Typically, it would be a list of dot-separated keys to index.
- *
- * @typedef {string | string[] | object[]} TextSearchRules
+ * @typedef {string | string[] | object[]} TextSearchRules - FlexSearch.Document options, specifically for .index. Their documentation isn't very clear on this. Typically, it would be a list of dot-separated keys to index.
  */
 
 /**
- * @typedef {object} ListSearchProps
+ * @typedef {object} ListSearchProps - The consumer-supplied props configuring a list's text search (rules, value, and FlexSearch options).
  * @property {TextSearchRules} textSearchRules - Rules for what to search for. Keys are the keys to search for, values are functions that take the object and return The value to search for.
  * @property {string} textSearchValue - The value to search for.
  * @property {object} customDocumentOptions - FlexSearch.Document options.
@@ -139,7 +130,7 @@ export function useListSearches(listSearchArgs) {
  */
 
 /**
- * @typedef {object} ListSearchInstanceOptions
+ * @typedef {object} ListSearchInstanceOptions - The configuration options used to create a list search instance.
  * @property {object} parentState - The list being filtered.
  * @property {ListSearchProps} [props] - Reactive properties.
  * @property {number} [throttle=500] - Throttle wait time.

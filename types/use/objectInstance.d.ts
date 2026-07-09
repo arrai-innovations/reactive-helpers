@@ -68,37 +68,28 @@ export function useObjectInstance({ props, handlers }: ObjectInstanceOptions): O
  * @module use/objectInstance.js
  */
 /**
- * The object being managed by the instance. It must include a primary key field as identifying property, matching
- * the name provided to the object/list's `pkKey` value, which is not known statically.
- *
- * @typedef {{[key: string]: any}} ExistingCrudObject
+ * @typedef {{[key: string]: any}} ExistingCrudObject - The object being managed by the instance. It must include a primary key field as identifying property, matching the name provided to the object/list's `pkKey` value, which is not known statically.
  */
 /**
- * The object you would like an object instance to create for you.
- *
- * @typedef {{[key: string]: any}} NewCrudObject
+ * @typedef {{[key: string]: any}} NewCrudObject - The object you would like an object instance to create for you.
  */
 /**
- * @typedef {ExistingCrudObject|NewCrudObject} CrudObject
+ * @typedef {ExistingCrudObject|NewCrudObject} CrudObject - An object managed by an object instance, either an existing object or a new object to be created.
  */
 /**
- * Arguments to be passed to the object instance.
- *
- * @typedef {object} ObjectInstanceOptions
+ * @typedef {object} ObjectInstanceOptions - Arguments to be passed to the object instance.
  * @property {import('vue').UnwrapNestedRefs<ObjectInstanceRawProps>} props - The reactive configuration object.
  * @property {import('../config/objectCrud.js').ObjectCrudHandlers} [handlers] - An object of custom crud handlers to use instead of the defaults.
  */
 /**
- * Reactive arguments to be passed to the object instance.
- *
- * @typedef {object} ObjectInstanceRawProps
+ * @typedef {object} ObjectInstanceRawProps - Reactive arguments to be passed to the object instance.
  * @property {import('../config/commonCrud.js').PkInput} [pk] - The pk of the object, optional to support creating new objects.
  * @property {string} pkKey - The pk key of the object.
  * @property {object} params - The arguments to be passed to the retrieve function.
  * @property {import('../config/objectCrud.js').ObjectTarget} target - The arguments to be passed to the crud handlers.
  */
 /**
- * @typedef {object} ObjectInstanceRawStateCrud
+ * @typedef {object} ObjectInstanceRawStateCrud - The raw CRUD handlers and target args stored in an object instance's reactive state.
  * @property {import('vue').Reactive<import('../config/objectCrud.js').TargetArgs|{}>} args - The arguments to be passed to the crud handlers.
  * @property {import('../config/objectCrud.js').CrudCreateFn} create - The create function.
  * @property {import('../config/objectCrud.js').CrudRetrieveFn} retrieve - The retrieve function.
@@ -109,9 +100,7 @@ export function useObjectInstance({ props, handlers }: ObjectInstanceOptions): O
  * @property {import('../config/objectCrud.js').CrudObjectExecuteActionFn} executeAction - The executeAction function.
  */
 /**
- * The raw state of the object instance.
- *
- * @typedef {object} ObjectInstanceRawMyState
+ * @typedef {object} ObjectInstanceRawMyState - The raw state of the object instance.
  * @property {import('vue').Reactive<ObjectInstanceRawStateCrud>} crud - The crud handlers.
  * @property {import('vue').Ref<import('../config/commonCrud.js').Pk|undefined>} pk - The pk of the object.
  * @property {import('vue').Ref<string|undefined>} pkKey - The pk key of the object.
@@ -120,26 +109,19 @@ export function useObjectInstance({ props, handlers }: ObjectInstanceOptions): O
  * @property {boolean} deleted - Whether the object is deleted.
  */
 /**
- * The raw state of the object instance.
- *
- * @typedef {ObjectInstanceRawMyState & import('./loadingError.js').LoadingErrorProperties} ObjectInstanceRawState
+ * @typedef {ObjectInstanceRawMyState & import('./loadingError.js').LoadingErrorProperties} ObjectInstanceRawState - The raw state of the object instance.
  */
 /**
- * Manages a reactive state of an object including its CRUD status, loading states, and any operational errors.
- * Reactivity ensures that any changes in state immediately reflect in the UI components that depend on this state.
- *
- * @typedef {import('vue').Reactive<ObjectInstanceRawState>} ObjectInstanceState
+ * @typedef {import('vue').Reactive<ObjectInstanceRawState>} ObjectInstanceState - Manages a reactive state of an object including its CRUD status, loading states, and any operational errors. Reactivity ensures that any changes in state immediately reflect in the UI components that depend on this state.
  */
-/** @typedef {{ object: NewCrudObject }} ObjectInstanceCreateArgs */
-/** @typedef {{ object: ExistingCrudObject }} ObjectInstanceUpdateArgs */
-/** @typedef {{ partialObject: ExistingCrudObject }} ObjectInstancePatchArgs */
+/** @typedef {{ object: NewCrudObject }} ObjectInstanceCreateArgs - The argument shape for an object instance's create operation, carrying the new object to create. */
+/** @typedef {{ object: ExistingCrudObject }} ObjectInstanceUpdateArgs - The argument shape for an object instance's update operation, carrying the existing object to update. */
+/** @typedef {{ partialObject: ExistingCrudObject }} ObjectInstancePatchArgs - The argument shape for an object instance's patch operation, carrying the partial object to apply. */
 /**
- * @typedef {{[key:string]: any}} AdditionalArgs
+ * @typedef {{[key:string]: any}} AdditionalArgs - Arbitrary extra arguments forwarded through to an object instance's CRUD operations.
  */
 /**
- * The functions available on the object instance.
- *
- * @typedef {object} ObjectInstanceMyFunctions
+ * @typedef {object} ObjectInstanceMyFunctions - The functions available on the object instance.
  * @property {(args: ObjectInstanceCreateArgs & AdditionalArgs) => import('../utils/cancellablePromise.js').MaybeCancellablePromise<boolean|never>} create - Called to turn the current object into a new object on the server.
  * @property {(args?: Partial<import('./cancellableIntent.js').CommonRunTracking> & AdditionalArgs) => import('../utils/cancellablePromise.js').MaybeCancellablePromise<boolean|never>} retrieve - Called to retrieve the current object by pk from the server.
  * @property {(args: ObjectInstanceUpdateArgs & AdditionalArgs) => import('../utils/cancellablePromise.js').MaybeCancellablePromise<boolean|never>} update - Called to update the current object on the server.
@@ -149,23 +131,17 @@ export function useObjectInstance({ props, handlers }: ObjectInstanceOptions): O
  * @property {() => void} clear - Called to clear the object state.
  */
 /**
- * The functions available on the object instance, including the ability to clear LoadingError errors.
- *
  * @typedef {(
  *     import('./error.js').ErrorReadOnlyFunctions &
  *     ObjectInstanceMyFunctions
- * )} ObjectInstanceFunctions
+ * )} ObjectInstanceFunctions - The functions available on the object instance, including the ability to clear LoadingError errors.
  */
 /**
- * The properties of the object instance.
- *
- * @typedef {object} ObjectInstanceProperties
+ * @typedef {object} ObjectInstanceProperties - The properties of the object instance.
  * @property {ObjectInstanceState} state - The state of the object instance.
  */
 /**
- * The instance of the object instance.
- *
- * @typedef {ObjectInstanceFunctions & ObjectInstanceProperties} ObjectInstance
+ * @typedef {ObjectInstanceFunctions & ObjectInstanceProperties} ObjectInstance - The instance of the object instance.
  */
 /**
  * Represents an error related to CRUD operations on an object instance. This error might be thrown
@@ -181,24 +157,28 @@ export class ObjectError extends Error {
     constructor(message: string, code: string);
     code: string;
 }
+/** @internal */
 export const objectInstanceStateKeys: string[];
+/** @internal */
 export const objectInstanceFunctions: string[];
 /**
- * The object being managed by the instance. It must include a primary key field as identifying property, matching
- * the name provided to the object/list's `pkKey` value, which is not known statically.
+ * - The object being managed by the instance. It must include a primary key field as identifying property, matching the name provided to the object/list's `pkKey` value, which is not known statically.
  */
 export type ExistingCrudObject = {
     [key: string]: any;
 };
 /**
- * The object you would like an object instance to create for you.
+ * - The object you would like an object instance to create for you.
  */
 export type NewCrudObject = {
     [key: string]: any;
 };
+/**
+ * - An object managed by an object instance, either an existing object or a new object to be created.
+ */
 export type CrudObject = ExistingCrudObject | NewCrudObject;
 /**
- * Arguments to be passed to the object instance.
+ * - Arguments to be passed to the object instance.
  */
 export type ObjectInstanceOptions = {
     /**
@@ -211,7 +191,7 @@ export type ObjectInstanceOptions = {
     handlers?: import("../config/objectCrud.js").ObjectCrudHandlers;
 };
 /**
- * Reactive arguments to be passed to the object instance.
+ * - Reactive arguments to be passed to the object instance.
  */
 export type ObjectInstanceRawProps = {
     /**
@@ -231,6 +211,9 @@ export type ObjectInstanceRawProps = {
      */
     target: import("../config/objectCrud.js").ObjectTarget;
 };
+/**
+ * - The raw CRUD handlers and target args stored in an object instance's reactive state.
+ */
 export type ObjectInstanceRawStateCrud = {
     /**
      * - The arguments to be passed to the crud handlers.
@@ -266,7 +249,7 @@ export type ObjectInstanceRawStateCrud = {
     executeAction: import("../config/objectCrud.js").CrudObjectExecuteActionFn;
 };
 /**
- * The raw state of the object instance.
+ * - The raw state of the object instance.
  */
 export type ObjectInstanceRawMyState = {
     /**
@@ -297,28 +280,39 @@ export type ObjectInstanceRawMyState = {
     deleted: boolean;
 };
 /**
- * The raw state of the object instance.
+ * - The raw state of the object instance.
  */
 export type ObjectInstanceRawState = ObjectInstanceRawMyState & import("./loadingError.js").LoadingErrorProperties;
 /**
- * Manages a reactive state of an object including its CRUD status, loading states, and any operational errors.
- * Reactivity ensures that any changes in state immediately reflect in the UI components that depend on this state.
+ * - Manages a reactive state of an object including its CRUD status, loading states, and any operational errors. Reactivity ensures that any changes in state immediately reflect in the UI components that depend on this state.
  */
 export type ObjectInstanceState = import("vue").Reactive<ObjectInstanceRawState>;
+/**
+ * - The argument shape for an object instance's create operation, carrying the new object to create.
+ */
 export type ObjectInstanceCreateArgs = {
     object: NewCrudObject;
 };
+/**
+ * - The argument shape for an object instance's update operation, carrying the existing object to update.
+ */
 export type ObjectInstanceUpdateArgs = {
     object: ExistingCrudObject;
 };
+/**
+ * - The argument shape for an object instance's patch operation, carrying the partial object to apply.
+ */
 export type ObjectInstancePatchArgs = {
     partialObject: ExistingCrudObject;
 };
+/**
+ * - Arbitrary extra arguments forwarded through to an object instance's CRUD operations.
+ */
 export type AdditionalArgs = {
     [key: string]: any;
 };
 /**
- * The functions available on the object instance.
+ * - The functions available on the object instance.
  */
 export type ObjectInstanceMyFunctions = {
     /**
@@ -353,11 +347,11 @@ export type ObjectInstanceMyFunctions = {
     clear: () => void;
 };
 /**
- * The functions available on the object instance, including the ability to clear LoadingError errors.
+ * - The functions available on the object instance, including the ability to clear LoadingError errors.
  */
 export type ObjectInstanceFunctions = (import("./error.js").ErrorReadOnlyFunctions & ObjectInstanceMyFunctions);
 /**
- * The properties of the object instance.
+ * - The properties of the object instance.
  */
 export type ObjectInstanceProperties = {
     /**
@@ -366,6 +360,6 @@ export type ObjectInstanceProperties = {
     state: ObjectInstanceState;
 };
 /**
- * The instance of the object instance.
+ * - The instance of the object instance.
  */
 export type ObjectInstance = ObjectInstanceFunctions & ObjectInstanceProperties;

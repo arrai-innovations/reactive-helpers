@@ -22,9 +22,7 @@
  * @typedef {() => boolean} IsCurrentRunFn - A function that checks if the current run ID matches the last run ID.
  */
 /**
- * The common run tracking arguments.
- *
- * @typedef {object} CommonRunTracking
+ * @typedef {object} CommonRunTracking - The common run tracking arguments.
  * @property {RunId} runId - The unique identifier for your run.
  * @property {IsCurrentRunFn} isCurrentRun - A function that checks if the current run ID matches your run ID.
  */
@@ -42,9 +40,7 @@
  * @property {boolean} [clearActiveOnResolved=true] - Whether to clear the active state when the promise resolves.
  */
 /**
- * Cancel function signature for cancellable intent.
- *
- * @typedef {Function} CancelFn
+ * @typedef {Function} CancelFn - Cancel function signature for cancellable intent.
  * @param {any} reason - The reason for cancellation.
  * @param {boolean} [forceClearActive=false] - Whether to force clear the active state.
  * @returns {Promise<void>} - A promise that resolves when the cancellation is complete.
@@ -161,7 +157,7 @@ export type CancellableIntentState = import("vue").Reactive<CancellableIntentRaw
  */
 export type IsCurrentRunFn = () => boolean;
 /**
- * The common run tracking arguments.
+ * - The common run tracking arguments.
  */
 export type CommonRunTracking = {
     /**
@@ -205,7 +201,7 @@ export type CancellableIntentOptions = {
     clearActiveOnResolved?: boolean;
 };
 /**
- * Cancel function signature for cancellable intent.
+ * - Cancel function signature for cancellable intent.
  */
 export type CancelFn = Function;
 /**

@@ -12,6 +12,8 @@
 
 > **CSSClasses** = `string` \| `string`[] \| \{\[`key`: `string`\]: `boolean` \| `Ref`\<`boolean`, `boolean`\>; \} \| `Ref`
 
+The accepted ways of specifying CSS classes to useCombineClasses (a string, array, class-map, or ref thereof).
+
 #### Type Parameters
 
 ## Functions

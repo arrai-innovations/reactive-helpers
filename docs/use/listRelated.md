@@ -10,6 +10,8 @@
 
 ### ListRelatedOptions
 
+The options for the list related composition function.
+
 #### Properties
 
 ##### parentState
@@ -147,6 +149,8 @@ The rules for the related objects.
 ***
 
 ### ListRelatedProperties
+
+The properties for the list related composition function.
 
 #### Properties
 
@@ -476,6 +480,8 @@ Stops all effects of the list related property.
 
 ### ListRelatedRawState
 
+Represents the internal state used by the list related composition function. It manages and computes the relationships between objects based on specified rules, providing real-time updates to related objects as the parent state changes.
+
 #### Properties
 
 ##### fkForPkAndRule
@@ -542,6 +548,8 @@ General flag that indicates if the list-related logic is processing, used to man
 
 ### ListRelatedRule
 
+The rule for defining relationships for objects in a list.
+
 #### Properties
 
 ##### objects
@@ -569,6 +577,8 @@ Specifies the foreign key used to link objects across lists. Planned to be renam
 
 > **ListRelated** = [`ListRelatedProperties`](#listrelatedproperties)
 
+An instance of `useListRelated`.
+
 #### Type Parameters
 
 ***
@@ -576,6 +586,8 @@ Specifies the foreign key used to link objects across lists. Planned to be renam
 ### ListRelatedParentRawState
 
 > **ListRelatedParentRawState** = [`ListInstanceRawState`](listInstance.md#listinstancerawstate) & `Partial`\<[`ListSubscriptionRawState`](listSubscription.md#listsubscriptionrawstate)\>
+
+The raw state properties for a parent of a list related property.
 
 #### Type Parameters
 
@@ -585,6 +597,8 @@ Specifies the foreign key used to link objects across lists. Planned to be renam
 
 > **ListRelatedParentState** = `UnwrapNestedRefs`
 
+The type for a parentState object.
+
 #### Type Parameters
 
 ***
@@ -592,6 +606,8 @@ Specifies the foreign key used to link objects across lists. Planned to be renam
 ### ListRelatedRules
 
 > **ListRelatedRules** = `object`
+
+The rules for defining relationships among objects in a list.
 
 #### Type Parameters
 
@@ -604,6 +620,8 @@ Specifies the foreign key used to link objects across lists. Planned to be renam
 ### ListRelatedState
 
 > **ListRelatedState** = `UnwrapNestedRefs`
+
+The state for a list related property.
 
 #### Type Parameters
 

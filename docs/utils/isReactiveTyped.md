@@ -12,6 +12,8 @@
 
 > **isReactiveTyped**\<`T`\>(`v`): `v is Reactive<T>`
 
+Type guard reporting whether a value is a Vue reactive object.
+
 #### Type Parameters
 
 ##### T

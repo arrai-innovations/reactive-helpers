@@ -34,9 +34,7 @@ export class ListError extends Error {
 }
 
 /**
- * Defines properties for configuring the list management system.
- *
- * @typedef {object} ListRawProps
+ * @typedef {object} ListRawProps - Defines properties for configuring the list management system.
  * @property {object} params - The arguments to pass to the registered list crud handlers, related to the list itself.
  * @property {string} pkKey - The primary key for the list items.
  * @property {object} target - General arguments to pass to the registered list crud handlers, often related to endpoints.
@@ -54,7 +52,7 @@ export class ListError extends Error {
  */
 
 /**
- * @typedef {object} ListOptions
+ * @typedef {object} ListOptions - The configuration options used to create a fully managed list via useList.
  * @property {ListRawProps} props - The properties for configuring the list.
  * @property {import('../config/listCrud.js').ListCrudHandlers} [handlers] - Additional handlers to be included in the list manager.
  * @property {number} [searchThrottle] - The throttle time for text search.
@@ -63,8 +61,6 @@ export class ListError extends Error {
  */
 
 /**
- * Holds references to instances of all list-related composables, facilitating direct access and management.
- *
  * @typedef {{
  *     listInstance: import('./listInstance.js').ListInstance,
  *     listSubscription: import('./listSubscription.js').ListSubscription,
@@ -73,33 +69,25 @@ export class ListError extends Error {
  *     listFilter: import('./listFilter.js').ListFilter,
  *     listSearch: import('./listSearch.js').ListSearch,
  *     listSort: import('./listSort.js').ListSort
- * }} ListManaged
+ * }} ListManaged - Holds references to instances of all list-related composables, facilitating direct access and management.
  */
 
 /**
- * Aggregates all functions provided by various list-related composables, allowing for a unified approach to calling these methods.
- *
  * @typedef {(
  *     import('./listInstance.js').ListInstanceFunctions
  *     & import('./listSubscription.js').ListSubscriptionFunctions
- * )} ListFunctions
+ * )} ListFunctions - Aggregates all functions provided by various list-related composables, allowing for a unified approach to calling these methods.
  */
 
 /**
- * Encapsulates properties relevant to the overall management of list-related hooks, including state, direct access to hooks,
- * and scoped effects.
- *
- * @typedef {object} ListManagerProperties
+ * @typedef {object} ListManagerProperties - Encapsulates properties relevant to the overall management of list-related hooks, including state, direct access to hooks, and scoped effects.
  * @property {ListManaged} managed - A readonly reference to the managed list hooks.
  * @property {import('./listSort.js').ListSortState} state - Represents the final reactive state in the list processing chain.
  * @property {() => void} stop - A function to stop the effect scope and clean up resources.
  */
 
 /**
- * Combines functionality and properties to represent a fully managed list instance,
- * orchestrating various functionalities such as sorting, searching, filtering, and state management.
- *
- * @typedef {ListFunctions & ListManagerProperties} ListManager
+ * @typedef {ListFunctions & ListManagerProperties} ListManager - Combines functionality and properties to represent a fully managed list instance, orchestrating various functionalities such as sorting, searching, filtering, and state management.
  */
 
 /* eslint-disable jsdoc/valid-types */

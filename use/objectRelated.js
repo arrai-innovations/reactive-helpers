@@ -20,26 +20,22 @@ import { computed, effectScope, nextTick, reactive, ref, toRef, unref, watch } f
 
 // todo: pkKey is misnamed, it should be fkKey... this will be a major breaking change.
 /**
- * The rule for defining relationships for the managed object to other collections of objects.
- *
- * @typedef {object} ObjectRelatedRule
+ * @typedef {object} ObjectRelatedRule - The rule for defining relationships for the managed object to other collections of objects.
  * @property {string} pkKey - The key in the managed object that corresponds to the key in the related object.
  * @property {import('./listInstance.js').ObjectsByPk} objects - The related objects, indexed by the key in the related object.
  * @property {string[]} order - The order of the related objects, if the related objects are an array.
  */
 
 /**
- * The rules for defining relationships for the managed object to other collections of objects.
- *
  * @typedef {{
  *     [rule: string]: ObjectRelatedRule,
- * }} ObjectRelatedRawRules
+ * }} ObjectRelatedRawRules - The rules for defining relationships for the managed object to other collections of objects.
  */
 
 /**
  *
  *
- * @typedef {object} ObjectRelatedRawState
+ * @typedef {object} ObjectRelatedRawState - The raw reactive state of the object related composable, holding its rules, computed relations, and running flags.
  * @property {ObjectRelatedRawRules} relatedObjectRules - The rules for defining relationships for the managed object to other collections of objects.
  * @property {{
  *     [rule: string]: import('vue').ComputedRef<any>,
@@ -56,13 +52,13 @@ import { computed, effectScope, nextTick, reactive, ref, toRef, unref, watch } f
  * @typedef {(
  *    import('./objectInstance.js').ObjectInstanceRawState &
  *    Partial<import('./objectSubscription.js').ObjectSubscriptionRawState>
- * )} ObjectRelatedParentRawState
+ * )} ObjectRelatedParentRawState - The raw, pre-unwrapped parent state consumed by the object related mixin (object instance plus optional subscription state).
  */
 
 /**
  *
  *
- * @typedef {import('vue').UnwrapNestedRefs<ObjectRelatedParentRawState>} ObjectRelatedParentState
+ * @typedef {import('vue').UnwrapNestedRefs<ObjectRelatedParentRawState>} ObjectRelatedParentState - The unwrapped reactive parent state consumed by the object related mixin.
  */
 
 /**
@@ -71,9 +67,10 @@ import { computed, effectScope, nextTick, reactive, ref, toRef, unref, watch } f
  * @typedef {import('vue').UnwrapNestedRefs<(
  *     ObjectRelatedParentRawState &
  *     ObjectRelatedRawState
- * )>} ObjectRelatedState
+ * )>} ObjectRelatedState - The unwrapped reactive state of the object related composable, combining the parent state with its own related state.
  */
 
+/** @internal */
 export const objectRelatedStateKeys = [
     "relatedObject",
     "relatedObjectRules",
@@ -83,10 +80,11 @@ export const objectRelatedStateKeys = [
     "running",
 ];
 
+/** @internal */
 export const objectRelatedFunctions = [];
 
 /**
- * @typedef {object} ObjectRelatedProperties
+ * @typedef {object} ObjectRelatedProperties - The members (state, parentState, stop) contributed by the object related composable.
  * @property {ObjectRelatedState} state - The state of the object related instance.
  * @property {ObjectRelatedParentState} parentState - The parent state.
  * @property {() => void} stop - Stops all effects of the object related instance.
@@ -96,27 +94,22 @@ export const objectRelatedFunctions = [];
 // if we provided functions, we would add a typedef and mix them into ObjectRelated
 
 /**
- * An instance of an object related reactive object.
- *
- * @typedef {ObjectRelatedProperties} ObjectRelated
+ * @typedef {ObjectRelatedProperties} ObjectRelated - An instance of an object related reactive object.
  */
 
 /**
- * Non-parent state options for useObjectRelated.
- *
- * @typedef {object} ObjectRelatedRawProps
+ * @typedef {object} ObjectRelatedRawProps - Non-parent state options for useObjectRelated.
  * @property {import('vue').Ref<ObjectRelatedRawRules>} relatedObjectRules - The rules for defining relationships for the managed object to other collections of objects.
  */
 
 /**
- * Options for useObjectRelated.
- *
  * @typedef {{
  *     parentState: ObjectRelatedParentState,
- * } & ObjectRelatedRawProps} ObjectRelatedOptions
+ * } & ObjectRelatedRawProps} ObjectRelatedOptions - Options for useObjectRelated.
  */
 
 /**
+ * Creates multiple object related instances keyed by name from a map of options.
  *
  * @param {{
  *     [key: string]: ObjectRelatedOptions

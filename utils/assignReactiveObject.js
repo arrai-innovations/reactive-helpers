@@ -51,7 +51,7 @@ function isArrayOrObject(key, value) {
 }
 
 /**
- * @typedef {object} validateTargetAndSourceResult
+ * @typedef {object} validateTargetAndSourceResult - The validated target and source values returned by the reactive-object assignment validator.
  * @private
  * @property {ValidTargetOrSource} target The validated target value.
  * @property {ValidTargetOrSource} source The validated source value.

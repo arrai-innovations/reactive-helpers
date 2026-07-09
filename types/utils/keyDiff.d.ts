@@ -5,9 +5,7 @@
  * @module utils/keyDiff.js
  */
 /**
- * Result object of keyDiff and keyDiffDeep.
- *
- * @typedef {object} KeyDiffResult
+ * @typedef {object} KeyDiffResult - Result object of keyDiff and keyDiffDeep.
  * @property {Set<string>} [sameKeys] - If sameKeys option is true, return keys that are the same.
  * @property {Set<string>} [removedKeys] - If removedKeys option is true, return keys that are removed.
  * @property {Set<string>} [addedKeys] - If addedKeys option is true, return keys that are added.
@@ -44,7 +42,7 @@ export function keyDiff(newKeys: string[] | Set<string>, oldKeys: string[] | Set
  */
 export function keyDiffDeep(newObj: object, oldObj: object, options?: object): KeyDiffResult;
 /**
- * Result object of keyDiff and keyDiffDeep.
+ * - Result object of keyDiff and keyDiffDeep.
  */
 export type KeyDiffResult = {
     /**

@@ -10,6 +10,8 @@
 
 ### LoadingFunctions
 
+The loading-state actions (setLoading, clearLoading) contributed by the useLoading composable.
+
 #### Properties
 
 ##### clearLoading
@@ -36,6 +38,8 @@ Set the loading state to true.
 
 ### LoadingProperties
 
+The reactive loading-state member (loading) contributed by the useLoading composable.
+
 #### Properties
 
 ##### loading
@@ -50,6 +54,8 @@ Whether the component is loading.
 
 > **LoadingReadonlyRef** = `Readonly`\<[`LoadingRef`](#loadingref)\>
 
+A readonly Vue ref to the loading flag, which is a boolean or undefined.
+
 #### Type Parameters
 
 ***
@@ -58,6 +64,8 @@ Whether the component is loading.
 
 > **LoadingRef** = `Ref`
 
+A Vue ref to the loading flag, which is a boolean or undefined.
+
 #### Type Parameters
 
 ***
@@ -65,6 +73,8 @@ Whether the component is loading.
 ### LoadingStatus
 
 > **LoadingStatus** = [`LoadingProperties`](#loadingproperties) & [`LoadingFunctions`](#loadingfunctions)
+
+The loading state API.
 
 #### Type Parameters
 

@@ -12,6 +12,8 @@
 
 > **CancellablePromise**\<`T`\> = `Promise`\<`T`\> & `object`
 
+A promise augmented with a cancel method to abort the pending operation.
+
 #### Type Declaration
 
 ##### cancel
@@ -39,6 +41,8 @@
 ### MaybeCancellablePromise
 
 > **MaybeCancellablePromise**\<`T`\> = `Promise`\<`T`\> & `object`
+
+A promise that may optionally carry a cancel method to abort the pending operation.
 
 #### Type Declaration
 
