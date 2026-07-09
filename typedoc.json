@@ -4,7 +4,7 @@
     "excludeExternals": true,
     "excludePrivate": true,
     "excludeProtected": true,
-    "plugin": ["typedoc-plugin-markdown", "./typedoc-local-plugins/customize-output.js"],
+    "plugin": ["typedoc-plugin-markdown"],
     "readme": "none",
     "disableSources": true,
     "outputFileStrategy": "modules",

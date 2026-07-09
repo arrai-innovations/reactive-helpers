@@ -8,7 +8,7 @@ import vitest from "@vitest/eslint-plugin";
 import noAutofix from "eslint-plugin-no-autofix";
 
 export default [
-    { ignores: [".prettierrc.js", "typedoc-local-plugins", "docs"] },
+    { ignores: [".prettierrc.js", "docs"] },
     {
         languageOptions: {
             globals: {

@@ -18,7 +18,6 @@ export default defineConfig({
                 "make_type_doc.js",
                 "clean_type_doc.js",
                 "tests",
-                "typedoc-local-plugins",
                 "types",
             ],
         },
