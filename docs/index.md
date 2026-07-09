@@ -10,18 +10,19 @@ hero:
           text: Get started
           link: /guide/
         - theme: alt
-          text: Concepts
-          link: /concepts/
-        - theme: alt
           text: API reference
           link: /reference/
 features:
-    - title: List & object composables
-      details: Manage reactive collections and single objects with instance composables, plus filter, sort, search, calculated, related, and subscription layers on top.
-    - title: Loading & error primitives
-      details: Small, composable loading and error state you can drive from any async work, with read-only proxy variants and helpers to combine state across sources.
-    - title: Pluggable CRUD, any backend
-      details: Provide the handlers that reach your backend per instance, or register defaults once with setListCrud / setObjectCrud. The composables never assume a transport.
-    - title: Reactive & object utilities
-      details: A toolkit of supporting helpers such as deepUnref, assignReactiveObject, refIfReactive, cancellablePromise, and cancellableFetch.
+    - title: Tutorials
+      details: Learning-oriented, step-by-step lessons. Build something small end to end to get a feel for the library.
+      link: /tutorials/
+    - title: How-to guides
+      details: Task-focused recipes for wiring composables to your backend and solving specific problems.
+      link: /guide/
+    - title: Concepts
+      details: Explanations of the reactive list/object model, the CRUD configuration pattern, and cancellable intents.
+      link: /concepts/
+    - title: Reference
+      details: The generated API for every module, composable, and utility, plus a glossary of terms.
+      link: /reference/
 ---

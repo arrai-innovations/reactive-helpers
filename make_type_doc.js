@@ -14,7 +14,7 @@ const ORANGE = "\u001b[1;38;2;255;127;0m";
 const RESET = "\u001b[0m";
 
 const tempDir = fs.mkdtempSync(path.join(os.tmpdir(), "docs-"));
-const docsDir = path.resolve("docs/reference");
+const docsDir = path.resolve("docs/reference/api");
 
 function cleanup() {
     fs.rmSync(tempDir, { recursive: true, force: true });

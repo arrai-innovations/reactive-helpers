@@ -55,7 +55,7 @@ see `typedoc.json`). Do not edit them by hand:
 
 Use VitePress links, not hardcoded file paths:
 
-- To a reference page: `/reference/use/loadingError`.
+- To a reference page: `/reference/api/use/loadingError`.
 - To another authored page: `/guide/data-layer`.
 - Relative Markdown links (`./data-layer`) also resolve.
 

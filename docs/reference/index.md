@@ -1,51 +1,22 @@
-# @arrai-innovations/reactive-helpers
+---
+title: Reference
+status: published
+type: index
+---
 
-## Modules
+# Reference
 
-- [config/commonCrud](config/commonCrud.md)
-- [config/listCrud](config/listCrud.md)
-- [config/objectCrud](config/objectCrud.md)
-- [use/cancellableIntent](use/cancellableIntent.md)
-- [use/combineClasses](use/combineClasses.md)
-- [use/error](use/error.md)
-- [use/list](use/list.md)
-- [use/listCalculated](use/listCalculated.md)
-- [use/listFilter](use/listFilter.md)
-- [use/listInstance](use/listInstance.md)
-- [use/listRelated](use/listRelated.md)
-- [use/listSearch](use/listSearch.md)
-- [use/listSort](use/listSort.md)
-- [use/listSubscription](use/listSubscription.md)
-- [use/loading](use/loading.md)
-- [use/loadingError](use/loadingError.md)
-- [use/object](use/object.md)
-- [use/objectCalculated](use/objectCalculated.md)
-- [use/objectInstance](use/objectInstance.md)
-- [use/objectRelated](use/objectRelated.md)
-- [use/objectSubscription](use/objectSubscription.md)
-- [use/proxyError](use/proxyError.md)
-- [use/proxyLoading](use/proxyLoading.md)
-- [use/proxyLoadingError](use/proxyLoadingError.md)
-- [use/search](use/search.md)
-- [utils/assignReactiveObject](utils/assignReactiveObject.md)
-- [utils/cancellableFetch](utils/cancellableFetch.md)
-- [utils/cancellablePromise](utils/cancellablePromise.md)
-- [utils/classes](utils/classes.md)
-- [utils/compact](utils/compact.md)
-- [utils/deepUnref](utils/deepUnref.md)
-- [utils/deleteKey](utils/deleteKey.md)
-- [utils/flattenPaths](utils/flattenPaths.md)
-- [utils/flattenPathsWithValues](utils/flattenPathsWithValues.md)
-- [utils/getFakePk](utils/getFakePk.md)
-- [utils/isReactiveTyped](utils/isReactiveTyped.md)
-- [utils/keepAliveTry](utils/keepAliveTry.md)
-- [utils/keyDiff](utils/keyDiff.md)
-- [utils/loadingCombine](utils/loadingCombine.md)
-- [utils/proxyRunning](utils/proxyRunning.md)
-- [utils/refIfReactive](utils/refIfReactive.md)
-- [utils/relatedCalculatedHelpers](utils/relatedCalculatedHelpers.md)
-- [utils/set](utils/set.md)
-- [utils/toRefsIfReactive](utils/toRefsIfReactive.md)
-- [utils/transformWalk](utils/transformWalk.md)
-- [utils/unwrapNested](utils/unwrapNested.md)
-- [utils/watches](utils/watches.md)
+Authoritative, look-up oriented material for reactive-helpers.
+
+## API reference
+
+The [API reference](/reference/api/) is generated from the JSDoc annotations in
+the source. It documents every module under `config/`, `use/`, and `utils/`,
+including each composable's arguments, the reactive state it returns, and the
+actions it exposes.
+
+## Glossary
+
+The [glossary](/reference/glossary) defines the vocabulary used across these
+docs: instances, handlers, CRUD configuration, cancellable intents, and the
+loading/error primitives.

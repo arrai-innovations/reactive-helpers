@@ -60,4 +60,4 @@ Instances created afterward fall back to these defaults, so a `useListInstance({
 `handlers` uses your registered CRUD. Per-instance `handlers` still override the defaults when you need a
 one-off.
 
-See the [config reference](/reference/config/listCrud) for the full handler surface.
+See the [config reference](/reference/api/config/listCrud) for the full handler surface.

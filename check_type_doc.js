@@ -21,14 +21,14 @@ function hasChangesIn(dir) {
 
 async function main() {
     const typesChanged = hasChangesIn("types");
-    const docsChanged = hasChangesIn("docs/reference");
+    const docsChanged = hasChangesIn("docs/reference/api");
 
     if (typesChanged || docsChanged) {
         if (typesChanged) {
             console.error(`[${scriptName}] ${ORANGE}$ types/ is out of sync${RESET}`);
         }
         if (docsChanged) {
-            console.error(`[${scriptName}] ${ORANGE}$ docs/reference/ is out of sync${RESET}`);
+            console.error(`[${scriptName}] ${ORANGE}$ docs/reference/api/ is out of sync${RESET}`);
         }
         process.exit(1);
     } else {

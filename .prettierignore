@@ -2,7 +2,7 @@ node_modules
 package.json
 pnpm-lock.yaml
 coverage
-docs/reference
+docs/reference/api
 site
 types
 **/.vitepress/cache

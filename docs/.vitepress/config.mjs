@@ -6,16 +6,17 @@ import { defineConfig } from "vitepress";
 // configDir is docs/.vitepress; docsRoot is the VitePress source root (docs/).
 const configDir = fileURLToPath(new URL(".", import.meta.url));
 const docsRoot = path.resolve(configDir, "..");
-const referenceRoot = path.join(docsRoot, "reference");
+const apiRoot = path.join(docsRoot, "reference", "api");
 
 // Env-driven base so CI can publish per-major under a subpath
 // (e.g. /reactive-helpers/documentation/v22/); defaults to root for local dev.
 const base = process.env.VITEPRESS_BASE || "/";
 
-// The generated reference is a flat, single-language tree of three module
-// groups. Build its sidebar from the files on disk so new modules appear
-// without hand-maintaining a list. Labels come from each page's H1
-// (e.g. "# use/loadingError" -> "loadingError").
+// The generated API reference is a flat, single-language tree of three module
+// groups under docs/reference/api. Build its sidebar from the files on disk so
+// new modules appear without hand-maintaining a list. Labels come from each
+// page's H1 (e.g. "# use/loadingError" -> "loadingError"). The authored
+// reference landing and glossary are listed above the generated groups.
 const REFERENCE_GROUPS = ["config", "use", "utils"];
 
 const labelFromFile = (absFile) => {
@@ -25,22 +26,31 @@ const labelFromFile = (absFile) => {
 };
 
 const buildReferenceSidebar = () => {
-    if (!fs.existsSync(referenceRoot)) {
-        return [];
-    }
-    const groups = REFERENCE_GROUPS.filter((group) => fs.existsSync(path.join(referenceRoot, group))).map((group) => {
-        const groupDir = path.join(referenceRoot, group);
-        const items = fs
-            .readdirSync(groupDir)
-            .filter((name) => name.endsWith(".md"))
-            .sort((a, b) => a.localeCompare(b))
-            .map((name) => ({
-                text: labelFromFile(path.join(groupDir, name)),
-                link: `/reference/${group}/${name.replace(/\.md$/, "")}`,
-            }));
-        return { text: group, collapsed: true, items };
-    });
-    return [{ text: "Reference", items: [{ text: "Overview", link: "/reference/" }] }, ...groups];
+    const apiGroups = fs.existsSync(apiRoot)
+        ? REFERENCE_GROUPS.filter((group) => fs.existsSync(path.join(apiRoot, group))).map((group) => {
+              const groupDir = path.join(apiRoot, group);
+              const items = fs
+                  .readdirSync(groupDir)
+                  .filter((name) => name.endsWith(".md"))
+                  .sort((a, b) => a.localeCompare(b))
+                  .map((name) => ({
+                      text: labelFromFile(path.join(groupDir, name)),
+                      link: `/reference/api/${group}/${name.replace(/\.md$/, "")}`,
+                  }));
+              return { text: group, collapsed: true, items };
+          })
+        : [];
+    return [
+        {
+            text: "Reference",
+            items: [
+                { text: "Overview", link: "/reference/" },
+                { text: "Glossary", link: "/reference/glossary" },
+                { text: "API index", link: "/reference/api/" },
+            ],
+        },
+        ...apiGroups,
+    ];
 };
 
 // Optional, gitignored local dev-server overrides (HTTPS, HMR host, etc.) so a
@@ -68,15 +78,25 @@ export default defineConfig({
     themeConfig: {
         outline: "deep",
         nav: [
-            { text: "Guide", link: "/guide/" },
+            { text: "Tutorials", link: "/tutorials/" },
+            { text: "How-to", link: "/guide/" },
             { text: "Concepts", link: "/concepts/" },
             { text: "Reference", link: "/reference/" },
             { text: "npm", link: "https://www.npmjs.com/package/@arrai-innovations/reactive-helpers" },
         ],
         sidebar: {
+            "/tutorials/": [
+                {
+                    text: "Tutorials",
+                    items: [
+                        { text: "Overview", link: "/tutorials/" },
+                        { text: "Track loading and error state", link: "/tutorials/track-loading-and-error" },
+                    ],
+                },
+            ],
             "/guide/": [
                 {
-                    text: "Guide",
+                    text: "How-to",
                     items: [
                         { text: "Getting started", link: "/guide/" },
                         { text: "Wiring a data layer", link: "/guide/data-layer" },

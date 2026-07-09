@@ -30,8 +30,8 @@ output is stale (`pnpm run docs:check`).
 ## Links
 
 Link to reference and authored pages with VitePress route links, for example
-`/reference/use/loadingError` or `/guide/data-layer`. Relative Markdown links
-(`./data-layer`) also resolve. The build fails on dead links.
+`/reference/api/use/loadingError` or `/guide/data-layer`. Relative Markdown
+links (`./data-layer`) also resolve. The build fails on dead links.
 
 ## Callouts
 
