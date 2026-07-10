@@ -91,6 +91,7 @@ export default defineConfig({
                     items: [
                         { text: "Overview", link: "/tutorials/" },
                         { text: "Track loading and error state", link: "/tutorials/track-loading-and-error" },
+                        { text: "Build a reactive list", link: "/tutorials/build-a-reactive-list" },
                     ],
                 },
             ],
