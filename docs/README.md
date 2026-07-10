@@ -24,6 +24,63 @@ The site follows the [Diátaxis](https://diataxis.fr/) model:
 - **Explanation** — build understanding. Describes boundaries, contracts, lifecycle, and failure modes. No steps.
 - **Reference** — provide facts. Authoritative, exhaustive, structured lookup. For this project that is the generated API reference.
 
+## Audience
+
+Write for Vue 3 developers who found the public npm package and have never
+seen the internal Arrai Innovations projects this library grew out of. Assume
+they understand refs, reactive objects, computed values, and `<script setup>`.
+Do not assume they know this project's CRUD handler pattern, primary key
+model, subscription lifecycle, or list pipeline.
+
+## Content principles
+
+- One concrete workflow per page.
+- Contacts are the canonical example domain across authored pages.
+- Examples are self-contained. Do not introduce a shared fake client module
+  that pages depend on.
+- Examples are plain JavaScript. Add TypeScript notes only where the emitted
+  `.d.ts` types change what the reader writes.
+- Keep backend examples transport-neutral. Use `fetch` or a tiny in-memory
+  client only to show handler shape.
+- Show the state shape the reader will render: `state.objects`,
+  `state.objectsInOrder`, `state.object`, `state.loading`, `state.error`, and
+  `state.errored`.
+- Do not duplicate generated reference tables in authored pages. Link to the
+  reference for exhaustive signatures.
+- Explain the current public names even when they are imperfect. For example,
+  related-object rules use `pkKey` even when the key acts like a foreign key.
+
+## Acceptance criteria
+
+Tutorial pages:
+
+- Start from a working install/import assumption.
+- Give a single data shape with `id` as the primary key.
+- Show the final rendered state in Vue template code.
+- End by naming the next tutorial, one related how-to, and the relevant
+  reference page. Link only to pages that exist; add forward links when the
+  target page lands.
+
+How-to pages:
+
+- Name the exact starting state or prerequisite.
+- Show the smallest code needed for the task.
+- Call out the expected state change or return value.
+- Link to generated reference for full argument shapes.
+- Avoid explaining the whole system unless the task depends on one concept.
+
+Explanation pages:
+
+- Describe invariants and tradeoffs, not steps.
+- Include small code fragments only when they clarify terminology.
+- Name failure modes explicitly, such as missing `pkKey`, stale promises, or
+  subscription deletes for objects not currently in the list.
+- Link to tutorials for learning paths and to how-to pages for tasks.
+
+Reference pages are generated: improve them through source JSDoc and
+`pnpm run docs`, never by hand editing, and keep authored pages linking to
+them instead of copying argument tables.
+
 ## Frontmatter
 
 ### `title`

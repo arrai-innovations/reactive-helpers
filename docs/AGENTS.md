@@ -10,6 +10,22 @@ directory for the fuller authoring reference.
 - `docs/reference/` — generated API reference. Do not edit by hand.
 - `docs/index.md` — site home.
 
+## Audience and principles
+
+- Reader: a Vue 3 developer who found the public npm package and has never
+  seen the internal Arrai Innovations projects this library grew out of.
+  Knows refs, reactive, computed, `<script setup>`. Does not know this
+  project's handler pattern, primary key model, or list pipeline.
+- One concrete workflow per page. Contacts are the canonical example domain.
+- Examples are self-contained, plain JavaScript, and transport-neutral
+  (`fetch` or a tiny in-memory client, only to show handler shape).
+- Show the state shape the reader renders (`state.objects`,
+  `state.objectsInOrder`, `state.object`, `state.loading`, `state.error`,
+  `state.errored`).
+- Never duplicate generated reference tables; link to the reference page.
+- Acceptance criteria per page type are in `README.md`; check drafts against
+  them.
+
 ## Frontmatter
 
 Authored pages use:
