@@ -14,6 +14,8 @@ end to end so you can get a feel for the library by building something small.
 - [Build a reactive list](/tutorials/build-a-reactive-list) — fetch contacts
   through a list handler and render stable, ordered rows with
   `useListInstance`.
+- [Edit one object](/tutorials/edit-one-object) — load one contact into an
+  edit form, then save, patch, and delete it with `useObjectInstance`.
 
 Looking for something more targeted? The [how-to guides](/guide/) solve specific
 problems, the [concepts](/concepts/) pages explain how the pieces fit together,
