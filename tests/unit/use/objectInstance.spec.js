@@ -2155,6 +2155,58 @@ describe("use/objectInstance.js", function () {
             expect(objectInstance.state.errored).toBe(false);
         });
     });
+    describe("deleted reset", () => {
+        const makeDeletedInstance = async () => {
+            const objectInstance = useObjectInstance({
+                props: {
+                    target: { stream: "test_stream" },
+                    pk: "1",
+                    pkKey: "id",
+                    params: { fields },
+                },
+            });
+            objectInstance.state.crud.delete = vi.fn().mockResolvedValue(crudDeleteResolved);
+            await expect(objectInstance.delete()).resolves.toBe(true);
+            expect(objectInstance.state.deleted).toBe(true);
+            return objectInstance;
+        };
+        scopedIt("a successful retrieve clears deleted", async () => {
+            const objectInstance = await makeDeletedInstance();
+            objectInstance.state.crud.retrieve = vi.fn().mockResolvedValue(crudRetrieveResolved);
+            await expect(objectInstance.retrieve()).resolves.toBe(true);
+            expect(objectInstance.state.deleted).toBe(false);
+            expect({ ...objectInstance.state.object }).toEqual(crudRetrieveResolved);
+        });
+        scopedIt("a successful create clears deleted", async () => {
+            const objectInstance = await makeDeletedInstance();
+            objectInstance.state.crud.create = vi.fn().mockResolvedValue(crudCreateResolved);
+            await expect(objectInstance.create({ object: { name: "tset" } })).resolves.toBe(true);
+            expect(objectInstance.state.deleted).toBe(false);
+        });
+        scopedIt("a successful update clears deleted", async () => {
+            const objectInstance = await makeDeletedInstance();
+            objectInstance.state.crud.update = vi.fn().mockResolvedValue(crudRetrieveResolved);
+            await expect(objectInstance.update({ object: crudRetrieveResolved })).resolves.toBe(true);
+            expect(objectInstance.state.deleted).toBe(false);
+        });
+        scopedIt("a successful patch clears deleted", async () => {
+            const objectInstance = await makeDeletedInstance();
+            objectInstance.state.crud.patch = vi.fn().mockResolvedValue(crudRetrieveResolved);
+            await expect(objectInstance.patch({ partialObject: { name: "zxcv" } })).resolves.toBe(true);
+            expect(objectInstance.state.deleted).toBe(false);
+        });
+        scopedIt("a failed retrieve leaves deleted set", async () => {
+            const objectInstance = await makeDeletedInstance();
+            objectInstance.state.crud.retrieve = vi.fn().mockRejectedValue(new Error("still gone"));
+            await expect(objectInstance.retrieve()).resolves.toBe(false);
+            expect(objectInstance.state.deleted).toBe(true);
+        });
+        scopedIt("clear resets deleted", async () => {
+            const objectInstance = await makeDeletedInstance();
+            objectInstance.clear();
+            expect(objectInstance.state.deleted).toBe(false);
+        });
+    });
     scopedIt("useObjectSubscriptions", async function () {
         const objectInstanceA = useObjectInstance({
             props: {

@@ -248,6 +248,26 @@ describe("use/objectSubscription.js", function () {
             handlers.lastSubscribeCallback({ id: 1, name: "Newer" }, "create");
             expect(sub.state.object).toMatchObject({ id: 1, name: "Newer" });
         });
+        scopedIt("an update callback after a delete callback clears deleted", async function () {
+            const handlers = getHandlers();
+            const props = getProps({
+                pk: 1,
+                intendToSubscribe: true,
+                params: { fields },
+            });
+
+            const sub = useObjectSubscription({ props, handlers });
+            await flushPromises();
+
+            handlers.lastSubscribeCallback({}, "delete");
+            expect(sub.state.deleted).toBe(true);
+
+            handlers.lastSubscribeCallback({ id: 1, name: "Restored" }, "update");
+            expect(sub.state).toMatchObject({
+                deleted: false,
+                object: { id: 1, name: "Restored" },
+            });
+        });
     });
     describe("retrieveIntent", function () {
         scopedIt("retrieves when `intentToRetrieve` + pk + params are all truthy", async () => {

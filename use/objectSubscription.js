@@ -230,6 +230,7 @@ export function useObjectSubscription({ objectInstance, props, handlers }) {
                     assignReactiveObject(objectInstance.state.object, {});
                 } else {
                     assignReactiveObject(objectInstance.state.object, data);
+                    state.deleted = false;
                 }
             };
             const parentState = objectInstance.state;

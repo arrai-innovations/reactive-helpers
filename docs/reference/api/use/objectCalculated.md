@@ -72,7 +72,8 @@ The update function.
 
 > **deleted**: `boolean`
 
-Whether the object is deleted.
+Whether the object was deleted by the delete action or a subscription delete
+ event. Cleared when a later create, retrieve, update, or patch repopulates the object, and by `clear()`.
 
 ###### error
 
@@ -270,7 +271,8 @@ The update function.
 
 > **deleted**: `boolean`
 
-Whether the object is deleted.
+Whether the object was deleted by the delete action or a subscription delete
+ event. Cleared when a later create, retrieve, update, or patch repopulates the object, and by `clear()`.
 
 ###### error
 
