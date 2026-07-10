@@ -62,11 +62,11 @@ A promise that may optionally carry a cancel method to abort the pending operati
 
 ## Functions
 
-### CancellablePromise()
+### ~~CancellablePromise()~~
 
 > **CancellablePromise**\<`T`\>(`promise`, `cancel`): [`CancellablePromise`](#cancellablepromise)\<`T`\>
 
-Creates a cancellable promise, mostly for easy of type checking.
+Adds a cancel method to a promise.
 
 #### Type Parameters
 
@@ -80,7 +80,45 @@ Creates a cancellable promise, mostly for easy of type checking.
 
 `Promise`\<`T`\>
 
-The promise to be cancellable.
+The promise to make cancellable.
+
+##### cancel
+
+(`reason?`) => `void` \| `Promise`\<`void`\>
+
+The function to cancel the promise.
+
+#### Returns
+
+[`CancellablePromise`](#cancellablepromise)\<`T`\>
+
+The cancellable promise.
+
+#### Deprecated
+
+Use [makeCancellable](#makecancellable) instead.
+
+***
+
+### makeCancellable()
+
+> **makeCancellable**\<`T`\>(`promise`, `cancel`): [`CancellablePromise`](#cancellablepromise)\<`T`\>
+
+Adds a cancel method to a promise.
+
+#### Type Parameters
+
+##### T
+
+`T`
+
+#### Parameters
+
+##### promise
+
+`Promise`\<`T`\>
+
+The promise to make cancellable.
 
 ##### cancel
 

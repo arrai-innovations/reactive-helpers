@@ -2,7 +2,7 @@ import { defaultObjectCrud, getObjectCrud } from "../config/objectCrud.js";
 import { assignReactiveObject } from "../utils/assignReactiveObject.js";
 import { useLoadingError } from "./loadingError.js";
 import { reactive, readonly, ref } from "vue";
-import { CancellablePromise, wrapMaybeCancellable } from "../utils/cancellablePromise.js";
+import { wrapMaybeCancellable } from "../utils/cancellablePromise.js";
 import { pkRefIfReactive, refIfReactive } from "../utils/refIfReactive.js";
 
 /**
@@ -329,7 +329,7 @@ export function useObjectInstance({ props, handlers = {} }) {
             } catch (error) {
                 loadingError.setError(error);
                 loadingError.clearLoading();
-                return CancellablePromise.resolve(false);
+                return Promise.resolve(false);
             }
 
             promises.retrieve = wrapMaybeCancellable(

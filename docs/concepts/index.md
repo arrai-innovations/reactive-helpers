@@ -25,7 +25,7 @@ A few more ideas do not have their own page yet:
   Proxy variants (`useProxyLoading`, `useProxyError`, `useProxyLoadingError`)
   expose the same state without the setters, and helpers combine several
   sources into one screen-level status.
-- **Cancellable intents.** `useCancellableIntent`, `CancellablePromise`, and
+- **Cancellable intents.** `useCancellableIntent`, `makeCancellable`, and
   `cancellableFetch` let a newer request cancel an in-flight one, so state
   reflects the latest request rather than whichever response lands last.
 - **Identity and order.** A list keys rows by their `pkKey` value and keeps

@@ -4,7 +4,7 @@ import { getFakePk } from "../utils/getFakePk.js";
 import { useLoadingError } from "./loadingError.js";
 import inspect from "browser-util-inspect";
 import { computed, effectScope, isReactive, reactive, readonly, ref, shallowReactive } from "vue";
-import { CancellablePromise, wrapMaybeCancellable } from "../utils/cancellablePromise.js";
+import { wrapMaybeCancellable } from "../utils/cancellablePromise.js";
 import { refIfReactive } from "../utils/refIfReactive.js";
 
 /**
@@ -401,7 +401,7 @@ export function useListInstance({ props, handlers = {} }) {
                 return promises.list;
             }
             if (state.loading) {
-                return CancellablePromise.reject(new ListInstanceError("already loading.", "already-loading"));
+                return Promise.reject(new ListInstanceError("already loading.", "already-loading"));
             }
             loadingError.clearError();
             loadingError.setLoading();
@@ -423,7 +423,7 @@ export function useListInstance({ props, handlers = {} }) {
             } catch (e) {
                 loadingError.setError(e);
                 loadingError.clearLoading();
-                return CancellablePromise.resolve(false);
+                return Promise.resolve(false);
             }
             promises.list = wrapMaybeCancellable(
                 listPromise

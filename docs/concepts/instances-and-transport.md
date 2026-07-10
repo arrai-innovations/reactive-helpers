@@ -95,7 +95,7 @@ if (contacts.state.error instanceof ValidationError) {
 
 The instance can only cancel what the handler makes cancellable. The promise
 returned by `list()` carries a `cancel` method only when the handler's own
-promise had one; `cancellableFetch` and `CancellablePromise` build such
+promise had one; `cancellableFetch` and `makeCancellable` build such
 promises. A cooperative handler also re-checks `isCancelled.value` after each
 `await` and stops touching state once it is `true`.
 

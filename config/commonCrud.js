@@ -1,4 +1,4 @@
-import { CancellablePromise } from "../utils/cancellablePromise.js";
+import { makeCancellable } from "../utils/cancellablePromise.js";
 import cloneDeep from "lodash-es/cloneDeep.js";
 import { addOrUpdateReactiveObject } from "../utils/assignReactiveObject.js";
 import isFunction from "lodash-es/isFunction.js";
@@ -17,8 +17,7 @@ import { refIfReactive } from "../utils/refIfReactive.js";
  * @param {string} name - The name of the method.
  * @returns {(...args: any[]) => import('../utils/cancellablePromise.js').MaybeCancellablePromise<any>} - A function that returns a rejected promise with an error message.
  */
-export const missingMethod = (name) => () =>
-    CancellablePromise.reject(new Error(`Crud method "${name}" is not implemented.`));
+export const missingMethod = (name) => () => Promise.reject(new Error(`Crud method "${name}" is not implemented.`));
 
 // HACK: eslint, tsc, webstorm all can't agree on how to do this right
 // noinspection JSValidateTypes,JSUnusedLocalSymbols
@@ -34,7 +33,7 @@ export const requiredCancelMissingMethod =
     /* eslint-disable no-unused-vars */
     // @ts-ignore - refuses to accept returned CancellablePromise<void> = imported CancellablePromise<void>
     (..._args) =>
-        CancellablePromise(Promise.reject(new Error(`Crud method "${name}" is not implemented.`)), () => {});
+        makeCancellable(Promise.reject(new Error(`Crud method "${name}" is not implemented.`)), () => {});
 /* eslint-enable no-unused-vars */
 
 /**

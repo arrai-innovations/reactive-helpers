@@ -2,6 +2,12 @@
 
 _Actions potentially required by implementers are marked with italics._
 
+## v22.1.0 (Unreleased)
+
+### Features
+
+- Added `makeCancellable(promise, cancel)` as the canonical factory for adding cancellation to a promise. The `CancellablePromise` type remains unchanged, and the callable `CancellablePromise()` export remains available as a deprecated alias.
+
 ## v22.0.0 (2026-07-09)
 
 First open-source release. There are no runtime or API changes from v21.1.4; this release relicenses the package and moves it to the public npm registry.
