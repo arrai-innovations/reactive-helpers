@@ -54,7 +54,7 @@ async function save() {
   layer with `setListCrud` and `setObjectCrud` instead of passing handlers per instance.
 - [Write list CRUD handlers](/guide/write-list-handlers) shows how to implement each list-side handler,
   from fetching rows to bulk delete and server actions.
-- [Concepts](/concepts/) explains the reactive list/object model, the CRUD configuration pattern, and
-  cancellable intents.
+- [Concepts](/concepts/) explains what instances own versus your handlers, and how the list pipeline
+  layers compose.
 - The [API reference](/reference/) lists every module, composable, and utility with their arguments and
   properties.

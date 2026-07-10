@@ -20,7 +20,7 @@ features:
       details: Task-focused recipes for wiring composables to your backend and solving specific problems.
       link: /guide/
     - title: Concepts
-      details: Explanations of the reactive list/object model, the CRUD configuration pattern, and cancellable intents.
+      details: Explanations of what instances own versus your handlers, and how the list pipeline layers compose.
       link: /concepts/
     - title: Reference
       details: The generated API for every module, composable, and utility, plus a glossary of terms.

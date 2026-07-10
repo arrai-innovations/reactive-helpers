@@ -109,7 +109,11 @@ export default defineConfig({
             "/concepts/": [
                 {
                     text: "Concepts",
-                    items: [{ text: "Overview", link: "/concepts/" }],
+                    items: [
+                        { text: "Overview", link: "/concepts/" },
+                        { text: "Instances and transport", link: "/concepts/instances-and-transport" },
+                        { text: "The list pipeline", link: "/concepts/list-pipeline" },
+                    ],
                 },
             ],
             "/reference/": buildReferenceSidebar(),
