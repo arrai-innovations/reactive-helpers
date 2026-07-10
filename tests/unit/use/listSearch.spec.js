@@ -472,6 +472,31 @@ describe("use/listSearch", () => {
                 1: { id: 1, name: "one", code: "eno" },
             });
         });
+        scopedIt("adds search rules after passing through existing objects", async () => {
+            const list = useListInstance({ props: { pkKey: "id" } });
+            list.addListObject({ id: 1, name: "one" });
+            list.addListObject({ id: 2, name: "two" });
+            const searchProps = reactive({
+                textSearchValue: "one",
+                textSearchRules: [],
+            });
+            const search = useListSearch({
+                parentState: list.state,
+                props: searchProps,
+                throttle: 20,
+            });
+            await nextTick();
+            expect(search.state.objects).toEqual(list.state.objects);
+
+            searchProps.textSearchRules = ["name"];
+            await doAwaitNot({
+                obj: search.state,
+                prop: "running",
+            });
+            expect(search.state.objects).toEqual({
+                1: { id: 1, name: "one" },
+            });
+        });
     });
     scopedIt("does not pass through when showAllWhenEmpty is false", async () => {
         const list = useListInstance({ props: { pkKey: "id" } });
