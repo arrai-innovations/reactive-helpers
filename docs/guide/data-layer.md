@@ -18,8 +18,8 @@ import { reactive } from "vue";
 
 const contacts = useListInstance({
     props: {
-        pkKey: "id",
-        params: reactive({ fields: ["id", "name"] }),
+        pkKey: "contactId",
+        params: reactive({ fields: ["contactId", "name"] }),
         target: { stream: "contacts" }, // implementation-specific args passed through to your handlers
     },
     handlers: {

@@ -35,7 +35,9 @@ model, subscription lifecycle, or list pipeline.
 ## Content principles
 
 - One concrete workflow per page.
-- Contacts are the canonical example domain across authored pages.
+- Contacts are the canonical example domain across authored pages, with
+  `contactId` as the primary key field. A domain-flavored key keeps `pkKey`
+  visibly configurable; a bare `id` reads as a required field name.
 - Examples are self-contained. Do not introduce a shared fake client module
   that pages depend on.
 - Examples are plain JavaScript. Add TypeScript notes only where the emitted
@@ -55,7 +57,7 @@ model, subscription lifecycle, or list pipeline.
 Tutorial pages:
 
 - Start from a working install/import assumption.
-- Give a single data shape with `id` as the primary key.
+- Give a single data shape with `contactId` as the primary key.
 - Show the final rendered state in Vue template code.
 - End by naming the next tutorial, one related how-to, and the relevant
   reference page. Link only to pages that exist; add forward links when the

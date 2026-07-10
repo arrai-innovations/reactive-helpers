@@ -16,7 +16,9 @@ directory for the fuller authoring reference.
   seen the internal Arrai Innovations projects this library grew out of.
   Knows refs, reactive, computed, `<script setup>`. Does not know this
   project's handler pattern, primary key model, or list pipeline.
-- One concrete workflow per page. Contacts are the canonical example domain.
+- One concrete workflow per page. Contacts are the canonical example domain,
+  with `contactId` as the primary key field (never a bare `id`, which reads
+  as a required field name).
 - Examples are self-contained, plain JavaScript, and transport-neutral
   (`fetch` or a tiny in-memory client, only to show handler shape).
 - Show the state shape the reader renders (`state.objects`,

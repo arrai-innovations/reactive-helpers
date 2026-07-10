@@ -94,7 +94,7 @@ what the shared handler receives:
 import { useListInstance } from "@arrai-innovations/reactive-helpers";
 
 const contacts = useListInstance({
-    props: { pkKey: "id", target: { resource: "contacts" } },
+    props: { pkKey: "contactId", target: { resource: "contacts" } },
 });
 
 contacts.list();
@@ -102,7 +102,7 @@ contacts.list();
 
 <template>
     <ul>
-        <li v-for="contact in contacts.state.objectsInOrder" :key="contact.id">{{ contact.name }}</li>
+        <li v-for="contact in contacts.state.objectsInOrder" :key="contact.contactId">{{ contact.name }}</li>
     </ul>
 </template>
 ```
@@ -117,7 +117,7 @@ this instance. A single object works the same way through the registered
 import { useObjectInstance } from "@arrai-innovations/reactive-helpers";
 
 const contact = useObjectInstance({
-    props: { pkKey: "id", pk: 1, target: { resource: "contacts" } },
+    props: { pkKey: "contactId", pk: 1, target: { resource: "contacts" } },
 });
 
 await contact.retrieve(); // resolves true; the fetched contact is in contact.state.object

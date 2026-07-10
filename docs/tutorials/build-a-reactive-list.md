@@ -17,14 +17,14 @@ the package is already installed; see [Getting started](/guide/) if it is not.
 ## 1. Sketch the contacts source
 
 The list needs somewhere to fetch from. To keep the tutorial self-contained,
-use a tiny in-memory array; the shape is what matters. Each contact has an `id`
-that acts as its primary key:
+use a tiny in-memory array; the shape is what matters. Each contact has a
+`contactId` that acts as its primary key:
 
 ```javascript
 const contactRows = [
-    { id: 1, name: "Ada Lovelace", email: "ada@example.com" },
-    { id: 2, name: "Grace Hopper", email: "grace@example.com" },
-    { id: 3, name: "Mary Jackson", email: "mary@example.com" },
+    { contactId: 1, name: "Ada Lovelace", email: "ada@example.com" },
+    { contactId: 2, name: "Grace Hopper", email: "grace@example.com" },
+    { contactId: 3, name: "Mary Jackson", email: "mary@example.com" },
 ];
 
 async function fetchContacts() {
@@ -42,7 +42,7 @@ field and providing a `list` handler:
 import { useListInstance } from "@arrai-innovations/reactive-helpers";
 
 const contacts = useListInstance({
-    props: { pkKey: "id" },
+    props: { pkKey: "contactId" },
     handlers: {
         list: async ({ pushObjects }) => {
             pushObjects(await fetchContacts());
@@ -52,7 +52,7 @@ const contacts = useListInstance({
 ```
 
 - `pkKey` tells the instance which field identifies a contact. Every row is
-  stored under its `id`.
+  stored under its `contactId`.
 - `handlers.list` is your transport. It receives a `pushObjects` callback and
   calls it with each batch of results; here that is one call with the whole
   array.
@@ -81,7 +81,8 @@ try/catch.
 
 The fetched contacts land in `contacts.state.objects`, keyed by primary key,
 and `contacts.state.objectsInOrder`, a computed array in the order your handler
-pushed them. Iterate the ordered array and key each row by `id`. The complete
+pushed them. Iterate the ordered array and key each row by `contactId`. The
+complete
 component:
 
 ```vue
@@ -89,9 +90,9 @@ component:
 import { useListInstance } from "@arrai-innovations/reactive-helpers";
 
 const contactRows = [
-    { id: 1, name: "Ada Lovelace", email: "ada@example.com" },
-    { id: 2, name: "Grace Hopper", email: "grace@example.com" },
-    { id: 3, name: "Mary Jackson", email: "mary@example.com" },
+    { contactId: 1, name: "Ada Lovelace", email: "ada@example.com" },
+    { contactId: 2, name: "Grace Hopper", email: "grace@example.com" },
+    { contactId: 3, name: "Mary Jackson", email: "mary@example.com" },
 ];
 
 async function fetchContacts() {
@@ -100,7 +101,7 @@ async function fetchContacts() {
 }
 
 const contacts = useListInstance({
-    props: { pkKey: "id" },
+    props: { pkKey: "contactId" },
     handlers: {
         list: async ({ pushObjects }) => {
             pushObjects(await fetchContacts());
@@ -115,7 +116,7 @@ contacts.list();
     <p v-if="contacts.state.loading">Loading contacts...</p>
     <p v-else-if="contacts.state.errored" role="alert">{{ contacts.state.error.message }}</p>
     <ul v-else>
-        <li v-for="contact in contacts.state.objectsInOrder" :key="contact.id">
+        <li v-for="contact in contacts.state.objectsInOrder" :key="contact.contactId">
             {{ contact.name }} ({{ contact.email }})
         </li>
     </ul>
@@ -130,9 +131,9 @@ template tracks it all with no extra wiring.
 
 A list instance that fetches through your handler and renders stable, ordered
 rows. Rows appear in the order the handler pushed them, and each is keyed by
-its `id`: if you call `contacts.list()` again, rows whose `id` is already in
-the list are updated in place rather than recreated, so their position and
-`:key` stay stable while their fields change reactively.
+its `contactId`: if you call `contacts.list()` again, rows whose `contactId`
+is already in the list are updated in place rather than recreated, so their
+position and `:key` stay stable while their fields change reactively.
 
 ## Next steps
 
