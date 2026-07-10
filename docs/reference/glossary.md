@@ -56,7 +56,7 @@ actions, for consumers that should observe it but not mutate it.
 ## Cancellable intent
 
 An async operation that can be superseded before it settles.
-`useCancellableIntent`, `cancellablePromise`, and `cancellableFetch` keep the
+`useCancellableIntent`, `CancellablePromise`, and `cancellableFetch` keep the
 reactive state reflecting the latest request rather than whichever response
 happens to arrive last.
 
