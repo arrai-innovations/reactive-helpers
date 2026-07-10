@@ -370,7 +370,6 @@ export function useListInstance({ props, handlers = {} }) {
         loading: loadingError.loading,
         errored: loadingError.errored,
         error: loadingError.error,
-        // order: es.run(() => computed(() => Array.from(state.objectsMap.keys()))),
         order: es.run(() =>
             computed(() => {
                 return [...state.objectsMap.keys()];
