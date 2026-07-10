@@ -102,6 +102,7 @@ export default defineConfig({
                         { text: "Getting started", link: "/guide/" },
                         { text: "Wiring a data layer", link: "/guide/data-layer" },
                         { text: "Register app-wide CRUD defaults", link: "/guide/register-crud-defaults" },
+                        { text: "Write list CRUD handlers", link: "/guide/write-list-handlers" },
                     ],
                 },
             ],
