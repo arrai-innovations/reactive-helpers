@@ -60,8 +60,8 @@ const contacts = useListInstance({
   actions that drive it (`contacts.list()`).
 
 Passing `handlers` per instance keeps the tutorial self-contained;
-[Wiring a data layer](/guide/data-layer) shows how to register one shared data
-layer instead.
+[Register app-wide CRUD defaults](/guide/register-crud-defaults) shows how to
+register one shared data layer instead.
 
 ## 3. Fetch the contacts
 
@@ -137,7 +137,8 @@ the list are updated in place rather than recreated, so their position and
 ## Next steps
 
 - [Wiring a data layer](/guide/data-layer) shows how to pass backend arguments
-  through `props.params` and `props.target`, and how to register one shared
-  data layer instead of per-instance handlers.
+  through `props.params` and `props.target`;
+  [Register app-wide CRUD defaults](/guide/register-crud-defaults) shows how to
+  register one shared data layer instead of per-instance handlers.
 - The [listInstance reference](/reference/api/use/listInstance) documents the
   full state shape and every action on the instance.

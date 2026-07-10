@@ -50,6 +50,8 @@ async function save() {
 ## Next steps
 
 - [Wiring a data layer](/guide/data-layer) shows how to back a reactive list or object with your API.
+- [Register app-wide CRUD defaults](/guide/register-crud-defaults) shows how to register one shared data
+  layer with `setListCrud` and `setObjectCrud` instead of passing handlers per instance.
 - [Concepts](/concepts/) explains the reactive list/object model, the CRUD configuration pattern, and
   cancellable intents.
 - The [API reference](/reference/) lists every module, composable, and utility with their arguments and

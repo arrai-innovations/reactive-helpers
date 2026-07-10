@@ -42,22 +42,8 @@ keyed (by `pkKey`), and exposed reactively.
 ## Shared defaults
 
 To share one data layer across every instance instead of passing `handlers` each time, register defaults
-once with `setListCrud` (and `setObjectCrud` for object instances):
-
-```javascript
-import { setListCrud } from "@arrai-innovations/reactive-helpers";
-
-setListCrud({
-    list: async ({ target, params, pushObjects }) => {
-        const rows = await myClient.query(target.stream, params);
-        pushObjects(rows);
-        return true;
-    },
-});
-```
-
-Instances created afterward fall back to these defaults, so a `useListInstance({ props })` with no
-`handlers` uses your registered CRUD. Per-instance `handlers` still override the defaults when you need a
-one-off.
+once with `setListCrud` and `setObjectCrud`; see
+[Register app-wide CRUD defaults](/guide/register-crud-defaults). Per-instance `handlers` still override
+the registered defaults when you need a one-off, so the two approaches compose.
 
 See the [config reference](/reference/api/config/listCrud) for the full handler surface.
