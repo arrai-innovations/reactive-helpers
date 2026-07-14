@@ -215,7 +215,9 @@ for the full argument shape.
 ## Related pages
 
 `setListCrud` also accepts a `subscribe` handler that streams live list
-updates into the list; a future guide covers it. The
+updates into the list; a future guide covers it.
+[Write object CRUD handlers](/guide/write-object-handlers) is this page's
+object-side counterpart. The
 [ListCrudHandlers reference](/reference/api/config/listCrud#listcrudhandlers)
 lists the full handler surface, and
 [useListInstance](/reference/api/use/listInstance#uselistinstance) documents
