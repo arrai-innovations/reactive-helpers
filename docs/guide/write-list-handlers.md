@@ -16,21 +16,11 @@ list:
 
 It assumes you register handlers app-wide with `setListCrud`, as in
 [Register app-wide CRUD defaults](/guide/register-crud-defaults). Per-instance
-`handlers` take the same functions. The starting state is a contact list
-instance with no `list` handler registered yet:
-
-```javascript
-import { useListInstance } from "@arrai-innovations/reactive-helpers";
-
-const contacts = useListInstance({
-    props: { pkKey: "contactId", target: { resource: "contacts" } },
-});
-```
-
-`pkKey` names the field that identifies each row; these examples use
-`contactId`, but any field your rows carry works. `target` names the backend resource for
-the shared handlers; its shape is yours to define. Every action
-below shares the same loading and error behavior:
+`handlers` take the same functions. An instance copies the registered
+handlers when it is created, so the sections below register every handler
+first. The final section creates the `contacts` instance that calls them.
+The examples use `contactId` as the primary key field; any field your rows
+carry works. Every action shares the same loading and error behavior:
 
 - While the handler runs, `contacts.state.loading` is `true`.
 - If the handler throws or rejects, the error lands in `contacts.state.error`
@@ -87,7 +77,8 @@ full shapes.
 ## Report pagination with `setPaginateInfo`
 
 When the server pages its results, pass the paging metadata to
-`setPaginateInfo`:
+`setPaginateInfo`. Each `setListCrud` call replaces the handlers it names, so
+this version supersedes the first:
 
 ```javascript
 setListCrud({
@@ -115,14 +106,22 @@ goes back through `props.params`, however your backend names it. See
 ## Report column totals with `setColumnTotals`
 
 `setColumnTotals` works the same way for aggregate values, such as sums the
-server computed across all pages:
+server computed across all pages. This final version keeps the reload and
+pagination pieces:
 
 ```javascript
 setListCrud({
-    list: async ({ target, params, pushObjects, setColumnTotals }) => {
+    list: async ({ target, params, pushObjects, clearObjects, setPaginateInfo, setColumnTotals }) => {
         const query = new URLSearchParams(params);
         const body = await fetch(`/api/${target.resource}?${query}`).then((r) => r.json());
+        clearObjects();
         pushObjects(body.results);
+        setPaginateInfo({
+            page: body.page,
+            perPage: body.perPage,
+            totalPages: body.totalPages,
+            totalRecords: body.totalRecords,
+        });
         setColumnTotals(body.totals); // e.g. { openInvoices: 12, balance: "1250.00" }
     },
 });
@@ -152,14 +151,8 @@ setListCrud({
 });
 ```
 
-Call it from the instance:
-
-```javascript
-const ok = await contacts.bulkDelete({ pks: ["1", "2"] });
-```
-
-`contacts.bulkDelete()` resolves to `true` on success and `false` on failure.
-Omitting `pks` deletes every row currently in the list.
+`contacts.bulkDelete({ pks: ["1", "2"] })` resolves to `true` on success and
+`false` on failure. Omitting `pks` deletes every row currently in the list.
 
 ::: warning
 On success, the instance empties `contacts.state.objects` even when you
@@ -192,14 +185,38 @@ setListCrud({
 });
 ```
 
-```javascript
-const result = await contacts.executeAction({ action: "deactivate", pks: ["1"] });
-```
-
 `contacts.executeAction()` resolves with your handler's response data, or
 `null` on failure. Omitting `pks` targets every row in the list. The rows
 themselves are untouched; call `contacts.list()` to reload if the action
-changed them.
+changed them. See
+[ExecuteActionArgsRaw](/reference/api/config/listCrud#executeactionargsraw)
+for the full argument shape.
+
+## Create the instance and call the actions
+
+With every handler registered, create the instance:
+
+```javascript
+import { useListInstance } from "@arrai-innovations/reactive-helpers";
+
+const contacts = useListInstance({
+    props: { pkKey: "contactId", target: { resource: "contacts" } },
+});
+```
+
+`pkKey` names the field that identifies each row. `target` names the backend
+resource for the shared handlers; its shape is yours to define. The instance
+copies the registered handlers at creation, so keep this call after the
+`setListCrud` calls above; see
+[Register before instances are created](/guide/register-crud-defaults#_2-register-before-instances-are-created).
+
+Each action now runs the handler you registered:
+
+```javascript
+await contacts.list();
+const result = await contacts.executeAction({ action: "deactivate", pks: ["1"] });
+const ok = await contacts.bulkDelete({ pks: ["1", "2"] });
+```
 
 The instance forwards any extra keys you pass to `list()`, `bulkDelete()`, or
 `executeAction()` on to your handler, so an action payload can ride along:
@@ -208,9 +225,7 @@ The instance forwards any extra keys you pass to `list()`, `bulkDelete()`, or
 await contacts.executeAction({ action: "assign", pks: ["1"], owner: 7 });
 ```
 
-The keys the instance supplies itself always win over yours. See
-[ExecuteActionArgsRaw](/reference/api/config/listCrud#executeactionargsraw)
-for the full argument shape.
+The keys the instance supplies itself always win over yours.
 
 ## Related pages
 

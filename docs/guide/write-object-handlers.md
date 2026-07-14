@@ -17,22 +17,11 @@ single contact record:
 
 It assumes you register handlers app-wide with `setObjectCrud`, as in
 [Register app-wide CRUD defaults](/guide/register-crud-defaults). Per-instance
-`handlers` take the same functions. The starting state is a contact instance
-with no handlers registered yet:
-
-```javascript
-import { useObjectInstance } from "@arrai-innovations/reactive-helpers";
-
-const contact = useObjectInstance({
-    props: { pk: 1, pkKey: "contactId", target: { resource: "contacts" } },
-});
-```
-
-`pkKey` names the field that identifies the record; these examples use
-`contactId`, but any field your records carry works. `pk` identifies the record to
-act on. `target` names the backend resource for the shared handlers; its
-shape is yours to define. Every action below shares the same loading and
-error behavior:
+`handlers` take the same functions. An instance copies the registered
+handlers when it is created, so the sections below register every handler
+first. The final section creates the `contact` instance that calls them. The
+examples use `contactId` as the primary key field; any field your records
+carry works. Every action shares the same loading and error behavior:
 
 - While the handler runs, `contact.state.loading` is `true`.
 - Each action resolves to `true` on success or `false` on failure.
@@ -82,15 +71,9 @@ full argument shape.
 
 ## Create a record with `create`
 
-Call the action with the new data:
-
-```javascript
-const ok = await contact.create({ object: { name: "Grace Hopper", email: "grace@example.com" } });
-```
-
 The handler receives the same `target`, `params`, `pkKey`, and `isCancelled`,
-plus `object`, the data you passed. It receives no `pk`; the record does not
-exist yet:
+plus `object`, the new data you pass to `contact.create({ object })`. It
+receives no `pk`; the record does not exist yet:
 
 ```javascript
 setObjectCrud({
@@ -122,13 +105,10 @@ argument shape.
 
 ## Save the whole record with `update`
 
-```javascript
-const ok = await contact.update({ object: { ...contact.state.object } });
-```
-
-The handler receives `target`, `object`, `params`, `pkKey`, and
-`isCancelled`. Like `create`, it gets no `pk`. The primary key travels inside
-the record, so read `object[pkKey]` to build the request:
+The handler receives `target`, `params`, `pkKey`, and `isCancelled`, plus
+`object`, the whole record you pass to `contact.update({ object })`. Like
+`create`, it gets no `pk`. The primary key travels inside the record, so read
+`object[pkKey]` to build the request:
 
 ```javascript
 setObjectCrud({
@@ -155,13 +135,9 @@ argument shape.
 
 ## Patch a few fields with `patch`
 
-```javascript
-const ok = await contact.patch({ partialObject: { email: "grace@example.org" } });
-```
-
 Unlike `update`, `patch` gets the `pk` back. The handler receives `target`,
-`pk`, `partialObject` (only the fields you passed), `params`, `pkKey`, and
-`isCancelled`:
+`pk`, `partialObject`, `params`, `pkKey`, and `isCancelled`. `partialObject`
+holds only the fields you pass to `contact.patch({ partialObject })`:
 
 ```javascript
 setObjectCrud({
@@ -228,15 +204,42 @@ setObjectCrud({
 });
 ```
 
-```javascript
-const ok = await contact.executeAction({ action: "deactivate" });
-```
-
 Here the object side parts ways with the list side, where `executeAction`
 hands the handler's response data back. `contact.executeAction()` resolves to
 `true` or `false`, never the response data. It also leaves
 `contact.state.object` untouched; call `contact.retrieve()` afterwards when
-the action changed the record.
+the action changed the record. See
+[ObjectExecuteActionArgsRaw](/reference/api/config/objectCrud#objectexecuteactionargsraw)
+for the full argument shape.
+
+## Create the instance and call the actions
+
+With every handler registered, create the instance:
+
+```javascript
+import { useObjectInstance } from "@arrai-innovations/reactive-helpers";
+
+const contact = useObjectInstance({
+    props: { pk: 1, pkKey: "contactId", target: { resource: "contacts" } },
+});
+```
+
+`pk` identifies the record to act on. `pkKey` names the field that identifies
+the record. `target` names the backend resource for the shared handlers; its
+shape is yours to define. The instance copies the registered handlers at
+creation, so keep this call after the `setObjectCrud` calls above; see
+[Register before instances are created](/guide/register-crud-defaults#_2-register-before-instances-are-created).
+
+Each action now runs the handler you registered:
+
+```javascript
+await contact.retrieve();
+await contact.create({ object: { name: "Grace Hopper", email: "grace@example.com" } });
+await contact.update({ object: { ...contact.state.object } });
+await contact.patch({ partialObject: { email: "grace@example.org" } });
+await contact.executeAction({ action: "deactivate" });
+await contact.delete();
+```
 
 Every action forwards extra keys to your handler, so a payload can ride
 along:
@@ -245,9 +248,7 @@ along:
 await contact.executeAction({ action: "assign", owner: 7 });
 ```
 
-The keys the instance supplies itself always win over yours. See
-[ObjectExecuteActionArgsRaw](/reference/api/config/objectCrud#objectexecuteactionargsraw)
-for the full argument shape.
+The keys the instance supplies itself always win over yours.
 
 ## Related pages
 
