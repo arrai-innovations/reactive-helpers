@@ -159,7 +159,7 @@ function mergeFns(source) {
  *             order: ['3','1','2'],
  *         },
  *         secondOrder: {
- *             pkKey: 'relatedObject.secondOrderId',
+ *             pkKey: 'relatedItem.firstOrder.secondOrderId',
  *             objects: someOtherObjectsSource.objects,
  *         },
  *     },
