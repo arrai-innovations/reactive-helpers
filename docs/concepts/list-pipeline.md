@@ -6,10 +6,52 @@ type: explanation
 
 # The list pipeline
 
-`useList` composes seven layers into one list. Each layer adds a single
-concern on top of the one below it. This page explains what each layer owns,
-the order they apply in, and the invariants that hold across the chain. These
-examples use contacts with `contactId` as the primary key field.
+`useList` turns a synchronized collection of rows into one final reactive list
+view. You point it at a collection, and it keeps those rows in sync with your
+server. It then enriches, narrows, and reorders them into the single `state`
+your template renders. This page explains which layer owns each transformation.
+It also names the invariants that hold across the chain as rows arrive, change,
+and drop out of view. The examples use a contact list, with `contactId` as the
+primary key field.
+
+Reach for `useList` when a plain instance is not enough. `useListInstance`
+alone owns rows and their identity, and nothing more. `useList` wraps it with
+everything a real list screen tends to need: refetching when inputs change,
+live updates, related and calculated values, filtering, text search, and
+sorting. Every layer exists in the chain, but each capability is optional. A
+list with no search rules and no sort rules still works, and those layers pass
+their rows through untouched.
+
+The manager exposes one final `state`. Your template reads `objectsInOrder` to
+render rows, `objects` and `order` for keyed access, and `loading`, `error`,
+and `errored` for status. The related and calculated maps hang beside those
+rows for the same template to read. Everything below produces that one
+observable view.
+
+## A transformation trace
+
+Picture a contact list screen. Your `params` name which contacts to fetch. The
+subscription layer sees `intendToList` turn true and calls your list handler.
+The rows land in the instance, each keyed by its `contactId`. That primary key
+is how every later layer refers to a row.
+
+Take one contact, Ada. Ada arrives in the instance as a row. The related layer
+reads Ada's company foreign key and resolves it against a collection of
+companies you already hold. The resolved company appears in
+`state.relatedObjects`, keyed by Ada's primary key. The calculated layer then
+reads Ada's row and her related company together. It builds a display label
+into `state.calculatedObjects`, keyed the same way.
+
+Now the narrowing layers decide whether Ada appears at all. The filter layer
+runs your `allowedFilter` and `excludedFilter` against Ada, her related
+company, and her calculated label. If she passes, the search layer checks her
+against the current text query. If she still qualifies, the sort layer places
+her among the rows that remain.
+
+Ada was one row the whole way through. No layer copied her, and no layer wrote
+to her. Each layer only decided whether she appears, where she appears, or what
+extra values hang beside her. That is the model in one sentence: same row,
+different view.
 
 ## The layers in order
 
@@ -58,8 +100,8 @@ Downstream layers hold references to the instance's rows, never copies. When
 a subscription event updates a contact, every layer shows the change at once.
 Filter and search change which `contactId`s appear; sort changes the order
 they appear in. No layer adds a row, and no layer writes to one. Related and
-calculated keep their derived data in side maps keyed by `contactId`, off the
-row itself.
+calculated keep their derived data in side maps keyed by the primary key, off
+the row itself.
 
 ## Order matters
 
@@ -73,13 +115,30 @@ The fixed order lets later layers see earlier layers' work:
 The reverse never holds: a related rule cannot see filter output, and search
 only sees what filter let through.
 
+## Client-side layers see only the loaded rows
+
 Everything past the subscription layer is client-side. Filter, search, and
-sort never refetch; they reshape what the last fetch and the subscription
-events left in the instance. Narrowing on the server goes through `params`
-instead, as in [Write list CRUD handlers](/guide/write-list-handlers).
-Search results and the sort order are also throttled, so they can trail fast
-input by a beat. The related, calculated, and search layers expose `running`
-flags while they rebuild.
+sort never refetch. They reshape only the rows the instance currently holds,
+the ones the last fetch and the subscription events left there. They never
+reach the full server-side collection.
+
+::: warning
+This matters most under pagination or partial loading. If the instance holds
+one page of contacts, a search or a sort ranges over that page alone. The
+result has loaded-set meaning, not application-wide meaning. A search that
+finds nothing means nothing matched among the loaded rows, not that no such
+contact exists on the server.
+:::
+
+So the layer you reach for depends on the scope you want. For a view over the
+rows already loaded, apply filter, search, or sort. For work across the whole
+collection, change the reactive `params` the subscription watches and let the
+server select the rows; see
+[Reload from reactive params](/guide/reload-from-reactive-params).
+
+Search results and the sort order are throttled, so they can trail fast input
+by a beat. The related, calculated, and search layers expose `running` flags
+while they rebuild.
 
 ## Failure modes
 
@@ -90,13 +149,17 @@ flags while they rebuild.
 - **Malformed events.** An event with no data, or an action other than
   create, update, or delete, throws back into your subscribe handler. So
   does a create or update whose row lacks its primary key.
-- **Missing `params`.** The props for `useList` must define `params`, even
-  as an empty object; the subscription layer throws at creation without it.
 - **Reading the wrong layer.** Rendering a middle layer's state, such as
   `managed.listSearch.state`, silently drops the layers after it. Render the
   manager's `state` unless you want a partial view.
-- **Empty search behavior.** With search rules set and `showAllWhenEmpty`
-  turned off, an empty query shows nothing. The default shows all rows.
+- **Missing `params`.** The subscription layer watches `params` to know when
+  to refetch, so it needs that key present to react to. The props for
+  `useList` must define `params`, even as an empty object; the subscription
+  layer throws at creation without it.
+- **Empty search behavior.** Search is a view over the loaded rows, not a
+  fetch. With search rules set and `showAllWhenEmpty` turned off, an empty
+  query is a filter that admits nothing, so the list shows nothing. The
+  default treats an empty query as no filter yet and shows every loaded row.
 
 ## Where to go next
 
@@ -106,12 +169,18 @@ flags while they rebuild.
   the handlers that feed the instance;
   [Register app-wide CRUD defaults](/guide/register-crud-defaults) shares
   them app-wide.
-- Reference: [useList](/reference/api/use/list) documents the manager, and
-  each layer has its own page:
-  [listInstance](/reference/api/use/listInstance),
-  [listSubscription](/reference/api/use/listSubscription),
+- Configuring the manager's own layers: no task guide yet covers setting up
+  related, calculated, filter, search, and sort in `useList`. Until one
+  lands, each layer's reference page documents its rule shape:
   [listRelated](/reference/api/use/listRelated),
   [listCalculated](/reference/api/use/listCalculated),
   [listFilter](/reference/api/use/listFilter),
   [listSearch](/reference/api/use/listSearch), and
   [listSort](/reference/api/use/listSort).
+- Related concept: [The object pipeline](/concepts/object-pipeline) applies
+  the same layering to a single record, without the membership and ordering
+  stages.
+- Reference: [useList](/reference/api/use/list) documents the manager, and
+  [listInstance](/reference/api/use/listInstance) and
+  [listSubscription](/reference/api/use/listSubscription) document the two
+  layers that own actions.

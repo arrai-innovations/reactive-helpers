@@ -17,6 +17,9 @@ familiar patterns.
 - [The list pipeline](/concepts/list-pipeline): how the instance,
   subscription, related, calculated, filter, search, and sort layers compose
   into one list.
+- [The object pipeline](/concepts/object-pipeline): how `useObject` synchronizes
+  one record with your transport and enriches it with related and calculated
+  values.
 
 A few more ideas do not have their own page yet:
 

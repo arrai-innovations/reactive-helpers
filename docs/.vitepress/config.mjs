@@ -116,6 +116,7 @@ export default defineConfig({
                         { text: "Overview", link: "/concepts/" },
                         { text: "Instances and transport", link: "/concepts/instances-and-transport" },
                         { text: "The list pipeline", link: "/concepts/list-pipeline" },
+                        { text: "The object pipeline", link: "/concepts/object-pipeline" },
                     ],
                 },
             ],
