@@ -318,9 +318,9 @@ Indicates if watches on the related objects themselves are active, managing upda
 
 Signals whether any computations related to object relationships are currently in progress.
 
-###### running?
+###### running
 
-> `optional` **running?**: `boolean`
+> **running**: `boolean`
 
 General flag that indicates if the list-related logic is processing, used to manage UI feedback or prevent concurrent operations.
 

@@ -22,6 +22,7 @@ export function setListSortDefaultOptions({ sortThrottleWait }: {
  * @typedef {object} ListSortRawState - Represents the raw state used by the list sorting functionality. Includes all configurations and state necessary to manage sorting operations within a Vue application.
  * @property {OrderByRule[]} orderByRules - Current sorting rules applied to the list.
  * @property {boolean[]} orderByDesc - Flags indicating whether each sort criterion is in descending order.
+ * @property {import('vue').ComputedRef<boolean|undefined>} running - Whether the sort is settling a pending reorder, combined with the upstream running state so it propagates through the composed list state. True from when a new order is computed until the throttled reorder lands.
  */
 /**
  *
@@ -136,6 +137,10 @@ export type ListSortRawState = {
      * Flags indicating whether each sort criterion is in descending order.
      */
     orderByDesc: boolean[];
+    /**
+     * Whether the sort is settling a pending reorder, combined with the upstream running state so it propagates through the composed list state. True from when a new order is computed until the throttled reorder lands.
+     */
+    running: import("vue").ComputedRef<boolean | undefined>;
 };
 /**
  * The raw, pre-unwrapped parent state consumed by the list sort mixin, aggregating the upstream list composable states.

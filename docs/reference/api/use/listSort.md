@@ -816,9 +816,9 @@ Indicates if watches on the related objects themselves are active, managing upda
 
 Signals whether any computations related to object relationships are currently in progress.
 
-###### running?
+###### running
 
-> `optional` **running?**: `boolean`
+> **running**: `boolean`
 
 General flag that indicates if the list-related logic is processing, used to manage UI feedback or prevent concurrent operations.
 
@@ -876,6 +876,12 @@ Flags indicating whether each sort criterion is in descending order.
 > **orderByRules**: [`OrderByRule`](#orderbyrule)[]
 
 Current sorting rules applied to the list.
+
+##### running
+
+> **running**: `ComputedRef`\<`boolean`\>
+
+Whether the sort is settling a pending reorder, combined with the upstream running state so it propagates through the composed list state. True from when a new order is computed until the throttled reorder lands.
 
 ## Type Aliases
 
