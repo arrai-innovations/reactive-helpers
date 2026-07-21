@@ -56,6 +56,8 @@ async function save() {
   from fetching rows to bulk delete and server actions.
 - [Write object CRUD handlers](/guide/write-object-handlers) shows how to implement each object-side
   handler, from loading one record to create, update, patch, delete, and server actions.
+- [Reload from reactive params](/guide/reload-from-reactive-params) shows how to refetch a list or
+  re-retrieve a record automatically when filters, props, or route params change.
 - [Concepts](/concepts/) explains what instances own versus your handlers, and how the list pipeline
   layers compose.
 - The [API reference](/reference/) lists every module, composable, and utility with their arguments and

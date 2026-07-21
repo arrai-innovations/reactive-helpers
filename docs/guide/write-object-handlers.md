@@ -257,7 +257,10 @@ into the object; a future guide covers it. The
 [Edit one object](/tutorials/edit-one-object) tutorial walks the retrieve,
 update, patch, and delete flow with a rendered form.
 [Write list CRUD handlers](/guide/write-list-handlers) is this page's
-list-side counterpart. The
+list-side counterpart.
+[Reload from reactive params](/guide/reload-from-reactive-params) shows how
+to re-run `retrieve()` automatically when the primary key or params change.
+The
 [ObjectCrudHandlers reference](/reference/api/config/objectCrud#objectcrudhandlers)
 lists the full handler surface, and
 [useObjectInstance](/reference/api/use/objectInstance#useobjectinstance)

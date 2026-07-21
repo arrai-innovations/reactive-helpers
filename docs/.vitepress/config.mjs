@@ -105,6 +105,7 @@ export default defineConfig({
                         { text: "Register app-wide CRUD defaults", link: "/guide/register-crud-defaults" },
                         { text: "Write list CRUD handlers", link: "/guide/write-list-handlers" },
                         { text: "Write object CRUD handlers", link: "/guide/write-object-handlers" },
+                        { text: "Reload from reactive params", link: "/guide/reload-from-reactive-params" },
                     ],
                 },
             ],
