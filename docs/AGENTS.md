@@ -21,9 +21,12 @@ directory for the fuller authoring reference.
   as a required field name).
 - Examples are self-contained, plain JavaScript, and transport-neutral
   (`fetch` or a tiny in-memory client, only to show handler shape).
-- Show the state shape the reader renders (`state.objects`,
-  `state.objectsInOrder`, `state.object`, `state.loading`, `state.error`,
-  `state.errored`).
+- Show the state shape the reader renders, using the named composable return
+  value in each path (for example, `contact.state.object`).
+- Name composable return values and use complete public paths consistently,
+  such as `contact.state.object` and `contact.retrieve()`. Use shorthand only
+  after declaring an alias. Distinguish inputs such as `props.pk` from returned
+  state such as `contact.state.pk`.
 - Never duplicate generated reference tables; link to the reference page.
 - Acceptance criteria per page type are in `README.md`; check drafts against
   them.

@@ -44,9 +44,20 @@ model, subscription lifecycle, or list pipeline.
   `.d.ts` types change what the reader writes.
 - Keep backend examples transport-neutral. Use `fetch` or a tiny in-memory
   client only to show handler shape.
-- Show the state shape the reader will render: `state.objects`,
-  `state.objectsInOrder`, `state.object`, `state.loading`, `state.error`, and
-  `state.errored`.
+- Show the state shape the reader will render, using the named composable return
+  value in each path. Common fields include `.state.objects`,
+  `.state.objectsInOrder`, `.state.object`, `.state.loading`, `.state.error`,
+  and `.state.errored`.
+- Name values returned by composables and use their complete public property
+  paths. For example, after `const contact = useObject(...)`, write
+  `contact.state.object`, `contact.state.pk`, and `contact.retrieve()`. Do not
+  alternate between full paths and unexplained shorthand such as `state.object`,
+  `pk`, or `retrieve()`. A page may introduce a shorter alias through code, such
+  as `const { state } = contact`, and then use that alias consistently.
+- Distinguish inputs from returned state when both expose the same name. For
+  example, use `props.pk` for the configured input and `contact.state.pk` for
+  the value exposed by the returned manager. Keep actions on the returned
+  composable rather than placing them under `.state`.
 - Do not duplicate generated reference tables in authored pages. Link to the
   reference for exhaustive signatures.
 - Explain the current public names even when they are imperfect. For example,

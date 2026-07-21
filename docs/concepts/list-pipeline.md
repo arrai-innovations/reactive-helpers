@@ -8,10 +8,10 @@ type: explanation
 
 `useList` turns a synchronized collection of rows into one final reactive list
 view. You point it at a collection, and it keeps those rows in sync with your
-server. It then enriches, narrows, and reorders them into the single `state`
-your template renders. This page explains which layer owns each transformation.
-It also names the invariants that hold across the chain as rows arrive, change,
-and drop out of view. The examples use a contact list, with `contactId` as the
+server. It then enriches, narrows, and reorders them into the single state your
+template renders. This page explains which layer owns each transformation. It
+also names the invariants that hold across the chain as rows arrive, change, and
+drop out of view. The examples use a contact list, with `contactId` as the
 primary key field.
 
 Reach for `useList` when a plain instance is not enough. `useListInstance`
@@ -22,25 +22,52 @@ sorting. Every layer exists in the chain, but each capability is optional. A
 list with no search rules and no sort rules still works, and those layers pass
 their rows through untouched.
 
-The manager exposes one final `state`. Your template reads `objectsInOrder` to
-render rows, `objects` and `order` for keyed access, and `loading`, `error`,
-and `errored` for status. The related and calculated maps hang beside those
-rows for the same template to read. Everything below produces that one
-observable view.
+## The returned manager
+
+This page names the value returned by `useList` `contacts`:
+
+```javascript
+const contacts = useList({ props, handlers });
+```
+
+The manager keeps reactive values under `contacts.state` and exposes actions
+directly on `contacts`:
+
+```javascript
+const contactId = "42";
+
+contacts.state.pkKey; // The field that identifies each row
+contacts.state.objects[contactId]; // A row accessed by primary key
+contacts.state.order; // Primary keys in presentation order
+contacts.state.objectsInOrder; // Rows in presentation order
+contacts.state.relatedObjects[contactId].company;
+contacts.state.calculatedObjects[contactId].displayLabel;
+contacts.state.loading;
+contacts.state.error;
+contacts.state.errored;
+
+contacts.list();
+contacts.bulkDelete({ pks: [contactId] });
+```
+
+The final `contacts.state` is flat rather than nested by pipeline layer. It
+contains the instance fields, subscription status, enrichment maps, and final
+filtered, searched, and sorted views together. The manager preserves the
+individual layers under `contacts.managed` for advanced use.
 
 ## A transformation trace
 
-Picture a contact list screen. Your `params` name which contacts to fetch. The
-subscription layer sees `intendToList` turn true and calls your list handler.
-The rows land in the instance, each keyed by its `contactId`. That primary key
-is how every later layer refers to a row.
+Picture a contact list screen. `props.params` names which contacts to fetch. The
+subscription layer sees `props.intendToList` turn true and calls your list
+handler. The rows land in the instance, each keyed by its `contactId`. That
+primary key is how every later layer refers to a row.
 
 Take one contact, Ada. Ada arrives in the instance as a row. The related layer
 reads Ada's company foreign key and resolves it against a collection of
 companies you already hold. The resolved company appears in
-`state.relatedObjects`, keyed by Ada's primary key. The calculated layer then
-reads Ada's row and her related company together. It builds a display label
-into `state.calculatedObjects`, keyed the same way.
+`contacts.state.relatedObjects`, keyed by Ada's primary key. The calculated
+layer then reads Ada's row and her related company together. It builds a display
+label into `contacts.state.calculatedObjects`, keyed the same way.
 
 Now the narrowing layers decide whether Ada appears at all. The filter layer
 runs your `allowedFilter` and `excludedFilter` against Ada, her related
@@ -59,23 +86,26 @@ different view.
 layer's state as its parent:
 
 1. **Instance** (`useListInstance`) owns the rows: identity by `contactId`,
-   insertion order, merging, and the CRUD actions.
+   insertion order, merging, and the CRUD actions exposed on `contacts`.
 2. **Subscription** (`useListSubscription`) owns timing. It watches
-   `intendToList` and `intendToSubscribe` together with `params`, refetching
-   or resubscribing as they change. Live events flow back into the instance.
-3. **Related** (`useListRelated`) adds `state.relatedObjects`, a per-row map
-   of objects looked up from other collections by rule.
-4. **Calculated** (`useListCalculated`) adds `state.calculatedObjects`,
-   per-row values derived from the row and its related objects.
-5. **Filter** (`useListFilter`) narrows membership with your `allowedFilter`
-   and `excludedFilter` functions.
+   `props.intendToList` and `props.intendToSubscribe` together with
+   `props.params`, refetching or resubscribing as they change. Live events flow
+   back into the instance.
+3. **Related** (`useListRelated`) adds `contacts.state.relatedObjects`, a
+   per-row map of objects looked up from other collections by rule.
+4. **Calculated** (`useListCalculated`) adds
+   `contacts.state.calculatedObjects`, per-row values derived from the row and
+   its related objects.
+5. **Filter** (`useListFilter`) narrows membership with your
+   `props.allowedFilter` and `props.excludedFilter` functions.
 6. **Search** (`useListSearch`) narrows membership by text query, using a
-   FlexSearch index built from your rules.
-7. **Sort** (`useListSort`) reorders whatever remains by your `orderByRules`.
+   FlexSearch index built from `props.textSearchRules`.
+7. **Sort** (`useListSort`) reorders whatever remains by `props.orderByRules`.
 
-The manager returned by `useList` exposes the sort layer's state as `state`,
-the end of the chain. Its `managed` property holds every layer, so
-`managed.listFilter.state` shows the list before search and sort apply.
+The manager returned by `useList` exposes the sort layer's state as
+`contacts.state`, the end of the chain. The `contacts.managed` property holds
+every layer, so `contacts.managed.listFilter.state` shows the list before search
+and sort apply.
 
 `useObject` layers subscription, related, and calculated over an object
 instance the same way; single objects have no filter, search, or sort.
@@ -84,15 +114,17 @@ instance the same way; single objects have no filter, search, or sort.
 
 Each layer re-exposes everything from its parent state and overrides only
 what it owns. Filter, search, and sort swap in narrowed or reordered views of
-`objects`, `order`, and `objectsInOrder`. Related and calculated add their
-maps and change nothing else. Subscription adds `intendToList`,
-`intendToSubscribe`, and `subscribed`, and merges its loading and error
-status with the instance's. Whatever layer you read from, the upstream fields
-are still there.
+`contacts.state.objects`, `contacts.state.order`, and
+`contacts.state.objectsInOrder`. Related and calculated add their maps and
+change nothing else. Subscription adds `contacts.state.intendToList`,
+`contacts.state.intendToSubscribe`, and `contacts.state.subscribed`, and merges
+its loading and error status with the instance's. Whatever layer you read from,
+the upstream fields are still there.
 
-Actions stay where they started. The manager's `list()`, `bulkDelete()`,
-`executeAction()`, and `clearError()` come from the instance and subscription
-layers. The derived layers contribute no actions; they are views.
+Actions stay outside the state object. The actions `contacts.list()`,
+`contacts.bulkDelete()`, `contacts.executeAction()`, and `contacts.clearError()`
+come from the instance and subscription layers. The derived layers contribute
+no actions; they are views.
 
 ## The instance owns row identity
 
@@ -132,13 +164,13 @@ contact exists on the server.
 
 So the layer you reach for depends on the scope you want. For a view over the
 rows already loaded, apply filter, search, or sort. For work across the whole
-collection, change the reactive `params` the subscription watches and let the
-server select the rows; see
+collection, change the reactive `props.params` the subscription watches and let
+the server select the rows; see
 [Reload from reactive params](/guide/reload-from-reactive-params).
 
 Search results and the sort order are throttled, so they can trail fast input
-by a beat. The related, calculated, and search layers expose `running` flags
-while they rebuild.
+by a beat. `contacts.state.running` reflects when the composed view is
+rebuilding.
 
 ## Failure modes
 
@@ -150,16 +182,17 @@ while they rebuild.
   create, update, or delete, throws back into your subscribe handler. So
   does a create or update whose row lacks its primary key.
 - **Reading the wrong layer.** Rendering a middle layer's state, such as
-  `managed.listSearch.state`, silently drops the layers after it. Render the
-  manager's `state` unless you want a partial view.
-- **Missing `params`.** The subscription layer watches `params` to know when
-  to refetch, so it needs that key present to react to. The props for
-  `useList` must define `params`, even as an empty object; the subscription
+  `contacts.managed.listSearch.state`, silently drops the layers after it.
+  Render `contacts.state` unless you want a partial view.
+- **Missing `props.params`.** The subscription layer watches `props.params` to
+  know when to refetch, so it needs that key present to react to. The props for
+  `useList` must define `props.params`, even as an empty object; the subscription
   layer throws at creation without it.
 - **Empty search behavior.** Search is a view over the loaded rows, not a
-  fetch. With search rules set and `showAllWhenEmpty` turned off, an empty
-  query is a filter that admits nothing, so the list shows nothing. The
-  default treats an empty query as no filter yet and shows every loaded row.
+  fetch. With `props.textSearchRules` set and the `searchShowAllWhenEmpty`
+  option passed to `useList` turned off, an empty query is a filter that admits
+  nothing, so the list shows nothing. The default treats an empty query as no
+  filter yet and shows every loaded row.
 
 ## Where to go next
 
