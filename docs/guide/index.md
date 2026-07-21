@@ -93,6 +93,8 @@ Pick the route that matches what you are trying to do.
   and [Write object CRUD handlers](/guide/write-object-handlers) implement each
   handler. [Reload from reactive params](/guide/reload-from-reactive-params)
   refetches when filters, props, or route params change.
+  [Cancel stale requests](/guide/cancel-stale-requests) makes those reloads safe
+  so only the latest request's result lands.
 - **Understand the design.** The [concepts](/concepts/) pages explain what an
   instance owns versus your handlers, and how the list and object pipelines
   compose.

@@ -25,6 +25,10 @@ Choose the page that answers your current question.
   [The object pipeline](/concepts/object-pipeline) explains how `useObject`
   synchronizes a single record with your transport, tracks its deletion state,
   and enriches it with related and calculated values.
+- **How does state stay on the latest request?**
+  [Cancellable intents](/concepts/cancellable-intents) explains how a newer
+  reactive trigger cancels an in-flight run, the contract that makes that
+  possible, and what happens when a transport cannot cancel.
 
 ## Related ideas
 
@@ -36,12 +40,6 @@ these are the best places to learn them.
   Learn them in [Track loading and error state](/tutorials/track-loading-and-error),
   and see the [useLoadingError reference](/reference/api/use/loadingError) for the
   full surface, including the proxy variants.
-- **Cancellable intents.** `useCancellableIntent`, `makeCancellable`, and
-  `cancellableFetch` let a newer request cancel an in-flight one, so state
-  reflects the latest request rather than whichever response lands last. See the
-  [useCancellableIntent reference](/reference/api/use/cancellableIntent) and
-  [Reload from reactive params](/guide/reload-from-reactive-params), where the
-  pattern matters most. A dedicated explanation is planned.
 - **Identity and order.** A list keys rows by their `pkKey` value and keeps them
   in push order. Pushing a row whose key is already present merges it in place
   instead of duplicating it. [The list pipeline](/concepts/list-pipeline)
