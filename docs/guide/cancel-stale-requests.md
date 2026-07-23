@@ -13,7 +13,8 @@ newer one.
 
 You start from a working handler driven by reactive reload. That is a `list` or
 `retrieve` handler wired through `useListSubscription` or `useObjectSubscription`, as set up in
-[Reload from reactive params](/guide/reload-from-reactive-params). If a watched
+[Filter a list](/guide/filter-a-list) or
+[Reload a record when the route changes](/guide/reload-a-record). If a watched
 input can change quickly, such as a `contactId` under fast route navigation, that
 handler needs to be cancellable. The examples use `contactId` as the primary key
 field.
@@ -112,28 +113,33 @@ setObjectCrud({
 The `async` keyword makes this return a native promise with no `.cancel`. The
 intent has nothing to cancel. So a fast `contactId` change loses the race. The
 stale record settles into `contact.state.object`, and the new key is never
-fetched. The wrong contact wins the screen.
+fetched. The record you navigated away from stays on screen.
 
 ## Confirm only the latest request lands
 
 Wire the cancellable handler into the reactive reload you set up in
-[Reload from reactive params](/guide/reload-from-reactive-params). Then change
+[Filter a list](/guide/filter-a-list) or
+[Reload a record when the route changes](/guide/reload-a-record). Then change
 the watched input twice in quick succession, faster than the first request
 returns.
 
 With the cancellable handler, only the second request's result lands. Watch
 `contact.state.object` or `contacts.state.objectsInOrder` settle on the value for
 the latest input. In your network tools, the first request shows as cancelled.
-With the plain `async` handler, both requests complete, and the first one can
-overwrite the second.
+
+Without cancellation, the two sides differ. A `retrieve` cannot start the new
+key while the stale request still holds the instance, so the stale record lands
+and the new key is never fetched. A `list` degrades more gently: the stale rows
+land first, then the reload replaces them.
 
 ## Related pages
 
 - Concept: [Cancellable intents](/concepts/cancellable-intents) explains the
   model, the cancel contract, and what transports that cannot abort do to your
   state.
-- Task: [Reload from reactive params](/guide/reload-from-reactive-params) sets up
-  the reactive reload this guide makes safe.
+- Tasks: [Filter a list](/guide/filter-a-list) and
+  [Reload a record when the route changes](/guide/reload-a-record) set up the
+  reactive reload this guide makes safe.
 - Reference:
   [useCancellableIntent](/reference/api/use/cancellableIntent),
   [cancellableFetch](/reference/api/utils/cancellableFetch), and
