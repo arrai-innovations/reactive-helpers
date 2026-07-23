@@ -108,6 +108,7 @@ export default defineConfig({
                         { text: "Bulk delete rows", link: "/guide/bulk-delete-rows" },
                         { text: "Run a server action", link: "/guide/run-a-server-action" },
                         { text: "Filter a list", link: "/guide/filter-a-list" },
+                        { text: "Filter and sort a loaded list", link: "/guide/add-client-sort-and-filter" },
                         { text: "Reload a record", link: "/guide/reload-a-record" },
                         { text: "Cancel stale requests", link: "/guide/cancel-stale-requests" },
                     ],
