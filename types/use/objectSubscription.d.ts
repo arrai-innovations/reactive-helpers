@@ -66,7 +66,7 @@ export function useObjectSubscriptions(subscriptionArgs: {
  * ```
  * <script setup>
  * import { useObjectSubscription } from "@arrai-innovations/reactive-helpers";
- * import { reactive, ref, toRef } from "vue";
+ * import { reactive, toRef } from "vue";
  *
  * const pkKey = "id";
  * const props = defineProps({
@@ -85,11 +85,12 @@ export function useObjectSubscriptions(subscriptionArgs: {
  *     params: {
  *         fields: ['foo', 'bar'],
  *     },
- *     intendToRetrieve: false,
- *     intendToSubscribe: false,
+ *     intendToRetrieve: true,
+ *     intendToSubscribe: true,
  * });
- * objectSubscriptionProps.intendToRetrieve = objectSubscriptionProps.intendToSubscribe = computed(()=> !!props.pk);
- * const objectSubscription = useObjectSubscription(objectSubscriptionProps);
+ * const objectSubscription = useObjectSubscription({
+ *     props: objectSubscriptionProps,
+ * });
  * </script>
  * <template>
  *     <div v-if="objectSubscription.state.loading">Loading...</div>
