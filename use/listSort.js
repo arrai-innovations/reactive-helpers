@@ -1,4 +1,6 @@
 import { keyDiff } from "../utils/keyDiff.js";
+import { loadingCombine } from "../utils/loadingCombine.js";
+import { proxyRunning } from "../utils/proxyRunning.js";
 import get from "lodash-es/get.js";
 import identity from "lodash-es/identity.js";
 import throttle from "lodash-es/throttle.js";
@@ -47,6 +49,7 @@ export function setListSortDefaultOptions({ sortThrottleWait }) {
  * @typedef {object} ListSortRawState - Represents the raw state used by the list sorting functionality. Includes all configurations and state necessary to manage sorting operations within a Vue application.
  * @property {OrderByRule[]} orderByRules - Current sorting rules applied to the list.
  * @property {boolean[]} orderByDesc - Flags indicating whether each sort criterion is in descending order.
+ * @property {import('vue').ComputedRef<boolean|undefined>} running - Whether the sort is settling a pending reorder, combined with the upstream running state so it propagates through the composed list state. True from when a new order is computed until the throttled reorder lands.
  */
 
 /**
@@ -161,6 +164,13 @@ export function useListSort({ parentState, orderByRules, sortThrottleWait = defa
     })();
     const es = effectScope();
 
+    /** @type {import('vue').Ref<boolean|undefined>} */
+    const parentRunning = ref(undefined);
+    proxyRunning(parentState, "running", parentRunning);
+    // True from the moment a new order is pending until the (possibly throttled) reorder lands.
+    const sortWatchRunning = ref(true);
+    const running = computed(() => loadingCombine(sortWatchRunning.value, parentRunning.value));
+
     const internalState = reactive({
         orderByRules,
         orderByDesc: computed(() =>
@@ -271,15 +281,23 @@ export function useListSort({ parentState, orderByRules, sortThrottleWait = defa
     });
 
     const order = ref([]);
-    const assignOrder =
-        sortThrottleWaitNumber > 0
-            ? throttle((v) => {
-                  order.value = v;
-              }, sortThrottleWaitNumber)
-            : (v) => {
-                  order.value = v;
-              };
+    const writeOrder = (v) => {
+        order.value = v;
+        // the pending reorder has landed; let running settle unless the parent is still running
+        sortWatchRunning.value = false;
+    };
+    const assignOrder = sortThrottleWaitNumber > 0 ? throttle(writeOrder, sortThrottleWaitNumber) : writeOrder;
 
+    // Raise running synchronously the moment a new order is pending, so a throttled reorder keeps
+    //  running true until it lands. This mirrors the related, calculated, and search layers, and
+    //  lets the composed manager's state.running reflect the final reorder settling.
+    watch(
+        rawOrder,
+        () => {
+            sortWatchRunning.value = true;
+        },
+        { flush: "sync" }
+    );
     watch(rawOrder, (v) => assignOrder(v), { immediate: true });
 
     // 6) objectsInOrder just follows that
@@ -293,6 +311,7 @@ export function useListSort({ parentState, orderByRules, sortThrottleWait = defa
             objects,
             order,
             objectsInOrder,
+            running,
         }),
         parentState,
         stop: () => {

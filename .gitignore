@@ -2,6 +2,16 @@
 node_modules
 /dist
 
+# vitepress docs site build output
+/site
+
+# vitepress cache/temp (lands at repo root or under docs/ depending on invocation)
+**/.vitepress/cache
+**/.vitepress/.temp
+
+# per-developer vitepress dev-server overrides (see config.local.example.mjs)
+docs/.vitepress/config.local.mjs
+
 # e2e coverage
 coverage
 # unit coverage

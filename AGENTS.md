@@ -27,8 +27,16 @@ This project uses [Vitest](https://vitest.dev/), ESLint, and Prettier.
 - **Generate types & documentation**: `pnpm run docs`
 - **Verify generated docs**: `pnpm run docs:check`
 - **Clean generated types/docs**: `pnpm run docs:clean`
+- **Develop the docs site**: `pnpm run docs:site:dev`
+- **Build the docs site**: `pnpm run docs:site:build`
 - **Generate types only**: `pnpm run types`
 - **Type smoke check without regenerating**: `pnpm run types:check -- --skip-gen`
+
+## Documentation
+
+The `docs/` directory is a VitePress site pairing hand-authored guide and
+concept pages with the generated API reference under `docs/reference/`. When
+authoring documentation pages, follow `docs/AGENTS.md`.
 
 ## Conventions
 

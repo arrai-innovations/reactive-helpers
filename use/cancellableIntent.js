@@ -103,7 +103,7 @@ export class CancellableIntentError extends Error {
  * @example
  * ```vue
  * <script setup>
- * import { useCancellableIntent } from "@vueda/use/cancellableIntent.js";
+ * import { useCancellableIntent } from "@arrai-innovations/reactive-helpers";
  * import { ref, computed, onMounted, onUnmounted } from "vue";
  *
  * const myValue = ref(0);

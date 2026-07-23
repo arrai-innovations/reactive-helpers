@@ -94,6 +94,63 @@ describe("use/useListSort", () => {
         expect(listSort.state.objectsInOrder).toEqual([]);
         expect(listSort.state.orderByDesc).toEqual([true, false]);
     });
+    scopedIt("keeps running true through a throttled reorder and settles when it lands", async () => {
+        vi.useFakeTimers();
+        try {
+            for (const contact of contactsResolved) {
+                listInstance.addListObject(contact);
+            }
+            const listSort = useListSort({
+                parentState: listInstance.state,
+                orderByRules,
+                sortThrottleWait: 100,
+            });
+            await nextTick();
+            // the initial reorder has already landed
+            expect(listSort.state.running).toBe(false);
+            expect(listSort.state.order).toEqual(["12", "15", "9"]);
+
+            // a new ordering makes a reorder pending: running goes true synchronously
+            listSort.state.orderByRules = [{ key: "id", desc: false }];
+            expect(listSort.state.running).toBe(true);
+
+            // the reorder is held by the throttle, so running stays true and order is unchanged
+            await nextTick();
+            expect(listSort.state.running).toBe(true);
+            expect(listSort.state.order).toEqual(["12", "15", "9"]);
+
+            // once the throttle fires, the reorder lands and running settles
+            vi.advanceTimersByTime(100);
+            await nextTick();
+            expect(listSort.state.running).toBe(false);
+            expect(listSort.state.order).toEqual(["9", "12", "15"]);
+        } finally {
+            vi.useRealTimers();
+        }
+    });
+    scopedIt("propagates the parent running state through the sort layer", async () => {
+        const parentState = reactive({
+            pkKey: "id",
+            objects: { 9: { id: 9 }, 12: { id: 12 }, 15: { id: 15 } },
+            order: ["9", "12", "15"],
+            relatedObjects: {},
+            calculatedObjects: {},
+            running: true,
+        });
+        const listSort = useListSort({
+            parentState,
+            orderByRules: [{ key: "id", desc: false }],
+            sortThrottleWait: 0,
+        });
+        await nextTick();
+        // running is inherited from the still-running parent
+        expect(listSort.state.running).toBe(true);
+
+        // when the parent settles, the sort layer settles too
+        parentState.running = false;
+        await doAwaitNot({ obj: listSort.state, prop: "running" });
+        expect(listSort.state.running).toBe(false);
+    });
     describe("addSortCriteria and removeSortCriteria", () => {
         scopedIt("triggers on watches updating state and sortCriteria", async () => {
             const addObject = {

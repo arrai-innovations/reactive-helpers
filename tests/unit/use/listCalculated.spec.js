@@ -77,6 +77,22 @@ describe("use/listCalculated", () => {
             },
         });
     });
+    scopedIt("passes a row's other calculated values to a rule as a third argument", async () => {
+        const mainListInstance = useListInstance({ props: { pkKey: "id" } });
+        mainListInstance.addListObject({ id: "1", name: "Ada" });
+        const listCalculated = useListCalculated({
+            parentState: mainListInstance.state,
+            calculatedObjectsRules: {
+                nameLength: (obj) => obj.name.length,
+                // The third argument is this row's other calculated values, read by rule
+                //  name (already unwrapped, not as a .value ref).
+                summary: (obj, related, calculated) => `${obj.name}:${calculated.nameLength}`,
+            },
+        });
+        await nextTick();
+        expect(deepUnref(listCalculated.state.calculatedObjects[1].nameLength)).toBe(3);
+        expect(deepUnref(listCalculated.state.calculatedObjects[1].summary)).toBe("Ada:3");
+    });
     scopedIt("running resolves when calculatedObjectsRules is empty and objects are present", async () => {
         // Bug: `return` inside the for..of loop in calculatedObjectsWatch exited the whole function
         // before reaching nextTick(() => { state.calculatedObjectsWatchRunning = false }), leaving

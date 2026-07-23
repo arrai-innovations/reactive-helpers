@@ -95,6 +95,52 @@ jobs:
                             remote_file: ${CIRCLE_BRANCH}/${CIRCLE_JOB}.coverage.svg
                             host: docs
 
+    docs-site:
+        executor: pnpm/lts
+        resource_class: medium
+        working_directory: ~/project
+        circleci_ip_ranges: true
+        steps:
+            - checkout
+            - pnpm/install_pnpm
+            - restore_cache:
+                  keys:
+                      - pnpm-v1-{{ arch }}-{{ checksum "pnpm-lock.yaml" }}
+            - run:
+                  name: Install dependencies
+                  command: pnpm install --frozen-lockfile
+            - run:
+                  name: Build docs site (per major)
+                  command: |
+                      # Base must equal the full served subpath or assets 404.
+                      MAJOR="${CIRCLE_TAG#v}"; MAJOR="${MAJOR%%.*}"
+                      VITEPRESS_BASE="/reactive-helpers/documentation/v${MAJOR}/" pnpm run docs:site:build
+            - run:
+                  name: Stage docs for deploy
+                  command: |
+                      # The tools.arrai.dev SSH user is chrooted to
+                      # reactive-helpers/documentation/, so publish/ maps there and
+                      # v<major>/ resolves to .../documentation/v<major>/.
+                      MAJOR="${CIRCLE_TAG#v}"; MAJOR="${MAJOR%%.*}"
+                      mkdir -p -m 0750 "publish/v${MAJOR}/"
+                      cp -r site/* "publish/v${MAJOR}/"
+            - utils/add_ssh_config:
+                  hostname: tools.arrai.dev
+                  host: tools.arrai.dev
+            # tools.arrai.dev deploy key for reactive-helpers. Same principal as the
+            # `docs` host used for artifacts, but this key's chroot points at the
+            # documentation root (docs.arrai.dev/reactive-helpers/documentation/),
+            # the same setup badass and vueda use for their docs sites.
+            - add_ssh_keys:
+                  fingerprints:
+                      - "SHA256:3Ho4jJepPm55XSG0R3/WIsMNnjfoXLxCIpUUzobirVU"
+            - utils/rsync_folder:
+                  when: on_success
+                  folder: ~/project/publish/
+                  remote_folder: /
+                  delete: false
+                  host: tools.arrai.dev
+
 workflows:
     test:
         jobs:
@@ -145,6 +191,16 @@ workflows:
                           ignore: /.*/
             - github/create_release:
                   name: release_on_github
+                  context: arrai-global
+                  requires:
+                      - publish
+                  filters:
+                      tags:
+                          only: /.*/
+                      branches:
+                          ignore: /.*/
+            - docs-site:
+                  name: docs-site
                   context: arrai-global
                   requires:
                       - publish

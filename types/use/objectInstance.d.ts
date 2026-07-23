@@ -106,7 +106,8 @@ export function useObjectInstance({ props, handlers }: ObjectInstanceOptions): O
  * @property {import('vue').Ref<string|undefined>} pkKey - The pk key of the object.
  * @property {import('vue').Ref<{[key:string]: any}>} params - The arguments to be passed to the retrieve function.
  * @property {import('vue').Reactive<CrudObject>} object - The object.
- * @property {boolean} deleted - Whether the object is deleted.
+ * @property {boolean} deleted - Whether the object was deleted by the delete action or a subscription delete
+ *  event. Cleared when a later create, retrieve, update, or patch repopulates the object, and by `clear()`.
  */
 /**
  * @typedef {ObjectInstanceRawMyState & import('./loadingError.js').LoadingErrorProperties} ObjectInstanceRawState - The raw state of the object instance.
@@ -275,7 +276,8 @@ export type ObjectInstanceRawMyState = {
      */
     object: import("vue").Reactive<CrudObject>;
     /**
-     * Whether the object is deleted.
+     * Whether the object was deleted by the delete action or a subscription delete
+     * event. Cleared when a later create, retrieve, update, or patch repopulates the object, and by `clear()`.
      */
     deleted: boolean;
 };
