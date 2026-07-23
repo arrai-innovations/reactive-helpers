@@ -1,5 +1,5 @@
-import { useProxyLoadingError } from "../../../use/proxyLoadingError.js";
-import { ref } from "vue";
+import { asWatchableLoadingError, useProxyLoadingError } from "../../../use/proxyLoadingError.js";
+import { reactive, ref } from "vue";
 import { describe, it, expect } from "vitest";
 import { scopedIt } from "../scopedIt.js";
 
@@ -48,6 +48,24 @@ describe("useProxyLoadingError", () => {
         proxyLoadingError.clearError();
         expect(loadingError1.clearError).toHaveBeenCalled();
         expect(loadingError2.clearError).toHaveBeenCalled();
+    });
+
+    scopedIt("keeps clearError when adapting a separate-state source with asWatchableLoadingError", () => {
+        // A list/object instance exposes loading/error under state, and clearError on
+        //  the instance itself. The adapter must carry that clearError through.
+        const instanceLike = {
+            state: reactive({ loading: false, error: new Error("boom"), errored: true }),
+            clearError: vi.fn(),
+        };
+        const adapted = asWatchableLoadingError(instanceLike);
+        expect(typeof adapted.clearError).toBe("function");
+
+        const proxyLoadingError = useProxyLoadingError([adapted]);
+        expect(proxyLoadingError.errored.value).toBe(true);
+        expect(proxyLoadingError.error.value?.message).toBe("boom");
+
+        proxyLoadingError.clearError();
+        expect(instanceLike.clearError).toHaveBeenCalled();
     });
 
     scopedIt("should reflect correct aggregate state when combining multiple sources", () => {
