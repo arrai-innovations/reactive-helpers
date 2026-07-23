@@ -99,6 +99,38 @@ describe("use/listSearch", () => {
         await nextTick();
         expect(search.state.objects).toEqual(listInstance.state.objects);
     });
+    scopedIt("matches a word prefix with the default forward tokenizer", async () => {
+        const textSearchValue = ref("Lov");
+        const list = useListInstance({ props: { pkKey: "id" } });
+        const search = useListSearch({
+            parentState: list.state,
+            props: reactive({ textSearchRules: ["name"], textSearchValue }),
+            throttle: 20,
+        });
+        list.addListObject({ id: 1, name: "Ada Lovelace" });
+        list.addListObject({ id: 2, name: "Grace Hopper" });
+        await doAwaitNot({ obj: search.state, prop: "running" });
+        await doAwaitTimeout(100);
+        expect(Object.keys(search.state.objects)).toEqual(["1"]);
+    });
+    scopedIt("ignores queries shorter than the default two-character minimum", async () => {
+        const textSearchValue = ref("A");
+        const list = useListInstance({ props: { pkKey: "id" } });
+        const search = useListSearch({
+            parentState: list.state,
+            props: reactive({ textSearchRules: ["name"], textSearchValue }),
+            throttle: 20,
+        });
+        list.addListObject({ id: 1, name: "Ada Lovelace" });
+        await doAwaitNot({ obj: search.state, prop: "running" });
+        await doAwaitTimeout(100);
+        // One character is below the minlength of 2, so nothing matches.
+        expect(search.state.objects).toEqual({});
+        textSearchValue.value = "Ad";
+        await doAwaitNot({ obj: search.state, prop: "running" });
+        await doAwaitTimeout(100);
+        expect(Object.keys(search.state.objects)).toEqual(["1"]);
+    });
     describe("useListSearch operates on parentState modified by useListSort", () => {
         scopedIt("computes state.order and state.objects in order", async () => {
             vi.resetAllMocks();
