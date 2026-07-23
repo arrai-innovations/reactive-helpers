@@ -105,6 +105,7 @@ export default defineConfig({
                         { text: "Register app-wide CRUD defaults", link: "/guide/register-crud-defaults" },
                         { text: "Create a record", link: "/guide/create-a-record" },
                         { text: "Paginate a list", link: "/guide/paginate-a-list" },
+                        { text: "Load all pages in one call", link: "/guide/load-all-pages" },
                         { text: "Bulk delete rows", link: "/guide/bulk-delete-rows" },
                         { text: "Run a server action", link: "/guide/run-a-server-action" },
                         { text: "Filter a list", link: "/guide/filter-a-list" },
