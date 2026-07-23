@@ -13,6 +13,24 @@ describe("use/listRelated", () => {
         const watchesModule = await import("../../../utils/watches.js");
         AwaitNot = watchesModule.AwaitNot;
     });
+    scopedIt("defaults a rule's foreign key to the rule name when pkKey is omitted", async () => {
+        const mainListInstance = useListInstance({ props: { pkKey: "id" } });
+        const relatedListInstance = useListInstance({ props: { pkKey: "id" } });
+        mainListInstance.addListObject({ id: "1", name: "main", related_id: "4" });
+        relatedListInstance.addListObject({ id: "4", name: "related3" });
+        const listRelated = useListRelated({
+            parentState: mainListInstance.state,
+            relatedObjectsRules: {
+                // No pkKey: the rule name "related_id" is used as the foreign-key field.
+                related_id: { objects: relatedListInstance.state.objects },
+            },
+        });
+        await nextTick();
+        expect(deepUnref(listRelated.state.relatedObjects[1].related_id)).toEqual({
+            id: "4",
+            name: "related3",
+        });
+    });
     scopedIt("should return a list of related items", async () => {
         const mainListInstance = useListInstance({ props: { pkKey: "id" } });
         const relatedListInstance = useListInstance({ props: { pkKey: "id" } });
