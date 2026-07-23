@@ -11,7 +11,7 @@ same handlers instead of each composable call passing its own.
 
 It assumes the package is installed and that you have written a per-instance
 handler before, as in the [Build a reactive list](/tutorials/build-a-reactive-list)
-tutorial or [Wiring a data layer](/guide/data-layer). The starting state is an
+tutorial or [Pass backend arguments](/guide/data-layer). The starting state is an
 app where every `useListInstance` or `useObjectInstance` call passes its own
 `handlers`.
 
@@ -22,8 +22,8 @@ requirement is that it must serve more than one collection, so each instance
 names its backend resource in `props.target`, and the handler reads it back
 from `target`. The shape of `target` is yours to define: the library passes
 it through to your handlers without interpreting it, so the `resource` key
-used here, the `stream` key in [Wiring a data layer](/guide/data-layer), or
-an app/model pair for a REST framework all work the same way. A `fetch`
+used here, a `stream` key, or an app/model pair for a REST framework all work
+the same way. A `fetch`
 sketch for contacts:
 
 ```javascript
@@ -125,7 +125,7 @@ await contact.retrieve(); // resolves true; the fetched contact is in contact.st
 
 Passing `handlers` to a specific instance still overrides the registered
 default for that instance only, as shown in
-[Wiring a data layer](/guide/data-layer), so the two approaches compose.
+[Pass backend arguments](/guide/data-layer), so the two approaches compose.
 
 ## Default target arguments
 

@@ -109,7 +109,7 @@ match. Nothing fetches until you intend it to.
 your handler needs to select the record, such as a field list. A change to
 `props.params` re-triggers the same lifecycle a key change does. Server-side
 narrowing goes through `props.params` for this reason; see
-[Reload from reactive params](/guide/reload-from-reactive-params).
+[Reload a record when the route changes](/guide/reload-a-record).
 
 When identity changes mid-flight, the pipeline intends to cancel the stale run
 before the new one starts. That intent only holds when your handler returns a
@@ -236,11 +236,11 @@ composables yourself. You render `contact.state` and get the whole pipeline.
 
 - Learning path: [Edit one object](/tutorials/edit-one-object) covers the
   instance layer on its own, not the full manager.
-- Tasks: [Write object CRUD handlers](/guide/write-object-handlers) implements
-  the handlers that feed the instance;
-  [Reload from reactive params](/guide/reload-from-reactive-params) drives
-  retrieval from reactive inputs. Neither configures related or calculated
-  values, and no focused guide yet covers the manager end to end.
+- Tasks: [Create a record](/guide/create-a-record) and
+  [Run a server action](/guide/run-a-server-action) build on the object
+  instance; [Reload a record when the route changes](/guide/reload-a-record)
+  drives retrieval from reactive inputs. Neither configures related or
+  calculated values, and no focused guide yet covers the manager end to end.
 - Configuring enrichment: until such a guide exists, the
   [objectRelated](/reference/api/use/objectRelated) and
   [objectCalculated](/reference/api/use/objectCalculated) references document the

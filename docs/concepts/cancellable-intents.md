@@ -112,8 +112,9 @@ intents too, as `contact.retrieveIntent` and `contacts.listIntent`.
   cancellable-handler shape, smallest first.
 - Related concept: [Instances and transport](/concepts/instances-and-transport)
   explains where transport sits relative to the library.
-- Related task: [Reload from reactive params](/guide/reload-from-reactive-params)
-  drives a reload from reactive inputs, the workflow that needs this model.
+- Related tasks: [Filter a list](/guide/filter-a-list) and
+  [Reload a record when the route changes](/guide/reload-a-record) drive a
+  reload from reactive inputs, the workflow that needs this model.
 - Reference:
   [useCancellableIntent](/reference/api/use/cancellableIntent) documents the
   intent surface, and

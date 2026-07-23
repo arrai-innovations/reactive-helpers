@@ -110,6 +110,23 @@ and sort apply.
 `useObject` layers subscription, related, and calculated over an object
 instance the same way; single objects have no filter, search, or sort.
 
+## Using a layer on its own
+
+You do not always need the whole chain, and the layers differ in how they get
+their parent.
+
+A subscription builds its own instance. Pass `props` (and `handlers`, unless
+shared defaults cover them) and `useListSubscription` calls `useListInstance`
+for you, because that instance is fully determined by those same inputs. Pass a
+`listInstance` you already made to drive that one instead. `useObjectSubscription`
+works the same way over `useObjectInstance`.
+
+A derived layer never builds its parent. It takes a `parentState` you supply,
+because its parent is whatever upstream you assembled, which the layer cannot
+guess. So `useListRelated`, `useListCalculated`, `useListFilter`,
+`useListSearch`, and `useListSort` all require `parentState` and throw without
+it.
+
 ## Layers wrap, they never replace
 
 Each layer re-exposes everything from its parent state and overrides only
@@ -166,7 +183,7 @@ So the layer you reach for depends on the scope you want. For a view over the
 rows already loaded, apply filter, search, or sort. For work across the whole
 collection, change the reactive `props.params` the subscription watches and let
 the server select the rows; see
-[Reload from reactive params](/guide/reload-from-reactive-params).
+[Filter a list](/guide/filter-a-list).
 
 Search results and the sort order are throttled, so they can trail fast input
 by a beat. `contacts.state.running` reflects when the composed view is
@@ -198,10 +215,10 @@ rebuilding.
 
 - Learning path: [Build a reactive list](/tutorials/build-a-reactive-list)
   covers the instance layer on its own.
-- Tasks: [Write list CRUD handlers](/guide/write-list-handlers) implements
-  the handlers that feed the instance;
+- Tasks: [Paginate a list](/guide/paginate-a-list) and
+  [Filter a list](/guide/filter-a-list) build on the list instance;
   [Register app-wide CRUD defaults](/guide/register-crud-defaults) shares
-  them app-wide.
+  handlers app-wide.
 - Configuring the manager's own layers: no task guide yet covers setting up
   related, calculated, filter, search, and sort in `useList`. Until one
   lands, each layer's reference page documents its rule shape:

@@ -85,16 +85,17 @@ Pick the route that matches what you are trying to do.
   at a time. Newcomers should start with
   [Build a reactive list](/tutorials/build-a-reactive-list), then move on to
   [Edit one object](/tutorials/edit-one-object).
-- **Wire your first integration.** [Wiring a data layer](/guide/data-layer)
-  connects one instance to your backend.
+- **Wire your first integration.** [Pass backend arguments](/guide/data-layer)
+  parameterizes one instance's handler.
   [Register app-wide CRUD defaults](/guide/register-crud-defaults) moves repeated
   handlers into app bootstrap.
-- **Handle a specific backend task.** [Write list CRUD handlers](/guide/write-list-handlers)
-  and [Write object CRUD handlers](/guide/write-object-handlers) implement each
-  handler. [Reload from reactive params](/guide/reload-from-reactive-params)
-  refetches when filters, props, or route params change.
-  [Cancel stale requests](/guide/cancel-stale-requests) makes those reloads safe
-  so only the latest request's result lands.
+- **Handle a specific backend task.** [Create a record](/guide/create-a-record),
+  [Paginate a list](/guide/paginate-a-list), [Bulk delete rows](/guide/bulk-delete-rows),
+  and [Run a server action](/guide/run-a-server-action) each solve one backend
+  task. [Filter a list](/guide/filter-a-list) and
+  [Reload a record](/guide/reload-a-record) refetch when filters, props, or
+  route params change; [Cancel stale requests](/guide/cancel-stale-requests)
+  makes those reloads safe so only the latest request's result lands.
 - **Understand the design.** The [concepts](/concepts/) pages explain what an
   instance owns versus your handlers, and how the list and object pipelines
   compose.

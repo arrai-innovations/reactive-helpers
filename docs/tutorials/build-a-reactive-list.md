@@ -140,7 +140,7 @@ position and `:key` stay stable while their fields change reactively.
 - [Edit one object](/tutorials/edit-one-object) is the next tutorial: load one
   contact, edit it in a form, and save, patch, and delete it with
   `useObjectInstance`.
-- [Wiring a data layer](/guide/data-layer) shows how to pass backend arguments
+- [Pass backend arguments](/guide/data-layer) parameterizes the handler
   through `props.params` and `props.target`;
   [Register app-wide CRUD defaults](/guide/register-crud-defaults) shows how to
   register one shared data layer instead of per-instance handlers.
