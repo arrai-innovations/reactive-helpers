@@ -1,8 +1,8 @@
 import flushPromises from "flush-promises";
-import { reactive, ref } from "vue";
+import { nextTick, reactive, ref } from "vue";
 import { deepUnref } from "../../../utils/deepUnref.js";
 import { scopedIt } from "../scopedIt.js";
-import { CancellableResolvable } from "../crudPromise.js";
+import { CancellableResolvable, Resolvable } from "../crudPromise.js";
 import { poll } from "../poll.js";
 import { useObjectInstance } from "../../../use/objectInstance.js";
 
@@ -358,6 +358,75 @@ describe("use/objectSubscription.js", function () {
             params.value = { fields };
             await flushPromises();
             expect(handlers.retrieve).toHaveBeenCalledTimes(1);
+        });
+    });
+    describe("retrieve race on a pk change mid-flight", function () {
+        // Flush chained microtasks/watchers; the intent awaits a cancel before it can re-run.
+        const flushAll = async () => {
+            for (let i = 0; i < 10; i++) {
+                await flushPromises();
+                await nextTick();
+            }
+        };
+        scopedIt("a non-cancellable retrieve loses the pk change: the stale record wins", async () => {
+            const calls = [];
+            const handlers = {
+                // Plain promise, no `.cancel`: the same shape an `async` handler produces.
+                retrieve: vi.fn(({ pk }) => {
+                    const resolvable = new Resolvable();
+                    calls.push({ pk, resolvable });
+                    return resolvable.promise;
+                }),
+            };
+            const pk = ref(1);
+            const props = getProps({ pk, intendToRetrieve: true, params: { fields } });
+            const sub = useObjectSubscription({ props, handlers });
+
+            await flushAll();
+            expect(calls.map((c) => c.pk)).toEqual(["1"]);
+
+            // Navigate to pk 2 while pk 1 is still in flight.
+            pk.value = 2;
+            await flushAll();
+            // The in-flight pk 1 run cannot be cancelled, so no pk 2 fetch ever starts.
+            expect(calls.map((c) => c.pk)).toEqual(["1"]);
+
+            // When the stale pk 1 request resolves, its record is assigned and pk 2 stays unfetched.
+            calls[0].resolvable.resolve({ id: 1, name: "one" });
+            await flushAll();
+            expect(calls.map((c) => c.pk)).toEqual(["1"]);
+            expect(sub.state.object).toEqual({ id: 1, name: "one" });
+        });
+
+        scopedIt("a cancellable retrieve drops the stale run and fetches the new key", async () => {
+            const calls = [];
+            const handlers = {
+                retrieve: vi.fn(({ pk }) => {
+                    const resolvable = new CancellableResolvable();
+                    calls.push({ pk, resolvable });
+                    return resolvable.promise;
+                }),
+            };
+            const pk = ref(1);
+            const props = getProps({ pk, intendToRetrieve: true, params: { fields } });
+            const sub = useObjectSubscription({ props, handlers });
+
+            await flushAll();
+            expect(calls.map((c) => c.pk)).toEqual(["1"]);
+
+            // Navigate to pk 2; aborting the stale run settles it (cancel resolves, request rejects).
+            pk.value = 2;
+            await flushAll();
+            calls[0].resolvable.cancel.resolve();
+            calls[0].resolvable.reject(new Error("aborted"));
+            await flushAll();
+
+            // The new key is fetched.
+            expect(calls.map((c) => c.pk)).toEqual(["1", "2"]);
+
+            calls.find((c) => c.pk === "2").resolvable.resolve({ id: 2, name: "two" });
+            await flushAll();
+            expect(sub.state.object).toEqual({ id: 2, name: "two" });
         });
     });
     describe("handler defaults", function () {
