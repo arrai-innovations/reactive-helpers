@@ -93,8 +93,9 @@ fuller chain.
 ## Sort the rows that remain
 
 Layer `useListSort` on the filter's state, so it orders only the rows the filter
-kept. Order matters: the filter narrows first, then the sort arranges what is
-left. Give `orderByRules`, an array of rules applied in turn:
+kept: the filter narrows, then the sort arranges what is left. Chaining them this
+way mirrors `useList`, though for these two the rendered rows are the same either
+way. Give `orderByRules`, an array of rules applied in turn:
 
 ```javascript
 import { useListSort } from "@arrai-innovations/reactive-helpers";
