@@ -110,6 +110,7 @@ export default defineConfig({
                         { text: "Filter a list", link: "/guide/filter-a-list" },
                         { text: "Filter and sort a loaded list", link: "/guide/filter-and-sort-a-loaded-list" },
                         { text: "Search a loaded list", link: "/guide/search-a-loaded-list" },
+                        { text: "Show related objects", link: "/guide/show-related-objects" },
                         { text: "Reload a record", link: "/guide/reload-a-record" },
                         { text: "Cancel stale requests", link: "/guide/cancel-stale-requests" },
                     ],
