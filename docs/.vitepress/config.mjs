@@ -115,6 +115,7 @@ export default defineConfig({
                         { text: "Show calculated values", link: "/guide/show-calculated-values" },
                         { text: "Reload a record", link: "/guide/reload-a-record" },
                         { text: "Cancel stale requests", link: "/guide/cancel-stale-requests" },
+                        { text: "Manage loading and errors", link: "/guide/manage-loading-and-errors" },
                     ],
                 },
             ],
