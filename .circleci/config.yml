@@ -58,6 +58,12 @@ jobs:
             - run:
                   name: Run tests with coverage
                   command: pnpm coverage
+            - run:
+                  name: Run list performance benchmark
+                  command: pnpm benchmark:list:ci
+            - store_artifacts:
+                  path: benchmark-results
+                  destination: benchmark-results
             - utils/rsync_folder:
                   when: always
                   folder: ~/project/coverage/

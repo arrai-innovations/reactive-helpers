@@ -1,7 +1,7 @@
 import { doAwaitNot } from "../../../utils/watches.js";
 import flushPromises from "flush-promises";
 import keyBy from "lodash-es/keyBy.js";
-import { isReactive, nextTick, reactive, isRef, isReadonly, unref } from "vue";
+import { isReactive, nextTick, reactive, isRef, isReadonly, unref, watch } from "vue";
 import { deepUnref } from "../../../utils/deepUnref.js";
 import { CancellablePromise } from "../../../utils/cancellablePromise.js";
 import { scopedIt } from "../scopedIt.js";
@@ -1219,6 +1219,35 @@ describe("use/listInstance.spec.js", function () {
 
             expect(listInstance.state.objects["1"].name).toBe("updated");
         });
+        scopedIt("emits one structural change for a page of new objects", () => {
+            const listInstance = useListInstance({ props: { pkKey: "id", params: {} } });
+            const versionWatch = vi.fn();
+            watch(() => listInstance.state.objectsVersion, versionWatch, { flush: "sync" });
+            const objects = Array.from({ length: 100 }, (_, index) => ({
+                id: index + 1,
+                name: `Object ${index + 1}`,
+            }));
+
+            listInstance.pushObjects(objects);
+
+            expect(listInstance.state.objectsVersion).toBe(1);
+            expect(versionWatch).toHaveBeenCalledTimes(1);
+            expect(Object.keys(listInstance.state.objects)).toHaveLength(100);
+
+            listInstance.pushObjects(objects.map((object) => ({ ...object, name: `${object.name} updated` })));
+
+            expect(listInstance.state.objectsVersion).toBe(1);
+            expect(versionWatch).toHaveBeenCalledTimes(1);
+
+            listInstance.pushObjects([
+                { id: 100, name: "Object 100 updated again" },
+                { id: 101, name: "Object 101" },
+                { id: 102, name: "Object 102" },
+            ]);
+
+            expect(listInstance.state.objectsVersion).toBe(2);
+            expect(versionWatch).toHaveBeenCalledTimes(2);
+        });
     });
     describe("list promise cancellation", function () {
         scopedIt("cancels and sets isCancelled", async function () {
@@ -1282,6 +1311,28 @@ describe("use/listInstance.spec.js", function () {
             const obj = reactive({ id: 2, __str__: "two", name: "two" });
             listInstance.state.objectsMap.set("2", obj);
             expect(listInstance.state.objectsMap.get("2")).toBe(obj);
+        });
+        scopedIt("tracks structural changes from map mutation methods", function () {
+            const listInstance = useListInstance({ props: { pkKey: "id" } });
+            const first = { id: 1, __str__: "one", name: "one" };
+            const replacement = { id: 1, __str__: "one replacement", name: "one replacement" };
+
+            expect(listInstance.state.objectsVersion).toBe(0);
+            listInstance.state.objectsMap.set("1", first);
+            expect(listInstance.state.objectsVersion).toBe(1);
+            listInstance.state.objectsMap.set("1", replacement);
+            expect(listInstance.state.objectsVersion).toBe(1);
+            expect(listInstance.state.objectsMap.delete("missing")).toBe(false);
+            expect(listInstance.state.objectsVersion).toBe(1);
+            expect(listInstance.state.objectsMap.delete("1")).toBe(true);
+            expect(listInstance.state.objectsVersion).toBe(2);
+            listInstance.state.objectsMap.set("1", first);
+            listInstance.state.objectsMap.set("2", { id: 2, __str__: "two", name: "two" });
+            expect(listInstance.state.objectsVersion).toBe(4);
+            listInstance.state.objectsMap.clear();
+            expect(listInstance.state.objectsVersion).toBe(5);
+            listInstance.state.objectsMap.clear();
+            expect(listInstance.state.objectsVersion).toBe(5);
         });
 
         scopedIt("preventExtensions trap executes", function () {

@@ -11,7 +11,11 @@ const makeRows = (count) =>
 const makeList = () =>
     useList({
         props: reactive({
+            allowedFilter: undefined,
             calculatedObjectsRules: {},
+            customDocumentOptions: {},
+            customSearchOptions: {},
+            excludedFilter: undefined,
             intendToList: false,
             intendToSubscribe: false,
             orderByRules: [],
@@ -26,9 +30,9 @@ const makeList = () =>
     });
 
 const benchmarkOptions = {
-    iterations: 3,
+    iterations: 10,
     time: 0,
-    warmupIterations: 1,
+    warmupIterations: 2,
     warmupTime: 0,
 };
 

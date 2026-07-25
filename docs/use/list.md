@@ -254,6 +254,12 @@ The objects in the order specified by the list.
 
 The map of objects stored by their pks.
 
+###### objectsVersion
+
+> **objectsVersion**: `number`
+
+Increments when the set of object keys changes.
+
 ###### order
 
 > **order**: `string`[]

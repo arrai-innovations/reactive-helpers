@@ -31,6 +31,7 @@
     "scripts": {
         "benchmark": "vitest bench --run",
         "benchmark:list": "vitest bench --run tests/benchmarks/listPush.bench.js",
+        "benchmark:list:ci": "vitest bench --run tests/benchmarks/listPush.bench.js --outputJson benchmark-results/list-push.json",
         "test": "vitest",
         "eslint": "eslint --fix index.js config/**/*.js tests/**/*.js use/**/*.js utils/**/*.js",
         "prettier": "prettier --write .",

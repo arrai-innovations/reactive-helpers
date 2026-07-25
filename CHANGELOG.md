@@ -2,6 +2,17 @@
 
 _Actions potentially required by implementers are marked with italics._
 
+## v22.0.1 (Unreleased)
+
+### Fixes
+
+- `useListInstance.pushObjects()` now batches structural list notifications for each supplied page instead of synchronously reprocessing every composed list layer after each inserted object.
+- Related, calculated, filter, and sort layers now use the batched structural version when maintaining their per-object state. Individual add, delete, and clear operations remain synchronous.
+
+### Testing
+
+- Added a focused `useList.pushObjects()` benchmark for tracking list insertion cost and scaling.
+
 ## v22.0.0 (2026-07-09)
 
 First open-source release. There are no runtime or API changes from v21.1.4; this release relicenses the package and moves it to the public npm registry.
