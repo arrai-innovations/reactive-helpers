@@ -54,7 +54,7 @@
  * @property {object} params - Arguments passed to the server for listing operations.
  * @property {ObjectsMap} objectsMap - The map of objects stored by their pks.
  * @property {ObjectsByPk} objects - The list objects stored by their pks.
- * @property {import('vue').Ref<number>} objectsVersion - Increments when the set of object keys changes.
+ * @property {number} objectsVersion - Increments when the set of object keys changes.
  * @property {ListOrder} order - The order of objects in the list.
  * @property {ObjectsInOrder} objectsInOrder - The objects in the order specified by the list.
  * @property {import('vue').ShallowReactive<PaginateInfo>} paginateInfo - Pagination information for the list.
@@ -323,7 +323,7 @@ export type ListInstanceRawMyState = {
     /**
      * Increments when the set of object keys changes.
      */
-    objectsVersion: import("vue").Ref<number>;
+    objectsVersion: number;
     /**
      * The order of objects in the list.
      */

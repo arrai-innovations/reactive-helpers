@@ -418,7 +418,7 @@ The map of objects stored by their pks.
 
 ##### objectsVersion
 
-> **objectsVersion**: `Ref`\<`number`, `number`\>
+> **objectsVersion**: `number`
 
 Increments when the set of object keys changes.
 
