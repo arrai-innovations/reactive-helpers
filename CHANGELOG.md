@@ -2,7 +2,11 @@
 
 _Actions potentially required by implementers are marked with italics._
 
-## v22.0.1 (Unreleased)
+## v22.1.0 (Unreleased)
+
+### Additions
+
+- List state exposes `objectsVersion`, a counter that increments whenever the set of object keys changes. Every list layer forwards it, so composed layers can observe structural changes without enumerating keys.
 
 ### Fixes
 
