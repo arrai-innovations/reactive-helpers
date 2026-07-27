@@ -5,10 +5,36 @@ directory for the fuller authoring reference.
 
 ## Structure (Diátaxis)
 
-- `docs/guide/` — how-to and tutorial pages (task focused: how to do X).
-- `docs/concepts/` — explanation pages (why the system behaves as it does).
-- `docs/reference/` — generated API reference. Do not edit by hand.
-- `docs/index.md` — site home.
+- `docs/tutorials/`: tutorials (action while acquiring skill).
+- `docs/guide/`: how-to guides (action while applying existing skill).
+- `docs/concepts/`: explanation pages (cognition for study and understanding).
+- `docs/reference/`: generated API reference (cognition while applying skill).
+  Do not edit by hand.
+- `docs/index.md`: site home.
+
+Choose a page type from the reader's need, not from the feature. Keep one
+dominant need per page and link to another page when content belongs in a
+different Diátaxis quadrant.
+
+## Page openings
+
+Assume readers can land directly on any page. The opening must establish why
+the page is worth their attention, its payoff, and its scope:
+
+- A tutorial shows the meaningful result the reader will build and the
+  important behaviors they will encounter. Promise an experience and outcome,
+  not that the reader "will learn" something.
+- A how-to guide names the real-world goal, exact starting situation, and
+  expected result.
+- An explanation names the question, tension, or surprising behavior it
+  resolves. Introduce the central mental model, say what it helps the reader
+  understand or predict, and bound the discussion before detailed terminology.
+  Its payoff is understanding, not a completed task.
+- Reference identifies the entity and scope for lookup.
+
+Do not open an explanation by correcting an expectation that has not yet been
+established. Favor connections, context, design choices, tradeoffs, and
+consequences over procedures. Put task steps in a tutorial or how-to guide.
 
 ## Audience and principles
 
@@ -16,9 +42,10 @@ directory for the fuller authoring reference.
   seen the internal Arrai Innovations projects this library grew out of.
   Knows refs, reactive, computed, `<script setup>`. Does not know this
   project's handler pattern, primary key model, or list pipeline.
-- One concrete workflow per page. Contacts are the canonical example domain,
-  with `contactId` as the primary key field (never a bare `id`, which reads
-  as a required field name).
+- Give each page one bounded purpose: one concrete workflow for a tutorial or
+  how-to guide, or one question or topic for an explanation. Contacts are the
+  canonical example domain, with `contactId` as the primary key field (never a
+  bare `id`, which reads as a required field name).
 - Examples are self-contained, plain JavaScript, and transport-neutral
   (`fetch` or a tiny in-memory client, only to show handler shape).
 - Show the state shape the reader renders, using the named composable return

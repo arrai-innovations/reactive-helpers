@@ -12,17 +12,55 @@ site and never render as pages.
 
 The site follows the [Diátaxis](https://diataxis.fr/) model:
 
-- `docs/guide/` — how-to and tutorial pages.
-- `docs/concepts/` — explanation pages.
-- `docs/reference/` — generated API reference (not hand edited).
-- `docs/index.md` — home page.
+- `docs/tutorials/`: tutorials.
+- `docs/guide/`: how-to guides.
+- `docs/concepts/`: explanation pages.
+- `docs/reference/`: generated API reference (not hand edited).
+- `docs/index.md`: home page.
 
 ### Diátaxis as an authoring contract
 
-- **Tutorial** — teach by doing. Step-by-step, linear, success oriented.
-- **How-to** — solve a specific problem. Task focused, assumes baseline competence.
-- **Explanation** — build understanding. Describes boundaries, contracts, lifecycle, and failure modes. No steps.
-- **Reference** — provide facts. Authoritative, exhaustive, structured lookup. For this project that is the generated API reference.
+Choose a page type from the reader's need, not from the feature being
+documented. The [Diátaxis compass](https://diataxis.fr/compass/) asks two
+questions: does the reader need action or cognition, and are they acquiring or
+applying skill?
+
+| Content informs | Reader is engaged in         | Page type   | Authoring obligation                                      |
+| --------------- | ---------------------------- | ----------- | --------------------------------------------------------- |
+| Action          | Acquisition of skill (study) | Tutorial    | Provide a reliable, concrete learning experience.         |
+| Action          | Application of skill (work)  | How-to      | Help an already-competent reader accomplish a real task.  |
+| Cognition       | Acquisition of skill (study) | Explanation | Connect ideas and develop a bounded mental model.         |
+| Cognition       | Application of skill (work)  | Reference   | Supply authoritative facts in a consistent lookup format. |
+
+A page can link to material in another quadrant, but it should serve one
+dominant need. Move extended reasoning out of tutorials and how-to guides into
+an explanation. Move procedures out of explanations into tutorials or how-to
+guides. Keep exhaustive signatures and option lists in reference.
+
+### Opening contract
+
+Assume a reader can land directly on any authored page. Its opening should
+establish why the rest of the page is worth their attention and what it covers.
+The promised payoff depends on the page type:
+
+- A **tutorial** shows the meaningful result the reader will build and the
+  important tools or behaviors they will encounter. Describe what they will do
+  and achieve rather than claiming what they will learn.
+- A **how-to guide** names the real-world problem or goal, the starting
+  situation, and the result the directions produce. It does not need to teach
+  the prerequisite competence.
+- An **explanation** names the question, tension, or surprising behavior it
+  resolves. Introduce the central idea, say what the reader will be better able
+  to understand or predict, and bound the discussion. This is the explanation
+  counterpart to a learning objective, but its payoff is a changed mental model
+  rather than a completed task.
+- A **reference page** identifies the entity and scope being described so the
+  reader can judge whether they are in the right lookup location.
+
+An explanation can begin with an observed behavior, a design tradeoff, or an
+implicit "why" question. Avoid beginning with a correction unless the opening
+first establishes the expectation being corrected. Detailed terminology should
+follow the motivating question and central idea, not substitute for them.
 
 ## Audience
 
@@ -34,7 +72,8 @@ model, subscription lifecycle, or list pipeline.
 
 ## Content principles
 
-- One concrete workflow per page.
+- Give each page one bounded purpose. Use one concrete workflow for a tutorial
+  or how-to guide, and one question or topic for an explanation.
 - Contacts are the canonical example domain across authored pages, with
   `contactId` as the primary key field. A domain-flavored key keeps `pkKey`
   visibly configurable; a bare `id` reads as a required field name.
@@ -67,8 +106,13 @@ model, subscription lifecycle, or list pipeline.
 
 Tutorial pages:
 
+- Open with the meaningful result the reader will build and the important
+  behaviors they will encounter.
 - Start from a working install/import assumption.
 - Give a single data shape with `contactId` as the primary key.
+- Provide one safe, linear path with concrete actions and expected results.
+- Keep explanation to what the reader needs at that moment; link to a concept
+  page for extended reasoning.
 - Show the final rendered state in Vue template code.
 - End by naming the next tutorial, one related how-to, and the relevant
   reference page. Link only to pages that exist; add forward links when the
@@ -76,7 +120,8 @@ Tutorial pages:
 
 How-to pages:
 
-- Name the exact starting state or prerequisite.
+- Open with the reader's practical goal, the exact starting state or
+  prerequisite, and the expected result.
 - Show the smallest code needed for the task.
 - Call out the expected state change or return value.
 - Link to generated reference for full argument shapes.
@@ -84,7 +129,12 @@ How-to pages:
 
 Explanation pages:
 
+- Open with the question, tension, or surprising behavior the page resolves.
+  State the central mental model, its value to the reader, and the boundary of
+  the discussion before introducing detailed terminology.
 - Describe invariants and tradeoffs, not steps.
+- Connect the topic to related parts of the system and explain relevant design
+  choices, alternatives, and consequences.
 - Include small code fragments only when they clarify terminology.
 - Name failure modes explicitly, such as missing `pkKey`, stale promises, or
   subscription deletes for objects not currently in the list.
