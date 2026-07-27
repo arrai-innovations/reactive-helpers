@@ -1,40 +1,6 @@
-import { useList } from "../../use/list.js";
 import { bench, describe } from "vitest";
-import { nextTick, reactive } from "vue";
-
-const makeRows = (count) =>
-    Array.from({ length: count }, (_, index) => ({
-        id: index + 1,
-        name: `Row ${index + 1}`,
-    }));
-
-const makeList = () =>
-    useList({
-        props: reactive({
-            allowedFilter: undefined,
-            calculatedObjectsRules: {},
-            customDocumentOptions: {},
-            customSearchOptions: {},
-            excludedFilter: undefined,
-            intendToList: false,
-            intendToSubscribe: false,
-            orderByRules: [],
-            params: {},
-            pkKey: "id",
-            relatedObjectsRules: {},
-            target: {},
-            textSearchRules: [],
-            textSearchValue: "",
-        }),
-        sortThrottleWait: 0,
-    });
-
-const benchmarkOptions = {
-    iterations: 10,
-    time: 0,
-    warmupIterations: 2,
-    warmupTime: 0,
-};
+import { nextTick } from "vue";
+import { benchmarkOptions, makeList, makeRichRows, makeRows, populatedRules } from "./fixtures.js";
 
 describe("useList pushObjects", () => {
     for (const count of [200, 400]) {
@@ -50,6 +16,49 @@ describe("useList pushObjects", () => {
                 } finally {
                     list.stop();
                 }
+            },
+            benchmarkOptions
+        );
+    }
+});
+
+describe("useList pushObjects with populated rules", () => {
+    // The empty-rule cases above measure the composition overhead alone. Production lists carry
+    // related, calculated, filter, and sort rules, which is where per-object maintenance happens.
+    for (const count of [200, 400]) {
+        const rows = makeRichRows(count);
+
+        bench(
+            `pushes ${count} rows into an empty list with related, calculated, filter, and sort rules`,
+            async () => {
+                const list = makeList(populatedRules);
+                try {
+                    list.pushObjects(rows);
+                    await nextTick();
+                } finally {
+                    list.stop();
+                }
+            },
+            benchmarkOptions
+        );
+    }
+});
+
+describe("useList pushObjects of existing objects", () => {
+    // A page carrying only pks the list already holds is not a structural change, so it should cost
+    // far less than the equivalent insertion. The list is seeded once and reused because replaying
+    // the same updates leaves its structure unchanged.
+    for (const count of [200, 400]) {
+        const rows = makeRichRows(count);
+        const updates = rows.map((row) => ({ ...row, name: `${row.name} updated` }));
+        const list = makeList(populatedRules);
+        list.pushObjects(rows);
+
+        bench(
+            `pushes ${count} updates into a list already holding them`,
+            async () => {
+                list.pushObjects(updates);
+                await nextTick();
             },
             benchmarkOptions
         );
