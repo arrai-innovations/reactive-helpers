@@ -12,10 +12,13 @@ _Actions potentially required by implementers are marked with italics._
 
 - `useListInstance.pushObjects()` now batches structural list notifications for each supplied page instead of synchronously reprocessing every composed list layer after each inserted object.
 - Related, calculated, filter, and sort layers now use the batched structural version when maintaining their per-object state. Individual add, delete, and clear operations remain synchronous.
+- `useListSort` no longer throws when the layer is stopped while its parent list still has work in flight. Its order watcher outlives the layer's effect scope, so the settling parent work re-evaluated the sort order against per-object criteria that were no longer maintained.
 
 ### Testing
 
 - Added a focused `useList.pushObjects()` benchmark for tracking list insertion cost and scaling.
+- Added streamed-page, layer-attribution, and populated-rule list benchmarks, and a check that fails the build when the cost of inserting a page stops scaling with the page size.
+- Added deterministic coverage for how much structural work each `pushObjects()` page performs, measured by counting key comparisons rather than by timing.
 
 ## v22.0.0 (2026-07-09)
 
