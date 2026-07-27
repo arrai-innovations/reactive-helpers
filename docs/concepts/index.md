@@ -29,6 +29,10 @@ Choose the page that answers your current question.
   [Cancellable intents](/concepts/cancellable-intents) explains how a newer
   reactive trigger cancels an in-flight run, the contract that makes that
   possible, and what happens when a transport cannot cancel.
+- **What do the `intendTo*` flags mean over time?**
+  [Subscription lifecycle](/concepts/subscription-lifecycle) explains when a
+  run starts, how overlapping input changes collapse into one rerun, and what
+  unmount and `<KeepAlive>` do to a live subscription.
 
 ## Related ideas
 
