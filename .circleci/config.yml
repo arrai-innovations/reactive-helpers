@@ -61,6 +61,9 @@ jobs:
             - run:
                   name: Run list performance benchmark
                   command: pnpm benchmark:list:ci
+            - run:
+                  name: Check list insertion scaling
+                  command: pnpm benchmark:check
             - store_artifacts:
                   path: benchmark-results
                   destination: benchmark-results
