@@ -1,5 +1,5 @@
 import { doAwaitNot, doAwaitTimeout } from "../../../utils/watches.js";
-import { CancellableResolvable } from "../crudPromise.js";
+import { CancellableResolvable, Resolvable } from "../crudPromise.js";
 import { poll } from "../poll.js";
 import flushPromises from "flush-promises";
 import { nextTick, reactive } from "vue";
@@ -609,6 +609,124 @@ describe("use/listSubscription.spec.js", function () {
             expect(() => useListSubscription({ listInstance, props: sharedProps, handlers: { list() {} } })).toThrow(
                 "`handlers` must not be passed when `listInstance` is used."
             );
+        });
+    });
+    describe("listIntent lifecycle", function () {
+        const settle = async (times = 6) => {
+            for (let i = 0; i < times; i++) {
+                await nextTick();
+                await flushPromises();
+            }
+        };
+        const paramsSeen = () => crudList.mock.calls.map((call) => deepUnref(call[0].params));
+
+        scopedIt("collapses several params changes during one in-flight list to the latest", async function () {
+            const props = reactive({ pkKey: "id", params: { page: 1 }, intendToList: true });
+            const listSubscription = useListSubscription({ props });
+            await settle();
+            expect(paramsSeen()).toEqual([{ page: 1 }]);
+
+            props.params = { page: 2 };
+            await settle(2);
+            props.params = { page: 3 };
+            await settle(2);
+            // the in-flight run was cancelled; the transport now finishes aborting
+            crudListResolvable[0].cancel.resolve(true);
+            crudListResolvable[0].reject(new Error("aborted"));
+            await settle();
+
+            // page 2 is never fetched: the queued rerun reads the current params when it runs
+            expect(paramsSeen()).toEqual([{ page: 1 }, { page: 3 }]);
+            expect(listSubscription.listIntent.state.lastRunId).toBe(2);
+        });
+        scopedIt("drops the queued rerun when intendToList goes false, and picks it up again", async function () {
+            const props = reactive({ pkKey: "id", params: { page: 1 }, intendToList: true });
+            useListSubscription({ props });
+            await settle();
+            expect(paramsSeen()).toEqual([{ page: 1 }]);
+
+            props.params = { page: 2 };
+            props.intendToList = false;
+            await settle(2);
+            crudListResolvable[0].cancel.resolve(true);
+            crudListResolvable[0].reject(new Error("aborted"));
+            await settle();
+            expect(paramsSeen()).toEqual([{ page: 1 }]);
+
+            // the intent is a standing declaration, so turning it back on lists the current params
+            props.intendToList = true;
+            await settle();
+            expect(paramsSeen()).toEqual([{ page: 1 }, { page: 2 }]);
+        });
+        scopedIt("waits for the handler's cancel to settle before rerunning", async function () {
+            const props = reactive({ pkKey: "id", params: { page: 1 }, intendToList: true });
+            const listSubscription = useListSubscription({ props });
+            await settle();
+
+            props.params = { page: 2 };
+            await settle(8);
+
+            // cancel was requested but never settled, so the rerun is still waiting on it
+            expect(crudListResolvable[0].promise.cancel).toHaveBeenCalledTimes(1);
+            expect(paramsSeen()).toEqual([{ page: 1 }]);
+            expect(listSubscription.state.loading).toBe(true);
+        });
+        scopedIt("stop() stops both intents, so neither flag nor params revives them", async function () {
+            const props = reactive({
+                pkKey: "id",
+                params: { page: 1 },
+                intendToList: true,
+                intendToSubscribe: false,
+            });
+            const listSubscription = useListSubscription({ props });
+            await settle();
+            expect(paramsSeen()).toEqual([{ page: 1 }]);
+            crudListResolvable[0].resolve([]);
+            await settle();
+
+            listSubscription.stop();
+
+            // the list intent is gone: a params change no longer refetches
+            props.params = { page: 2 };
+            await settle();
+            expect(paramsSeen()).toEqual([{ page: 1 }]);
+
+            // the subscribe intent is gone too: raising its flag subscribes nothing
+            props.intendToSubscribe = true;
+            await settle();
+            expect(crudSubscribe).not.toHaveBeenCalled();
+
+            // stopping is terminal, so re-raising the list flag does not bring it back either
+            props.intendToList = false;
+            await settle();
+            props.intendToList = true;
+            await settle();
+            expect(paramsSeen()).toEqual([{ page: 1 }]);
+        });
+        scopedIt("lets a non-cancellable list finish before rerunning with the new params", async function () {
+            // a plain promise, so the intent has no cancel to call
+            const plain = new Resolvable();
+            crudList.mockReset().mockImplementationOnce(() => plain.promise);
+            const laterResolvables = [];
+            crudList.mockImplementation(() => {
+                const next = new Resolvable();
+                laterResolvables.push(next);
+                return next.promise;
+            });
+            const props = reactive({ pkKey: "id", params: { page: 1 }, intendToList: true });
+            const listSubscription = useListSubscription({ props });
+            await settle();
+            expect(paramsSeen()).toEqual([{ page: 1 }]);
+
+            props.params = { page: 2 };
+            await settle(2);
+            // nothing cancelled the stale run, so it is still the only one
+            expect(paramsSeen()).toEqual([{ page: 1 }]);
+
+            plain.resolve([]);
+            await settle();
+            expect(paramsSeen()).toEqual([{ page: 1 }, { page: 2 }]);
+            expect(listSubscription.listIntent.state.lastRunId).toBe(2);
         });
     });
     scopedIt("useListSubscriptions", async function () {

@@ -294,9 +294,19 @@ The context (state, list instance, and loading/error status) bound to the shared
 
 ### ListSubscriptionFunctions
 
-> **ListSubscriptionFunctions** = `Pick`\<[`LoadingErrorStatus`](loadingError.md#loadingerrorstatus), `"clearError"`\>
+> **ListSubscriptionFunctions** = `Pick`\<[`LoadingErrorStatus`](loadingError.md#loadingerrorstatus), `"clearError"`\> & `object`
 
 The methods available on a list subscription.
+
+#### Type Declaration
+
+##### stop
+
+> **stop**: () => `void`
+
+###### Returns
+
+`void`
 
 #### Type Parameters
 
