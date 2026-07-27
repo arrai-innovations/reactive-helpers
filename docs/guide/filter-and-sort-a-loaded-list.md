@@ -196,11 +196,12 @@ You usually do not need to stop anything. Each layer runs its watchers in an
 effect scope tied to the surrounding component, so they stop automatically when
 that component unmounts.
 
-Call `sortedContacts.stop()` and `visibleContacts.stop()` only to end the
-reactivity early. Reach for it to pause reacting while the component stays
-mounted, or when you built the layers outside any component scope, where nothing
-disposes them for you. Each layer stops on its own; stopping one leaves the
-others and the instance running.
+`sortedContacts.stop()` and `visibleContacts.stop()` mirror
+`effectScope().stop()`. They are the disposal handles for a scope you own, so
+reach for them when you built the layers outside any component scope, where
+nothing disposes them for you. Stopping is terminal. There is no resume, so build
+a new layer if you need one again. Each layer stops on its own. Stopping one
+leaves the others and the instance running.
 
 ## Related pages
 

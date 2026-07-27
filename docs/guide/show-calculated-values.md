@@ -186,9 +186,10 @@ You usually do not need to stop anything. The calculated layer runs its watchers
 in an effect scope tied to the surrounding component, so it stops automatically
 when that component unmounts.
 
-Call `withLabel.stop()` only to end the reactivity early. Reach for it to pause
-reacting while the component stays mounted, or when you built the layer outside
-any component scope, where nothing disposes it for you. Stopping it leaves the
+`withLabel.stop()` mirrors `effectScope().stop()`. It is the disposal handle for
+a scope you own, so reach for it when you built the layer outside any component
+scope, where nothing disposes it for you. Stopping is terminal. There is no
+resume, so build a new layer if you need one again. Stopping it leaves the
 instance running.
 
 ## Related pages
