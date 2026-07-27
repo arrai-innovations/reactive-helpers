@@ -152,17 +152,27 @@ they appear in. No layer adds a row, and no layer writes to one. Related and
 calculated keep their derived data in side maps keyed by the primary key, off
 the row itself.
 
-## Order matters
+## Which layer order matters
 
-The fixed order lets later layers see earlier layers' work:
+One rule genuinely constrains the order. A related or calculated layer must sit
+upstream of any rule that reads its values:
 
 - Filter functions receive each row plus its related and calculated values.
 - Search rules can index related and calculated values as well as row fields.
 - Sort rules reach them through the `relatedItem.` and `calculatedItem.` key
   prefixes.
 
-The reverse never holds: a related rule cannot see filter output, and search
-only sees what filter let through.
+The reverse never holds. A related rule cannot see filter output.
+
+The order among filter, search, and sort does not change what you render.
+Filter and search decide membership. Sort reorders whatever remains. None of the
+three reads another's result, so reversing them all yields the same
+`contacts.state.objectsInOrder`. `useList` fixes the order at filter, then
+search, then sort because it is predictable and leaves the reorder with the
+fewest rows to move. Treat that as a convention, not a correctness requirement.
+
+One observable follows from it: inside `useList`, the search index is built from
+the rows filter let through.
 
 ## Client-side layers see only the loaded rows
 
