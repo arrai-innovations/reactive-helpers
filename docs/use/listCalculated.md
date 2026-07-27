@@ -138,6 +138,12 @@ The objects in the order specified by the list.
 
 The map of objects stored by their pks.
 
+###### objectsVersion
+
+> **objectsVersion**: `number`
+
+Increments when the set of object keys changes.
+
 ###### order
 
 > **order**: `string`[]
@@ -331,6 +337,12 @@ The objects in the order specified by the list.
 > **objectsMap**: `Map`\<`string`, [`ExistingCrudObject`](objectInstance.md#existingcrudobject)\> & `Omit`\<[`ObjectsMap`](listInstance.md#objectsmap-1), keyof `Map`\<`any`, `any`\>\>
 
 The map of objects stored by their pks.
+
+###### objectsVersion
+
+> **objectsVersion**: `number`
+
+Increments when the set of object keys changes.
 
 ###### order
 
@@ -551,6 +563,12 @@ The objects in the order specified by the list.
 > **objectsMap**: `Map`\<`string`, [`ExistingCrudObject`](objectInstance.md#existingcrudobject)\> & `Omit`\<[`ObjectsMap`](listInstance.md#objectsmap-1), keyof `Map`\<`any`, `any`\>\>
 
 The map of objects stored by their pks.
+
+###### objectsVersion
+
+> **objectsVersion**: `number`
+
+Increments when the set of object keys changes.
 
 ###### order
 

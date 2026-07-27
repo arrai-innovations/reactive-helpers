@@ -29,6 +29,12 @@
         "tests": "tests"
     },
     "scripts": {
+        "benchmark": "vitest bench --run",
+        "benchmark:list": "vitest bench --run tests/benchmarks/listPush.bench.js",
+        "benchmark:list:ci": "vitest bench --run tests/benchmarks/listPush.bench.js --outputJson benchmark-results/list-push.json",
+        "benchmark:check": "node check_benchmark.js",
+        "benchmark:layers": "vitest bench --run tests/benchmarks/listLayers.bench.js",
+        "benchmark:stream": "vitest bench --run tests/benchmarks/listStream.bench.js",
         "test": "vitest",
         "eslint": "eslint --fix index.js config/**/*.js tests/**/*.js use/**/*.js utils/**/*.js",
         "prettier": "prettier --write .",

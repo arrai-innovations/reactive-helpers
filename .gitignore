@@ -4,6 +4,7 @@ node_modules
 
 # e2e coverage
 coverage
+benchmark-results
 # unit coverage
 .nyc_output
 

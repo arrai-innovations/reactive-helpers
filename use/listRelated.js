@@ -329,7 +329,7 @@ export function useListRelated({ parentState, relatedObjectsRules }) {
 
     es.run(() => {
         watch(
-            () => Object.keys(parentState.objects),
+            () => parentState.objectsVersion,
             () => {
                 state.relatedObjectsParentStateObjectsWatchRunning = true;
             },
@@ -337,7 +337,7 @@ export function useListRelated({ parentState, relatedObjectsRules }) {
         );
         watch(() => Object.keys(parentState.objects), parentStateObjectsWatch, { immediate: true });
         watch(
-            [() => Object.keys(state.relatedObjects), () => Object.keys(state.relatedObjectsRules || {})],
+            [() => parentState.objectsVersion, () => Object.keys(state.relatedObjectsRules || {})],
             () => {
                 state.relatedObjectsWatchRunning = true;
             },

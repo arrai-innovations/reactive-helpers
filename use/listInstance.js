@@ -96,6 +96,7 @@ export class ListInstanceError extends Error {
  * @property {object} params - Arguments passed to the server for listing operations.
  * @property {ObjectsMap} objectsMap - The map of objects stored by their pks.
  * @property {ObjectsByPk} objects - The list objects stored by their pks.
+ * @property {number} objectsVersion - Increments when the set of object keys changes.
  * @property {ListOrder} order - The order of objects in the list.
  * @property {ObjectsInOrder} objectsInOrder - The objects in the order specified by the list.
  * @property {import('vue').ShallowReactive<PaginateInfo>} paginateInfo - Pagination information for the list.
@@ -237,6 +238,30 @@ export function useListInstance({ props, handlers = {} }) {
     }
 
     const es = effectScope();
+    const objectsVersion = ref(0);
+    let objectsBatchDepth = 0;
+    let objectsChangedDuringBatch = false;
+
+    function triggerObjectsChanged() {
+        if (objectsBatchDepth) {
+            objectsChangedDuringBatch = true;
+            return;
+        }
+        objectsVersion.value++;
+    }
+
+    function batchObjectChanges(fn) {
+        objectsBatchDepth++;
+        try {
+            return fn();
+        } finally {
+            objectsBatchDepth--;
+            if (!objectsBatchDepth && objectsChangedDuringBatch) {
+                objectsChangedDuringBatch = false;
+                objectsVersion.value++;
+            }
+        }
+    }
 
     const [_objectsProxy, _objectsMapProxy] = es.run(() => {
         // ### do not use this directly, because we proxy `set` to make sure that values are reactive ###
@@ -273,10 +298,14 @@ export function useListInstance({ props, handlers = {} }) {
                 if (typeof prop === "symbol") {
                     return Reflect.set(target, prop, value);
                 }
+                const hadKey = target.has(prop);
                 if (!isReactive(value)) {
                     value = reactive(value);
                 }
                 target.set(prop, value); // map.set() returns the map, we don't need that
+                if (!hadKey) {
+                    triggerObjectsChanged();
+                }
                 return true;
             },
             ownKeys(target) {
@@ -289,7 +318,11 @@ export function useListInstance({ props, handlers = {} }) {
                 if (typeof p === "symbol") {
                     return Reflect.deleteProperty(target, p);
                 }
-                return target.delete(p);
+                const deleted = target.delete(p);
+                if (deleted) {
+                    triggerObjectsChanged();
+                }
+                return deleted;
             },
             getOwnPropertyDescriptor(target, prop) {
                 if (prop === Symbol.toStringTag) {
@@ -331,17 +364,40 @@ export function useListInstance({ props, handlers = {} }) {
 
         // ### for deep reactivity on map items, we need to make sure each is reactive ###
         const _objectsMapWrappedSet = (key, value) => {
+            const hadKey = _objectsMap.has(key);
             const reactiveValue =
                 typeof value === "object" && value !== null && !isReactive(value) ? reactive(value) : value;
-            return _objectsMap.set(key, reactiveValue);
+            const result = _objectsMap.set(key, reactiveValue);
+            if (!hadKey) {
+                triggerObjectsChanged();
+            }
+            return result;
+        };
+        const _objectsMapWrappedDelete = (key) => {
+            const deleted = _objectsMap.delete(key);
+            if (deleted) {
+                triggerObjectsChanged();
+            }
+            return deleted;
+        };
+        const _objectsMapWrappedClear = () => {
+            if (!_objectsMap.size) {
+                return;
+            }
+            _objectsMap.clear();
+            triggerObjectsChanged();
         };
 
-        // ### wrapping the set method to make sure that values are reactive ###
+        // ### wrapping mutation methods to enforce reactive values and track structural changes ###
         const _objectsMapProxy = new Proxy(_objectsMap, {
             get(target, prop, receiver) {
                 switch (prop) {
                     case "set":
                         return _objectsMapWrappedSet;
+                    case "delete":
+                        return _objectsMapWrappedDelete;
+                    case "clear":
+                        return _objectsMapWrappedClear;
                 }
                 return Reflect.get(target, prop, receiver);
             },
@@ -367,6 +423,7 @@ export function useListInstance({ props, handlers = {} }) {
         // /** @type {{[key: string]: import('../use/objectInstance.js').ExistingCrudObject}} */
         // objects: /** @type {{[key: string]: import('../use/objectInstance.js').ExistingCrudObject}} */ _objectsProxy,
         objects: _objectsProxy,
+        objectsVersion,
         loading: loadingError.loading,
         errored: loadingError.errored,
         error: loadingError.error,
@@ -469,7 +526,9 @@ export function useListInstance({ props, handlers = {} }) {
                     pkKey: state.pkKey,
                 })
                 .then(() => {
-                    assignReactiveObject(state.objects, {});
+                    batchObjectChanges(() => {
+                        assignReactiveObject(state.objects, {});
+                    });
                     loadingError.clearError();
                     return Promise.resolve(true);
                 })
@@ -569,13 +628,15 @@ export function useListInstance({ props, handlers = {} }) {
         clearError: loadingError.clearError,
         getFakePk: () => getFakePk(state.objects, state.pkKey),
         pushObjects: (newObjects) => {
-            newObjects.forEach((newObject) => {
-                const pk = String(newObject[state.pkKey]);
-                if (pk in state.objects) {
-                    self.updateListObject.call(this, newObject);
-                } else {
-                    self.addListObject.call(this, newObject);
-                }
+            batchObjectChanges(() => {
+                newObjects.forEach((newObject) => {
+                    const pk = String(newObject[state.pkKey]);
+                    if (pk in state.objects) {
+                        self.updateListObject.call(this, newObject);
+                    } else {
+                        self.addListObject.call(this, newObject);
+                    }
+                });
             });
         },
     };
