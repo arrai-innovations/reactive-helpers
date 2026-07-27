@@ -5,14 +5,29 @@ type: explanation
 
 # Instances and transport
 
-`useListInstance` and `useObjectInstance` split data work into two roles. The
-instance owns reactive state. Your handlers own transport, the code that
-reaches your backend. This page explains where that boundary sits, what
-crosses it, and how it fails.
+Most data libraries own the request. You give one an endpoint, and it fetches.
+This one issues no requests at all. You can install it, wire it up, and still
+see nothing load until you write the code that talks to your backend.
 
-Both instance types share this boundary. One rule differs between them: what
-the instance does with the value your handler resolves. That difference runs
-through every section below, so this page names both instances throughout.
+That gap is deliberate. `useListInstance` and `useObjectInstance` own reactive
+state. Handlers you write own transport. The library keeps one half of the job
+and hands you the other.
+
+Knowing which half you are holding answers a lot. After this page you should be
+able to say:
+
+- what you have to supply before anything loads at all
+- what an instance does with the value your handler resolves, and when it
+  ignores that value
+- which side of the boundary a fault sits on when records never appear
+
+This page stays on that boundary: where it sits, what crosses it, and how it
+fails. It does not show how to write any particular handler, which the how-to
+guides at the end cover.
+
+Both instance types share the boundary. One rule differs between them. It is
+what the instance does with the value your handler resolves, and that difference
+runs through every section below. So this page names both instances throughout.
 `contacts` is a list instance from `useListInstance`; `contact` is an object
 instance from `useObjectInstance`.
 

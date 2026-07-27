@@ -6,22 +6,31 @@ type: explanation
 
 # The object pipeline
 
-`useObject` turns a reactive identity into a synchronized, enriched view of one
-record. You point it at a record, and it keeps a single reactive object in sync
-with your server. It then hangs related and calculated values beside that
-object for your template to render. This page explains which layer owns each
-transition. It also names the invariants you can rely on as the identity, server
-state, related data, and calculated values change. The examples use a contact
-detail screen, with `contactId` as the primary key field.
+One record looks simpler than a list. There is no membership to decide, and no
+order to keep. A detail screen still moves underneath you, though. The identity
+changes when a route parameter changes. The server pushes an update. Someone
+deletes the record while it is on screen.
 
-The work moves through a fixed chain. A reactive identity comes first. Retrieve
-and subscribe follow. They keep one stable reactive object in sync. Related-object
-lookups hang beside it. Calculated presentation values come last, and the
-template renders the composed result.
+`useObject` handles that as a fixed chain over one object it never replaces. A
+reactive identity comes first. Retrieve and subscribe keep the object in sync.
+Related-object lookups hang beside it. Calculated presentation values come last,
+and the template renders the composed result.
 
-Unlike a list, a single object has no membership or ordering stages. After
-synchronization its only remaining concern is enrichment, not filtering,
-searching, or sorting.
+After synchronization, enrichment is the only concern left. A single object gets
+no filtering, searching, or sorting stage.
+
+That never-replaced object is where most surprises live. After this page you
+should be able to say:
+
+- what survives a reload, and what is replaced
+- how deletion is represented, and what resets it
+- where related and calculated data live, given that neither sits on the record
+
+This page stays on how those stages compose, and on what holds true as identity,
+server state, related data, and calculated values change. It does not walk
+through configuring any single stage, which the how-to guides at the end cover.
+The examples use a contact detail screen, with `contactId` as the primary key
+field.
 
 ## The returned manager
 

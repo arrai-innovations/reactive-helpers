@@ -6,13 +6,25 @@ type: explanation
 
 # The list pipeline
 
-`useList` turns a synchronized collection of rows into one final reactive list
-view. You point it at a collection, and it keeps those rows in sync with your
-server. It then enriches, narrows, and reorders them into the single state your
-template renders. This page explains which layer owns each transformation. It
-also names the invariants that hold across the chain as rows arrive, change, and
-drop out of view. The examples use a contact list, with `contactId` as the
-primary key field.
+A real list screen wants several things at once. Rows that stay fresh. Related
+records beside them. Derived values. A filter, a search box, a sort order. One
+composable owning all of that would hide which part did what.
+
+`useList` stacks the concerns instead. Each one is its own layer, and each layer
+takes the previous layer's state as its parent. What your template renders is
+the last layer's view of rows the first layer owns.
+
+That structure explains behavior that is otherwise puzzling. After this page you
+should be able to say:
+
+- which layer changed the rows you are looking at
+- why `contacts.state.objects` can hold fewer rows than the server returned
+- which orderings among the layers matter, and which are only convention
+
+This page stays on how the layers compose, and on what holds true across the
+chain as rows arrive, change, and drop out of view. It does not walk through
+configuring any single layer, which the how-to guides at the end cover. The
+examples use a contact list, with `contactId` as the primary key field.
 
 Reach for `useList` when a plain instance is not enough. `useListInstance`
 alone owns rows and their identity, and nothing more. `useList` wraps it with
