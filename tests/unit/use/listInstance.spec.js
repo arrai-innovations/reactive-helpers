@@ -1248,6 +1248,61 @@ describe("use/listInstance.spec.js", function () {
             expect(listInstance.state.objectsVersion).toBe(2);
             expect(versionWatch).toHaveBeenCalledTimes(2);
         });
+        scopedIt("reports single-object mutations immediately", () => {
+            // Batching applies to a page. Individual mutations must still publish their structural
+            // change as soon as they are made, because callers read derived state straight after.
+            const listInstance = useListInstance({ props: { pkKey: "id", params: {} } });
+
+            listInstance.addListObject({ id: 1, name: "one" });
+            expect(listInstance.state.objectsVersion).toBe(1);
+
+            listInstance.updateListObject({ id: 1, name: "one updated" });
+            expect(listInstance.state.objectsVersion).toBe(1);
+
+            listInstance.addListObject({ id: 2, name: "two" });
+            expect(listInstance.state.objectsVersion).toBe(2);
+
+            listInstance.deleteListObject(1);
+            expect(listInstance.state.objectsVersion).toBe(3);
+        });
+        scopedIt("tracks structural changes made through the objects proxy", () => {
+            // state.objects is an object-shaped view over the underlying map, so mutations applied to
+            // it have to maintain the same signal as the map's own methods.
+            const listInstance = useListInstance({ props: { pkKey: "id", params: {} } });
+
+            listInstance.state.objects["1"] = { id: 1, name: "one" };
+            expect(listInstance.state.objectsVersion).toBe(1);
+
+            listInstance.state.objects["1"] = { id: 1, name: "one replaced" };
+            expect(listInstance.state.objectsVersion).toBe(1);
+
+            // Deleting an absent key reports failure from the trap, which strict mode turns into a
+            // TypeError. A plain object would report success instead, so this is a divergence from
+            // ordinary object semantics rather than an intended guard. Pinned so a deliberate change
+            // to it is visible.
+            expect(() => delete listInstance.state.objects["missing"]).toThrow(TypeError);
+            expect(listInstance.state.objectsVersion).toBe(1);
+
+            expect(delete listInstance.state.objects["1"]).toBe(true);
+            expect(listInstance.state.objectsVersion).toBe(2);
+        });
+        scopedIt("emits one structural change when clearing a populated list", () => {
+            const listInstance = useListInstance({ props: { pkKey: "id", params: {} } });
+            const versionWatch = vi.fn();
+            listInstance.pushObjects(
+                Array.from({ length: 50 }, (_, index) => ({ id: index + 1, name: `Object ${index + 1}` }))
+            );
+            watch(() => listInstance.state.objectsVersion, versionWatch, { flush: "sync" });
+
+            listInstance.clearList();
+
+            expect(Object.keys(listInstance.state.objects)).toHaveLength(0);
+            expect(versionWatch).toHaveBeenCalledTimes(1);
+
+            listInstance.clearList();
+
+            expect(versionWatch).toHaveBeenCalledTimes(1);
+        });
     });
     describe("list promise cancellation", function () {
         scopedIt("cancels and sets isCancelled", async function () {
