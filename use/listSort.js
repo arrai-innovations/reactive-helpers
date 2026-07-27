@@ -4,7 +4,7 @@ import { proxyRunning } from "../utils/proxyRunning.js";
 import get from "lodash-es/get.js";
 import identity from "lodash-es/identity.js";
 import throttle from "lodash-es/throttle.js";
-import { computed, effectScope, reactive, ref, toRef, toRefs, unref, watch } from "vue";
+import { computed, effectScope, onScopeDispose, reactive, ref, toRef, toRefs, unref, watch } from "vue";
 
 /**
  * Provides a Vue 3 composable for sorting lists based on dynamic and customizable rules. This module integrates
@@ -286,19 +286,28 @@ export function useListSort({ parentState, orderByRules, sortThrottleWait = defa
         // the pending reorder has landed; let running settle unless the parent is still running
         sortWatchRunning.value = false;
     };
-    const assignOrder = sortThrottleWaitNumber > 0 ? throttle(writeOrder, sortThrottleWaitNumber) : writeOrder;
+    // Held separately from assignOrder so the throttle's own cancel stays typed.
+    const throttledOrder = sortThrottleWaitNumber > 0 ? throttle(writeOrder, sortThrottleWaitNumber) : null;
+    const assignOrder = throttledOrder ?? writeOrder;
 
-    // Raise running synchronously the moment a new order is pending, so a throttled reorder keeps
-    //  running true until it lands. This mirrors the related, calculated, and search layers, and
-    //  lets the composed manager's state.running reflect the final reorder settling.
-    watch(
-        rawOrder,
-        () => {
-            sortWatchRunning.value = true;
-        },
-        { flush: "sync" }
-    );
-    watch(rawOrder, (v) => assignOrder(v), { immediate: true });
+    es.run(() => {
+        // Raise running synchronously the moment a new order is pending, so a throttled reorder keeps
+        //  running true until it lands. This mirrors the related, calculated, and search layers, and
+        //  lets the composed manager's state.running reflect the final reorder settling.
+        watch(
+            rawOrder,
+            () => {
+                sortWatchRunning.value = true;
+            },
+            { flush: "sync" }
+        );
+        watch(rawOrder, (v) => assignOrder(v), { immediate: true });
+        // A throttled trailing reorder is a timer, not a reactive effect, so disposal would otherwise
+        //  leave it pending and let it write order after the layer stopped.
+        if (throttledOrder) {
+            onScopeDispose(() => throttledOrder.cancel());
+        }
+    });
 
     // 6) objectsInOrder just follows that
     const objectsInOrder = computed(() => order.value.map((pk) => parentState.objects[pk]));

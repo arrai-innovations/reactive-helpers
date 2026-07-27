@@ -450,4 +450,46 @@ describe("use/useListSort", () => {
         expect(listSort.state.order).toEqual(["1", "3"]);
         expect(listSort.state.objectsInOrder.map((obj) => obj.id)).toEqual([1, 3]);
     });
+    scopedIt("stops reordering once the layer is stopped", async () => {
+        for (const contact of contactsResolved) {
+            listInstance.addListObject(contact);
+        }
+        const listSort = useListSort({ parentState: listInstance.state, orderByRules, sortThrottleWait });
+        await nextTick();
+        expect(listSort.state.order).toEqual(["12", "15", "9"]);
+
+        listSort.stop();
+        // the order watcher belongs to the layer's scope, so a new parent row no longer reorders
+        listInstance.addListObject({ id: 20, lexical_name: "zero, contact", organization: 99 });
+        await nextTick();
+        expect(listSort.state.order).toEqual(["12", "15", "9"]);
+    });
+    scopedIt("cancels a throttled reorder that is still pending when stopped", async () => {
+        vi.useFakeTimers();
+        try {
+            for (const contact of contactsResolved) {
+                listInstance.addListObject(contact);
+            }
+            const listSort = useListSort({
+                parentState: listInstance.state,
+                orderByRules,
+                sortThrottleWait: 100,
+            });
+            await nextTick();
+            expect(listSort.state.order).toEqual(["12", "15", "9"]);
+
+            // a new ordering is computed, but the throttle holds the reorder
+            listSort.state.orderByRules = [{ key: "id", desc: false }];
+            await nextTick();
+            expect(listSort.state.order).toEqual(["12", "15", "9"]);
+
+            listSort.stop();
+            vi.advanceTimersByTime(100);
+            await nextTick();
+            // the trailing reorder was cancelled with the scope, so order stayed put
+            expect(listSort.state.order).toEqual(["12", "15", "9"]);
+        } finally {
+            vi.useRealTimers();
+        }
+    });
 });
