@@ -34,7 +34,7 @@ field.
 
 ## The returned manager
 
-This page names the value returned by `useObject` `contact`:
+The examples name the value returned by `useObject` `contact`:
 
 ```javascript
 const contact = useObject({ props, handlers });

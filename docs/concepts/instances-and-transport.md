@@ -27,7 +27,7 @@ guides at the end cover.
 
 Both instance types share the boundary. One rule differs between them. It is
 what the instance does with the value your handler resolves, and that difference
-runs through every section below. So this page names both instances throughout.
+runs through every section below. The examples use both instances side by side:
 `contacts` is a list instance from `useListInstance`; `contact` is an object
 instance from `useObjectInstance`.
 
@@ -107,8 +107,8 @@ A handler receives one argument object. Both instance types pass:
 A list handler also gets callbacks: `pushObjects`, `clearObjects`,
 `setPaginateInfo`, and `setColumnTotals`. An object handler gets none.
 
-This is where the two instance types diverge, and it is the most important
-rule on this page. A **list handler's resolved value is ignored.** Rows enter
+This is where the two instance types diverge, and it is the difference to
+remember. A **list handler's resolved value is ignored.** Rows enter
 the instance only through `pushObjects`; resolving means "done". An **object
 handler's resolved value is the payload.** Whatever `retrieve`, `create`,
 `update`, or `patch` resolves is assigned directly into `contact.state.object`.

@@ -36,7 +36,7 @@ their rows through untouched.
 
 ## The returned manager
 
-This page names the value returned by `useList` `contacts`:
+The examples name the value returned by `useList` `contacts`:
 
 ```javascript
 const contacts = useList({ props, handlers });

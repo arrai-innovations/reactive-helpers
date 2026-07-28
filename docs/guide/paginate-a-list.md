@@ -141,9 +141,9 @@ time. The guard stops the button on the last page and while a request is in
 flight.
 
 ::: tip
-This page drives paging by hand with `useListInstance` to keep the paging
-metadata in focus. You set the page, call `contacts.list()`, and gate the
-button while a request is in flight.
+Driving paging by hand with `useListInstance` makes each metadata update
+explicit. You set the page, call `contacts.list()`, and gate the button while
+a request is in flight.
 
 In an app you could put the page number in reactive `params` on a
 `useListSubscription` instead. Then you set `params.page` and the subscription
