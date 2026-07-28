@@ -247,6 +247,9 @@ template swaps to a confirmation line.
 
 ## Next steps
 
+- [Build a live-updating list](/tutorials/live-updating-list) is the next
+  tutorial: keep a contact list fresh as create, update, and delete events
+  arrive, with `useListSubscription`.
 - [Register app-wide CRUD defaults](/guide/register-crud-defaults) shows how
   to register these handlers once with `setObjectCrud` instead of repeating
   them per instance.

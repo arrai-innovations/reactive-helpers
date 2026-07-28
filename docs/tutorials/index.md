@@ -20,6 +20,9 @@ immediate need.
    `useListInstance`. Start here.
 2. [Edit one object](/tutorials/edit-one-object) loads one contact into an edit
    form, then saves it back with `useObjectInstance`.
+3. [Build a live-updating list](/tutorials/live-updating-list) keeps a contact
+   list fresh as create, update, and delete events arrive, with
+   `useListSubscription`.
 
 ## Supporting lesson
 
