@@ -6,7 +6,7 @@ type: how-to
 # Create a record
 
 This guide submits a new-contact form and creates the record on the backend.
-The task turns on one point: you drive it with an object instance that has no
+The task turns on one point. You drive it with an object instance that has no
 primary key, because a new record has no key until the backend assigns one.
 
 The starting state is an object instance (`useObjectInstance`) with a `create`

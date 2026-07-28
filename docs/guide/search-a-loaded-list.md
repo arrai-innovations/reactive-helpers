@@ -80,7 +80,7 @@ default.
 
 By default, an empty query shows every loaded row, so the list starts full and
 narrows as the reader types. Pass `showAllWhenEmpty: false` to start empty
-instead, showing nothing until the first query. Reach for that when the loaded
+instead, showing nothing until the first query. Choose that when the loaded
 set is large and a full dump is not a useful starting view:
 
 ```javascript
@@ -97,12 +97,12 @@ const foundContacts = useListSearch({
 ## The search is asynchronous
 
 The index updates and runs off the main path, throttled to avoid rebuilding on
-every keystroke. So the results trail fast typing by a beat:
+every keystroke. So the results lag slightly behind fast typing:
 
 - `foundContacts.state.running` is `true` while a search is settling. Bind a
   spinner to it.
 - `foundContacts.state.searched` is `true` while a query is applied and `false`
-  when the box is empty, so you can tell an unfiltered list from a search that
+  when the box is empty. So you can tell an unfiltered list from a search that
   matched everything.
 - Pass `throttle` (milliseconds) to tune the wait. It defaults to 500.
 
@@ -188,9 +188,9 @@ an effect scope tied to the surrounding component, so it stops automatically whe
 that component unmounts.
 
 `foundContacts.stop()` mirrors `effectScope().stop()`. It is the disposal handle
-for a scope you own, so reach for it when you built the layer outside any
-component scope, where nothing disposes it for you. Stopping is terminal. There
-is no resume, so build a new layer if you need one again. Stopping it leaves the
+for a scope you own. Call it when you built the layer outside any component
+scope, where nothing disposes it for you. Stopping is terminal. There is no
+resume, so build a new layer if you need one again. Stopping it leaves the
 instance running.
 
 ## Related pages

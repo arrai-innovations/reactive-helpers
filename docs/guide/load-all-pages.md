@@ -13,7 +13,7 @@ concurrently and accumulates every row.
 
 This is the exhaustive-load counterpart to
 [Paginate a list](/guide/paginate-a-list), which shows one page at a time as the
-reader navigates. Reach for a full load when you need the whole set in memory at
+reader navigates. Load everything when you need the whole set in memory at
 once. Then you can search, sort, or export it client-side. It is heavy for very
 large collections, so prefer server-side paging or filtering when you do not
 truly need every row.
@@ -75,8 +75,8 @@ setListCrud({
 
 The response shape is this example's backend convention, not the library's. The
 handler reads `results`, `totalPages`, and `totalRecords` from the response, and
-sends `page` as the query key, but your backend might use `items`, a page count,
-or a cursor. Read whatever it returns and hand the rows to `pushObjects`. The
+sends `page` as the query key. Your backend might use `items`, a page count, or a
+cursor. Read whatever it returns and hand the rows to `pushObjects`. The
 callbacks the handler is given, such as `pushObjects` and `setPaginateInfo`, are
 the library's side of the contract; the response keys are yours.
 
@@ -106,7 +106,7 @@ pages.
 
 A deliberate cancel is not an error, so nothing lands in `state.error`. The
 `isCancelled` re-checks are the safety net for a transport that cannot truly
-abort: they keep a late page from pushing rows after the run was cancelled. See
+abort. They keep a late page from pushing rows after the run was cancelled. See
 [Cancel stale requests](/guide/cancel-stale-requests) for the cancellable handler
 pattern and [Cancellable intents](/concepts/cancellable-intents) for the model.
 

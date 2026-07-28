@@ -26,7 +26,7 @@ chain as rows arrive, change, and drop out of view. It does not walk through
 configuring any single layer, which the how-to guides at the end cover. The
 examples use a contact list, with `contactId` as the primary key field.
 
-Reach for `useList` when a plain instance is not enough. `useListInstance`
+Use `useList` when a plain instance is not enough. `useListInstance`
 alone owns rows and their identity, and nothing more. `useList` wraps it with
 everything a real list screen tends to need: refetching when inputs change,
 live updates, related and calculated values, filtering, text search, and
@@ -128,8 +128,8 @@ You do not always need the whole chain, and the layers differ in how they get
 their parent.
 
 A subscription builds its own instance. Pass `props` (and `handlers`, unless
-shared defaults cover them) and `useListSubscription` calls `useListInstance`
-for you, because that instance is fully determined by those same inputs. Pass a
+shared defaults cover them), and `useListSubscription` calls `useListInstance`
+for you. That instance is fully determined by those same inputs. Pass a
 `listInstance` you already made to drive that one instead. `useObjectSubscription`
 works the same way over `useObjectInstance`.
 
@@ -201,14 +201,14 @@ finds nothing means nothing matched among the loaded rows, not that no such
 contact exists on the server.
 :::
 
-So the layer you reach for depends on the scope you want. For a view over the
+So the layer you choose depends on the scope you want. For a view over the
 rows already loaded, apply filter, search, or sort. For work across the whole
 collection, change the reactive `props.params` the subscription watches and let
 the server select the rows; see
 [Filter a list](/guide/filter-a-list).
 
-Search results and the sort order are throttled, so they can trail fast input
-by a beat. `contacts.state.running` reflects when the composed view is
+Search results and the sort order are throttled, so they can lag slightly behind
+fast input. `contacts.state.running` reflects when the composed view is
 rebuilding.
 
 ## Failure modes

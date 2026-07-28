@@ -130,7 +130,7 @@ That direct assignment drives the object side's invariants:
   resets `contact.state.deleted` to `false`; so does `contact.clear()`.
 - **`executeAction` ignores its handler's resolved value too.** The action
   resolves a boolean, never response data, and leaves `contact.state.object`
-  untouched. Reach for it when a server action returns no record.
+  untouched. Use it when a server action returns no record.
 
 Errors travel the other way, the same for both instances. When a handler
 throws or rejects, the instance stores the error in `state.error` unchanged
@@ -153,7 +153,7 @@ if (contacts.state.error instanceof ValidationError) {
 The instance can only cancel what the handler makes cancellable. This holds
 for both instances. The promise returned by `contacts.list()` or
 `contact.retrieve()` carries a `cancel` method only when the handler's own
-promise had one; `cancellableFetch` and `makeCancellable` build such promises.
+promise had one. `cancellableFetch` and `makeCancellable` build such promises.
 A cooperative handler also re-checks `isCancelled.value` after each `await`
 and stops touching state once it is `true`.
 
@@ -163,7 +163,7 @@ merely becomes uncancellable.
 
 The consequence differs by instance. For a list, an uncancellable run cannot
 be stopped once `useListSubscription` refetches on parameter changes. For an
-object, a lost `pk` change is sharper: the stale record wins the race and
+object, a lost `pk` change is sharper. The stale record wins the race and
 lands in `contact.state.object`, overwriting the one you asked for. See
 [Cancellable intents](/concepts/cancellable-intents) for how the library makes
 runs cancellable.

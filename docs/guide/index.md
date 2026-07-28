@@ -94,8 +94,8 @@ Pick the route that matches what you are trying to do.
   and [Run a server action](/guide/run-a-server-action) each solve one backend
   task. [Filter a list](/guide/filter-a-list) and
   [Reload a record](/guide/reload-a-record) refetch when filters, props, or
-  route params change; [Cancel stale requests](/guide/cancel-stale-requests)
-  makes those reloads safe so only the latest request's result lands.
+  route params change. [Cancel stale requests](/guide/cancel-stale-requests)
+  makes those reloads safe, so only the latest request's result lands.
 - **Understand the design.** The [concepts](/concepts/) pages explain what an
   instance owns versus your handlers, and how the list and object pipelines
   compose.

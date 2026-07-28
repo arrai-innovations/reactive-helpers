@@ -7,7 +7,7 @@ type: tutorial
 
 In this tutorial, you will use `useListInstance` to fetch contacts into a
 reactive list and render them as stable, ordered rows. You bring one small
-handler that knows how to fetch; the instance owns the reactive state and keeps
+handler that knows how to fetch. The instance owns the reactive state and keeps
 every row keyed and ordered for you.
 
 By the end, you will have a component that loads contacts on setup and renders a
@@ -131,9 +131,9 @@ template tracks it all with no extra wiring.
 
 A list instance that fetches through your handler and renders stable, ordered
 rows. Rows appear in the order the handler pushed them, and each is keyed by
-its `contactId`: if you call `contacts.list()` again, rows whose `contactId`
-is already in the list are updated in place rather than recreated, so their
-position and `:key` stay stable while their fields change reactively.
+its `contactId`. Call `contacts.list()` again and rows whose `contactId` is
+already there are updated in place rather than recreated. Their position and
+`:key` stay stable while their fields change reactively.
 
 ## Next steps
 
@@ -141,8 +141,8 @@ position and `:key` stay stable while their fields change reactively.
   contact, edit it in a form, and save, patch, and delete it with
   `useObjectInstance`.
 - [Pass backend arguments](/guide/data-layer) parameterizes the handler
-  through `props.params` and `props.target`;
-  [Register app-wide CRUD defaults](/guide/register-crud-defaults) shows how to
+  through `props.params` and `props.target`.
+- [Register app-wide CRUD defaults](/guide/register-crud-defaults) shows how to
   register one shared data layer instead of per-instance handlers.
 - The [listInstance reference](/reference/api/use/listInstance) documents the
   full state shape and every action on the instance.

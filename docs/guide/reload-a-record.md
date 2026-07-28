@@ -14,8 +14,8 @@ reloads the record through `useObjectSubscription`.
 
 Before you drive `pk` from the route, make `retrieve` return a cancellable
 promise. When `pk` changes while a retrieve is in flight,
-`useObjectSubscription` cancels that run and starts a new one for the new key,
-so the screen ends on the record you navigated to.
+`useObjectSubscription` cancels that run and starts a new one for the new key.
+The screen then ends on the record you navigated to.
 
 Build the promise with `cancellableFetch` or `makeCancellable`. Do not mark the
 handler `async`: an `async` function returns a native promise with no `.cancel`,
@@ -24,7 +24,7 @@ which the instance cannot cancel.
 ::: warning
 A retrieve that cannot be cancelled does not recover from a mid-flight `pk`
 change. The stale request finishes and its record is assigned to
-`contact.state.object`, and the new key is never fetched, so the record you
+`contact.state.object`. The new key is never fetched, so the record you
 navigated away from stays on screen.
 :::
 
@@ -145,11 +145,13 @@ effect scope tied to the surrounding component, so they stop automatically when
 that component unmounts.
 
 `contact.stop()` mirrors `effectScope().stop()`. It is the disposal handle for a
-scope you own, so reach for it when you created the instance outside any
-component scope, where nothing disposes it for you. It stops both of the
-instance's intents. Stopping is terminal. There is no resume, so build a new
-instance if you need reactivity again. After stopping, value changes trigger
-nothing, and the instance keeps its state and still takes manual calls.
+scope you own. Call it when you created the instance outside any component
+scope, where nothing disposes it for you. It stops both of the instance's
+intents.
+
+Stopping is terminal. There is no resume, so build a new instance if you need
+reactivity again. After stopping, value changes trigger nothing, and the
+instance keeps its state and still takes manual calls.
 
 To suspend retrieving without giving up reactivity, set
 `contact.state.intendToRetrieve` to false instead. That is reversible; stopping

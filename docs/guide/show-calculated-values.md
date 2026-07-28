@@ -7,9 +7,9 @@ type: how-to
 # Show calculated values
 
 In this guide, you derive a value for each row of a loaded list from the row and
-its related objects, such as a display label that combines a contact's name with
-its company. `useListCalculated` runs a rule per row and keeps the result in a
-side map, without writing it onto the row.
+its related objects. One example is a display label that combines a contact's
+name with its company. `useListCalculated` runs a rule per row and keeps the
+result in a side map, without writing it onto the row.
 
 This is client-side derivation. The rule is a plain function of data you already
 hold, and it never fetches.
@@ -137,8 +137,8 @@ label recomputes. `withLabel.state.running` is `true` while the values settle.
 
 ## The same for one object
 
-`useObjectCalculated` does this for a single record, with two naming differences:
-the option is `calculatedObjectRules` (singular), and the results land in
+`useObjectCalculated` does this for a single record, with two naming differences.
+The option is `calculatedObjectRules` (singular), and the results land in
 `state.calculatedObject` (singular), keyed by rule name only.
 
 ```javascript
@@ -175,7 +175,7 @@ take only the row and its related objects.
 
 A calculated layer reads the related layer, so it must sit downstream of
 `useListRelated`. Filter, search, and sort can then read calculated values in
-turn: a filter rule receives them as an argument, and sort and search rules reach
+turn. A filter rule receives them as an argument. Sort and search rules reach
 them through the `calculatedItem.` key prefix. So the order is related, then
 calculated, then the membership and ordering layers, as `useList` arranges it.
 See [The list pipeline](/concepts/list-pipeline) for the full chain.
@@ -187,10 +187,10 @@ in an effect scope tied to the surrounding component, so it stops automatically
 when that component unmounts.
 
 `withLabel.stop()` mirrors `effectScope().stop()`. It is the disposal handle for
-a scope you own, so reach for it when you built the layer outside any component
-scope, where nothing disposes it for you. Stopping is terminal. There is no
-resume, so build a new layer if you need one again. Stopping it leaves the
-instance running.
+a scope you own. Call it when you built the layer outside any component scope,
+where nothing disposes it for you. Stopping is terminal. There is no resume, so
+build a new layer if you need one again. Stopping it leaves the instance
+running.
 
 ## Related pages
 

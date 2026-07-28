@@ -11,7 +11,7 @@ shows progress and surfaces failures. It is the smallest end-to-end use of the
 library: no data layer or configuration required.
 
 This is a supporting technique. You fold it into list and object work once you
-reach for loading and error UI, rather than as a first step. If you are new to
+need loading and error UI, rather than as a first step. If you are new to
 the library, [Build a reactive list](/tutorials/build-a-reactive-list) is the
 better place to start. The list and object instances track loading and error
 state for you. Read this tutorial when you want the same behavior around your
@@ -52,7 +52,7 @@ async function saveToBackend(name) {
 }
 ```
 
-Wrap that call so the state reflects its lifecycle: set loading and clear any
+Wrap that call so the state reflects its lifecycle. Set loading and clear any
 prior error before the attempt, capture a new error on failure, and always
 clear loading at the end.
 

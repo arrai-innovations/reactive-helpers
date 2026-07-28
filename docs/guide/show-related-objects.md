@@ -190,10 +190,14 @@ Ada references projects `1` and `3`, and the list holds `3` before `1`, so
 ];
 ```
 
-`order` sets relative order only, never membership. The foreign keys decide which
-projects appear, ids missing from the collection drop out, and ids in `order` the
-row does not reference are ignored. Because you passed a reactive ref, reordering
-the projects list reorders the related array with it.
+`order` sets relative order only, never membership. Three rules follow from that:
+
+- The row's foreign keys decide which projects appear.
+- An id missing from the collection drops out.
+- An id in `order` that the row does not reference is ignored.
+
+Because you passed a reactive ref, reordering the projects list reorders the
+related array with it.
 
 ::: warning
 `order` should cover every id the foreign keys might reference, which it does when
@@ -204,8 +208,8 @@ list's `order` over authoring one by hand.
 
 ## The same for one object
 
-`useObjectRelated` does this for a single record, with two naming differences:
-the option is `relatedObjectRules` (singular), and the results land in
+`useObjectRelated` does this for a single record, with two naming differences.
+The option is `relatedObjectRules` (singular), and the results land in
 `state.relatedObject` (singular), keyed by rule name only.
 
 ```javascript
@@ -243,9 +247,9 @@ an effect scope tied to the surrounding component, so it stops automatically whe
 that component unmounts.
 
 `withCompany.stop()` mirrors `effectScope().stop()`. It is the disposal handle
-for a scope you own, so reach for it when you built the layer outside any
-component scope, where nothing disposes it for you. Stopping is terminal. There
-is no resume, so build a new layer if you need one again. Stopping it leaves the
+for a scope you own. Call it when you built the layer outside any component
+scope, where nothing disposes it for you. Stopping is terminal. There is no
+resume, so build a new layer if you need one again. Stopping it leaves the
 instance running.
 
 ## Related pages

@@ -38,8 +38,8 @@ declaration simply stops applying, so no further run happens. Turn it back on
 and the library lists again, using whatever the inputs say at that moment.
 
 The one-off actions still exist. `contacts.list()` and `contact.retrieve()` run
-once when you call them. Reach for those when you want a button to trigger
-work. Reach for an intent when the data should track its inputs on its own.
+once when you call them. Call those when you want a button to trigger work. Use
+an intent when the data should track its inputs on its own.
 
 ## Every watched input must be truthy
 
@@ -130,8 +130,9 @@ in-flight run. That is the common case, and it needs nothing from you.
 Stopping by hand mirrors
 [`effectScope().stop()`](https://vuejs.org/api/reactivity-advanced.html#effectscope).
 An intent owns a scope, and `stop()` is that scope's disposal handle. You need it
-when you own the lifetime, which means you created the composable outside any
+when you own the lifetime. That means you created the composable outside any
 component scope: a module singleton, an eagerly built store, a test harness.
+
 Stopping is terminal. There is no resume, and no flag brings a stopped intent
 back. Build a new composable instead.
 

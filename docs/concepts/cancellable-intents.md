@@ -102,7 +102,7 @@ watch your reactive inputs, such as a filter or a primary key. A change cancels
 the in-flight reload and starts a fresh one. This is why route-driven reload is
 only safe with cancellable handlers.
 
-You can also reach for `useCancellableIntent` directly. It drives re-runs of your
+You can also use `useCancellableIntent` directly. It drives re-runs of your
 own async work under the same contract. The subscription composables expose their
 intents too, as `contact.retrieveIntent` and `contacts.listIntent`.
 

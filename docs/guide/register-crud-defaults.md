@@ -6,8 +6,8 @@ type: how-to
 # Register app-wide CRUD defaults
 
 In this guide, you will register one shared data layer with `setListCrud` and
-`setObjectCrud` so list and object instances across your app fall back to the
-same handlers instead of each composable call passing its own.
+`setObjectCrud`. List and object instances across your app then fall back to
+those handlers, instead of each composable call passing its own.
 
 It assumes the package is installed and that you have written a per-instance
 handler before, as in the [Build a reactive list](/tutorials/build-a-reactive-list)
@@ -18,13 +18,12 @@ app where every `useListInstance` or `useObjectInstance` call passes its own
 ## 1. Write the shared handlers
 
 A registered handler has the same shape as a per-instance one. The only new
-requirement is that it must serve more than one collection, so each instance
-names its backend resource in `props.target`, and the handler reads it back
-from `target`. The shape of `target` is yours to define: the library passes
-it through to your handlers without interpreting it, so the `resource` key
-used here, a `stream` key, or an app/model pair for a REST framework all work
-the same way. A `fetch`
-sketch for contacts:
+requirement is that it must serve more than one collection. Each instance names
+its backend resource in `props.target`, and the handler reads it back from
+`target`. The shape of `target` is yours to define, because the library passes it
+through without interpreting it. The `resource` key used here, a `stream` key, or
+an app/model pair for a REST framework all work the same way. A `fetch` sketch
+for contacts:
 
 ```javascript
 // src/crud.js
@@ -108,8 +107,8 @@ contacts.list();
 ```
 
 `contacts.list()` runs the registered `list` handler and resolves to `true` on
-success; the fetched rows land in `contacts.state.objects` and
-`contacts.state.objectsInOrder` exactly as if the handler had been passed to
+success. The fetched rows land in `contacts.state.objects` and
+`contacts.state.objectsInOrder`, exactly as if the handler had been passed to
 this instance. A single object works the same way through the registered
 `retrieve`:
 
@@ -130,7 +129,7 @@ default for that instance only, as shown in
 ## Default target arguments
 
 Besides handlers, both functions accept `args`: default target fields merged
-into every instance's `target` so the shared handler sees them without each
+into every instance's `target`. The shared handler then sees them without each
 instance repeating them.
 
 ```javascript

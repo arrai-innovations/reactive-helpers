@@ -68,13 +68,12 @@ pushObjects(body.results);
 setPaginateInfo({ page: body.page, totalPages: body.totalPages });
 ```
 
-Either way, `setPaginateInfo` and `setColumnTotals` still replace on every
-call, so the page counter and totals track the latest request. By default
-`clearObjects` also resets the paging metadata, the totals, and the error
-state; the handler above sets fresh metadata and totals right after, so the
-reset never shows. See
-[ClearListOptions](/reference/api/use/listInstance#clearlistoptions) for the
-`keepPagination`, `keepColumnTotals`, and `keepError` options.
+Either way, `setPaginateInfo` and `setColumnTotals` still replace on every call,
+so the page counter and totals track the latest request. By default
+`clearObjects` also resets the paging metadata, the totals, and the error state.
+The handler above sets fresh metadata and totals right after, so the reset never
+shows. See [ClearListOptions](/reference/api/use/listInstance#clearlistoptions)
+for the `keepPagination`, `keepColumnTotals`, and `keepError` options.
 
 ## Render the page, the totals, and a Next control
 
@@ -132,25 +131,28 @@ function nextPage() {
 </template>
 ```
 
-On the first `list()`, the header reads "Page 1 of 5 (100 contacts)", the list
-shows the first 20 rows, and the totals show the server's aggregates, such as
-`openInvoices` and `balance`. Clicking "Next page" writes `page: 2` into
-`params` and reloads: because the handler calls `clearObjects()`, page 2's rows
-replace page 1's, the header reads "Page 2 of 5", and the totals stay put since
-the server reports the same all-page aggregates each time. The guard stops the
-button on the last page and while a request is in flight.
+On the first `list()`, the header reads "Page 1 of 5 (100 contacts)" and the list
+shows the first 20 rows. The totals show the server's aggregates, such as
+`openInvoices` and `balance`. Clicking "Next page" writes `page: 2` into `params`
+and reloads. The handler calls `clearObjects()`, so page 2's rows replace page
+1's, and its fresh `setPaginateInfo` call makes the header read "Page 2 of 5".
+The totals stay put, because the server reports the same all-page aggregates each
+time. The guard stops the button on the last page and while a request is in
+flight.
 
 ::: tip
 This page drives paging by hand with `useListInstance` to keep the paging
 metadata in focus. You set the page, call `contacts.list()`, and gate the
-button while a request is in flight. In an app you could put the page
-number in reactive `params` on a `useListSubscription` instead. Then you set
-`params.page` and the subscription refetches on its own, with no manual
-`list()` call. Its list intent coordinates overlapping runs (it waits for the
-current one, or cancels it when your handler is cancellable), so rapid page
-changes still settle on the page you last chose. Keep the disabled-while-loading
-guard for UX if you like, but you no longer need it for correctness. See
-[Filter a list](/guide/filter-a-list) for this reactive-reload pattern.
+button while a request is in flight.
+
+In an app you could put the page number in reactive `params` on a
+`useListSubscription` instead. Then you set `params.page` and the subscription
+refetches on its own, with no manual `list()` call. Its list intent coordinates
+overlapping runs. It waits for the current run, or cancels it when your handler
+is cancellable, so rapid page changes settle on the page you last chose. Keep
+the disabled-while-loading guard for UX if you like, but you no longer need it
+for correctness. See [Filter a list](/guide/filter-a-list) for this
+reactive-reload pattern.
 :::
 
 ## Related pages

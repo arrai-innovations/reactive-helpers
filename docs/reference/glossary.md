@@ -67,6 +67,6 @@ The plural form of an instance composable (for example `useListInstances`,
 
 ## Layered composable
 
-A composable that adds one concern on top of an instance without replacing it:
-filtering, sorting, searching, calculated fields, related lookups, or
-subscriptions for lists, and the equivalent layers for objects.
+A composable that adds one concern on top of an instance without replacing it.
+For lists: filtering, sorting, searching, calculated fields, related lookups, or
+subscriptions. Objects have the equivalent layers.

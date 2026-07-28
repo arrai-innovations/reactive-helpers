@@ -93,7 +93,7 @@ fuller chain.
 ## Sort the rows that remain
 
 Layer `useListSort` on the filter's state, so it orders only the rows the filter
-kept: the filter narrows, then the sort arranges what is left. Chaining them this
+kept. The filter narrows, then the sort arranges what is left. Chaining them this
 way mirrors `useList`, though for these two the rendered rows are the same either
 way. Give `orderByRules`, an array of rules applied in turn:
 
@@ -197,11 +197,13 @@ effect scope tied to the surrounding component, so they stop automatically when
 that component unmounts.
 
 `sortedContacts.stop()` and `visibleContacts.stop()` mirror
-`effectScope().stop()`. They are the disposal handles for a scope you own, so
-reach for them when you built the layers outside any component scope, where
-nothing disposes them for you. Stopping is terminal. There is no resume, so build
-a new layer if you need one again. Each layer stops on its own. Stopping one
-leaves the others and the instance running.
+`effectScope().stop()`. They are the disposal handles for a scope you own. Call
+them when you built the layers outside any component scope, where nothing
+disposes them for you.
+
+Stopping is terminal. There is no resume, so build a new layer if you need one
+again. Each layer stops on its own. Stopping one leaves the others and the
+instance running.
 
 ## Related pages
 

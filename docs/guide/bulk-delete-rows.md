@@ -114,8 +114,8 @@ async function deleteSelected() {
 ```
 
 Check two contacts and the button reads "Delete 2 selected". Clicking it sends
-one request with both keys. On success `contacts.bulkDelete` resolves `true`,
-the list empties, and the `contacts.list()` reload repopulates
+one request with both keys. On success `contacts.bulkDelete` resolves `true` and
+the list empties. The `contacts.list()` reload repopulates
 `contacts.state.objectsInOrder` with every remaining contact, so only the two
 you chose are gone. If the request fails, `bulkDelete` resolves `false`, the
 reload is skipped, and the error message shows.

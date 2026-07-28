@@ -69,9 +69,11 @@ primary key, and it is reactive: navigating to another contact changes it.
 That change is the trigger. The subscription layer watches the primary key and
 sees it move. It retrieves the new contact from your handler. The response lands
 in `contact.state.object`, in place. Everything on screen bound to that object
-reflects the change. If you also subscribe, live events flow into the same
-object as the server changes the record. Delivering events for the current
-contact is your transport's job, not the pipeline's.
+reflects the change.
+
+If you also subscribe, live events flow into the same object as the server
+changes the record. Delivering events for the current contact is your
+transport's job, not the pipeline's.
 
 The contact carries a company foreign key. A related rule resolves that key
 against a collection of companies you already hold. The resolved company appears
@@ -83,6 +85,7 @@ Now the route changes again. The primary key moves to a third contact. The
 pipeline's intent is clear: cancel the stale retrieval, fetch the new record, and
 write it into the same `contact.state.object`. Whether the stale work actually
 stops depends on your transport, as the cancellation section below explains.
+
 The related company re-resolves. The label recomputes. The reactive object your
 template holds never changed identity; only its contents did. That stability is
 the point of the pipeline.
@@ -188,11 +191,12 @@ related rule can never read a calculated one. The order is the contract.
 
 Both layers keep their output in side maps: `contact.state.relatedObject` and
 `contact.state.calculatedObject`, each keyed by rule name. They enrich the
-renderable view. They never write onto the server-backed object. Keeping derived
-values beside the object, rather than on it, has a purpose. A mutation or a
-subscribe event can replace the object's contents wholesale without colliding
-with anything you derived. The record stays exactly what the server sent.
-Everything you computed stays recomputable from it.
+renderable view. They never write onto the server-backed object.
+
+Keeping derived values beside the object, rather than on it, has a purpose. A
+mutation or a subscribe event can replace the object's contents wholesale
+without colliding with anything you derived. The record stays exactly what the
+server sent. Everything you computed stays recomputable from it.
 
 Everything past the subscription layer is client-side. Related and calculated
 never refetch. They reshape what the last retrieve and the subscription events
@@ -247,7 +251,7 @@ composables yourself. You render `contact.state` and get the whole pipeline.
   instance layer on its own, not the full manager.
 - Tasks: [Create a record](/guide/create-a-record) and
   [Run a server action](/guide/run-a-server-action) build on the object
-  instance; [Reload a record when the route changes](/guide/reload-a-record)
+  instance. [Reload a record when the route changes](/guide/reload-a-record)
   drives retrieval from reactive inputs. Neither configures related or
   calculated values, and no focused guide yet covers the manager end to end.
 - Configuring enrichment: until such a guide exists, the
