@@ -140,18 +140,11 @@ current route from `contact.state.object`.
 
 ## Stop reacting
 
-You usually do not need to stop anything. Each intent runs its watchers in an
-effect scope tied to the surrounding component, so they stop automatically when
-that component unmounts.
-
-`contact.stop()` mirrors `effectScope().stop()`. It is the disposal handle for a
-scope you own. Call it when you created the instance outside any component
-scope, where nothing disposes it for you. It stops both of the instance's
-intents.
-
-Stopping is terminal. There is no resume, so build a new instance if you need
-reactivity again. After stopping, value changes trigger nothing, and the
-instance keeps its state and still takes manual calls.
+You usually do not need to stop anything. Inside a component, teardown is
+automatic. `contact.stop()` is the terminal disposal handle for a subscription
+you created outside any component scope. See
+[Lifecycle and cleanup](/concepts/lifecycle-and-cleanup) for what disposal
+covers and when you own it.
 
 To suspend retrieving without giving up reactivity, set
 `contact.state.intendToRetrieve` to false instead. That is reversible; stopping

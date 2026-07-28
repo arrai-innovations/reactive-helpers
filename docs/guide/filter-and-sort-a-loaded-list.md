@@ -192,18 +192,12 @@ box and the inactive contact reappears in order. Neither change fetches again.
 
 ## Stop reacting
 
-You usually do not need to stop anything. Each layer runs its watchers in an
-effect scope tied to the surrounding component, so they stop automatically when
-that component unmounts.
-
-`sortedContacts.stop()` and `visibleContacts.stop()` mirror
-`effectScope().stop()`. They are the disposal handles for a scope you own. Call
-them when you built the layers outside any component scope, where nothing
-disposes them for you.
-
-Stopping is terminal. There is no resume, so build a new layer if you need one
-again. Each layer stops on its own. Stopping one leaves the others and the
-instance running.
+You usually do not need to stop anything. Inside a component, teardown is
+automatic. `sortedContacts.stop()` and `visibleContacts.stop()` are the terminal
+disposal handles for layers you built outside any component scope; each layer
+stops on its own, leaving the others and the instance running. See
+[Lifecycle and cleanup](/concepts/lifecycle-and-cleanup) for what disposal
+covers and when you own it.
 
 ## Related pages
 

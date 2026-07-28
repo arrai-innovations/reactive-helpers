@@ -183,15 +183,11 @@ the full chain.
 
 ## Stop reacting
 
-You usually do not need to stop anything. The search layer runs its watchers in
-an effect scope tied to the surrounding component, so it stops automatically when
-that component unmounts.
-
-`foundContacts.stop()` mirrors `effectScope().stop()`. It is the disposal handle
-for a scope you own. Call it when you built the layer outside any component
-scope, where nothing disposes it for you. Stopping is terminal. There is no
-resume, so build a new layer if you need one again. Stopping it leaves the
-instance running.
+You usually do not need to stop anything. Inside a component, teardown is
+automatic. `foundContacts.stop()` is the terminal disposal handle for a layer
+you built outside any component scope; stopping it leaves the instance running.
+See [Lifecycle and cleanup](/concepts/lifecycle-and-cleanup) for what disposal
+covers and when you own it.
 
 ## Related pages
 
