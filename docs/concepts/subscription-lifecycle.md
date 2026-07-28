@@ -135,6 +135,8 @@ component scope: a module singleton, an eagerly built store, a test harness.
 
 Stopping is terminal. There is no resume, and no flag brings a stopped intent
 back. Build a new composable instead.
+[Lifecycle and cleanup](/concepts/lifecycle-and-cleanup) covers how that
+ownership works across the library.
 
 Both sides hand you one `stop`, and it stops every intent the composable owns.
 `contacts.stop()` stops the list and subscribe intents. `contact.stop()` stops
@@ -170,6 +172,9 @@ nobody is looking at.
 
 - Related concept: [Cancellable intents](/concepts/cancellable-intents) covers
   the cancel contract these intents depend on.
+- Related concept: [Lifecycle and cleanup](/concepts/lifecycle-and-cleanup)
+  covers scope disposal across every composable, including the derived layers
+  that have no intent flags.
 - Related concepts: [The list pipeline](/concepts/list-pipeline) and
   [The object pipeline](/concepts/object-pipeline) show where the subscription
   layer sits among the others.

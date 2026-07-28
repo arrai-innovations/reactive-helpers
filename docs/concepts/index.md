@@ -33,6 +33,10 @@ Choose the page that answers your current question.
   [Subscription lifecycle](/concepts/subscription-lifecycle) explains when a
   run starts, how overlapping input changes collapse into one rerun, and what
   unmount and `<KeepAlive>` do to a live subscription.
+- **Do these composables clean themselves up?**
+  [Lifecycle and cleanup](/concepts/lifecycle-and-cleanup) explains why the
+  creation site decides who disposes a composable, what disposal stops, and when
+  you have to own the lifetime yourself.
 
 ## Related ideas
 

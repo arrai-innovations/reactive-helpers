@@ -129,6 +129,7 @@ export default defineConfig({
                         { text: "The object pipeline", link: "/concepts/object-pipeline" },
                         { text: "Cancellable intents", link: "/concepts/cancellable-intents" },
                         { text: "Subscription lifecycle", link: "/concepts/subscription-lifecycle" },
+                        { text: "Lifecycle and cleanup", link: "/concepts/lifecycle-and-cleanup" },
                     ],
                 },
             ],
