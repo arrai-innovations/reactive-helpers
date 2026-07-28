@@ -382,6 +382,68 @@ describe("use/listSubscription.spec.js", function () {
             expect(crudSubscribeResolvable[0].promise.cancel).toHaveBeenCalledTimes(1);
             expect(listSubscription.state.subscribed).toBe(false);
         });
+        scopedIt("re-raising intendToSubscribe after unsubscribing starts a fresh subscribe run", async function () {
+            const props = reactive({
+                pkKey: "id",
+                params: { user: 1, fields },
+                intendToList: false,
+                intendToSubscribe: true,
+            });
+            const listSubscription = useListSubscription({ props });
+            crudSubscribeResolvable[0].resolve();
+            await poll(() => listSubscription.state.subscribed);
+            expect(crudSubscribe).toHaveBeenCalledTimes(1);
+
+            listSubscription.state.intendToSubscribe = false;
+            crudSubscribeResolvable[0].cancel.resolve(true);
+            await poll(() => !listSubscription.state.subscribed);
+            expect(listSubscription.state.subscribed).toBe(false);
+
+            listSubscription.state.intendToSubscribe = true;
+            await poll(() => crudSubscribeResolvable.length === 2);
+            crudSubscribeResolvable[1].resolve();
+            await poll(() => listSubscription.state.subscribed);
+            expect(listSubscription.state.subscribed).toBe(true);
+            expect(crudSubscribe).toHaveBeenCalledTimes(2);
+            // the flag cycle drives only the subscribe intent; the list was never fetched
+            expect(crudList).not.toHaveBeenCalled();
+        });
+        scopedIt("holds the subscribe run until the list settles", async function () {
+            const listSubscription = useListSubscription({
+                props: reactive({
+                    pkKey: "id",
+                    params: { user: 1, fields },
+                    intendToList: true,
+                    intendToSubscribe: true,
+                }),
+            });
+            await poll(() => crudList.mock.calls.length === 1);
+            // the shared loading guard delays the subscribe intent while the list is in flight
+            await doAwaitTimeout(150);
+            expect(crudSubscribe).not.toHaveBeenCalled();
+
+            crudListResolvable[0].resolve();
+            await poll(() => crudSubscribe.mock.calls.length === 1);
+            crudSubscribeResolvable[0].resolve();
+            await poll(() => listSubscription.state.subscribed);
+            expect(listSubscription.state.subscribed).toBe(true);
+        });
+        scopedIt("applies a delete event that carries the object instead of the bare pk", async function () {
+            const listSubscription = useListSubscription({
+                props: reactive({
+                    pkKey: "id",
+                    params: { user: 1, fields },
+                    intendToList: false,
+                    intendToSubscribe: true,
+                }),
+            });
+            crudSubscribeResolvable[0].resolve();
+            await poll(() => listSubscription.state.subscribed);
+            passedApplyObjectEvent({ id: 7, __str__: "foo", name: "foo" }, "create");
+            expect(listSubscription.listInstance.state.objects).toEqual({ 7: { id: 7, __str__: "foo", name: "foo" } });
+            passedApplyObjectEvent({ id: 7, __str__: "gone", name: "gone" }, "delete");
+            expect(listSubscription.listInstance.state.objects).toEqual({});
+        });
         scopedIt("does not trigger subscription when intendToSubscribe is never set to true", () => {
             const props = reactive({
                 pkKey: "id",
