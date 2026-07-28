@@ -38,8 +38,8 @@ const { loading, error, errored, setLoading, clearLoading, setError, clearError 
 
 ## 2. Wrap the work
 
-The tutorial needs something to save. To keep it self-contained, use a stand-in
-that waits, then rejects when the name is empty and resolves otherwise:
+The button needs something to save. A stand-in that waits, then rejects when
+the name is empty and resolves otherwise, runs without a backend:
 
 ```javascript
 async function saveToBackend(name) {

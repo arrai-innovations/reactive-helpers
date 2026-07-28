@@ -16,8 +16,8 @@ the package is already installed; see [Getting started](/guide/) if it is not.
 
 ## 1. Sketch the contacts source
 
-The list needs somewhere to fetch from. To keep the tutorial self-contained,
-use a tiny in-memory array; the shape is what matters. Each contact has a
+The list needs somewhere to fetch from. A tiny in-memory array runs this whole
+page without a backend; the shape is what matters. Each contact has a
 `contactId` that acts as its primary key:
 
 ```javascript
@@ -59,7 +59,7 @@ const contacts = useListInstance({
 - The returned instance pairs reactive state (`contacts.state`) with the
   actions that drive it (`contacts.list()`).
 
-Passing `handlers` per instance keeps the tutorial self-contained;
+Passing `handlers` per instance keeps the whole example in one file;
 [Register app-wide CRUD defaults](/guide/register-crud-defaults) shows how to
 register one shared data layer instead.
 
