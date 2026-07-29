@@ -97,11 +97,14 @@ screens.
 A handler receives one argument object. Both instance types pass:
 
 - Your own arguments, passed through untouched, with shapes you define. A list
-  handler gets `target` and `params`; an object handler gets `target`, `pk`,
-  and `params`.
+  handler gets `target` and `params`; an object handler gets `target` and, per
+  verb, `pk` and `params`
+  ([CRUD handler contracts](/concepts/crud-handler-contracts) maps each verb's
+  payload).
 - `pkKey`, the primary key field name, so one handler can serve records keyed
   by different fields.
-- `isCancelled`, a readonly ref that turns `true` when the run is cancelled.
+- `isCancelled`, a readonly ref that turns `true` when the run is cancelled
+  (`bulkDelete` and list `executeAction` do not get it).
 - Any extra keys you passed to the action call.
 
 A list handler also gets callbacks: `pushObjects`, `clearObjects`,
