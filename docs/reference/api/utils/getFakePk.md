@@ -6,8 +6,8 @@
 
 > **getFakePk**(`arraySetMapOrObject`, `key?`): `string`
 
-Get a fake pk that is not in the array, set, map, or object. The fake pk is negative number, so they can be
-differentiated from real ids. They are returned as strings, as javascript object property keys are always strings.
+Get a random safe integer at or below zero and return it as a string. A candidate is redrawn when its numeric value
+exists in an array field, Set, or Map, or when its string property key exists in an object.
 
 #### Parameters
 

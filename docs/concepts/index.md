@@ -25,6 +25,11 @@ Choose the page that answers your current question.
   [The list pipeline](/concepts/list-pipeline) explains how the instance,
   subscription, related, calculated, filter, search, and sort layers compose
   into one list.
+- **What makes two rows the same record, and what decides where a row sits?**
+  [Identity and order](/concepts/identity-and-order) explains how a list keys
+  rows by their `pkKey` value, merges pushed rows by identity, keeps arrival
+  order, and hands out placeholder keys for records the backend has not named
+  yet.
 - **How does one record stay in sync?**
   [The object pipeline](/concepts/object-pipeline) explains how `useObject`
   synchronizes a single record with your transport, tracks its deletion state,
@@ -44,20 +49,14 @@ Choose the page that answers your current question.
 
 ## Related ideas
 
-A few supporting ideas do not have their own concept page yet. Until they do,
-these are the best places to learn them.
+One supporting idea does not have its own concept page yet. Until it does,
+these are the best places to learn it.
 
 - **Loading and error primitives.** `useLoading`, `useError`, and
   `useLoadingError` return readonly state plus actions to set and clear it.
   Learn them in [Track loading and error state](/tutorials/track-loading-and-error),
   and see the [useLoadingError reference](/reference/api/use/loadingError) for the
   full surface, including the proxy variants.
-- **Identity and order.** A list keys rows by their `pkKey` value and keeps them
-  in push order. Pushing a row whose key is already present merges it in place
-  instead of duplicating it. [The list pipeline](/concepts/list-pipeline)
-  covers this, and the
-  [listInstance reference](/reference/api/use/listInstance) documents the state
-  shape.
 
 For vocabulary, see the [glossary](/reference/glossary). For step-by-step
 learning, start with the [tutorials](/tutorials/); for specific tasks, see the
