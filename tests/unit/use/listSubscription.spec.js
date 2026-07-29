@@ -570,6 +570,27 @@ describe("use/listSubscription.spec.js", function () {
             expect(isCancelledRef.value).toBe(true);
             expect(listSubscription.state.subscribed).toBe(false);
         });
+        scopedIt("hands the subscribe handler deep-cloned target and params snapshots", async function () {
+            const props = reactive({
+                pkKey: "id",
+                params: { user: 1, fields },
+                intendToList: false,
+                intendToSubscribe: true,
+            });
+            const listSubscription = useListSubscription({ props });
+            await poll(() => crudSubscribe.mock.calls.length === 1);
+            crudSubscribeResolvable[0].resolve();
+            await poll(() => listSubscription.state.subscribed);
+            const seen = crudSubscribe.mock.calls[0][0];
+            expect(seen.target).toEqual({ stream: "test_stream" });
+            expect(seen.target).not.toBe(listSubscription.listInstance.state.crud.args);
+            expect(seen.params).toEqual({ user: 1, fields });
+            expect(seen.params).not.toBe(listSubscription.listInstance.state.params);
+            // the snapshot keeps the values the run started with
+            props.params.user = 2;
+            await nextTick();
+            expect(seen.params.user).toBe(1);
+        });
         scopedIt("subscribe resubscribes when params change", async function () {
             crudSubscribeResolvable[0].promise.cancel.mockImplementation(() => Promise.resolve(true));
             const props = reactive({

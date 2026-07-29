@@ -136,6 +136,25 @@ describe("use/objectSubscription.js", function () {
 
             expect(objSub.state.object).toEqual(crudRetrieveResolved);
         });
+        scopedIt("hands the subscribe handler the live reactive target and params", async function () {
+            const props = getProps({
+                target: { stream: "test_stream" },
+                intendToRetrieve: false,
+                intendToSubscribe: true,
+            });
+            const handlers = getHandlers();
+            const objSub = useObjectSubscription({ props, handlers });
+            await flushPromises();
+            expect(handlers.subscribe).toHaveBeenCalledTimes(1);
+            const seen = handlers.subscribe.mock.calls[0][0];
+            // no clone: the handler holds the same reactive objects the instance reads
+            expect(seen.target).toBe(objSub.objectInstance.state.crud.args);
+            props.target.stream = "another_stream";
+            props.params.fields = ["id"];
+            await nextTick();
+            expect(seen.target.stream).toBe("another_stream");
+            expect(seen.params.fields).toEqual(["id"]);
+        });
         scopedIt("delays when `params` are falsy", async function () {
             const pk = ref(1);
             const intendToSubscribe = ref(true);

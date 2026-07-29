@@ -606,6 +606,28 @@ describe("use/listInstance.spec.js", function () {
             expect(listInstance.state.loading).toBe(false);
             expect(listInstance.state.error).toEqual(new Error("sync throw from list"));
         });
+        scopedIt("ignores the handler's resolved value; rows enter only through pushObjects", async () => {
+            const resolvingRows = useListInstance({
+                props: { pkKey: "id", params: {} },
+                handlers: {
+                    list: () => Promise.resolve([{ id: 1, name: "resolved but ignored" }]),
+                },
+            });
+            await expect(resolvingRows.list()).resolves.toBe(true);
+            expect(resolvingRows.state.objectsInOrder).toEqual([]);
+
+            const pushingRows = useListInstance({
+                props: { pkKey: "id", params: {} },
+                handlers: {
+                    list: ({ pushObjects }) => {
+                        pushObjects([{ id: 1, name: "pushed" }]);
+                        return Promise.resolve();
+                    },
+                },
+            });
+            await expect(pushingRows.list()).resolves.toBe(true);
+            expect(pushingRows.state.objectsInOrder).toEqual([{ id: 1, name: "pushed" }]);
+        });
     });
     scopedIt("useListInstances", async function () {
         const listInstanceA = useListInstance({
