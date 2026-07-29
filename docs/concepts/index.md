@@ -17,6 +17,10 @@ Choose the page that answers your current question.
   [Instances and transport](/concepts/instances-and-transport) explains what the
   instance owns, what your handlers own, and why transport stays outside the
   library.
+- **What does each handler receive, and what should it return?**
+  [CRUD handler contracts](/concepts/crud-handler-contracts) explains the
+  argument object every handler gets, the per-verb payloads and return
+  expectations, and where a handler failure lands.
 - **How is a rendered list transformed?**
   [The list pipeline](/concepts/list-pipeline) explains how the instance,
   subscription, related, calculated, filter, search, and sort layers compose

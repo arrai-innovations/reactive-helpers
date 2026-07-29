@@ -126,6 +126,7 @@ export default defineConfig({
                     items: [
                         { text: "Overview", link: "/concepts/" },
                         { text: "Instances and transport", link: "/concepts/instances-and-transport" },
+                        { text: "CRUD handler contracts", link: "/concepts/crud-handler-contracts" },
                         { text: "The list pipeline", link: "/concepts/list-pipeline" },
                         { text: "The object pipeline", link: "/concepts/object-pipeline" },
                         { text: "Cancellable intents", link: "/concepts/cancellable-intents" },
