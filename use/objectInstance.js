@@ -268,14 +268,21 @@ export function useObjectInstance({ props, handlers = {} }) {
             loadingError.setLoading();
             loadingError.clearError();
             const isCancelled = ref(false);
-            const createPromise = state.crud.create({
-                ...additionalArgs,
-                target: state.crud.args,
-                object,
-                params: state.params,
-                pkKey: state.pkKey,
-                isCancelled: readonly(isCancelled),
-            });
+            let createPromise = null;
+            try {
+                createPromise = state.crud.create({
+                    ...additionalArgs,
+                    target: state.crud.args,
+                    object,
+                    params: state.params,
+                    pkKey: state.pkKey,
+                    isCancelled: readonly(isCancelled),
+                });
+            } catch (error) {
+                loadingError.setError(error);
+                loadingError.clearLoading();
+                return Promise.resolve(false);
+            }
 
             return wrapMaybeCancellable(
                 createPromise
@@ -373,14 +380,21 @@ export function useObjectInstance({ props, handlers = {} }) {
             loadingError.setLoading();
             loadingError.clearError();
             const isCancelled = ref(false);
-            const updatePromise = state.crud.update({
-                ...additionalArgs,
-                target: state.crud.args,
-                object,
-                params: state.params,
-                pkKey: state.pkKey,
-                isCancelled: readonly(isCancelled),
-            });
+            let updatePromise = null;
+            try {
+                updatePromise = state.crud.update({
+                    ...additionalArgs,
+                    target: state.crud.args,
+                    object,
+                    params: state.params,
+                    pkKey: state.pkKey,
+                    isCancelled: readonly(isCancelled),
+                });
+            } catch (error) {
+                loadingError.setError(error);
+                loadingError.clearLoading();
+                return Promise.resolve(false);
+            }
             return wrapMaybeCancellable(
                 updatePromise
                     .then((/** @type {ExistingCrudObject} */ object) => {
@@ -417,13 +431,20 @@ export function useObjectInstance({ props, handlers = {} }) {
             loadingError.setLoading();
             loadingError.clearError();
             const isCancelled = ref(false);
-            const deletePromise = state.crud.delete({
-                ...args,
-                target: state.crud.args,
-                pk: state.pk,
-                pkKey: state.pkKey,
-                isCancelled: readonly(isCancelled),
-            });
+            let deletePromise = null;
+            try {
+                deletePromise = state.crud.delete({
+                    ...args,
+                    target: state.crud.args,
+                    pk: state.pk,
+                    pkKey: state.pkKey,
+                    isCancelled: readonly(isCancelled),
+                });
+            } catch (error) {
+                loadingError.setError(error);
+                loadingError.clearLoading();
+                return Promise.resolve(false);
+            }
             return wrapMaybeCancellable(
                 deletePromise
                     .then(() => {
@@ -460,15 +481,22 @@ export function useObjectInstance({ props, handlers = {} }) {
             loadingError.setLoading();
             loadingError.clearError();
             const isCancelled = ref(false);
-            const patchPromise = state.crud.patch({
-                ...additionalArgs,
-                target: state.crud.args,
-                partialObject,
-                pk: state.pk,
-                pkKey: state.pkKey,
-                params: state.params,
-                isCancelled: readonly(isCancelled),
-            });
+            let patchPromise = null;
+            try {
+                patchPromise = state.crud.patch({
+                    ...additionalArgs,
+                    target: state.crud.args,
+                    partialObject,
+                    pk: state.pk,
+                    pkKey: state.pkKey,
+                    params: state.params,
+                    isCancelled: readonly(isCancelled),
+                });
+            } catch (error) {
+                loadingError.setError(error);
+                loadingError.clearLoading();
+                return Promise.resolve(false);
+            }
             return wrapMaybeCancellable(
                 patchPromise
                     .then((/** @type {ExistingCrudObject} */ object) => {
@@ -502,14 +530,21 @@ export function useObjectInstance({ props, handlers = {} }) {
             loadingError.setLoading();
             loadingError.clearError();
             const isCancelled = ref(false);
-            const executeActionPromise = state.crud.executeAction({
-                ...additionalArgs,
-                target: state.crud.args,
-                action,
-                pk: state.pk,
-                pkKey: state.pkKey,
-                isCancelled: readonly(isCancelled),
-            });
+            let executeActionPromise = null;
+            try {
+                executeActionPromise = state.crud.executeAction({
+                    ...additionalArgs,
+                    target: state.crud.args,
+                    action,
+                    pk: state.pk,
+                    pkKey: state.pkKey,
+                    isCancelled: readonly(isCancelled),
+                });
+            } catch (error) {
+                loadingError.setError(error);
+                loadingError.clearLoading();
+                return Promise.resolve(false);
+            }
             return wrapMaybeCancellable(
                 executeActionPromise
                     .then(() => {

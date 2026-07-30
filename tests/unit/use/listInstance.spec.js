@@ -606,6 +606,41 @@ describe("use/listInstance.spec.js", function () {
             expect(listInstance.state.loading).toBe(false);
             expect(listInstance.state.error).toEqual(new Error("sync throw from list"));
         });
+        scopedIt("bulkDelete handles synchronously thrown errors", async () => {
+            const listInstance = useListInstance({
+                props: { pkKey: "id", params: {} },
+                handlers: {
+                    bulkDelete: () => {
+                        throw new Error("sync throw from bulkDelete");
+                    },
+                },
+            });
+            listInstance.addListObject({ id: "1" });
+
+            await expect(listInstance.bulkDelete({})).resolves.toBe(false);
+
+            expect(listInstance.state.errored).toBe(true);
+            expect(listInstance.state.loading).toBe(false);
+            expect(listInstance.state.error).toEqual(new Error("sync throw from bulkDelete"));
+            expect(Object.keys(listInstance.state.objects)).toEqual(["1"]);
+        });
+        scopedIt("executeAction handles synchronously thrown errors", async () => {
+            const listInstance = useListInstance({
+                props: { pkKey: "id", params: {} },
+                handlers: {
+                    executeAction: () => {
+                        throw new Error("sync throw from executeAction");
+                    },
+                },
+            });
+
+            // the failure path of executeAction resolves null rather than false
+            await expect(listInstance.executeAction({ action: "doThing" })).resolves.toBeNull();
+
+            expect(listInstance.state.errored).toBe(true);
+            expect(listInstance.state.loading).toBe(false);
+            expect(listInstance.state.error).toEqual(new Error("sync throw from executeAction"));
+        });
         scopedIt("ignores the handler's resolved value; rows enter only through pushObjects", async () => {
             const resolvingRows = useListInstance({
                 props: { pkKey: "id", params: {} },
