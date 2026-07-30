@@ -101,11 +101,10 @@ export class CancellableIntentError extends Error {
  *
  * If the watch arguments change again before the promise resolves, the in-flight promise is cancelled only when it
  * carries a `cancel` method (a `MaybeCancellablePromise`); a plain promise is left to run to completion. That
- * distinction is visible through the composables built on this one. `useObjectSubscription` calls
- * `objectInstance.retrieve()` again for the new key, and that call returns the promise already in flight for the
- * previous key, so the stale record is assigned and the new key is never fetched. `useListSubscription` guards its
- * list intent on the list's own loading state, so the superseded run is left to finish and the list is then listed
- * again with the current arguments.
+ * distinction is visible through the composables built on this one. Both `useObjectSubscription` and
+ * `useListSubscription` guard their intents on the instance's own loading state, so a superseded run is left to
+ * finish and the intent then re-runs with the current arguments. The stale result is assigned first, and the
+ * re-run replaces it.
  *
  * @example
  * ```vue

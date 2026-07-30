@@ -387,7 +387,7 @@ describe("use/objectSubscription.js", function () {
                 await nextTick();
             }
         };
-        scopedIt("a non-cancellable retrieve loses the pk change: the stale record wins", async () => {
+        scopedIt("a non-cancellable retrieve defers the pk change until it settles", async () => {
             const calls = [];
             const handlers = {
                 // Plain promise, no `.cancel`: the same shape an `async` handler produces.
@@ -407,14 +407,18 @@ describe("use/objectSubscription.js", function () {
             // Navigate to pk 2 while pk 1 is still in flight.
             pk.value = 2;
             await flushAll();
-            // The in-flight pk 1 run cannot be cancelled, so no pk 2 fetch ever starts.
+            // The in-flight pk 1 run cannot be cancelled, so the pk 2 fetch waits behind it.
             expect(calls.map((c) => c.pk)).toEqual(["1"]);
 
-            // When the stale pk 1 request resolves, its record is assigned and pk 2 stays unfetched.
+            // The stale pk 1 record is still assigned when it resolves, but settling clears the
+            //  guard, so the deferred run then fetches pk 2.
             calls[0].resolvable.resolve({ id: 1, name: "one" });
             await flushAll();
-            expect(calls.map((c) => c.pk)).toEqual(["1"]);
-            expect(sub.state.object).toEqual({ id: 1, name: "one" });
+            expect(calls.map((c) => c.pk)).toEqual(["1", "2"]);
+
+            calls[1].resolvable.resolve({ id: 2, name: "two" });
+            await flushAll();
+            expect(sub.state.object).toEqual({ id: 2, name: "two" });
         });
 
         scopedIt("a cancellable retrieve drops the stale run and fetches the new key", async () => {
@@ -446,6 +450,32 @@ describe("use/objectSubscription.js", function () {
             calls.find((c) => c.pk === "2").resolvable.resolve({ id: 2, name: "two" });
             await flushAll();
             expect(sub.state.object).toEqual({ id: 2, name: "two" });
+        });
+
+        scopedIt("a standing subscription does not block a later retrieve", async () => {
+            // The retrieve guard reads the object instance's loading, not the subscription's, which
+            //  stays true for as long as a standing connection's promise is pending.
+            const calls = [];
+            const handlers = {
+                retrieve: vi.fn(({ pk }) => {
+                    calls.push(pk);
+                    return Promise.resolve({ id: pk, name: `name-${pk}` });
+                }),
+                subscribe: vi.fn(() => new Promise(() => {})),
+            };
+            const pk = ref(1);
+            const props = getProps({ pk, intendToRetrieve: true, intendToSubscribe: true, params: { fields } });
+            // @ts-ignore - the subscribe handler returns a plain never-settling promise, the shape a
+            //  standing connection has, rather than a cancellable one
+            const sub = useObjectSubscription({ props, handlers });
+
+            await flushAll();
+            expect(calls).toEqual(["1"]);
+            expect(sub.state.subscribed).toBe(true);
+
+            pk.value = 2;
+            await flushAll();
+            expect(calls).toEqual(["1", "2"]);
         });
     });
     describe("handler defaults", function () {

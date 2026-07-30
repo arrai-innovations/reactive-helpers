@@ -231,9 +231,10 @@ composables yourself. You render `contact.state` and get the whole pipeline.
   flight. It returns that in-flight promise rather than starting a second run.
 - **Stale work on an uncancellable handler.** When identity changes mid-flight,
   the layer can only cancel a handler that returned a cancellable promise. A
-  plain `async` retrieve cannot be stopped, and its stale result wins. An
-  uncancellable subscription is worse: it never settles, so the old callback
-  keeps writing events into the object.
+  plain `async` retrieve cannot be stopped, so its stale record lands and the
+  fetch for the new key waits until that run settles. An uncancellable
+  subscription is worse: it never settles, so the old callback keeps writing
+  events into the object.
 - **Deletion.** An empty `contact.state.object` with `contact.state.deleted` set
   is a valid lifecycle state, not an operational error, as described above.
 - **Reading an intermediate layer.** Reading
