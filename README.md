@@ -1,10 +1,10 @@
 # reactive-helpers
 
-![Tests](https://docs.arrai.dev/reactive-helpers/artifacts/main/tests.svg)
-[![Coverage](https://docs.arrai.dev/reactive-helpers/artifacts/main/tests.coverage.svg)](https://docs.arrai.dev/reactive-helpers/artifacts/main/coverage_tests/)
-![ESLint](https://docs.arrai.dev/reactive-helpers/artifacts/main/eslint.svg)
-![Prettier](https://docs.arrai.dev/reactive-helpers/artifacts/main/prettier.svg)
-![Audit](https://docs.arrai.dev/reactive-helpers/artifacts/main/pnpm-audit.svg)
+![Tests](https://reactive-helpers.arrai.dev/artifacts/main/tests.svg)
+[![Coverage](https://reactive-helpers.arrai.dev/artifacts/main/tests.coverage.svg)](https://reactive-helpers.arrai.dev/artifacts/main/coverage_tests/)
+![ESLint](https://reactive-helpers.arrai.dev/artifacts/main/eslint.svg)
+![Prettier](https://reactive-helpers.arrai.dev/artifacts/main/prettier.svg)
+![Audit](https://reactive-helpers.arrai.dev/artifacts/main/pnpm-audit.svg)
 [![License: BSD-3-Clause](https://img.shields.io/badge/License-BSD--3--Clause-blue.svg?style=for-the-badge)](./LICENSE)
 
 Vue.js 3 composition utilities to manage reactive lists, objects, loading and error state, and the small helpers that
