@@ -241,9 +241,11 @@ rebuilding.
   [Filter a list](/guide/filter-a-list) build on the list instance;
   [Register app-wide CRUD defaults](/guide/register-crud-defaults) shares
   handlers app-wide.
-- Configuring the manager's own layers: no task guide yet covers setting up
-  related, calculated, filter, search, and sort in `useList`. Until one
-  lands, each layer's reference page documents its rule shape:
+- Configuring the manager's own layers:
+  [Show related objects](/guide/show-related-objects) and
+  [Show calculated values](/guide/show-calculated-values) set up the two
+  enrichment layers. No task guide yet covers filter, search, and sort as
+  `useList` props. Each layer's reference page documents its rule shape:
   [listRelated](/reference/api/use/listRelated),
   [listCalculated](/reference/api/use/listCalculated),
   [listFilter](/reference/api/use/listFilter),

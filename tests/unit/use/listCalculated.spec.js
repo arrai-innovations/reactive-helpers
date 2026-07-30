@@ -93,6 +93,67 @@ describe("use/listCalculated", () => {
         expect(deepUnref(listCalculated.state.calculatedObjects[1].nameLength)).toBe(3);
         expect(deepUnref(listCalculated.state.calculatedObjects[1].summary)).toBe("Ada:3");
     });
+    scopedIt("passes undefined for related objects when no related layer sits upstream", async () => {
+        const mainListInstance = useListInstance({ props: { pkKey: "id" } });
+        mainListInstance.addListObject({ id: "1", name: "Ada" });
+        const listCalculated = useListCalculated({
+            parentState: mainListInstance.state,
+            calculatedObjectsRules: {
+                relatedType: (obj, related) => typeof related,
+            },
+        });
+        await nextTick();
+        expect(deepUnref(listCalculated.state.calculatedObjects[1].relatedType)).toBe("undefined");
+    });
+    scopedIt("throws on read when a rule is not a function, leaving other rules working", async () => {
+        const mainListInstance = useListInstance({ props: { pkKey: "id" } });
+        mainListInstance.addListObject({ id: "1", name: "Ada" });
+        const listCalculated = useListCalculated({
+            parentState: mainListInstance.state,
+            calculatedObjectsRules: {
+                // @ts-ignore - rules must be functions; this is the failure case
+                bad: 123,
+                good: (obj) => obj.name,
+            },
+        });
+        await nextTick();
+        // Unlike useObjectCalculated, the list side does not warn and skip.
+        expect(() => listCalculated.state.calculatedObjects[1].bad).toThrow(TypeError);
+        expect(deepUnref(listCalculated.state.calculatedObjects[1].good)).toBe("Ada");
+    });
+    scopedIt("reads undefined for a sibling rule that is still evaluating", async () => {
+        const mainListInstance = useListInstance({ props: { pkKey: "id" } });
+        mainListInstance.addListObject({ id: "1", name: "Ada" });
+        const listCalculated = useListCalculated({
+            parentState: mainListInstance.state,
+            calculatedObjectsRules: {
+                // Two rules that read each other: the in-flight one reads as undefined
+                //  rather than raising, so a cycle yields a quietly incomplete value.
+                a: (obj, related, calculated) => `a${calculated.b ?? "?"}`,
+                b: (obj, related, calculated) => `b${calculated.a ?? "?"}`,
+            },
+        });
+        await nextTick();
+        expect(deepUnref(listCalculated.state.calculatedObjects[1].a)).toBe("ab?");
+    });
+    scopedIt("drops a row's calculated values when the row leaves the list", async () => {
+        const mainListInstance = useListInstance({ props: { pkKey: "id" } });
+        mainListInstance.addListObject({ id: "1", name: "Ada" });
+        mainListInstance.addListObject({ id: "2", name: "Grace" });
+        const listCalculated = useListCalculated({
+            parentState: mainListInstance.state,
+            calculatedObjectsRules: {
+                label: (obj) => obj.name,
+            },
+        });
+        await nextTick();
+        expect(Object.keys(listCalculated.state.calculatedObjects)).toEqual(["1", "2"]);
+
+        mainListInstance.deleteListObject("2");
+        await nextTick();
+        expect(Object.keys(listCalculated.state.calculatedObjects)).toEqual(["1"]);
+        expect(deepUnref(listCalculated.state.calculatedObjects[1].label)).toBe("Ada");
+    });
     scopedIt("running resolves when calculatedObjectsRules is empty and objects are present", async () => {
         // Bug: `return` inside the for..of loop in calculatedObjectsWatch exited the whole function
         // before reaching nextTick(() => { state.calculatedObjectsWatchRunning = false }), leaving

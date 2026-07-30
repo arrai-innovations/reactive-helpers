@@ -254,7 +254,9 @@ composables yourself. You render `contact.state` and get the whole pipeline.
   instance. [Reload a record when the route changes](/guide/reload-a-record)
   drives retrieval from reactive inputs. Neither configures related or
   calculated values, and no focused guide yet covers the manager end to end.
-- Configuring enrichment: until such a guide exists, the
+- Configuring enrichment: [Show related objects](/guide/show-related-objects) and
+  [Show calculated values](/guide/show-calculated-values) each close with the
+  single-record form of their layer. The
   [objectRelated](/reference/api/use/objectRelated) and
   [objectCalculated](/reference/api/use/objectCalculated) references document the
   related and calculated rule shapes.

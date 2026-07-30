@@ -76,6 +76,34 @@ describe("use/objectCalculated", () => {
         expect(deepUnref(oc.state.calculatedObject.friendName)).toBe("Beta-mod");
     });
 
+    scopedIt("passes only the object and its related objects to a rule", async () => {
+        const parentState = createParentState();
+        const oc = useObjectCalculated({
+            parentState,
+            calculatedObjectRules: {
+                argCount: (...args) => args.length,
+                // The list side passes a third argument; the object side does not.
+                thirdType: (object, relatedObject, calculatedObjects) => typeof calculatedObjects,
+            },
+        });
+        await flushPromises();
+        expect(deepUnref(oc.state.calculatedObject.argCount)).toBe(2);
+        expect(deepUnref(oc.state.calculatedObject.thirdType)).toBe("undefined");
+    });
+
+    scopedIt("passes undefined for related objects when the parent has no related layer", async () => {
+        const parentState = createParentState();
+        delete parentState.relatedObject;
+        const oc = useObjectCalculated({
+            parentState,
+            calculatedObjectRules: {
+                relatedType: (object, relatedObject) => typeof relatedObject,
+            },
+        });
+        await flushPromises();
+        expect(deepUnref(oc.state.calculatedObject.relatedType)).toBe("undefined");
+    });
+
     scopedIt("reacts to rule changes", async () => {
         const parentState = createParentState();
         const rules = reactive({

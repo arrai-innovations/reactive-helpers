@@ -38,6 +38,10 @@ Choose the page that answers your current question.
   [The object pipeline](/concepts/object-pipeline) explains how `useObject`
   synchronizes a single record with your transport, tracks its deletion state,
   and enriches it with related and calculated values.
+- **What are related and calculated rules, and where does derived data live?**
+  [Related and calculated data](/concepts/related-and-calculated-data) explains
+  what each kind of rule resolves, how one rule reads another, and why derived
+  values sit in side maps beside the record instead of on it.
 - **How does state stay on the latest request?**
   [Cancellable intents](/concepts/cancellable-intents) explains how a newer
   reactive trigger cancels an in-flight run, the contract that makes that
