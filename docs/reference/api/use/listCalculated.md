@@ -4,7 +4,7 @@
 
 ### ListCalculatedOptions
 
-Options to configure the behavior of the list calculated properties.
+Options to configure the behaviour of the list calculated properties.
 
 #### Properties
 

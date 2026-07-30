@@ -34,6 +34,20 @@ describe("useProxyLoadingError", () => {
         expect(proxyLoadingError.loading.value).toBe(true);
     });
 
+    scopedIt("preserves the loading tri-state across its sources", () => {
+        loadingError1.loading.value = undefined;
+        loadingError2.loading.value = undefined;
+        const proxyLoadingError = useProxyLoadingError([loadingError1, loadingError2]);
+
+        expect(proxyLoadingError.loading.value).toBe(undefined);
+
+        loadingError1.loading.value = false;
+        expect(proxyLoadingError.loading.value).toBe(false);
+
+        loadingError2.loading.value = true;
+        expect(proxyLoadingError.loading.value).toBe(true);
+    });
+
     scopedIt("should reflect error state when one source has an error", () => {
         const error = new Error("Test Error");
         loadingError2.error.value = error;
@@ -41,6 +55,19 @@ describe("useProxyLoadingError", () => {
         const proxyLoadingError = useProxyLoadingError([loadingError1, loadingError2]);
         expect(proxyLoadingError.error.value).toBe(error);
         expect(proxyLoadingError.errored.value).toBe(true);
+    });
+
+    scopedIt("selects the first error by source order", () => {
+        const firstError = new Error("First Error");
+        const secondError = new Error("Second Error");
+        loadingError2.error.value = secondError;
+        loadingError2.errored.value = true;
+        loadingError1.error.value = firstError;
+        loadingError1.errored.value = true;
+
+        const proxyLoadingError = useProxyLoadingError([loadingError1, loadingError2]);
+
+        expect(proxyLoadingError.error.value).toBe(firstError);
     });
 
     scopedIt("should clear all errors when clearError is called", () => {

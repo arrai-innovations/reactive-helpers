@@ -20,7 +20,7 @@ An intent watches a set of reactive inputs. When they change, and are all
 truthy, it cancels the in-flight run. Then it starts a new one. The newest
 trigger always owns the active run.
 
-`useCancellableIntent` is the composable behind this behavior. You give it an
+`useCancellableIntent` is the composable behind this behaviour. You give it an
 `awaitableWithCancel` function and a `watchArguments` object. It watches those
 arguments and re-runs your function when they change. That is the whole loop:
 inputs change, the old run cancels, a new run starts.

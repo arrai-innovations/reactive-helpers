@@ -22,18 +22,18 @@ Assume readers can land directly on any page. The opening must establish why
 the page is worth their attention, its payoff, and its scope:
 
 - A tutorial shows the meaningful result the reader will build and the
-  important behaviors they will encounter. Promise an experience and outcome,
+  important behaviours they will encounter. Promise an experience and outcome,
   not that the reader "will learn" something.
 - A how-to guide names the real-world goal, exact starting situation, and
   expected result.
-- An explanation names the question, tension, or surprising behavior it
+- An explanation names the question, tension, or surprising behaviour it
   resolves. Introduce the central mental model, say what it helps the reader
   understand or predict, and bound the discussion before detailed terminology.
   Its payoff is understanding, not a completed task.
 - Reference identifies the entity and scope for lookup.
 
 Do not open an explanation by correcting an expectation that has not yet been
-established. Favor connections, context, design choices, tradeoffs, and
+established. Favour connections, context, design choices, tradeoffs, and
 consequences over procedures. Put task steps in a tutorial or how-to guide.
 
 ## Audience and principles
@@ -101,3 +101,8 @@ Available containers: `info`, `tip`, `warning`, `danger`, `details`.
 ## Wording
 
 Use `JSON`, not `json`, in prose.
+
+Use Canadian spelling in prose (behaviour, colour, favour; keep `-ize`/`-yze`:
+initialize, analyze). Never respell code: identifiers, API names, string
+literals, and code spans/blocks stay as written, even for discretionary names.
+JSDoc prose follows the same rule. Full rule in `README.md`.

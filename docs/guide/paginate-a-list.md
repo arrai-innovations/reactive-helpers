@@ -59,7 +59,7 @@ choice that makes this replace mode: each page drops the previous rows, so the
 list shows one page at a time. `pushObjects` never removes rows on its own, so
 without the `clearObjects()` call the new page would append to the old one.
 
-Skip `clearObjects()` when you want that append behavior, such as a "Load more"
+Skip `clearObjects()` when you want that append behaviour, such as a "Load more"
 button or an infinite scroll that accumulates rows:
 
 ```javascript

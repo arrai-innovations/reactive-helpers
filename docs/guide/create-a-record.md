@@ -85,7 +85,7 @@ async function submit() {
 
 `contact.create(...)` resolves `true` on success or `false` on failure. On
 failure, the error lands in `contact.state.error` and `contact.state.errored`
-becomes `true`, the same loading and error behavior every action shares.
+becomes `true`, the same loading and error behaviour every action shares.
 
 On success, the resolved record is assigned into `contact.state.object`. This
 differs from a `list` handler, whose resolved value only marks the run done.

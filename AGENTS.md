@@ -42,5 +42,9 @@ authoring documentation pages, follow `docs/AGENTS.md`.
 
 - Always use braces for `if` statements, even single-line bodies.
 - Prefer explicit object literal type syntax over `Record` utility types.
+- Prose (JSDoc, code comments, and docs pages) uses Canadian spelling
+  (behaviour, colour, favour; keep `-ize`/`-yze` endings). Identifiers, API
+  names, and string literals keep code spelling, even for discretionary
+  names. Full rule in `docs/README.md`.
 
 Automated agents should run linting, formatting, and tests before committing.

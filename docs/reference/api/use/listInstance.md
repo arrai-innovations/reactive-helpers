@@ -654,7 +654,7 @@ Creates and manages a reactive list of objects, providing utilities to add, upda
 [`ListInstanceOptions`](#listinstanceoptions)
 
 Specifies the configuration options for creating a list instance, including
- properties for CRUD operations and UI behaviors like page persistence.
+ properties for CRUD operations and UI behaviours like page persistence.
 
 #### Returns
 

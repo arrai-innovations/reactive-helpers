@@ -66,7 +66,7 @@ import { computed, effectScope, nextTick, reactive, ref, toRef, toRefs, unref, w
 /**
  * The options to create a list calculated composition function.
  *
- * @typedef {object} ListCalculatedOptions - Options to configure the behavior of the list calculated properties.
+ * @typedef {object} ListCalculatedOptions - Options to configure the behaviour of the list calculated properties.
  * @property {ListCalculatedParentState} parentState - The parent state that interacts with the calculated objects.
  * @property {import('vue').Ref<ListCalculatedRules>} calculatedObjectsRules - A reactive reference to rules used for dynamic calculations
  *  within list objects. Proper setup of this reference ensures that updates are managed reactively, including deep

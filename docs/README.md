@@ -44,12 +44,12 @@ establish why the rest of the page is worth their attention and what it covers.
 The promised payoff depends on the page type:
 
 - A **tutorial** shows the meaningful result the reader will build and the
-  important tools or behaviors they will encounter. Describe what they will do
+  important tools or behaviours they will encounter. Describe what they will do
   and achieve rather than claiming what they will learn.
 - A **how-to guide** names the real-world problem or goal, the starting
   situation, and the result the directions produce. It does not need to teach
   the prerequisite competence.
-- An **explanation** names the question, tension, or surprising behavior it
+- An **explanation** names the question, tension, or surprising behaviour it
   resolves. Introduce the central idea, say what the reader will be better able
   to understand or predict, and bound the discussion. This is the explanation
   counterpart to a learning objective, but its payoff is a changed mental model
@@ -57,7 +57,7 @@ The promised payoff depends on the page type:
 - A **reference page** identifies the entity and scope being described so the
   reader can judge whether they are in the right lookup location.
 
-An explanation can begin with an observed behavior, a design tradeoff, or an
+An explanation can begin with an observed behaviour, a design tradeoff, or an
 implicit "why" question. Avoid beginning with a correction unless the opening
 first establishes the expectation being corrected. Detailed terminology should
 follow the motivating question and central idea, not substitute for them.
@@ -75,7 +75,7 @@ model, subscription lifecycle, or list pipeline.
 - Give each page one bounded purpose. Use one concrete workflow for a tutorial
   or how-to guide, and one question or topic for an explanation.
 - Contacts are the canonical example domain across authored pages, with
-  `contactId` as the primary key field. A domain-flavored key keeps `pkKey`
+  `contactId` as the primary key field. A domain-flavoured key keeps `pkKey`
   visibly configurable; a bare `id` reads as a required field name.
 - Examples are self-contained. Do not introduce a shared fake client module
   that pages depend on.
@@ -107,7 +107,7 @@ model, subscription lifecycle, or list pipeline.
 Tutorial pages:
 
 - Open with the meaningful result the reader will build and the important
-  behaviors they will encounter.
+  behaviours they will encounter.
 - Start from a working install/import assumption.
 - Give a single data shape with `contactId` as the primary key.
 - Provide one safe, linear path with concrete actions and expected results.
@@ -129,7 +129,7 @@ How-to pages:
 
 Explanation pages:
 
-- Open with the question, tension, or surprising behavior the page resolves.
+- Open with the question, tension, or surprising behaviour the page resolves.
   State the central mental model, its value to the reader, and the boundary of
   the discussion before introducing detailed terminology.
 - Describe invariants and tradeoffs, not steps.
@@ -194,7 +194,7 @@ Body text here.
 
 Available containers: `info`, `tip`, `warning`, `danger`, and `details`. See
 <https://vitepress.dev/guide/markdown#custom-containers>. Do not use
-GitHub-flavored alert syntax (`> [!WARNING]`) in authored docs.
+GitHub alert syntax (`> [!WARNING]`) in authored docs.
 
 ## Previewing
 
@@ -205,3 +205,18 @@ GitHub-flavored alert syntax (`> [!WARNING]`) in authored docs.
 ## Wording
 
 Use `JSON`, not `json`, in prose.
+
+Use Canadian spelling in prose: the `-our` family (behaviour, colour, favour,
+flavour), doubled consonants (cancelled, labelled, modelled, travelling), and
+`-re` endings (centre, fibre). Keep `-ize` and `-yze` endings (initialize,
+normalize, analyze); Canadian spelling does not use `-ise` or `-yse`. Prefer
+grey over gray.
+
+Code keeps its own spelling. Never respell identifiers, API names, string
+literals, or anything inside code spans and fenced blocks, even for
+discretionary names (a `color` option stays `color`). Proper names keep their
+official spelling (GitHub Flavored Markdown).
+
+JSDoc prose follows the same convention, since the generated reference renders
+it. The code-spelling exception covers `@param`/`@property` names, types, and
+`@example` blocks.

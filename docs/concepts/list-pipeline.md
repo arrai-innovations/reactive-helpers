@@ -14,7 +14,7 @@ composable owning all of that would hide which part did what.
 takes the previous layer's state as its parent. What your template renders is
 the last layer's view of rows the first layer owns.
 
-That structure explains behavior that is otherwise puzzling. After this page you
+That structure explains behaviour that is otherwise puzzling. After this page you
 should be able to say:
 
 - which layer changed the rows you are looking at
@@ -227,7 +227,7 @@ rebuilding.
   know when to refetch, so it needs that key present to react to. The props for
   `useList` must define `props.params`, even as an empty object; the subscription
   layer throws at creation without it.
-- **Empty search behavior.** Search is a view over the loaded rows, not a
+- **Empty search behaviour.** Search is a view over the loaded rows, not a
   fetch. With `props.textSearchRules` set and the `searchShowAllWhenEmpty`
   option passed to `useList` turned off, an empty query is a filter that admits
   nothing, so the list shows nothing. The default treats an empty query as no

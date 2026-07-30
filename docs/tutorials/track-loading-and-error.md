@@ -14,7 +14,7 @@ This is a supporting technique. You fold it into list and object work once you
 need loading and error UI, rather than as a first step. If you are new to
 the library, [Build a reactive list](/tutorials/build-a-reactive-list) is the
 better place to start. The list and object instances track loading and error
-state for you. Read this tutorial when you want the same behavior around your
+state for you. Read this tutorial when you want the same behaviour around your
 own async work.
 
 By the end you will have a runnable component that disables its button while

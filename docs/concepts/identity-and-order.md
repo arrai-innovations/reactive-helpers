@@ -134,10 +134,10 @@ A pushed row whose key is already present updates the existing row in place:
 - Its contents mirror the pushed row exactly. The merge drops fields the new
   row omits, so push whole records, not diffs.
 
-Two behaviors rest on this merge. Pagination accumulates because every page
+Two behaviours rest on this merge. Pagination accumulates because every page
 your handler pushes enters the same list. A record appearing on two pages
 becomes one row updated twice, never a duplicate.
-[Paginate a list](/guide/paginate-a-list) builds on this behavior. A
+[Paginate a list](/guide/paginate-a-list) builds on this behaviour. A
 subscription update also lands on the one existing row its key names.
 
 ## Keys that do not exist yet

@@ -25,7 +25,7 @@ const defaultOptions = {
 
 /**
  * Sets default configuration options for all list sorting operations within the application. This function allows
- * global settings to be specified that affect the behavior of sorting operations unless overridden by specific
+ * global settings to be specified that affect the behaviour of sorting operations unless overridden by specific
  * instance configurations.
  *
  * @param {object} options - Configuration options to set as defaults for list sorting.
