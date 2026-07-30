@@ -537,21 +537,6 @@ describe("use/objectInstance.js", function () {
             expect(objectInstance.state.error.name).toBe("AssignReactiveObjectError");
             expect(objectInstance.state.loading).toBe(false);
         });
-        scopedIt("stores a synchronously thrown error and resolves false", async () => {
-            // Unlike the other verbs, retrieve wraps the handler call itself, so a throw
-            // before the promise exists is stored like a rejection instead of escaping.
-            const objectInstance = useObjectInstance({
-                props: { target: {}, pk: "1", pkKey: "id", params: {} },
-                handlers: {
-                    retrieve: () => {
-                        throw new Error("sync throw from retrieve");
-                    },
-                },
-            });
-            await expect(objectInstance.retrieve()).resolves.toBe(false);
-            expect(objectInstance.state.error).toEqual(new Error("sync throw from retrieve"));
-            expect(objectInstance.state.loading).toBe(false);
-        });
     });
     describe("create", function () {
         scopedIt("success", async function () {
@@ -1353,21 +1338,31 @@ describe("use/objectInstance.js", function () {
             expect(cancelFnCalled).toBe(true);
             expect(unref(objectInstance.state.crud.update.mock.calls[0][0].isCancelled)).toBe(true);
         });
-        scopedIt("a synchronous handler throw escapes the action call", async () => {
-            // Unlike retrieve, update does not wrap the handler call itself, so a handler
-            // that throws before producing its promise escapes to the caller and leaves
-            // state.loading set.
+    });
+    describe("synchronous handler throws", function () {
+        // Every verb wraps its handler call, so a handler that throws before producing its
+        // promise is stored like a rejection instead of escaping and leaving loading set.
+        const verbs = [
+            ["create", (objectInstance) => objectInstance.create({ object: { id: 1 } })],
+            ["retrieve", (objectInstance) => objectInstance.retrieve()],
+            ["update", (objectInstance) => objectInstance.update({ object: { id: 1 } })],
+            ["patch", (objectInstance) => objectInstance.patch({ partialObject: { name: "zxcv" } })],
+            ["delete", (objectInstance) => objectInstance.delete()],
+            ["executeAction", (objectInstance) => objectInstance.executeAction({ action: "doThing" })],
+        ];
+        scopedIt.each(verbs)("%s stores the error and resolves false", async (verb, call) => {
             const objectInstance = useObjectInstance({
                 props: { target: {}, pk: "1", pkKey: "id", params: {} },
                 handlers: {
-                    update: () => {
-                        throw new Error("sync throw from update");
+                    [verb]: () => {
+                        throw new Error(`sync throw from ${verb}`);
                     },
                 },
             });
-            expect(() => objectInstance.update({ object: { id: 1 } })).toThrowError("sync throw from update");
-            expect(objectInstance.state.loading).toBe(true);
-            expect(objectInstance.state.errored).toBe(false);
+            await expect(call(objectInstance)).resolves.toBe(false);
+            expect(objectInstance.state.error).toEqual(new Error(`sync throw from ${verb}`));
+            expect(objectInstance.state.errored).toBe(true);
+            expect(objectInstance.state.loading).toBe(false);
         });
     });
     describe("patch", function () {
