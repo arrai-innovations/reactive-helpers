@@ -5,7 +5,18 @@ overrides:
     "js-yaml@<=4.1.1": ">=4.2.0 <5"
     "markdown-it@<=14.1.1": ">=14.2.0 <15"
     "vite@>=8.0.0 <=8.0.15": ">=8.0.16 <9"
+    "vite@<6.4.3": ">=6.4.3 <7"
 
 allowBuilds:
     esbuild: true
     lefthook: false
+
+auditConfig:
+    # GHSA-mh99-v99m-4gvg (brace-expansion DoS via unbounded expansion): the
+    # patched line is >=5.0.8 only; minimatch@3 and @9 pin ^1/^2, which have no
+    # patched release, and v5's CJS export shape ({ expand }) is not callable
+    # the way minimatch@3 requires. Dev-only tooling (eslint, typedoc,
+    # test-utils) expanding repo-authored glob patterns. Revisit when minimatch
+    # consumers move to brace-expansion@5.
+    ignoreGhsas:
+        - GHSA-mh99-v99m-4gvg
