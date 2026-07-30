@@ -2,6 +2,13 @@
 
 _Actions potentially required by implementers are marked with italics._
 
+## v22.1.1 (Unreleased)
+
+### Fixes
+
+- `useListCalculated` now removes a rule's values from `state.calculatedObjects` when the rule is deleted from a rules object already in use. It previously stopped the rule's effect scope but left the key in place, reading as `undefined` for every row.
+- `useObjectRelated` no longer throws a `TypeError` when a rule is deleted from a rules object already in use. Tearing the rule down read its own entry back through the reactive state, which re-evaluated the rule's computed against the rule it had just removed.
+
 ## v22.1.0 (2026-07-30)
 
 ### Additions

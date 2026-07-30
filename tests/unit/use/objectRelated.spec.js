@@ -100,6 +100,24 @@ describe("use/objectRelated", () => {
         expect(deepUnref(objectRelated.state.relatedObject.friend)).toEqual(relatedObjects[2]);
     });
 
+    scopedIt("drops a rule's related object when the rule is deleted in place", async () => {
+        const parentState = createParentState();
+        const relatedObjects = { 2: { id: "2" }, 3: { id: "3" } };
+        const relatedObjectRules = reactive({
+            friend: { pkKey: "friend_id", objects: relatedObjects },
+            friends: { pkKey: "friend_ids", objects: relatedObjects },
+        });
+        const objectRelated = useObjectRelated({ parentState, relatedObjectRules });
+        await nextTick();
+        expect(Object.keys(objectRelated.state.relatedObject)).toEqual(["friend", "friends"]);
+
+        // removing the rule must not re-read the removed entry, which would throw from its own computed
+        delete relatedObjectRules.friends;
+        await nextTick();
+        expect(Object.keys(objectRelated.state.relatedObject)).toEqual(["friend"]);
+        expect(deepUnref(objectRelated.state.relatedObject.friend)).toEqual(relatedObjects[2]);
+    });
+
     scopedIt("stops effects", async () => {
         const parentState = createParentState();
         const relatedObjects = { 2: { id: "2" }, 3: { id: "3" } };
