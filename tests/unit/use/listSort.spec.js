@@ -581,7 +581,7 @@ describe("use/useListSort", () => {
             // stop() disposes every watcher this layer owns, including the order watchers, so parent
             // work settling afterwards no longer reorders (see "stops reordering once the layer is
             // stopped"). The criteria lookup still has to tolerate a missing entry: criteria sync for
-            // rows a parent layer newly exposes lands in a deferred watcher, so a sync order
+            // rows a parent layer newly exposes lands in a deferred watcher, so an order
             // re-evaluation can run inside that window. Without the guard the re-evaluation throws,
             // which surfaces as an unhandled rejection rather than a failed assertion, so the absence
             // of one is what this case is guarding.

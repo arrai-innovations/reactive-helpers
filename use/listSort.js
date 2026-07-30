@@ -298,15 +298,27 @@ export function useListSort({ parentState, orderByRules, sortThrottleWait = defa
     es.run(() => {
         // Raise running synchronously the moment a new order is pending, so a throttled reorder keeps
         //  running true until it lands. This mirrors the related, calculated, and search layers, and
-        //  lets the composed manager's state.running reflect the final reorder settling.
+        //  lets the composed manager's state.running reflect the final reorder settling. Watch cheap
+        //  signals rather than rawOrder itself: a sync watcher re-evaluates its source on every
+        //  invalidation, and rawOrder performs the full sort, so watching it synchronously re-sorts
+        //  the list once per reactive write while a page is being pushed. The batched objectsVersion
+        //  covers structural changes and the rule reads cover rule changes; reorders triggered another
+        //  way (a row edit, a parent subset change) raise running in the pre-flush watcher below.
         watch(
-            rawOrder,
+            () => [parentState.objectsVersion, internalState.orderByRules, internalState.orderByDesc],
             () => {
                 sortWatchRunning.value = true;
             },
             { flush: "sync" }
         );
-        watch(rawOrder, (v) => assignOrder(v), { immediate: true });
+        watch(
+            rawOrder,
+            (v) => {
+                sortWatchRunning.value = true;
+                assignOrder(v);
+            },
+            { immediate: true }
+        );
         // A throttled trailing reorder is a timer, not a reactive effect, so disposal would otherwise
         //  leave it pending and let it write order after the layer stopped.
         if (throttledOrder) {
