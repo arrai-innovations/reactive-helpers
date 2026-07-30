@@ -475,4 +475,42 @@ describe("use/listRelated", () => {
             });
         }
     );
+    describe("running sentinels", () => {
+        // The sentinels are raised by synchronous watchers so that a caller reading `running`
+        // immediately after a mutation sees work pending rather than a stale settled value. They key
+        // off the parent's structural version, so a pushed page has to raise them before the derived
+        // related objects have been rebuilt.
+        scopedIt("raises both sentinels synchronously for a pushed page", async () => {
+            const mainListInstance = useListInstance({ props: { pkKey: "id" } });
+            const relatedListInstance = useListInstance({ props: { pkKey: "id" } });
+            relatedListInstance.addListObject({ id: "2", name: "related1" });
+            relatedListInstance.addListObject({ id: "3", name: "related2" });
+            mainListInstance.addListObject({ id: "1", name: "main", related_id: "2" });
+
+            const listRelated = useListRelated({
+                parentState: mainListInstance.state,
+                relatedObjectsRules: {
+                    relatedItem: { objects: relatedListInstance.state.objects, pkKey: "related_id" },
+                },
+            });
+            const settled = new AwaitNot({ obj: listRelated.state, prop: "running" });
+            settled.start();
+            await settled.promise;
+            expect(listRelated.state.running).toBe(false);
+
+            mainListInstance.pushObjects([{ id: "7", name: "seven", related_id: "3" }]);
+
+            expect(listRelated.state.relatedObjectsParentStateObjectsWatchRunning).toBe(true);
+            expect(listRelated.state.relatedObjectsWatchRunning).toBe(true);
+            expect(listRelated.state.running).toBe(true);
+
+            const resettled = new AwaitNot({ obj: listRelated.state, prop: "running" });
+            resettled.start();
+            await resettled.promise;
+            expect(deepUnref(listRelated.state.relatedObjects["7"].relatedItem)).toEqual({
+                id: "3",
+                name: "related2",
+            });
+        });
+    });
 });

@@ -14,6 +14,7 @@ docs/.vitepress/config.local.mjs
 
 # e2e coverage
 coverage
+benchmark-results
 # unit coverage
 .nyc_output
 

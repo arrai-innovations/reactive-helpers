@@ -256,7 +256,7 @@ export function useListCalculated({ parentState, calculatedObjectsRules }) {
     }
 
     watch(
-        () => Object.keys(parentState.objects),
+        () => parentState.objectsVersion,
         () => {
             state.calculatedObjectsParentStateObjectsWatchRunning = true;
         },
@@ -264,7 +264,11 @@ export function useListCalculated({ parentState, calculatedObjectsRules }) {
     );
     watch(() => Object.keys(parentState.objects), parentStateObjectsWatch, { immediate: true });
     watch(
-        () => Object.keys(state.calculatedObjects),
+        [
+            () => parentState.objectsVersion,
+            () =>
+                state.calculatedObjectsRules ? Object.keys(state.calculatedObjectsRules) : state.calculatedObjectsRules,
+        ],
         () => {
             state.calculatedObjectsWatchRunning = true;
         },

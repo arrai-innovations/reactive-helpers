@@ -1,4 +1,5 @@
 import { doAwaitNot, doAwaitTimeout } from "../../../utils/watches.js";
+import flushPromises from "flush-promises";
 import { isReactive, isRef, nextTick, reactive, ref, toRef, watch } from "vue";
 import { deepUnref } from "../../../utils/deepUnref.js";
 import { scopedIt } from "../scopedIt.js";
@@ -12,6 +13,7 @@ describe("use/useListSort", () => {
         useListRelated,
         useListCalculated,
         useListFilter,
+        useListSearch,
         useListSort,
         useListSorts,
         setListSortDefaultOptions;
@@ -46,12 +48,14 @@ describe("use/useListSort", () => {
         const importedRelatedModule = await import("../../../use/listRelated.js");
         const importedCalculatedModule = await import("../../../use/listCalculated.js");
         const importedFilterModule = await import("../../../use/listFilter.js");
+        const importedSearchModule = await import("../../../use/listSearch.js");
         const importedSortModule = await import("../../../use/listSort.js");
         useListInstance = importedInstanceModule.useListInstance;
         useListInstances = importedInstanceModule.useListInstances;
         useListRelated = importedRelatedModule.useListRelated;
         useListCalculated = importedCalculatedModule.useListCalculated;
         useListFilter = importedFilterModule.useListFilter;
+        useListSearch = importedSearchModule.useListSearch;
         orderByRules = [
             { key: "organization", desc: true, localeCompare: false },
             { key: "lexical_name", desc: false, localeCompare: true },
@@ -491,5 +495,136 @@ describe("use/useListSort", () => {
         } finally {
             vi.useRealTimers();
         }
+    });
+    describe("sort criteria track subset changes made by a parent layer", () => {
+        // A parent filter changes which objects are visible without changing the underlying object
+        // keys, so parentState.objectsVersion does not move and criteria are maintained by the
+        // key-based watcher instead. Criteria can therefore be briefly absent for a visible object,
+        // which sorts it as though its criteria were empty until the watcher catches up. These cases
+        // assert the order once it has settled.
+        const subsetRows = Array.from({ length: 5 }, (_, index) => ({
+            id: index + 1,
+            organization: index + 1,
+        }));
+        const makeSubsetChain = (allowedFilter) => {
+            const listInstance = useListInstance({ props: reactive({ pkKey: "id" }) });
+            const listFilter = useListFilter({ parentState: listInstance.state, allowedFilter });
+            const listSort = useListSort({
+                parentState: listFilter.state,
+                orderByRules: ref([{ key: "organization", desc: true, localeCompare: false }]),
+                sortThrottleWait,
+            });
+            return { listInstance, listSort };
+        };
+
+        scopedIt("sorts objects revealed by a widening filter", async () => {
+            const allowedFilter = ref((obj) => obj.id <= 2);
+            const { listInstance, listSort } = makeSubsetChain(allowedFilter);
+
+            listInstance.pushObjects(subsetRows);
+            await nextTick();
+            expect(listSort.state.order).toEqual(["2", "1"]);
+
+            allowedFilter.value = () => true;
+            await nextTick();
+            expect(listSort.state.order).toEqual(["5", "4", "3", "2", "1"]);
+            expect(listSort.state.objectsInOrder.map((obj) => obj.id)).toEqual([5, 4, 3, 2, 1]);
+        });
+
+        scopedIt("sorts the objects left by a narrowing filter", async () => {
+            const allowedFilter = ref((obj) => obj.id > 0);
+            const { listInstance, listSort } = makeSubsetChain(allowedFilter);
+
+            listInstance.pushObjects(subsetRows);
+            await nextTick();
+            expect(listSort.state.order).toEqual(["5", "4", "3", "2", "1"]);
+
+            allowedFilter.value = (obj) => obj.id % 2 === 0;
+            await nextTick();
+            expect(listSort.state.order).toEqual(["4", "2"]);
+            expect(listSort.state.objectsInOrder.map((obj) => obj.id)).toEqual([4, 2]);
+        });
+
+        scopedIt("sorts objects supplied through a search layer", async () => {
+            // The search layer publishes its object set from an async task rather than from a Vue
+            // flush job, which is a different arrival pattern to the filter cases above.
+            const listInstance = useListInstance({ props: reactive({ pkKey: "id" }) });
+            const props = reactive({
+                customDocumentOptions: {},
+                customSearchOptions: {},
+                textSearchRules: [],
+                textSearchValue: "",
+            });
+            const listSearch = useListSearch({ parentState: listInstance.state, props });
+            const listSort = useListSort({
+                parentState: listSearch.state,
+                orderByRules: ref([{ key: "organization", desc: true, localeCompare: false }]),
+                sortThrottleWait,
+            });
+
+            // Enough rows that the parent reports keys before the sort layer has criteria for them.
+            const manyRows = Array.from({ length: 200 }, (_, index) => ({
+                id: index + 1,
+                organization: index + 1,
+            }));
+            listInstance.pushObjects(manyRows);
+            await flushPromises();
+            await nextTick();
+            await flushPromises();
+
+            expect(listSort.state.order.length).toBe(200);
+            expect(listSort.state.order.slice(0, 3)).toEqual(["200", "199", "198"]);
+            expect(listSort.state.objectsInOrder.slice(0, 3).map((obj) => obj.id)).toEqual([200, 199, 198]);
+        });
+
+        scopedIt("survives being stopped while its parent still has work in flight", async () => {
+            // stop() disposes every watcher this layer owns, including the order watchers, so parent
+            // work settling afterwards no longer reorders (see "stops reordering once the layer is
+            // stopped"). The criteria lookup still has to tolerate a missing entry: criteria sync for
+            // rows a parent layer newly exposes lands in a deferred watcher, so a sync order
+            // re-evaluation can run inside that window. Without the guard the re-evaluation throws,
+            // which surfaces as an unhandled rejection rather than a failed assertion, so the absence
+            // of one is what this case is guarding.
+            const listInstance = useListInstance({ props: reactive({ pkKey: "id" }) });
+            const props = reactive({
+                customDocumentOptions: {},
+                customSearchOptions: {},
+                textSearchRules: [],
+                textSearchValue: "",
+            });
+            const listSearch = useListSearch({ parentState: listInstance.state, props });
+            const listSort = useListSort({
+                parentState: listSearch.state,
+                orderByRules: ref([{ key: "organization", desc: true, localeCompare: false }]),
+                sortThrottleWait,
+            });
+            const manyRows = Array.from({ length: 200 }, (_, index) => ({
+                id: index + 1,
+                organization: index + 1,
+            }));
+
+            listInstance.pushObjects(manyRows);
+            await nextTick();
+            listSort.stop();
+            listSearch.stop();
+            await flushPromises();
+            await nextTick();
+
+            expect(listSort.state.order.length).toBeGreaterThan(0);
+        });
+
+        scopedIt("sorts pages pushed while a filter is active", async () => {
+            const allowedFilter = ref((obj) => obj.id % 2 === 0);
+            const { listInstance, listSort } = makeSubsetChain(allowedFilter);
+
+            listInstance.pushObjects(subsetRows.slice(0, 3));
+            await nextTick();
+            expect(listSort.state.order).toEqual(["2"]);
+
+            listInstance.pushObjects(subsetRows.slice(3));
+            await nextTick();
+            expect(listSort.state.order).toEqual(["4", "2"]);
+            expect(listSort.state.objectsInOrder.map((obj) => obj.id)).toEqual([4, 2]);
+        });
     });
 });

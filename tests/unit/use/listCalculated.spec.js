@@ -1,4 +1,4 @@
-import { nextTick } from "vue";
+import { nextTick, reactive } from "vue";
 import { deepUnref } from "../../../utils/deepUnref.js";
 import { scopedIt } from "../scopedIt.js";
 
@@ -233,6 +233,61 @@ describe("use/listCalculated", () => {
                 calculatedItems: ["related1-modified", "related2-modified"],
                 calculatedItem: "related3-modified",
             },
+        });
+    });
+    describe("running sentinels", () => {
+        // The sentinels are raised by synchronous watchers so that a caller reading `running`
+        // immediately after a mutation sees work pending rather than a stale settled value. They key
+        // off the parent's structural version and the rule keys, so both of those have to raise them.
+        const settle = async (listCalculated) => {
+            const awaitNot = new AwaitNot({ obj: listCalculated.state, prop: "running" });
+            awaitNot.start();
+            await awaitNot.promise;
+        };
+
+        scopedIt("raises both sentinels synchronously for a pushed page", async () => {
+            const listInstance = useListInstance({ props: { pkKey: "id" } });
+            const listCalculated = useListCalculated({
+                parentState: listInstance.state,
+                calculatedObjectsRules: { doubled: (obj) => obj.id * 2 },
+            });
+            listInstance.addListObject({ id: 1, name: "one" });
+            await settle(listCalculated);
+            expect(listCalculated.state.running).toBe(false);
+
+            listInstance.pushObjects([
+                { id: 2, name: "two" },
+                { id: 3, name: "three" },
+            ]);
+
+            expect(listCalculated.state.calculatedObjectsParentStateObjectsWatchRunning).toBe(true);
+            expect(listCalculated.state.calculatedObjectsWatchRunning).toBe(true);
+            expect(listCalculated.state.running).toBe(true);
+
+            await settle(listCalculated);
+            expect(listCalculated.state.running).toBe(false);
+            expect(deepUnref(listCalculated.state.calculatedObjects)).toEqual({
+                1: { doubled: 2 },
+                2: { doubled: 4 },
+                3: { doubled: 6 },
+            });
+        });
+
+        scopedIt("raises the rules sentinel synchronously when the rule set changes", async () => {
+            const listInstance = useListInstance({ props: { pkKey: "id" } });
+            const calculatedObjectsRules = reactive(
+                /** @type {{ [key: string]: (obj: any) => number }} */ ({ doubled: (obj) => obj.id * 2 })
+            );
+            const listCalculated = useListCalculated({ parentState: listInstance.state, calculatedObjectsRules });
+            listInstance.addListObject({ id: 1, name: "one" });
+            await settle(listCalculated);
+
+            calculatedObjectsRules.tripled = (obj) => obj.id * 3;
+
+            expect(listCalculated.state.calculatedObjectsWatchRunning).toBe(true);
+
+            await settle(listCalculated);
+            expect(deepUnref(listCalculated.state.calculatedObjects)).toEqual({ 1: { doubled: 2, tripled: 3 } });
         });
     });
 });

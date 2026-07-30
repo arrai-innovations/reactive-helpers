@@ -170,8 +170,9 @@ export function useListFilter({ parentState, allowedFilter, excludedFilter }) {
 
     es.run(() => {
         watch(
-            () => Object.keys(parentState.objects),
-            (newVal) => {
+            () => parentState.objectsVersion,
+            () => {
+                const newVal = Object.keys(parentState.objects);
                 const { addedKeys, removedKeys } = keyDiff(newVal, Object.keys(includeMap));
                 for (const pk of removedKeys) {
                     disposeIncludeComputed(pk);
@@ -180,7 +181,7 @@ export function useListFilter({ parentState, allowedFilter, excludedFilter }) {
                     ensureIncludeComputed(pk);
                 }
             },
-            { deep: true, immediate: true, flush: "sync" }
+            { immediate: true, flush: "sync" }
         );
     });
 

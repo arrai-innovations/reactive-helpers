@@ -216,29 +216,34 @@ export function useListSort({ parentState, orderByRules, sortThrottleWait = defa
         return crit;
     }
 
+    function syncCriteria(newKeys) {
+        const { addedKeys, removedKeys } = keyDiff(newKeys, Object.keys(criteriaMap));
+        for (const pk of removedKeys) {
+            criteriaMap[pk].scope.stop();
+            delete criteriaMap[pk];
+        }
+        for (const pk of addedKeys) {
+            ensureCriteria(pk);
+        }
+    }
+
     es.run(() => {
         watch(
-            () => Object.keys(parentState.objects),
-            (newKeys) => {
-                const { addedKeys, removedKeys } = keyDiff(newKeys, Object.keys(criteriaMap));
-                for (const pk of removedKeys) {
-                    criteriaMap[pk].scope.stop();
-                    delete criteriaMap[pk];
-                }
-                for (const pk of addedKeys) {
-                    ensureCriteria(pk);
-                }
+            () => parentState.objectsVersion,
+            () => {
+                syncCriteria(Object.keys(parentState.objects));
             },
             { immediate: true, flush: "sync" }
         );
+        watch(() => Object.keys(parentState.objects), syncCriteria);
     });
 
     const rawOrder = computed(() => {
         const arr = [...unref(toRef(parentState, "order"))];
         const rulesArr = internalState.orderByRules?.filter(identity) || [];
         return arr.sort((a, b) => {
-            const aCrit = criteriaMap[a].crit ?? [];
-            const bCrit = criteriaMap[b].crit ?? [];
+            const aCrit = criteriaMap[a]?.crit ?? [];
+            const bCrit = criteriaMap[b]?.crit ?? [];
             for (let i = 0; i < rulesArr.length; i++) {
                 const rule = rulesArr[i];
                 let x = aCrit[i],
