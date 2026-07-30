@@ -1,15 +1,16 @@
 expect.extend({
     /**
      * Custom matcher to check if a function throws an error of a specific class and has a specific message and code.
+     * Vitest calls a matcher with the value passed to expect() first, so `received` leads here.
      *
+     * @param {Function} received - The function to execute.
      * @param {Function} errorClass - The class of the error to check for.
-     * @param {Function} received - The function to execute
      * @param {object} [expected] - The expected error message and code.
      * @param {string} [expected.message] - The expected error message.
      * @param {string} [expected.code] - The expected error code.
      * @returns {object} - An object containing the result of the check and a message.
      */
-    toThrowErrorWithCode(errorClass, received, expected = {}) {
+    toThrowErrorWithCode(received, errorClass, expected = {}) {
         if (typeof received !== "function") {
             return {
                 pass: false,
