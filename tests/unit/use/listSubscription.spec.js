@@ -6,45 +6,6 @@ import { nextTick, reactive } from "vue";
 import { deepUnref } from "../../../utils/deepUnref.js";
 import { scopedIt } from "../scopedIt.js";
 
-expect.extend({
-    toThrowErrorWithCode(errorClass, received, expected) {
-        if (typeof received !== "function") {
-            return {
-                pass: false,
-                message: () => `Expected a function to throw, but got: ${typeof received}`,
-            };
-        }
-
-        let thrown;
-        try {
-            received();
-        } catch (err) {
-            thrown = err;
-        }
-
-        if (!thrown) {
-            return {
-                pass: false,
-                message: () => `Expected function to throw a ${errorClass}, but it did not throw.`,
-            };
-        }
-
-        const passInstance = thrown instanceof errorClass;
-        const passMessage = thrown.message === expected.message;
-        const passCode = thrown.code === expected.code;
-
-        const pass = passInstance && passMessage && passCode;
-
-        return {
-            pass,
-            message: () =>
-                pass
-                    ? `Expected function not to throw ${errorClass}, but it did.`
-                    : `Expected ${errorClass} with { message: "${expected.message}", code: "${expected.code}" } but got { message: "${thrown.message}", code: "${thrown.code}" }`,
-        };
-    },
-});
-
 describe("use/listSubscription.spec.js", function () {
     let useListSubscription,
         ListSubscriptionError,
@@ -658,19 +619,8 @@ describe("use/listSubscription.spec.js", function () {
         });
     });
     describe("useListSubscription", function () {
-        function expectListSubscriptionError(fn, { message, code }) {
-            try {
-                fn();
-                throw new Error("Expected ListSubscriptionError was not thrown");
-            } catch (err) {
-                expect(err).toBeInstanceOf(ListSubscriptionError);
-                expect(err.message).toBe(message);
-                expect(err.code).toBe(code);
-            }
-        }
         scopedIt("throws if props is not provided", function () {
-            // expect(() => useListSubscription({})).toThrow("`props` is required.");
-            expectListSubscriptionError(() => useListSubscription({}), {
+            expect(() => useListSubscription({})).toThrowErrorWithCode(ListSubscriptionError, {
                 message: "`props` is required.",
                 code: "missing-props",
             });
