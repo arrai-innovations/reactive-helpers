@@ -129,6 +129,42 @@ describe("use/objectCalculated", () => {
         expect(oc.state.calculatedObject.increment).toBeUndefined();
     });
 
+    scopedIt("reports its own busy state through running", async () => {
+        const parentState = createParentState();
+        const oc = useObjectCalculated({
+            parentState,
+            calculatedObjectRules: {
+                double: (obj) => obj.value * 2,
+            },
+        });
+        await flushPromises();
+        expect(oc.state.calculatedRunning).toBe(false);
+        expect(oc.state.running).toBe(false);
+
+        parentState.object = { ...parentState.object, value: 5 };
+        expect(oc.state.calculatedRunning).toBe(true);
+        expect(oc.state.running).toBe(true);
+
+        await flushPromises();
+        expect(oc.state.calculatedRunning).toBe(false);
+        expect(oc.state.running).toBe(false);
+    });
+
+    scopedIt("combines the parent's running state with its own", async () => {
+        const parentState = createParentState();
+        const oc = useObjectCalculated({
+            parentState,
+            calculatedObjectRules: {
+                double: (obj) => obj.value * 2,
+            },
+        });
+        await flushPromises();
+        expect(oc.state.running).toBe(false);
+
+        parentState.running = true;
+        expect(oc.state.running).toBe(true);
+    });
+
     scopedIt("warns on invalid rule and stops reactive effects", async () => {
         const parentState = createParentState();
         const rules = reactive({

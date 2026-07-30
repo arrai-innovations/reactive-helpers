@@ -78,7 +78,8 @@ export const objectRelatedStateKeys = [
     "relatedObjectWatchRunning",
     "parentStateObjectWatchRunning",
     "relatedRunning",
-    "running",
+    // "running" is deliberately absent: a downstream layer combines the parent's running into its own computed,
+    //  so copying it here would overwrite that computed with the parent's value.
 ];
 
 /** @internal */
