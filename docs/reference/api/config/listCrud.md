@@ -8,6 +8,22 @@ Raw arguments for a bulk-delete operation before additional list CRUD arguments 
 
 #### Properties
 
+##### isCancelled
+
+> **isCancelled**: `Readonly`\<`Ref`\<`boolean`, `boolean`\>\>
+
+A readonly ref that becomes true once the request is cancelled.
+
+##### params
+
+> **params**: `object`
+
+Your listing arguments, passed through to the crud handlers.
+
+###### Index Signature
+
+\[`key`: `string`\]: `any`
+
 ##### pkKey
 
 > **pkKey**: `string`
@@ -39,6 +55,22 @@ Raw arguments for a list execute-action operation before additional list CRUD ar
 > **action**: `string`
 
 The action to execute.
+
+##### isCancelled
+
+> **isCancelled**: `Readonly`\<`Ref`\<`boolean`, `boolean`\>\>
+
+A readonly ref that becomes true once the request is cancelled.
+
+##### params
+
+> **params**: `object`
+
+Your listing arguments, passed through to the crud handlers.
+
+###### Index Signature
+
+\[`key`: `string`\]: `any`
 
 ##### pkKey
 
@@ -284,7 +316,7 @@ Signature for the handler that clears the objects held by the list.
 
 ### CrudBulkDeleteFn
 
-> **CrudBulkDeleteFn** = (`args`) => `Promise`\<`boolean`\>
+> **CrudBulkDeleteFn** = (`args`) => [`MaybeCancellablePromise`](../utils/cancellablePromise.md#maybecancellablepromise)
 
 Signature for the handler that bulk-deletes objects from the backing store.
 
@@ -300,13 +332,13 @@ The arguments to be passed to the crud handlers.
 
 #### Returns
 
-`Promise`\<`boolean`\>
+[`MaybeCancellablePromise`](../utils/cancellablePromise.md#maybecancellablepromise)
 
 ***
 
 ### CrudExecuteActionFn
 
-> **CrudExecuteActionFn** = (`args`) => `Promise`\<`object` \| `string` \| `null`\>
+> **CrudExecuteActionFn** = (`args`) => [`MaybeCancellablePromise`](../utils/cancellablePromise.md#maybecancellablepromise)
 
 Signature for the handler that executes an action on a list of objects in the backing store.
 
@@ -322,7 +354,7 @@ The arguments to be passed to the crud handlers.
 
 #### Returns
 
-`Promise`\<`object` \| `string` \| `null`\>
+[`MaybeCancellablePromise`](../utils/cancellablePromise.md#maybecancellablepromise)
 
 ***
 

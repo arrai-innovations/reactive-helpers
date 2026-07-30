@@ -107,9 +107,9 @@ Adds an object to the list.
 
 ##### bulkDelete
 
-> **bulkDelete**: (`args?`) => `Promise`\<`boolean`\>
+> **bulkDelete**: (`args?`) => [`MaybeCancellablePromise`](../utils/cancellablePromise.md#maybecancellablepromise)\<`boolean`\>
 
-Deletes objects from the list by pk, returning a promise to a boolean indicating success.
+Deletes objects from the list by pk, returning a promise to a boolean indicating success. The promise carries a `cancel` method when the handler's promise did.
 
 ###### Parameters
 
@@ -119,7 +119,7 @@ Deletes objects from the list by pk, returning a promise to a boolean indicating
 
 ###### Returns
 
-`Promise`\<`boolean`\>
+[`MaybeCancellablePromise`](../utils/cancellablePromise.md#maybecancellablepromise)\<`boolean`\>
 
 ##### clearList
 
@@ -156,9 +156,9 @@ Deletes an object from the list by pk.
 
 ##### executeAction
 
-> **executeAction**: (`args`) => `Promise`\<`any`\>
+> **executeAction**: (`args`) => [`MaybeCancellablePromise`](../utils/cancellablePromise.md#maybecancellablepromise)\<`any`\>
 
-Initiates an action on all objects in the list, returning the response, or null if the action failed.
+Initiates an action on all objects in the list, returning the response, or null if the action failed. The promise carries a `cancel` method when the handler's promise did.
 
 ###### Parameters
 
@@ -168,7 +168,7 @@ Initiates an action on all objects in the list, returning the response, or null 
 
 ###### Returns
 
-`Promise`\<`any`\>
+[`MaybeCancellablePromise`](../utils/cancellablePromise.md#maybecancellablepromise)\<`any`\>
 
 ##### getFakePk
 

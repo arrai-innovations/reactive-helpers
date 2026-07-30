@@ -84,6 +84,16 @@ export type BulkDeleteArgsRaw = {
      * The key name of the primary key.
      */
     pkKey: string;
+    /**
+     * Your listing arguments, passed through to the crud handlers.
+     */
+    params: {
+        [key: string]: any;
+    };
+    /**
+     * A readonly ref that becomes true once the request is cancelled.
+     */
+    isCancelled: Readonly<import("vue").Ref<boolean>>;
 };
 /**
  * Arguments for a bulk-delete operation, combining the raw arguments with any additional list CRUD arguments.
@@ -142,6 +152,16 @@ export type ExecuteActionArgsRaw = {
      * The action to execute.
      */
     action: string;
+    /**
+     * Your listing arguments, passed through to the crud handlers.
+     */
+    params: {
+        [key: string]: any;
+    };
+    /**
+     * A readonly ref that becomes true once the request is cancelled.
+     */
+    isCancelled: Readonly<import("vue").Ref<boolean>>;
 };
 /**
  * Arguments for a list execute-action operation, combining the raw arguments with any additional list CRUD arguments.
@@ -154,7 +174,7 @@ export type CrudListFn = (args: ListArgs) => import("../utils/cancellablePromise
 /**
  * Signature for the handler that bulk-deletes objects from the backing store.
  */
-export type CrudBulkDeleteFn = (args: BulkDeleteArgs) => Promise<boolean>;
+export type CrudBulkDeleteFn = (args: BulkDeleteArgs) => import("../utils/cancellablePromise.js").MaybeCancellablePromise<boolean>;
 /**
  * Signature for the handler that subscribes to list changes in the backing store.
  */
@@ -162,7 +182,7 @@ export type CrudListSubscribeFn = (args: ListSubscribeArgs) => import("../utils/
 /**
  * Signature for the handler that executes an action on a list of objects in the backing store.
  */
-export type CrudExecuteActionFn = (args: ExecuteActionArgs) => Promise<object | string | null>;
+export type CrudExecuteActionFn = (args: ExecuteActionArgs) => import("../utils/cancellablePromise.js").MaybeCancellablePromise<object | string | null>;
 /**
  * The set of optional CRUD handler functions (list, bulkDelete, executeAction, subscribe) for a list.
  */

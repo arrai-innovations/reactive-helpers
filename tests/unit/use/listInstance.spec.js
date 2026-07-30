@@ -856,6 +856,8 @@ describe("use/listInstance.spec.js", function () {
                 pkKey: "id",
                 pks: Object.keys(crudListResolvedObjects2),
                 action: "foo",
+                params: expect.any(Object),
+                isCancelled: expect.any(Object),
             });
 
             expect(globalExecuteAction).toHaveBeenCalledTimes(1);
@@ -885,6 +887,8 @@ describe("use/listInstance.spec.js", function () {
                 pkKey: "id",
                 pks: ["1"],
                 action: "foo",
+                params: expect.any(Object),
+                isCancelled: expect.any(Object),
             });
             expect(globalExecuteAction).toHaveBeenCalledTimes(1);
         });
@@ -924,6 +928,8 @@ describe("use/listInstance.spec.js", function () {
                 pkKey: "unique",
                 pks: Object.keys(crudListResolvedObjectsNonStandardPK),
                 action: "foo",
+                params: expect.any(Object),
+                isCancelled: expect.any(Object),
             });
 
             expect(globalExecuteAction).toHaveBeenCalledTimes(1);
@@ -1005,6 +1011,8 @@ describe("use/listInstance.spec.js", function () {
                 pkKey: "id",
                 pks: [],
                 action: "foo",
+                params: expect.any(Object),
+                isCancelled: expect.any(Object),
             });
             expect(globalExecuteAction).toHaveBeenCalledTimes(1);
         });
@@ -1046,6 +1054,8 @@ describe("use/listInstance.spec.js", function () {
                 target: { stream: "test_stream" },
                 pkKey: "id",
                 pks: Object.keys(crudListResolvedObjects2),
+                params: expect.any(Object),
+                isCancelled: expect.any(Object),
             });
 
             expect(globalBulkDelete).toHaveBeenCalledTimes(1);
@@ -1072,6 +1082,8 @@ describe("use/listInstance.spec.js", function () {
                 target: { stream: "test_stream" },
                 pkKey: "id",
                 pks: ["1"],
+                params: expect.any(Object),
+                isCancelled: expect.any(Object),
             });
             expect(globalBulkDelete).toHaveBeenCalledTimes(1);
         });
@@ -1110,6 +1122,8 @@ describe("use/listInstance.spec.js", function () {
                 target: { stream: "test_stream" },
                 pkKey: "unique",
                 pks: Object.keys(crudListResolvedObjectsNonStandardPK),
+                params: expect.any(Object),
+                isCancelled: expect.any(Object),
             });
 
             expect(globalBulkDelete).toHaveBeenCalledTimes(1);
@@ -1187,6 +1201,8 @@ describe("use/listInstance.spec.js", function () {
                 target: { stream: "test_stream" },
                 pkKey: "id",
                 pks: [],
+                params: expect.any(Object),
+                isCancelled: expect.any(Object),
             });
             expect(globalBulkDelete).toHaveBeenCalledTimes(1);
         });
@@ -1451,6 +1467,69 @@ describe("use/listInstance.spec.js", function () {
 
             expect(passedIsCancelled.value).toBe(true);
             expect(listInstance.state.loading).toBe(false);
+        });
+    });
+    describe("bulkDelete and executeAction cancellation", function () {
+        const cases = [
+            ["bulkDelete", (listInstance) => listInstance.bulkDelete({ pks: ["1"] })],
+            ["executeAction", (listInstance) => listInstance.executeAction({ action: "foo", pks: ["1"] })],
+        ];
+        scopedIt.each(cases)("%s carries the cancellation harness", async function (verb, call) {
+            /** @type {(value: boolean) => void} */
+            let cancelPromiseResolve;
+            /** @type {import("vue").Ref<boolean>} */
+            let passedIsCancelled;
+            const cancelPromise = new Promise((resolve) => {
+                cancelPromiseResolve = resolve;
+            });
+            const handler = vi.fn().mockImplementation(({ isCancelled }) => {
+                passedIsCancelled = isCancelled;
+                return CancellablePromise(new Promise(() => {}), () => cancelPromise);
+            });
+            const listInstance = useListInstance({
+                props: { pkKey: "id", params: { user: 1 } },
+                handlers: { [verb]: handler },
+            });
+
+            const cancellablePromise = call(listInstance);
+
+            expect(isRef(passedIsCancelled)).toBe(true);
+            expect(isReadonly(passedIsCancelled)).toBe(true);
+            expect(passedIsCancelled.value).toBe(false);
+            expect(cancellablePromise.cancel).toBeTruthy();
+            expect(listInstance.state.loading).toBe(true);
+
+            const cancelResult = cancellablePromise.cancel();
+            cancelPromiseResolve(true);
+            await cancelResult;
+
+            expect(passedIsCancelled.value).toBe(true);
+            expect(listInstance.state.loading).toBe(false);
+            // a deliberate cancellation is not a failure
+            expect(listInstance.state.errored).toBe(false);
+            expect(listInstance.state.error).toBeNullError();
+        });
+        scopedIt.each(cases)("%s receives params", async function (verb, call) {
+            const handler = vi.fn().mockResolvedValue(true);
+            const listInstance = useListInstance({
+                props: { pkKey: "id", params: { user: 1, fields } },
+                handlers: { [verb]: handler },
+            });
+
+            await call(listInstance);
+
+            expect(handler.mock.calls[0][0].params).toEqual({ user: 1, fields });
+        });
+        scopedIt.each(cases)("%s stays plain when the handler's promise is plain", async function (verb, call) {
+            const handler = vi.fn().mockResolvedValue(true);
+            const listInstance = useListInstance({
+                props: { pkKey: "id", params: {} },
+                handlers: { [verb]: handler },
+            });
+
+            const result = call(listInstance);
+            expect(result.cancel).toBeUndefined();
+            await result;
         });
     });
     describe("useListInstance", function () {

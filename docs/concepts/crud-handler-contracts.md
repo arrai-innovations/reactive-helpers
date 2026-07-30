@@ -48,11 +48,11 @@ Any extra keys you pass to an action call are forwarded as-is. They cannot
 override the built-in keys. Two more keys ride along on most verbs:
 
 - `params`: your listing or retrieval arguments, again in a shape you
-  define. `list`, `subscribe`, `create`, `retrieve`, `update`, and `patch`
-  receive it; `delete`, `bulkDelete`, and `executeAction` do not.
+  define. Every list verb receives it. On the object side, so do `create`,
+  `retrieve`, `update`, `patch`, and `subscribe`. Object `delete` and object
+  `executeAction` do not, since they identify their record by key alone.
 - `isCancelled`: a readonly ref that turns `true` once the run is
-  cancelled. `bulkDelete` and the list side's `executeAction` do not
-  receive it.
+  cancelled. Every verb receives it.
 
 The exhaustive shapes live in the generated reference, in
 [config/listCrud](/reference/api/config/listCrud) and
@@ -160,10 +160,10 @@ Two failure paths behave differently:
 
 ## Cancellable or plain
 
-The single-record verbs and `list` may return either a plain promise or
-one carrying a `cancel` method (the reference calls this union
-`MaybeCancellablePromise`). The choice propagates: the promise an action
-returns has `.cancel` only when your handler's promise did.
+Every verb may return either a plain promise or one carrying a `cancel`
+method (the reference calls this union `MaybeCancellablePromise`). The
+choice propagates: the promise an action returns has `.cancel` only when
+your handler's promise did.
 
 That method is what lets the library abandon superseded work. When a
 watched input changes mid-flight, the run is cancelled only if its promise
