@@ -305,8 +305,7 @@ export function useListSearch({ parentState, props, throttle = 500, showAllWhenE
                 : undefined;
             for (const key of removedTextSearchRules) {
                 delete state.objectIndexes[sameObjectPk][key];
-                // stop a computed earlier than the effect scope
-                objectComputeds[sameObjectPk][key]?.effect?.stop?.();
+                // dropping the last reference is what releases a computed; effect scopes do not hold them
                 delete objectComputeds[sameObjectPk][key];
             }
             objectEffectScopes[sameObjectPk].run(() => {
