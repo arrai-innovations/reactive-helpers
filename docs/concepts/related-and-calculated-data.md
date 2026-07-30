@@ -236,10 +236,12 @@ puts the constraint in your hands. See
 
 ## Failure modes
 
-- **A silently unresolved chain.** Only `relatedItem.` chains. A `pkKey` of
+- **An unresolved chain.** Only `relatedItem.` chains. A `pkKey` of
   `relatedObject.company.regionId` resolves against the record, finds no such
-  field, and yields `undefined` with no warning. The typo looks like missing
-  data.
+  field, and yields `undefined`. The value looks like missing data, so the layer
+  warns to the console when a `pkKey` opens with a prefix that does not chain.
+  A dotted `pkKey` that names a real path on the record stays silent, because
+  that is a supported lookup.
 - **A rule with no `objects`.** The lookup has nothing to index, so reading the
   result throws a `ListRelatedError` or `ObjectRelatedError` with the code
   `missing-objects`, naming the rule. The rule is unusable rather than empty.

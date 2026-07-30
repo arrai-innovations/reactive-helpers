@@ -10,6 +10,19 @@
  * @returns {void}
  */
 export function warnWrongSideRuleOptions(composableName: string, options: object | undefined, side: "list" | "object"): void;
+/**
+ * Warns when a related rule's foreign key starts with a prefix that reads as an attempt to chain off
+ * another rule. Only `relatedItem.` chains. Anything else resolves against the record, finds no such
+ * field, and yields `undefined`, so the mistake looks like missing data rather than a typo.
+ *
+ * @internal
+ * @param {string} composableName - The composable to name in the warning.
+ * @param {string} ruleKey - The rule the foreign key belongs to.
+ * @param {any} ruleFkKey - The rule's configured foreign key.
+ * @param {Set<string>} warned - Foreign keys already warned about, so each is reported once.
+ * @returns {void}
+ */
+export function warnWrongChainingPrefix(composableName: string, ruleKey: string, ruleFkKey: any, warned: Set<string>): void;
 /** @internal */
 export const relatedItemRegex: RegExp;
 /** @internal */
@@ -24,5 +37,12 @@ export namespace ruleOptionNameForWrongSideName {
         let calculatedObjectsRules: string;
     }
 }
+/**
+ * Prefixes that look like an attempt to chain a related rule off another rule's value, but are not
+ * the one prefix that chains. Each is either a state property name or a near miss of `relatedItem.`.
+ *
+ * @internal
+ */
+export const wrongChainingPrefixes: string[];
 export function getObjectRelatedCalculatedByKey(obj: object, relatedObj: object, calculatedObj: object, key: string): [object, string];
 export function getObjectRelatedByKey(obj: object, relatedObj: object, key: string): [object, string];

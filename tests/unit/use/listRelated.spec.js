@@ -125,10 +125,13 @@ describe("use/listRelated", () => {
         expect(ids()).toEqual(["1", "2", "3"]);
     });
     scopedIt('only the "relatedItem." prefix chains off another rule', async () => {
+        const warnSpy = vi.spyOn(console, "warn").mockImplementation(() => {});
         const mainListInstance = useListInstance({ props: { pkKey: "id" } });
         const intermediateListInstance = useListInstance({ props: { pkKey: "id" } });
         const relatedListInstance = useListInstance({ props: { pkKey: "id" } });
         mainListInstance.addListObject({ id: "1", intermediate_id: "2" });
+        // a second row, so the per-row rule setup does not warn twice
+        mainListInstance.addListObject({ id: "5", intermediate_id: "2" });
         intermediateListInstance.addListObject({ id: "2", name: "intermediate1", related_id: "4" });
         relatedListInstance.addListObject({ id: "4", name: "related1" });
         const listRelated = useListRelated({
@@ -162,6 +165,15 @@ describe("use/listRelated", () => {
         expect(deepUnref(listRelated.state.relatedObjects[1].chained)).toEqual({ id: "4", name: "related1" });
         expect(deepUnref(listRelated.state.relatedObjects[1].objectPrefix)).toBeUndefined();
         expect(deepUnref(listRelated.state.relatedObjects[1].calculatedPrefix)).toBeUndefined();
+        // each unrecognized prefix is reported once, whatever the row count
+        expect(warnSpy).toHaveBeenCalledWith(
+            '[useListRelated] Rule "objectPrefix" has a pkKey of "relatedObject.intermediateItem.related_id", which resolves against the record and reads as missing data. Only "relatedItem." chains off another rule\'s value.'
+        );
+        expect(warnSpy).toHaveBeenCalledWith(
+            '[useListRelated] Rule "calculatedPrefix" has a pkKey of "calculatedItem.intermediateItem.related_id", which resolves against the record and reads as missing data. Only "relatedItem." chains off another rule\'s value.'
+        );
+        expect(warnSpy).toHaveBeenCalledTimes(2);
+        warnSpy.mockRestore();
     });
     scopedIt("adds and drops entries as rows and rules change", async () => {
         const mainListInstance = useListInstance({ props: { pkKey: "id" } });

@@ -140,6 +140,26 @@ describe("use/objectRelated", () => {
         expect(thrown.code).toBe("missing-objects");
     });
 
+    scopedIt("warns when a rule's foreign key uses a prefix that does not chain", async () => {
+        const warnSpy = vi.spyOn(console, "warn").mockImplementation(() => {});
+        const parentState = createParentState();
+        const relatedObjects = { 2: { id: "2", friend_id: "3" }, 3: { id: "3", name: "three" } };
+        const relatedObjectRules = reactive({
+            friend: { pkKey: "friend_id", objects: relatedObjects },
+            chained: { pkKey: "relatedItem.friend.friend_id", objects: relatedObjects },
+            wrongPrefix: { pkKey: "relatedObject.friend.friend_id", objects: relatedObjects },
+        });
+        const objectRelated = useObjectRelated({ parentState, relatedObjectRules });
+        await nextTick();
+        expect(deepUnref(objectRelated.state.relatedObject.chained)).toEqual({ id: "3", name: "three" });
+        expect(objectRelated.state.relatedObject.wrongPrefix).toBeUndefined();
+        expect(warnSpy).toHaveBeenCalledWith(
+            '[useObjectRelated] Rule "wrongPrefix" has a pkKey of "relatedObject.friend.friend_id", which resolves against the record and reads as missing data. Only "relatedItem." chains off another rule\'s value.'
+        );
+        expect(warnSpy).toHaveBeenCalledTimes(1);
+        warnSpy.mockRestore();
+    });
+
     scopedIt("stops effects", async () => {
         const parentState = createParentState();
         const relatedObjects = { 2: { id: "2" }, 3: { id: "3" } };

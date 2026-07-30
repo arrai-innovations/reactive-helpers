@@ -46,6 +46,50 @@ export function warnWrongSideRuleOptions(composableName, options, side) {
 }
 
 /**
+ * Prefixes that look like an attempt to chain a related rule off another rule's value, but are not
+ * the one prefix that chains. Each is either a state property name or a near miss of `relatedItem.`.
+ *
+ * @internal
+ */
+export const wrongChainingPrefixes = [
+    "relatedObject.",
+    "relatedObjects.",
+    "relatedItems.",
+    "calculatedItem.",
+    "calculatedObject.",
+    "calculatedObjects.",
+];
+
+/**
+ * Warns when a related rule's foreign key starts with a prefix that reads as an attempt to chain off
+ * another rule. Only `relatedItem.` chains. Anything else resolves against the record, finds no such
+ * field, and yields `undefined`, so the mistake looks like missing data rather than a typo.
+ *
+ * @internal
+ * @param {string} composableName - The composable to name in the warning.
+ * @param {string} ruleKey - The rule the foreign key belongs to.
+ * @param {any} ruleFkKey - The rule's configured foreign key.
+ * @param {Set<string>} warned - Foreign keys already warned about, so each is reported once.
+ * @returns {void}
+ */
+export function warnWrongChainingPrefix(composableName, ruleKey, ruleFkKey, warned) {
+    if (typeof ruleFkKey !== "string") {
+        return;
+    }
+    if (!wrongChainingPrefixes.some((prefix) => ruleFkKey.startsWith(prefix))) {
+        return;
+    }
+    const warnedKey = `${ruleKey}:${ruleFkKey}`;
+    if (warned.has(warnedKey)) {
+        return;
+    }
+    warned.add(warnedKey);
+    console.warn(
+        `[${composableName}] Rule "${ruleKey}" has a pkKey of "${ruleFkKey}", which resolves against the record and reads as missing data. Only "relatedItem." chains off another rule's value.`
+    );
+}
+
+/**
  * Get the object and key of a calculated item.
  *
  * @param {object} obj - The object to get the calculated item from.
