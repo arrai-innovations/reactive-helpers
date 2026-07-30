@@ -249,8 +249,7 @@ composables yourself. You render `contact.state` and get the whole pipeline.
 
 - Learning path: [Edit one object](/tutorials/edit-one-object) covers the
   instance layer on its own, not the full manager.
-- Tasks: [Create a record](/guide/create-a-record) and
-  [Run a server action](/guide/run-a-server-action) build on the object
+- Tasks: [Create a record](/guide/create-a-record) builds on the object
   instance. [Reload a record when the route changes](/guide/reload-a-record)
   drives retrieval from reactive inputs. Neither configures related or
   calculated values, and no focused guide yet covers the manager end to end.

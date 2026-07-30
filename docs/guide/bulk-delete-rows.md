@@ -122,9 +122,7 @@ reload is skipped, and the error message shows.
 
 ## Related pages
 
-- [Paginate a list](/guide/paginate-a-list) and
-  [Run a server action](/guide/run-a-server-action) cover the other list-side
-  tasks.
+- [Paginate a list](/guide/paginate-a-list) covers another list-side task.
 - [Track loading and error state](/tutorials/track-loading-and-error) explains
   the shared `state.loading`, `state.error`, and `state.errored` fields this
   page relies on.

@@ -90,8 +90,8 @@ Pick the route that matches what you are trying to do.
   [Register app-wide CRUD defaults](/guide/register-crud-defaults) moves repeated
   handlers into app bootstrap.
 - **Handle a specific backend task.** [Create a record](/guide/create-a-record),
-  [Paginate a list](/guide/paginate-a-list), [Bulk delete rows](/guide/bulk-delete-rows),
-  and [Run a server action](/guide/run-a-server-action) each solve one backend
+  [Paginate a list](/guide/paginate-a-list), and
+  [Bulk delete rows](/guide/bulk-delete-rows) each solve one backend
   task. [Filter a list](/guide/filter-a-list) and
   [Reload a record](/guide/reload-a-record) refetch when filters, props, or
   route params change. [Cancel stale requests](/guide/cancel-stale-requests)

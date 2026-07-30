@@ -12,6 +12,40 @@ const apiRoot = path.join(docsRoot, "reference", "api");
 // (e.g. /reactive-helpers/documentation/v22/); defaults to root for local dev.
 const base = process.env.VITEPRESS_BASE || "/";
 
+// Authored pages carry `status` frontmatter (docs/README.md); `draft` marks a
+// page deliberately withheld from publication. Collect draft pages at config
+// load so neither the build nor the sidebar can ship one: draft files join
+// srcExclude, and sidebar entries pointing at them are filtered out.
+const collectDraftFiles = (dir, found = []) => {
+    for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
+        if (entry.isDirectory()) {
+            if (entry.name !== ".vitepress" && entry.name !== "temp") {
+                collectDraftFiles(path.join(dir, entry.name), found);
+            }
+        } else if (entry.name.endsWith(".md")) {
+            const abs = path.join(dir, entry.name);
+            const frontmatter = fs
+                .readFileSync(abs, "utf-8")
+                .slice(0, 512)
+                .match(/^---\n([\s\S]*?)\n---/);
+            if (frontmatter && /^status:\s*draft\s*$/m.test(frontmatter[1])) {
+                found.push(abs);
+            }
+        }
+    }
+    return found;
+};
+
+const draftFiles = collectDraftFiles(docsRoot);
+const draftRoutes = new Set(
+    draftFiles.map((abs) => `/${path.relative(docsRoot, abs).split(path.sep).join("/").replace(/\.md$/, "")}`)
+);
+
+const withoutDrafts = (items) =>
+    items
+        .filter((item) => !draftRoutes.has(item.link))
+        .map((item) => (item.items ? { ...item, items: withoutDrafts(item.items) } : item));
+
 // The generated API reference is a flat, single-language tree of three module
 // groups under docs/reference/api. Build its sidebar from the files on disk so
 // new modules appear without hand-maintaining a list. Labels come from each
@@ -74,7 +108,13 @@ export default defineConfig({
     lastUpdated: true,
     base,
     outDir: "../site",
-    srcExclude: ["**/AGENTS.md", "**/CLAUDE.md", "**/README.md", "temp/**"],
+    srcExclude: [
+        "**/AGENTS.md",
+        "**/CLAUDE.md",
+        "**/README.md",
+        "temp/**",
+        ...draftFiles.map((abs) => path.relative(docsRoot, abs).split(path.sep).join("/")),
+    ],
     themeConfig: {
         outline: "deep",
         nav: [
@@ -85,7 +125,7 @@ export default defineConfig({
             { text: "npm", link: "https://www.npmjs.com/package/@arrai-innovations/reactive-helpers" },
         ],
         sidebar: {
-            "/tutorials/": [
+            "/tutorials/": withoutDrafts([
                 {
                     text: "Tutorials",
                     items: [
@@ -96,8 +136,8 @@ export default defineConfig({
                         { text: "Build a live-updating list", link: "/tutorials/live-updating-list" },
                     ],
                 },
-            ],
-            "/guide/": [
+            ]),
+            "/guide/": withoutDrafts([
                 {
                     text: "How-to",
                     items: [
@@ -119,8 +159,8 @@ export default defineConfig({
                         { text: "Manage loading and errors", link: "/guide/manage-loading-and-errors" },
                     ],
                 },
-            ],
-            "/concepts/": [
+            ]),
+            "/concepts/": withoutDrafts([
                 {
                     text: "Concepts",
                     items: [
@@ -137,8 +177,8 @@ export default defineConfig({
                         { text: "Lifecycle and cleanup", link: "/concepts/lifecycle-and-cleanup" },
                     ],
                 },
-            ],
-            "/reference/": buildReferenceSidebar(),
+            ]),
+            "/reference/": withoutDrafts(buildReferenceSidebar()),
         },
         socialLinks: [{ icon: "github", link: "https://github.com/arrai-innovations/reactive-helpers" }],
         search: { provider: "local" },
