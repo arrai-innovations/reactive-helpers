@@ -2,7 +2,11 @@
 import { keyDiff } from "../utils/keyDiff.js";
 import { loadingCombine } from "../utils/loadingCombine.js";
 import { proxyRunning } from "../utils/proxyRunning.js";
-import { getObjectRelatedByKey, warnWrongSideRuleOptions } from "../utils/relatedCalculatedHelpers.js";
+import {
+    getObjectRelatedByKey,
+    warnWrongChainingPrefix,
+    warnWrongSideRuleOptions,
+} from "../utils/relatedCalculatedHelpers.js";
 import { objectInstanceStateKeys } from "./objectInstance.js";
 import { objectSubscriptionStateKeys } from "./objectSubscription.js";
 import get from "lodash-es/get.js";
@@ -226,6 +230,8 @@ export function useObjectRelated(options) {
     warnWrongSideRuleOptions("useObjectRelated", options, "object");
     const { parentState, relatedObjectRules } = options;
     const es = effectScope();
+    /** @type {Set<string>} */
+    const warnedChainingPrefixes = new Set();
     /** @type {import('vue').Ref<boolean|undefined>} */
     const parentRunning = ref(undefined);
     proxyRunning(parentState, "running", parentRunning);
@@ -251,6 +257,7 @@ export function useObjectRelated(options) {
 
     function applyRule(ruleKey) {
         const rule = toRef(state.relatedObjectRules, ruleKey);
+        warnWrongChainingPrefix("useObjectRelated", ruleKey, unref(rule)?.pkKey, warnedChainingPrefixes);
         const originalObjectRef = toRef(parentState, "object");
         const relatedObjectRef = toRef(state, "relatedObject");
         internalState.objAndKeyForRule[ruleKey] = computed(() => {
