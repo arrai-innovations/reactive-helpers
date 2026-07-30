@@ -146,11 +146,13 @@ action clears the previous error when it starts.
 Two failure paths behave differently:
 
 - **A second call while loading.** While `state.loading` is `true`, a new
-  object action throws an `ObjectError` with code `already-loading` rather
-  than storing it. A list action rejects with a `ListInstanceError`
-  instead. That is a developer error, not a transport failure. The one
-  exception is repeating the call already in flight: a second `retrieve`
-  or `list` returns that same promise.
+  action throws rather than storing the error: an `ObjectError` on the object
+  side, a `ListInstanceError` on the list side, both with the code
+  `already-loading`. The throw is synchronous, so `.catch()` never sees it and
+  only `await` inside `try` does. That is a developer error, not a transport
+  failure, and it is meant to reach your console. The one exception is
+  repeating the call already in flight: a second `retrieve` or `list` returns
+  that same promise.
 - **A cancelled run.** Deliberate cancellation is not a failure. The action
   resolves `false` without touching `state.error`.
 
