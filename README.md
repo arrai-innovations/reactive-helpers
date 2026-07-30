@@ -124,14 +124,15 @@ Issues and pull requests are welcome. A few things to know before you start:
 
 ### Deploy documentation
 
-After documentation changes reach `main`, set `CIRCLECI_TOKEN` to a CircleCI personal API token and run:
+After documentation changes reach `main`, authenticate the CircleCI CLI with `circleci setup`, then run:
 
 ```bash
 $ pnpm run docs:site:deploy
 ```
 
 This triggers a docs-only CircleCI pipeline. It derives the documentation major from `package.json` and does not
-publish the npm package.
+publish the npm package. The script reuses the CLI's authentication. `CIRCLECI_TOKEN` remains available as an override
+for automation.
 
 ## License
 

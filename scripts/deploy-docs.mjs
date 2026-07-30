@@ -1,7 +1,22 @@
-const token = process.env.CIRCLECI_TOKEN;
+import fs from "node:fs";
+import os from "node:os";
+import path from "node:path";
+
+const readCliToken = () => {
+    const configPath = path.join(os.homedir(), ".circleci", "cli.yml");
+
+    if (!fs.existsSync(configPath)) {
+        return;
+    }
+
+    const match = fs.readFileSync(configPath, "utf8").match(/^token:\s*(?:"([^"]*)"|'([^']*)'|(\S+))\s*$/m);
+    return match?.[1] || match?.[2] || match?.[3];
+};
+
+const token = process.env.CIRCLECI_TOKEN || process.env.CIRCLECI_CLI_TOKEN || readCliToken();
 
 if (!token) {
-    throw new Error("Set CIRCLECI_TOKEN to a CircleCI personal API token.");
+    throw new Error("Authenticate with `circleci setup` or set CIRCLECI_TOKEN.");
 }
 
 const projectSlug = "gh/arrai-innovations/reactive-helpers";
