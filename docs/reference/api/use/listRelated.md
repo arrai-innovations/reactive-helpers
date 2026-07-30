@@ -1,5 +1,60 @@
 # use/listRelated
 
+## Classes
+
+### ListRelatedError
+
+Defines a custom error class specific to list related rules, encapsulating details about rules that cannot be
+ resolved as configured.
+
+#### Extends
+
+- `Error`
+
+#### Constructors
+
+##### Constructor
+
+> **new ListRelatedError**(`message`, `code`): [`ListRelatedError`](#listrelatederror)
+
+Creates an instance of ListRelatedError.
+
+###### Parameters
+
+###### message
+
+`string`
+
+The error message.
+
+###### code
+
+`string`
+
+The error code.
+
+###### Returns
+
+[`ListRelatedError`](#listrelatederror)
+
+###### Overrides
+
+`Error.constructor`
+
+#### Properties
+
+##### code
+
+> **code**: `string`
+
+##### name
+
+> **name**: `string`
+
+###### Inherited from
+
+`Error.name`
+
 ## Interfaces
 
 ### ListRelatedOptions

@@ -3,12 +3,13 @@ import { deepUnref } from "../../../utils/deepUnref.js";
 import { scopedIt } from "../scopedIt.js";
 
 describe("use/listRelated", () => {
-    let useListInstance, useListRelated, AwaitNot;
+    let useListInstance, useListRelated, ListRelatedError, AwaitNot;
     beforeEach(async () => {
         const listInstanceModule = await import("../../../use/listInstance.js");
         useListInstance = listInstanceModule.useListInstance;
         const listRelatedModule = await import("../../../use/listRelated.js");
         useListRelated = listRelatedModule.useListRelated;
+        ListRelatedError = listRelatedModule.ListRelatedError;
         // todo: no useListRelateds test yet
         const watchesModule = await import("../../../utils/watches.js");
         AwaitNot = watchesModule.AwaitNot;
@@ -224,8 +225,19 @@ describe("use/listRelated", () => {
             },
         });
         await nextTick();
-        expect(() => listRelated.state.relatedObjects[1].single).toThrow(TypeError);
-        expect(() => listRelated.state.relatedObjects[1].many).toThrow(TypeError);
+        // the error names the rule and the missing option, rather than surfacing a bare TypeError
+        //  from indexing undefined. Read each rule once: Vue leaves a computed that threw
+        //  non-dirty, so a second read returns its cached undefined instead of throwing again.
+        let thrown;
+        try {
+            void listRelated.state.relatedObjects[1].single;
+        } catch (error) {
+            thrown = error;
+        }
+        expect(thrown).toBeInstanceOf(ListRelatedError);
+        expect(thrown.message).toBe('useListRelated: rule "single" has no objects to resolve against.');
+        expect(thrown.code).toBe("missing-objects");
+        expect(() => listRelated.state.relatedObjects[1].many).toThrow(ListRelatedError);
     });
     scopedIt("should return a list of related items", async () => {
         const mainListInstance = useListInstance({ props: { pkKey: "id" } });

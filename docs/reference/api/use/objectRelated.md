@@ -1,5 +1,60 @@
 # use/objectRelated
 
+## Classes
+
+### ObjectRelatedError
+
+Defines a custom error class specific to object related rules, encapsulating details about rules that cannot be
+ resolved as configured.
+
+#### Extends
+
+- `Error`
+
+#### Constructors
+
+##### Constructor
+
+> **new ObjectRelatedError**(`message`, `code`): [`ObjectRelatedError`](#objectrelatederror)
+
+Creates an instance of ObjectRelatedError.
+
+###### Parameters
+
+###### message
+
+`string`
+
+The error message.
+
+###### code
+
+`string`
+
+The error code.
+
+###### Returns
+
+[`ObjectRelatedError`](#objectrelatederror)
+
+###### Overrides
+
+`Error.constructor`
+
+#### Properties
+
+##### code
+
+> **code**: `string`
+
+##### name
+
+> **name**: `string`
+
+###### Inherited from
+
+`Error.name`
+
 ## Interfaces
 
 ### ObjectRelatedProperties

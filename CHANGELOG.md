@@ -2,7 +2,11 @@
 
 _Actions potentially required by implementers are marked with italics._
 
-## v22.1.1 (Unreleased)
+## v23.0.0 (Unreleased)
+
+### Additions
+
+- Added `ListRelatedError` and `ObjectRelatedError`. A related rule with no `objects` collection now throws one of these with the code `missing-objects`, naming the rule, where it previously surfaced a bare `TypeError` from indexing `undefined`. The check stays at read time, since two lists that relate to each other cannot both be wired first. _Implementers catching `TypeError` around a related rule read should catch the named error instead._
 
 ### Fixes
 
