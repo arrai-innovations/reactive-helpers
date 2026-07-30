@@ -107,7 +107,7 @@ export function useObjectRelateds(objectRelatedArgs: {
  * @param {ObjectRelatedOptions} options - The options for the object related reactive object.
  * @returns {ObjectRelated} - The object related reactive object.
  */
-export function useObjectRelated({ parentState, relatedObjectRules }: ObjectRelatedOptions): ObjectRelated;
+export function useObjectRelated(options: ObjectRelatedOptions): ObjectRelated;
 /**
  * Vue Composition API composable function for handling reactive relations to other objects.
  *

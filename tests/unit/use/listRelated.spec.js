@@ -194,7 +194,8 @@ describe("use/listRelated", () => {
         await nextTick();
         expect(Object.keys(listRelated.state.relatedObjects)).toEqual([]);
     });
-    scopedIt("produces empty entries when the rules option is misnamed", async () => {
+    scopedIt("warns and produces empty entries when the rules option is misnamed", async () => {
+        const warnSpy = vi.spyOn(console, "warn").mockImplementation(() => {});
         const mainListInstance = useListInstance({ props: { pkKey: "id" } });
         const relatedListInstance = useListInstance({ props: { pkKey: "id" } });
         mainListInstance.addListObject({ id: "1", related_id: "2" });
@@ -207,10 +208,14 @@ describe("use/listRelated", () => {
             },
         });
         await nextTick();
+        expect(warnSpy).toHaveBeenCalledWith(
+            '[useListRelated] Ignoring "relatedObjectRules", which is the object composables\' name. Did you mean "relatedObjectsRules"?'
+        );
         // No rules reach the layer, so it builds an entry per row and no results.
         expect(listRelated.state.relatedObjectsRules).toBeUndefined();
         expect(deepUnref(listRelated.state.relatedObjects)).toEqual({ 1: {} });
         expect(listRelated.state.running).toBe(false);
+        warnSpy.mockRestore();
     });
     scopedIt("throws when a rule has no objects to resolve against", async () => {
         const mainListInstance = useListInstance({ props: { pkKey: "id" } });

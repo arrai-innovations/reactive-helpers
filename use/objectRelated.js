@@ -2,7 +2,7 @@
 import { keyDiff } from "../utils/keyDiff.js";
 import { loadingCombine } from "../utils/loadingCombine.js";
 import { proxyRunning } from "../utils/proxyRunning.js";
-import { getObjectRelatedByKey } from "../utils/relatedCalculatedHelpers.js";
+import { getObjectRelatedByKey, warnWrongSideRuleOptions } from "../utils/relatedCalculatedHelpers.js";
 import { objectInstanceStateKeys } from "./objectInstance.js";
 import { objectSubscriptionStateKeys } from "./objectSubscription.js";
 import get from "lodash-es/get.js";
@@ -203,7 +203,9 @@ export function useObjectRelateds(objectRelatedArgs) {
  * @param {ObjectRelatedOptions} options - The options for the object related reactive object.
  * @returns {ObjectRelated} - The object related reactive object.
  */
-export function useObjectRelated({ parentState, relatedObjectRules }) {
+export function useObjectRelated(options) {
+    warnWrongSideRuleOptions("useObjectRelated", options, "object");
+    const { parentState, relatedObjectRules } = options;
     const es = effectScope();
     /** @type {import('vue').Ref<boolean|undefined>} */
     const parentRunning = ref(undefined);

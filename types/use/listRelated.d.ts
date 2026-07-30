@@ -157,7 +157,7 @@ export function useListRelateds(listRelatedArgs: {
  * @returns {ListRelated} - A reactive instance that manages related objects, providing real-time updates and
  * maintaining the integrity of object relationships as per the specified rules.
  */
-export function useListRelated({ parentState, relatedObjectsRules }: ListRelatedOptions): ListRelated;
+export function useListRelated(options: ListRelatedOptions): ListRelated;
 /**
  * The rule for defining relationships for objects in a list.
  */

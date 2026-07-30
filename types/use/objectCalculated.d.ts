@@ -56,7 +56,7 @@ export function useObjectCalculateds(objectCalculatedArgs: {
  * @param {ObjectCalculatedOptions} options - The object calculated options.
  * @returns {ObjectCalculated} - The object calculated instance.
  */
-export function useObjectCalculated({ parentState, calculatedObjectRules }: ObjectCalculatedOptions): ObjectCalculated;
+export function useObjectCalculated(options: ObjectCalculatedOptions): ObjectCalculated;
 /**
  * Vue Composition API composable function for object calculated.
  *

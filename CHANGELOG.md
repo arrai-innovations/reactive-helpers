@@ -2,6 +2,12 @@
 
 _Actions potentially required by implementers are marked with italics._
 
+## v22.1.1 (Unreleased)
+
+### Additions
+
+- `useList`, `useObject`, and the four related and calculated layers now warn when they are given a rule option under the other side's name. The list composables take `relatedObjectsRules` and `calculatedObjectsRules`; the object composables take `relatedObjectRules` and `calculatedObjectRules`. Passing the wrong one stays a no-op, but it now says so instead of silently producing empty results.
+
 ## v22.1.0 (2026-07-30)
 
 ### Additions

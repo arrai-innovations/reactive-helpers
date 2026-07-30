@@ -187,9 +187,10 @@ The list side is plural and the object side is singular, throughout:
 | Calculated results | `contacts.state.calculatedObjects[contactId]` | `contact.state.calculatedObject` |
 
 The singular and plural forms sit one character apart. Nothing rejects the wrong
-one, because rules are optional. On the list side, the layer still builds an entry
-per record and resolves nothing into it. On the object side, the result map stays
-empty.
+one, because rules are optional, so the layer warns to the console instead. It
+then behaves as though you passed no rules at all. On the list side, it still
+builds an entry per record and resolves nothing into it. On the object side, the
+result map stays empty.
 
 ## Rules can read other rules
 

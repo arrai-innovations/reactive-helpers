@@ -138,7 +138,7 @@ export function useListCalculateds(listCalculatedArgs: {
  * @returns {ListCalculated} - A reactive instance that manages and provides access to calculated properties within the
  *  list, facilitating real-time updates and complex dependency management across multiple components.
  */
-export function useListCalculated({ parentState, calculatedObjectsRules }: ListCalculatedOptions): ListCalculated;
+export function useListCalculated(options: ListCalculatedOptions): ListCalculated;
 /**
  * Defines rules for dynamically calculating new properties for objects in a list. Each rule is a function that takes an object from the list, optionally its related objects, and previously calculated properties to compute a new property. These functions are reactive and re-evaluate when underlying dependencies change. Each entry of the third argument is backed by a computed, but it is read through a reactive proxy that unwraps it, so a rule reads `calculatedObjects.otherRule` directly and never `.value`.
  */
