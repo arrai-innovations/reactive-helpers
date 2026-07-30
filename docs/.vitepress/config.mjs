@@ -129,6 +129,7 @@ export default defineConfig({
                         { text: "CRUD handler contracts", link: "/concepts/crud-handler-contracts" },
                         { text: "The list pipeline", link: "/concepts/list-pipeline" },
                         { text: "Identity and order", link: "/concepts/identity-and-order" },
+                        { text: "Loading, error, and running", link: "/concepts/loading-error-and-running" },
                         { text: "The object pipeline", link: "/concepts/object-pipeline" },
                         { text: "Cancellable intents", link: "/concepts/cancellable-intents" },
                         { text: "Subscription lifecycle", link: "/concepts/subscription-lifecycle" },
