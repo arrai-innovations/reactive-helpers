@@ -287,14 +287,11 @@ export function useObjectRelated({ parentState, relatedObjectRules }) {
             addedRuleKeys = new Set();
         }
         for (const removedRuleKey of removedRuleKeys) {
-            // @ts-ignore - this is an unofficial api, effect is internal
-            state.relatedObject[removedRuleKey]?.effect?.stop?.();
+            // Delete without reading: state.relatedObject unwraps refs, so reading a removed rule's entry would
+            //  re-evaluate its computed chain against a rule that is already gone. Dropping the last reference to
+            //  each computed is enough to release it.
             delete state.relatedObject[removedRuleKey];
-            // @ts-ignore - this is an unofficial api, effect is internal
-            internalState.fkForRule[removedRuleKey]?.effect?.stop?.();
             delete internalState.fkForRule[removedRuleKey];
-            // @ts-ignore - this is an unofficial api, effect is internal
-            internalState.objAndKeyForRule[removedRuleKey]?.effect?.stop?.();
             delete internalState.objAndKeyForRule[removedRuleKey];
         }
 

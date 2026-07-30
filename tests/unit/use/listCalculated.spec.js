@@ -154,6 +154,25 @@ describe("use/listCalculated", () => {
         expect(Object.keys(listCalculated.state.calculatedObjects)).toEqual(["1"]);
         expect(deepUnref(listCalculated.state.calculatedObjects[1].label)).toBe("Ada");
     });
+    scopedIt("drops a rule's calculated values when the rule is deleted in place", async () => {
+        const mainListInstance = useListInstance({ props: { pkKey: "id" } });
+        mainListInstance.addListObject({ id: "1", name: "Ada" });
+        const calculatedObjectsRules = reactive({
+            label: (obj) => obj.name,
+            shout: (obj) => obj.name.toUpperCase(),
+        });
+        const listCalculated = useListCalculated({
+            parentState: mainListInstance.state,
+            calculatedObjectsRules,
+        });
+        await nextTick();
+        expect(Object.keys(listCalculated.state.calculatedObjects[1])).toEqual(["label", "shout"]);
+
+        delete calculatedObjectsRules.shout;
+        await nextTick();
+        expect(Object.keys(listCalculated.state.calculatedObjects[1])).toEqual(["label"]);
+        expect(deepUnref(listCalculated.state.calculatedObjects[1].label)).toBe("Ada");
+    });
     scopedIt("running resolves when calculatedObjectsRules is empty and objects are present", async () => {
         // Bug: `return` inside the for..of loop in calculatedObjectsWatch exited the whole function
         // before reaching nextTick(() => { state.calculatedObjectsWatchRunning = false }), leaving
