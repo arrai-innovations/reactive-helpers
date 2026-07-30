@@ -18,9 +18,7 @@ reaches your backend), so the package stays transport agnostic.
 - [Features](#features)
 - [Requirements](#requirements)
 - [Install](#install)
-- [Usage](#usage)
-  - [Quick start](#quick-start)
-  - [Wiring a data layer](#wiring-a-data-layer)
+- [Documentation](#documentation)
 - [Changelog](#changelog)
 - [Contributing](#contributing)
 - [Development](#development)
@@ -31,20 +29,15 @@ reaches your backend), so the package stays transport agnostic.
 
 ## Features
 
-- **List composables** for managing collections of objects: `useListInstance`, `useList`, `useListFilter`,
-  `useListSort`, `useListSearch`, `useListCalculated`, `useListRelated`, and `useListSubscription`.
-- **Object composables** for managing single objects: `useObjectInstance`, `useObject`, `useObjectCalculated`,
-  `useObjectRelated`, and `useObjectSubscription`.
-- **Loading and error state** as small, composable primitives: `useLoading`, `useError`, `useLoadingError`, and their
-  read-only proxy variants `useProxyLoading`, `useProxyError`, `useProxyLoadingError`.
-- **Standalone helpers** such as `useSearch` (FlexSearch-backed), `useCancellableIntent`, and `useCombineClasses`.
-- **Pluggable CRUD configuration** via `setListCrud` / `setObjectCrud`, so the same composables can drive any backend.
-- **Reactive and object utilities**: `deepUnref`, `assignReactiveObject`, `refIfReactive`, `toRefsIfReactive`,
-  `isReactiveTyped`, `set`, `deleteKey`, `keyDiff`, `flattenPaths`, `cancellablePromise`, `cancellableFetch`, and more.
+- **Reactive lists** with stable identity, ordering, filtering, sorting, searching, related data, calculated values, and
+  subscriptions.
+- **Reactive objects** that retrieve, edit, create, delete, and subscribe through transport-neutral handlers.
+- **Loading and error state** as small primitives that can be composed across asynchronous work.
+- **Pluggable CRUD configuration** so instances can share app-wide handlers for any backend.
+- **Focused utilities** for reactive data, cancellable work, object paths, classes, and search.
 
 Most list and object composables also ship a plural batch variant (for example `useListInstances`,
-`useObjectInstances`) for creating several keyed instances at once. See the full API in
-[docs/reference/api/index.md](./docs/reference/api/index.md).
+`useObjectInstances`) for creating several keyed instances at once.
 
 ## Requirements
 
@@ -60,67 +53,17 @@ Most list and object composables also ship a plural batch variant (for example `
 $ npm install @arrai-innovations/reactive-helpers vue @vueuse/core lodash-es
 ```
 
-## Usage
+## Documentation
 
-### Quick start
+The [reactive-helpers documentation](https://reactive-helpers.arrai.dev/v22/) is versioned by package major.
 
-The loading and error composables are self contained and need no configuration. They return readonly reactive state
-plus actions to drive it, which is handy for wiring UI to any asynchronous work:
-
-```javascript
-import { useLoadingError } from "@arrai-innovations/reactive-helpers";
-
-const { loading, error, errored, setLoading, clearLoading, setError, clearError } = useLoadingError();
-
-async function save() {
-    setLoading();
-    try {
-        await doWork();
-        clearError();
-    } catch (e) {
-        setError(e);
-    } finally {
-        clearLoading();
-    }
-}
-
-// `loading`, `error`, and `errored` are readonly refs you can render or watch.
-```
-
-### Wiring a data layer
-
-The list and object instance composables manage reactive collections but stay transport agnostic: you provide the CRUD
-handlers that reach your backend. A list handler receives a `pushObjects` callback to feed results (one or more pages)
-into the reactive state and resolves when it is done:
-
-```javascript
-import { useListInstance } from "@arrai-innovations/reactive-helpers";
-import { reactive } from "vue";
-
-const contacts = useListInstance({
-    props: {
-        pkKey: "id",
-        params: reactive({ fields: ["id", "name"] }),
-        target: { stream: "contacts" }, // implementation-specific args passed through to your handlers
-    },
-    handlers: {
-        list: async ({ pushObjects }) => {
-            const rows = await fetch("/api/contacts").then((r) => r.json());
-            pushObjects(rows);
-            return true;
-        },
-    },
-});
-
-await contacts.list();
-console.log(contacts.state.objects);
-```
-
-To share one data layer across every instance instead of passing `handlers` each time, register defaults once with
-`setListCrud` (and `setObjectCrud` for object instances).
-
-See [docs/reference/api/index.md](./docs/reference/api/index.md) for the full list of modules, composables, and
-utilities, along with their arguments and properties.
+- [Get started](https://reactive-helpers.arrai.dev/v22/guide/) with installation and a complete reactive list.
+- [Build a reactive list](https://reactive-helpers.arrai.dev/v22/tutorials/build-a-reactive-list) step by step.
+- [Pass backend arguments](https://reactive-helpers.arrai.dev/v22/guide/data-layer) or
+  [register app-wide CRUD defaults](https://reactive-helpers.arrai.dev/v22/guide/register-crud-defaults).
+- Read about [instances and transport](https://reactive-helpers.arrai.dev/v22/concepts/instances-and-transport) to
+  understand the library's core boundary.
+- Use the [API reference](https://reactive-helpers.arrai.dev/v22/reference/api/) for exact signatures and return values.
 
 ## Changelog
 
@@ -178,6 +121,17 @@ Issues and pull requests are welcome. A few things to know before you start:
         ```bash
         $ pnpm run types:check -- --skip-gen
         ```
+
+### Deploy documentation
+
+After documentation changes reach `main`, set `CIRCLECI_TOKEN` to a CircleCI personal API token and run:
+
+```bash
+$ pnpm run docs:site:deploy
+```
+
+This triggers a docs-only CircleCI pipeline. It derives the documentation major from `package.json` and does not
+publish the npm package.
 
 ## License
 

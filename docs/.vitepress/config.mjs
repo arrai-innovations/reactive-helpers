@@ -8,8 +8,8 @@ const configDir = fileURLToPath(new URL(".", import.meta.url));
 const docsRoot = path.resolve(configDir, "..");
 const apiRoot = path.join(docsRoot, "reference", "api");
 
-// Env-driven base so CI can publish per-major under a subpath
-// (e.g. /reactive-helpers/documentation/v22/); defaults to root for local dev.
+// Env-driven base so CI can publish per-major under a subpath (e.g. /v22/);
+// defaults to root for local development.
 const base = process.env.VITEPRESS_BASE || "/";
 
 // Authored pages carry `status` frontmatter (docs/README.md); `draft` marks a

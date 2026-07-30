@@ -1,5 +1,10 @@
 version: 2.1
 
+parameters:
+    deploy-docs:
+        type: boolean
+        default: false
+
 orbs:
     github: arrai/github@5.0.0
     lintinator: arrai/lintinator@2.1.6
@@ -122,15 +127,23 @@ jobs:
                   name: Build docs site (per major)
                   command: |
                       # Base must equal the full served subpath or assets 404.
-                      MAJOR="${CIRCLE_TAG#v}"; MAJOR="${MAJOR%%.*}"
-                      VITEPRESS_BASE="/reactive-helpers/documentation/v${MAJOR}/" pnpm run docs:site:build
+                      VERSION="${CIRCLE_TAG:-$(node -p "require('./package.json').version")}"
+                      MAJOR="${VERSION#v}"; MAJOR="${MAJOR%%.*}"
+                      case "${MAJOR}" in
+                          ""|*[!0-9]*)
+                              echo "Could not determine a numeric major version from ${VERSION}."
+                              exit 1
+                              ;;
+                      esac
+                      VITEPRESS_BASE="/v${MAJOR}/" pnpm run docs:site:build
             - run:
                   name: Stage docs for deploy
                   command: |
-                      # The tools.arrai.dev SSH user is chrooted to
-                      # reactive-helpers/documentation/, so publish/ maps there and
-                      # v<major>/ resolves to .../documentation/v<major>/.
-                      MAJOR="${CIRCLE_TAG#v}"; MAJOR="${MAJOR%%.*}"
+                      # The tools.arrai.dev SSH user is chrooted to the directory
+                      # exposed at reactive-helpers.arrai.dev, so publish/v<major>/
+                      # is served as https://reactive-helpers.arrai.dev/v<major>/.
+                      VERSION="${CIRCLE_TAG:-$(node -p "require('./package.json').version")}"
+                      MAJOR="${VERSION#v}"; MAJOR="${MAJOR%%.*}"
                       mkdir -p -m 0750 "publish/v${MAJOR}/"
                       cp -r site/* "publish/v${MAJOR}/"
             - utils/add_ssh_config:
@@ -138,8 +151,7 @@ jobs:
                   host: tools.arrai.dev
             # tools.arrai.dev deploy key for reactive-helpers. Same principal as the
             # `docs` host used for artifacts, but this key's chroot points at the
-            # documentation root (docs.arrai.dev/reactive-helpers/documentation/),
-            # the same setup badass and vueda use for their docs sites.
+            # reactive-helpers documentation root.
             - add_ssh_keys:
                   fingerprints:
                       - "SHA256:3Ho4jJepPm55XSG0R3/WIsMNnjfoXLxCIpUUzobirVU"
@@ -152,6 +164,7 @@ jobs:
 
 workflows:
     test:
+        unless: << pipeline.parameters.deploy-docs >>
         jobs:
             - coverage:
                   name: tests
@@ -220,6 +233,7 @@ workflows:
                           ignore: /.*/
 
     lint:
+        unless: << pipeline.parameters.deploy-docs >>
         jobs:
             - lintinator/lint_python_fixed_ip:
                   name: lint
@@ -256,6 +270,7 @@ workflows:
                               - main
 
     audit:
+        unless: << pipeline.parameters.deploy-docs >>
         jobs:
             - pnpm/audit_fixed_ip:
                   name: audit
@@ -280,3 +295,13 @@ workflows:
                       branches:
                           ignore:
                               - main
+
+    deploy-docs:
+        when: << pipeline.parameters.deploy-docs >>
+        jobs:
+            - docs-site:
+                  name: deploy-current-major-docs
+                  context: arrai-global
+                  filters:
+                      branches:
+                          only: main
