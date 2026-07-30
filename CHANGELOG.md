@@ -2,6 +2,12 @@
 
 _Actions potentially required by implementers are marked with italics._
 
+## v22.1.1 (Unreleased)
+
+### Fixes
+
+- `useObjectCalculated` now reports its own busy state through `state.running`. It previously copied the parent's `running` over its own computed, so `state.calculatedRunning` could be `true` while `state.running` read `false`. This also applies to `useObject`, whose `state` is the calculated layer's. _Implementers who worked around the old value by reading `state.calculatedRunning` alongside `state.running` can now read `state.running` alone._
+
 ## v22.1.0 (2026-07-30)
 
 ### Additions
