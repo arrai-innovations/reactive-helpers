@@ -65,15 +65,18 @@ There is no library-level guard behind any of this. When a transport does not
 cancel, the stale work is not stopped. The consequence lands on your state. It
 also differs by side.
 
-The object side can lose an identity change. A plain `async` retrieve cannot be
-cancelled. Say the primary key changes mid-flight. The stale record still
-settles into `contact.state.object`. The new key is never fetched. The wrong
-record wins the screen.
+Both sides degrade the same way. A plain `async` run cannot be stopped, so the
+next run waits behind a guard. Once the stale run settles, the guard clears and
+the next run repeats with the current inputs.
 
-The list side degrades more gently. A plain `async` `list` run holds the refetch
-behind a guard. The refetch waits for the stale run to finish. Then it re-runs
-with the current inputs. The stale rows land first, and the fresh rows replace
+Say the primary key changes mid-flight. The stale record settles into
+`contact.state.object` first, and the fetch for the new key follows it. The
+record you navigated away from is on screen until the second request returns. A
+list behaves the same way. The stale rows land, then the fresh rows replace
 them.
+
+Cancellation removes that interval. The superseded run is dropped as soon as the
+input changes, so the wrong value never lands at all.
 
 ## Telling a run it is stale
 

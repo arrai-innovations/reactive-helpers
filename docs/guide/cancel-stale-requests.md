@@ -111,9 +111,10 @@ setObjectCrud({
 ```
 
 The `async` keyword makes this return a native promise with no `.cancel`. The
-intent has nothing to cancel. So a fast `contactId` change loses the race. The
-stale record settles into `contact.state.object`, and the new key is never
-fetched. The record you navigated away from stays on screen.
+intent has nothing to cancel, so a fast `contactId` change cannot abandon the
+first request. The stale record settles into `contact.state.object` first. The
+new key is fetched once that request finishes, so the record you navigated away
+from is on screen in between.
 
 ## Confirm only the latest request lands
 
@@ -127,10 +128,9 @@ With the cancellable handler, only the second request's result lands. Watch
 `contact.state.object` or `contacts.state.objectsInOrder` settle on the value for
 the latest input. In your network tools, the first request shows as cancelled.
 
-Without cancellation, the two sides differ. A `retrieve` cannot start the new
-key while the stale request still holds the instance, so the stale record lands
-and the new key is never fetched. A `list` degrades more gently: the stale rows
-land first, then the reload replaces them.
+Without cancellation, both sides behave the same. The stale result lands first,
+then the deferred run repeats with the current input and replaces it. You see
+the wrong value until the second request returns.
 
 ## Related pages
 

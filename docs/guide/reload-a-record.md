@@ -22,10 +22,10 @@ handler `async`: an `async` function returns a native promise with no `.cancel`,
 which the instance cannot cancel.
 
 ::: warning
-A retrieve that cannot be cancelled does not recover from a mid-flight `pk`
-change. The stale request finishes and its record is assigned to
-`contact.state.object`. The new key is never fetched, so the record you
-navigated away from stays on screen.
+A retrieve that cannot be cancelled cannot be abandoned, so a mid-flight `pk`
+change waits for it. The stale record is assigned to `contact.state.object`
+first. The new key is fetched once that request settles, so the record you
+navigated away from is on screen in between.
 :::
 
 To build a cancellable handler, see

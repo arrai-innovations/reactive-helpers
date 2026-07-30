@@ -1,7 +1,7 @@
 import { assignReactiveObject } from "../utils/assignReactiveObject.js";
 import { useCancellableIntent } from "./cancellableIntent.js";
 import { useObjectInstance } from "./objectInstance.js";
-import { computed, reactive, readonly, ref, toRefs } from "vue";
+import { computed, reactive, readonly, ref, toRef, toRefs } from "vue";
 import { refIfReactive } from "../utils/refIfReactive.js";
 import { asWatchableError, useProxyError } from "./proxyError.js";
 import { loadingCombine } from "../utils/loadingCombine.js";
@@ -287,8 +287,13 @@ export function useObjectSubscription({ objectInstance, props, handlers }) {
         errored: proxyError.errored,
         error: proxyError.error,
     });
-    retrieveGuardArgs.loading = state.loading;
-    subscribeGuardArgs.loading = state.loading;
+    // Guard on the object instance's own loading, and assign the ref rather than the value behind it.
+    //  Reading a value here would store a one-time snapshot, leaving both guards stuck at their
+    //  creation-time value, which is why a superseded retrieve was handed the in-flight promise for the
+    //  previous key. `state.loading` is the wrong source: it also covers the subscribe intent, whose
+    //  promise stays pending for the life of a standing connection, which would block every later run.
+    retrieveGuardArgs.loading = toRef(objectInstance.state, "loading");
+    subscribeGuardArgs.loading = toRef(objectInstance.state, "loading");
     return {
         state,
         objectInstance,
