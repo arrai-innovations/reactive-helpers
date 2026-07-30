@@ -240,7 +240,12 @@ puts the constraint in your hands. See
   field, and yields `undefined` with no warning. The typo looks like missing
   data.
 - **A rule with no `objects`.** The lookup has nothing to index, so reading the
-  result throws a `TypeError`. The rule is unusable rather than empty.
+  result throws a `ListRelatedError` or `ObjectRelatedError` with the code
+  `missing-objects`, naming the rule. The rule is unusable rather than empty.
+  The check happens on read rather than at creation, because you can only wire
+  one of two mutually related lists first. Vue leaves a computed that
+  threw non-dirty, so the error appears on the first read after each change,
+  not on every read.
 - **An `order` that omits a referenced id.** Membership survives, but that id
   sorts unpredictably, as described above.
 - **A calculated rule that is not a function.** The two sides differ here. On the
