@@ -1350,7 +1350,7 @@ describe("use/objectInstance.js", function () {
             ["delete", (objectInstance) => objectInstance.delete()],
             ["executeAction", (objectInstance) => objectInstance.executeAction({ action: "doThing" })],
         ];
-        scopedIt.each(verbs)("%s stores the error and resolves false", async (verb, call) => {
+        scopedIt.each(verbs)("%s stores the error and resolves its failure value", async (verb, call) => {
             const objectInstance = useObjectInstance({
                 props: { target: {}, pk: "1", pkKey: "id", params: {} },
                 handlers: {
@@ -1359,7 +1359,8 @@ describe("use/objectInstance.js", function () {
                     },
                 },
             });
-            await expect(call(objectInstance)).resolves.toBe(false);
+            // executeAction resolves null on failure; every other verb resolves false
+            await expect(call(objectInstance)).resolves.toBe(verb === "executeAction" ? null : false);
             expect(objectInstance.state.error).toEqual(new Error(`sync throw from ${verb}`));
             expect(objectInstance.state.errored).toBe(true);
             expect(objectInstance.state.loading).toBe(false);
@@ -1770,6 +1771,31 @@ describe("use/objectInstance.js", function () {
             expect(isRef(objectInstance.state.crud.executeAction.mock.calls[0][0].isCancelled)).toBe(true);
             expect(unref(objectInstance.state.crud.executeAction.mock.calls[0][0].isCancelled)).toBe(false);
         });
+        scopedIt("resolves the handler's own resolved value", async function () {
+            const objectInstance = useObjectInstance({
+                props: { target: { stream: "test_stream" }, pk: ref(1), pkKey: "id", params: reactive({ fields }) },
+            });
+            const responseData = { queued: true, jobId: "job-7" };
+            objectInstance.state.crud.executeAction = vi.fn().mockResolvedValue(responseData);
+
+            // the object side passes the handler's value through, as the list side does, rather than
+            //  reporting a bare success boolean
+            await expect(objectInstance.executeAction({ action: "requeue" })).resolves.toBe(responseData);
+            expect(objectInstance.state.errored).toBe(false);
+            expect(objectInstance.state.loading).toBe(false);
+            // the action is not a mutation: the record is left alone
+            expect({ ...objectInstance.state.object }).toEqual({});
+        });
+        scopedIt("resolves undefined when the handler resolves nothing", async function () {
+            const objectInstance = useObjectInstance({
+                props: { target: { stream: "test_stream" }, pk: ref(1), pkKey: "id", params: reactive({ fields }) },
+            });
+            objectInstance.state.crud.executeAction = vi.fn().mockResolvedValue(undefined);
+
+            // undefined is distinguishable from the null a stored failure resolves
+            await expect(objectInstance.executeAction({ action: "ping" })).resolves.toBeUndefined();
+            expect(objectInstance.state.errored).toBe(false);
+        });
         scopedIt("passes additional args to executeAction and does not override", async function () {
             const pk = ref(1);
             const params = reactive({ fields });
@@ -1831,7 +1857,8 @@ describe("use/objectInstance.js", function () {
             expect(objectInstance.state.error).toBe(rejected);
             expect(objectInstance.state.errored).toBe(true);
             expect(objectInstance.state.loading).toBe(false);
-            await expect(oiExecuteActionPromise).resolves.toBe(false);
+            // a stored failure resolves null, matching the list side
+            await expect(oiExecuteActionPromise).resolves.toBeNull();
             expect(objectInstance.state.crud.executeAction).toHaveBeenCalledWith({
                 target: { stream: "test_stream" },
                 pk: "1",

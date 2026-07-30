@@ -131,9 +131,10 @@ That direct assignment drives the object side's invariants:
   `contact.state.deleted` to `true` and empties `contact.state.object`. A
   later `retrieve`, `create`, `update`, or `patch` repopulates the object and
   resets `contact.state.deleted` to `false`; so does `contact.clear()`.
-- **`executeAction` ignores its handler's resolved value too.** The action
-  resolves a boolean, never response data, and leaves `contact.state.object`
-  untouched. Use it when a server action returns no record.
+- **`executeAction` passes its handler's resolved value through.** The action
+  resolves whatever the handler resolved, and leaves `contact.state.object`
+  untouched. Both sides behave this way. Use it for a server action that
+  returns something other than the record, or nothing at all.
 
 Errors travel the other way, the same for both instances. When a handler
 throws or rejects, the instance stores the error in `state.error` unchanged

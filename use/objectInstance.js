@@ -83,7 +83,7 @@ import { pkRefIfReactive, refIfReactive } from "../utils/refIfReactive.js";
  * @property {(args: ObjectInstanceUpdateArgs & AdditionalArgs) => import('../utils/cancellablePromise.js').MaybeCancellablePromise<boolean|never>} update - Called to update the current object on the server.
  * @property {(args?: AdditionalArgs) => import('../utils/cancellablePromise.js').MaybeCancellablePromise<boolean|never>} delete - Called to delete the current object on the server.
  * @property {(args: ObjectInstancePatchArgs & AdditionalArgs) => import('../utils/cancellablePromise.js').MaybeCancellablePromise<boolean|never>} patch - Called to patch the current object on the server.
- * @property {(args: {action: string} & AdditionalArgs) => import('../utils/cancellablePromise.js').MaybeCancellablePromise<boolean|never>} executeAction - Called to execute certain action on the current object.
+ * @property {(args: {action: string} & AdditionalArgs) => import('../utils/cancellablePromise.js').MaybeCancellablePromise<object|string|void|null>} executeAction - Called to execute certain action on the current object. Resolves the handler's own resolved value, or `null` when the action failed.
  * @property {() => void} clear - Called to clear the object state.
  */
 
@@ -543,19 +543,20 @@ export function useObjectInstance({ props, handlers = {} }) {
             } catch (error) {
                 loadingError.setError(error);
                 loadingError.clearLoading();
-                return Promise.resolve(false);
+                // null, not false: this verb's failure value is null on both of its failure paths
+                return Promise.resolve(null);
             }
             return wrapMaybeCancellable(
                 executeActionPromise
-                    .then(() => {
-                        return true;
+                    .then((/** @type {object|string|void} */ responseData) => {
+                        return responseData;
                     })
                     .catch((/** @type {Error} */ error) => {
                         // A deliberate cancellation rejects with the cancel reason; that is not an error.
                         if (!isCancelled.value) {
                             loadingError.setError(error);
                         }
-                        return false;
+                        return null;
                     })
                     .finally(() => {
                         loadingError.clearLoading();

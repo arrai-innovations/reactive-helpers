@@ -274,9 +274,10 @@ export type ObjectSubscribeArgs = ObjectSubscribeArgsRaw & import("../use/cancel
 export type CrudResponse = import("../utils/cancellablePromise.js").MaybeCancellablePromise<object>;
 /**
  * -
- *  The value returned by an object CRUD handler whose resolved value is ignored: delete, and executeAction. A
- *  possibly-cancellable promise whose resolution signals success and nothing more, so it may resolve a record, a
- *  primary key string, or nothing at all.
+ *  The value returned by an object CRUD handler that does not populate the managed record: delete, and
+ *  executeAction. A possibly-cancellable promise that may resolve a record, a primary key string, or nothing at
+ *  all. `delete` ignores the resolved value, treating resolution alone as success. `executeAction` passes the
+ *  resolved value through to its caller, and resolves `null` instead when the action failed.
  */
 export type CrudCompletionResponse = import("../utils/cancellablePromise.js").MaybeCancellablePromise<object | string | void>;
 /**
@@ -300,7 +301,8 @@ export type CrudPatchFn = (args: PartialArgs) => CrudResponse;
  */
 export type CrudDeleteFn = (args: DeleteArgs) => CrudCompletionResponse;
 /**
- * Signature for the handler that executes an action on a single object in the backing store.
+ * Signature for the handler that executes an action on a single object in the
+ *  backing store. Its resolved value is passed through to the caller of `objectInstance.executeAction`.
  */
 export type CrudObjectExecuteActionFn = (args: ObjectExecuteActionArgs) => CrudCompletionResponse;
 /**
