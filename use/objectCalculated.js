@@ -6,6 +6,7 @@ import { objectInstanceStateKeys } from "./objectInstance.js";
 import { objectRelatedStateKeys } from "./objectRelated.js";
 import { objectSubscriptionStateKeys } from "./objectSubscription.js";
 import { computed, effectScope, nextTick, onScopeDispose, reactive, ref, toRef, watch } from "vue";
+import { warnWrongSideRuleOptions } from "../utils/relatedCalculatedHelpers.js";
 
 /**
  * Vue Composition API composable function for object calculated.
@@ -163,7 +164,9 @@ export function useObjectCalculateds(objectCalculatedArgs) {
  * @param {ObjectCalculatedOptions} options - The object calculated options.
  * @returns {ObjectCalculated} - The object calculated instance.
  */
-export function useObjectCalculated({ parentState, calculatedObjectRules }) {
+export function useObjectCalculated(options) {
+    warnWrongSideRuleOptions("useObjectCalculated", options, "object");
+    const { parentState, calculatedObjectRules } = options;
     const es = effectScope();
     /** @type {import('vue').Ref<boolean|undefined>} */
     const parentRunning = ref(undefined);

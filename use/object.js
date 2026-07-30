@@ -3,6 +3,7 @@ import { useObjectInstance } from "./objectInstance.js";
 import { useObjectRelated } from "./objectRelated.js";
 import { useObjectSubscription } from "./objectSubscription.js";
 import { effectScope, shallowReactive, shallowReadonly, toRef } from "vue";
+import { warnWrongSideRuleOptions } from "../utils/relatedCalculatedHelpers.js";
 
 /**
  * Provides a Vue 3 composable function for object management. This module orchestrates the useObjectInstance,
@@ -207,6 +208,8 @@ function mergeFns(source) {
  * @returns {ObjectManager} - An object managing a chain of useObject* instances.
  */
 export const useObject = ({ props, handlers }) => {
+    warnWrongSideRuleOptions("useObject", props, "object");
+
     /** @type {ObjectManaged} */
     const managed = shallowReactive({
         objectInstance: null,

@@ -3,6 +3,7 @@ import { loadingCombine } from "../utils/loadingCombine.js";
 import { proxyRunning } from "../utils/proxyRunning.js";
 import isEmpty from "lodash-es/isEmpty.js";
 import { computed, effectScope, nextTick, reactive, ref, toRef, toRefs, unref, watch } from "vue";
+import { warnWrongSideRuleOptions } from "../utils/relatedCalculatedHelpers.js";
 
 /**
  * This module provides a Vue Composition API composable function for dynamically calculating properties in lists
@@ -159,7 +160,9 @@ export function useListCalculateds(listCalculatedArgs) {
  * @returns {ListCalculated} - A reactive instance that manages and provides access to calculated properties within the
  *  list, facilitating real-time updates and complex dependency management across multiple components.
  */
-export function useListCalculated({ parentState, calculatedObjectsRules }) {
+export function useListCalculated(options) {
+    warnWrongSideRuleOptions("useListCalculated", options, "list");
+    const { parentState, calculatedObjectsRules } = options;
     const es = effectScope();
     const parentRefs = toRefs(parentState);
     /** @type {import('vue').Ref<boolean|undefined>} */

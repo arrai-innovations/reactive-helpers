@@ -6,6 +6,7 @@ import { useListSearch } from "./listSearch.js";
 import { useListSort } from "./listSort.js";
 import { useListSubscription } from "./listSubscription.js";
 import { effectScope, shallowReactive, shallowReadonly, toRef } from "vue";
+import { warnWrongSideRuleOptions } from "../utils/relatedCalculatedHelpers.js";
 
 /**
  * Provides a comprehensive Vue 3 composable function for managing a list of objects. This module orchestrates several
@@ -157,6 +158,8 @@ export const useList = ({ props, handlers = {}, searchThrottle = 500, sortThrott
         listSearch: null,
         listSort: null,
     });
+
+    warnWrongSideRuleOptions("useList", props, "list");
 
     if (!("params" in props)) {
         console.error("params not set, must be true for intendToList or intendToSubscribe to work.");

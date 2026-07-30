@@ -7,6 +7,7 @@ _Actions potentially required by implementers are marked with italics._
 ### Additions
 
 - Added `ListRelatedError` and `ObjectRelatedError`. A related rule with no `objects` collection now throws one of these with the code `missing-objects`, naming the rule, where it previously surfaced a bare `TypeError` from indexing `undefined`. The check stays at read time, since two lists that relate to each other cannot both be wired first. _Implementers catching `TypeError` around a related rule read should catch the named error instead._
+- - `useList`, `useObject`, and the four related and calculated layers now warn when they are given a rule option under the other side's name. The list composables take `relatedObjectsRules` and `calculatedObjectsRules`; the object composables take `relatedObjectRules` and `calculatedObjectRules`. Passing the wrong one stays a no-op, but it now says so instead of silently producing empty results.
 
 ### Fixes
 

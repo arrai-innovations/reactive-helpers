@@ -151,7 +151,7 @@ export function useListRelateds(listRelatedArgs: {
  * @returns {ListRelated} - A reactive instance that manages related objects, providing real-time updates and
  * maintaining the integrity of object relationships as per the specified rules.
  */
-export function useListRelated({ parentState, relatedObjectsRules }: ListRelatedOptions): ListRelated;
+export function useListRelated(options: ListRelatedOptions): ListRelated;
 /**
  * Vue Composition API composable function for managing relationships among objects in a list.
  * It enables linking objects based on predefined rules and dynamically adjusts as the underlying data changes.

@@ -4,6 +4,48 @@ export const relatedItemRegex = /^relatedItem\./;
 export const calculatedItemRegex = /^calculatedItem\./;
 
 /**
+ * The rule option names belonging to the other side's composables, mapped to the name each side
+ * expects. The list composables take plural names and the object composables take singular ones.
+ *
+ * @internal
+ */
+export const ruleOptionNameForWrongSideName = {
+    list: {
+        relatedObjectRules: "relatedObjectsRules",
+        calculatedObjectRules: "calculatedObjectsRules",
+    },
+    object: {
+        relatedObjectsRules: "relatedObjectRules",
+        calculatedObjectsRules: "calculatedObjectRules",
+    },
+};
+
+/**
+ * Warns when a bag of options or props carries a rule option belonging to the other side's
+ * composables. The two names sit one character apart, and nothing consumes the wrong one, so the
+ * layer would otherwise build empty results with no indication of why.
+ *
+ * @internal
+ * @param {string} composableName - The composable to name in the warning.
+ * @param {object|undefined} options - The options or props to check.
+ * @param {"list"|"object"} side - The side whose names are correct here.
+ * @returns {void}
+ */
+export function warnWrongSideRuleOptions(composableName, options, side) {
+    if (!options) {
+        return;
+    }
+    const wrongSide = side === "list" ? "object" : "list";
+    for (const [wrongName, name] of Object.entries(ruleOptionNameForWrongSideName[side])) {
+        if (options[wrongName] !== undefined) {
+            console.warn(
+                `[${composableName}] Ignoring "${wrongName}", which is the ${wrongSide} composables' name. Did you mean "${name}"?`
+            );
+        }
+    }
+}
+
+/**
  * Get the object and key of a calculated item.
  *
  * @param {object} obj - The object to get the calculated item from.
