@@ -262,7 +262,7 @@ export function useListSearch({ parentState, props, throttle = 500, showAllWhenE
             addedKeys: addedObjectPks,
             removedKeys: removedObjectPks,
             sameKeys: sameObjectPks,
-        } = keyDiff(Object.keys(parentState.objects), Object.keys(state.objects));
+        } = keyDiff(Object.keys(parentState.objects), Object.keys(objectEffectScopes));
         const { addedKeys: addedTextSearchRules, removedKeys: removedTextSearchRules } = keyDiff(
             state.textSearchRules,
             previousTextSearchRules

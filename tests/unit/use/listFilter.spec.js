@@ -90,6 +90,26 @@ describe("use/listFilter", () => {
         expect(filter.state.order).toEqual(listInstance.state.order);
         expect(filter.state.objectsInOrder).toEqual(listInstance.state.objectsInOrder);
     });
+    scopedIt("re-runs a stable rule that reads a ref when that ref changes", async () => {
+        // The rule function keeps a stable identity; reactivity comes from reading
+        //  showInactive.value inside it, which the include computed tracks.
+        const showInactive = ref(false);
+        const list = useListInstance({ props: { pkKey: "id" } });
+        const filter = useListFilter({
+            parentState: list.state,
+            allowedFilter: (object) => showInactive.value || object.active,
+        });
+        list.addListObject({ id: 1, name: "one", active: true });
+        list.addListObject({ id: 2, name: "two", active: false });
+        await nextTick();
+        expect(Object.keys(filter.state.objects)).toEqual(["1"]);
+        showInactive.value = true;
+        await nextTick();
+        expect(Object.keys(filter.state.objects).sort()).toEqual(["1", "2"]);
+        showInactive.value = false;
+        await nextTick();
+        expect(Object.keys(filter.state.objects)).toEqual(["1"]);
+    });
     describe("useListFilter operates on parentState modified by useListSort", () => {
         scopedIt("computes state.order and state.objects in order", async () => {
             vi.resetAllMocks();

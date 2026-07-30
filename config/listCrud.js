@@ -28,11 +28,10 @@ import { readonly } from "vue";
  * @typedef {object} ListArgsRaw - Raw arguments for a list operation before run-tracking and additional list CRUD arguments are merged in.
  * @property {import('../config/objectCrud.js').TargetArgs} target - The arguments to be passed to the crud handlers.
  * @property {string} pkKey - The key name of the primary key.
- * @property {object} params - The arguments to be passed for list crud handlers.
+ * @property {object} params - Your listing or retrieval arguments, passed through to the crud handlers.
  * @property {import("../use/listInstance.js").PushObjectsFn} pushObjects - The method to call with new page(s) of data received.
  * @property {ClearObjectsFn} clearObjects - The method to call to clear the objects.
- * @property {Readonly<import('vue').Ref<boolean>>} isCancelled - A ref to a boolean indicating whether the request has
- *  been cancelled.
+ * @property {Readonly<import('vue').Ref<boolean>>} isCancelled - A readonly ref that becomes true once the request is cancelled.
  * @property {SetPaginateInfo} setPaginateInfo - The method to update pagination information.
  * @property {SetColumnTotals} setColumnTotals - The method to update column totals.
  */
@@ -44,7 +43,7 @@ import { readonly } from "vue";
 /**
  * @typedef {object} BulkDeleteArgsRaw - Raw arguments for a bulk-delete operation before additional list CRUD arguments are merged in.
  * @property {import('../config/objectCrud.js').TargetArgs} target - The arguments to be passed to the crud handlers.
- * @property {import('./commonCrud.js').Pk[]} pks - The ids of the objects to be deleted.
+ * @property {import('./commonCrud.js').Pk[]} pks - The pks of the objects to be deleted.
  * @property {string} pkKey - The key name of the primary key.
  */
 
@@ -63,10 +62,9 @@ import { readonly } from "vue";
  * @typedef {object} ListSubscribeArgsRaw - Raw arguments for a list subscribe operation before run-tracking and additional list CRUD arguments are merged in.
  * @property {import('../config/objectCrud.js').TargetArgs} target - The arguments to be passed to the crud handlers.
  * @property {string} pkKey - The key name of the primary key.
- * @property {object} params - The arguments to be passed for list crud handlers.
+ * @property {object} params - Your listing or retrieval arguments, passed through to the crud handlers.
  * @property {applyObjectEvent} applyObjectEvent - The method to call when new data is received.
- * @property {Readonly<import('vue').Ref<boolean>>} isCancelled - A ref to a boolean indicating whether the request has
- *  been cancelled.
+ * @property {Readonly<import('vue').Ref<boolean>>} isCancelled - A readonly ref that becomes true once the request is cancelled.
  */
 
 /**
@@ -76,7 +74,7 @@ import { readonly } from "vue";
 /**
  * @typedef {object} ExecuteActionArgsRaw - Raw arguments for a list execute-action operation before additional list CRUD arguments are merged in.
  * @property {import('../config/objectCrud.js').TargetArgs} target - The arguments to be passed to the crud handlers.
- * @property {import('./commonCrud.js').Pk[]} pks - The ids of the objects to be acted upon.
+ * @property {import('./commonCrud.js').Pk[]} pks - The pks of the objects to be acted upon.
  * @property {string} pkKey - The key name of the primary key.
  * @property {string} action - The action to execute.
  */
@@ -88,13 +86,16 @@ import { readonly } from "vue";
 /**
  * @callback CrudListFn - Signature for the handler that lists objects from the backing store.
  * @param {ListArgs} args - The arguments to be passed to the crud handlers.
- * @returns {import('../utils/cancellablePromise.js').MaybeCancellablePromise<void>} - A cancellable promise for the list request.
+ * @returns {import('../utils/cancellablePromise.js').MaybeCancellablePromise<void>} - A promise whose resolution means
+ *  the fetch is complete. Rows reach the list only through `pushObjects`, so the resolved value is ignored. Carry a
+ *  `cancel` method to let the library abandon a superseded run.
  */
 
 /**
  * @callback CrudBulkDeleteFn - Signature for the handler that bulk-deletes objects from the backing store.
  * @param {BulkDeleteArgs} args - The arguments to be passed to the crud handlers.
- * @returns {Promise<boolean>} - A promise that resolves to a boolean indicating success.
+ * @returns {Promise<boolean>} - A promise whose resolution means the bulk delete succeeded; the resolved value is not
+ *  inspected, and the instance then empties the list.
  */
 
 /**
@@ -106,7 +107,8 @@ import { readonly } from "vue";
 /**
  * @callback CrudExecuteActionFn - Signature for the handler that executes an action on a list of objects in the backing store.
  * @param {ExecuteActionArgs} args - The arguments to be passed to the crud handlers.
- * @returns {Promise<object|string|null>} - A promise that resolves the result of the action, returned to the executor.
+ * @returns {Promise<object|string|null>} - A promise resolving the action's result, which `listInstance.executeAction`
+ *  passes through to its caller.
  */
 
 /**

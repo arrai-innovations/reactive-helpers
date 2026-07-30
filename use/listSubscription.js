@@ -54,7 +54,9 @@ export class ListSubscriptionError extends Error {
  */
 
 /**
- * @typedef {Pick<import('./loadingError.js').LoadingErrorStatus, "clearError">} ListSubscriptionFunctions - The methods available on a list subscription.
+ * @typedef {Pick<import('./loadingError.js').LoadingErrorStatus, "clearError"> & {
+ *     stop: () => void
+ * }} ListSubscriptionFunctions - The methods available on a list subscription.
  */
 
 /**
@@ -337,5 +339,12 @@ export function useListSubscription({ listInstance, props, handlers }) {
         listIntent,
         subscribeIntent,
         clearError: proxyLoadingError.clearError,
+        // Stops both intents, mirroring useObjectSubscription, so a caller that owns this
+        // subscription's lifetime does not have to know its intent inventory. The wrapped
+        // instance keeps its state and still takes manual calls.
+        stop: () => {
+            listIntent.stop();
+            subscribeIntent.stop();
+        },
     };
 }

@@ -2,7 +2,7 @@ import { defaultObjectCrud, getObjectCrud } from "../config/objectCrud.js";
 import { assignReactiveObject } from "../utils/assignReactiveObject.js";
 import { useLoadingError } from "./loadingError.js";
 import { reactive, readonly, ref } from "vue";
-import { CancellablePromise, wrapMaybeCancellable } from "../utils/cancellablePromise.js";
+import { wrapMaybeCancellable } from "../utils/cancellablePromise.js";
 import { pkRefIfReactive, refIfReactive } from "../utils/refIfReactive.js";
 
 /**
@@ -56,7 +56,8 @@ import { pkRefIfReactive, refIfReactive } from "../utils/refIfReactive.js";
  * @property {import('vue').Ref<string|undefined>} pkKey - The pk key of the object.
  * @property {import('vue').Ref<{[key:string]: any}>} params - The arguments to be passed to the retrieve function.
  * @property {import('vue').Reactive<CrudObject>} object - The object.
- * @property {boolean} deleted - Whether the object is deleted.
+ * @property {boolean} deleted - Whether the object was deleted by the delete action or a subscription delete
+ *  event. Cleared when a later create, retrieve, update, or patch repopulates the object, and by `clear()`.
  */
 
 /**
@@ -280,6 +281,7 @@ export function useObjectInstance({ props, handlers = {} }) {
                 createPromise
                     .then((/** @type {ExistingCrudObject} */ object) => {
                         assignReactiveObject(state.object, object);
+                        state.deleted = false;
                         return true;
                     })
                     .catch((/** @type {Error} */ error) => {
@@ -329,13 +331,14 @@ export function useObjectInstance({ props, handlers = {} }) {
             } catch (error) {
                 loadingError.setError(error);
                 loadingError.clearLoading();
-                return CancellablePromise.resolve(false);
+                return Promise.resolve(false);
             }
 
             promises.retrieve = wrapMaybeCancellable(
                 retrievePromise
                     .then((/** @type {ExistingCrudObject} */ object) => {
                         assignReactiveObject(state.object, object);
+                        state.deleted = false;
                         return true;
                     })
                     .catch((/** @type {Error} */ error) => {
@@ -382,6 +385,7 @@ export function useObjectInstance({ props, handlers = {} }) {
                 updatePromise
                     .then((/** @type {ExistingCrudObject} */ object) => {
                         assignReactiveObject(state.object, object);
+                        state.deleted = false;
                         return true;
                     })
                     .catch((/** @type {Error} */ error) => {
@@ -469,6 +473,7 @@ export function useObjectInstance({ props, handlers = {} }) {
                 patchPromise
                     .then((/** @type {ExistingCrudObject} */ object) => {
                         assignReactiveObject(state.object, object);
+                        state.deleted = false;
                         return true;
                     })
                     .catch((/** @type {Error} */ error) => {
@@ -533,6 +538,7 @@ export function useObjectInstance({ props, handlers = {} }) {
         clear: () => {
             loadingError.clearError();
             assignReactiveObject(state.object, {});
+            state.deleted = false;
         },
     };
     return instance;

@@ -16,7 +16,9 @@
  * @typedef {import('vue').Reactive<ListSubscriptionRawState>} ListSubscriptionState - A reactive object that manages a list of objects, as returned by `useListInstance`.
  */
 /**
- * @typedef {Pick<import('./loadingError.js').LoadingErrorStatus, "clearError">} ListSubscriptionFunctions - The methods available on a list subscription.
+ * @typedef {Pick<import('./loadingError.js').LoadingErrorStatus, "clearError"> & {
+ *     stop: () => void
+ * }} ListSubscriptionFunctions - The methods available on a list subscription.
  */
 /**
  * @typedef {{
@@ -151,7 +153,9 @@ export type ListSubscriptionState = import("vue").Reactive<ListSubscriptionRawSt
 /**
  * The methods available on a list subscription.
  */
-export type ListSubscriptionFunctions = Pick<import("./loadingError.js").LoadingErrorStatus, "clearError">;
+export type ListSubscriptionFunctions = Pick<import("./loadingError.js").LoadingErrorStatus, "clearError"> & {
+    stop: () => void;
+};
 /**
  * The context (state, list instance, and loading/error status) bound to the shared list subscription functions.
  */

@@ -6,13 +6,18 @@ _Actions potentially required by implementers are marked with italics._
 
 ### Additions
 
+- Added `makeCancellable(promise, cancel)` as the canonical factory for adding cancellation to a promise. The `CancellablePromise` type remains unchanged, and the callable `CancellablePromise()` export remains available as a deprecated alias.
 - List state exposes `objectsVersion`, a counter that increments whenever the set of object keys changes. Every list layer forwards it, so composed layers can observe structural changes without enumerating keys.
+- `useListSubscription` now returns a `stop()` that stops both of its intents, mirroring `useObjectSubscription`.
 
 ### Fixes
 
 - `useListInstance.pushObjects()` now batches structural list notifications for each supplied page instead of synchronously reprocessing every composed list layer after each inserted object.
 - Related, calculated, filter, and sort layers now use the batched structural version when maintaining their per-object state. Individual add, delete, and clear operations remain synchronous.
-- `useListSort` no longer throws when the layer is stopped while its parent list still has work in flight. Its order watcher outlives the layer's effect scope, so the settling parent work re-evaluated the sort order against per-object criteria that were no longer maintained.
+- `useListSort` no longer throws when the layer is stopped while its parent list still has work in flight. The layer's order watchers are owned by its effect scope, and a reorder still pending in the sort throttle is cancelled when the layer stops instead of writing `order` afterward.
+- `asWatchableLoadingError` keeps the source's `clearError` when adapting a list or object instance, so `useProxyLoadingError(sources).clearError()` no longer throws when any source is an instance.
+- `useListSearch` no longer throws when `textSearchRules` is assigned after rows have entered a search created without rules.
+- Object `state.deleted` is no longer permanent once set. A successful retrieve, create, update, or patch, a non-delete subscription event, and `clear()` reset it to `false`. _Implementers relying on `state.deleted` staying `true` after a later successful action should read it before acting again._
 
 ### Testing
 

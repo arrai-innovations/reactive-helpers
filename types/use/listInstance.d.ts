@@ -167,7 +167,7 @@ export function useListInstances(listInstanceArgs: {
  * ```
  *
  * @param {ListInstanceOptions} options - Specifies the configuration options for creating a list instance, including
- *  properties for CRUD operations and UI behaviors like page persistence.
+ *  properties for CRUD operations and UI behaviours like page persistence.
  * @returns {ListInstance} The list instance.
  * @throws {ListInstanceError} If the props are missing.
  */

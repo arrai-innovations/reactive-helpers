@@ -66,6 +66,18 @@ describe("use/objectRelated", () => {
         ]);
     });
 
+    scopedIt("defaults a rule's foreign key to the rule name when pkKey is omitted", async () => {
+        const parentState = createParentState();
+        const relatedObjects = { 2: { id: "2", name: "two" } };
+        const relatedObjectRules = reactive({
+            // No pkKey: the rule name "friend_id" is used as the foreign-key field.
+            friend_id: { objects: relatedObjects },
+        });
+        const objectRelated = useObjectRelated({ parentState, relatedObjectRules });
+        await nextTick();
+        expect(deepUnref(objectRelated.state.relatedObject.friend_id)).toEqual({ id: "2", name: "two" });
+    });
+
     scopedIt("reacts to rule changes", async () => {
         const parentState = createParentState();
         const relatedObjects = {

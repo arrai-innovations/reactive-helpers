@@ -14,7 +14,7 @@
  * @example
  * ```vue
  * <script setup>
- * import { useCombineClasses } from "@vueda/use/combineClasses.js";
+ * import { useCombineClasses } from "@arrai-innovations/reactive-helpers";
  * import { ref } from "vue";
  * const myClasses = useCombineClasses(
  *     "class1",

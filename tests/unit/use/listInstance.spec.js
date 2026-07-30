@@ -606,6 +606,28 @@ describe("use/listInstance.spec.js", function () {
             expect(listInstance.state.loading).toBe(false);
             expect(listInstance.state.error).toEqual(new Error("sync throw from list"));
         });
+        scopedIt("ignores the handler's resolved value; rows enter only through pushObjects", async () => {
+            const resolvingRows = useListInstance({
+                props: { pkKey: "id", params: {} },
+                handlers: {
+                    list: () => Promise.resolve([{ id: 1, name: "resolved but ignored" }]),
+                },
+            });
+            await expect(resolvingRows.list()).resolves.toBe(true);
+            expect(resolvingRows.state.objectsInOrder).toEqual([]);
+
+            const pushingRows = useListInstance({
+                props: { pkKey: "id", params: {} },
+                handlers: {
+                    list: ({ pushObjects }) => {
+                        pushObjects([{ id: 1, name: "pushed" }]);
+                        return Promise.resolve();
+                    },
+                },
+            });
+            await expect(pushingRows.list()).resolves.toBe(true);
+            expect(pushingRows.state.objectsInOrder).toEqual([{ id: 1, name: "pushed" }]);
+        });
     });
     scopedIt("useListInstances", async function () {
         const listInstanceA = useListInstance({
@@ -1219,6 +1241,56 @@ describe("use/listInstance.spec.js", function () {
 
             expect(listInstance.state.objects["1"].name).toBe("updated");
         });
+        scopedIt("merges a pushed row by identity: same position, same reactive row, contents mirrored", () => {
+            const listInstance = useListInstance({ props: { pkKey: "id", params: {} } });
+            listInstance.pushObjects([
+                { id: 1, name: "one", email: "one@example.com" },
+                { id: 2, name: "two", email: "two@example.com" },
+                { id: 3, name: "three", email: "three@example.com" },
+            ]);
+            const rowBefore = listInstance.state.objects["2"];
+            listInstance.pushObjects([{ id: 2, name: "two updated" }]);
+            expect(listInstance.state.order).toEqual(["1", "2", "3"]);
+            expect(listInstance.state.objects["2"]).toBe(rowBefore);
+            expect(listInstance.state.objects["2"]).toEqual({ id: 2, name: "two updated" });
+        });
+        scopedIt("rejects rows whose pk value is falsy before coercion, including 0 and false", () => {
+            const listInstance = useListInstance({ props: { pkKey: "id", params: {} } });
+            for (const badPk of [0, false, "", null, undefined]) {
+                expect(() => listInstance.pushObjects([{ id: badPk, name: "bad" }])).toThrowError(
+                    expect.objectContaining({ name: "ListInstanceError", code: "missing-pk" })
+                );
+            }
+            listInstance.pushObjects([{ id: "0", name: "zero" }]);
+            expect(listInstance.state.order).toEqual(["0"]);
+            expect(() => listInstance.pushObjects([{ id: 0, name: "zero again" }])).toThrowError(ListInstanceError);
+            expect(listInstance.state.objects["0"]).toEqual({ id: "0", name: "zero" });
+        });
+        scopedIt("partially applies a pushed batch before a missing-pk error", async () => {
+            const listInstance = useListInstance({
+                props: { pkKey: "id", params: {} },
+                handlers: {
+                    list: ({ pushObjects }) => {
+                        pushObjects([{ id: 1, name: "one" }, { name: "bad" }, { id: 2, name: "two" }]);
+                        return Promise.resolve();
+                    },
+                },
+            });
+
+            await expect(listInstance.list()).resolves.toBe(false);
+            expect(listInstance.state.order).toEqual(["1"]);
+            expect(listInstance.state.error).toEqual(
+                expect.objectContaining({ name: "ListInstanceError", code: "missing-pk" })
+            );
+        });
+        scopedIt("a deleted pk pushed again is a new arrival at the end of the order", () => {
+            const listInstance = useListInstance({ props: { pkKey: "id", params: {} } });
+            listInstance.pushObjects([{ id: 1 }, { id: 2 }, { id: 3 }]);
+            listInstance.deleteListObject(2);
+            expect(listInstance.state.order).toEqual(["1", "3"]);
+            listInstance.pushObjects([{ id: 2 }]);
+            expect(listInstance.state.order).toEqual(["1", "3", "2"]);
+        });
         scopedIt("emits one structural change for a page of new objects", () => {
             const listInstance = useListInstance({ props: { pkKey: "id", params: {} } });
             const versionWatch = vi.fn();
@@ -1355,6 +1427,22 @@ describe("use/listInstance.spec.js", function () {
         });
     });
     describe("internal objectsMap proxy", function () {
+        scopedIt("lets Map.set bypass string key normalization", function () {
+            const listInstance = useListInstance({ props: { pkKey: "id" } });
+
+            listInstance.state.objectsMap.set(42, { id: 42, name: "forty-two" });
+
+            expect(listInstance.state.objectsMap.get(42)).toEqual({ id: 42, name: "forty-two" });
+            expect(listInstance.state.objects["42"]).toBeUndefined();
+            expect(listInstance.state.order).toEqual([42]);
+        });
+        scopedIt("keeps numeric Map lookups distinct from string object-property lookups", function () {
+            const listInstance = useListInstance({ props: { pkKey: "id" } });
+            listInstance.pushObjects([{ id: 42, name: "forty-two" }]);
+
+            expect(listInstance.state.objectsMap.get(42)).toBeUndefined();
+            expect(listInstance.state.objects[42]).toBe(listInstance.state.objectsMap.get("42"));
+        });
         scopedIt("set wraps objects reactively", function () {
             const listInstance = useListInstance({ props: { pkKey: "id" } });
             const obj = { id: 1, __str__: "one", name: "one" };
@@ -1398,6 +1486,18 @@ describe("use/listInstance.spec.js", function () {
         });
     });
     describe("internal objects proxy", function () {
+        scopedIt("direct writes replace the stored row and bypass its embedded pk", function () {
+            const listInstance = useListInstance({ props: { pkKey: "id" } });
+            listInstance.pushObjects([{ id: 1, name: "one" }]);
+            const heldRow = listInstance.state.objects["1"];
+
+            listInstance.state.objects["1"] = { name: "replacement" };
+
+            expect(listInstance.state.objectsMap.get("1")).toBe(listInstance.state.objects["1"]);
+            expect(listInstance.state.objects["1"]).not.toBe(heldRow);
+            expect(listInstance.state.objects["1"]).toEqual({ name: "replacement" });
+            expect(heldRow).toEqual({ id: 1, name: "one" });
+        });
         scopedIt("prototype and define traps", function () {
             const listInstance = useListInstance({ props: { pkKey: "id" } });
             expect(() => Object.setPrototypeOf(listInstance.state.objects, null)).toThrow(TypeError);

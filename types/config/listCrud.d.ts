@@ -40,7 +40,7 @@ export type ListArgsRaw = {
      */
     pkKey: string;
     /**
-     * The arguments to be passed for list crud handlers.
+     * Your listing or retrieval arguments, passed through to the crud handlers.
      */
     params: object;
     /**
@@ -52,8 +52,7 @@ export type ListArgsRaw = {
      */
     clearObjects: ClearObjectsFn;
     /**
-     * A ref to a boolean indicating whether the request has
-     * been cancelled.
+     * A readonly ref that becomes true once the request is cancelled.
      */
     isCancelled: Readonly<import("vue").Ref<boolean>>;
     /**
@@ -78,7 +77,7 @@ export type BulkDeleteArgsRaw = {
      */
     target: import("../config/objectCrud.js").TargetArgs;
     /**
-     * The ids of the objects to be deleted.
+     * The pks of the objects to be deleted.
      */
     pks: import("./commonCrud.js").Pk[];
     /**
@@ -107,7 +106,7 @@ export type ListSubscribeArgsRaw = {
      */
     pkKey: string;
     /**
-     * The arguments to be passed for list crud handlers.
+     * Your listing or retrieval arguments, passed through to the crud handlers.
      */
     params: object;
     /**
@@ -115,8 +114,7 @@ export type ListSubscribeArgsRaw = {
      */
     applyObjectEvent: applyObjectEvent;
     /**
-     * A ref to a boolean indicating whether the request has
-     * been cancelled.
+     * A readonly ref that becomes true once the request is cancelled.
      */
     isCancelled: Readonly<import("vue").Ref<boolean>>;
 };
@@ -133,7 +131,7 @@ export type ExecuteActionArgsRaw = {
      */
     target: import("../config/objectCrud.js").TargetArgs;
     /**
-     * The ids of the objects to be acted upon.
+     * The pks of the objects to be acted upon.
      */
     pks: import("./commonCrud.js").Pk[];
     /**

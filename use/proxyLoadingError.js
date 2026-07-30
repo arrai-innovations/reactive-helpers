@@ -44,5 +44,8 @@ export function asWatchableLoadingError(source) {
     return {
         ...asWatchableLoading(unwrappedRefs),
         ...asWatchableError(unwrappedRefs),
+        // Preserve clearError: for a separate-state source it lives on the source
+        // itself, not on state, so extracting state above would otherwise drop it.
+        clearError: unwrappedSource.clearError,
     };
 }

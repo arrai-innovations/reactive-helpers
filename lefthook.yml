@@ -26,7 +26,7 @@ pre-commit:
                 - "**/coverage/**"
                 - "types/**"
                 - "**/*.d.ts"
-            run: pnpm exec eslint --cache --fix {staged_files}
+            run: pnpm exec eslint --cache --fix --no-warn-ignored {staged_files}
         fix-prettier:
             stage_fixed: true
             glob: "**/*.{less,scss,css,vue,js,mjs,cjs,ts,tsx,jsx,markdown,json,md,yml,yaml,html}"

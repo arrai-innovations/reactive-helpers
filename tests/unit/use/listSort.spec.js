@@ -98,6 +98,63 @@ describe("use/useListSort", () => {
         expect(listSort.state.objectsInOrder).toEqual([]);
         expect(listSort.state.orderByDesc).toEqual([true, false]);
     });
+    scopedIt("keeps running true through a throttled reorder and settles when it lands", async () => {
+        vi.useFakeTimers();
+        try {
+            for (const contact of contactsResolved) {
+                listInstance.addListObject(contact);
+            }
+            const listSort = useListSort({
+                parentState: listInstance.state,
+                orderByRules,
+                sortThrottleWait: 100,
+            });
+            await nextTick();
+            // the initial reorder has already landed
+            expect(listSort.state.running).toBe(false);
+            expect(listSort.state.order).toEqual(["12", "15", "9"]);
+
+            // a new ordering makes a reorder pending: running goes true synchronously
+            listSort.state.orderByRules = [{ key: "id", desc: false }];
+            expect(listSort.state.running).toBe(true);
+
+            // the reorder is held by the throttle, so running stays true and order is unchanged
+            await nextTick();
+            expect(listSort.state.running).toBe(true);
+            expect(listSort.state.order).toEqual(["12", "15", "9"]);
+
+            // once the throttle fires, the reorder lands and running settles
+            vi.advanceTimersByTime(100);
+            await nextTick();
+            expect(listSort.state.running).toBe(false);
+            expect(listSort.state.order).toEqual(["9", "12", "15"]);
+        } finally {
+            vi.useRealTimers();
+        }
+    });
+    scopedIt("propagates the parent running state through the sort layer", async () => {
+        const parentState = reactive({
+            pkKey: "id",
+            objects: { 9: { id: 9 }, 12: { id: 12 }, 15: { id: 15 } },
+            order: ["9", "12", "15"],
+            relatedObjects: {},
+            calculatedObjects: {},
+            running: true,
+        });
+        const listSort = useListSort({
+            parentState,
+            orderByRules: [{ key: "id", desc: false }],
+            sortThrottleWait: 0,
+        });
+        await nextTick();
+        // running is inherited from the still-running parent
+        expect(listSort.state.running).toBe(true);
+
+        // when the parent settles, the sort layer settles too
+        parentState.running = false;
+        await doAwaitNot({ obj: listSort.state, prop: "running" });
+        expect(listSort.state.running).toBe(false);
+    });
     describe("addSortCriteria and removeSortCriteria", () => {
         scopedIt("triggers on watches updating state and sortCriteria", async () => {
             const addObject = {
@@ -397,6 +454,48 @@ describe("use/useListSort", () => {
         expect(listSort.state.order).toEqual(["1", "3"]);
         expect(listSort.state.objectsInOrder.map((obj) => obj.id)).toEqual([1, 3]);
     });
+    scopedIt("stops reordering once the layer is stopped", async () => {
+        for (const contact of contactsResolved) {
+            listInstance.addListObject(contact);
+        }
+        const listSort = useListSort({ parentState: listInstance.state, orderByRules, sortThrottleWait });
+        await nextTick();
+        expect(listSort.state.order).toEqual(["12", "15", "9"]);
+
+        listSort.stop();
+        // the order watcher belongs to the layer's scope, so a new parent row no longer reorders
+        listInstance.addListObject({ id: 20, lexical_name: "zero, contact", organization: 99 });
+        await nextTick();
+        expect(listSort.state.order).toEqual(["12", "15", "9"]);
+    });
+    scopedIt("cancels a throttled reorder that is still pending when stopped", async () => {
+        vi.useFakeTimers();
+        try {
+            for (const contact of contactsResolved) {
+                listInstance.addListObject(contact);
+            }
+            const listSort = useListSort({
+                parentState: listInstance.state,
+                orderByRules,
+                sortThrottleWait: 100,
+            });
+            await nextTick();
+            expect(listSort.state.order).toEqual(["12", "15", "9"]);
+
+            // a new ordering is computed, but the throttle holds the reorder
+            listSort.state.orderByRules = [{ key: "id", desc: false }];
+            await nextTick();
+            expect(listSort.state.order).toEqual(["12", "15", "9"]);
+
+            listSort.stop();
+            vi.advanceTimersByTime(100);
+            await nextTick();
+            // the trailing reorder was cancelled with the scope, so order stayed put
+            expect(listSort.state.order).toEqual(["12", "15", "9"]);
+        } finally {
+            vi.useRealTimers();
+        }
+    });
     describe("sort criteria track subset changes made by a parent layer", () => {
         // A parent filter changes which objects are visible without changing the underlying object
         // keys, so parentState.objectsVersion does not move and criteria are maintained by the
@@ -479,12 +578,13 @@ describe("use/useListSort", () => {
         });
 
         scopedIt("survives being stopped while its parent still has work in flight", async () => {
-            // watch(rawOrder, ...) is registered outside this layer's effect scope, so stop() disposes
-            // the criteria watchers while leaving the order watcher live. Any parent work that
-            // settles afterwards re-evaluates the order against criteria that are no longer
-            // maintained, so the criteria lookup has to tolerate a missing entry. Without that the
-            // re-evaluation throws, which surfaces as an unhandled rejection rather than a failed
-            // assertion, so the absence of one is what this case is guarding.
+            // stop() disposes every watcher this layer owns, including the order watchers, so parent
+            // work settling afterwards no longer reorders (see "stops reordering once the layer is
+            // stopped"). The criteria lookup still has to tolerate a missing entry: criteria sync for
+            // rows a parent layer newly exposes lands in a deferred watcher, so an order
+            // re-evaluation can run inside that window. Without the guard the re-evaluation throws,
+            // which surfaces as an unhandled rejection rather than a failed assertion, so the absence
+            // of one is what this case is guarding.
             const listInstance = useListInstance({ props: reactive({ pkKey: "id" }) });
             const props = reactive({
                 customDocumentOptions: {},
