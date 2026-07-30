@@ -144,8 +144,8 @@ export class ListInstanceError extends Error {
  *  or error state.
  * @property {() => import('../config/commonCrud.js').Pk} getFakePk - Generates a unique fake pk for use within the list.
  * @property {(args?: import('../config/listCrud.js').AdditionalListArgs) => import('../utils/cancellablePromise.js').MaybeCancellablePromise<boolean|never>} list - Initiates a fetch to retrieve objects according to the CRUD configuration, returning a promise to a boolean indicating success.
- * @property {(args?: {pks?: import('../config/commonCrud.js').Pk[]} & import('../config/listCrud.js').AdditionalListArgs) => Promise<boolean>} bulkDelete - Deletes objects from the list by pk, returning a promise to a boolean indicating success.
- * @property {(args: {action: string, pks?: import('../config/commonCrud.js').Pk[]} & import('../config/listCrud.js').AdditionalListArgs) => Promise<object|string|boolean|null>} executeAction - Initiates an action on all objects in the list, returning the response, or null if the action failed.
+ * @property {(args?: {pks?: import('../config/commonCrud.js').Pk[]} & import('../config/listCrud.js').AdditionalListArgs) => import('../utils/cancellablePromise.js').MaybeCancellablePromise<boolean>} bulkDelete - Deletes objects from the list by pk, returning a promise to a boolean indicating success. The promise carries a `cancel` method when the handler's promise did.
+ * @property {(args: {action: string, pks?: import('../config/commonCrud.js').Pk[]} & import('../config/listCrud.js').AdditionalListArgs) => import('../utils/cancellablePromise.js').MaybeCancellablePromise<object|string|boolean|null>} executeAction - Initiates an action on all objects in the list, returning the response, or null if the action failed. The promise carries a `cancel` method when the handler's promise did.
  * @property {(info: PaginateInfo) => void} setPaginateInfo - The method to update pagination information.
  * @property {(total: ColumnTotals) => void} setColumnTotals - The method to update column totals.
  */
@@ -521,6 +521,7 @@ export function useListInstance({ props, handlers = {} }) {
             }
             loadingError.setLoading();
             loadingError.clearError();
+            const isCancelled = ref(false);
             let bulkDeletePromise = null;
             try {
                 bulkDeletePromise = state.crud.bulkDelete({
@@ -528,27 +529,41 @@ export function useListInstance({ props, handlers = {} }) {
                     target: state.crud.args,
                     pks,
                     pkKey: state.pkKey,
+                    params: state.params,
+                    isCancelled: readonly(isCancelled),
                 });
             } catch (error) {
                 loadingError.setError(error);
                 loadingError.clearLoading();
                 return Promise.resolve(false);
             }
-            return bulkDeletePromise
-                .then(() => {
-                    batchObjectChanges(() => {
-                        assignReactiveObject(state.objects, {});
-                    });
-                    loadingError.clearError();
-                    return Promise.resolve(true);
-                })
-                .catch((/** @type {Error} */ error) => {
-                    loadingError.setError(error);
-                    return Promise.resolve(false);
-                })
-                .finally(() => {
-                    loadingError.clearLoading();
-                });
+            return wrapMaybeCancellable(
+                bulkDeletePromise
+                    .then(() => {
+                        batchObjectChanges(() => {
+                            assignReactiveObject(state.objects, {});
+                        });
+                        loadingError.clearError();
+                        return true;
+                    })
+                    .catch((/** @type {Error} */ error) => {
+                        // A deliberate cancellation rejects with the cancel reason; that is not an error.
+                        if (!isCancelled.value) {
+                            loadingError.setError(error);
+                        }
+                        return false;
+                    })
+                    .finally(() => {
+                        loadingError.clearLoading();
+                    }),
+                bulkDeletePromise.cancel
+                    ? async (/** @type {any} */ reason) => {
+                          isCancelled.value = true;
+                          await bulkDeletePromise.cancel?.(reason);
+                          loadingError.clearLoading();
+                      }
+                    : undefined
+            );
         },
         executeAction: ({ pks, action, ...additionalArgs }) => {
             if (state.loading) {
@@ -561,6 +576,7 @@ export function useListInstance({ props, handlers = {} }) {
             }
             loadingError.setLoading();
             loadingError.clearError();
+            const isCancelled = ref(false);
             let executeActionPromise = null;
             try {
                 executeActionPromise = state.crud.executeAction({
@@ -569,24 +585,38 @@ export function useListInstance({ props, handlers = {} }) {
                     action,
                     pks,
                     pkKey: state.pkKey,
+                    params: state.params,
+                    isCancelled: readonly(isCancelled),
                 });
             } catch (error) {
                 loadingError.setError(error);
                 loadingError.clearLoading();
                 return Promise.resolve(null);
             }
-            return executeActionPromise
-                .then((/** @type {object|string} */ responseData) => {
-                    loadingError.clearError();
-                    return Promise.resolve(responseData);
-                })
-                .catch((/** @type {Error} */ error) => {
-                    loadingError.setError(error);
-                    return Promise.resolve(null);
-                })
-                .finally(() => {
-                    loadingError.clearLoading();
-                });
+            return wrapMaybeCancellable(
+                executeActionPromise
+                    .then((/** @type {object|string} */ responseData) => {
+                        loadingError.clearError();
+                        return responseData;
+                    })
+                    .catch((/** @type {Error} */ error) => {
+                        // A deliberate cancellation rejects with the cancel reason; that is not an error.
+                        if (!isCancelled.value) {
+                            loadingError.setError(error);
+                        }
+                        return null;
+                    })
+                    .finally(() => {
+                        loadingError.clearLoading();
+                    }),
+                executeActionPromise.cancel
+                    ? async (/** @type {any} */ reason) => {
+                          isCancelled.value = true;
+                          await executeActionPromise.cancel?.(reason);
+                          loadingError.clearLoading();
+                      }
+                    : undefined
+            );
         },
         addListObject: (object) => {
             const pk = String(object[state.pkKey]);

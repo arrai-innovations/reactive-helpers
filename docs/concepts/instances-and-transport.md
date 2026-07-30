@@ -103,8 +103,7 @@ A handler receives one argument object. Both instance types pass:
   payload).
 - `pkKey`, the primary key field name, so one handler can serve records keyed
   by different fields.
-- `isCancelled`, a readonly ref that turns `true` when the run is cancelled
-  (`bulkDelete` and list `executeAction` do not get it).
+- `isCancelled`, a readonly ref that turns `true` when the run is cancelled.
 - Any extra keys you passed to the action call.
 
 A list handler also gets callbacks: `pushObjects`, `clearObjects`,

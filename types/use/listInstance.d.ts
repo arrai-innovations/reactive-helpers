@@ -94,8 +94,8 @@
  *  or error state.
  * @property {() => import('../config/commonCrud.js').Pk} getFakePk - Generates a unique fake pk for use within the list.
  * @property {(args?: import('../config/listCrud.js').AdditionalListArgs) => import('../utils/cancellablePromise.js').MaybeCancellablePromise<boolean|never>} list - Initiates a fetch to retrieve objects according to the CRUD configuration, returning a promise to a boolean indicating success.
- * @property {(args?: {pks?: import('../config/commonCrud.js').Pk[]} & import('../config/listCrud.js').AdditionalListArgs) => Promise<boolean>} bulkDelete - Deletes objects from the list by pk, returning a promise to a boolean indicating success.
- * @property {(args: {action: string, pks?: import('../config/commonCrud.js').Pk[]} & import('../config/listCrud.js').AdditionalListArgs) => Promise<object|string|boolean|null>} executeAction - Initiates an action on all objects in the list, returning the response, or null if the action failed.
+ * @property {(args?: {pks?: import('../config/commonCrud.js').Pk[]} & import('../config/listCrud.js').AdditionalListArgs) => import('../utils/cancellablePromise.js').MaybeCancellablePromise<boolean>} bulkDelete - Deletes objects from the list by pk, returning a promise to a boolean indicating success. The promise carries a `cancel` method when the handler's promise did.
+ * @property {(args: {action: string, pks?: import('../config/commonCrud.js').Pk[]} & import('../config/listCrud.js').AdditionalListArgs) => import('../utils/cancellablePromise.js').MaybeCancellablePromise<object|string|boolean|null>} executeAction - Initiates an action on all objects in the list, returning the response, or null if the action failed. The promise carries a `cancel` method when the handler's promise did.
  * @property {(info: PaginateInfo) => void} setPaginateInfo - The method to update pagination information.
  * @property {(total: ColumnTotals) => void} setColumnTotals - The method to update column totals.
  */
@@ -416,18 +416,18 @@ export type ListInstanceMyFunctions = {
      */
     list: (args?: import("../config/listCrud.js").AdditionalListArgs) => import("../utils/cancellablePromise.js").MaybeCancellablePromise<boolean | never>;
     /**
-     * Deletes objects from the list by pk, returning a promise to a boolean indicating success.
+     * Deletes objects from the list by pk, returning a promise to a boolean indicating success. The promise carries a `cancel` method when the handler's promise did.
      */
     bulkDelete: (args?: {
         pks?: import("../config/commonCrud.js").Pk[];
-    } & import("../config/listCrud.js").AdditionalListArgs) => Promise<boolean>;
+    } & import("../config/listCrud.js").AdditionalListArgs) => import("../utils/cancellablePromise.js").MaybeCancellablePromise<boolean>;
     /**
-     * Initiates an action on all objects in the list, returning the response, or null if the action failed.
+     * Initiates an action on all objects in the list, returning the response, or null if the action failed. The promise carries a `cancel` method when the handler's promise did.
      */
     executeAction: (args: {
         action: string;
         pks?: import("../config/commonCrud.js").Pk[];
-    } & import("../config/listCrud.js").AdditionalListArgs) => Promise<object | string | boolean | null>;
+    } & import("../config/listCrud.js").AdditionalListArgs) => import("../utils/cancellablePromise.js").MaybeCancellablePromise<object | string | boolean | null>;
     /**
      * The method to update pagination information.
      */

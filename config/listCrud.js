@@ -45,6 +45,8 @@ import { readonly } from "vue";
  * @property {import('../config/objectCrud.js').TargetArgs} target - The arguments to be passed to the crud handlers.
  * @property {import('./commonCrud.js').Pk[]} pks - The pks of the objects to be deleted.
  * @property {string} pkKey - The key name of the primary key.
+ * @property {{[key:string]: any}} params - Your listing arguments, passed through to the crud handlers.
+ * @property {Readonly<import('vue').Ref<boolean>>} isCancelled - A readonly ref that becomes true once the request is cancelled.
  */
 
 /**
@@ -77,6 +79,8 @@ import { readonly } from "vue";
  * @property {import('./commonCrud.js').Pk[]} pks - The pks of the objects to be acted upon.
  * @property {string} pkKey - The key name of the primary key.
  * @property {string} action - The action to execute.
+ * @property {{[key:string]: any}} params - Your listing arguments, passed through to the crud handlers.
+ * @property {Readonly<import('vue').Ref<boolean>>} isCancelled - A readonly ref that becomes true once the request is cancelled.
  */
 
 /**
@@ -94,8 +98,9 @@ import { readonly } from "vue";
 /**
  * @callback CrudBulkDeleteFn - Signature for the handler that bulk-deletes objects from the backing store.
  * @param {BulkDeleteArgs} args - The arguments to be passed to the crud handlers.
- * @returns {Promise<boolean>} - A promise whose resolution means the bulk delete succeeded; the resolved value is not
- *  inspected, and the instance then empties the list.
+ * @returns {import('../utils/cancellablePromise.js').MaybeCancellablePromise<boolean>} - A promise whose resolution
+ *  means the bulk delete succeeded; the resolved value is not inspected, and the instance then empties the list.
+ *  Carry a `cancel` method to let the caller abandon the run.
  */
 
 /**
@@ -107,8 +112,9 @@ import { readonly } from "vue";
 /**
  * @callback CrudExecuteActionFn - Signature for the handler that executes an action on a list of objects in the backing store.
  * @param {ExecuteActionArgs} args - The arguments to be passed to the crud handlers.
- * @returns {Promise<object|string|null>} - A promise resolving the action's result, which `listInstance.executeAction`
- *  passes through to its caller.
+ * @returns {import('../utils/cancellablePromise.js').MaybeCancellablePromise<object|string|null>} - A promise
+ *  resolving the action's result, which `listInstance.executeAction` passes through to its caller. Carry a `cancel`
+ *  method to let the caller abandon the run.
  */
 
 /**
