@@ -4,6 +4,10 @@ _Actions potentially required by implementers are marked with italics._
 
 ## v23.0.0 (Unreleased)
 
+### Breaking Changes
+
+- `useListInstance`'s `list`, `bulkDelete`, and `executeAction` now throw a `ListInstanceError` with the code `already-loading` synchronously when called while `state.loading` is `true`. They previously returned a rejected promise. Every object verb already threw, so the two sides now deliver the same condition the same way. _Implementers handling this with `.catch()` must move to `await` inside `try`/`catch`, or gate the call on `state.loading` before making it. A generic `.catch()` previously swallowed this developer error in silence, which is the behaviour the change is meant to end._
+
 ### Additions
 
 - Added `ListRelatedError` and `ObjectRelatedError`. A related rule with no `objects` collection now throws one of these with the code `missing-objects`, naming the rule, where it previously surfaced a bare `TypeError` from indexing `undefined`. The check stays at read time, since two lists that relate to each other cannot both be wired first. _Implementers catching `TypeError` around a related rule read should catch the named error instead._

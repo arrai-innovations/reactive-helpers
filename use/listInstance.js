@@ -458,7 +458,9 @@ export function useListInstance({ props, handlers = {} }) {
                 return promises.list;
             }
             if (state.loading) {
-                return Promise.reject(new ListInstanceError("already loading.", "already-loading"));
+                // we throw because we want devs to see this error in the console
+                // state.error should be for user facing errors, or unknown errors
+                throw new ListInstanceError("already loading.", "already-loading");
             }
             loadingError.clearError();
             loadingError.setLoading();
@@ -510,7 +512,9 @@ export function useListInstance({ props, handlers = {} }) {
         },
         bulkDelete: ({ pks, ...additionalArgs } = {}) => {
             if (state.loading) {
-                return Promise.reject(new ListInstanceError("already loading.", "already-loading"));
+                // we throw because we want devs to see this error in the console
+                // state.error should be for user facing errors, or unknown errors
+                throw new ListInstanceError("already loading.", "already-loading");
             }
             if (!pks) {
                 pks = Object.keys(state.objects);
@@ -548,7 +552,9 @@ export function useListInstance({ props, handlers = {} }) {
         },
         executeAction: ({ pks, action, ...additionalArgs }) => {
             if (state.loading) {
-                return Promise.reject(new ListInstanceError("already loading.", "already-loading"));
+                // we throw because we want devs to see this error in the console
+                // state.error should be for user facing errors, or unknown errors
+                throw new ListInstanceError("already loading.", "already-loading");
             }
             if (!pks) {
                 pks = Object.keys(state.objects);

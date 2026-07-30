@@ -320,7 +320,7 @@ describe("use/listInstance.spec.js", function () {
 
             expect(listInstance.state.loading).toBe(true);
 
-            await expect(() => listInstance.list()).rejects.toThrow(ListInstanceError);
+            expect(() => listInstance.list()).toThrow(ListInstanceError);
 
             expect(listInstance.state.loading).toBe(true);
 
@@ -950,7 +950,7 @@ describe("use/listInstance.spec.js", function () {
             expect(listInstance.state.error).toBeNullError();
             expect(listInstance.state.errored).toBe(false);
             expect(listInstance.state.loading).toBe(true);
-            await expect(() => listInstance.executeAction({ action: "foo" })).rejects.toThrow(ListInstanceError);
+            expect(() => listInstance.executeAction({ action: "foo" })).toThrow(ListInstanceError);
             expect(listInstance.state.error).toBeNullError();
             expect(listInstance.state.errored).toBe(false);
             expect(listInstance.state.loading).toBe(true);
@@ -1139,7 +1139,7 @@ describe("use/listInstance.spec.js", function () {
             expect(listInstance.state.error).toBeNullError();
             expect(listInstance.state.errored).toBe(false);
             expect(listInstance.state.loading).toBe(true);
-            await expect(() => listInstance.bulkDelete()).rejects.toThrow(ListInstanceError);
+            expect(() => listInstance.bulkDelete()).toThrow(ListInstanceError);
             expect(listInstance.state.error).toBeNullError();
             expect(listInstance.state.errored).toBe(false);
             expect(listInstance.state.loading).toBe(true);
