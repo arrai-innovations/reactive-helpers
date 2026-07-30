@@ -7,6 +7,7 @@ _Actions potentially required by implementers are marked with italics._
 ### Fixes
 
 - A CRUD handler that throws before returning its promise is now stored in `state.error` on every verb, matching a rejected promise. Previously only object `retrieve` and list `list` caught it. On the other verbs the throw escaped the action call after `state.loading` had been set, and nothing cleared it, so every later action on that instance failed with `already-loading`. _Implementers catching a synchronous handler throw around an action call should read `state.error` instead; the action now resolves `false`, or `null` for list `executeAction`._
+- `useObjectCalculated` now reports its own busy state through `state.running`. It previously copied the parent's `running` over its own computed, so `state.calculatedRunning` could be `true` while `state.running` read `false`. This also applies to `useObject`, whose `state` is the calculated layer's. _Implementers who worked around the old value by reading `state.calculatedRunning` alongside `state.running` can now read `state.running` alone._
 
 ## v22.1.0 (2026-07-30)
 
