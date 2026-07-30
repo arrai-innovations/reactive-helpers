@@ -2,11 +2,19 @@
 
 _Actions potentially required by implementers are marked with italics._
 
-## v22.1.1 (Unreleased)
+## v23.0.0 (Unreleased)
 
 ### Additions
 
-- `useList`, `useObject`, and the four related and calculated layers now warn when they are given a rule option under the other side's name. The list composables take `relatedObjectsRules` and `calculatedObjectsRules`; the object composables take `relatedObjectRules` and `calculatedObjectRules`. Passing the wrong one stays a no-op, but it now says so instead of silently producing empty results.
+- Added `ListRelatedError` and `ObjectRelatedError`. A related rule with no `objects` collection now throws one of these with the code `missing-objects`, naming the rule, where it previously surfaced a bare `TypeError` from indexing `undefined`. The check stays at read time, since two lists that relate to each other cannot both be wired first. _Implementers catching `TypeError` around a related rule read should catch the named error instead._
+- - `useList`, `useObject`, and the four related and calculated layers now warn when they are given a rule option under the other side's name. The list composables take `relatedObjectsRules` and `calculatedObjectsRules`; the object composables take `relatedObjectRules` and `calculatedObjectRules`. Passing the wrong one stays a no-op, but it now says so instead of silently producing empty results.
+
+### Fixes
+
+- `useListCalculated` now removes a rule's values from `state.calculatedObjects` when the rule is deleted from a rules object already in use. It previously stopped the rule's effect scope but left the key in place, reading as `undefined` for every row.
+- `useObjectRelated` no longer throws a `TypeError` when a rule is deleted from a rules object already in use. Tearing the rule down read its own entry back through the reactive state, which re-evaluated the rule's computed against the rule it had just removed.
+- A CRUD handler that throws before returning its promise is now stored in `state.error` on every verb, matching a rejected promise. Previously only object `retrieve` and list `list` caught it. On the other verbs the throw escaped the action call after `state.loading` had been set, and nothing cleared it, so every later action on that instance failed with `already-loading`. _Implementers catching a synchronous handler throw around an action call should read `state.error` instead; the action now resolves `false`, or `null` for list `executeAction`._
+- `useObjectCalculated` now reports its own busy state through `state.running`. It previously copied the parent's `running` over its own computed, so `state.calculatedRunning` could be `true` while `state.running` read `false`. This also applies to `useObject`, whose `state` is the calculated layer's. _Implementers who worked around the old value by reading `state.calculatedRunning` alongside `state.running` can now read `state.running` alone._
 
 ## v22.1.0 (2026-07-30)
 

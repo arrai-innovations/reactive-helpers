@@ -1,10 +1,4 @@
 /**
- * Vue Composition API composable function for managing relationships among objects in a list.
- * It enables linking objects based on predefined rules and dynamically adjusts as the underlying data changes.
- *
- * @module use/listRelated.js
- */
-/**
  * @typedef {object} ListRelatedRule - The rule for defining relationships for objects in a list.
  * @property {string} [pkKey] - Specifies the foreign key used to link objects across lists. Defaults to the rule's
  *  own key when omitted. Planned to be renamed to 'fkKey' to better reflect its usage.
@@ -158,6 +152,26 @@ export function useListRelateds(listRelatedArgs: {
  * maintaining the integrity of object relationships as per the specified rules.
  */
 export function useListRelated(options: ListRelatedOptions): ListRelated;
+/**
+ * Vue Composition API composable function for managing relationships among objects in a list.
+ * It enables linking objects based on predefined rules and dynamically adjusts as the underlying data changes.
+ *
+ * @module use/listRelated.js
+ */
+/**
+ * Defines a custom error class specific to list related rules, encapsulating details about rules that cannot be
+ *  resolved as configured.
+ */
+export class ListRelatedError extends Error {
+    /**
+     * Creates an instance of ListRelatedError.
+     *
+     * @param {string} message - The error message.
+     * @param {string} code - The error code.
+     */
+    constructor(message: string, code: string);
+    code: string;
+}
 /**
  * The rule for defining relationships for objects in a list.
  */

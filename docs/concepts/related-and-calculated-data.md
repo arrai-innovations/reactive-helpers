@@ -175,6 +175,11 @@ The list-side maps track their rows. A row added to the list gains its entries,
 and a row that leaves loses them, along with the effect scopes behind them.
 Nothing outlives the row it belongs to.
 
+All four layers track the rule set the same way. They watch the set of rule
+names, so the rules can change while a layer runs. Add a rule, delete one in
+place, or swap in a fresh rules object. A deleted rule takes its entries with
+it.
+
 ## Naming differs between the two sides
 
 The list side is plural and the object side is singular, throughout:
@@ -236,7 +241,12 @@ puts the constraint in your hands. See
   field, and yields `undefined` with no warning. The typo looks like missing
   data.
 - **A rule with no `objects`.** The lookup has nothing to index, so reading the
-  result throws a `TypeError`. The rule is unusable rather than empty.
+  result throws a `ListRelatedError` or `ObjectRelatedError` with the code
+  `missing-objects`, naming the rule. The rule is unusable rather than empty.
+  The check happens on read rather than at creation, because you can only wire
+  one of two mutually related lists first. Vue leaves a computed that
+  threw non-dirty, so the error appears on the first read after each change,
+  not on every read.
 - **An `order` that omits a referenced id.** Membership survives, but that id
   sorts unpredictably, as described above.
 - **A calculated rule that is not a function.** The two sides differ here. On the
@@ -253,12 +263,6 @@ puts the constraint in your hands. See
 - **Reading a list-side map before the row has an entry.** The layer builds a
   row's entry a tick after the row arrives, so guard the first tick with optional
   chaining. The object-side maps carry their entries from the start.
-- **Deleting a key from a rules object already in use.** The layers watch the set
-  of rule names, so adding a rule, or swapping in a fresh rules object, works.
-  Deleting a key in place behaves differently per layer. `useListRelated` drops
-  the rule's entry, `useListCalculated` leaves a stale entry that reads as
-  `undefined`, and `useObjectRelated` throws while tearing the rule down. Swap the
-  rules object rather than mutating it.
 
 ## Where to go next
 

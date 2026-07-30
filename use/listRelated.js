@@ -16,6 +16,24 @@ import { computed, effectScope, nextTick, onScopeDispose, reactive, ref, toRef, 
  * @module use/listRelated.js
  */
 
+/**
+ * Defines a custom error class specific to list related rules, encapsulating details about rules that cannot be
+ *  resolved as configured.
+ */
+export class ListRelatedError extends Error {
+    /**
+     * Creates an instance of ListRelatedError.
+     *
+     * @param {string} message - The error message.
+     * @param {string} code - The error code.
+     */
+    constructor(message, code) {
+        super(message);
+        this.name = "ListRelatedError";
+        this.code = code;
+    }
+}
+
 // todo: pkKey is misnamed, it should be fkKey... this will be a major breaking change
 /**
  * @typedef {object} ListRelatedRule - The rule for defining relationships for objects in a list.
@@ -250,6 +268,14 @@ export function useListRelated(options) {
         state.relatedObjects[objectKey][ruleKey] = computed(() => {
             const value = unref(state.fkForPkAndRule[objectKey][ruleKey]);
             const objects = unref(rule).objects;
+            if (!objects) {
+                // read time rather than creation time: when two lists relate to each other, one manager exists
+                //  first, so a rule legitimately sits unresolvable while the other is being wired.
+                throw new ListRelatedError(
+                    `useListRelated: rule "${ruleKey}" has no objects to resolve against.`,
+                    "missing-objects"
+                );
+            }
             if (isArray(value)) {
                 return value.map((e) => objects[e]).filter(identity);
             }

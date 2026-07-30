@@ -114,6 +114,20 @@ export function useObjectRelated(options: ObjectRelatedOptions): ObjectRelated;
  * @module use/objectRelated.js
  */
 /**
+ * Defines a custom error class specific to object related rules, encapsulating details about rules that cannot be
+ *  resolved as configured.
+ */
+export class ObjectRelatedError extends Error {
+    /**
+     * Creates an instance of ObjectRelatedError.
+     *
+     * @param {string} message - The error message.
+     * @param {string} code - The error code.
+     */
+    constructor(message: string, code: string);
+    code: string;
+}
+/**
  * @typedef {object} ObjectRelatedRule - The rule for defining relationships for the managed object to other collections of objects.
  * @property {string} [pkKey] - The key in the managed object that corresponds to the key in the related object.
  *  Defaults to the rule's own key when omitted.

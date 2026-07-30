@@ -3,10 +3,11 @@ import { deepUnref } from "../../../utils/deepUnref.js";
 import { scopedIt } from "../scopedIt.js";
 
 describe("use/objectRelated", () => {
-    let useObjectRelated;
+    let useObjectRelated, ObjectRelatedError;
     beforeEach(async () => {
         const mod = await import("../../../use/objectRelated.js");
         useObjectRelated = mod.useObjectRelated;
+        ObjectRelatedError = mod.ObjectRelatedError;
     });
 
     const createParentState = () =>
@@ -98,6 +99,45 @@ describe("use/objectRelated", () => {
         expect(deepUnref(objectRelated.state.relatedObject.friends)).toEqual([relatedObjects[2], relatedObjects[3]]);
 
         expect(deepUnref(objectRelated.state.relatedObject.friend)).toEqual(relatedObjects[2]);
+    });
+
+    scopedIt("drops a rule's related object when the rule is deleted in place", async () => {
+        const parentState = createParentState();
+        const relatedObjects = { 2: { id: "2" }, 3: { id: "3" } };
+        const relatedObjectRules = reactive({
+            friend: { pkKey: "friend_id", objects: relatedObjects },
+            friends: { pkKey: "friend_ids", objects: relatedObjects },
+        });
+        const objectRelated = useObjectRelated({ parentState, relatedObjectRules });
+        await nextTick();
+        expect(Object.keys(objectRelated.state.relatedObject)).toEqual(["friend", "friends"]);
+
+        // removing the rule must not re-read the removed entry, which would throw from its own computed
+        delete relatedObjectRules.friends;
+        await nextTick();
+        expect(Object.keys(objectRelated.state.relatedObject)).toEqual(["friend"]);
+        expect(deepUnref(objectRelated.state.relatedObject.friend)).toEqual(relatedObjects[2]);
+    });
+
+    scopedIt("throws a named error when a rule has no objects to resolve against", async () => {
+        const parentState = createParentState();
+        const relatedObjectRules = reactive({
+            // @ts-ignore - objects is required; this is the failure case
+            friend: { pkKey: "friend_id" },
+        });
+        const objectRelated = useObjectRelated({ parentState, relatedObjectRules });
+        await nextTick();
+        // read once: Vue leaves a computed that threw non-dirty, so a second read returns its
+        //  cached undefined instead of throwing again
+        let thrown;
+        try {
+            void objectRelated.state.relatedObject.friend;
+        } catch (error) {
+            thrown = error;
+        }
+        expect(thrown).toBeInstanceOf(ObjectRelatedError);
+        expect(thrown.message).toBe('useObjectRelated: rule "friend" has no objects to resolve against.');
+        expect(thrown.code).toBe("missing-objects");
     });
 
     scopedIt("stops effects", async () => {

@@ -227,6 +227,7 @@ export function useListCalculated(options) {
                     calculatedObjectsEffectScopes[objectKey].ruleScopes[removedRuleKey].stop();
                     delete calculatedObjectsEffectScopes[objectKey].ruleScopes[removedRuleKey];
                 }
+                delete calculatedObjectsObject[removedRuleKey];
             }
             if (!calculatedObjectsEffectScopes[objectKey]) {
                 calculatedObjectsEffectScopes[objectKey] = {

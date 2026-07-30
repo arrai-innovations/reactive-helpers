@@ -517,13 +517,20 @@ export function useListInstance({ props, handlers = {} }) {
             }
             loadingError.setLoading();
             loadingError.clearError();
-            return state.crud
-                .bulkDelete({
+            let bulkDeletePromise = null;
+            try {
+                bulkDeletePromise = state.crud.bulkDelete({
                     ...additionalArgs,
                     target: state.crud.args,
                     pks,
                     pkKey: state.pkKey,
-                })
+                });
+            } catch (error) {
+                loadingError.setError(error);
+                loadingError.clearLoading();
+                return Promise.resolve(false);
+            }
+            return bulkDeletePromise
                 .then(() => {
                     batchObjectChanges(() => {
                         assignReactiveObject(state.objects, {});
@@ -548,14 +555,21 @@ export function useListInstance({ props, handlers = {} }) {
             }
             loadingError.setLoading();
             loadingError.clearError();
-            return state.crud
-                .executeAction({
+            let executeActionPromise = null;
+            try {
+                executeActionPromise = state.crud.executeAction({
                     ...additionalArgs,
                     target: state.crud.args,
                     action,
                     pks,
                     pkKey: state.pkKey,
-                })
+                });
+            } catch (error) {
+                loadingError.setError(error);
+                loadingError.clearLoading();
+                return Promise.resolve(null);
+            }
+            return executeActionPromise
                 .then((/** @type {object|string} */ responseData) => {
                     loadingError.clearError();
                     return Promise.resolve(responseData);

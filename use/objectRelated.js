@@ -18,6 +18,24 @@ import { computed, effectScope, nextTick, reactive, ref, toRef, unref, watch } f
  * @module use/objectRelated.js
  */
 
+/**
+ * Defines a custom error class specific to object related rules, encapsulating details about rules that cannot be
+ *  resolved as configured.
+ */
+export class ObjectRelatedError extends Error {
+    /**
+     * Creates an instance of ObjectRelatedError.
+     *
+     * @param {string} message - The error message.
+     * @param {string} code - The error code.
+     */
+    constructor(message, code) {
+        super(message);
+        this.name = "ObjectRelatedError";
+        this.code = code;
+    }
+}
+
 // todo: pkKey is misnamed, it should be fkKey... this will be a major breaking change.
 /**
  * @typedef {object} ObjectRelatedRule - The rule for defining relationships for the managed object to other collections of objects.
@@ -78,7 +96,8 @@ export const objectRelatedStateKeys = [
     "relatedObjectWatchRunning",
     "parentStateObjectWatchRunning",
     "relatedRunning",
-    "running",
+    // "running" is deliberately absent: a downstream layer combines the parent's running into its own computed,
+    //  so copying it here would overwrite that computed with the parent's value.
 ];
 
 /** @internal */
@@ -266,6 +285,14 @@ export function useObjectRelated(options) {
         state.relatedObject[ruleKey] = computed(() => {
             const value = unref(internalState.fkForRule[ruleKey]);
             const objects = unref(rule).objects;
+            if (!objects) {
+                // read time rather than creation time: when two managers relate to each other, one exists first,
+                //  so a rule legitimately sits unresolvable while the other is being wired.
+                throw new ObjectRelatedError(
+                    `useObjectRelated: rule "${ruleKey}" has no objects to resolve against.`,
+                    "missing-objects"
+                );
+            }
             if (isArray(value)) {
                 return value.map((e) => objects[e]).filter(identity);
             }
@@ -288,14 +315,11 @@ export function useObjectRelated(options) {
             addedRuleKeys = new Set();
         }
         for (const removedRuleKey of removedRuleKeys) {
-            // @ts-ignore - this is an unofficial api, effect is internal
-            state.relatedObject[removedRuleKey]?.effect?.stop?.();
+            // Delete without reading: state.relatedObject unwraps refs, so reading a removed rule's entry would
+            //  re-evaluate its computed chain against a rule that is already gone. Dropping the last reference to
+            //  each computed is enough to release it.
             delete state.relatedObject[removedRuleKey];
-            // @ts-ignore - this is an unofficial api, effect is internal
-            internalState.fkForRule[removedRuleKey]?.effect?.stop?.();
             delete internalState.fkForRule[removedRuleKey];
-            // @ts-ignore - this is an unofficial api, effect is internal
-            internalState.objAndKeyForRule[removedRuleKey]?.effect?.stop?.();
             delete internalState.objAndKeyForRule[removedRuleKey];
         }
 

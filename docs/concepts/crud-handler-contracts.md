@@ -136,19 +136,15 @@ the action's promise.
 
 ## When a handler fails
 
-Reject the promise, or throw inside an `async` handler. The instance
-stores the error object unchanged in `state.error`, sets `state.errored`
-to `true`, clears `state.loading`, and resolves the action `false`. Because
-the error is stored as-is, the typed errors your handler throws reach the
-component intact. Each action clears the previous error when it starts.
+Reject the promise, or throw. A throw before the handler returns its promise
+lands the same way a rejection does. The instance stores the error object
+unchanged in `state.error`, sets `state.errored` to `true`, clears
+`state.loading`, and resolves the action `false`. Because the error is stored
+as-is, the typed errors your handler throws reach the component intact. Each
+action clears the previous error when it starts.
 
-Three failure paths behave differently:
+Two failure paths behave differently:
 
-- **A synchronous throw.** Only `retrieve` and `list` catch an error thrown
-  before the handler produces its promise. On every other verb the throw
-  escapes the action call, and `state.loading` stays `true` with no run to
-  clear it. Keep the code before your promise trivial, and let failures
-  reject.
 - **A second call while loading.** While `state.loading` is `true`, a new
   object action throws an `ObjectError` with code `already-loading` rather
   than storing it. A list action rejects with a `ListInstanceError`
