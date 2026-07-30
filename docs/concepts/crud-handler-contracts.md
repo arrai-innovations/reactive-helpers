@@ -131,17 +131,19 @@ central rule of
 
 The promise the action itself returns is not your handler's promise. A CRUD
 action such as `contact.update(...)` or `contacts.list()` resolves `true`
-on success and `false` on a stored failure. A handler error never rejects
-the action's promise.
+on success and `false` on a stored failure. `executeAction` is the exception
+on both sides: it resolves whatever your handler resolved, and `null` on a
+stored failure. A handler error never rejects the action's promise.
 
 ## When a handler fails
 
 Reject the promise, or throw. A throw before the handler returns its promise
 lands the same way a rejection does. The instance stores the error object
 unchanged in `state.error`, sets `state.errored` to `true`, clears
-`state.loading`, and resolves the action `false`. Because the error is stored
-as-is, the typed errors your handler throws reach the component intact. Each
-action clears the previous error when it starts.
+`state.loading`, and resolves the action `false`, or `null` for
+`executeAction`. Because the error is stored as-is, the typed errors your
+handler throws reach the component intact. Each action clears the previous
+error when it starts.
 
 Two failure paths behave differently:
 

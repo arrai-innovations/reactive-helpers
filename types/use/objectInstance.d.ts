@@ -128,7 +128,7 @@ export function useObjectInstance({ props, handlers }: ObjectInstanceOptions): O
  * @property {(args: ObjectInstanceUpdateArgs & AdditionalArgs) => import('../utils/cancellablePromise.js').MaybeCancellablePromise<boolean|never>} update - Called to update the current object on the server.
  * @property {(args?: AdditionalArgs) => import('../utils/cancellablePromise.js').MaybeCancellablePromise<boolean|never>} delete - Called to delete the current object on the server.
  * @property {(args: ObjectInstancePatchArgs & AdditionalArgs) => import('../utils/cancellablePromise.js').MaybeCancellablePromise<boolean|never>} patch - Called to patch the current object on the server.
- * @property {(args: {action: string} & AdditionalArgs) => import('../utils/cancellablePromise.js').MaybeCancellablePromise<boolean|never>} executeAction - Called to execute certain action on the current object.
+ * @property {(args: {action: string} & AdditionalArgs) => import('../utils/cancellablePromise.js').MaybeCancellablePromise<object|string|void|null>} executeAction - Called to execute certain action on the current object. Resolves the handler's own resolved value, or `null` when the action failed.
  * @property {() => void} clear - Called to clear the object state.
  */
 /**
@@ -338,11 +338,11 @@ export type ObjectInstanceMyFunctions = {
      */
     patch: (args: ObjectInstancePatchArgs & AdditionalArgs) => import("../utils/cancellablePromise.js").MaybeCancellablePromise<boolean | never>;
     /**
-     * Called to execute certain action on the current object.
+     * Called to execute certain action on the current object. Resolves the handler's own resolved value, or `null` when the action failed.
      */
     executeAction: (args: {
         action: string;
-    } & AdditionalArgs) => import("../utils/cancellablePromise.js").MaybeCancellablePromise<boolean | never>;
+    } & AdditionalArgs) => import("../utils/cancellablePromise.js").MaybeCancellablePromise<object | string | void | null>;
     /**
      * Called to clear the object state.
      */

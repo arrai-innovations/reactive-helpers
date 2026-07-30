@@ -408,9 +408,10 @@ Arguments for an object create operation, combining the raw arguments with any a
 
 > **CrudCompletionResponse** = [`MaybeCancellablePromise`](../utils/cancellablePromise.md#maybecancellablepromise)
 
-The value returned by an object CRUD handler whose resolved value is ignored: delete, and executeAction. A
- possibly-cancellable promise whose resolution signals success and nothing more, so it may resolve a record, a
- primary key string, or nothing at all.
+The value returned by an object CRUD handler that does not populate the managed record: delete, and
+ executeAction. A possibly-cancellable promise that may resolve a record, a primary key string, or nothing at
+ all. `delete` ignores the resolved value, treating resolution alone as success. `executeAction` passes the
+ resolved value through to its caller, and resolves `null` instead when the action failed.
 
 #### Type Parameters
 
@@ -464,7 +465,8 @@ The arguments to be passed to the delete function.
 
 > **CrudObjectExecuteActionFn** = (`args`) => [`CrudCompletionResponse`](#crudcompletionresponse)
 
-Signature for the handler that executes an action on a single object in the backing store.
+Signature for the handler that executes an action on a single object in the
+ backing store. Its resolved value is passed through to the caller of `objectInstance.executeAction`.
 
 #### Type Parameters
 

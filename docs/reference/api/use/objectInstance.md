@@ -107,9 +107,9 @@ Called to delete the current object on the server.
 
 ##### executeAction
 
-> **executeAction**: (`args`) => [`MaybeCancellablePromise`](../utils/cancellablePromise.md#maybecancellablepromise)\<`boolean`\>
+> **executeAction**: (`args`) => [`MaybeCancellablePromise`](../utils/cancellablePromise.md#maybecancellablepromise)\<`any`\>
 
-Called to execute certain action on the current object.
+Called to execute certain action on the current object. Resolves the handler's own resolved value, or `null` when the action failed.
 
 ###### Parameters
 
@@ -119,7 +119,7 @@ Called to execute certain action on the current object.
 
 ###### Returns
 
-[`MaybeCancellablePromise`](../utils/cancellablePromise.md#maybecancellablepromise)\<`boolean`\>
+[`MaybeCancellablePromise`](../utils/cancellablePromise.md#maybecancellablepromise)\<`any`\>
 
 ##### patch
 

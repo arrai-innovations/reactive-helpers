@@ -133,9 +133,10 @@ import { readonly } from "vue";
 
 /**
  * @typedef {import('../utils/cancellablePromise.js').MaybeCancellablePromise<object|string|void>} CrudCompletionResponse -
- *  The value returned by an object CRUD handler whose resolved value is ignored: delete, and executeAction. A
- *  possibly-cancellable promise whose resolution signals success and nothing more, so it may resolve a record, a
- *  primary key string, or nothing at all.
+ *  The value returned by an object CRUD handler that does not populate the managed record: delete, and
+ *  executeAction. A possibly-cancellable promise that may resolve a record, a primary key string, or nothing at
+ *  all. `delete` ignores the resolved value, treating resolution alone as success. `executeAction` passes the
+ *  resolved value through to its caller, and resolves `null` instead when the action failed.
  */
 
 /**
@@ -169,10 +170,11 @@ import { readonly } from "vue";
  */
 
 /**
- * @callback CrudObjectExecuteActionFn - Signature for the handler that executes an action on a single object in the backing store.
+ * @callback CrudObjectExecuteActionFn - Signature for the handler that executes an action on a single object in the
+ *  backing store. Its resolved value is passed through to the caller of `objectInstance.executeAction`.
  * @param {ObjectExecuteActionArgs} args - The arguments to be passed to the executeAction function.
- * @returns {CrudCompletionResponse} - A promise whose resolution means the action succeeded; its value is ignored, and
- *  `objectInstance.executeAction` resolves `true`.
+ * @returns {CrudCompletionResponse} - A promise resolving the action's result, which
+ *  `objectInstance.executeAction` passes through to its caller. A stored failure resolves `null` instead.
  */
 
 /**
