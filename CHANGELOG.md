@@ -2,6 +2,12 @@
 
 _Actions potentially required by implementers are marked with italics._
 
+## v22.1.1 (Unreleased)
+
+### Fixes
+
+- A CRUD handler that throws before returning its promise is now stored in `state.error` on every verb, matching a rejected promise. Previously only object `retrieve` and list `list` caught it. On the other verbs the throw escaped the action call after `state.loading` had been set, and nothing cleared it, so every later action on that instance failed with `already-loading`. _Implementers catching a synchronous handler throw around an action call should read `state.error` instead; the action now resolves `false`, or `null` for list `executeAction`._
+
 ## v22.1.0 (2026-07-30)
 
 ### Additions
