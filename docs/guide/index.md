@@ -90,12 +90,24 @@ Pick the route that matches what you are trying to do.
   [Register app-wide CRUD defaults](/guide/register-crud-defaults) moves repeated
   handlers into app bootstrap.
 - **Handle a specific backend task.** [Create a record](/guide/create-a-record),
-  [Paginate a list](/guide/paginate-a-list), and
+  [Paginate a list](/guide/paginate-a-list),
+  [Load all pages in one call](/guide/load-all-pages), and
   [Bulk delete rows](/guide/bulk-delete-rows) each solve one backend
   task. [Filter a list](/guide/filter-a-list) and
   [Reload a record](/guide/reload-a-record) refetch when filters, props, or
   route params change. [Cancel stale requests](/guide/cancel-stale-requests)
   makes those reloads safe, so only the latest request's result lands.
+- **Reshape rows you already have.**
+  [Filter and sort a loaded list](/guide/filter-and-sort-a-loaded-list) and
+  [Search a loaded list](/guide/search-a-loaded-list) narrow and order loaded
+  rows in the browser, with no extra request.
+- **Add derived data to each row.**
+  [Show related objects](/guide/show-related-objects) resolves a key into the
+  record it points at. [Show calculated values](/guide/show-calculated-values)
+  computes values from each row and its related objects.
+- **Report progress and failures.**
+  [Manage loading and errors](/guide/manage-loading-and-errors) folds several
+  composables into one screen-wide loading and error status.
 - **Understand the design.** The [concepts](/concepts/) pages explain what an
   instance owns versus your handlers, and how the list and object pipelines
   compose.

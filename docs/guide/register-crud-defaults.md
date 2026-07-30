@@ -138,3 +138,13 @@ setListCrud({ args: { version: "v1" } });
 
 Handlers now receive `target.version` alongside the instance's own fields;
 where a key collides, the instance's `props.target` wins.
+
+## Related pages
+
+- [Pass backend arguments](/guide/data-layer) supplies handlers and arguments to
+  one instance instead of registering them app-wide.
+- [Instances and transport](/concepts/instances-and-transport) explains the
+  boundary these shared handlers sit on.
+- Reference: [setListCrud](/reference/api/config/listCrud#setlistcrud) and
+  [setObjectCrud](/reference/api/config/objectCrud#setobjectcrud) document the
+  full configuration shapes.

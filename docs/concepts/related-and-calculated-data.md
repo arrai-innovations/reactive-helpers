@@ -259,7 +259,7 @@ puts the constraint in your hands. See
   `undefined`, and `useObjectRelated` throws while tearing the rule down. Swap the
   rules object rather than mutating it.
 
-## Related pages
+## Where to go next
 
 - Tasks: [Show related objects](/guide/show-related-objects) and
   [Show calculated values](/guide/show-calculated-values) configure both layers.

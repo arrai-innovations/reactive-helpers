@@ -131,6 +131,8 @@ the collection at that moment, so later changes would go unnoticed.
   can add to the aggregate.
 - [Register app-wide CRUD defaults](/guide/register-crud-defaults) sets up the
   data layer the instances on this page use.
+- [Loading, error, and running](/concepts/loading-error-and-running) explains the
+  loading tri-state and why `running` is a separate signal.
 - Reference:
   [useProxyLoadingError](/reference/api/use/proxyLoadingError#useproxyloadingerror)
   and

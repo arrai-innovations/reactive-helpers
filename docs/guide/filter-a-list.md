@@ -168,7 +168,9 @@ as shown above. That is reversible; stopping is not.
 
 ## Related pages
 
-To reload a single record when its primary key changes, see
+To narrow rows already loaded, without a refetch, see
+[Filter and sort a loaded list](/guide/filter-and-sort-a-loaded-list). To reload a
+single record when its primary key changes, see
 [Reload a record when the route changes](/guide/reload-a-record).
 [Cancel stale requests](/guide/cancel-stale-requests) builds the cancellable
 handler this page recommends, and

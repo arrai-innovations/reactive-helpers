@@ -1,6 +1,8 @@
 ---
 layout: home
 title: reactive-helpers
+status: published
+type: index
 hero:
     name: reactive-helpers
     text: Reactive composition utilities for Vue 3

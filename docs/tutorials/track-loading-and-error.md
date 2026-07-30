@@ -126,5 +126,11 @@ No manual boolean juggling, and the same pattern works for any async operation.
 - [Build a reactive list](/tutorials/build-a-reactive-list) shows the list
   instance tracking this same loading and error state for you, backed by your
   API.
+- [Manage loading and errors](/guide/manage-loading-and-errors) folds several
+  instances into one screen-wide status.
+- [Loading, error, and running](/concepts/loading-error-and-running) explains the
+  loading tri-state and why `running` stays separate.
 - [Instances and transport](/concepts/instances-and-transport) explains how
   loading and error state compose across the instance boundary.
+- The [useLoadingError reference](/reference/api/use/loadingError) documents the
+  full state shape and every action.

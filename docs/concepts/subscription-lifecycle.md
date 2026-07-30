@@ -170,6 +170,8 @@ nobody is looking at.
 
 ## Where to go next
 
+- Learning path: [Build a live-updating list](/tutorials/live-updating-list)
+  drives these flags from a working subscription.
 - Related concept: [Cancellable intents](/concepts/cancellable-intents) covers
   the cancel contract these intents depend on.
 - Related concept: [Lifecycle and cleanup](/concepts/lifecycle-and-cleanup)

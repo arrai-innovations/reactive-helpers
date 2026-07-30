@@ -144,10 +144,10 @@ export default defineConfig({
                     text: "Tutorials",
                     items: [
                         { text: "Overview", link: "/tutorials/" },
-                        { text: "Track loading and error state", link: "/tutorials/track-loading-and-error" },
                         { text: "Build a reactive list", link: "/tutorials/build-a-reactive-list" },
                         { text: "Edit one object", link: "/tutorials/edit-one-object" },
                         { text: "Build a live-updating list", link: "/tutorials/live-updating-list" },
+                        { text: "Track loading and error state", link: "/tutorials/track-loading-and-error" },
                     ],
                 },
             ]),
