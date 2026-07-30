@@ -29,10 +29,10 @@ import { readonly } from "vue";
 /**
  * @typedef {object} CreateArgsRaw - Raw arguments for an object create operation before additional CRUD arguments are merged in.
  * @property {TargetArgs} target - The arguments to be passed to the crud handlers.
- * @property {{[key:string]: any}} object - The data to be acted upon.
- * @property {{[key:string]: any}} params - The arguments to be passed to the retrieve function.
+ * @property {{[key:string]: any}} object - The new object to create; it carries no primary key yet.
+ * @property {{[key:string]: any}} params - Your listing or retrieval arguments, passed through to the crud handlers.
  * @property {string} pkKey - The key name of the primary key.
- * @property {Readonly<import('vue').Ref<boolean>>} isCancelled - A ref to indicate if the request was cancelled.
+ * @property {Readonly<import('vue').Ref<boolean>>} isCancelled - A readonly ref that becomes true once the request is cancelled.
  */
 
 /**
@@ -44,8 +44,8 @@ import { readonly } from "vue";
  * @property {TargetArgs} target - The arguments to be passed to the crud handlers.
  * @property {import('./commonCrud.js').Pk} pk - The pk of the object to be acted upon.
  * @property {string} pkKey - The key name of the primary key.
- * @property {{[key:string]: any}} params - The arguments to be passed to the retrieve function.
- * @property {Readonly<import('vue').Ref<boolean>>} isCancelled - A ref to indicate if the request was cancelled.
+ * @property {{[key:string]: any}} params - Your listing or retrieval arguments, passed through to the crud handlers.
+ * @property {Readonly<import('vue').Ref<boolean>>} isCancelled - A readonly ref that becomes true once the request is cancelled.
  */
 
 /**
@@ -55,10 +55,10 @@ import { readonly } from "vue";
 /**
  * @typedef {object} UpdateArgsRaw - Raw arguments for an object update operation before additional CRUD arguments are merged in.
  * @property {TargetArgs} target - The arguments to be passed to the crud handlers.
- * @property {import('../use/objectInstance.js').ExistingCrudObject} object - The data to be acted upon.
- * @property {{[key:string]: any}} params - The arguments to be passed to the retrieve function.
+ * @property {import('../use/objectInstance.js').ExistingCrudObject} object - The complete object to update; its primary key rides inside it, at `object[pkKey]`.
+ * @property {{[key:string]: any}} params - Your listing or retrieval arguments, passed through to the crud handlers.
  * @property {string} pkKey - The key name of the primary key.
- * @property {Readonly<import('vue').Ref<boolean>>} isCancelled - A ref to indicate if the request was cancelled.
+ * @property {Readonly<import('vue').Ref<boolean>>} isCancelled - A readonly ref that becomes true once the request is cancelled.
  */
 
 /**
@@ -70,7 +70,7 @@ import { readonly } from "vue";
  * @property {TargetArgs} target - The arguments to be passed to the crud handlers.
  * @property {import('./commonCrud.js').Pk} pk - The pk of the object to be acted upon.
  * @property {string} pkKey - The key name of the primary key.
- * @property {Readonly<import('vue').Ref<boolean>>} isCancelled - A ref to indicate if the request was cancelled.
+ * @property {Readonly<import('vue').Ref<boolean>>} isCancelled - A readonly ref that becomes true once the request is cancelled.
  */
 
 /**
@@ -82,9 +82,9 @@ import { readonly } from "vue";
  * @property {TargetArgs} target - The arguments to be passed to the crud handlers.
  * @property {import('./commonCrud.js').Pk} pk - The pk of the object to be acted upon.
  * @property {string} pkKey - The key name of the primary key.
- * @property {{[key:string]: any}} partialObject - The data to be acted upon.
- * @property {{[key:string]: any}} params - The arguments to be passed to the retrieve function.
- * @property {Readonly<import('vue').Ref<boolean>>} isCancelled - A ref to indicate if the request was cancelled.
+ * @property {{[key:string]: any}} partialObject - The changed fields only.
+ * @property {{[key:string]: any}} params - Your listing or retrieval arguments, passed through to the crud handlers.
+ * @property {Readonly<import('vue').Ref<boolean>>} isCancelled - A readonly ref that becomes true once the request is cancelled.
  */
 /**
  * @typedef {PartialArgsRaw & AdditionalCrudArgs} PartialArgs - Arguments for an object patch (partial update) operation, combining the raw arguments with any additional CRUD arguments.
@@ -92,11 +92,11 @@ import { readonly } from "vue";
 
 /**
  * @typedef {object} ObjectExecuteActionArgsRaw - Raw arguments for a single-object execute-action operation before additional CRUD arguments are merged in.
- * @property {import('../config/objectCrud.js').TargetArgs} target - The arguments to be passed to the crud handlers.
- * @property {string} pk - The id of the objects to be acted upon.
+ * @property {TargetArgs} target - The arguments to be passed to the crud handlers.
+ * @property {import('./commonCrud.js').Pk} pk - The pk of the object to be acted upon.
  * @property {string} pkKey - The key name of the primary key.
  * @property {string} action - The action to execute.
- * @property {Readonly<import('vue').Ref<boolean>>} isCancelled - A ref to indicate if the request was cancelled.
+ * @property {Readonly<import('vue').Ref<boolean>>} isCancelled - A readonly ref that becomes true once the request is cancelled.
  */
 
 /**
@@ -114,9 +114,9 @@ import { readonly } from "vue";
  * @property {TargetArgs} target - The arguments to be passed to the crud handlers.
  * @property {import('./commonCrud.js').Pk} pk - The pk of the object to be acted upon.
  * @property {string} pkKey - The key name of the primary key.
- * @property {{[key:string]: any}} params - The arguments to be passed to the retrieve function.
+ * @property {{[key:string]: any}} params - Your listing or retrieval arguments, passed through to the crud handlers.
  * @property {CrudSubscribeCallback} callback - The callback to be called when the object is updated.
- * @property {Readonly<import('vue').Ref<boolean>>} isCancelled - A ref to indicate if the request was cancelled.
+ * @property {Readonly<import('vue').Ref<boolean>>} isCancelled - A readonly ref that becomes true once the request is cancelled.
  */
 
 /**
@@ -124,43 +124,55 @@ import { readonly } from "vue";
  */
 
 /**
- * @typedef {import('../utils/cancellablePromise.js').MaybeCancellablePromise<object|string>} CrudResponse - The value returned by an object CRUD handler, a possibly-cancellable promise resolving to an object or string.
+ * @typedef {import('../utils/cancellablePromise.js').MaybeCancellablePromise<object>} CrudResponse -
+ *  The value returned by an object CRUD handler whose resolved value becomes the record: create, retrieve, update, and
+ *  patch. A possibly-cancellable promise resolving to the complete record. The instance mirrors the resolved value
+ *  into `state.object`, so a partial record drops the fields it omits, and a resolved value that is not an object (a
+ *  bare primary key string, for instance) fails the assignment and is stored in `state.error`.
+ */
+
+/**
+ * @typedef {import('../utils/cancellablePromise.js').MaybeCancellablePromise<object|string|void>} CrudCompletionResponse -
+ *  The value returned by an object CRUD handler whose resolved value is ignored: delete, and executeAction. A
+ *  possibly-cancellable promise whose resolution signals success and nothing more, so it may resolve a record, a
+ *  primary key string, or nothing at all.
  */
 
 /**
  * @callback CrudCreateFn - Signature for the handler that creates an object in the backing store.
  * @param {CreateArgs} args - The arguments to be passed to the create function.
- * @returns {CrudResponse} - The response data from the create function.
+ * @returns {CrudResponse} - A promise resolving the created record in full.
  */
 
 /**
  * @callback CrudRetrieveFn - Signature for the handler that retrieves an object from the backing store.
  * @param {RetrieveArgs} args - The arguments to be passed to the retrieve function.
- * @returns {CrudResponse} - The response data from the retrieve function.
+ * @returns {CrudResponse} - A promise resolving the retrieved record in full.
  */
 
 /**
  * @callback CrudUpdateFn - Signature for the handler that updates an object in the backing store.
  * @param {UpdateArgs} args - The arguments to be passed to the update function.
- * @returns {CrudResponse} - The response data from the update function.
+ * @returns {CrudResponse} - A promise resolving the updated record in full.
  */
 
 /**
  * @callback CrudPatchFn - Signature for the handler that partially updates (patches) an object in the backing store.
  * @param {PartialArgs} args - The arguments to be passed to the patch function.
- * @returns {CrudResponse} - The response data from the patch function.
+ * @returns {CrudResponse} - A promise resolving the patched record in full, not just the changed fields.
  */
 
 /**
  * @callback CrudDeleteFn - Signature for the handler that deletes an object from the backing store.
  * @param {DeleteArgs} args - The arguments to be passed to the delete function.
- * @returns {CrudResponse} - The response data from the delete function.
+ * @returns {CrudCompletionResponse} - A promise whose resolution means the delete succeeded; its value is ignored.
  */
 
 /**
  * @callback CrudObjectExecuteActionFn - Signature for the handler that executes an action on a single object in the backing store.
  * @param {ObjectExecuteActionArgs} args - The arguments to be passed to the executeAction function.
- * @returns {CrudResponse} - The response data from the delete function.
+ * @returns {CrudCompletionResponse} - A promise whose resolution means the action succeeded; its value is ignored, and
+ *  `objectInstance.executeAction` resolves `true`.
  */
 
 /**

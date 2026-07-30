@@ -48,13 +48,13 @@ export type CreateArgsRaw = {
      */
     target: TargetArgs;
     /**
-     * The data to be acted upon.
+     * The new object to create; it carries no primary key yet.
      */
     object: {
         [key: string]: any;
     };
     /**
-     * The arguments to be passed to the retrieve function.
+     * Your listing or retrieval arguments, passed through to the crud handlers.
      */
     params: {
         [key: string]: any;
@@ -64,7 +64,7 @@ export type CreateArgsRaw = {
      */
     pkKey: string;
     /**
-     * A ref to indicate if the request was cancelled.
+     * A readonly ref that becomes true once the request is cancelled.
      */
     isCancelled: Readonly<import("vue").Ref<boolean>>;
 };
@@ -89,13 +89,13 @@ export type RetrieveArgsRaw = {
      */
     pkKey: string;
     /**
-     * The arguments to be passed to the retrieve function.
+     * Your listing or retrieval arguments, passed through to the crud handlers.
      */
     params: {
         [key: string]: any;
     };
     /**
-     * A ref to indicate if the request was cancelled.
+     * A readonly ref that becomes true once the request is cancelled.
      */
     isCancelled: Readonly<import("vue").Ref<boolean>>;
 };
@@ -112,11 +112,11 @@ export type UpdateArgsRaw = {
      */
     target: TargetArgs;
     /**
-     * The data to be acted upon.
+     * The complete object to update; its primary key rides inside it, at `object[pkKey]`.
      */
     object: import("../use/objectInstance.js").ExistingCrudObject;
     /**
-     * The arguments to be passed to the retrieve function.
+     * Your listing or retrieval arguments, passed through to the crud handlers.
      */
     params: {
         [key: string]: any;
@@ -126,7 +126,7 @@ export type UpdateArgsRaw = {
      */
     pkKey: string;
     /**
-     * A ref to indicate if the request was cancelled.
+     * A readonly ref that becomes true once the request is cancelled.
      */
     isCancelled: Readonly<import("vue").Ref<boolean>>;
 };
@@ -151,7 +151,7 @@ export type DeleteArgsRaw = {
      */
     pkKey: string;
     /**
-     * A ref to indicate if the request was cancelled.
+     * A readonly ref that becomes true once the request is cancelled.
      */
     isCancelled: Readonly<import("vue").Ref<boolean>>;
 };
@@ -176,19 +176,19 @@ export type PartialArgsRaw = {
      */
     pkKey: string;
     /**
-     * The data to be acted upon.
+     * The changed fields only.
      */
     partialObject: {
         [key: string]: any;
     };
     /**
-     * The arguments to be passed to the retrieve function.
+     * Your listing or retrieval arguments, passed through to the crud handlers.
      */
     params: {
         [key: string]: any;
     };
     /**
-     * A ref to indicate if the request was cancelled.
+     * A readonly ref that becomes true once the request is cancelled.
      */
     isCancelled: Readonly<import("vue").Ref<boolean>>;
 };
@@ -203,11 +203,11 @@ export type ObjectExecuteActionArgsRaw = {
     /**
      * The arguments to be passed to the crud handlers.
      */
-    target: import("../config/objectCrud.js").TargetArgs;
+    target: TargetArgs;
     /**
-     * The id of the objects to be acted upon.
+     * The pk of the object to be acted upon.
      */
-    pk: string;
+    pk: import("./commonCrud.js").Pk;
     /**
      * The key name of the primary key.
      */
@@ -217,7 +217,7 @@ export type ObjectExecuteActionArgsRaw = {
      */
     action: string;
     /**
-     * A ref to indicate if the request was cancelled.
+     * A readonly ref that becomes true once the request is cancelled.
      */
     isCancelled: Readonly<import("vue").Ref<boolean>>;
 };
@@ -246,7 +246,7 @@ export type ObjectSubscribeArgsRaw = {
      */
     pkKey: string;
     /**
-     * The arguments to be passed to the retrieve function.
+     * Your listing or retrieval arguments, passed through to the crud handlers.
      */
     params: {
         [key: string]: any;
@@ -256,7 +256,7 @@ export type ObjectSubscribeArgsRaw = {
      */
     callback: CrudSubscribeCallback;
     /**
-     * A ref to indicate if the request was cancelled.
+     * A readonly ref that becomes true once the request is cancelled.
      */
     isCancelled: Readonly<import("vue").Ref<boolean>>;
 };
@@ -265,9 +265,20 @@ export type ObjectSubscribeArgsRaw = {
  */
 export type ObjectSubscribeArgs = ObjectSubscribeArgsRaw & import("../use/cancellableIntent.js").CommonRunTracking & AdditionalCrudArgs;
 /**
- * The value returned by an object CRUD handler, a possibly-cancellable promise resolving to an object or string.
+ * -
+ *  The value returned by an object CRUD handler whose resolved value becomes the record: create, retrieve, update, and
+ *  patch. A possibly-cancellable promise resolving to the complete record. The instance mirrors the resolved value
+ *  into `state.object`, so a partial record drops the fields it omits, and a resolved value that is not an object (a
+ *  bare primary key string, for instance) fails the assignment and is stored in `state.error`.
  */
-export type CrudResponse = import("../utils/cancellablePromise.js").MaybeCancellablePromise<object | string>;
+export type CrudResponse = import("../utils/cancellablePromise.js").MaybeCancellablePromise<object>;
+/**
+ * -
+ *  The value returned by an object CRUD handler whose resolved value is ignored: delete, and executeAction. A
+ *  possibly-cancellable promise whose resolution signals success and nothing more, so it may resolve a record, a
+ *  primary key string, or nothing at all.
+ */
+export type CrudCompletionResponse = import("../utils/cancellablePromise.js").MaybeCancellablePromise<object | string | void>;
 /**
  * Signature for the handler that creates an object in the backing store.
  */
@@ -287,11 +298,11 @@ export type CrudPatchFn = (args: PartialArgs) => CrudResponse;
 /**
  * Signature for the handler that deletes an object from the backing store.
  */
-export type CrudDeleteFn = (args: DeleteArgs) => CrudResponse;
+export type CrudDeleteFn = (args: DeleteArgs) => CrudCompletionResponse;
 /**
  * Signature for the handler that executes an action on a single object in the backing store.
  */
-export type CrudObjectExecuteActionFn = (args: ObjectExecuteActionArgs) => CrudResponse;
+export type CrudObjectExecuteActionFn = (args: ObjectExecuteActionArgs) => CrudCompletionResponse;
 /**
  * Signature for the handler that subscribes to changes on a single object in the backing store.
  */

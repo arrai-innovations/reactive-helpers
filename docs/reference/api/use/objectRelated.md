@@ -274,11 +274,11 @@ The pk key of the object.
 
 > **relatedObject**: `object`
 
-The related objects, indexed by the key in the related object.
+The related objects, by rule name. Each entry is backed by a computed, but it is read through a reactive proxy that unwraps it, so reads yield the related object (or array of related objects) and never carry a `.value`.
 
 ###### Index Signature
 
-\[`rule`: `string`\]: `ComputedRef`\<`any`\>
+\[`rule`: `string`\]: `any`
 
 ###### relatedObjectRules
 
@@ -352,11 +352,11 @@ Whether the parent state object watch is running.
 
 > **relatedObject**: `object`
 
-The related objects, indexed by the key in the related object.
+The related objects, by rule name. Each entry is backed by a computed, but it is read through a reactive proxy that unwraps it, so reads yield the related object (or array of related objects) and never carry a `.value`.
 
 ###### Index Signature
 
-\[`rule`: `string`\]: `ComputedRef`\<`any`\>
+\[`rule`: `string`\]: `any`
 
 ##### relatedObjectRules
 
@@ -396,17 +396,18 @@ The rule for defining relationships for the managed object to other collections 
 
 The related objects, indexed by the key in the related object.
 
-##### order
+##### order?
 
-> **order**: `string`[]
+> `optional` **order?**: `string`[]
 
 The order of the related objects, if the related objects are an array.
 
-##### pkKey
+##### pkKey?
 
-> **pkKey**: `string`
+> `optional` **pkKey?**: `string`
 
 The key in the managed object that corresponds to the key in the related object.
+ Defaults to the rule's own key when omitted.
 
 ## Type Aliases
 

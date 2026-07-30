@@ -20,7 +20,7 @@ export function useObjectCalculateds(objectCalculatedArgs: {
  * ```vue
  * <script setup>
  * import { useObjectCalculated, useObjectSubscription } from "@arrai-innovations/reactive-helpers";
- * import { ref, reactive } from "vue";
+ * import { reactive } from "vue";
  *
  * const objectSubscriptionProps = reactive({
  *     // whatever object subscription props you need to work with your crud implementation
@@ -29,21 +29,21 @@ export function useObjectCalculateds(objectCalculatedArgs: {
  *     pk: '1',
  *     pkKey: 'id',
  *     intendToRetrieve: true,
- * };
- * const objectSubscription = useObjectSubscription(objectSubscriptionProps);
+ * });
+ * const objectSubscription = useObjectSubscription({ props: objectSubscriptionProps });
  * const objectCalculatedProps = reactive({
  *     parentState: objectSubscription.state,
  *     calculatedObjectRules: {
- *         someRule: (object, relatedObject, calculatedObjects) => {
- *            // some complex calculation, relatedObjects would be assuming there was a listRelated between the two
- *            // calculatedObjects would be the other calculated objects in the list
- *            // including yourself, so try not to create circular dependencies
+ *         someRule: (object, relatedObject) => {
+ *            // some complex calculation. relatedObject holds the managed object's related objects, and is
+ *            // only populated when a useObjectRelated sits between the object and this composable.
  *            // this is used as a computed body.
  *            return object.someProperty + object.someOtherProperty;
  *          },
- *         ...
+ *         // ...further rules
  *      },
  *  });
+ * const objectCalculated = useObjectCalculated(objectCalculatedProps);
  * </script>
  * <template>
  * <div>
@@ -65,14 +65,16 @@ export function useObjectCalculated({ parentState, calculatedObjectRules }: Obje
 /**
  * @typedef {{
  *     [ruleKey: string]: (object: any, relatedObject: any) => any
- * }} ObjectCalculatedRules - The object calculated state keys.
+ * }} ObjectCalculatedRules - Rules for calculating values from the managed object, keyed by rule name. Each rule is used
+ *  as a computed body and receives exactly two arguments: the managed object and its related objects (the latter only
+ *  populated when a useObjectRelated sits upstream).
  */
 /**
  * @typedef {object} ObjectCalculatedRawState - The raw state for object calculated.
  * @property {ObjectCalculatedRules} calculatedObjectRules - The calculated object rules.
  * @property {{
- *     [ruleKey: string]: import('vue').ComputedRef<any>
- * }} calculatedObject - The calculated object.
+ *     [ruleKey: string]: any
+ * }} calculatedObject - The calculated values, by rule name. Each entry is backed by a computed, but it is read through a reactive proxy that unwraps it, so reads yield the calculated value and never carry a `.value`.
  * @property {boolean} calculatedObjectWatchRunning - Whether the calculated object watch is running.
  * @property {boolean} parentStateObjectWatchRunning - Whether the parent state object watch is running.
  * @property {boolean} calculatedRunning - Whether the calculated is running.
@@ -126,7 +128,9 @@ export const objectCalculatedStateKeys: string[];
 /** @internal */
 export const objectCalculatedFunctions: any[];
 /**
- * The object calculated state keys.
+ * Rules for calculating values from the managed object, keyed by rule name. Each rule is used
+ *  as a computed body and receives exactly two arguments: the managed object and its related objects (the latter only
+ *  populated when a useObjectRelated sits upstream).
  */
 export type ObjectCalculatedRules = {
     [ruleKey: string]: (object: any, relatedObject: any) => any;
@@ -140,10 +144,10 @@ export type ObjectCalculatedRawState = {
      */
     calculatedObjectRules: ObjectCalculatedRules;
     /**
-     * The calculated object.
+     * The calculated values, by rule name. Each entry is backed by a computed, but it is read through a reactive proxy that unwraps it, so reads yield the calculated value and never carry a `.value`.
      */
     calculatedObject: {
-        [ruleKey: string]: import("vue").ComputedRef<any>;
+        [ruleKey: string]: any;
     };
     /**
      * Whether the calculated object watch is running.

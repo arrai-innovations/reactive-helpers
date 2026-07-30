@@ -140,11 +140,11 @@ The state of the managed object.
 
 > **calculatedObject**: `object`
 
-The calculated object.
+The calculated values, by rule name. Each entry is backed by a computed, but it is read through a reactive proxy that unwraps it, so reads yield the calculated value and never carry a `.value`.
 
 ###### Index Signature
 
-\[`ruleKey`: `string`\]: `ComputedRef`\<`any`\>
+\[`ruleKey`: `string`\]: `any`
 
 ###### calculatedObjectRules
 
@@ -293,11 +293,11 @@ The pk key of the object.
 
 > `optional` **relatedObject?**: `object`
 
-The related objects, indexed by the key in the related object.
+The related objects, by rule name. Each entry is backed by a computed, but it is read through a reactive proxy that unwraps it, so reads yield the related object (or array of related objects) and never carry a `.value`.
 
 ###### Index Signature
 
-\[`rule`: `string`\]: `ComputedRef`\<`any`\>
+\[`rule`: `string`\]: `any`
 
 ###### relatedObjectRules?
 
@@ -434,7 +434,7 @@ The options to be passed to useObjectInstance, useObjectSubscription, useObjectR
 ```
 <script setup>
 import { useObject } from "@arrai-innovations/reactive-helpers";
-import { reactive, ref, toRef } from "vue";
+import { computed, reactive, toRef } from "vue";
 
 const someObjectsSource = reactive({
     objects: {
@@ -482,20 +482,19 @@ const objectProps = reactive({
         },
     },
     calculatedObjectRules: {
-        someRule: (object, relatedObject, calculatedObjects) => {
-            // some complex calculation, relatedObjects would be assuming there was a listRelated between the two
-            // calculatedObjects would be the other calculated objects in the list
-            // including yourself, so try not to create circular dependencies
+        someRule: (object, relatedObject) => {
+            // some complex calculation. relatedObject holds the objects matched by relatedObjectRules above,
+            // keyed by rule name.
             // this is used as a computed body.
             return object.foo + object.name;
         },
-        ...
+        // ...further rules
     },
     intendToRetrieve: false,
     intendToSubscribe: false,
 });
 objectProps.intendToRetrieve = objectProps.intendToSubscribe = computed(()=> !!props.pk);
-const objectManager = useObject(objectProps);
+const objectManager = useObject({ props: objectProps });
 // objectManager.state.object comes back from the server (via configured crud retrieve function)
 // { id: 2, name: 'two', foo: 'bar', some_objects_id: 2, some_objects_list_ids: ['1','2','3'] }
 </script>

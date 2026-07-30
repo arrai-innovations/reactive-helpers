@@ -18,7 +18,7 @@ The key name of the primary key.
 
 > **pks**: `string`[]
 
-The ids of the objects to be deleted.
+The pks of the objects to be deleted.
 
 ##### target
 
@@ -50,7 +50,7 @@ The key name of the primary key.
 
 > **pks**: `string`[]
 
-The ids of the objects to be acted upon.
+The pks of the objects to be acted upon.
 
 ##### target
 
@@ -76,14 +76,13 @@ The method to call to clear the objects.
 
 > **isCancelled**: `Readonly`\<`Ref`\<`boolean`, `boolean`\>\>
 
-A ref to a boolean indicating whether the request has
- been cancelled.
+A readonly ref that becomes true once the request is cancelled.
 
 ##### params
 
 > **params**: `any`
 
-The arguments to be passed for list crud handlers.
+Your listing or retrieval arguments, passed through to the crud handlers.
 
 ##### pkKey
 
@@ -165,14 +164,13 @@ The method to call when new data is received.
 
 > **isCancelled**: `Readonly`\<`Ref`\<`boolean`, `boolean`\>\>
 
-A ref to a boolean indicating whether the request has
- been cancelled.
+A readonly ref that becomes true once the request is cancelled.
 
 ##### params
 
 > **params**: `any`
 
-The arguments to be passed for list crud handlers.
+Your listing or retrieval arguments, passed through to the crud handlers.
 
 ##### pkKey
 

@@ -14,16 +14,16 @@
  *             [rule: string]: any,
  *         },
  *         calculatedObjects: {
- *             [rule: string]: import('vue').ComputedRef<any>,
+ *             [rule: string]: any,
  *         }
  *     ) => any,
- * }}  ListCalculatedRules - Defines rules for dynamically calculating new properties for objects in a list. Each rule is a function that takes an object from the list, optionally its related objects, and previously calculated properties to compute a new property. These functions are reactive and re-evaluate when underlying dependencies change.
+ * }}  ListCalculatedRules - Defines rules for dynamically calculating new properties for objects in a list. Each rule is a function that takes an object from the list, optionally its related objects, and previously calculated properties to compute a new property. These functions are reactive and re-evaluate when underlying dependencies change. Each entry of the third argument is backed by a computed, but it is read through a reactive proxy that unwraps it, so a rule reads `calculatedObjects.otherRule` directly and never `.value`.
  */
 /**
  * The raw state for a list calculated.
  *
  * @typedef {object} ListCalculatedRawState - The raw state for a list calculated property.
- * @property {{[pk: import('../config/commonCrud.js').Pk]: {[rule: string]: import('vue').ComputedRef<any>}}} calculatedObjects - The calculated objects.
+ * @property {{[pk: import('../config/commonCrud.js').Pk]: {[rule: string]: any}}} calculatedObjects - The calculated objects, by object pk and then rule name. Each entry is backed by a computed, but it is read through a reactive proxy that unwraps it, so reads yield the calculated value and never carry a `.value`.
  * @property {ListCalculatedRules} calculatedObjectsRules - The rules for the calculated objects.
  * @property {boolean} calculatedObjectsParentStateObjectsWatchRunning - Whether the parent state objects watch is running.
  * @property {boolean} calculatedObjectsWatchRunning - Whether the calculated objects watch is running.
@@ -93,7 +93,7 @@ export function useListCalculateds(listCalculatedArgs: {
  * ```vue
  * <script setup>
  * import { useListSubscription, useListCalculated } from "@arrai-innovations/reactive-helpers";
- * import { reactive, toRef } from "vue";
+ * import { reactive } from "vue";
  *
  * const listSubscriptionProps = reactive({
  *     // whatever props you need to get the list to work with your crud implementation
@@ -102,14 +102,15 @@ export function useListCalculateds(listCalculatedArgs: {
  *     pkKey: "pk",
  *     intendToList: true,
  * });
- * const listSubscription = useListSubscription(listSubscriptionProps);
+ * const listSubscription = useListSubscription({ props: listSubscriptionProps });
  * const listCalculatedProps = reactive({
  *     parentState: listSubscription.state,
- *     computedObjectsRules: {
- *         someRule: (object, relatedObjects, calculatedObjects) => {
- *            // some complex calculation, relatedObjects would be assuming there was a listRelated between the two
- *            // calculatedObjects would be the other calculated objects in the list
- *            // including yourself, so try not to create circular dependencies
+ *     calculatedObjectsRules: {
+ *         someRule: (object, relatedObject, calculatedObjects) => {
+ *            // some complex calculation. relatedObject holds this object's related objects, and is only
+ *            // populated when a useListRelated sits between the list and this composable.
+ *            // calculatedObjects holds the other calculated values for this same object,
+ *            // including this rule, so try not to create circular dependencies.
  *            // this is used as a computed body.
  *            return object.someProperty + object.someOtherProperty;
  *         }
@@ -119,12 +120,12 @@ export function useListCalculateds(listCalculatedArgs: {
  * </script>
  * <template>
  *     <ul>
- *         <!-- reactive list of objects, re-retrieving the list as someListFilter changes. -->
- *         <li v-for="obj in listInstance.state.objectsInOrder">
+ *         <!-- reactive list of objects, kept current by the configured subscription function. -->
+ *         <li v-for="obj in listSubscription.state.objectsInOrder">
  *             {{ obj }}
  *             <div>
- *                 <!-- the computed object or objects based on the rule -->
- *                 {{ listCalculated.state.computedObjects[obj.pk].someRule }}
+ *                 <!-- the calculated value for this object, based on the rule -->
+ *                 {{ listCalculated.state.calculatedObjects[obj.pk].someRule }}
  *             </div>
  *         </li>
  *     </ul>
@@ -139,13 +140,13 @@ export function useListCalculateds(listCalculatedArgs: {
  */
 export function useListCalculated({ parentState, calculatedObjectsRules }: ListCalculatedOptions): ListCalculated;
 /**
- * Defines rules for dynamically calculating new properties for objects in a list. Each rule is a function that takes an object from the list, optionally its related objects, and previously calculated properties to compute a new property. These functions are reactive and re-evaluate when underlying dependencies change.
+ * Defines rules for dynamically calculating new properties for objects in a list. Each rule is a function that takes an object from the list, optionally its related objects, and previously calculated properties to compute a new property. These functions are reactive and re-evaluate when underlying dependencies change. Each entry of the third argument is backed by a computed, but it is read through a reactive proxy that unwraps it, so a rule reads `calculatedObjects.otherRule` directly and never `.value`.
  */
 export type ListCalculatedRules = {
     [rule: string]: (object: import("../use/objectInstance.js").ExistingCrudObject, relatedObject: {
         [rule: string]: any;
     }, calculatedObjects: {
-        [rule: string]: import("vue").ComputedRef<any>;
+        [rule: string]: any;
     }) => any;
 };
 /**
@@ -153,11 +154,11 @@ export type ListCalculatedRules = {
  */
 export type ListCalculatedRawState = {
     /**
-     * The calculated objects.
+     * The calculated objects, by object pk and then rule name. Each entry is backed by a computed, but it is read through a reactive proxy that unwraps it, so reads yield the calculated value and never carry a `.value`.
      */
     calculatedObjects: {
         [pk: import("../config/commonCrud.js").Pk]: {
-            [rule: string]: import("vue").ComputedRef<any>;
+            [rule: string]: any;
         };
     };
     /**

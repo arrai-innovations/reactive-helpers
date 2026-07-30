@@ -56,7 +56,7 @@ Function to determine if an item should be included based on custom logic.
 
 > `optional` **calculatedObjects?**: `object`
 
-The calculated objects.
+The calculated objects, by object pk and then rule name. Each entry is backed by a computed, but it is read through a reactive proxy that unwraps it, so reads yield the calculated value and never carry a `.value`.
 
 ###### Index Signature
 
@@ -150,7 +150,7 @@ Function to determine if an item should be excluded based on custom logic.
 
 > `optional` **fkForPkAndRule?**: `object`
 
-Maintains computed references to the foreign keys for each object pk and rule, crucial for navigating complex data relationships.
+The foreign key for each object pk and rule, crucial for navigating complex data relationships. Each entry is backed by a computed that the reactive proxy unwraps on read.
 
 ###### Index Signature
 
@@ -178,7 +178,7 @@ Whether the component is loading.
 
 > `optional` **objAndKeyForPkAndRule?**: `object`
 
-Maps each object pk and rule to a tuple consisting of the related object and its respective key, facilitating direct data manipulation.
+Maps each object pk and rule to a tuple consisting of the related object and its respective key, facilitating direct data manipulation. Reads through the reactive state unwrap the computed to the tuple itself, so `.value` is not used.
 
 ###### Index Signature
 
@@ -236,7 +236,7 @@ The primary key field for the list objects.
 
 > `optional` **relatedObjects?**: `object`
 
-Stores computed references to related objects, allowing for dynamic access based on object pk and specific rules.
+The related objects, by object pk and then rule name. Each entry is backed by a computed, but it is read through a reactive proxy that unwraps it, so reads yield the related object (or array of related objects) and never carry a `.value`.
 
 ###### Index Signature
 
@@ -350,7 +350,7 @@ Function to determine if an item should be included based on custom logic.
 
 > `optional` **calculatedObjects?**: `object`
 
-The calculated objects.
+The calculated objects, by object pk and then rule name. Each entry is backed by a computed, but it is read through a reactive proxy that unwraps it, so reads yield the calculated value and never carry a `.value`.
 
 ###### Index Signature
 
@@ -456,7 +456,7 @@ Function to determine if an item should be excluded based on custom logic.
 
 > `optional` **fkForPkAndRule?**: `object`
 
-Maintains computed references to the foreign keys for each object pk and rule, crucial for navigating complex data relationships.
+The foreign key for each object pk and rule, crucial for navigating complex data relationships. Each entry is backed by a computed that the reactive proxy unwraps on read.
 
 ###### Index Signature
 
@@ -484,7 +484,7 @@ Whether the component is loading.
 
 > `optional` **objAndKeyForPkAndRule?**: `object`
 
-Maps each object pk and rule to a tuple consisting of the related object and its respective key, facilitating direct data manipulation.
+Maps each object pk and rule to a tuple consisting of the related object and its respective key, facilitating direct data manipulation. Reads through the reactive state unwrap the computed to the tuple itself, so `.value` is not used.
 
 ###### Index Signature
 
@@ -548,7 +548,7 @@ The primary key field for the list objects.
 
 > `optional` **relatedObjects?**: `object`
 
-Stores computed references to related objects, allowing for dynamic access based on object pk and specific rules.
+The related objects, by object pk and then rule name. Each entry is backed by a computed, but it is read through a reactive proxy that unwraps it, so reads yield the related object (or array of related objects) and never carry a `.value`.
 
 ###### Index Signature
 

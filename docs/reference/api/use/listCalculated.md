@@ -80,7 +80,7 @@ Whether an error has occurred.
 
 > `optional` **fkForPkAndRule?**: `object`
 
-Maintains computed references to the foreign keys for each object pk and rule, crucial for navigating complex data relationships.
+The foreign key for each object pk and rule, crucial for navigating complex data relationships. Each entry is backed by a computed that the reactive proxy unwraps on read.
 
 ###### Index Signature
 
@@ -108,7 +108,7 @@ Whether the component is loading.
 
 > `optional` **objAndKeyForPkAndRule?**: `object`
 
-Maps each object pk and rule to a tuple consisting of the related object and its respective key, facilitating direct data manipulation.
+Maps each object pk and rule to a tuple consisting of the related object and its respective key, facilitating direct data manipulation. Reads through the reactive state unwrap the computed to the tuple itself, so `.value` is not used.
 
 ###### Index Signature
 
@@ -166,7 +166,7 @@ The primary key field for the list objects.
 
 > `optional` **relatedObjects?**: `object`
 
-Stores computed references to related objects, allowing for dynamic access based on object pk and specific rules.
+The related objects, by object pk and then rule name. Each entry is backed by a computed, but it is read through a reactive proxy that unwraps it, so reads yield the related object (or array of related objects) and never carry a `.value`.
 
 ###### Index Signature
 
@@ -280,7 +280,7 @@ Whether an error has occurred.
 
 > `optional` **fkForPkAndRule?**: `object`
 
-Maintains computed references to the foreign keys for each object pk and rule, crucial for navigating complex data relationships.
+The foreign key for each object pk and rule, crucial for navigating complex data relationships. Each entry is backed by a computed that the reactive proxy unwraps on read.
 
 ###### Index Signature
 
@@ -308,7 +308,7 @@ Whether the component is loading.
 
 > `optional` **objAndKeyForPkAndRule?**: `object`
 
-Maps each object pk and rule to a tuple consisting of the related object and its respective key, facilitating direct data manipulation.
+Maps each object pk and rule to a tuple consisting of the related object and its respective key, facilitating direct data manipulation. Reads through the reactive state unwrap the computed to the tuple itself, so `.value` is not used.
 
 ###### Index Signature
 
@@ -366,7 +366,7 @@ The primary key field for the list objects.
 
 > `optional` **relatedObjects?**: `object`
 
-Stores computed references to related objects, allowing for dynamic access based on object pk and specific rules.
+The related objects, by object pk and then rule name. Each entry is backed by a computed, but it is read through a reactive proxy that unwraps it, so reads yield the related object (or array of related objects) and never carry a `.value`.
 
 ###### Index Signature
 
@@ -418,7 +418,7 @@ The state for the list calculated property.
 
 > **calculatedObjects**: `object`
 
-The calculated objects.
+The calculated objects, by object pk and then rule name. Each entry is backed by a computed, but it is read through a reactive proxy that unwraps it, so reads yield the calculated value and never carry a `.value`.
 
 ###### Index Signature
 
@@ -506,7 +506,7 @@ Whether an error has occurred.
 
 > `optional` **fkForPkAndRule?**: `object`
 
-Maintains computed references to the foreign keys for each object pk and rule, crucial for navigating complex data relationships.
+The foreign key for each object pk and rule, crucial for navigating complex data relationships. Each entry is backed by a computed that the reactive proxy unwraps on read.
 
 ###### Index Signature
 
@@ -534,7 +534,7 @@ Whether the component is loading.
 
 > `optional` **objAndKeyForPkAndRule?**: `object`
 
-Maps each object pk and rule to a tuple consisting of the related object and its respective key, facilitating direct data manipulation.
+Maps each object pk and rule to a tuple consisting of the related object and its respective key, facilitating direct data manipulation. Reads through the reactive state unwrap the computed to the tuple itself, so `.value` is not used.
 
 ###### Index Signature
 
@@ -592,7 +592,7 @@ The primary key field for the list objects.
 
 > `optional` **relatedObjects?**: `object`
 
-Stores computed references to related objects, allowing for dynamic access based on object pk and specific rules.
+The related objects, by object pk and then rule name. Each entry is backed by a computed, but it is read through a reactive proxy that unwraps it, so reads yield the related object (or array of related objects) and never carry a `.value`.
 
 ###### Index Signature
 
@@ -656,7 +656,7 @@ The raw state for a list calculated property.
 
 > **calculatedObjects**: `object`
 
-The calculated objects.
+The calculated objects, by object pk and then rule name. Each entry is backed by a computed, but it is read through a reactive proxy that unwraps it, so reads yield the calculated value and never carry a `.value`.
 
 ###### Index Signature
 
@@ -728,7 +728,7 @@ Represents a combined reactive state that includes properties from list related,
 
 > **ListCalculatedRules** = `object`
 
-Defines rules for dynamically calculating new properties for objects in a list. Each rule is a function that takes an object from the list, optionally its related objects, and previously calculated properties to compute a new property. These functions are reactive and re-evaluate when underlying dependencies change.
+Defines rules for dynamically calculating new properties for objects in a list. Each rule is a function that takes an object from the list, optionally its related objects, and previously calculated properties to compute a new property. These functions are reactive and re-evaluate when underlying dependencies change. Each entry of the third argument is backed by a computed, but it is read through a reactive proxy that unwraps it, so a rule reads `calculatedObjects.otherRule` directly and never `.value`.
 
 #### Type Parameters
 
@@ -780,7 +780,7 @@ Configuration options including the parent state and rules for dynamically
 ```vue
 <script setup>
 import { useListSubscription, useListCalculated } from "@arrai-innovations/reactive-helpers";
-import { reactive, toRef } from "vue";
+import { reactive } from "vue";
 
 const listSubscriptionProps = reactive({
     // whatever props you need to get the list to work with your crud implementation
@@ -789,14 +789,15 @@ const listSubscriptionProps = reactive({
     pkKey: "pk",
     intendToList: true,
 });
-const listSubscription = useListSubscription(listSubscriptionProps);
+const listSubscription = useListSubscription({ props: listSubscriptionProps });
 const listCalculatedProps = reactive({
     parentState: listSubscription.state,
-    computedObjectsRules: {
-        someRule: (object, relatedObjects, calculatedObjects) => {
-           // some complex calculation, relatedObjects would be assuming there was a listRelated between the two
-           // calculatedObjects would be the other calculated objects in the list
-           // including yourself, so try not to create circular dependencies
+    calculatedObjectsRules: {
+        someRule: (object, relatedObject, calculatedObjects) => {
+           // some complex calculation. relatedObject holds this object's related objects, and is only
+           // populated when a useListRelated sits between the list and this composable.
+           // calculatedObjects holds the other calculated values for this same object,
+           // including this rule, so try not to create circular dependencies.
            // this is used as a computed body.
            return object.someProperty + object.someOtherProperty;
         }
@@ -806,12 +807,12 @@ const listCalculated = useListCalculated(listCalculatedProps);
 </script>
 <template>
     <ul>
-        <!-- reactive list of objects, re-retrieving the list as someListFilter changes. -->
-        <li v-for="obj in listInstance.state.objectsInOrder">
+        <!-- reactive list of objects, kept current by the configured subscription function. -->
+        <li v-for="obj in listSubscription.state.objectsInOrder">
             {{ obj }}
             <div>
-                <!-- the computed object or objects based on the rule -->
-                {{ listCalculated.state.computedObjects[obj.pk].someRule }}
+                <!-- the calculated value for this object, based on the rule -->
+                {{ listCalculated.state.calculatedObjects[obj.pk].someRule }}
             </div>
         </li>
     </ul>

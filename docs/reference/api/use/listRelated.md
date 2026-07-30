@@ -350,7 +350,7 @@ Whether an error has occurred.
 
 > **fkForPkAndRule**: `object`
 
-Maintains computed references to the foreign keys for each object pk and rule, crucial for navigating complex data relationships.
+The foreign key for each object pk and rule, crucial for navigating complex data relationships. Each entry is backed by a computed that the reactive proxy unwraps on read.
 
 ###### Index Signature
 
@@ -378,7 +378,7 @@ Whether the component is loading.
 
 > **objAndKeyForPkAndRule**: `object`
 
-Maps each object pk and rule to a tuple consisting of the related object and its respective key, facilitating direct data manipulation.
+Maps each object pk and rule to a tuple consisting of the related object and its respective key, facilitating direct data manipulation. Reads through the reactive state unwrap the computed to the tuple itself, so `.value` is not used.
 
 ###### Index Signature
 
@@ -436,7 +436,7 @@ The primary key field for the list objects.
 
 > **relatedObjects**: `object`
 
-Stores computed references to related objects, allowing for dynamic access based on object pk and specific rules.
+The related objects, by object pk and then rule name. Each entry is backed by a computed, but it is read through a reactive proxy that unwraps it, so reads yield the related object (or array of related objects) and never carry a `.value`.
 
 ###### Index Signature
 
@@ -500,7 +500,7 @@ Represents the internal state used by the list related composition function. It 
 
 > **fkForPkAndRule**: `object`
 
-Maintains computed references to the foreign keys for each object pk and rule, crucial for navigating complex data relationships.
+The foreign key for each object pk and rule, crucial for navigating complex data relationships. Each entry is backed by a computed that the reactive proxy unwraps on read.
 
 ###### Index Signature
 
@@ -510,7 +510,7 @@ Maintains computed references to the foreign keys for each object pk and rule, c
 
 > **objAndKeyForPkAndRule**: `object`
 
-Maps each object pk and rule to a tuple consisting of the related object and its respective key, facilitating direct data manipulation.
+Maps each object pk and rule to a tuple consisting of the related object and its respective key, facilitating direct data manipulation. Reads through the reactive state unwrap the computed to the tuple itself, so `.value` is not used.
 
 ###### Index Signature
 
@@ -520,7 +520,7 @@ Maps each object pk and rule to a tuple consisting of the related object and its
 
 > **relatedObjects**: `object`
 
-Stores computed references to related objects, allowing for dynamic access based on object pk and specific rules.
+The related objects, by object pk and then rule name. Each entry is backed by a computed, but it is read through a reactive proxy that unwraps it, so reads yield the related object (or array of related objects) and never carry a `.value`.
 
 ###### Index Signature
 
@@ -576,12 +576,12 @@ The objects that can be related based on the foreign key.
 
 Specifies the order in which related objects should be sorted, if applicable.
 
-##### pkKey
+##### pkKey?
 
-> **pkKey**: `string`
+> `optional` **pkKey?**: `string`
 
-Specifies the foreign key used to link objects across lists. Planned to be renamed to
- 'fkKey' to better reflect its usage.
+Specifies the foreign key used to link objects across lists. Defaults to the rule's
+ own key when omitted. Planned to be renamed to 'fkKey' to better reflect its usage.
 
 ## Type Aliases
 

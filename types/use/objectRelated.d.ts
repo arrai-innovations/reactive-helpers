@@ -115,9 +115,10 @@ export function useObjectRelated({ parentState, relatedObjectRules }: ObjectRela
  */
 /**
  * @typedef {object} ObjectRelatedRule - The rule for defining relationships for the managed object to other collections of objects.
- * @property {string} pkKey - The key in the managed object that corresponds to the key in the related object.
+ * @property {string} [pkKey] - The key in the managed object that corresponds to the key in the related object.
+ *  Defaults to the rule's own key when omitted.
  * @property {import('./listInstance.js').ObjectsByPk} objects - The related objects, indexed by the key in the related object.
- * @property {string[]} order - The order of the related objects, if the related objects are an array.
+ * @property {string[]} [order] - The order of the related objects, if the related objects are an array.
  */
 /**
  * @typedef {{
@@ -130,8 +131,8 @@ export function useObjectRelated({ parentState, relatedObjectRules }: ObjectRela
  * @typedef {object} ObjectRelatedRawState - The raw reactive state of the object related composable, holding its rules, computed relations, and running flags.
  * @property {ObjectRelatedRawRules} relatedObjectRules - The rules for defining relationships for the managed object to other collections of objects.
  * @property {{
- *     [rule: string]: import('vue').ComputedRef<any>,
- * }} relatedObject - The related objects, indexed by the key in the related object.
+ *     [rule: string]: any,
+ * }} relatedObject - The related objects, by rule name. Each entry is backed by a computed, but it is read through a reactive proxy that unwraps it, so reads yield the related object (or array of related objects) and never carry a `.value`.
  * @property {boolean} relatedObjectWatchRunning - Whether the related object watch is running.
  * @property {boolean} parentStateObjectWatchRunning - Whether the parent state object watch is running.
  * @property {boolean} relatedRunning - Whether the related objects are loading.
@@ -204,8 +205,9 @@ export type ObjectRelatedOptions = {
 export type ObjectRelatedRule = {
     /**
      * The key in the managed object that corresponds to the key in the related object.
+     * Defaults to the rule's own key when omitted.
      */
-    pkKey: string;
+    pkKey?: string;
     /**
      * The related objects, indexed by the key in the related object.
      */
@@ -213,7 +215,7 @@ export type ObjectRelatedRule = {
     /**
      * The order of the related objects, if the related objects are an array.
      */
-    order: string[];
+    order?: string[];
 };
 /**
  * The rules for defining relationships for the managed object to other collections of objects.
@@ -230,10 +232,10 @@ export type ObjectRelatedRawState = {
      */
     relatedObjectRules: ObjectRelatedRawRules;
     /**
-     * The related objects, indexed by the key in the related object.
+     * The related objects, by rule name. Each entry is backed by a computed, but it is read through a reactive proxy that unwraps it, so reads yield the related object (or array of related objects) and never carry a `.value`.
      */
     relatedObject: {
-        [rule: string]: import("vue").ComputedRef<any>;
+        [rule: string]: any;
     };
     /**
      * Whether the related object watch is running.

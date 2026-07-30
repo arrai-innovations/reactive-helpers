@@ -19,8 +19,8 @@ import { computed, effectScope, nextTick, onScopeDispose, reactive, ref, toRef, 
 // todo: pkKey is misnamed, it should be fkKey... this will be a major breaking change
 /**
  * @typedef {object} ListRelatedRule - The rule for defining relationships for objects in a list.
- * @property {string} pkKey - Specifies the foreign key used to link objects across lists. Planned to be renamed to
- *  'fkKey' to better reflect its usage.
+ * @property {string} [pkKey] - Specifies the foreign key used to link objects across lists. Defaults to the rule's
+ *  own key when omitted. Planned to be renamed to 'fkKey' to better reflect its usage.
  * @property {string[]} [order] - Specifies the order in which related objects should be sorted, if applicable.
  * @property {import('./listInstance.js').ObjectsByPk} objects - The objects that can be related based on the foreign key.
  */
@@ -35,20 +35,20 @@ import { computed, effectScope, nextTick, onScopeDispose, reactive, ref, toRef, 
  * @typedef {object} ListRelatedRawState - Represents the internal state used by the list related composition function. It manages and computes the relationships between objects based on specified rules, providing real-time updates to related objects as the parent state changes.
  * @property {{
  *     [pk: import('../config/commonCrud.js').Pk]: {
- *         [rule: string]: import('vue').ComputedRef<any>,
+ *         [rule: string]: any,
  *     },
- * }} relatedObjects - Stores computed references to related objects, allowing for dynamic access based on object pk and specific rules.
+ * }} relatedObjects - The related objects, by object pk and then rule name. Each entry is backed by a computed, but it is read through a reactive proxy that unwraps it, so reads yield the related object (or array of related objects) and never carry a `.value`.
  * @property {ListRelatedRules} relatedObjectsRules - Defines the rules for establishing relationships, such as foreign key links and sorting orders.
  * @property {{
  *     [pk: import('../config/commonCrud.js').Pk]: {
  *         [rule: string]: import('vue').ComputedRef<[object, string]>,
  *     },
- * }} objAndKeyForPkAndRule - Maps each object pk and rule to a tuple consisting of the related object and its respective key, facilitating direct data manipulation.
+ * }} objAndKeyForPkAndRule - Maps each object pk and rule to a tuple consisting of the related object and its respective key, facilitating direct data manipulation. Reads through the reactive state unwrap the computed to the tuple itself, so `.value` is not used.
  * @property {{
  *     [pk: import('../config/commonCrud.js').Pk]: {
- *         [rule: string]: import('vue').ComputedRef<any>,
+ *         [rule: string]: any,
  *     },
- * }} fkForPkAndRule - Maintains computed references to the foreign keys for each object pk and rule, crucial for navigating complex data relationships.
+ * }} fkForPkAndRule - The foreign key for each object pk and rule, crucial for navigating complex data relationships. Each entry is backed by a computed that the reactive proxy unwraps on read.
  * @property {boolean} relatedObjectsParentStateObjectsWatchRunning - Flags whether the watch on parent state objects is currently active, ensuring updates trigger as needed.
  * @property {boolean} relatedObjectsWatchRunning - Indicates if watches on the related objects themselves are active, managing updates efficiently.
  * @property {boolean} relatedRunning - Signals whether any computations related to object relationships are currently in progress.

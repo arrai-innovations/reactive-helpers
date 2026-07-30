@@ -57,7 +57,14 @@
 /**
  * Calls your awaitable function with the arguments you pass in when the watch arguments change and are all truthy.
  * Watch arguments should be a reactive object.
- * If the promise is not resolved before the watch arguments change again, the previous promise is cancelled.
+ *
+ * If the watch arguments change again before the promise resolves, the in-flight promise is cancelled only when it
+ * carries a `cancel` method (a `MaybeCancellablePromise`); a plain promise is left to run to completion. That
+ * distinction is visible through the composables built on this one. `useObjectSubscription` calls
+ * `objectInstance.retrieve()` again for the new key, and that call returns the promise already in flight for the
+ * previous key, so the stale record is assigned and the new key is never fetched. `useListSubscription` guards its
+ * list intent on the list's own loading state, so the superseded run is left to finish and the list is then listed
+ * again with the current arguments.
  *
  * @example
  * ```vue

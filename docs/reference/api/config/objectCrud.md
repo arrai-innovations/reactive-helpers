@@ -12,13 +12,13 @@ Raw arguments for an object create operation before additional CRUD arguments ar
 
 > **isCancelled**: `Readonly`\<`Ref`\<`boolean`, `boolean`\>\>
 
-A ref to indicate if the request was cancelled.
+A readonly ref that becomes true once the request is cancelled.
 
 ##### object
 
 > **object**: `object`
 
-The data to be acted upon.
+The new object to create; it carries no primary key yet.
 
 ###### Index Signature
 
@@ -28,7 +28,7 @@ The data to be acted upon.
 
 > **params**: `object`
 
-The arguments to be passed to the retrieve function.
+Your listing or retrieval arguments, passed through to the crud handlers.
 
 ###### Index Signature
 
@@ -58,7 +58,7 @@ Raw arguments for an object delete operation before additional CRUD arguments ar
 
 > **isCancelled**: `Readonly`\<`Ref`\<`boolean`, `boolean`\>\>
 
-A ref to indicate if the request was cancelled.
+A readonly ref that becomes true once the request is cancelled.
 
 ##### pk
 
@@ -146,13 +146,13 @@ The action to execute.
 
 > **isCancelled**: `Readonly`\<`Ref`\<`boolean`, `boolean`\>\>
 
-A ref to indicate if the request was cancelled.
+A readonly ref that becomes true once the request is cancelled.
 
 ##### pk
 
 > **pk**: `string`
 
-The id of the objects to be acted upon.
+The pk of the object to be acted upon.
 
 ##### pkKey
 
@@ -184,13 +184,13 @@ The callback to be called when the object is updated.
 
 > **isCancelled**: `Readonly`\<`Ref`\<`boolean`, `boolean`\>\>
 
-A ref to indicate if the request was cancelled.
+A readonly ref that becomes true once the request is cancelled.
 
 ##### params
 
 > **params**: `object`
 
-The arguments to be passed to the retrieve function.
+Your listing or retrieval arguments, passed through to the crud handlers.
 
 ###### Index Signature
 
@@ -254,13 +254,13 @@ Raw arguments for an object patch (partial update) operation before additional C
 
 > **isCancelled**: `Readonly`\<`Ref`\<`boolean`, `boolean`\>\>
 
-A ref to indicate if the request was cancelled.
+A readonly ref that becomes true once the request is cancelled.
 
 ##### params
 
 > **params**: `object`
 
-The arguments to be passed to the retrieve function.
+Your listing or retrieval arguments, passed through to the crud handlers.
 
 ###### Index Signature
 
@@ -270,7 +270,7 @@ The arguments to be passed to the retrieve function.
 
 > **partialObject**: `object`
 
-The data to be acted upon.
+The changed fields only.
 
 ###### Index Signature
 
@@ -306,13 +306,13 @@ Raw arguments for an object retrieve operation before run-tracking and additiona
 
 > **isCancelled**: `Readonly`\<`Ref`\<`boolean`, `boolean`\>\>
 
-A ref to indicate if the request was cancelled.
+A readonly ref that becomes true once the request is cancelled.
 
 ##### params
 
 > **params**: `object`
 
-The arguments to be passed to the retrieve function.
+Your listing or retrieval arguments, passed through to the crud handlers.
 
 ###### Index Signature
 
@@ -348,19 +348,19 @@ Raw arguments for an object update operation before additional CRUD arguments ar
 
 > **isCancelled**: `Readonly`\<`Ref`\<`boolean`, `boolean`\>\>
 
-A ref to indicate if the request was cancelled.
+A readonly ref that becomes true once the request is cancelled.
 
 ##### object
 
 > **object**: [`ExistingCrudObject`](../use/objectInstance.md#existingcrudobject)
 
-The data to be acted upon.
+The complete object to update; its primary key rides inside it, at `object[pkKey]`.
 
 ##### params
 
 > **params**: `object`
 
-The arguments to be passed to the retrieve function.
+Your listing or retrieval arguments, passed through to the crud handlers.
 
 ###### Index Signature
 
@@ -404,6 +404,18 @@ Arguments for an object create operation, combining the raw arguments with any a
 
 ***
 
+### CrudCompletionResponse
+
+> **CrudCompletionResponse** = [`MaybeCancellablePromise`](../utils/cancellablePromise.md#maybecancellablepromise)
+
+The value returned by an object CRUD handler whose resolved value is ignored: delete, and executeAction. A
+ possibly-cancellable promise whose resolution signals success and nothing more, so it may resolve a record, a
+ primary key string, or nothing at all.
+
+#### Type Parameters
+
+***
+
 ### CrudCreateFn
 
 > **CrudCreateFn** = (`args`) => [`CrudResponse`](#crudresponse)
@@ -428,7 +440,7 @@ The arguments to be passed to the create function.
 
 ### CrudDeleteFn
 
-> **CrudDeleteFn** = (`args`) => [`CrudResponse`](#crudresponse)
+> **CrudDeleteFn** = (`args`) => [`CrudCompletionResponse`](#crudcompletionresponse)
 
 Signature for the handler that deletes an object from the backing store.
 
@@ -444,13 +456,13 @@ The arguments to be passed to the delete function.
 
 #### Returns
 
-[`CrudResponse`](#crudresponse)
+[`CrudCompletionResponse`](#crudcompletionresponse)
 
 ***
 
 ### CrudObjectExecuteActionFn
 
-> **CrudObjectExecuteActionFn** = (`args`) => [`CrudResponse`](#crudresponse)
+> **CrudObjectExecuteActionFn** = (`args`) => [`CrudCompletionResponse`](#crudcompletionresponse)
 
 Signature for the handler that executes an action on a single object in the backing store.
 
@@ -466,7 +478,7 @@ The arguments to be passed to the executeAction function.
 
 #### Returns
 
-[`CrudResponse`](#crudresponse)
+[`CrudCompletionResponse`](#crudcompletionresponse)
 
 ***
 
@@ -518,7 +530,10 @@ The arguments to be passed to the patch function.
 
 > **CrudResponse** = [`MaybeCancellablePromise`](../utils/cancellablePromise.md#maybecancellablepromise)
 
-The value returned by an object CRUD handler, a possibly-cancellable promise resolving to an object or string.
+The value returned by an object CRUD handler whose resolved value becomes the record: create, retrieve, update, and
+ patch. A possibly-cancellable promise resolving to the complete record. The instance mirrors the resolved value
+ into `state.object`, so a partial record drops the fields it omits, and a resolved value that is not an object (a
+ bare primary key string, for instance) fails the assignment and is stored in `state.error`.
 
 #### Type Parameters
 
