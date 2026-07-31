@@ -144,9 +144,12 @@ promises, and a cooperative handler also re-checks `isCancelled.value` after eac
 - It receives the shared keys plus an event applier: `applyObjectEvent` on the list side, `callback` on the object side.
   Each takes `(data, action)` with `action` one of `create`, `update`, or `delete`. The object handler also receives
   `pk`.
-- The shared arguments arrive differently per side. The list handler's `target` and `params` are deep-cloned snapshots
-  taken as the run starts. A long-lived stream reads the values it started with; a rerun takes fresh ones. The object
-  handler receives the live reactive objects.
+- Its `target` and `params` are deep-cloned snapshots, taken as the run starts, on both sides. A payload describes one
+  call. A handler that stashes it and reads it later sees the values that run began with. Changing `params` does not
+  re-aim a connection already open; it starts a fresh run with fresh arguments. The clone also means a `target` must
+  hold cloneable values: a function or class instance placed on one does not survive the copy.
+- `isCancelled` is the exception to that rule, and the only one. It stays a live readonly ref, since watching it for the
+  life of the call is what a cancellable handler is for.
 - It resolves once your connection is open, not when data arrives. The subscription's `state.loading` clears on that
   resolution.
 - Its returned promise must carry `cancel`, because that cancel is the disconnect. A plain promise leaves the library no

@@ -17,6 +17,13 @@ _Actions potentially required by implementers are marked with italics._
   value through, and there was no reason for the two to differ. _Implementers checking the resolved value for `true`
   should check that the action did not resolve `null`, or have the handler resolve a truthy value of its own. A handler
   resolving nothing now surfaces `undefined` on success, which stays distinguishable from the `null` of a failure._
+- `useObjectSubscription` now hands its `subscribe` handler deep-cloned `target` and `params` snapshots, matching
+  `useListSubscription`. It previously passed the live reactive objects, so the two sides disagreed about what a handler
+  holding onto its payload would later read. A payload describes the call it was made for, and a `params` change starts
+  a fresh run with fresh arguments rather than re-aiming a connection already open. `isCancelled` is unchanged and stays
+  a live readonly ref on both sides. _Implementers whose object `subscribe` handler reads `target` or `params` after the
+  initial call, such as in a reconnect path, should resubscribe on the input change instead. Because the payload is now
+  cloned, a `target` carrying a function or class instance no longer arrives intact._
 
 ### Additions
 

@@ -1,5 +1,5 @@
 import flushPromises from "flush-promises";
-import { nextTick, reactive, ref } from "vue";
+import { isReadonly, isRef, nextTick, reactive, ref } from "vue";
 import { deepUnref } from "../../../utils/deepUnref.js";
 import { scopedIt } from "../scopedIt.js";
 import { CancellableResolvable, Resolvable } from "../crudPromise.js";
@@ -136,7 +136,7 @@ describe("use/objectSubscription.js", function () {
 
             expect(objSub.state.object).toEqual(crudRetrieveResolved);
         });
-        scopedIt("hands the subscribe handler the live reactive target and params", async function () {
+        scopedIt("hands the subscribe handler deep-cloned target and params snapshots", async function () {
             const props = getProps({
                 target: { stream: "test_stream" },
                 intendToRetrieve: false,
@@ -147,13 +147,27 @@ describe("use/objectSubscription.js", function () {
             await flushPromises();
             expect(handlers.subscribe).toHaveBeenCalledTimes(1);
             const seen = handlers.subscribe.mock.calls[0][0];
-            // no clone: the handler holds the same reactive objects the instance reads
-            expect(seen.target).toBe(objSub.objectInstance.state.crud.args);
+            expect(seen.target).toEqual({ stream: "test_stream" });
+            expect(seen.target).not.toBe(objSub.objectInstance.state.crud.args);
+            expect(seen.params).not.toBe(objSub.objectInstance.state.params);
+            // the snapshot keeps the values the run started with
             props.target.stream = "another_stream";
             props.params.fields = ["id"];
             await nextTick();
-            expect(seen.target.stream).toBe("another_stream");
-            expect(seen.params.fields).toEqual(["id"]);
+            expect(seen.target.stream).toBe("test_stream");
+            expect(seen.params.fields).toEqual(fields);
+        });
+        scopedIt("keeps handing the subscribe handler a live isCancelled ref", async function () {
+            const props = getProps({ intendToRetrieve: false, intendToSubscribe: true });
+            const handlers = getHandlers();
+            useObjectSubscription({ props, handlers });
+            await flushPromises();
+            const seen = handlers.subscribe.mock.calls[0][0];
+            // the one argument the snapshot rule deliberately excludes: a cancellable handler
+            // watches it for the life of the call.
+            expect(isRef(seen.isCancelled)).toBe(true);
+            expect(isReadonly(seen.isCancelled)).toBe(true);
+            expect(seen.isCancelled.value).toBe(false);
         });
         scopedIt("delays when `params` are falsy", async function () {
             const pk = ref(1);
