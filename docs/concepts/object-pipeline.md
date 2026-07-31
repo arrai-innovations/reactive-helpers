@@ -148,7 +148,7 @@ the foreign key. It names the collection to resolve that key against, keyed by i
 Cardinality follows the foreign key. When the field holds a single key, the rule resolves one related object. When the
 field holds an array of keys, the rule resolves an array of related objects. Presentation order is a separate concern:
 an optional `order` sorts that array, and without it the array keeps the order the keys came in. On a related rule,
-`pkKey` names the foreign-key field on the source object. See the
+`fkKey` names the foreign-key field on the source object. See the
 [objectRelated reference](/reference/api/use/objectRelated) for the full rule shape.
 
 A calculated rule then reads the object together with its resolved related objects. Its result appears in

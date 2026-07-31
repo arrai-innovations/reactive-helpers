@@ -46,6 +46,43 @@ export function warnWrongSideRuleOptions(composableName, options, side) {
 }
 
 /**
+ * Reads a related rule's foreign key, preferring `fkKey` over the deprecated `pkKey`.
+ *
+ * @internal
+ * @param {object|undefined} rule - The related rule to read.
+ * @returns {any} The configured foreign key, or `undefined` when the rule names neither.
+ */
+export function ruleForeignKey(rule) {
+    return rule?.fkKey ?? rule?.pkKey;
+}
+
+/**
+ * Warns when a related rule names its foreign key with the deprecated `pkKey`. The option never held
+ * a primary key: it names the foreign-key field on the source record. A rule setting both names is
+ * still warned about, because `fkKey` silently wins and the two would otherwise disagree unnoticed.
+ *
+ * @internal
+ * @param {string} composableName - The composable to name in the warning.
+ * @param {string} ruleKey - The rule carrying the deprecated option.
+ * @param {object|undefined} rule - The rule to check.
+ * @param {Set<string>} warned - Rules already warned about, so each is reported once.
+ * @returns {void}
+ */
+export function warnDeprecatedRulePkKey(composableName, ruleKey, rule, warned) {
+    if (rule?.pkKey === undefined) {
+        return;
+    }
+    if (warned.has(ruleKey)) {
+        return;
+    }
+    warned.add(ruleKey);
+    const bothNames = rule.fkKey !== undefined ? ` This rule sets both, and "fkKey" is the one used.` : "";
+    console.warn(
+        `[${composableName}] Rule "${ruleKey}" uses "pkKey", which is deprecated and will be removed in v24. Rename it to "fkKey", which is what the option has always meant.${bothNames}`
+    );
+}
+
+/**
  * Prefixes that look like an attempt to chain a related rule off another rule's value, but are not
  * the one prefix that chains. Each is either a state property name or a near miss of `relatedItem.`.
  *
@@ -85,7 +122,7 @@ export function warnWrongChainingPrefix(composableName, ruleKey, ruleFkKey, warn
     }
     warned.add(warnedKey);
     console.warn(
-        `[${composableName}] Rule "${ruleKey}" has a pkKey of "${ruleFkKey}", which resolves against the record and reads as missing data. Only "relatedItem." chains off another rule's value.`
+        `[${composableName}] Rule "${ruleKey}" has a foreign key of "${ruleFkKey}", which resolves against the record and reads as missing data. Only "relatedItem." chains off another rule's value.`
     );
 }
 

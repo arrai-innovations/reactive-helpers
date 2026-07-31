@@ -3,6 +3,8 @@ import { loadingCombine } from "../utils/loadingCombine.js";
 import { proxyRunning } from "../utils/proxyRunning.js";
 import {
     getObjectRelatedByKey,
+    ruleForeignKey,
+    warnDeprecatedRulePkKey,
     warnWrongChainingPrefix,
     warnWrongSideRuleOptions,
 } from "../utils/relatedCalculatedHelpers.js";
@@ -38,11 +40,12 @@ export class ListRelatedError extends Error {
     }
 }
 
-// todo: pkKey is misnamed, it should be fkKey... this will be a major breaking change
 /**
  * @typedef {object} ListRelatedRule - The rule for defining relationships for objects in a list.
- * @property {string} [pkKey] - Specifies the foreign key used to link objects across lists. Defaults to the rule's
- *  own key when omitted. Planned to be renamed to 'fkKey' to better reflect its usage.
+ * @property {string} [fkKey] - Specifies the foreign key on each row used to link objects across lists. Defaults to
+ *  the rule's own key when omitted.
+ * @property {string} [pkKey] - Deprecated alias for `fkKey`, removed in v24. The option never named a primary key.
+ *  A rule setting both uses `fkKey`.
  * @property {string[]} [order] - Specifies the order in which related objects should be sorted, if applicable.
  * @property {import('./listInstance.js').ObjectsByPk} objects - The objects that can be related based on the foreign key.
  */
@@ -180,7 +183,7 @@ export function useListRelateds(listRelatedArgs) {
  *     relatedObjectsRules: {
  *         someRule: {
  *             // this can point to a key or an array of keys to relate to
- *             pkKey: "dot.separated.key.to.pk.on.an.listInstance.object",
+ *             fkKey: "dot.separated.key.to.the.foreign.key.on.a.listInstance.object",
  *             objects: toRef(props, "objects"),
  *             order: toRef(props, "order"),
  *         },
@@ -213,6 +216,7 @@ export function useListRelated(options) {
     const es = effectScope();
     /** @type {Set<string>} */
     const warnedChainingPrefixes = new Set();
+    const warnedDeprecatedPkKeys = new Set();
     /** @type {import('vue').Ref<boolean|undefined>} */
     const parentRunning = ref(undefined);
     proxyRunning(parentState, "running", parentRunning);
@@ -260,12 +264,13 @@ export function useListRelated(options) {
 
     function applyRuleToObject(objectKey, ruleKey, originalObjectRef, relatedObjectRef) {
         const rule = toRef(state.relatedObjectsRules, ruleKey);
-        warnWrongChainingPrefix("useListRelated", ruleKey, unref(rule)?.pkKey, warnedChainingPrefixes);
+        warnDeprecatedRulePkKey("useListRelated", ruleKey, unref(rule), warnedDeprecatedPkKeys);
+        warnWrongChainingPrefix("useListRelated", ruleKey, ruleForeignKey(unref(rule)), warnedChainingPrefixes);
         state.objAndKeyForPkAndRule[objectKey][ruleKey] = computed(() => {
-            const rulePkKey = unref(rule).pkKey || ruleKey;
+            const ruleFkKey = ruleForeignKey(unref(rule)) || ruleKey;
             const object = unref(originalObjectRef);
             const relatedObject = unref(relatedObjectRef);
-            return getObjectRelatedByKey(object, relatedObject, rulePkKey);
+            return getObjectRelatedByKey(object, relatedObject, ruleFkKey);
         });
 
         state.fkForPkAndRule[objectKey][ruleKey] = computed(() =>
@@ -307,11 +312,11 @@ export function useListRelated(options) {
         if (isArray(value) && ruleOrder?.length) {
             value = value.filter(identity);
             const indexById = Object.fromEntries(ruleOrder.map((e, i) => [e, i]));
-            value.sort((a, b) => {
-                const aIndex = indexById[a];
-                const bIndex = indexById[b];
-                return aIndex - bIndex;
-            });
+            // An id the order does not list sorts to a shared index past the end, so those ids land
+            //  last and keep their foreign-key order between themselves through a stable sort.
+            //  Comparing an absent id directly would yield NaN and leave its position undefined.
+            const missingIndex = ruleOrder.length;
+            value.sort((a, b) => (indexById[a] ?? missingIndex) - (indexById[b] ?? missingIndex));
         }
         return value;
     }

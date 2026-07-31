@@ -11,6 +11,27 @@
  */
 export function warnWrongSideRuleOptions(composableName: string, options: object | undefined, side: "list" | "object"): void;
 /**
+ * Reads a related rule's foreign key, preferring `fkKey` over the deprecated `pkKey`.
+ *
+ * @internal
+ * @param {object|undefined} rule - The related rule to read.
+ * @returns {any} The configured foreign key, or `undefined` when the rule names neither.
+ */
+export function ruleForeignKey(rule: object | undefined): any;
+/**
+ * Warns when a related rule names its foreign key with the deprecated `pkKey`. The option never held
+ * a primary key: it names the foreign-key field on the source record. A rule setting both names is
+ * still warned about, because `fkKey` silently wins and the two would otherwise disagree unnoticed.
+ *
+ * @internal
+ * @param {string} composableName - The composable to name in the warning.
+ * @param {string} ruleKey - The rule carrying the deprecated option.
+ * @param {object|undefined} rule - The rule to check.
+ * @param {Set<string>} warned - Rules already warned about, so each is reported once.
+ * @returns {void}
+ */
+export function warnDeprecatedRulePkKey(composableName: string, ruleKey: string, rule: object | undefined, warned: Set<string>): void;
+/**
  * Warns when a related rule's foreign key starts with a prefix that reads as an attempt to chain off
  * another rule. Only `relatedItem.` chains. Anything else resolves against the record, finds no such
  * field, and yields `undefined`, so the mistake looks like missing data rather than a typo.
