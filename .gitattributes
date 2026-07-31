@@ -1,5 +1,6 @@
 # Mark TypeScript declaration files as generated
 types/**/*.d.ts linguist-generated
 types/**/*.d.ts.map linguist-generated
-# Mark Documentation files as generated
-docs/**/*.md linguist-generated
+# Mark the generated API reference as generated. Everything else under docs/ is
+# hand-authored, including docs/reference/index.md and docs/reference/glossary.md.
+docs/reference/api/**/*.md linguist-generated
