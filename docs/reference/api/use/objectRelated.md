@@ -445,6 +445,13 @@ The rule for defining relationships for the managed object to other collections 
 
 #### Properties
 
+##### fkKey?
+
+> `optional` **fkKey?**: `string`
+
+The foreign key on the managed object that corresponds to the key in the related
+ object. Defaults to the rule's own key when omitted.
+
 ##### objects
 
 > **objects**: [`ObjectsByPk`](listInstance.md#objectsbypk)
@@ -461,8 +468,8 @@ The order of the related objects, if the related objects are an array.
 
 > `optional` **pkKey?**: `string`
 
-The key in the managed object that corresponds to the key in the related object.
- Defaults to the rule's own key when omitted.
+Deprecated alias for `fkKey`, removed in v24. The option never named a primary key.
+ A rule setting both uses `fkKey`.
 
 ## Type Aliases
 
@@ -596,16 +603,16 @@ const objectRelatedProps = reactive({
     parentState: objectSubscription.state,
     relatedObjectRules: {
         firstOrder: {
-            pkKey: 'some_objects_id',
+            fkKey: 'some_objects_id',
             objects: someObjectsSource.objects,
         },
         some_objects_list_ids: {
-            // pkKey defaults to match rule name
+            // fkKey defaults to match rule name
             objects: someObjectsSource.objects,
             order: ['3','1','2'],
         },
         secondOrder: {
-            pkKey: 'relatedItem.firstOrder.secondOrderId',
+            fkKey: 'relatedItem.firstOrder.secondOrderId',
             objects: someOtherObjectsSource.objects,
         },
     },

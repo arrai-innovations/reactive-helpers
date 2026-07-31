@@ -151,16 +151,16 @@ function mergeFns(source) {
  *     },
  *     relatedObjectRules: {
  *         firstOrder: {
- *             pkKey: 'some_objects_id',
+ *             fkKey: 'some_objects_id',
  *             objects: someObjectsSource.objects,
  *         },
  *         some_objects_list_ids: {
- *             // pkKey defaults to match rule name
+ *             // fkKey defaults to match rule name
  *             objects: someObjectsSource.objects,
  *             order: ['3','1','2'],
  *         },
  *         secondOrder: {
- *             pkKey: 'relatedItem.firstOrder.secondOrderId',
+ *             fkKey: 'relatedItem.firstOrder.secondOrderId',
  *             objects: someOtherObjectsSource.objects,
  *         },
  *     },

@@ -60,6 +60,9 @@
         "url": "https://github.com/arrai-innovations/reactive-helpers/issues"
     },
     "homepage": "https://reactive-helpers.arrai.dev/v22/",
+    "engines": {
+        "node": ">=22"
+    },
     "devDependencies": {
         "@arrai-innovations/commitlint-config": "^2.1.0",
         "@arrai-innovations/diction-md": "^1.0.0",

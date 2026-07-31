@@ -36,21 +36,27 @@ their order.
 
 A related rule is data rather than code. It names up to three things:
 
-- `pkKey`: the field on the source record that carries the foreign key.
+- `fkKey`: the field on the source record that carries the foreign key.
 - `objects`: the collection to resolve that key against, keyed by the value the foreign key holds.
 - `order`: an optional list of ids that arranges an array result.
 
 ```javascript
 relatedObjectsRules: {
-    company: { pkKey: "companyId", objects: companies },
+    company: { fkKey: "companyId", objects: companies },
 }
 ```
 
-`pkKey` defaults to the rule name. A rule named `companyId` therefore needs no `pkKey` of its own. The value may also be
+`fkKey` defaults to the rule name. A rule named `companyId` therefore needs no `fkKey` of its own. The value may also be
 a dotted path, so `profile.companyId` reads a nested field on the record.
 
-On a related rule, `pkKey` names the foreign-key field on the source record. The rule reads that field, then uses its
-value to find a record in `objects`.
+The rule reads the field `fkKey` names, then uses its value to find a record in `objects`.
+
+::: info
+
+Before v23 this option was called `pkKey`, which named a foreign key rather than a primary one. Both names work in v23,
+`fkKey` wins when a rule sets both, and `pkKey` warns and is removed in v24.
+
+:::
 
 The rule resolves to records from `objects`, and `objects` is any map keyed by the id the foreign key holds. Another
 list manager's objects work, such as `projects.state.objects`, and so does a plain object you built yourself. Nothing
@@ -81,18 +87,16 @@ record's foreign keys pick a subset, and `order` arranges that subset:
 
 - Omit `order` and the relation keeps the order of the foreign keys.
 - An `order` wider than the referenced ids sorts the subset and ignores the extras.
+- An `order` narrower than them keeps the whole relation. Ids it does not list sort after every id it does, and hold
+  their foreign-key order among themselves.
 - An id the collection has no record for drops out, whatever `order` says.
 - Passing a reactive `order` reorders the relation when the source list reorders.
 
 `order` applies only when the relation is an array. It has no effect on a single-valued rule.
 
-::: warning
-
-An `order` should cover every id the foreign keys might reference. A partial `order` still keeps the whole relation, but
-an id missing from it compares as `NaN` against everything else. That id lands in an unpredictable position. This is why
-a real list's `order` is a safer source than a hand-written list.
-
-:::
+A real list's `order` covers every id that list holds, which is why it is a better source than a hand-written sequence.
+A hand-written one has to be maintained against the ids the foreign keys actually reference, and anything it misses
+collects at the end.
 
 ## A calculated rule is a function
 
@@ -166,12 +170,12 @@ builds an entry per record and resolves nothing into it. On the object side, the
 ## Rules can read other rules
 
 A second-order relation is common. A contact belongs to a company, and that company belongs to a region. The
-`relatedItem.` prefix on `pkKey` reaches the first result to build the second:
+`relatedItem.` prefix on `fkKey` reaches the first result to build the second:
 
 ```javascript
 relatedObjectsRules: {
-    company: { pkKey: "companyId", objects: companies },
-    region: { pkKey: "relatedItem.company.regionId", objects: regions },
+    company: { fkKey: "companyId", objects: companies },
+    region: { fkKey: "relatedItem.company.regionId", objects: regions },
 }
 ```
 
@@ -197,9 +201,9 @@ watchers rebuild.
 
 ## Failure modes
 
-- **An unresolved chain.** Only `relatedItem.` chains. A `pkKey` of `relatedObject.company.regionId` resolves against
+- **An unresolved chain.** Only `relatedItem.` chains. An `fkKey` of `relatedObject.company.regionId` resolves against
   the record, finds no such field, and yields `undefined`. The value looks like missing data, so the layer warns to the
-  console when a `pkKey` opens with a prefix that does not chain. A dotted `pkKey` that names a real path on the record
+  console when an `fkKey` opens with a prefix that does not chain. A dotted `fkKey` that names a real path on the record
   stays silent, because that is a supported lookup.
 - **A rule with no `objects`.** The lookup has nothing to index, so reading the result throws a `ListRelatedError` or
   `ObjectRelatedError` with the code `missing-objects`, naming the rule. The rule is unusable rather than empty. The

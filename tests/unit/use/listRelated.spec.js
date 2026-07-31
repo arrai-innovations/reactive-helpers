@@ -77,13 +77,18 @@ describe("use/listRelated", () => {
         const listRelated = useListRelated({
             parentState: mainListInstance.state,
             relatedObjectsRules: {
-                noOrder: { objects: relatedListInstance.state.objects, pkKey: "related_items" },
+                noOrder: { objects: relatedListInstance.state.objects, fkKey: "related_items" },
                 superset: {
                     objects: relatedListInstance.state.objects,
-                    pkKey: "related_items",
+                    fkKey: "related_items",
                     order: ["2", "1", "3", "4", "5"],
                 },
-                partial: { objects: relatedListInstance.state.objects, pkKey: "related_items", order: ["2", "1"] },
+                partial: { objects: relatedListInstance.state.objects, fkKey: "related_items", order: ["2", "1"] },
+                partialMany: {
+                    objects: relatedListInstance.state.objects,
+                    fkKey: "related_items",
+                    order: ["2"],
+                },
             },
         });
         await nextTick();
@@ -92,10 +97,11 @@ describe("use/listRelated", () => {
         expect(ids("noOrder")).toEqual(["3", "1", "2"]);
         // An order wider than the referenced ids sorts the subset and ignores the extras.
         expect(ids("superset")).toEqual(["2", "1", "3"]);
-        // An order that omits a referenced id keeps membership, but sorts that id
-        //  unpredictably (its comparisons are NaN), so its position is not asserted.
-        expect(ids("partial")).toHaveLength(3);
-        expect(ids("partial")).toEqual(expect.arrayContaining(["1", "2", "3"]));
+        // An id the order omits sorts after every listed id, rather than landing wherever a NaN
+        //  comparison left it.
+        expect(ids("partial")).toEqual(["2", "1", "3"]);
+        // Several omitted ids keep their foreign-key order between themselves.
+        expect(ids("partialMany")).toEqual(["2", "3", "1"]);
     });
     scopedIt("follows the related list's reactive order", async () => {
         const mainListInstance = useListInstance({ props: { pkKey: "id" } });
@@ -139,20 +145,20 @@ describe("use/listRelated", () => {
             relatedObjectsRules: {
                 intermediateItem: {
                     objects: intermediateListInstance.state.objects,
-                    pkKey: "intermediate_id",
+                    fkKey: "intermediate_id",
                 },
                 chained: {
                     objects: relatedListInstance.state.objects,
-                    pkKey: "relatedItem.intermediateItem.related_id",
+                    fkKey: "relatedItem.intermediateItem.related_id",
                 },
                 // These prefixes are not recognized, so they resolve against the row itself.
                 objectPrefix: {
                     objects: relatedListInstance.state.objects,
-                    pkKey: "relatedObject.intermediateItem.related_id",
+                    fkKey: "relatedObject.intermediateItem.related_id",
                 },
                 calculatedPrefix: {
                     objects: relatedListInstance.state.objects,
-                    pkKey: "calculatedItem.intermediateItem.related_id",
+                    fkKey: "calculatedItem.intermediateItem.related_id",
                 },
             },
         });
@@ -167,12 +173,54 @@ describe("use/listRelated", () => {
         expect(deepUnref(listRelated.state.relatedObjects[1].calculatedPrefix)).toBeUndefined();
         // each unrecognized prefix is reported once, whatever the row count
         expect(warnSpy).toHaveBeenCalledWith(
-            '[useListRelated] Rule "objectPrefix" has a pkKey of "relatedObject.intermediateItem.related_id", which resolves against the record and reads as missing data. Only "relatedItem." chains off another rule\'s value.'
+            '[useListRelated] Rule "objectPrefix" has a foreign key of "relatedObject.intermediateItem.related_id", which resolves against the record and reads as missing data. Only "relatedItem." chains off another rule\'s value.'
         );
         expect(warnSpy).toHaveBeenCalledWith(
-            '[useListRelated] Rule "calculatedPrefix" has a pkKey of "calculatedItem.intermediateItem.related_id", which resolves against the record and reads as missing data. Only "relatedItem." chains off another rule\'s value.'
+            '[useListRelated] Rule "calculatedPrefix" has a foreign key of "calculatedItem.intermediateItem.related_id", which resolves against the record and reads as missing data. Only "relatedItem." chains off another rule\'s value.'
         );
         expect(warnSpy).toHaveBeenCalledTimes(2);
+        warnSpy.mockRestore();
+    });
+    scopedIt("accepts the deprecated pkKey, warning once per rule", async () => {
+        const warnSpy = vi.spyOn(console, "warn").mockImplementation(() => {});
+        const mainListInstance = useListInstance({ props: { pkKey: "id" } });
+        const relatedListInstance = useListInstance({ props: { pkKey: "id" } });
+        mainListInstance.addListObject({ id: "1", related_id: "4" });
+        // a second row, so the per-row rule setup does not warn twice
+        mainListInstance.addListObject({ id: "5", related_id: "4" });
+        relatedListInstance.addListObject({ id: "4", name: "related1" });
+        const listRelated = useListRelated({
+            parentState: mainListInstance.state,
+            relatedObjectsRules: {
+                legacy: { objects: relatedListInstance.state.objects, pkKey: "related_id" },
+            },
+        });
+        await nextTick();
+        expect(deepUnref(listRelated.state.relatedObjects[1].legacy)).toEqual({ id: "4", name: "related1" });
+        expect(warnSpy).toHaveBeenCalledWith(
+            '[useListRelated] Rule "legacy" uses "pkKey", which is deprecated and will be removed in v24. Rename it to "fkKey", which is what the option has always meant.'
+        );
+        expect(warnSpy).toHaveBeenCalledTimes(1);
+        warnSpy.mockRestore();
+    });
+    scopedIt("prefers fkKey when a rule sets both names, and still warns", async () => {
+        const warnSpy = vi.spyOn(console, "warn").mockImplementation(() => {});
+        const mainListInstance = useListInstance({ props: { pkKey: "id" } });
+        const relatedListInstance = useListInstance({ props: { pkKey: "id" } });
+        mainListInstance.addListObject({ id: "1", new_id: "4", old_id: "5" });
+        relatedListInstance.addListObject({ id: "4", name: "viaFkKey" });
+        relatedListInstance.addListObject({ id: "5", name: "viaPkKey" });
+        const listRelated = useListRelated({
+            parentState: mainListInstance.state,
+            relatedObjectsRules: {
+                both: { objects: relatedListInstance.state.objects, fkKey: "new_id", pkKey: "old_id" },
+            },
+        });
+        await nextTick();
+        expect(deepUnref(listRelated.state.relatedObjects[1].both)).toEqual({ id: "4", name: "viaFkKey" });
+        expect(warnSpy).toHaveBeenCalledWith(
+            '[useListRelated] Rule "both" uses "pkKey", which is deprecated and will be removed in v24. Rename it to "fkKey", which is what the option has always meant. This rule sets both, and "fkKey" is the one used.'
+        );
         warnSpy.mockRestore();
     });
     scopedIt("adds and drops entries as rows and rules change", async () => {

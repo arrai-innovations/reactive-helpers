@@ -16,7 +16,7 @@ describe("use/objectRelated", () => {
             pk: "1",
             pkKey: "id",
             params: {},
-            object: { id: "1", friend_id: "2", friend_ids: ["2", "3"] },
+            object: { id: "1", friend_id: "2", friend_ids: ["2", "3"], other_id: "3" },
             loading: false,
             errored: false,
             error: null,
@@ -145,18 +145,51 @@ describe("use/objectRelated", () => {
         const parentState = createParentState();
         const relatedObjects = { 2: { id: "2", friend_id: "3" }, 3: { id: "3", name: "three" } };
         const relatedObjectRules = reactive({
-            friend: { pkKey: "friend_id", objects: relatedObjects },
-            chained: { pkKey: "relatedItem.friend.friend_id", objects: relatedObjects },
-            wrongPrefix: { pkKey: "relatedObject.friend.friend_id", objects: relatedObjects },
+            friend: { fkKey: "friend_id", objects: relatedObjects },
+            chained: { fkKey: "relatedItem.friend.friend_id", objects: relatedObjects },
+            wrongPrefix: { fkKey: "relatedObject.friend.friend_id", objects: relatedObjects },
         });
         const objectRelated = useObjectRelated({ parentState, relatedObjectRules });
         await nextTick();
         expect(deepUnref(objectRelated.state.relatedObject.chained)).toEqual({ id: "3", name: "three" });
         expect(objectRelated.state.relatedObject.wrongPrefix).toBeUndefined();
         expect(warnSpy).toHaveBeenCalledWith(
-            '[useObjectRelated] Rule "wrongPrefix" has a pkKey of "relatedObject.friend.friend_id", which resolves against the record and reads as missing data. Only "relatedItem." chains off another rule\'s value.'
+            '[useObjectRelated] Rule "wrongPrefix" has a foreign key of "relatedObject.friend.friend_id", which resolves against the record and reads as missing data. Only "relatedItem." chains off another rule\'s value.'
         );
         expect(warnSpy).toHaveBeenCalledTimes(1);
+        warnSpy.mockRestore();
+    });
+
+    scopedIt("accepts the deprecated pkKey, warning once per rule", async () => {
+        const warnSpy = vi.spyOn(console, "warn").mockImplementation(() => {});
+        const parentState = createParentState();
+        const relatedObjects = { 2: { id: "2", name: "two" } };
+        const relatedObjectRules = reactive({
+            legacy: { pkKey: "friend_id", objects: relatedObjects },
+        });
+        const objectRelated = useObjectRelated({ parentState, relatedObjectRules });
+        await nextTick();
+        expect(deepUnref(objectRelated.state.relatedObject.legacy)).toEqual({ id: "2", name: "two" });
+        expect(warnSpy).toHaveBeenCalledWith(
+            '[useObjectRelated] Rule "legacy" uses "pkKey", which is deprecated and will be removed in v24. Rename it to "fkKey", which is what the option has always meant.'
+        );
+        expect(warnSpy).toHaveBeenCalledTimes(1);
+        warnSpy.mockRestore();
+    });
+
+    scopedIt("prefers fkKey when a rule sets both names, and still warns", async () => {
+        const warnSpy = vi.spyOn(console, "warn").mockImplementation(() => {});
+        const parentState = createParentState();
+        const relatedObjects = { 2: { id: "2", name: "viaPkKey" }, 3: { id: "3", name: "viaFkKey" } };
+        const relatedObjectRules = reactive({
+            both: { fkKey: "other_id", pkKey: "friend_id", objects: relatedObjects },
+        });
+        const objectRelated = useObjectRelated({ parentState, relatedObjectRules });
+        await nextTick();
+        expect(deepUnref(objectRelated.state.relatedObject.both)).toEqual({ id: "3", name: "viaFkKey" });
+        expect(warnSpy).toHaveBeenCalledWith(
+            '[useObjectRelated] Rule "both" uses "pkKey", which is deprecated and will be removed in v24. Rename it to "fkKey", which is what the option has always meant. This rule sets both, and "fkKey" is the one used.'
+        );
         warnSpy.mockRestore();
     });
 

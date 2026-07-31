@@ -619,6 +619,13 @@ The rule for defining relationships for objects in a list.
 
 #### Properties
 
+##### fkKey?
+
+> `optional` **fkKey?**: `string`
+
+Specifies the foreign key on each row used to link objects across lists. Defaults to
+ the rule's own key when omitted.
+
 ##### objects
 
 > **objects**: [`ObjectsByPk`](listInstance.md#objectsbypk)
@@ -635,8 +642,8 @@ Specifies the order in which related objects should be sorted, if applicable.
 
 > `optional` **pkKey?**: `string`
 
-Specifies the foreign key used to link objects across lists. Defaults to the rule's
- own key when omitted. Planned to be renamed to 'fkKey' to better reflect its usage.
+Deprecated alias for `fkKey`, removed in v24. The option never named a primary key.
+ A rule setting both uses `fkKey`.
 
 ## Type Aliases
 
@@ -762,7 +769,7 @@ const listRelatedProps = reactive({
     relatedObjectsRules: {
         someRule: {
             // this can point to a key or an array of keys to relate to
-            pkKey: "dot.separated.key.to.pk.on.an.listInstance.object",
+            fkKey: "dot.separated.key.to.the.foreign.key.on.a.listInstance.object",
             objects: toRef(props, "objects"),
             order: toRef(props, "order"),
         },
