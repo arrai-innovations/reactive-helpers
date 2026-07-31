@@ -11,7 +11,7 @@ different return. Getting a contract wrong rarely fails loudly. A `patch` handle
 fields. A `list` handler that resolves rows renders an empty screen.
 
 One pattern underlies every verb. Each handler receives one argument object, a few keys shared by every verb plus a
-verb-specific payload carrying exactly the identity that operation needs. Each returns a promise, and the instance
+verb-specific payload carrying exactly the identity that operation needs. Each must return a promise, and the instance
 either assigns its resolved value, ignores it, or holds it open as a connection.
 
 That shared pattern lets you determine:
@@ -124,6 +124,11 @@ Two failure paths behave differently:
   second `retrieve` or `list` returns that same promise.
 - **A cancelled run.** Deliberate cancellation is not a failure. The action resolves `false` without touching
   `state.error`.
+- **A handler that returns no promise.** Returning a non-promise breaks the contract rather than failing within it, so
+  it is reported rather than absorbed. The instance stores an `ObjectError` or `ListInstanceError` with the code
+  `invalid-promise`, naming the verb and what was returned, and the action resolves its usual failure value. The
+  instance stays usable, so the next action runs normally. Returning nothing from an `async` handler is still fine: an
+  `async` function returns a promise whatever its body resolves.
 
 ## Cancellable or plain
 

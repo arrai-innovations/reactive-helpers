@@ -67,6 +67,13 @@ _Actions potentially required by implementers are marked with italics._
 - `getFakePk` now always draws a negative key. It scaled `Number.MIN_SAFE_INTEGER` directly, so a `Math.random()` of
   exactly `0` produced `Math.floor(-0)` and returned the string `"0"`, which could collide with a server-issued key of
   `0` and did not carry the negative sign that distinguishes a placeholder key from a real one.
+- A CRUD handler that returns something other than a promise is now reported instead of wedging the instance. Every verb
+  on both sides stores an `ObjectError` or `ListInstanceError` with the code `invalid-promise`, naming the verb and what
+  was returned, and resolves its usual failure value. The guard added for a synchronous handler throw wrapped the
+  handler call but not the chain built on its return value, so a non-promise threw a `TypeError` one line later, outside
+  that guard, leaving `state.loading` set and every later action on the instance failing with `already-loading`.
+  `useCancellableIntent` already rejected the same mistake with the same code for intent-driven runs. _Implementers
+  catching that `TypeError` around an action call should read `state.error` instead._
 
 ## v22.1.0 (2026-07-30)
 

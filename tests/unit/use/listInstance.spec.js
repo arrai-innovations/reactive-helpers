@@ -641,6 +641,50 @@ describe("use/listInstance.spec.js", function () {
             expect(listInstance.state.loading).toBe(false);
             expect(listInstance.state.error).toEqual(new Error("sync throw from executeAction"));
         });
+        // The guards above wrap the handler call, not the chain built on what it returns. A handler
+        // returning a non-promise therefore used to throw one line later, outside the guard, and
+        // reproduce the wedge: loading stayed set and every later action failed with already-loading.
+        const nonPromiseVerbs = [
+            ["list", (listInstance) => listInstance.list(), false],
+            ["bulkDelete", (listInstance) => listInstance.bulkDelete({ pks: ["1"] }), false],
+            ["executeAction", (listInstance) => listInstance.executeAction({ action: "doThing" }), null],
+        ];
+        scopedIt.each(nonPromiseVerbs)(
+            "%s rejects a non-promise return with invalid-promise",
+            async (verb, call, failureValue) => {
+                const listInstance = useListInstance({
+                    props: { pkKey: "id", params: {} },
+                    handlers: { [verb]: () => undefined },
+                });
+
+                await expect(call(listInstance)).resolves.toBe(failureValue);
+
+                expect(listInstance.state.error.name).toBe("ListInstanceError");
+                expect(listInstance.state.error.code).toBe("invalid-promise");
+                expect(listInstance.state.error.message).toBe(
+                    `${verb}: the configured handler must return a promise, but returned undefined.`
+                );
+                expect(listInstance.state.errored).toBe(true);
+                expect(listInstance.state.loading).toBe(false);
+            }
+        );
+        scopedIt("leaves the list usable after a non-promise return", async () => {
+            const list = vi
+                .fn()
+                .mockReturnValueOnce(undefined)
+                .mockImplementationOnce(async ({ pushObjects }) => {
+                    pushObjects([{ id: "1", name: "ok" }]);
+                });
+            const listInstance = useListInstance({ props: { pkKey: "id", params: {} }, handlers: { list } });
+
+            await listInstance.list();
+            expect(listInstance.state.error.code).toBe("invalid-promise");
+
+            // the wedge this removes: a second action must run rather than fail with already-loading
+            await expect(listInstance.list()).resolves.toBe(true);
+            expect(listInstance.state.errored).toBe(false);
+            expect(listInstance.state.objectsInOrder).toEqual([{ id: "1", name: "ok" }]);
+        });
         scopedIt("ignores the handler's resolved value; rows enter only through pushObjects", async () => {
             const resolvingRows = useListInstance({
                 props: { pkKey: "id", params: {} },
