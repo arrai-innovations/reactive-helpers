@@ -23,6 +23,7 @@ reaches your backend), so the package stays transport agnostic.
 - [Changelog](#changelog)
 - [Contributing](#contributing)
 - [Development](#development)
+  - [Deploy documentation](#deploy-documentation)
 - [License](#license)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
@@ -36,9 +37,6 @@ reaches your backend), so the package stays transport agnostic.
 - **Loading and error state** as small primitives that can be composed across asynchronous work.
 - **Pluggable CRUD configuration** so instances can share app-wide handlers for any backend.
 - **Focused utilities** for reactive data, cancellable work, object paths, classes, and search.
-
-Most list and object composables also ship a plural batch variant (for example `useListInstances`, `useObjectInstances`)
-for creating several keyed instances at once.
 
 ## Requirements
 
@@ -77,8 +75,9 @@ Issues and pull requests are welcome. A few things to know before you start:
 - Commits follow [Conventional Commits](https://www.conventionalcommits.org/) and are validated by commitlint through a
   git hook (installed automatically by `pnpm install`).
 - Run the tests, linters, and formatter before opening a pull request (see [Development](#development)).
-- Generated output under `docs/` and `types/` is committed and checked in CI; regenerate it with `pnpm run docs` and
-  `pnpm run types` when you change public APIs or their JSDoc.
+- Generated output under `types/` and `docs/reference/api/` is committed and checked in CI. Regenerate it with
+  `pnpm run docs` when you change public APIs or their JSDoc. Everything else under `docs/` is hand-authored; see
+  [`docs/README.md`](./docs/README.md) before editing it.
 
 ## Development
 
@@ -94,10 +93,10 @@ Issues and pull requests are welcome. A few things to know before you start:
     $ pnpm install
     ```
 
-3. Run tests via vitest:
+3. Run tests via vitest. Pass `run` for a single pass; `pnpm test` on its own starts watch mode:
 
     ```bash
-    $ pnpm test
+    $ pnpm test run
     ```
 
 4. Run tests with coverage output:
@@ -106,13 +105,21 @@ Issues and pull requests are welcome. A few things to know before you start:
     $ pnpm coverage
     ```
 
-5. Generate types and typedocs:
+5. Lint and format. Both rewrite files in place, and a git hook runs them on staged files:
+
+    ```bash
+    $ pnpm eslint
+    $ pnpm prettier
+    ```
+
+6. Generate types and typedocs, then confirm the committed output matches:
 
     ```bash
     $ pnpm run docs
+    $ pnpm run docs:check
     ```
 
-6. Type-only workflows:
+7. Type-only workflows:
 
     - Generate types without docs:
         ```bash
@@ -123,17 +130,29 @@ Issues and pull requests are welcome. A few things to know before you start:
         $ pnpm run types:check -- --skip-gen
         ```
 
+8. Preview the documentation site. The build fails on dead links, so run it before proposing documentation changes:
+
+    ```bash
+    $ pnpm run docs:site:dev
+    $ pnpm run docs:site:build
+    ```
+
 ### Deploy documentation
 
-After documentation changes reach `main`, authenticate the CircleCI CLI with `circleci setup`, then run:
+Tagging a release publishes the documentation. The `docs-site` CircleCI job runs after the npm publish succeeds, takes
+the major from the tag, and deploys to `https://reactive-helpers.arrai.dev/v<major>/`. Releasing needs no separate
+documentation step.
+
+Publishing between releases is the out-of-band case: a correction or a new page that should not wait for the next tag.
+Authenticate the CircleCI CLI with `circleci setup`, then run:
 
 ```bash
 $ pnpm run docs:site:deploy
 ```
 
-This triggers a docs-only CircleCI pipeline. It derives the documentation major from `package.json` and does not publish
-the npm package. The script reuses the CLI's authentication. `CIRCLECI_TOKEN` remains available as an override for
-automation.
+This triggers a docs-only pipeline against `main`. It derives the major from `package.json`, deploys to that same
+per-major path, and does not publish the npm package. The script reuses the CLI's authentication. `CIRCLECI_TOKEN`
+remains available as an override for automation.
 
 ## License
 
