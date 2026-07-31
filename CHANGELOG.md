@@ -64,6 +64,9 @@ _Actions potentially required by implementers are marked with italics._
   instance's loading state, matching `useListSubscription`. _Implementers who worked around this by returning a
   cancellable promise from their retrieve handler need no change, and that remains the better path: cancelling drops the
   stale run instead of waiting for it._
+- `getFakePk` now always draws a negative key. It scaled `Number.MIN_SAFE_INTEGER` directly, so a `Math.random()` of
+  exactly `0` produced `Math.floor(-0)` and returned the string `"0"`, which could collide with a server-issued key of
+  `0` and did not carry the negative sign that distinguishes a placeholder key from a real one.
 
 ## v22.1.0 (2026-07-30)
 

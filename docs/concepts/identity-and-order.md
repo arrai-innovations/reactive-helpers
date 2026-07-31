@@ -115,7 +115,7 @@ optimistic row shown while your create handler runs.
 
 `contacts.getFakePk()` mints a placeholder identity:
 
-- drawn from the negative safe-integer space and returned as a string; a zero random sample produces `"0"`
+- drawn from the negative safe-integer space and returned as a string, so it never matches a server-issued key
 - checked against the keys the list holds, so it cannot collide with a loaded row or an earlier placeholder
 
 Set it as the row's `pkKey` field and add the row with `contacts.addListObject`. The row then behaves like any other: it
