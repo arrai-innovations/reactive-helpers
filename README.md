@@ -1,5 +1,6 @@
 # reactive-helpers
 
+[![npm](https://img.shields.io/npm/v/%40arrai-innovations%2Freactive-helpers.svg?style=for-the-badge)](https://www.npmjs.com/package/@arrai-innovations/reactive-helpers)
 ![Tests](https://reactive-helpers.arrai.dev/artifacts/main/tests.svg)
 [![Coverage](https://reactive-helpers.arrai.dev/artifacts/main/tests.coverage.svg)](https://reactive-helpers.arrai.dev/artifacts/main/coverage_tests/)
 ![ESLint](https://reactive-helpers.arrai.dev/artifacts/main/eslint.svg)
