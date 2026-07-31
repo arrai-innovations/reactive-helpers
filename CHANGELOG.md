@@ -28,10 +28,10 @@ _Actions potentially required by implementers are marked with italics._
   the other side's name. The list composables take `relatedObjectsRules` and `calculatedObjectsRules`; the object
   composables take `relatedObjectRules` and `calculatedObjectRules`. Passing the wrong one stays a no-op, but it now
   says so instead of silently producing empty results.
-- `useListRelated` and `useObjectRelated` now warn when a rule's `pkKey` opens with a prefix that does not chain, such
-  as `relatedObject.` or `calculatedItem.`. Only `relatedItem.` chains off another rule's value; the others resolve
-  against the record and read as missing data. Each rule reports once, and a dotted `pkKey` naming a real path on the
-  record stays silent.
+- `useListRelated` and `useObjectRelated` now warn when a rule's foreign key opens with a prefix that does not chain,
+  such as `relatedObject.` or `calculatedItem.`. Only `relatedItem.` chains off another rule's value; the others resolve
+  against the record and read as missing data. Each rule reports once, and a dotted foreign key naming a real path on
+  the record stays silent.
 - `useListInstance`'s `bulkDelete` and `executeAction` now carry the same cancellation harness every other verb has.
   Their handlers receive a readonly `isCancelled` ref, the promise the action returns carries `.cancel` when the
   handler's promise did, and a deliberate cancellation no longer lands in `state.error` as a failure. They were the only
@@ -39,6 +39,10 @@ _Actions potentially required by implementers are marked with italics._
 - Those two handlers also now receive `params`, so an action or bulk delete can reach the same listing arguments `list`
   and `subscribe` get. Object `delete` and object `executeAction` still receive none: they identify their record by key
   alone.
+- Related rules on `useListRelated` and `useObjectRelated` now take `fkKey`. The option has always named the foreign-key
+  field on the source record rather than a primary key, and the old name said otherwise. `pkKey` still works, resolves
+  the same field, and warns once per rule; a rule setting both uses `fkKey` and still warns. _`pkKey` is removed in v24,
+  so rename related-rule `pkKey` to `fkKey`. Instance `props.pkKey` is a different option and is unchanged._
 
 ### Fixes
 
@@ -67,6 +71,10 @@ _Actions potentially required by implementers are marked with italics._
 - `getFakePk` now always draws a negative key. It scaled `Number.MIN_SAFE_INTEGER` directly, so a `Math.random()` of
   exactly `0` produced `Math.floor(-0)` and returned the string `"0"`, which could collide with a server-issued key of
   `0` and did not carry the negative sign that distinguishes a placeholder key from a real one.
+- A related rule's `order` now gives a defined position to an id it does not list. Such ids sort after every listed id
+  and keep their foreign-key order among themselves. They previously compared as `NaN` against everything, which left
+  their position undefined. A partial `order` arises during ordinary operation, since a paginated source list covers
+  only the pages it has fetched.
 
 ## v22.1.0 (2026-07-30)
 

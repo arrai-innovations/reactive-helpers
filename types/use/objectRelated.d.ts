@@ -74,16 +74,16 @@ export function useObjectRelateds(objectRelatedArgs: {
  *     parentState: objectSubscription.state,
  *     relatedObjectRules: {
  *         firstOrder: {
- *             pkKey: 'some_objects_id',
+ *             fkKey: 'some_objects_id',
  *             objects: someObjectsSource.objects,
  *         },
  *         some_objects_list_ids: {
- *             // pkKey defaults to match rule name
+ *             // fkKey defaults to match rule name
  *             objects: someObjectsSource.objects,
  *             order: ['3','1','2'],
  *         },
  *         secondOrder: {
- *             pkKey: 'relatedItem.firstOrder.secondOrderId',
+ *             fkKey: 'relatedItem.firstOrder.secondOrderId',
  *             objects: someOtherObjectsSource.objects,
  *         },
  *     },
@@ -129,8 +129,10 @@ export class ObjectRelatedError extends Error {
 }
 /**
  * @typedef {object} ObjectRelatedRule - The rule for defining relationships for the managed object to other collections of objects.
- * @property {string} [pkKey] - The key in the managed object that corresponds to the key in the related object.
- *  Defaults to the rule's own key when omitted.
+ * @property {string} [fkKey] - The foreign key on the managed object that corresponds to the key in the related
+ *  object. Defaults to the rule's own key when omitted.
+ * @property {string} [pkKey] - Deprecated alias for `fkKey`, removed in v24. The option never named a primary key.
+ *  A rule setting both uses `fkKey`.
  * @property {import('./listInstance.js').ObjectsByPk} objects - The related objects, indexed by the key in the related object.
  * @property {string[]} [order] - The order of the related objects, if the related objects are an array.
  */
@@ -218,8 +220,13 @@ export type ObjectRelatedOptions = {
  */
 export type ObjectRelatedRule = {
     /**
-     * The key in the managed object that corresponds to the key in the related object.
-     * Defaults to the rule's own key when omitted.
+     * The foreign key on the managed object that corresponds to the key in the related
+     * object. Defaults to the rule's own key when omitted.
+     */
+    fkKey?: string;
+    /**
+     * Deprecated alias for `fkKey`, removed in v24. The option never named a primary key.
+     * A rule setting both uses `fkKey`.
      */
     pkKey?: string;
     /**

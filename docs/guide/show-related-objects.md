@@ -58,7 +58,7 @@ import { useListRelated } from "@arrai-innovations/reactive-helpers";
 const withCompany = useListRelated({
     parentState: contacts.state,
     relatedObjectsRules: {
-        company: { pkKey: "companyId", objects: companies },
+        company: { fkKey: "companyId", objects: companies },
     },
 });
 ```
@@ -69,8 +69,11 @@ this side map, not on the row.
 
 ::: info
 
-On a related rule, `pkKey` names the foreign-key field on the source row. Here `companyId` is the field on each contact
-that points at a company. Omit `pkKey` and it defaults to the rule name.
+On a related rule, `fkKey` names the foreign-key field on the source row. Here `companyId` is the field on each contact
+that points at a company. Omit `fkKey` and it defaults to the rule name.
+
+Rules written before v23 name this option `pkKey`. That name still works and resolves the same field, with a console
+warning, and it is removed in v24. Rename it to `fkKey`.
 
 :::
 
@@ -107,7 +110,7 @@ const contacts = useListInstance({
 const withCompany = useListRelated({
     parentState: contacts.state,
     relatedObjectsRules: {
-        company: { pkKey: "companyId", objects: companies },
+        company: { fkKey: "companyId", objects: companies },
     },
 });
 
@@ -162,7 +165,7 @@ const withProjects = useListRelated({
     parentState: contacts.state,
     relatedObjectsRules: {
         projects: {
-            pkKey: "projectIds",
+            fkKey: "projectIds",
             objects: projects.state.objects,
             order: toRef(projects.state, "order"),
         },
@@ -185,16 +188,12 @@ Ada references projects `1` and `3`, and the list holds `3` before `1`, so
 - The row's foreign keys decide which projects appear.
 - An id missing from the collection drops out.
 - An id in `order` that the row does not reference is ignored.
+- An id the row references but `order` omits sorts after every listed id, keeping foreign-key order with any others.
 
 Because you passed a reactive ref, reordering the projects list reorders the related array with it.
 
-::: warning
-
-`order` should cover every id the foreign keys might reference, which it does when it is the related list's own `order`.
-A hand-written `order` that omits a referenced id leaves that id unsorted, in an unpredictable spot. Prefer a real
-list's `order` over authoring one by hand.
-
-:::
+Prefer the related list's own `order`, as above, over a hand-written sequence. It already covers every id that list
+holds, so nothing collects at the end by accident.
 
 ## Related pages
 

@@ -81,8 +81,9 @@ assume they know this project's CRUD handler pattern, primary key model, subscri
   input and `contact.state.pk` for the value exposed by the returned manager. Keep actions on the returned composable
   rather than placing them under `.state`.
 - Do not duplicate generated reference tables in authored pages. Link to the reference for exhaustive signatures.
-- Explain the current public names even when they are imperfect. For example, related-object rules use `pkKey` even when
-  the key acts like a foreign key.
+- Explain the current public names even when they are imperfect, rather than describing the name you would prefer.
+- Document a deprecated name alongside its replacement while both work, and say which release removes it. Related-object
+  rules take `fkKey` and still accept `pkKey` until v24.
 
 ## Acceptance criteria
 

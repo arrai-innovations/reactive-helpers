@@ -42,7 +42,7 @@ const contacts = useListInstance({
 const withCompany = useListRelated({
     parentState: contacts.state,
     relatedObjectsRules: {
-        company: { pkKey: "companyId", objects: companies },
+        company: { fkKey: "companyId", objects: companies },
     },
 });
 
@@ -103,7 +103,7 @@ const contacts = useListInstance({
 const withCompany = useListRelated({
     parentState: contacts.state,
     relatedObjectsRules: {
-        company: { pkKey: "companyId", objects: companies },
+        company: { fkKey: "companyId", objects: companies },
     },
 });
 

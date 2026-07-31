@@ -4,6 +4,8 @@ import { loadingCombine } from "../utils/loadingCombine.js";
 import { proxyRunning } from "../utils/proxyRunning.js";
 import {
     getObjectRelatedByKey,
+    ruleForeignKey,
+    warnDeprecatedRulePkKey,
     warnWrongChainingPrefix,
     warnWrongSideRuleOptions,
 } from "../utils/relatedCalculatedHelpers.js";
@@ -40,11 +42,12 @@ export class ObjectRelatedError extends Error {
     }
 }
 
-// todo: pkKey is misnamed, it should be fkKey... this will be a major breaking change.
 /**
  * @typedef {object} ObjectRelatedRule - The rule for defining relationships for the managed object to other collections of objects.
- * @property {string} [pkKey] - The key in the managed object that corresponds to the key in the related object.
- *  Defaults to the rule's own key when omitted.
+ * @property {string} [fkKey] - The foreign key on the managed object that corresponds to the key in the related
+ *  object. Defaults to the rule's own key when omitted.
+ * @property {string} [pkKey] - Deprecated alias for `fkKey`, removed in v24. The option never named a primary key.
+ *  A rule setting both uses `fkKey`.
  * @property {import('./listInstance.js').ObjectsByPk} objects - The related objects, indexed by the key in the related object.
  * @property {string[]} [order] - The order of the related objects, if the related objects are an array.
  */
@@ -193,16 +196,16 @@ export function useObjectRelateds(objectRelatedArgs) {
  *     parentState: objectSubscription.state,
  *     relatedObjectRules: {
  *         firstOrder: {
- *             pkKey: 'some_objects_id',
+ *             fkKey: 'some_objects_id',
  *             objects: someObjectsSource.objects,
  *         },
  *         some_objects_list_ids: {
- *             // pkKey defaults to match rule name
+ *             // fkKey defaults to match rule name
  *             objects: someObjectsSource.objects,
  *             order: ['3','1','2'],
  *         },
  *         secondOrder: {
- *             pkKey: 'relatedItem.firstOrder.secondOrderId',
+ *             fkKey: 'relatedItem.firstOrder.secondOrderId',
  *             objects: someOtherObjectsSource.objects,
  *         },
  *     },
@@ -232,6 +235,8 @@ export function useObjectRelated(options) {
     const es = effectScope();
     /** @type {Set<string>} */
     const warnedChainingPrefixes = new Set();
+    /** @type {Set<string>} */
+    const warnedDeprecatedPkKeys = new Set();
     /** @type {import('vue').Ref<boolean|undefined>} */
     const parentRunning = ref(undefined);
     proxyRunning(parentState, "running", parentRunning);
@@ -257,12 +262,13 @@ export function useObjectRelated(options) {
 
     function applyRule(ruleKey) {
         const rule = toRef(state.relatedObjectRules, ruleKey);
-        warnWrongChainingPrefix("useObjectRelated", ruleKey, unref(rule)?.pkKey, warnedChainingPrefixes);
+        warnDeprecatedRulePkKey("useObjectRelated", ruleKey, unref(rule), warnedDeprecatedPkKeys);
+        warnWrongChainingPrefix("useObjectRelated", ruleKey, ruleForeignKey(unref(rule)), warnedChainingPrefixes);
         const originalObjectRef = toRef(parentState, "object");
         const relatedObjectRef = toRef(state, "relatedObject");
         internalState.objAndKeyForRule[ruleKey] = computed(() => {
-            const rulePkKey = unref(rule).pkKey || ruleKey;
-            return getObjectRelatedByKey(unref(originalObjectRef), unref(relatedObjectRef), rulePkKey);
+            const ruleFkKey = ruleForeignKey(unref(rule)) || ruleKey;
+            return getObjectRelatedByKey(unref(originalObjectRef), unref(relatedObjectRef), ruleFkKey);
         });
         internalState.fkForRule[ruleKey] = computed(() => {
             const ruleOrder = unref(rule).order;
@@ -281,11 +287,11 @@ export function useObjectRelated(options) {
             if (isArray(value) && ruleOrder?.length) {
                 value = value.filter(identity);
                 const indexById = Object.fromEntries(ruleOrder.map((e, i) => [e, i]));
-                value.sort((a, b) => {
-                    const aIndex = indexById[a];
-                    const bIndex = indexById[b];
-                    return aIndex - bIndex;
-                });
+                // An id the order does not list sorts to a shared index past the end, so those ids
+                //  land last and keep their foreign-key order between themselves through a stable
+                //  sort. Comparing an absent id directly would yield NaN and leave it unpositioned.
+                const missingIndex = ruleOrder.length;
+                value.sort((a, b) => (indexById[a] ?? missingIndex) - (indexById[b] ?? missingIndex));
             }
             return value;
         });

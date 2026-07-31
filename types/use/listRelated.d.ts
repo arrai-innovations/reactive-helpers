@@ -1,7 +1,9 @@
 /**
  * @typedef {object} ListRelatedRule - The rule for defining relationships for objects in a list.
- * @property {string} [pkKey] - Specifies the foreign key used to link objects across lists. Defaults to the rule's
- *  own key when omitted. Planned to be renamed to 'fkKey' to better reflect its usage.
+ * @property {string} [fkKey] - Specifies the foreign key on each row used to link objects across lists. Defaults to
+ *  the rule's own key when omitted.
+ * @property {string} [pkKey] - Deprecated alias for `fkKey`, removed in v24. The option never named a primary key.
+ *  A rule setting both uses `fkKey`.
  * @property {string[]} [order] - Specifies the order in which related objects should be sorted, if applicable.
  * @property {import('./listInstance.js').ObjectsByPk} objects - The objects that can be related based on the foreign key.
  */
@@ -124,7 +126,7 @@ export function useListRelateds(listRelatedArgs: {
  *     relatedObjectsRules: {
  *         someRule: {
  *             // this can point to a key or an array of keys to relate to
- *             pkKey: "dot.separated.key.to.pk.on.an.listInstance.object",
+ *             fkKey: "dot.separated.key.to.the.foreign.key.on.a.listInstance.object",
  *             objects: toRef(props, "objects"),
  *             order: toRef(props, "order"),
  *         },
@@ -177,8 +179,13 @@ export class ListRelatedError extends Error {
  */
 export type ListRelatedRule = {
     /**
-     * Specifies the foreign key used to link objects across lists. Defaults to the rule's
-     * own key when omitted. Planned to be renamed to 'fkKey' to better reflect its usage.
+     * Specifies the foreign key on each row used to link objects across lists. Defaults to
+     * the rule's own key when omitted.
+     */
+    fkKey?: string;
+    /**
+     * Deprecated alias for `fkKey`, removed in v24. The option never named a primary key.
+     * A rule setting both uses `fkKey`.
      */
     pkKey?: string;
     /**
