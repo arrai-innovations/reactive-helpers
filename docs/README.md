@@ -213,6 +213,31 @@ Review authored pages together, not only one at a time:
 - Use lexical searches to find possible diction problems, but review every match in context. A flagged word is a review
   prompt, not an automatic failure.
 
+### Checking prose with `diction-md`
+
+[`diction-md`](https://www.npmjs.com/package/@arrai-innovations/diction-md) is a development dependency. It reports
+mechanical signals against the rules above. Run it on one page, several, or a shell-expanded glob:
+
+```console
+pnpm exec diction-md docs/concepts/list-pipeline.md
+pnpm exec diction-md docs/guide/*.md
+```
+
+It checks sentence length, Flesch-Kincaid grade, passive-voice candidates, long paragraphs, marketing and inflated
+wording, empty framing, selected idioms, and dashes. Its defaults match the thresholds stated above: fewer than 25 words
+per sentence, never past 35, and a grade target of 10.
+
+It analyzes prose only. It skips frontmatter, fenced and indented code blocks, inline code, tables, and `:::` container
+markers. It measures each paragraph, heading, and list item separately. A page that alternates short prose with code
+blocks is therefore not penalized for the gaps. Headings receive wording checks but stay out of the readability metrics.
+
+The default run is advisory and exits successfully, which is the intended way to use it: findings are review prompts,
+not automatic failures. Passive-voice results in particular are candidates, and this library's subject matter produces
+legitimate ones ("the in-flight run is cancelled"). Read each in context. `--strict` exits non-zero on error-level
+findings, which among the default rules means the dash check alone.
+
+Use `--json` for machine-readable output and `--config <file.json>` to override thresholds or replace the wording rules.
+
 Use Canadian spelling in prose: the `-our` family (behaviour, colour, favour, flavour), doubled consonants (cancelled,
 labelled, modelled, travelling), and `-re` endings (centre, fibre). Keep `-ize` and `-yze` endings (initialize,
 normalize, analyze); Canadian spelling does not use `-ise` or `-yse`. Prefer grey over gray.

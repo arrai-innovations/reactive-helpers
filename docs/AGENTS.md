@@ -101,6 +101,10 @@ surprising.
 Keep one idea per sentence. Aim for fewer than 25 words and never exceed 35 words. Prefer active voice and plain verbs.
 Treat automated diction and readability results as review prompts, not automatic failures.
 
+Check prose with `pnpm exec diction-md <page.md>` (accepts several files or a glob). It reports sentence length,
+readability grade, passive-voice candidates, and wording problems, and it excludes code, tables, and `:::` markers. The
+default run is advisory and exits successfully. Review each finding in context rather than editing to satisfy it.
+
 Do not narrate page construction, advertise missing documentation, or promise behaviour that is not implemented in the
 documented version. Keep backlog and roadmap notes in planning documents. Frame deliberate behaviour through its
 purpose, tradeoff, and consequence. Reserve warnings for harmful results.

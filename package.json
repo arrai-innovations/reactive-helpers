@@ -62,6 +62,7 @@
     "homepage": "https://reactive-helpers.arrai.dev/v22/",
     "devDependencies": {
         "@arrai-innovations/commitlint-config": "^2.1.0",
+        "@arrai-innovations/diction-md": "^1.0.0",
         "@commitlint/cli": "^19.8.1",
         "@eslint/js": "9.39.4",
         "@godaddy/dmd": "^1.0.4",

@@ -20,3 +20,10 @@ auditConfig:
     # consumers move to brace-expansion@5.
     ignoreGhsas:
         - GHSA-mh99-v99m-4gvg
+
+# diction-md is a first-party docs-authoring tool, published from
+# arrai-innovations/diction-md and used only to lint prose in docs/. It was added the day it was
+# published, before it could satisfy the minimum release age. Drop this entry at the next version
+# bump, when the gate passes on its own.
+minimumReleaseAgeExclude:
+    - "@arrai-innovations/diction-md@1.0.0"

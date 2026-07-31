@@ -40,6 +40,9 @@ importers:
       '@arrai-innovations/commitlint-config':
         specifier: ^2.1.0
         version: 2.1.0
+      '@arrai-innovations/diction-md':
+        specifier: ^1.0.0
+        version: 1.0.0
       '@commitlint/cli':
         specifier: ^19.8.1
         version: 19.8.1(@types/node@25.9.3)(typescript@5.9.3)
@@ -211,6 +214,11 @@ packages:
 
   '@arrai-innovations/commitlint-config@2.1.0':
     resolution: {integrity: sha512-+sgs7R5aV7TcVZrw9297OEIcTANSCGOlzFCkAmfLlgtxK1UIm6lIFBEtB3hzat6qzmy4pzVe1rgSKP7r3dquyQ==}
+
+  '@arrai-innovations/diction-md@1.0.0':
+    resolution: {integrity: sha512-G9/qqAtfn3FH5e3m4MeHLnYnWMquMonwKQYf3KMfvzZO0gWcAEhUfr8Q2mkGxrOJ4rAuvh3uJpAA1kSjm4Rtcg==}
+    engines: {node: '>=22'}
+    hasBin: true
 
   '@asamuzakjp/css-color@3.2.0':
     resolution: {integrity: sha512-K1A6z8tS3XsmCMM86xoWdn7Fkdn9m6RSVtocUrJYIwZnFVkng/PvkEoWtOWmP+Scc6saYWHWZYbndEEXxl24jw==}
@@ -3219,6 +3227,8 @@ snapshots:
   '@arrai-innovations/commitlint-config@2.1.0':
     dependencies:
       '@commitlint/config-conventional': 19.8.1
+
+  '@arrai-innovations/diction-md@1.0.0': {}
 
   '@asamuzakjp/css-color@3.2.0':
     dependencies:

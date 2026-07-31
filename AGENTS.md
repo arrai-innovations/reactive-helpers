@@ -26,6 +26,7 @@ This project uses [Vitest](https://vitest.dev/), ESLint, and Prettier.
 
 - **Lint**: `pnpm eslint`
 - **Format**: `pnpm prettier`
+- **Check docs prose**: `pnpm exec diction-md docs/<page>.md` (advisory; see `docs/README.md`)
 - **Generate types & documentation**: `pnpm run docs`
 - **Verify generated docs**: `pnpm run docs:check`
 - **Clean generated types/docs**: `pnpm run docs:clean`
