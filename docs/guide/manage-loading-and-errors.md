@@ -6,9 +6,9 @@ type: how-to
 
 # Manage loading and errors
 
-In this guide, you combine the loading and error state of several composables into one status for a screen. A page that
-shows a list and a selected record has two instances, each with its own loading and error state. Rather than wire a
-spinner and an error banner to each, you aggregate them. One spinner and one banner then cover the whole screen.
+Combine the loading and error state of several composables into one status for a screen. A page that shows a list and a
+selected record has two instances, each with its own loading and error state. Aggregate them so one spinner and one
+banner cover the whole screen.
 
 ## Start from a few composables
 

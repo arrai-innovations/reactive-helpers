@@ -5,8 +5,8 @@ type: how-to
 
 # Register app-wide CRUD defaults
 
-In this guide, you will register one shared data layer with `setListCrud` and `setObjectCrud`. List and object instances
-across your app then fall back to those handlers, instead of each composable call passing its own.
+Register one shared data layer with `setListCrud` and `setObjectCrud`. List and object instances across your app then
+fall back to those handlers instead of requiring every composable call to pass its own.
 
 It assumes the package is installed and that you have written a per-instance handler before, as in the
 [Build a reactive list](/tutorials/build-a-reactive-list) tutorial or [Pass backend arguments](/guide/data-layer). The

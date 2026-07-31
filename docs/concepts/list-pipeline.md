@@ -12,7 +12,7 @@ filter, a search box, a sort order. One composable owning all of that would hide
 `useList` stacks the concerns instead. Each one is its own layer, and each layer takes the previous layer's state as its
 parent. What your template renders is the last layer's view of rows the first layer owns.
 
-That structure explains behaviour that is otherwise puzzling. After this page you should be able to say:
+Following a row through that structure shows:
 
 - which layer changed the rows you are looking at
 - why `contacts.state.objects` can hold fewer rows than the server returned
@@ -194,11 +194,10 @@ reflects when the composed view is rebuilding.
 - Tasks: [Paginate a list](/guide/paginate-a-list) and [Filter a list](/guide/filter-a-list) build on the list instance;
   [Register app-wide CRUD defaults](/guide/register-crud-defaults) shares handlers app-wide.
 - Configuring the manager's own layers: [Show related objects](/guide/show-related-objects) and
-  [Show calculated values](/guide/show-calculated-values) set up the two enrichment layers. No task guide yet covers
-  filter, search, and sort as `useList` props. Each layer's reference page documents its rule shape:
-  [listRelated](/reference/api/use/listRelated), [listCalculated](/reference/api/use/listCalculated),
-  [listFilter](/reference/api/use/listFilter), [listSearch](/reference/api/use/listSearch), and
-  [listSort](/reference/api/use/listSort).
+  [Show calculated values](/guide/show-calculated-values) set up the two enrichment layers. Each layer's reference page
+  documents its rule shape: [listRelated](/reference/api/use/listRelated),
+  [listCalculated](/reference/api/use/listCalculated), [listFilter](/reference/api/use/listFilter),
+  [listSearch](/reference/api/use/listSearch), and [listSort](/reference/api/use/listSort).
 - Related concept: [The object pipeline](/concepts/object-pipeline) applies the same layering to a single record,
   without the membership and ordering stages.
 - Reference: [useList](/reference/api/use/list) documents the manager, and

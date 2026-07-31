@@ -43,9 +43,10 @@ their attention and what it covers. The promised payoff depends on the page type
   encounter. Describe what they will do and achieve rather than claiming what they will learn.
 - A **how-to guide** names the real-world problem or goal, the starting situation, and the result the directions
   produce. It does not need to teach the prerequisite competence.
-- An **explanation** names the question, tension, or surprising behaviour it resolves. Introduce the central idea, say
-  what the reader will be better able to understand or predict, and bound the discussion. This is the explanation
-  counterpart to a learning objective, but its payoff is a changed mental model rather than a completed task.
+- An **explanation** names the question, tension, or behaviour whose cause is not apparent from the public surface.
+  Introduce the central idea, say what the reader will be better able to understand or predict, and bound the
+  discussion. This is the explanation counterpart to a learning objective, but its payoff is a changed mental model
+  rather than a completed task.
 - A **reference page** identifies the entity and scope being described so the reader can judge whether they are in the
   right lookup location.
 
@@ -106,7 +107,7 @@ How-to pages:
 
 Explanation pages:
 
-- Open with the question, tension, or surprising behaviour the page resolves. State the central mental model, its value
+- Open with the question, tension, or behaviour whose cause the page explains. State the central mental model, its value
   to the reader, and the boundary of the discussion before introducing detailed terminology.
 - Describe invariants and tradeoffs, not steps.
 - Connect the topic to related parts of the system and explain relevant design choices, alternatives, and consequences.
@@ -176,13 +177,41 @@ docs.
 
 ## Previewing
 
-- `pnpm run docs:site:dev` — local dev server with hot reload.
-- `pnpm run docs:site:build` — production build into `site/` (gitignored); fails on dead links.
-- `pnpm run docs:site:preview` — serve the built site.
+- `pnpm run docs:site:dev`: local dev server with hot reload.
+- `pnpm run docs:site:build`: production build into `site/` (gitignored); fails on dead links.
+- `pnpm run docs:site:preview`: serve the built site.
 
 ## Wording
 
 Use `JSON`, not `json`, in prose.
+
+### Diction
+
+- Use literal, domain-specific language. Avoid idioms, metaphors, slang, and colloquial phrases such as "bites",
+  "footgun", "magic", or "full dump". State the concrete action or consequence instead.
+- Do not assign a reaction to the reader or characterize the API as puzzling, awkward, obvious, simple, or surprising.
+  State the model or observable behaviour directly.
+- Explain deliberate behaviour through its purpose, tradeoff, and consequence. Use warning framing only when the
+  behaviour can cause a harmful or difficult-to-reverse result.
+- Keep one idea per sentence. Aim for fewer than 25 words and do not exceed 35 words. Prefer active voice and plain
+  verbs. Treat readability scores and sentence limits as review signals rather than goals to optimize mechanically.
+- Do not narrate page construction or editorial choices. A scope statement can bound a page, but the prose should not
+  announce its most important rule or describe why the author included a section.
+- Do not put backlog notes, missing-page notices, or unimplemented roadmap promises in published pages. Keep planning in
+  the repository's planning documents. Document a migration when the corresponding behaviour exists in the version being
+  documented.
+
+### Corpus review
+
+Review authored pages together, not only one at a time:
+
+- Look for repeated opening formulas, transitions, section boilerplate, and other copied scaffolding. Each page must
+  satisfy its opening contract without using identical sentences.
+- Check important terms against the glossary. Define a new term or use an existing one consistently.
+- Keep how-to guides on the stated task. Link to concept, lifecycle, alternate API, and advanced material instead of
+  repeating it when that material is not required to complete the task.
+- Use lexical searches to find possible diction problems, but review every match in context. A flagged word is a review
+  prompt, not an automatic failure.
 
 Use Canadian spelling in prose: the `-our` family (behaviour, colour, favour, flavour), doubled consonants (cancelled,
 labelled, modelled, travelling), and `-re` endings (centre, fibre). Keep `-ize` and `-yze` endings (initialize,

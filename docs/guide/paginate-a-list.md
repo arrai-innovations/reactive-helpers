@@ -5,8 +5,7 @@ type: how-to
 
 # Paginate a list
 
-In this guide, you page through a large server-paged contact list and surface column totals the server computed across
-every page.
+Page through a large server-paged contact list and show column totals the server computed across every page.
 
 This guide assumes a working `list` handler and a `contacts` instance built on that handler, as in the
 [Build a reactive list](/tutorials/build-a-reactive-list) tutorial. The examples use `contactId` as the primary key

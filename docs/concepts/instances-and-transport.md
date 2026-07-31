@@ -11,7 +11,7 @@ can install it, wire it up, and still see nothing load until you write the code 
 That gap is deliberate. `useListInstance` and `useObjectInstance` own reactive state. Handlers you write own transport.
 The library keeps one half of the job and hands you the other.
 
-Knowing which half you are holding answers a lot. After this page you should be able to say:
+That boundary determines:
 
 - what you have to supply before anything loads at all
 - what an instance does with the value your handler resolves, and when it ignores that value
@@ -72,7 +72,7 @@ Handlers arrive two ways, and they compose. Pass `handlers` to one instance, or 
 The tradeoff is deliberate. The cost: the library does nothing until you write a handler. The gain: the same composables
 drive any backend, and your components never learn transport details. A component renders
 `contacts.state.objectsInOrder` or `contact.state.object` the same way wherever the records came from: `fetch`, a
-socket, a test fixture, or something stranger. Swapping the backend means rewriting handlers, not screens.
+socket, a test fixture, or another source. Swapping the backend means rewriting handlers, not screens.
 
 ## The contract at the boundary
 
@@ -129,8 +129,8 @@ The instance can only cancel what the handler makes cancellable. This holds for 
 `cancellableFetch` and `makeCancellable` build such promises. A cooperative handler also re-checks `isCancelled.value`
 after each `await` and stops touching state once it is `true`.
 
-This is where `async` handlers bite. An `async` function always returns a plain promise, so its `cancel` method is lost
-and nothing warns you. The run merely becomes uncancellable.
+An `async` handler loses cancellability. An `async` function always returns a plain promise, so its `cancel` method is
+lost and nothing warns you. The run becomes uncancellable.
 
 The consequence differs by instance. For a list, an uncancellable run cannot be stopped once `useListSubscription`
 refetches on parameter changes. For an object, a lost `pk` change is sharper. The stale record wins the race and lands

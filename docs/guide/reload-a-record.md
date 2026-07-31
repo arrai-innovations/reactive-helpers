@@ -6,8 +6,8 @@ type: how-to
 
 # Reload a record when the route changes
 
-In this guide, you re-retrieve a single contact when its primary key changes. A route param supplies the key, so
-navigating from one contact to another reloads the record through `useObjectSubscription`.
+Re-retrieve a single contact when its primary key changes. A route param supplies the key, so navigating from one
+contact to another reloads the record through `useObjectSubscription`.
 
 ## Prerequisite: a cancellable retrieve handler
 
@@ -127,15 +127,6 @@ const contact = useObjectSubscription({
 As the route changes, `contactId.value` changes, and the composable re-retrieves. `contact.state.loading` flips to
 `true` during each run, so the template shows a loading line. The detail view then renders the record for the current
 route from `contact.state.object`.
-
-## Stop reacting
-
-You usually do not need to stop anything. Inside a component, teardown is automatic. `contact.stop()` is the terminal
-disposal handle for a subscription you created outside any component scope. See
-[Lifecycle and cleanup](/concepts/lifecycle-and-cleanup) for what disposal covers and when you own it.
-
-To suspend retrieving without giving up reactivity, set `contact.state.intendToRetrieve` to false instead. That is
-reversible; stopping is not.
 
 ## Related pages
 

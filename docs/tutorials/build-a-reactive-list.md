@@ -5,12 +5,9 @@ type: tutorial
 
 # Build a reactive list
 
-In this tutorial, you will use `useListInstance` to fetch contacts into a reactive list and render them as stable,
-ordered rows. You bring one small handler that knows how to fetch. The instance owns the reactive state and keeps every
-row keyed and ordered for you.
-
-By the end, you will have a component that loads contacts on setup and renders a row per contact, updating automatically
-as the list state changes. It assumes the package is already installed; see [Getting started](/guide/) if it is not.
+Build a component that uses `useListInstance` to fetch contacts and render them as stable, ordered rows. One small
+handler fetches the data. The instance owns the reactive state and keeps every row keyed and ordered as the list
+changes. This tutorial assumes the package is already installed; see [Getting started](/guide/) if it is not.
 
 ## 1. Sketch the contacts source
 

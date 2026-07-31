@@ -15,7 +15,7 @@ record and stores the result in a side map beside the record, under the rule's n
 into a collection you already hold. A calculated rule's recipe is a function you write. Neither one writes to the
 record, which stays exactly what your backend sent.
 
-After this page you should be able to say:
+The two rule contracts determine:
 
 - what a related rule resolves, and what decides whether you get one record or an array of them
 - what each kind of calculated rule receives, and how one rule reads another
@@ -49,8 +49,8 @@ relatedObjectsRules: {
 `pkKey` defaults to the rule name. A rule named `companyId` therefore needs no `pkKey` of its own. The value may also be
 a dotted path, so `profile.companyId` reads a nested field on the record.
 
-The name `pkKey` describes the wrong end of the relation. It holds a foreign key on the source record, not a primary
-key. The name is historical, and a rename to `fkKey` is planned. Read it as the field that points elsewhere.
+On a related rule, `pkKey` names the foreign-key field on the source record. The rule reads that field, then uses its
+value to find a record in `objects`.
 
 The rule resolves to records from `objects`, and `objects` is any map keyed by the id the foreign key holds. Another
 list manager's objects work, such as `projects.state.objects`, and so does a plain object you built yourself. Nothing

@@ -5,14 +5,11 @@ type: tutorial
 
 # Build a live-updating list
 
-In this tutorial, you will use `useListSubscription` to keep a contact list fresh as create, update, and delete events
-arrive. You bring two handlers: one fetches the rows, one listens for events. The composable fetches the list, applies
-each event to the right row, and disconnects cleanly when asked.
-
-By the end, you will have a component that loads contacts, updates its rows live, and toggles the connection with one
-flag. Buttons stand in for a server pushing events, so you can watch rows appear, change, and vanish. It assumes the
-package is already installed; see [Getting started](/guide/) if it is not. Each step builds one piece of a single
-component, and step 5 assembles the complete file.
+Build a component that uses `useListSubscription` to load contacts, apply live create, update, and delete events, and
+toggle the connection with one flag. One handler fetches rows, and another listens for events. Buttons stand in for a
+server pushing events, so rows appear, change, and vanish without a backend. This tutorial assumes the package is
+already installed; see [Getting started](/guide/) if it is not. Each step builds one piece of a single component, and
+step 5 assembles the complete file.
 
 ## 1. Sketch the live contact source
 

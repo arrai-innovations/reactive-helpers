@@ -21,9 +21,9 @@ payoff, and its scope:
 - A tutorial shows the meaningful result the reader will build and the important behaviours they will encounter. Promise
   an experience and outcome, not that the reader "will learn" something.
 - A how-to guide names the real-world goal, exact starting situation, and expected result.
-- An explanation names the question, tension, or surprising behaviour it resolves. Introduce the central mental model,
-  say what it helps the reader understand or predict, and bound the discussion before detailed terminology. Its payoff
-  is understanding, not a completed task.
+- An explanation names the question, tension, or behaviour whose cause is not apparent from the public surface.
+  Introduce the central mental model, say what it helps the reader understand or predict, and bound the discussion
+  before detailed terminology. Its payoff is understanding, not a completed task.
 - Reference identifies the entity and scope for lookup.
 
 Do not open an explanation by correcting an expectation that has not yet been established. Favour connections, context,
@@ -93,6 +93,21 @@ Available containers: `info`, `tip`, `warning`, `danger`, `details`.
 ## Wording
 
 Use `JSON`, not `json`, in prose.
+
+Use literal, domain-specific language. Avoid idioms, slang, metaphors, and colloquial phrases. State concrete actions
+and consequences instead. Do not characterize the API or the reader's reaction as puzzling, awkward, obvious, simple, or
+surprising.
+
+Keep one idea per sentence. Aim for fewer than 25 words and never exceed 35 words. Prefer active voice and plain verbs.
+Treat automated diction and readability results as review prompts, not automatic failures.
+
+Do not narrate page construction, advertise missing documentation, or promise behaviour that is not implemented in the
+documented version. Keep backlog and roadmap notes in planning documents. Frame deliberate behaviour through its
+purpose, tradeoff, and consequence. Reserve warnings for harmful results.
+
+Review authored pages as a corpus for repeated opening formulas, transitions, and boilerplate. Use glossary terms
+consistently. Keep how-to guides on their stated task and link to concept or lifecycle material that is not required for
+the task.
 
 Use Canadian spelling in prose (behaviour, colour, favour; keep `-ize`/`-yze`: initialize, analyze). Never respell code:
 identifiers, API names, string literals, and code spans/blocks stay as written, even for discretionary names. JSDoc

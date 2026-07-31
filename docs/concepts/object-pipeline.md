@@ -17,7 +17,7 @@ and the template renders the composed result.
 After synchronization, enrichment is the only concern left. A single object gets no filtering, searching, or sorting
 stage.
 
-That never-replaced object is where most surprises live. After this page you should be able to say:
+That stable object determines:
 
 - what survives a reload, and what is replaced
 - how deletion is represented, and what resets it
@@ -147,8 +147,8 @@ the foreign key. It names the collection to resolve that key against, keyed by i
 
 Cardinality follows the foreign key. When the field holds a single key, the rule resolves one related object. When the
 field holds an array of keys, the rule resolves an array of related objects. Presentation order is a separate concern:
-an optional `order` sorts that array, and without it the array keeps the order the keys came in. The rule names this
-field `pkKey`, though it holds a foreign key; the source notes the name is misleading. See the
+an optional `order` sorts that array, and without it the array keeps the order the keys came in. On a related rule,
+`pkKey` names the foreign-key field on the source object. See the
 [objectRelated reference](/reference/api/use/objectRelated) for the full rule shape.
 
 A calculated rule then reads the object together with its resolved related objects. Its result appears in
@@ -206,11 +206,11 @@ Composing the chain for you is what `useObject` adds over calling the four compo
 - Tasks: [Create a record](/guide/create-a-record) builds on the object instance.
   [Reload a record when the route changes](/guide/reload-a-record) drives retrieval from reactive inputs.
   [Run a server action](/guide/run-a-server-action) reaches a backend operation outside the CRUD verbs. None of the
-  three configures related or calculated values, and no focused guide yet covers the manager end to end.
+  three configures related or calculated values.
 - Configuring enrichment: [Show related objects](/guide/show-related-objects) and
-  [Show calculated values](/guide/show-calculated-values) each close with the single-record form of their layer. The
+  [Show calculated values](/guide/show-calculated-values) introduce the rule patterns on the list side. The
   [objectRelated](/reference/api/use/objectRelated) and [objectCalculated](/reference/api/use/objectCalculated)
-  references document the related and calculated rule shapes.
+  references document the single-record rule shapes.
 - Related concept: [The list pipeline](/concepts/list-pipeline) applies the same layering to a collection, with
   membership and ordering stages a single object does not need.
 - Reference: [useObject](/reference/api/use/object) documents the manager, and each layer has its own page:

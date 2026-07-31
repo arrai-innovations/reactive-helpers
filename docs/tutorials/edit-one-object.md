@@ -5,11 +5,9 @@ type: tutorial
 
 # Edit one object
 
-In this tutorial, you will use `useObjectInstance` to manage a single contact. You bring four small handlers that talk
-to your backend. The instance owns the reactive state, the loading flag, and the error.
-
-By the end, you will have a small edit form that loads one contact, saves edits, patches a single field, and deletes the
-record. It assumes the package is already installed; see [Getting started](/guide/) if it is not.
+Build a small edit form that uses `useObjectInstance` to load one contact, save edits, patch one field, and delete the
+record. Four small handlers talk to your backend. The instance owns the reactive state, loading flag, and error. This
+tutorial assumes the package is already installed; see [Getting started](/guide/) if it is not.
 
 ## 1. Sketch the contact source
 

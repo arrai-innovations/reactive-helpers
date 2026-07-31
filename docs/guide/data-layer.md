@@ -6,9 +6,9 @@ type: how-to
 
 # Pass backend arguments to handlers
 
-In this guide, you parameterize one list instance so its handler builds a request from values you supply, rather than
-hardcoding a single endpoint. You pass those values through `props.target` and `props.params`; the instance hands them
-to your handler untouched. The examples use `contactId` as the primary key field.
+Parameterize one list instance so its handler builds a request from values you supply instead of hardcoding one
+endpoint. Pass those values through `props.target` and `props.params`; the instance hands them to your handler
+untouched. The examples use `contactId` as the primary key field.
 
 The [Build a reactive list](/tutorials/build-a-reactive-list) tutorial fetches from a fixed URL. Real handlers usually
 need to know which resource to reach and which query to send. That is what `target` and `params` carry.

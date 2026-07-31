@@ -6,9 +6,9 @@ type: how-to
 
 # Show calculated values
 
-In this guide, you derive a value for each row of a loaded list from the row and its related objects. One example is a
-display label that combines a contact's name with its company. `useListCalculated` runs a rule per row and keeps the
-result in a side map, without writing it onto the row.
+Derive a value for each row of a loaded list from the row and its related objects. One example is a display label that
+combines a contact's name with its company. `useListCalculated` runs a rule per row and keeps the result in a side map
+without writing it onto the row.
 
 This is client-side derivation. The rule is a plain function of data you already hold, and it never fetches.
 
@@ -129,24 +129,6 @@ contacts.list();
 Each row renders its label. Edit a contact's `name` or its company, and the label recomputes. `withLabel.state.running`
 is `true` while the values settle.
 
-## The same for one object
-
-`useObjectCalculated` does this for a single record, with two naming differences. The option is `calculatedObjectRules`
-(singular), and the results land in `state.calculatedObject` (singular), keyed by rule name only.
-
-```javascript
-import { useObjectCalculated } from "@arrai-innovations/reactive-helpers";
-
-// contact here is a useObjectRelated over an object instance or subscription
-const contactCalculated = useObjectCalculated({
-    parentState: contact.state,
-    calculatedObjectRules: {
-        displayLabel: (object, relatedObject) => `${object.name} at ${relatedObject?.company?.name}`,
-    },
-});
-// contactCalculated.state.calculatedObject.displayLabel is the derived value
-```
-
 ## Build one value from another
 
 On the list side, a rule receives a third argument: the row's other calculated values, keyed by rule name. So one
@@ -160,21 +142,7 @@ calculatedObjectsRules: {
 ```
 
 Read the sibling value directly, as `calculated.nameLength`, not `calculated.nameLength.value`. Avoid circular
-references between rules. The object side does not pass this third argument, so `useObjectCalculated` rules take only
-the row and its related objects.
-
-## Where calculated sits in the pipeline
-
-A calculated layer reads the related layer, so it must sit downstream of `useListRelated`. Filter, search, and sort can
-then read calculated values in turn. A filter rule receives them as an argument. Sort and search rules reach them
-through the `calculatedItem.` key prefix. So the order is related, then calculated, then the membership and ordering
-layers, as `useList` arranges it. See [The list pipeline](/concepts/list-pipeline) for the full chain.
-
-## Stop reacting
-
-You usually do not need to stop anything. Inside a component, teardown is automatic. `withLabel.stop()` is the terminal
-disposal handle for a layer you built outside any component scope; stopping it leaves the instance running. See
-[Lifecycle and cleanup](/concepts/lifecycle-and-cleanup) for what disposal covers and when you own it.
+references between rules.
 
 ## Related pages
 
@@ -182,6 +150,6 @@ disposal handle for a layer you built outside any component scope; stopping it l
 - [Filter and sort a loaded list](/guide/filter-and-sort-a-loaded-list) and
   [Search a loaded list](/guide/search-a-loaded-list) can narrow and order rows by their calculated values.
 - [The list pipeline](/concepts/list-pipeline) and [The object pipeline](/concepts/object-pipeline) explain where the
-  calculated layer sits.
+  calculated layer sits and how the single-record form differs.
 - Reference: [useListCalculated](/reference/api/use/listCalculated) and
   [useObjectCalculated](/reference/api/use/objectCalculated) document the full rule and state shapes.

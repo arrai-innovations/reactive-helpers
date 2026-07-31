@@ -12,7 +12,7 @@ should catch up. Calling `list()` by hand on every change is tedious. Two reques
 The subscription composables treat this as a standing intention rather than an immediate command. `intendToList`,
 `intendToRetrieve`, and `intendToSubscribe` declare what should be true, and the library decides when to act on that.
 
-Holding that distinction makes the timing predictable. After this page you should be able to reason about:
+That distinction determines:
 
 - when a run starts, and what holds one back
 - why several fast input changes collapse into a single rerun
@@ -44,8 +44,8 @@ An intent watches a set of reactive inputs. It runs only when all of them are tr
 | `intendToRetrieve`           | `intendToRetrieve`, `props.pk`, `props.pkKey`, `props.params`  |
 | `intendToSubscribe` (object) | `intendToSubscribe`, `props.pk`, `props.pkKey`, `props.params` |
 
-So a missing `props.pk` alone holds a retrieve back. That is useful rather than awkward. A detail screen can mount
-before its route parameter resolves. Nothing runs, nothing errors, and the retrieve starts the moment the key arrives.
+So a missing `props.pk` alone holds a retrieve back. A detail screen can mount before its route parameter resolves.
+Nothing runs, nothing errors, and the retrieve starts the moment the key arrives.
 
 Two truthiness edges are worth knowing:
 

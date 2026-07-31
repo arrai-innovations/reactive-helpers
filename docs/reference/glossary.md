@@ -13,6 +13,11 @@ Vocabulary used across the reactive-helpers documentation.
 The reactive object returned by a `use*Instance` composable (`useListInstance`, `useObjectInstance`). It owns reactive
 state plus the actions that drive it, and is unaware of how data is fetched or persisted.
 
+## Manager
+
+The composed object returned by `useList` or `useObject`. A manager presents the final state and actions from its
+instance, subscription, and derived layers. It also exposes the individual layers under `managed`.
+
 ## Handler
 
 A CRUD function you supply to an instance, either per instance via `handlers` or as a shared default. Handlers contain

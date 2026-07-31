@@ -6,8 +6,8 @@ type: how-to
 
 # Filter and sort a loaded list
 
-In this guide, you narrow and reorder a contact list that is already loaded, without fetching again. You add a
-`useListFilter` layer to drop rows, then a `useListSort` layer to order the rows that remain.
+Narrow and reorder a contact list that is already loaded without fetching again. Add a `useListFilter` layer to drop
+rows, then a `useListSort` layer to order the rows that remain.
 
 This is client-side work. Both layers reshape only the rows the instance already holds. To narrow the list by asking the
 server for different rows instead, see [Filter a list](/guide/filter-a-list), which changes `params` and refetches.
@@ -177,13 +177,6 @@ contacts.list();
 
 The list loads, drops the inactive contact, and shows the rest by name. Tick the box and the inactive contact reappears
 in order. Neither change fetches again.
-
-## Stop reacting
-
-You usually do not need to stop anything. Inside a component, teardown is automatic. `sortedContacts.stop()` and
-`visibleContacts.stop()` are the terminal disposal handles for layers you built outside any component scope; each layer
-stops on its own, leaving the others and the instance running. See
-[Lifecycle and cleanup](/concepts/lifecycle-and-cleanup) for what disposal covers and when you own it.
 
 ## Related pages
 

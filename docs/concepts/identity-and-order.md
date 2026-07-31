@@ -14,7 +14,7 @@ One rule produces both guarantees. The instance stores every row in one ordered 
 `pkKey` names. A pushed row whose key is already present updates the existing row in place. Everything else about
 identity and order follows from that rule.
 
-After this page you should be able to say:
+That storage rule determines:
 
 - when two pushed rows count as the same record, and why a numeric id and its string form always do
 - why pages accumulate without duplicating, and why a merged row keeps its place

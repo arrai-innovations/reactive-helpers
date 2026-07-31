@@ -6,8 +6,8 @@ type: how-to
 
 # Search a loaded list
 
-In this guide, you add a text search box that narrows a contact list already in memory. You give `useListSearch` a set
-of fields to index and a reactive query, and it keeps only the rows that match.
+Add a text search box that narrows a contact list already in memory. Give `useListSearch` a set of fields to index and a
+reactive query, and it keeps only the rows that match.
 
 This is client-side work. The search runs over the rows the instance already holds, and never refetches. To search by
 asking the server instead, send the query as a param and let the backend select the rows; see
@@ -72,8 +72,8 @@ two characters match nothing by default.
 ## Choose what an empty query shows
 
 By default, an empty query shows every loaded row, so the list starts full and narrows as the reader types. Pass
-`showAllWhenEmpty: false` to start empty instead, showing nothing until the first query. Choose that when the loaded set
-is large and a full dump is not a useful starting view:
+`showAllWhenEmpty: false` to start empty instead, showing nothing until the first query. Choose that when showing the
+full loaded set is not a useful starting view:
 
 ```javascript
 const foundContacts = useListSearch({
@@ -161,18 +161,12 @@ the rows; see [Filter a list](/guide/filter-a-list).
 
 Search stacks with the filter and sort layers from
 [Filter and sort a loaded list](/guide/filter-and-sort-a-loaded-list). Pass one layer's state as the next one's
-`parentState`. `useList` chains them in a set order, filter then search then sort, which is a fine default to copy.
+`parentState`. `useList` uses a fixed order: filter, then search, then sort.
 
 For these three, that order does not change the rendered result. Filter and search both narrow membership, and sort
 reorders whatever remains, so the rows come out the same whichever way you chain them. One ordering does matter: a
 related or calculated layer must sit upstream, because filter, search, and sort rules can read its values. See
 [The list pipeline](/concepts/list-pipeline) for the full chain.
-
-## Stop reacting
-
-You usually do not need to stop anything. Inside a component, teardown is automatic. `foundContacts.stop()` is the
-terminal disposal handle for a layer you built outside any component scope; stopping it leaves the instance running. See
-[Lifecycle and cleanup](/concepts/lifecycle-and-cleanup) for what disposal covers and when you own it.
 
 ## Related pages
 

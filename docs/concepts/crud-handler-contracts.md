@@ -14,7 +14,7 @@ One pattern underlies every verb. Each handler receives one argument object, a f
 verb-specific payload carrying exactly the identity that operation needs. Each returns a promise, and the instance
 either assigns its resolved value, ignores it, or holds it open as a connection.
 
-After this page you should be able to say:
+That shared pattern lets you determine:
 
 - what any verb's handler receives, before checking the reference
 - what each handler must resolve, and what happens when it resolves the wrong shape

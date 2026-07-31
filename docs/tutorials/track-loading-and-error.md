@@ -6,16 +6,13 @@ type: tutorial
 
 # Track loading and error state
 
-In this tutorial you will use `useLoadingError` to drive a save button that shows progress and surfaces failures. It is
-the smallest end-to-end use of the library: no data layer or configuration required.
+Use `useLoadingError` to build a save button that disables itself during a save and shows failures. This is the smallest
+end-to-end use of the library, with no data layer or configuration required.
 
 This is a supporting technique. You fold it into list and object work once you need loading and error UI, rather than as
 a first step. If you are new to the library, [Build a reactive list](/tutorials/build-a-reactive-list) is the better
 place to start. The list and object instances track loading and error state for you. Read this tutorial when you want
 the same behaviour around your own async work.
-
-By the end you will have a runnable component that disables its button while saving and shows a message when saving
-fails.
 
 ## 1. Create the state
 

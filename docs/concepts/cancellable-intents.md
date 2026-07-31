@@ -47,8 +47,8 @@ Cancellation takes the shape of its transport. A `fetch` aborts through an
 [`AbortController`](https://developer.mozilla.org/en-US/docs/Web/API/AbortController), and its promise rejects at once.
 `cancellableFetch` wires that for you and hands back a promise with a working `.cancel`.
 
-Some transports cannot abort. A websocket may have no per-request teardown. A low-latency source may not be worth
-aborting at all. These transports cancel by ignoring a stale response instead. That is a fair choice, not a bug.
+Some transports cannot abort. A websocket may have no per-request teardown. A low-latency source may not warrant
+aborting. These transports cancel by ignoring a stale response instead.
 
 There is no library-level guard behind any of this. When a transport does not cancel, the stale work is not stopped. The
 consequence lands on your state. It also differs by side.

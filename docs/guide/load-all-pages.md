@@ -6,9 +6,9 @@ type: how-to
 
 # Load all pages in one call
 
-In this guide, you write a `list` handler that loads every page of a server-paged collection into one list. It runs as a
-single cancellable call. The handler fetches page one, learns how many pages there are, then fetches the rest
-concurrently and accumulates every row.
+Write a `list` handler that loads every page of a server-paged collection into one list. It runs as a single cancellable
+call. The handler fetches page one, learns how many pages there are, then fetches the rest concurrently and accumulates
+every row.
 
 This is the exhaustive-load counterpart to [Paginate a list](/guide/paginate-a-list), which shows one page at a time as
 the reader navigates. Load everything when you need the whole set in memory at once. Then you can search, sort, or

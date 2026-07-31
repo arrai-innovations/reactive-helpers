@@ -6,9 +6,9 @@ type: how-to
 
 # Show related objects
 
-In this guide, you attach a related object to each row of a loaded list, such as the company a contact belongs to.
-`useListRelated` resolves a foreign key on each row against another collection you already hold, and exposes the match
-without copying it onto the row.
+Attach a related object to each row of a loaded list, such as the company a contact belongs to. `useListRelated`
+resolves a foreign key on each row against another collection you already hold and exposes the match without copying it
+onto the row.
 
 This is client-side enrichment. It looks up rows in a collection you provide, and never fetches.
 
@@ -67,11 +67,10 @@ The match lands in `withCompany.state.relatedObjects`, keyed first by the row's 
 `withCompany.state.relatedObjects[1].company` is the Acme record. The row itself stays untouched: related data lives in
 this side map, not on the row.
 
-::: warning
+::: info
 
-Despite its name, a rule's `pkKey` is the foreign-key field on the source row, not a primary key. Here `companyId` is
-the field on each contact that points at a company. The name is historical, and a rename to `fkKey` is planned. Omit
-`pkKey` and it defaults to the rule name.
+On a related rule, `pkKey` names the foreign-key field on the source row. Here `companyId` is the field on each contact
+that points at a company. Omit `pkKey` and it defaults to the rule name.
 
 :::
 
@@ -197,50 +196,11 @@ list's `order` over authoring one by hand.
 
 :::
 
-## The same for one object
-
-`useObjectRelated` does this for a single record, with two naming differences. The option is `relatedObjectRules`
-(singular), and the results land in `state.relatedObject` (singular), keyed by rule name only.
-
-```javascript
-import { useObjectRelated } from "@arrai-innovations/reactive-helpers";
-
-// contact is a useObjectInstance or useObjectSubscription
-const contactRelated = useObjectRelated({
-    parentState: contact.state,
-    relatedObjectRules: {
-        company: { pkKey: "companyId", objects: companies },
-    },
-});
-// contactRelated.state.relatedObject.company is the resolved record
-```
-
-::: tip
-
-A rule can chain off another rule's result with the `relatedItem.` prefix, to follow a second-order relation (a
-contact's company, then that company's region). See [The object pipeline](/concepts/object-pipeline) and
-[useObjectRelated](/reference/api/use/objectRelated) for that.
-
-:::
-
-## Where related sits in the pipeline
-
-A related layer must resolve before any layer that reads it. Filter, search, and sort rules can all reach related
-values, so layer `useListRelated` upstream of those, as `useList` does. It also feeds the calculated layer, which
-derives values from a row together with its related objects. See [The list pipeline](/concepts/list-pipeline) for the
-full order.
-
-## Stop reacting
-
-You usually do not need to stop anything. Inside a component, teardown is automatic. `withCompany.stop()` is the
-terminal disposal handle for a layer you built outside any component scope; stopping it leaves the instance running. See
-[Lifecycle and cleanup](/concepts/lifecycle-and-cleanup) for what disposal covers and when you own it.
-
 ## Related pages
 
 - [Filter and sort a loaded list](/guide/filter-and-sort-a-loaded-list) and
   [Search a loaded list](/guide/search-a-loaded-list) are the client-side layers that can read related values.
 - [The list pipeline](/concepts/list-pipeline) and [The object pipeline](/concepts/object-pipeline) explain where the
-  related layer sits and how derived data composes.
+  related layer sits, how derived data composes, and how the single-record form differs.
 - Reference: [useListRelated](/reference/api/use/listRelated) and [useObjectRelated](/reference/api/use/objectRelated)
   document the full rule and state shapes.

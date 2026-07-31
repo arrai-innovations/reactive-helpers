@@ -6,9 +6,8 @@ type: how-to
 
 # Cancel stale requests
 
-In this guide, you make a handler cancellable so a reactive reload always lands the latest result. When a watched input
-changes before the current request returns, the handler cancels that request, and no stale response can overwrite a
-newer one.
+Make a handler cancellable so a reactive reload always lands the latest result. When a watched input changes before the
+current request returns, the handler cancels that request, and no stale response can overwrite a newer one.
 
 You start from a working handler driven by reactive reload. That is a `list` or `retrieve` handler wired through
 `useListSubscription` or `useObjectSubscription`, as set up in [Filter a list](/guide/filter-a-list) or

@@ -16,7 +16,7 @@ when you call it owns that work. A call made during component setup therefore st
 active scope leaves the lifetime to you. So the creation site, rather than the composable you chose, decides who
 disposes it.
 
-Holding that model makes teardown predictable. After this page you should be able to say:
+Creation-site ownership determines:
 
 - what disposal stops, and what can still finish afterwards
 - why a list or object manager disposes its layers together

@@ -5,8 +5,8 @@ type: how-to
 
 # Filter a list
 
-In this guide, you keep a contact list in sync with a reactive filter. The filter can be a search box, a route query, or
-a parent prop. When it changes, `useListSubscription` refetches the list and swaps in fresh rows.
+Keep a contact list in sync with a reactive filter. The filter can be a search box, a route query, or a parent prop.
+When it changes, `useListSubscription` refetches the list and swaps in fresh rows.
 
 ## Prerequisite: a list handler, cancellable recommended
 
@@ -137,15 +137,6 @@ const contacts = useListSubscription({
 As the reader types, `search.value` changes, and each new value refetches. `contacts.state.loading` flips to `true`
 during each run, so the template shows a loading line. The list then renders the rows for the latest search term from
 `contacts.state.objectsInOrder`.
-
-## Stop reacting
-
-You usually do not need to stop anything. Inside a component, teardown is automatic. `contacts.stop()` is the terminal
-disposal handle for a subscription you created outside any component scope. See
-[Lifecycle and cleanup](/concepts/lifecycle-and-cleanup) for what disposal covers and when you own it.
-
-To suspend fetching without giving up reactivity, set the intent flags to false as shown above. That is reversible;
-stopping is not.
 
 ## Related pages
 

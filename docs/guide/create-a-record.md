@@ -89,9 +89,9 @@ the template renders it.
 The new key lands in `contact.state.object.contactId`, but not in `contact.state.pk`. That value still mirrors
 `props.pk`, which you left unset here. Create does not adopt the new key.
 
-This rarely bites, because a create form usually hands off once the record exists. You read the new key from
-`contact.state.object.contactId` and navigate to a detail or edit route, or return to the list with a toast. The
-returned record carries the key you need to build that link.
+A create form usually hands off once the record exists. Read the new key from `contact.state.object.contactId` and
+navigate to a detail or edit route, or return to the list with a toast. The returned record carries the key you need to
+build that link.
 
 ::: warning
 

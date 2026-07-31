@@ -5,8 +5,7 @@ type: how-to
 
 # Bulk delete rows
 
-In this guide, you delete several selected rows from a contact list in one request, then keep the rest of the list on
-screen.
+Delete several selected rows from a contact list in one request, then keep the rest of the list on screen.
 
 This guide assumes a working `list` handler and a `contacts` instance built on that handler, as in the
 [Build a reactive list](/tutorials/build-a-reactive-list) tutorial. The examples use `contactId` as the primary key
