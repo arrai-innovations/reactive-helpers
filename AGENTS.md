@@ -9,9 +9,11 @@ This project uses [Vitest](https://vitest.dev/), ESLint, and Prettier.
 
 ## Commit Requirements
 
-- Commit messages must conform to the [Conventional Commits](https://www.conventionalcommits.org/en/v1.0.0/) specification and pass `commitlint`.
+- Commit messages must conform to the [Conventional Commits](https://www.conventionalcommits.org/en/v1.0.0/)
+  specification and pass `commitlint`.
 - Lefthook runs ESLint and Prettier on staged files before each commit.
-- CI runs Prettier across the entire repository. To avoid formatting-related failures, run `pnpm prettier` before committing.
+- CI runs Prettier across the entire repository. To avoid formatting-related failures, run `pnpm prettier` before
+  committing.
 - The configured Prettier plugin also sorts imports automatically.
 
 ## Useful Scripts
@@ -34,17 +36,15 @@ This project uses [Vitest](https://vitest.dev/), ESLint, and Prettier.
 
 ## Documentation
 
-The `docs/` directory is a VitePress site pairing hand-authored guide and
-concept pages with the generated API reference under `docs/reference/`. When
-authoring documentation pages, follow `docs/AGENTS.md`.
+The `docs/` directory is a VitePress site pairing hand-authored guide and concept pages with the generated API reference
+under `docs/reference/`. When authoring documentation pages, follow `docs/AGENTS.md`.
 
 ## Conventions
 
 - Always use braces for `if` statements, even single-line bodies.
 - Prefer explicit object literal type syntax over `Record` utility types.
-- Prose (JSDoc, code comments, and docs pages) uses Canadian spelling
-  (behaviour, colour, favour; keep `-ize`/`-yze` endings). Identifiers, API
-  names, and string literals keep code spelling, even for discretionary
-  names. Full rule in `docs/README.md`.
+- Prose (JSDoc, code comments, and docs pages) uses Canadian spelling (behaviour, colour, favour; keep `-ize`/`-yze`
+  endings). Identifiers, API names, and string literals keep code spelling, even for discretionary names. Full rule in
+  `docs/README.md`.
 
 Automated agents should run linting, formatting, and tests before committing.

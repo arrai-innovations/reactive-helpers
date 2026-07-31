@@ -6,20 +6,16 @@ type: how-to
 
 # Show related objects
 
-In this guide, you attach a related object to each row of a loaded list, such as
-the company a contact belongs to. `useListRelated` resolves a foreign key on each
-row against another collection you already hold, and exposes the match without
-copying it onto the row.
+In this guide, you attach a related object to each row of a loaded list, such as the company a contact belongs to.
+`useListRelated` resolves a foreign key on each row against another collection you already hold, and exposes the match
+without copying it onto the row.
 
-This is client-side enrichment. It looks up rows in a collection you provide, and
-never fetches.
+This is client-side enrichment. It looks up rows in a collection you provide, and never fetches.
 
 ## Start from a loaded list and a related collection
 
-You start from a loaded list plus the collection to relate against. These
-examples use `contactId` as the primary key field. Each contact carries a
-`companyId`, and a separate `companies` map holds the companies, keyed by their
-own id:
+You start from a loaded list plus the collection to relate against. These examples use `contactId` as the primary key
+field. Each contact carries a `companyId`, and a separate `companies` map holds the companies, keyed by their own id:
 
 ```javascript
 import { useListInstance } from "@arrai-innovations/reactive-helpers";
@@ -48,15 +44,13 @@ const contacts = useListInstance({
 contacts.list();
 ```
 
-`companies` is any object keyed by the value a row's foreign key holds. A plain
-map works. Point it at another instance's `state.objects` to relate two live
-lists.
+`companies` is any object keyed by the value a row's foreign key holds. A plain map works. Point it at another
+instance's `state.objects` to relate two live lists.
 
 ## Add the related layer
 
-`useListRelated` takes the parent state and `relatedObjectsRules`, a map of named
-rules. Each rule names the field on the row to read and the collection to resolve
-it against:
+`useListRelated` takes the parent state and `relatedObjectsRules`, a map of named rules. Each rule names the field on
+the row to read and the collection to resolve it against:
 
 ```javascript
 import { useListRelated } from "@arrai-innovations/reactive-helpers";
@@ -69,23 +63,18 @@ const withCompany = useListRelated({
 });
 ```
 
-The match lands in `withCompany.state.relatedObjects`, keyed first by the row's
-primary key, then by the rule name. So `withCompany.state.relatedObjects[1].company`
-is the Acme record. The row itself stays untouched: related data lives in this
-side map, not on the row.
+The match lands in `withCompany.state.relatedObjects`, keyed first by the row's primary key, then by the rule name. So
+`withCompany.state.relatedObjects[1].company` is the Acme record. The row itself stays untouched: related data lives in
+this side map, not on the row.
 
-::: warning
-Despite its name, a rule's `pkKey` is the foreign-key field on the source row,
-not a primary key. Here `companyId` is the field on each contact that points at a
-company. The name is historical, and a rename to `fkKey` is planned. Omit `pkKey`
-and it defaults to the rule name.
-:::
+::: warning Despite its name, a rule's `pkKey` is the foreign-key field on the source row, not a primary key. Here
+`companyId` is the field on each contact that points at a company. The name is historical, and a rename to `fkKey` is
+planned. Omit `pkKey` and it defaults to the rule name. :::
 
 ## Render the related object
 
-Iterate the rows, then read each row's related object from the side map by
-primary key. `useListRelated` carries the list through, so read both from
-`withCompany`:
+Iterate the rows, then read each row's related object from the side map by primary key. `useListRelated` carries the
+list through, so read both from `withCompany`:
 
 ```vue
 <script setup>
@@ -132,19 +121,17 @@ contacts.list();
 </template>
 ```
 
-Each row renders its company name. `withCompany.state.running` is `true` while
-the relations settle, so bind a loading cue to it if the resolve is not instant.
-The optional chaining guards the first tick, before a row's entry is built.
+Each row renders its company name. `withCompany.state.running` is `true` while the relations settle, so bind a loading
+cue to it if the resolve is not instant. The optional chaining guards the first tick, before a row's entry is built.
 
 ## Relate to a list of objects
 
-When the foreign-key field holds an array of ids, the rule resolves an array of
-related objects. By default that array keeps the order of the ids in the field.
+When the foreign-key field holds an array of ids, the rule resolves an array of related objects. By default that array
+keeps the order of the ids in the field.
 
-To present the matches in the related collection's own order instead, pass that
-collection's `order`. That is what the rule's `order` property is for: it is the
-canonical id order of the related list, not a sequence you hand-author. The row's
-foreign keys pick a subset, and `order` arranges that subset.
+To present the matches in the related collection's own order instead, pass that collection's `order`. That is what the
+rule's `order` property is for: it is the canonical id order of the related list, not a sequence you hand-author. The
+row's foreign keys pick a subset, and `order` arranges that subset.
 
 So relate to a projects list, and hand the rule that list's reactive `order`:
 
@@ -196,21 +183,16 @@ Ada references projects `1` and `3`, and the list holds `3` before `1`, so
 - An id missing from the collection drops out.
 - An id in `order` that the row does not reference is ignored.
 
-Because you passed a reactive ref, reordering the projects list reorders the
-related array with it.
+Because you passed a reactive ref, reordering the projects list reorders the related array with it.
 
-::: warning
-`order` should cover every id the foreign keys might reference, which it does when
-it is the related list's own `order`. A hand-written `order` that omits a
-referenced id leaves that id unsorted, in an unpredictable spot. Prefer a real
-list's `order` over authoring one by hand.
-:::
+::: warning `order` should cover every id the foreign keys might reference, which it does when it is the related list's
+own `order`. A hand-written `order` that omits a referenced id leaves that id unsorted, in an unpredictable spot. Prefer
+a real list's `order` over authoring one by hand. :::
 
 ## The same for one object
 
-`useObjectRelated` does this for a single record, with two naming differences.
-The option is `relatedObjectRules` (singular), and the results land in
-`state.relatedObject` (singular), keyed by rule name only.
+`useObjectRelated` does this for a single record, with two naming differences. The option is `relatedObjectRules`
+(singular), and the results land in `state.relatedObject` (singular), keyed by rule name only.
 
 ```javascript
 import { useObjectRelated } from "@arrai-innovations/reactive-helpers";
@@ -225,37 +207,28 @@ const contactRelated = useObjectRelated({
 // contactRelated.state.relatedObject.company is the resolved record
 ```
 
-::: tip
-A rule can chain off another rule's result with the `relatedItem.` prefix, to
-follow a second-order relation (a contact's company, then that company's region).
-See [The object pipeline](/concepts/object-pipeline) and
-[useObjectRelated](/reference/api/use/objectRelated) for that.
-:::
+::: tip A rule can chain off another rule's result with the `relatedItem.` prefix, to follow a second-order relation (a
+contact's company, then that company's region). See [The object pipeline](/concepts/object-pipeline) and
+[useObjectRelated](/reference/api/use/objectRelated) for that. :::
 
 ## Where related sits in the pipeline
 
-A related layer must resolve before any layer that reads it. Filter, search, and
-sort rules can all reach related values, so layer `useListRelated` upstream of
-those, as `useList` does. It also feeds the calculated layer, which derives
-values from a row together with its related objects. See
-[The list pipeline](/concepts/list-pipeline) for the full order.
+A related layer must resolve before any layer that reads it. Filter, search, and sort rules can all reach related
+values, so layer `useListRelated` upstream of those, as `useList` does. It also feeds the calculated layer, which
+derives values from a row together with its related objects. See [The list pipeline](/concepts/list-pipeline) for the
+full order.
 
 ## Stop reacting
 
-You usually do not need to stop anything. Inside a component, teardown is
-automatic. `withCompany.stop()` is the terminal disposal handle for a layer
-you built outside any component scope; stopping it leaves the instance running.
-See [Lifecycle and cleanup](/concepts/lifecycle-and-cleanup) for what disposal
-covers and when you own it.
+You usually do not need to stop anything. Inside a component, teardown is automatic. `withCompany.stop()` is the
+terminal disposal handle for a layer you built outside any component scope; stopping it leaves the instance running. See
+[Lifecycle and cleanup](/concepts/lifecycle-and-cleanup) for what disposal covers and when you own it.
 
 ## Related pages
 
 - [Filter and sort a loaded list](/guide/filter-and-sort-a-loaded-list) and
-  [Search a loaded list](/guide/search-a-loaded-list) are the client-side layers
-  that can read related values.
-- [The list pipeline](/concepts/list-pipeline) and
-  [The object pipeline](/concepts/object-pipeline) explain where the related
-  layer sits and how derived data composes.
-- Reference: [useListRelated](/reference/api/use/listRelated) and
-  [useObjectRelated](/reference/api/use/objectRelated) document the full rule and
-  state shapes.
+  [Search a loaded list](/guide/search-a-loaded-list) are the client-side layers that can read related values.
+- [The list pipeline](/concepts/list-pipeline) and [The object pipeline](/concepts/object-pipeline) explain where the
+  related layer sits and how derived data composes.
+- Reference: [useListRelated](/reference/api/use/listRelated) and [useObjectRelated](/reference/api/use/objectRelated)
+  document the full rule and state shapes.

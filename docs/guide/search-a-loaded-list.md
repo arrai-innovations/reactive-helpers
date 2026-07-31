@@ -6,20 +6,17 @@ type: how-to
 
 # Search a loaded list
 
-In this guide, you add a text search box that narrows a contact list already in
-memory. You give `useListSearch` a set of fields to index and a reactive query,
-and it keeps only the rows that match.
+In this guide, you add a text search box that narrows a contact list already in memory. You give `useListSearch` a set
+of fields to index and a reactive query, and it keeps only the rows that match.
 
-This is client-side work. The search runs over the rows the instance already
-holds, and never refetches. To search by asking the server instead, send the
-query as a param and let the backend select the rows; see
+This is client-side work. The search runs over the rows the instance already holds, and never refetches. To search by
+asking the server instead, send the query as a param and let the backend select the rows; see
 [Filter a list](/guide/filter-a-list).
 
 ## Start from a loaded list
 
-You start from a list instance that already fetches rows. These examples use
-`contactId` as the primary key field, with a `name` and an `email` to search
-over:
+You start from a list instance that already fetches rows. These examples use `contactId` as the primary key field, with
+a `name` and an `email` to search over:
 
 ```javascript
 import { useListInstance } from "@arrai-innovations/reactive-helpers";
@@ -43,14 +40,12 @@ contacts.list();
 ```
 
 `contacts.state` is the parent that the search layer reads from. See
-[Build a reactive list](/tutorials/build-a-reactive-list) for this instance in
-full.
+[Build a reactive list](/tutorials/build-a-reactive-list) for this instance in full.
 
 ## Add the search layer
 
-`useListSearch` takes the parent state and a reactive `props` object. Two keys
-matter: `textSearchRules`, the fields to index, and `textSearchValue`, the
-current query. Both fields are indexed, so a query matches either one:
+`useListSearch` takes the parent state and a reactive `props` object. Two keys matter: `textSearchRules`, the fields to
+index, and `textSearchValue`, the current query. Both fields are indexed, so a query matches either one:
 
 ```javascript
 import { useListSearch } from "@arrai-innovations/reactive-helpers";
@@ -67,21 +62,18 @@ const foundContacts = useListSearch({
 });
 ```
 
-`foundContacts.state.objectsInOrder` now holds only the matching rows, in the
-parent's order. Set `query.value` and the list narrows. Each rule is a field key
-on the row. A rule can also read a related or calculated value through the
+`foundContacts.state.objectsInOrder` now holds only the matching rows, in the parent's order. Set `query.value` and the
+list narrows. Each rule is a field key on the row. A rule can also read a related or calculated value through the
 `relatedItem.` and `calculatedItem.` prefixes, when those layers sit upstream.
 
-The match is a prefix match over words, so `Lov` finds `Lovelace` and `grace`
-finds `Grace Hopper`. Queries shorter than two characters match nothing by
-default.
+The match is a prefix match over words, so `Lov` finds `Lovelace` and `grace` finds `Grace Hopper`. Queries shorter than
+two characters match nothing by default.
 
 ## Choose what an empty query shows
 
-By default, an empty query shows every loaded row, so the list starts full and
-narrows as the reader types. Pass `showAllWhenEmpty: false` to start empty
-instead, showing nothing until the first query. Choose that when the loaded
-set is large and a full dump is not a useful starting view:
+By default, an empty query shows every loaded row, so the list starts full and narrows as the reader types. Pass
+`showAllWhenEmpty: false` to start empty instead, showing nothing until the first query. Choose that when the loaded set
+is large and a full dump is not a useful starting view:
 
 ```javascript
 const foundContacts = useListSearch({
@@ -96,14 +88,12 @@ const foundContacts = useListSearch({
 
 ## The search is asynchronous
 
-The index updates and runs off the main path, throttled to avoid rebuilding on
-every keystroke. So the results lag slightly behind fast typing:
+The index updates and runs off the main path, throttled to avoid rebuilding on every keystroke. So the results lag
+slightly behind fast typing:
 
-- `foundContacts.state.running` is `true` while a search is settling. Bind a
-  spinner to it.
-- `foundContacts.state.searched` is `true` while a query is applied and `false`
-  when the box is empty. So you can tell an unfiltered list from a search that
-  matched everything.
+- `foundContacts.state.running` is `true` while a search is settling. Bind a spinner to it.
+- `foundContacts.state.searched` is `true` while a query is applied and `false` when the box is empty. So you can tell
+  an unfiltered list from a search that matched everything.
 - Pass `throttle` (milliseconds) to tune the wait. It defaults to 500.
 
 ## Render the searchable list
@@ -155,48 +145,37 @@ contacts.list();
 </template>
 ```
 
-The list starts with every contact and narrows as the reader types. Clearing the
-box restores the full loaded set. No query fetches again.
+The list starts with every contact and narrows as the reader types. Clearing the box restores the full loaded set. No
+query fetches again.
 
-::: warning
-Search sees only the loaded rows, not the whole server-side collection. Under
-pagination or partial loading, a search ranges over the loaded page alone. A
-query that finds nothing means nothing matched among the loaded rows, not that
-no such contact exists on the server. To search the whole collection, send the
-query as a param and let the server select the rows; see
-[Filter a list](/guide/filter-a-list).
-:::
+::: warning Search sees only the loaded rows, not the whole server-side collection. Under pagination or partial loading,
+a search ranges over the loaded page alone. A query that finds nothing means nothing matched among the loaded rows, not
+that no such contact exists on the server. To search the whole collection, send the query as a param and let the server
+select the rows; see [Filter a list](/guide/filter-a-list). :::
 
 ## Compose with filter and sort
 
 Search stacks with the filter and sort layers from
-[Filter and sort a loaded list](/guide/filter-and-sort-a-loaded-list). Pass one
-layer's state as the next one's `parentState`. `useList` chains them in a set
-order, filter then search then sort, which is a fine default to copy.
+[Filter and sort a loaded list](/guide/filter-and-sort-a-loaded-list). Pass one layer's state as the next one's
+`parentState`. `useList` chains them in a set order, filter then search then sort, which is a fine default to copy.
 
-For these three, that order does not change the rendered result. Filter and
-search both narrow membership, and sort reorders whatever remains, so the rows
-come out the same whichever way you chain them. One ordering does matter: a
-related or calculated layer must sit upstream, because filter, search, and sort
-rules can read its values. See [The list pipeline](/concepts/list-pipeline) for
-the full chain.
+For these three, that order does not change the rendered result. Filter and search both narrow membership, and sort
+reorders whatever remains, so the rows come out the same whichever way you chain them. One ordering does matter: a
+related or calculated layer must sit upstream, because filter, search, and sort rules can read its values. See
+[The list pipeline](/concepts/list-pipeline) for the full chain.
 
 ## Stop reacting
 
-You usually do not need to stop anything. Inside a component, teardown is
-automatic. `foundContacts.stop()` is the terminal disposal handle for a layer
-you built outside any component scope; stopping it leaves the instance running.
-See [Lifecycle and cleanup](/concepts/lifecycle-and-cleanup) for what disposal
-covers and when you own it.
+You usually do not need to stop anything. Inside a component, teardown is automatic. `foundContacts.stop()` is the
+terminal disposal handle for a layer you built outside any component scope; stopping it leaves the instance running. See
+[Lifecycle and cleanup](/concepts/lifecycle-and-cleanup) for what disposal covers and when you own it.
 
 ## Related pages
 
-- [Filter a list](/guide/filter-a-list) narrows a list by refetching from the
-  server; this page searches rows already loaded.
-- [Filter and sort a loaded list](/guide/filter-and-sort-a-loaded-list) covers the
-  other two client-side layers.
-- [The list pipeline](/concepts/list-pipeline) explains how search composes with
-  the other layers and why client-side layers see only the loaded rows.
-- Reference: [useListSearch](/reference/api/use/listSearch) documents the full
-  option and state shapes, and [useSearch](/reference/api/use/search) documents
-  the FlexSearch index it wraps.
+- [Filter a list](/guide/filter-a-list) narrows a list by refetching from the server; this page searches rows already
+  loaded.
+- [Filter and sort a loaded list](/guide/filter-and-sort-a-loaded-list) covers the other two client-side layers.
+- [The list pipeline](/concepts/list-pipeline) explains how search composes with the other layers and why client-side
+  layers see only the loaded rows.
+- Reference: [useListSearch](/reference/api/use/listSearch) documents the full option and state shapes, and
+  [useSearch](/reference/api/use/search) documents the FlexSearch index it wraps.

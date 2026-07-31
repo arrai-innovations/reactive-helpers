@@ -6,24 +6,20 @@ type: tutorial
 
 # Track loading and error state
 
-In this tutorial you will use `useLoadingError` to drive a save button that
-shows progress and surfaces failures. It is the smallest end-to-end use of the
-library: no data layer or configuration required.
+In this tutorial you will use `useLoadingError` to drive a save button that shows progress and surfaces failures. It is
+the smallest end-to-end use of the library: no data layer or configuration required.
 
-This is a supporting technique. You fold it into list and object work once you
-need loading and error UI, rather than as a first step. If you are new to
-the library, [Build a reactive list](/tutorials/build-a-reactive-list) is the
-better place to start. The list and object instances track loading and error
-state for you. Read this tutorial when you want the same behaviour around your
-own async work.
+This is a supporting technique. You fold it into list and object work once you need loading and error UI, rather than as
+a first step. If you are new to the library, [Build a reactive list](/tutorials/build-a-reactive-list) is the better
+place to start. The list and object instances track loading and error state for you. Read this tutorial when you want
+the same behaviour around your own async work.
 
-By the end you will have a runnable component that disables its button while
-saving and shows a message when saving fails.
+By the end you will have a runnable component that disables its button while saving and shows a message when saving
+fails.
 
 ## 1. Create the state
 
-`useLoadingError` returns readonly reactive state plus actions to change it.
-Call it once in your component's setup:
+`useLoadingError` returns readonly reactive state plus actions to change it. Call it once in your component's setup:
 
 ```javascript
 import { useLoadingError } from "@arrai-innovations/reactive-helpers";
@@ -38,8 +34,8 @@ const { loading, error, errored, setLoading, clearLoading, setError, clearError 
 
 ## 2. Wrap the work
 
-The button needs something to save. A stand-in that waits, then rejects when
-the name is empty and resolves otherwise, runs without a backend:
+The button needs something to save. A stand-in that waits, then rejects when the name is empty and resolves otherwise,
+runs without a backend:
 
 ```javascript
 async function saveToBackend(name) {
@@ -52,9 +48,8 @@ async function saveToBackend(name) {
 }
 ```
 
-Wrap that call so the state reflects its lifecycle. Set loading and clear any
-prior error before the attempt, capture a new error on failure, and always
-clear loading at the end.
+Wrap that call so the state reflects its lifecycle. Set loading and clear any prior error before the attempt, capture a
+new error on failure, and always clear loading at the end.
 
 ```javascript
 async function save() {
@@ -72,9 +67,8 @@ async function save() {
 
 ## 3. Bind it to the template
 
-Because `loading`, `errored`, and `error` are refs, the template updates
-automatically as `save()` runs. Here is the complete component, with a name
-input so you can trigger both paths:
+Because `loading`, `errored`, and `error` are refs, the template updates automatically as `save()` runs. Here is the
+complete component, with a name input so you can trigger both paths:
 
 ```vue
 <script setup>
@@ -117,20 +111,16 @@ async function save() {
 
 ## What you built
 
-The button disables itself while `save()` is in flight. Save with the input
-empty and the error message appears; type a name and save again and it clears.
-No manual boolean juggling, and the same pattern works for any async operation.
+The button disables itself while `save()` is in flight. Save with the input empty and the error message appears; type a
+name and save again and it clears. No manual boolean juggling, and the same pattern works for any async operation.
 
 ## Next steps
 
-- [Build a reactive list](/tutorials/build-a-reactive-list) shows the list
-  instance tracking this same loading and error state for you, backed by your
-  API.
-- [Manage loading and errors](/guide/manage-loading-and-errors) folds several
-  instances into one screen-wide status.
-- [Loading, error, and running](/concepts/loading-error-and-running) explains the
-  loading tri-state and why `running` stays separate.
-- [Instances and transport](/concepts/instances-and-transport) explains how
-  loading and error state compose across the instance boundary.
-- The [useLoadingError reference](/reference/api/use/loadingError) documents the
-  full state shape and every action.
+- [Build a reactive list](/tutorials/build-a-reactive-list) shows the list instance tracking this same loading and error
+  state for you, backed by your API.
+- [Manage loading and errors](/guide/manage-loading-and-errors) folds several instances into one screen-wide status.
+- [Loading, error, and running](/concepts/loading-error-and-running) explains the loading tri-state and why `running`
+  stays separate.
+- [Instances and transport](/concepts/instances-and-transport) explains how loading and error state compose across the
+  instance boundary.
+- The [useLoadingError reference](/reference/api/use/loadingError) documents the full state shape and every action.

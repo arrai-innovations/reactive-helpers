@@ -36,8 +36,8 @@ reaches your backend), so the package stays transport agnostic.
 - **Pluggable CRUD configuration** so instances can share app-wide handlers for any backend.
 - **Focused utilities** for reactive data, cancellable work, object paths, classes, and search.
 
-Most list and object composables also ship a plural batch variant (for example `useListInstances`,
-`useObjectInstances`) for creating several keyed instances at once.
+Most list and object composables also ship a plural batch variant (for example `useListInstances`, `useObjectInstances`)
+for creating several keyed instances at once.
 
 ## Requirements
 
@@ -130,9 +130,9 @@ After documentation changes reach `main`, authenticate the CircleCI CLI with `ci
 $ pnpm run docs:site:deploy
 ```
 
-This triggers a docs-only CircleCI pipeline. It derives the documentation major from `package.json` and does not
-publish the npm package. The script reuses the CLI's authentication. `CIRCLECI_TOKEN` remains available as an override
-for automation.
+This triggers a docs-only CircleCI pipeline. It derives the documentation major from `package.json` and does not publish
+the npm package. The script reuses the CLI's authentication. `CIRCLECI_TOKEN` remains available as an override for
+automation.
 
 ## License
 

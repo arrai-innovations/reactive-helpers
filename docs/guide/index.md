@@ -6,9 +6,8 @@ type: index
 
 # Getting started
 
-`reactive-helpers` is a set of Vue 3 composition utilities for managing reactive
-lists, objects, and loading/error state, along with the small helpers that
-support them. The composables give you reactive state plus actions. You supply
+`reactive-helpers` is a set of Vue 3 composition utilities for managing reactive lists, objects, and loading/error
+state, along with the small helpers that support them. The composables give you reactive state plus actions. You supply
 the data layer, so the package stays transport agnostic.
 
 ## Requirements
@@ -25,9 +24,8 @@ npm install @arrai-innovations/reactive-helpers vue @vueuse/core lodash-es
 
 ## Quick start
 
-The main outcome is a reactive list rendered on screen. This complete component
-fetches contacts through one handler and renders a row per contact. Each contact
-is keyed by `contactId`, the primary key field for the examples throughout these
+The main outcome is a reactive list rendered on screen. This complete component fetches contacts through one handler and
+renders a row per contact. Each contact is keyed by `contactId`, the primary key field for the examples throughout these
 docs.
 
 ```vue
@@ -61,59 +59,48 @@ contacts.list();
 </template>
 ```
 
-Calling `contacts.list()` runs your handler. The handler passes the rows to
-`pushObjects`, which stores each one under its `contactId`. The template then
-renders `contacts.state.objectsInOrder`, a reactive array in push order, as one
-row per contact. Swap the in-memory array for a real request and nothing else
-changes.
+Calling `contacts.list()` runs your handler. The handler passes the rows to `pushObjects`, which stores each one under
+its `contactId`. The template then renders `contacts.state.objectsInOrder`, a reactive array in push order, as one row
+per contact. Swap the in-memory array for a real request and nothing else changes.
 
-[Build a reactive list](/tutorials/build-a-reactive-list) walks through the same
-component step by step, including loading and error state.
+[Build a reactive list](/tutorials/build-a-reactive-list) walks through the same component step by step, including
+loading and error state.
 
-::: tip
-Need loading and error state around your own async work? `useLoadingError` is a
-small standalone primitive that returns readonly state plus actions to set and
-clear it. You fold it into your own composites; see the
-[useLoadingError reference](/reference/api/use/loadingError).
-:::
+::: tip Need loading and error state around your own async work? `useLoadingError` is a small standalone primitive that
+returns readonly state plus actions to set and clear it. You fold it into your own composites; see the
+[useLoadingError reference](/reference/api/use/loadingError). :::
 
 ## Next steps
 
 Pick the route that matches what you are trying to do.
 
-- **Learn by building.** The [tutorials](/tutorials/) teach the library one task
-  at a time. Newcomers should start with
+- **Learn by building.** The [tutorials](/tutorials/) teach the library one task at a time. Newcomers should start with
   [Build a reactive list](/tutorials/build-a-reactive-list), then move on to
   [Edit one object](/tutorials/edit-one-object).
 
-- **Wire your first integration.** [Pass backend arguments](/guide/data-layer)
-  parameterizes one instance's handler.
-  [Register app-wide CRUD defaults](/guide/register-crud-defaults) moves repeated
-  handlers into app bootstrap.
+- **Wire your first integration.** [Pass backend arguments](/guide/data-layer) parameterizes one instance's handler.
+  [Register app-wide CRUD defaults](/guide/register-crud-defaults) moves repeated handlers into app bootstrap.
 
 - **Handle a specific backend task.** [Create a record](/guide/create-a-record),
-  [Paginate a list](/guide/paginate-a-list),
-  [Load all pages in one call](/guide/load-all-pages), and
-  [Bulk delete rows](/guide/bulk-delete-rows) each solve one backend
-  task. [Filter a list](/guide/filter-a-list) and
-  [Reload a record](/guide/reload-a-record) refetch when filters, props, or
-  route params change. [Cancel stale requests](/guide/cancel-stale-requests)
-  makes those reloads safe, so only the latest request's result lands.
+  [Paginate a list](/guide/paginate-a-list), [Load all pages in one call](/guide/load-all-pages), and
+  [Bulk delete rows](/guide/bulk-delete-rows) each solve one backend task. [Filter a list](/guide/filter-a-list) and
+  [Reload a record](/guide/reload-a-record) refetch when filters, props, or route params change.
+  [Cancel stale requests](/guide/cancel-stale-requests) makes those reloads safe, so only the latest request's result
+  lands.
 
 - **Reshape rows you already have.** [Filter and sort a loaded list](/guide/filter-and-sort-a-loaded-list) and
-  [Search a loaded list](/guide/search-a-loaded-list) narrow and order loaded
-  rows in the browser, with no extra request.
+  [Search a loaded list](/guide/search-a-loaded-list) narrow and order loaded rows in the browser, with no extra
+  request.
 
-- **Add derived data to each row.** [Show related objects](/guide/show-related-objects) resolves a key into the
-  record it points at. [Show calculated values](/guide/show-calculated-values)
-  computes values from each row and its related objects.
+- **Add derived data to each row.** [Show related objects](/guide/show-related-objects) resolves a key into the record
+  it points at. [Show calculated values](/guide/show-calculated-values) computes values from each row and its related
+  objects.
 
 - **Report progress and failures.** [Manage loading and errors](/guide/manage-loading-and-errors) folds several
   composables into one screen-wide loading and error status.
 
-- **Understand the design.** The [concepts](/concepts/) pages explain what an
-  instance owns versus your handlers, and how the list and object pipelines
-  compose.
+- **Understand the design.** The [concepts](/concepts/) pages explain what an instance owns versus your handlers, and
+  how the list and object pipelines compose.
 
-- **Look up an API.** The [reference](/reference/) lists every module,
-  composable, and utility with their arguments and properties.
+- **Look up an API.** The [reference](/reference/) lists every module, composable, and utility with their arguments and
+  properties.

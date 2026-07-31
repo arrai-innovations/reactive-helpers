@@ -5,20 +5,17 @@ type: how-to
 
 # Create a record
 
-This guide submits a new-contact form and creates the record on the backend.
-The task turns on one point. You drive it with an object instance that has no
-primary key, because a new record has no key until the backend assigns one.
+This guide submits a new-contact form and creates the record on the backend. The task turns on one point. You drive it
+with an object instance that has no primary key, because a new record has no key until the backend assigns one.
 
-The starting state is an object instance (`useObjectInstance`) with a `create`
-handler and no `pk`. That missing key is what makes create its own task,
-distinct from the retrieve-and-edit instance in
-[Edit one object](/tutorials/edit-one-object), which loads an existing record
-by `pk`.
+The starting state is an object instance (`useObjectInstance`) with a `create` handler and no `pk`. That missing key is
+what makes create its own task, distinct from the retrieve-and-edit instance in
+[Edit one object](/tutorials/edit-one-object), which loads an existing record by `pk`.
 
 ## Create an instance without a `pk`
 
-Call `useObjectInstance` with `pkKey` and a `target`, but leave `pk` out. A
-create form needs no key up front, since the backend assigns one:
+Call `useObjectInstance` with `pkKey` and a `target`, but leave `pk` out. A create form needs no key up front, since the
+backend assigns one:
 
 ```javascript
 import { useObjectInstance } from "@arrai-innovations/reactive-helpers";
@@ -41,21 +38,17 @@ const contact = useObjectInstance({
 });
 ```
 
-The `create` handler receives `target`, `params`, `pkKey`, `isCancelled`, and
-`object`, the new data you pass to `contact.create({ object })`. It receives
-no `pk`. Resolve the created record, including the primary key the backend
+The `create` handler receives `target`, `params`, `pkKey`, `isCancelled`, and `object`, the new data you pass to
+`contact.create({ object })`. It receives no `pk`. Resolve the created record, including the primary key the backend
 assigned. Throw or reject on failure so the error reaches the instance. See
-[CreateArgsRaw](/reference/api/config/objectCrud#createargsraw) for the full
-argument shape.
+[CreateArgsRaw](/reference/api/config/objectCrud#createargsraw) for the full argument shape.
 
-Serialization is the handler's job. This example sends JSON. When a field
-holds a `File`, the same handler can build a `FormData` body instead. The
-instance never inspects the request.
+Serialization is the handler's job. This example sends JSON. When a field holds a `File`, the same handler can build a
+`FormData` body instead. The instance never inspects the request.
 
 ## Submit the form
 
-Bind the form to local state, then pass that object to
-`contact.create({ object })` on submit:
+Bind the form to local state, then pass that object to `contact.create({ object })` on submit:
 
 ```vue
 <script setup>
@@ -83,36 +76,30 @@ async function submit() {
 </template>
 ```
 
-`contact.create(...)` resolves `true` on success or `false` on failure. On
-failure, the error lands in `contact.state.error` and `contact.state.errored`
-becomes `true`, the same loading and error behaviour every action shares.
+`contact.create(...)` resolves `true` on success or `false` on failure. On failure, the error lands in
+`contact.state.error` and `contact.state.errored` becomes `true`, the same loading and error behaviour every action
+shares.
 
-On success, the resolved record is assigned into `contact.state.object`. This
-differs from a `list` handler, whose resolved value only marks the run done.
-So `contact.state.object.contactId` now holds the key the backend assigned,
-and the template renders it.
+On success, the resolved record is assigned into `contact.state.object`. This differs from a `list` handler, whose
+resolved value only marks the run done. So `contact.state.object.contactId` now holds the key the backend assigned, and
+the template renders it.
 
 ## What the instance does not adopt
 
-The new key lands in `contact.state.object.contactId`, but not in
-`contact.state.pk`. That value still mirrors `props.pk`, which you left unset
-here. Create does not adopt the new key.
+The new key lands in `contact.state.object.contactId`, but not in `contact.state.pk`. That value still mirrors
+`props.pk`, which you left unset here. Create does not adopt the new key.
 
-This rarely bites, because a create form usually hands off once the record
-exists. You read the new key from `contact.state.object.contactId` and navigate
-to a detail or edit route, or return to the list with a toast. The returned
-record carries the key you need to build that link.
+This rarely bites, because a create form usually hands off once the record exists. You read the new key from
+`contact.state.object.contactId` and navigate to a detail or edit route, or return to the list with a toast. The
+returned record carries the key you need to build that link.
 
-::: warning
-If you instead keep this same instance on screen and expect a later
-`contact.retrieve()` or `contact.patch(...)` to act on the new record, it will
-not. Those still target `props.pk`, which is unset here. To edit the new record
-from one instance, drive `pk` reactively from the returned key, as in
-[Reload a record](/guide/reload-a-record).
-:::
+::: warning If you instead keep this same instance on screen and expect a later `contact.retrieve()` or
+`contact.patch(...)` to act on the new record, it will not. Those still target `props.pk`, which is unset here. To edit
+the new record from one instance, drive `pk` reactively from the returned key, as in
+[Reload a record](/guide/reload-a-record). :::
 
 ## Related pages
 
-[Edit one object](/tutorials/edit-one-object) manages an existing record by
-`pk`. [Register app-wide CRUD defaults](/guide/register-crud-defaults)
-shows how to register `create` once instead of per instance.
+[Edit one object](/tutorials/edit-one-object) manages an existing record by `pk`.
+[Register app-wide CRUD defaults](/guide/register-crud-defaults) shows how to register `create` once instead of per
+instance.

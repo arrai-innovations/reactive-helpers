@@ -6,32 +6,24 @@ type: how-to
 
 # Reload a record when the route changes
 
-In this guide, you re-retrieve a single contact when its primary key changes.
-A route param supplies the key, so navigating from one contact to another
-reloads the record through `useObjectSubscription`.
+In this guide, you re-retrieve a single contact when its primary key changes. A route param supplies the key, so
+navigating from one contact to another reloads the record through `useObjectSubscription`.
 
 ## Prerequisite: a cancellable retrieve handler
 
-Before you drive `pk` from the route, make `retrieve` return a cancellable
-promise. When `pk` changes while a retrieve is in flight,
-`useObjectSubscription` cancels that run and starts a new one for the new key.
-The screen then ends on the record you navigated to.
+Before you drive `pk` from the route, make `retrieve` return a cancellable promise. When `pk` changes while a retrieve
+is in flight, `useObjectSubscription` cancels that run and starts a new one for the new key. The screen then ends on the
+record you navigated to.
 
-Build the promise with `cancellableFetch` or `makeCancellable`. Do not mark the
-handler `async`: an `async` function returns a native promise with no `.cancel`,
-which the instance cannot cancel.
+Build the promise with `cancellableFetch` or `makeCancellable`. Do not mark the handler `async`: an `async` function
+returns a native promise with no `.cancel`, which the instance cannot cancel.
 
-::: warning
-A retrieve that cannot be cancelled cannot be abandoned, so a mid-flight `pk`
-change waits for it. The stale record is assigned to `contact.state.object`
-first. The new key is fetched once that request settles, so the record you
-navigated away from is on screen in between.
-:::
+::: warning A retrieve that cannot be cancelled cannot be abandoned, so a mid-flight `pk` change waits for it. The stale
+record is assigned to `contact.state.object` first. The new key is fetched once that request settles, so the record you
+navigated away from is on screen in between. :::
 
-To build a cancellable handler, see
-[Cancel stale requests](/guide/cancel-stale-requests). For the model behind
-cancellation, see [Cancellable intents](/concepts/cancellable-intents). This
-example uses a small cancellable handler:
+To build a cancellable handler, see [Cancel stale requests](/guide/cancel-stale-requests). For the model behind
+cancellation, see [Cancellable intents](/concepts/cancellable-intents). This example uses a small cancellable handler:
 
 ```javascript
 import { cancellableFetch, setObjectCrud } from "@arrai-innovations/reactive-helpers";
@@ -47,8 +39,8 @@ setObjectCrud({
 
 ## Build the subscription
 
-Create the instance through `useObjectSubscription`. It takes `props`, wrapped
-in `reactive()`, and watches `pk`, `pkKey`, `params`, and `intendToRetrieve`:
+Create the instance through `useObjectSubscription`. It takes `props`, wrapped in `reactive()`, and watches `pk`,
+`pkKey`, `params`, and `intendToRetrieve`:
 
 ```javascript
 import { useObjectSubscription } from "@arrai-innovations/reactive-helpers";
@@ -67,28 +59,23 @@ const contact = useObjectSubscription({
 });
 ```
 
-`intendToRetrieve` is the on-switch, and it defaults to off, so you set it
-`true` to retrieve whenever possible. The intent still runs only when every
-watched value is truthy, and `pk` is one of them. So while `contactId.value` is
-empty, nothing runs. When the route supplies `"1"`, the composable calls
-`retrieve()` and assigns the resolved record into `contact.state.object`.
+`intendToRetrieve` is the on-switch, and it defaults to off, so you set it `true` to retrieve whenever possible. The
+intent still runs only when every watched value is truthy, and `pk` is one of them. So while `contactId.value` is empty,
+nothing runs. When the route supplies `"1"`, the composable calls `retrieve()` and assigns the resolved record into
+`contact.state.object`.
 
-Leave `intendToRetrieve` as `true` when a present key is the only condition, as
-here. To also gate on something else, such as a value that must load first,
-make it a computed, as in [Filter a list](/guide/filter-a-list).
+Leave `intendToRetrieve` as `true` when a present key is the only condition, as here. To also gate on something else,
+such as a value that must load first, make it a computed, as in [Filter a list](/guide/filter-a-list).
 
 ## Re-retrieve when the pk changes
 
-Navigating to `"2"` re-retrieves and replaces the record. The handler receives
-`pk` as a string, even when the ref holds a number. Changing `params`
-re-retrieves too. Emptying `contactId` makes `pk` falsy, which cancels the
-current run and blocks new ones, so navigating away stops retrieval without an
-error.
+Navigating to `"2"` re-retrieves and replaces the record. The handler receives `pk` as a string, even when the ref holds
+a number. Changing `params` re-retrieves too. Emptying `contactId` makes `pk` falsy, which cancels the current run and
+blocks new ones, so navigating away stops retrieval without an error.
 
-`contact.state.loading` is `undefined` before the first run, then `true` and
-`false` around each run. See
-[useObjectSubscription](/reference/api/use/objectSubscription#useobjectsubscription)
-for the full option and state shapes.
+`contact.state.loading` is `undefined` before the first run, then `true` and `false` around each run. See
+[useObjectSubscription](/reference/api/use/objectSubscription#useobjectsubscription) for the full option and state
+shapes.
 
 ## Render the route-driven record
 
@@ -133,30 +120,23 @@ const contact = useObjectSubscription({
 </template>
 ```
 
-As the route changes, `contactId.value` changes, and the composable
-re-retrieves. `contact.state.loading` flips to `true` during each run, so the
-template shows a loading line. The detail view then renders the record for the
-current route from `contact.state.object`.
+As the route changes, `contactId.value` changes, and the composable re-retrieves. `contact.state.loading` flips to
+`true` during each run, so the template shows a loading line. The detail view then renders the record for the current
+route from `contact.state.object`.
 
 ## Stop reacting
 
-You usually do not need to stop anything. Inside a component, teardown is
-automatic. `contact.stop()` is the terminal disposal handle for a subscription
-you created outside any component scope. See
-[Lifecycle and cleanup](/concepts/lifecycle-and-cleanup) for what disposal
-covers and when you own it.
+You usually do not need to stop anything. Inside a component, teardown is automatic. `contact.stop()` is the terminal
+disposal handle for a subscription you created outside any component scope. See
+[Lifecycle and cleanup](/concepts/lifecycle-and-cleanup) for what disposal covers and when you own it.
 
-To suspend retrieving without giving up reactivity, set
-`contact.state.intendToRetrieve` to false instead. That is reversible; stopping
-is not.
+To suspend retrieving without giving up reactivity, set `contact.state.intendToRetrieve` to false instead. That is
+reversible; stopping is not.
 
 ## Related pages
 
-To keep a list in sync with a reactive filter, see
-[Filter a list](/guide/filter-a-list).
-[Cancel stale requests](/guide/cancel-stale-requests) builds the cancellable
-handler this page requires, and
-[useObjectSubscription](/reference/api/use/objectSubscription#useobjectsubscription)
-and
-[useCancellableIntent](/reference/api/use/cancellableIntent#usecancellableintent)
-document the full option, state, and intent shapes.
+To keep a list in sync with a reactive filter, see [Filter a list](/guide/filter-a-list).
+[Cancel stale requests](/guide/cancel-stale-requests) builds the cancellable handler this page requires, and
+[useObjectSubscription](/reference/api/use/objectSubscription#useobjectsubscription) and
+[useCancellableIntent](/reference/api/use/cancellableIntent#usecancellableintent) document the full option, state, and
+intent shapes.

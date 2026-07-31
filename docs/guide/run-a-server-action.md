@@ -5,25 +5,21 @@ type: how-to
 
 # Run a server action
 
-This guide invokes a named backend action, such as `deactivate`, from both a
-list and a single record. A named action is any operation your backend runs
-beyond plain CRUD; you pass its name as `action`.
+This guide invokes a named backend action, such as `deactivate`, from both a list and a single record. A named action is
+any operation your backend runs beyond plain CRUD; you pass its name as `action`.
 
-The two sides differ in one structural way, and that difference is the whole
-point of this page:
+The two sides differ in one structural way, and that difference is the whole point of this page:
 
 - A **list** action hands your handler's response data back to the caller.
 - An **object** action returns only a boolean, never the response data.
 
-The starting state is a list instance and an object instance, each with an
-`executeAction` handler. The sections below use per-instance `handlers`;
-[Register app-wide CRUD defaults](/guide/register-crud-defaults) registers
-them once instead.
+The starting state is a list instance and an object instance, each with an `executeAction` handler. The sections below
+use per-instance `handlers`; [Register app-wide CRUD defaults](/guide/register-crud-defaults) registers them once
+instead.
 
 ## Act on selected list rows
 
-The list `executeAction` handler receives `target`, `action`, `pks`, and
-`pkKey`. Return whatever the caller should see:
+The list `executeAction` handler receives `target`, `action`, `pks`, and `pkKey`. Return whatever the caller should see:
 
 ```javascript
 import { useListInstance } from "@arrai-innovations/reactive-helpers";
@@ -46,12 +42,10 @@ const contacts = useListInstance({
 });
 ```
 
-`contacts.executeAction({ action, pks })` resolves with your handler's
-response data, or `null` on failure. Omitting `pks` targets every row in the
-list. The rows themselves are untouched; call `contacts.list()` to reload them
-when the action changed them. See
-[ExecuteActionArgsRaw](/reference/api/config/listCrud#executeactionargsraw)
-for the full argument shape.
+`contacts.executeAction({ action, pks })` resolves with your handler's response data, or `null` on failure. Omitting
+`pks` targets every row in the list. The rows themselves are untouched; call `contacts.list()` to reload them when the
+action changed them. See [ExecuteActionArgsRaw](/reference/api/config/listCrud#executeactionargsraw) for the full
+argument shape.
 
 Because the list side returns the response data, you can render it:
 
@@ -76,8 +70,7 @@ async function deactivateSelected() {
 
 ## Act on a single record
 
-The object `executeAction` handler receives `target`, `action`, `pk`, and
-`pkKey`, and no `params`:
+The object `executeAction` handler receives `target`, `action`, `pk`, and `pkKey`, and no `params`:
 
 ```javascript
 import { useObjectInstance } from "@arrai-innovations/reactive-helpers";
@@ -97,12 +90,10 @@ const contact = useObjectInstance({
 });
 ```
 
-Here is the contrast that gives this page its shape. Unlike the list side,
-`contact.executeAction({ action })` resolves to `true` or `false`, never the
-response data. It also leaves `contact.state.object` untouched. Call
+Here is the contrast that gives this page its shape. Unlike the list side, `contact.executeAction({ action })` resolves
+to `true` or `false`, never the response data. It also leaves `contact.state.object` untouched. Call
 `contact.retrieve()` afterwards when the action changed the record. See
-[ObjectExecuteActionArgsRaw](/reference/api/config/objectCrud#objectexecuteactionargsraw)
-for the full argument shape.
+[ObjectExecuteActionArgsRaw](/reference/api/config/objectCrud#objectexecuteactionargsraw) for the full argument shape.
 
 So the object side shows an outcome, not data, and reloads to see the effect:
 
@@ -130,8 +121,7 @@ async function deactivate() {
 
 ## Pass a payload to the action
 
-Both sides forward any extra keys you pass on to your handler, so a payload
-can ride along:
+Both sides forward any extra keys you pass on to your handler, so a payload can ride along:
 
 ```javascript
 await contacts.executeAction({ action: "assign", pks: ["1"], owner: 7 });
@@ -141,9 +131,7 @@ The keys the instance supplies itself always win over yours.
 
 ## Related pages
 
-[Paginate a list](/guide/paginate-a-list) and
-[Bulk delete rows](/guide/bulk-delete-rows) cover the other list-side tasks;
-[Create a record](/guide/create-a-record) and
-[Edit one object](/tutorials/edit-one-object) cover the object side.
-[Register app-wide CRUD defaults](/guide/register-crud-defaults)
-shows how to register `executeAction` once instead of per instance.
+[Paginate a list](/guide/paginate-a-list) and [Bulk delete rows](/guide/bulk-delete-rows) cover the other list-side
+tasks; [Create a record](/guide/create-a-record) and [Edit one object](/tutorials/edit-one-object) cover the object
+side. [Register app-wide CRUD defaults](/guide/register-crud-defaults) shows how to register `executeAction` once
+instead of per instance.

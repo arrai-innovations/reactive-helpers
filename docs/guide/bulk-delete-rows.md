@@ -5,19 +5,18 @@ type: how-to
 
 # Bulk delete rows
 
-In this guide, you delete several selected rows from a contact list in one
-request, then keep the rest of the list on screen.
+In this guide, you delete several selected rows from a contact list in one request, then keep the rest of the list on
+screen.
 
-This guide assumes a working `list` handler and a `contacts` instance built on
-that handler, as in the [Build a reactive list](/tutorials/build-a-reactive-list)
-tutorial. The examples use `contactId` as the primary key field.
+This guide assumes a working `list` handler and a `contacts` instance built on that handler, as in the
+[Build a reactive list](/tutorials/build-a-reactive-list) tutorial. The examples use `contactId` as the primary key
+field.
 
 ## Write the `bulkDelete` handler
 
-The `bulkDelete` handler receives `target`, `pks` (the primary keys to
-delete), and `pkKey`. The handler decides the outcome: resolve to report
-success, throw or reject to report failure. This one checks `response.ok` and
-throws otherwise:
+The `bulkDelete` handler receives `target`, `pks` (the primary keys to delete), and `pkKey`. The handler decides the
+outcome: resolve to report success, throw or reject to report failure. This one checks `response.ok` and throws
+otherwise:
 
 ```javascript
 import { setListCrud } from "@arrai-innovations/reactive-helpers";
@@ -36,33 +35,25 @@ setListCrud({
 });
 ```
 
-`contacts.bulkDelete({ pks: ["1", "2"] })` resolves to `true` on success and
-`false` on failure. Omitting `pks` deletes every row currently in the list. A
-failure lands in `contacts.state.error`, and `contacts.state.errored` becomes
-`true`, the same as any other action. While `contacts.state.loading` is
-`true`, a new `bulkDelete()` call rejects. See
-[BulkDeleteArgsRaw](/reference/api/config/listCrud#bulkdeleteargsraw) for the
-full argument shape.
+`contacts.bulkDelete({ pks: ["1", "2"] })` resolves to `true` on success and `false` on failure. Omitting `pks` deletes
+every row currently in the list. A failure lands in `contacts.state.error`, and `contacts.state.errored` becomes `true`,
+the same as any other action. While `contacts.state.loading` is `true`, a new `bulkDelete()` call rejects. See
+[BulkDeleteArgsRaw](/reference/api/config/listCrud#bulkdeleteargsraw) for the full argument shape.
 
 ## Reload after deleting a subset
 
-::: warning
-On success the instance empties `contacts.state.objects` even when you deleted
-only a subset. The rows you kept vanish from the screen too. Call
-`contacts.list()` after a successful `bulkDelete()` when other rows should stay
-visible.
-:::
+::: warning On success the instance empties `contacts.state.objects` even when you deleted only a subset. The rows you
+kept vanish from the screen too. Call `contacts.list()` after a successful `bulkDelete()` when other rows should stay
+visible. :::
 
-So the pattern is: build a selection of primary keys, delete them, and reload.
-The reload refetches the rows the server still has, which are every row except
-the ones you just deleted.
+So the pattern is: build a selection of primary keys, delete them, and reload. The reload refetches the rows the server
+still has, which are every row except the ones you just deleted.
 
 ## Render checkboxes, a delete button, and the outcome
 
-Each checkbox toggles a `contactId` in a `selected` set. The delete button
-passes those keys to `contacts.bulkDelete`, then reloads on success so the
-remaining rows return. It stays disabled while nothing is selected and while a
-request is in flight:
+Each checkbox toggles a `contactId` in a `selected` set. The delete button passes those keys to `contacts.bulkDelete`,
+then reloads on success so the remaining rows return. It stays disabled while nothing is selected and while a request is
+in flight:
 
 ```vue
 <script setup>
@@ -113,19 +104,15 @@ async function deleteSelected() {
 </template>
 ```
 
-Check two contacts and the button reads "Delete 2 selected". Clicking it sends
-one request with both keys. On success `contacts.bulkDelete` resolves `true` and
-the list empties. The `contacts.list()` reload repopulates
-`contacts.state.objectsInOrder` with every remaining contact, so only the two
-you chose are gone. If the request fails, `bulkDelete` resolves `false`, the
-reload is skipped, and the error message shows.
+Check two contacts and the button reads "Delete 2 selected". Clicking it sends one request with both keys. On success
+`contacts.bulkDelete` resolves `true` and the list empties. The `contacts.list()` reload repopulates
+`contacts.state.objectsInOrder` with every remaining contact, so only the two you chose are gone. If the request fails,
+`bulkDelete` resolves `false`, the reload is skipped, and the error message shows.
 
 ## Related pages
 
 - [Paginate a list](/guide/paginate-a-list) covers another list-side task.
-- [Track loading and error state](/tutorials/track-loading-and-error) explains
-  the shared `state.loading`, `state.error`, and `state.errored` fields this
-  page relies on.
-- The
-  [BulkDeleteArgsRaw reference](/reference/api/config/listCrud#bulkdeleteargsraw)
-  documents the handler's full argument shape.
+- [Track loading and error state](/tutorials/track-loading-and-error) explains the shared `state.loading`,
+  `state.error`, and `state.errored` fields this page relies on.
+- The [BulkDeleteArgsRaw reference](/reference/api/config/listCrud#bulkdeleteargsraw) documents the handler's full
+  argument shape.
