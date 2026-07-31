@@ -4,7 +4,7 @@ import { getFakePk } from "../utils/getFakePk.js";
 import { useLoadingError } from "./loadingError.js";
 import inspect from "browser-util-inspect";
 import { computed, effectScope, isReactive, reactive, readonly, ref, shallowReactive } from "vue";
-import { wrapMaybeCancellable } from "../utils/cancellablePromise.js";
+import { assertHandlerPromise, wrapMaybeCancellable } from "../utils/cancellablePromise.js";
 import { refIfReactive } from "../utils/refIfReactive.js";
 
 /**
@@ -479,6 +479,7 @@ export function useListInstance({ props, handlers = {} }) {
                     setColumnTotals: self.setColumnTotals,
                 };
                 listPromise = state.crud.list(listCrudArgs);
+                assertHandlerPromise(listPromise, ListInstanceError, "list");
             } catch (e) {
                 loadingError.setError(e);
                 loadingError.clearLoading();
@@ -532,6 +533,7 @@ export function useListInstance({ props, handlers = {} }) {
                     params: state.params,
                     isCancelled: readonly(isCancelled),
                 });
+                assertHandlerPromise(bulkDeletePromise, ListInstanceError, "bulkDelete");
             } catch (error) {
                 loadingError.setError(error);
                 loadingError.clearLoading();
@@ -588,6 +590,7 @@ export function useListInstance({ props, handlers = {} }) {
                     params: state.params,
                     isCancelled: readonly(isCancelled),
                 });
+                assertHandlerPromise(executeActionPromise, ListInstanceError, "executeAction");
             } catch (error) {
                 loadingError.setError(error);
                 loadingError.clearLoading();

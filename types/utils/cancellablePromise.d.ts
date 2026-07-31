@@ -66,6 +66,21 @@ export namespace CancellablePromise {
  */
 export function wrapMaybeCancellable<T>(inner: Promise<T>, cancel?: ((reason?: any) => Promise<void> | void) | undefined): MaybeCancellablePromise<T>;
 /**
+ * Throws when a CRUD handler returned something that cannot be awaited. Callers invoke this inside the same `try` that
+ * wraps the handler call, so the resulting error reaches `state.error` by the path a handler's own throw already takes.
+ *
+ * A handler that returns a non-promise breaks the handler contract rather than failing within it, so this stays loud
+ * instead of being absorbed. `useCancellableIntent` rejects the same mistake with the same code for intent-driven runs.
+ *
+ * @internal
+ * @param {any} value - The value the handler returned.
+ * @param {new (message: string, code: string) => Error} ErrorClass - The error class for the calling composable.
+ * @param {string} verb - The action to name in the message.
+ * @returns {void}
+ * @throws {Error} An `ErrorClass` with code `invalid-promise` when the value is not thenable.
+ */
+export function assertHandlerPromise(value: any, ErrorClass: new (message: string, code: string) => Error, verb: string): void;
+/**
  * A promise that may optionally carry a cancel method to abort the pending operation.
  */
 export type MaybeCancellablePromise<T> = Promise<T> & {

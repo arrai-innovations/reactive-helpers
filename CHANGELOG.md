@@ -24,6 +24,9 @@ _Actions potentially required by implementers are marked with italics._
   a live readonly ref on both sides. _Implementers whose object `subscribe` handler reads `target` or `params` after the
   initial call, such as in a reconnect path, should resubscribe on the input change instead. Because the payload is now
   cloned, a `target` carrying a function or class instance no longer arrives intact._
+- The package now declares `engines.node` of `>=22`. Node 20 reached end of life on 2026-04-30, leaving 22 and 24 as the
+  supported lines. Nothing in the code changed; the constraint was previously undeclared. _Implementers still on Node 20
+  or earlier will see an install failure under pnpm, which enforces `engines` by default, and a warning under npm._
 
 ### Additions
 
@@ -78,6 +81,13 @@ _Actions potentially required by implementers are marked with italics._
 - `getFakePk` now always draws a negative key. It scaled `Number.MIN_SAFE_INTEGER` directly, so a `Math.random()` of
   exactly `0` produced `Math.floor(-0)` and returned the string `"0"`, which could collide with a server-issued key of
   `0` and did not carry the negative sign that distinguishes a placeholder key from a real one.
+- A CRUD handler that returns something other than a promise is now reported instead of wedging the instance. Every verb
+  on both sides stores an `ObjectError` or `ListInstanceError` with the code `invalid-promise`, naming the verb and what
+  was returned, and resolves its usual failure value. The guard added for a synchronous handler throw wrapped the
+  handler call but not the chain built on its return value, so a non-promise threw a `TypeError` one line later, outside
+  that guard, leaving `state.loading` set and every later action on the instance failing with `already-loading`.
+  `useCancellableIntent` already rejected the same mistake with the same code for intent-driven runs. _Implementers
+  catching that `TypeError` around an action call should read `state.error` instead._
 - A related rule's `order` now gives a defined position to an id it does not list. Such ids sort after every listed id
   and keep their foreign-key order among themselves. They previously compared as `NaN` against everything, which left
   their position undefined. A partial `order` arises during ordinary operation, since a paginated source list covers

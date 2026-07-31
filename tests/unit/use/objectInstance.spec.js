@@ -1365,6 +1365,36 @@ describe("use/objectInstance.js", function () {
             expect(objectInstance.state.errored).toBe(true);
             expect(objectInstance.state.loading).toBe(false);
         });
+        // The guard above wraps the handler call, not the chain built on what it returns. A handler
+        // that returns a non-promise therefore used to throw one line later, outside the guard, and
+        // reproduce the wedge: loading stayed set and every later action failed with already-loading.
+        scopedIt.each(verbs)("%s rejects a non-promise return with invalid-promise", async (verb, call) => {
+            const objectInstance = useObjectInstance({
+                props: { target: {}, pk: "1", pkKey: "id", params: {} },
+                handlers: { [verb]: () => undefined },
+            });
+            await expect(call(objectInstance)).resolves.toBe(verb === "executeAction" ? null : false);
+            expect(objectInstance.state.error.name).toBe("ObjectError");
+            expect(objectInstance.state.error.code).toBe("invalid-promise");
+            expect(objectInstance.state.error.message).toBe(
+                `${verb}: the configured handler must return a promise, but returned undefined.`
+            );
+            expect(objectInstance.state.errored).toBe(true);
+            expect(objectInstance.state.loading).toBe(false);
+        });
+        scopedIt("leaves the instance usable after a non-promise return", async () => {
+            const retrieve = vi.fn().mockReturnValueOnce(undefined).mockResolvedValueOnce({ id: "1", name: "ok" });
+            const objectInstance = useObjectInstance({
+                props: { target: {}, pk: "1", pkKey: "id", params: {} },
+                handlers: { retrieve },
+            });
+            await objectInstance.retrieve();
+            expect(objectInstance.state.error.code).toBe("invalid-promise");
+            // the wedge this removes: a second action must run rather than fail with already-loading
+            await expect(objectInstance.retrieve()).resolves.toBe(true);
+            expect(objectInstance.state.errored).toBe(false);
+            expect({ ...objectInstance.state.object }).toEqual({ id: "1", name: "ok" });
+        });
     });
     describe("patch", function () {
         scopedIt("success", async function () {
