@@ -204,8 +204,9 @@ Composing the chain for you is what `useObject` adds over calling the four compo
 - Learning path: [Edit one object](/tutorials/edit-one-object) covers the instance layer on its own, not the full
   manager.
 - Tasks: [Create a record](/guide/create-a-record) builds on the object instance.
-  [Reload a record when the route changes](/guide/reload-a-record) drives retrieval from reactive inputs. Neither
-  configures related or calculated values, and no focused guide yet covers the manager end to end.
+  [Reload a record when the route changes](/guide/reload-a-record) drives retrieval from reactive inputs.
+  [Run a server action](/guide/run-a-server-action) reaches a backend operation outside the CRUD verbs. None of the
+  three configures related or calculated values, and no focused guide yet covers the manager end to end.
 - Configuring enrichment: [Show related objects](/guide/show-related-objects) and
   [Show calculated values](/guide/show-calculated-values) each close with the single-record form of their layer. The
   [objectRelated](/reference/api/use/objectRelated) and [objectCalculated](/reference/api/use/objectCalculated)

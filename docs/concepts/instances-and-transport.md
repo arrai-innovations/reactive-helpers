@@ -154,8 +154,9 @@ for how the library makes runs cancellable.
 
 - Learning path: [Build a reactive list](/tutorials/build-a-reactive-list) walks through one list instance and one
   handler end to end.
-- Tasks: [Create a record](/guide/create-a-record) and [Paginate a list](/guide/paginate-a-list) implement specific
-  handlers; [Pass backend arguments](/guide/data-layer) shows the per-instance form.
+- Tasks: [Create a record](/guide/create-a-record), [Paginate a list](/guide/paginate-a-list), and
+  [Run a server action](/guide/run-a-server-action) implement specific handlers;
+  [Pass backend arguments](/guide/data-layer) shows the per-instance form.
 - Related concepts: [The list pipeline](/concepts/list-pipeline) and [The object pipeline](/concepts/object-pipeline)
   cover what wraps each instance; [Cancellable intents](/concepts/cancellable-intents) covers cancellation.
 - Reference: [useListInstance](/reference/api/use/listInstance), [config/listCrud](/reference/api/config/listCrud),

@@ -114,7 +114,8 @@ Check two contacts and the button reads "Delete 2 selected". Clicking it sends o
 
 ## Related pages
 
-- [Paginate a list](/guide/paginate-a-list) covers another list-side task.
+- [Paginate a list](/guide/paginate-a-list) and [Run a server action](/guide/run-a-server-action) cover the other
+  list-side tasks.
 - [Track loading and error state](/tutorials/track-loading-and-error) explains the shared `state.loading`,
   `state.error`, and `state.errored` fields this page relies on.
 - The [BulkDeleteArgsRaw reference](/reference/api/config/listCrud#bulkdeleteargsraw) documents the handler's full

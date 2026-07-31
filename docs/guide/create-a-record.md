@@ -104,5 +104,6 @@ instance, drive `pk` reactively from the returned key, as in [Reload a record](/
 ## Related pages
 
 [Edit one object](/tutorials/edit-one-object) manages an existing record by `pk`.
+[Run a server action](/guide/run-a-server-action) covers backend operations beyond the CRUD verbs.
 [Register app-wide CRUD defaults](/guide/register-crud-defaults) shows how to register `create` once instead of per
 instance.
