@@ -75,8 +75,10 @@ describe("use/objectSubscription.js", function () {
         request_id: "60799141-959a-4ff7-80bc-1ad6b805a8fd",
     };
     const fields = ["id", "__str__", "name"];
-    // Flush chained microtasks/watchers; the intent awaits a cancel before it can re-run.
-    const flushAll = async () => {
+    // Only for asserting that something does *not* happen, where there is no condition to poll for.
+    //  Prefer `poll` whenever the test is waiting for a state to arrive: it fails saying what never
+    //  became true, where this one just runs out and leaves the assertion to explain itself.
+    const settle = async () => {
         for (let i = 0; i < 10; i++) {
             await flushPromises();
             await nextTick();
@@ -178,23 +180,21 @@ describe("use/objectSubscription.js", function () {
                 intendToRetrieve: false,
                 intendToSubscribe: true,
             });
-            useObjectSubscription({ props, handlers });
+            const sub = useObjectSubscription({ props, handlers });
 
-            await flushAll();
-            expect(calls).toHaveLength(1);
+            await poll(() => calls.length === 1);
             // the connection is open and standing; its promise stays pending
             calls[0].resolvable.resolve(crudSubscribeResolved);
-            await flushAll();
+            await poll(() => sub.state.subscribed);
 
             props.target.stream = "another_stream";
             props.params = { fields: ["id"] };
-            await flushAll();
+            await poll(() => calls[0].args.isCancelled.value);
             // disconnecting settles the superseded run, which releases the new one
             calls[0].resolvable.cancel.resolve();
             calls[0].resolvable.reject(new Error("disconnected"));
-            await flushAll();
+            await poll(() => calls.length === 2);
 
-            expect(calls).toHaveLength(2);
             expect(calls[1].args.target).toEqual({ stream: "another_stream" });
             expect(calls[1].args.params).toEqual({ fields: ["id"] });
             // the first run's payload still describes the call it was made for
@@ -452,23 +452,24 @@ describe("use/objectSubscription.js", function () {
             const props = getProps({ pk, intendToRetrieve: true, params: { fields } });
             const sub = useObjectSubscription({ props, handlers });
 
-            await flushAll();
+            await poll(() => calls.length === 1);
             expect(calls.map((c) => c.pk)).toEqual(["1"]);
 
             // Navigate to pk 2 while pk 1 is still in flight.
             pk.value = 2;
-            await flushAll();
+            // Nothing to wait for: the assertion is that no second run starts, so settle instead.
+            await settle();
             // The in-flight pk 1 run cannot be cancelled, so the pk 2 fetch waits behind it.
             expect(calls.map((c) => c.pk)).toEqual(["1"]);
 
             // The stale pk 1 record is still assigned when it resolves, but settling clears the
             //  guard, so the deferred run then fetches pk 2.
             calls[0].resolvable.resolve({ id: 1, name: "one" });
-            await flushAll();
+            await poll(() => calls.length === 2);
             expect(calls.map((c) => c.pk)).toEqual(["1", "2"]);
 
             calls[1].resolvable.resolve({ id: 2, name: "two" });
-            await flushAll();
+            await poll(() => sub.state.object.id === 2);
             expect(sub.state.object).toEqual({ id: 2, name: "two" });
         });
 
@@ -485,21 +486,21 @@ describe("use/objectSubscription.js", function () {
             const props = getProps({ pk, intendToRetrieve: true, params: { fields } });
             const sub = useObjectSubscription({ props, handlers });
 
-            await flushAll();
+            await poll(() => calls.length === 1);
             expect(calls.map((c) => c.pk)).toEqual(["1"]);
 
             // Navigate to pk 2; aborting the stale run settles it (cancel resolves, request rejects).
             pk.value = 2;
-            await flushAll();
+            await poll(() => calls[0].resolvable.promise.cancel.mock.calls.length);
             calls[0].resolvable.cancel.resolve();
             calls[0].resolvable.reject(new Error("aborted"));
-            await flushAll();
+            await poll(() => calls.length === 2);
 
             // The new key is fetched.
             expect(calls.map((c) => c.pk)).toEqual(["1", "2"]);
 
             calls.find((c) => c.pk === "2").resolvable.resolve({ id: 2, name: "two" });
-            await flushAll();
+            await poll(() => sub.state.object.id === 2);
             expect(sub.state.object).toEqual({ id: 2, name: "two" });
         });
 
@@ -520,12 +521,12 @@ describe("use/objectSubscription.js", function () {
             //  standing connection has, rather than a cancellable one
             const sub = useObjectSubscription({ props, handlers });
 
-            await flushAll();
+            await poll(() => calls.length === 1);
             expect(calls).toEqual(["1"]);
             expect(sub.state.subscribed).toBe(true);
 
             pk.value = 2;
-            await flushAll();
+            await poll(() => calls.length === 2);
             expect(calls).toEqual(["1", "2"]);
         });
     });
