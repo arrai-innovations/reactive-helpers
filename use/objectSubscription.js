@@ -1,4 +1,5 @@
 import { assignReactiveObject } from "../utils/assignReactiveObject.js";
+import cloneDeep from "lodash-es/cloneDeep.js";
 import { useCancellableIntent } from "./cancellableIntent.js";
 import { useObjectInstance } from "./objectInstance.js";
 import { computed, reactive, readonly, ref, toRef, toRefs } from "vue";
@@ -238,10 +239,13 @@ export function useObjectSubscription({ objectInstance, props, handlers }) {
             const subscribePromise = parentState.crud.subscribe({
                 runId,
                 isCurrentRun,
-                target: parentState.crud.args,
+                // Snapshots, matching useListSubscription. A subscribe payload describes the call it was made for, so
+                //  a handler that stashes it and reads it later sees what the run started with. `isCancelled` below is
+                //  the deliberate exception: observing it while the call is in flight is its whole purpose.
+                target: cloneDeep(parentState.crud.args),
                 pk: parentState.pk,
                 pkKey: parentState.pkKey,
-                params: state.params,
+                params: cloneDeep(state.params),
                 callback: subscribeCallback,
                 isCancelled: readonly(isCancelled),
             });
