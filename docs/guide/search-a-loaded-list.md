@@ -148,10 +148,14 @@ contacts.list();
 The list starts with every contact and narrows as the reader types. Clearing the box restores the full loaded set. No
 query fetches again.
 
-::: warning Search sees only the loaded rows, not the whole server-side collection. Under pagination or partial loading,
-a search ranges over the loaded page alone. A query that finds nothing means nothing matched among the loaded rows, not
-that no such contact exists on the server. To search the whole collection, send the query as a param and let the server
-select the rows; see [Filter a list](/guide/filter-a-list). :::
+::: warning
+
+Search sees only the loaded rows, not the whole server-side collection. Under pagination or partial loading, a search
+ranges over the loaded page alone. A query that finds nothing means nothing matched among the loaded rows, not that no
+such contact exists on the server. To search the whole collection, send the query as a param and let the server select
+the rows; see [Filter a list](/guide/filter-a-list).
+
+:::
 
 ## Compose with filter and sort
 

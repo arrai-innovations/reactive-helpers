@@ -73,8 +73,15 @@ Link to reference and authored pages with VitePress route links, for example `/r
 Use VitePress custom containers, not GitHub alert syntax:
 
 ```md
-::: warning Body text here. :::
+::: warning
+
+Body text here.
+
+:::
 ```
+
+Keep a blank line after the opening marker and before the closing marker. With the project's `proseWrap: "always"`
+setting, Prettier otherwise collapses the container into one line and breaks VitePress rendering.
 
 Available containers: `info`, `tip`, `warning`, `danger`, `details`.
 

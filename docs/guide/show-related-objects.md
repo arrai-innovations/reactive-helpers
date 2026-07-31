@@ -67,9 +67,13 @@ The match lands in `withCompany.state.relatedObjects`, keyed first by the row's 
 `withCompany.state.relatedObjects[1].company` is the Acme record. The row itself stays untouched: related data lives in
 this side map, not on the row.
 
-::: warning Despite its name, a rule's `pkKey` is the foreign-key field on the source row, not a primary key. Here
-`companyId` is the field on each contact that points at a company. The name is historical, and a rename to `fkKey` is
-planned. Omit `pkKey` and it defaults to the rule name. :::
+::: warning
+
+Despite its name, a rule's `pkKey` is the foreign-key field on the source row, not a primary key. Here `companyId` is
+the field on each contact that points at a company. The name is historical, and a rename to `fkKey` is planned. Omit
+`pkKey` and it defaults to the rule name.
+
+:::
 
 ## Render the related object
 
@@ -185,9 +189,13 @@ Ada references projects `1` and `3`, and the list holds `3` before `1`, so
 
 Because you passed a reactive ref, reordering the projects list reorders the related array with it.
 
-::: warning `order` should cover every id the foreign keys might reference, which it does when it is the related list's
-own `order`. A hand-written `order` that omits a referenced id leaves that id unsorted, in an unpredictable spot. Prefer
-a real list's `order` over authoring one by hand. :::
+::: warning
+
+`order` should cover every id the foreign keys might reference, which it does when it is the related list's own `order`.
+A hand-written `order` that omits a referenced id leaves that id unsorted, in an unpredictable spot. Prefer a real
+list's `order` over authoring one by hand.
+
+:::
 
 ## The same for one object
 
@@ -207,9 +215,13 @@ const contactRelated = useObjectRelated({
 // contactRelated.state.relatedObject.company is the resolved record
 ```
 
-::: tip A rule can chain off another rule's result with the `relatedItem.` prefix, to follow a second-order relation (a
+::: tip
+
+A rule can chain off another rule's result with the `relatedItem.` prefix, to follow a second-order relation (a
 contact's company, then that company's region). See [The object pipeline](/concepts/object-pipeline) and
-[useObjectRelated](/reference/api/use/objectRelated) for that. :::
+[useObjectRelated](/reference/api/use/objectRelated) for that.
+
+:::
 
 ## Where related sits in the pipeline
 

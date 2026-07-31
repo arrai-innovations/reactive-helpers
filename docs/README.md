@@ -159,8 +159,16 @@ VitePress fails the build on dead links, so a broken link is caught by `pnpm run
 Use VitePress custom containers for callouts:
 
 ```md
-::: warning Body text here. :::
+::: warning
+
+Body text here.
+
+:::
 ```
+
+Keep the blank line after the opening marker and before the closing marker. The project formats Markdown with Prettier's
+`proseWrap: "always"`; without those blank lines, Prettier treats the container as one prose paragraph and moves the
+markers onto the same line, which breaks VitePress rendering.
 
 Available containers: `info`, `tip`, `warning`, `danger`, and `details`. See
 <https://vitepress.dev/guide/markdown#custom-containers>. Do not use GitHub alert syntax (`> [!WARNING]`) in authored

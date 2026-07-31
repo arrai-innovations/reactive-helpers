@@ -93,10 +93,13 @@ This rarely bites, because a create form usually hands off once the record exist
 `contact.state.object.contactId` and navigate to a detail or edit route, or return to the list with a toast. The
 returned record carries the key you need to build that link.
 
-::: warning If you instead keep this same instance on screen and expect a later `contact.retrieve()` or
-`contact.patch(...)` to act on the new record, it will not. Those still target `props.pk`, which is unset here. To edit
-the new record from one instance, drive `pk` reactively from the returned key, as in
-[Reload a record](/guide/reload-a-record). :::
+::: warning
+
+If you instead keep this same instance on screen and expect a later `contact.retrieve()` or `contact.patch(...)` to act
+on the new record, it will not. Those still target `props.pk`, which is unset here. To edit the new record from one
+instance, drive `pk` reactively from the returned key, as in [Reload a record](/guide/reload-a-record).
+
+:::
 
 ## Related pages
 

@@ -42,9 +42,12 @@ the same as any other action. While `contacts.state.loading` is `true`, a new `b
 
 ## Reload after deleting a subset
 
-::: warning On success the instance empties `contacts.state.objects` even when you deleted only a subset. The rows you
-kept vanish from the screen too. Call `contacts.list()` after a successful `bulkDelete()` when other rows should stay
-visible. :::
+::: warning
+
+On success the instance empties `contacts.state.objects` even when you deleted only a subset. The rows you kept vanish
+from the screen too. Call `contacts.list()` after a successful `bulkDelete()` when other rows should stay visible.
+
+:::
 
 So the pattern is: build a selection of primary keys, delete them, and reload. The reload refetches the rows the server
 still has, which are every row except the ones you just deleted.

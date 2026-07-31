@@ -76,9 +76,13 @@ const visibleContacts = useListFilter({
 
 When `showInactive` flips to `true`, the inactive rows reappear at once. No refetch, and no manual recompute.
 
-::: tip A filter rule also receives a row's related and calculated values as later arguments, when those layers sit
-upstream. Here there are none, so the rule reads the row alone. See [The list pipeline](/concepts/list-pipeline) for the
-fuller chain. :::
+::: tip
+
+A filter rule also receives a row's related and calculated values as later arguments, when those layers sit upstream.
+Here there are none, so the rule reads the row alone. See [The list pipeline](/concepts/list-pipeline) for the fuller
+chain.
+
+:::
 
 ## Sort the rows that remain
 

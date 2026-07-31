@@ -129,14 +129,18 @@ and reloads. The handler calls `clearObjects()`, so page 2's rows replace page 1
 makes the header read "Page 2 of 5". The totals stay put, because the server reports the same all-page aggregates each
 time. The guard stops the button on the last page and while a request is in flight.
 
-::: tip Driving paging by hand with `useListInstance` makes each metadata update explicit. You set the page, call
+::: tip
+
+Driving paging by hand with `useListInstance` makes each metadata update explicit. You set the page, call
 `contacts.list()`, and gate the button while a request is in flight.
 
 In an app you could put the page number in reactive `params` on a `useListSubscription` instead. Then you set
 `params.page` and the subscription refetches on its own, with no manual `list()` call. Its list intent coordinates
 overlapping runs. It waits for the current run, or cancels it when your handler is cancellable, so rapid page changes
 settle on the page you last chose. Keep the disabled-while-loading guard for UX if you like, but you no longer need it
-for correctness. See [Filter a list](/guide/filter-a-list) for this reactive-reload pattern. :::
+for correctness. See [Filter a list](/guide/filter-a-list) for this reactive-reload pattern.
+
+:::
 
 ## Related pages
 

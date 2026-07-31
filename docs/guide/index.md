@@ -66,9 +66,13 @@ per contact. Swap the in-memory array for a real request and nothing else change
 [Build a reactive list](/tutorials/build-a-reactive-list) walks through the same component step by step, including
 loading and error state.
 
-::: tip Need loading and error state around your own async work? `useLoadingError` is a small standalone primitive that
-returns readonly state plus actions to set and clear it. You fold it into your own composites; see the
-[useLoadingError reference](/reference/api/use/loadingError). :::
+::: tip
+
+Need loading and error state around your own async work? `useLoadingError` is a small standalone primitive that returns
+readonly state plus actions to set and clear it. You fold it into your own composites; see the
+[useLoadingError reference](/reference/api/use/loadingError).
+
+:::
 
 ## Next steps
 

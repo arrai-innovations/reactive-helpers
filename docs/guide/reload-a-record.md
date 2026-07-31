@@ -18,9 +18,13 @@ record you navigated to.
 Build the promise with `cancellableFetch` or `makeCancellable`. Do not mark the handler `async`: an `async` function
 returns a native promise with no `.cancel`, which the instance cannot cancel.
 
-::: warning A retrieve that cannot be cancelled cannot be abandoned, so a mid-flight `pk` change waits for it. The stale
-record is assigned to `contact.state.object` first. The new key is fetched once that request settles, so the record you
-navigated away from is on screen in between. :::
+::: warning
+
+A retrieve that cannot be cancelled cannot be abandoned, so a mid-flight `pk` change waits for it. The stale record is
+assigned to `contact.state.object` first. The new key is fetched once that request settles, so the record you navigated
+away from is on screen in between.
+
+:::
 
 To build a cancellable handler, see [Cancel stale requests](/guide/cancel-stale-requests). For the model behind
 cancellation, see [Cancellable intents](/concepts/cancellable-intents). This example uses a small cancellable handler:

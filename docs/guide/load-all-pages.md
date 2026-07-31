@@ -79,9 +79,13 @@ needs survives. See [Cancel stale requests](/guide/cancel-stale-requests) for wh
 `setPaginateInfo` is optional here; the paging metadata is less useful once every page is loaded, but page one still
 reports the totals. See [Paginate a list](/guide/paginate-a-list) for per-page navigation instead.
 
-::: tip The loop fetches pages two and up concurrently, so a collection with many pages fires many requests at once. For
-large page counts, cap the concurrency with a small limiter (such as [`p-limit`](https://www.npmjs.com/package/p-limit))
-so you do not open hundreds of requests in parallel. :::
+::: tip
+
+The loop fetches pages two and up concurrently, so a collection with many pages fires many requests at once. For large
+page counts, cap the concurrency with a small limiter (such as [`p-limit`](https://www.npmjs.com/package/p-limit)) so
+you do not open hundreds of requests in parallel.
+
+:::
 
 ## Cancel the whole operation at once
 

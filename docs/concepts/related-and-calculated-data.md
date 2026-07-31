@@ -86,9 +86,13 @@ record's foreign keys pick a subset, and `order` arranges that subset:
 
 `order` applies only when the relation is an array. It has no effect on a single-valued rule.
 
-::: warning An `order` should cover every id the foreign keys might reference. A partial `order` still keeps the whole
-relation, but an id missing from it compares as `NaN` against everything else. That id lands in an unpredictable
-position. This is why a real list's `order` is a safer source than a hand-written list. :::
+::: warning
+
+An `order` should cover every id the foreign keys might reference. A partial `order` still keeps the whole relation, but
+an id missing from it compares as `NaN` against everything else. That id lands in an unpredictable position. This is why
+a real list's `order` is a safer source than a hand-written list.
+
+:::
 
 ## A calculated rule is a function
 

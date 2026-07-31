@@ -42,9 +42,13 @@ One rule matters above all. The handler must not be `async`. An `async` function
 fresh native promise. That fresh promise has no `.cancel`, so the intent cannot stop the run. Return the
 `cancellableFetch` promise directly instead.
 
-::: warning Do not chain `.then()` onto the `cancellableFetch` result and return that. A `.then()` returns a new promise
-without `.cancel`, which silently loses cancellation again. Do any post-processing inside the `transform` function, so
-the returned promise keeps its `.cancel`. :::
+::: warning
+
+Do not chain `.then()` onto the `cancellableFetch` result and return that. A `.then()` returns a new promise without
+`.cancel`, which silently loses cancellation again. Do any post-processing inside the `transform` function, so the
+returned promise keeps its `.cancel`.
+
+:::
 
 ## The manual pattern for non-fetch or custom work
 

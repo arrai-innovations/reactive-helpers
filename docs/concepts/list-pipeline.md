@@ -158,9 +158,13 @@ Everything past the subscription layer is client-side. Filter, search, and sort 
 rows the instance currently holds, the ones the last fetch and the subscription events left there. They never reach the
 full server-side collection.
 
-::: warning This matters most under pagination or partial loading. If the instance holds one page of contacts, a search
-or a sort ranges over that page alone. The result has loaded-set meaning, not application-wide meaning. A search that
-finds nothing means nothing matched among the loaded rows, not that no such contact exists on the server. :::
+::: warning
+
+This matters most under pagination or partial loading. If the instance holds one page of contacts, a search or a sort
+ranges over that page alone. The result has loaded-set meaning, not application-wide meaning. A search that finds
+nothing means nothing matched among the loaded rows, not that no such contact exists on the server.
+
+:::
 
 So the layer you choose depends on the scope you want. For a view over the rows already loaded, apply filter, search, or
 sort. For work across the whole collection, change the reactive `props.params` the subscription watches and let the

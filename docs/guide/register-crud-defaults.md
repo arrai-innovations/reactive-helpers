@@ -65,9 +65,13 @@ import App from "./App.vue";
 createApp(App).mount("#app");
 ```
 
-::: warning Instances created before registration keep the placeholders and do not pick up handlers registered later. If
-an action resolves `false` with `Crud method "list" is not implemented.` in `state.error` even though you called
-`setListCrud`, the instance was created first. :::
+::: warning
+
+Instances created before registration keep the placeholders and do not pick up handlers registered later. If an action
+resolves `false` with `Crud method "list" is not implemented.` in `state.error` even though you called `setListCrud`,
+the instance was created first.
+
+:::
 
 ## 3. Create instances without handlers
 
