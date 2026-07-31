@@ -2,7 +2,7 @@ import { defaultObjectCrud, getObjectCrud } from "../config/objectCrud.js";
 import { assignReactiveObject } from "../utils/assignReactiveObject.js";
 import { useLoadingError } from "./loadingError.js";
 import { reactive, readonly, ref } from "vue";
-import { wrapMaybeCancellable } from "../utils/cancellablePromise.js";
+import { assertHandlerPromise, wrapMaybeCancellable } from "../utils/cancellablePromise.js";
 import { pkRefIfReactive, refIfReactive } from "../utils/refIfReactive.js";
 
 /**
@@ -278,6 +278,7 @@ export function useObjectInstance({ props, handlers = {} }) {
                     pkKey: state.pkKey,
                     isCancelled: readonly(isCancelled),
                 });
+                assertHandlerPromise(createPromise, ObjectError, "create");
             } catch (error) {
                 loadingError.setError(error);
                 loadingError.clearLoading();
@@ -335,6 +336,7 @@ export function useObjectInstance({ props, handlers = {} }) {
                     pkKey: state.pkKey,
                     isCancelled: readonly(isCancelled),
                 });
+                assertHandlerPromise(retrievePromise, ObjectError, "retrieve");
             } catch (error) {
                 loadingError.setError(error);
                 loadingError.clearLoading();
@@ -390,6 +392,7 @@ export function useObjectInstance({ props, handlers = {} }) {
                     pkKey: state.pkKey,
                     isCancelled: readonly(isCancelled),
                 });
+                assertHandlerPromise(updatePromise, ObjectError, "update");
             } catch (error) {
                 loadingError.setError(error);
                 loadingError.clearLoading();
@@ -440,6 +443,7 @@ export function useObjectInstance({ props, handlers = {} }) {
                     pkKey: state.pkKey,
                     isCancelled: readonly(isCancelled),
                 });
+                assertHandlerPromise(deletePromise, ObjectError, "delete");
             } catch (error) {
                 loadingError.setError(error);
                 loadingError.clearLoading();
@@ -492,6 +496,7 @@ export function useObjectInstance({ props, handlers = {} }) {
                     params: state.params,
                     isCancelled: readonly(isCancelled),
                 });
+                assertHandlerPromise(patchPromise, ObjectError, "patch");
             } catch (error) {
                 loadingError.setError(error);
                 loadingError.clearLoading();
@@ -540,6 +545,7 @@ export function useObjectInstance({ props, handlers = {} }) {
                     pkKey: state.pkKey,
                     isCancelled: readonly(isCancelled),
                 });
+                assertHandlerPromise(executeActionPromise, ObjectError, "executeAction");
             } catch (error) {
                 loadingError.setError(error);
                 loadingError.clearLoading();
