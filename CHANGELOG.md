@@ -17,6 +17,9 @@ _Actions potentially required by implementers are marked with italics._
   value through, and there was no reason for the two to differ. _Implementers checking the resolved value for `true`
   should check that the action did not resolve `null`, or have the handler resolve a truthy value of its own. A handler
   resolving nothing now surfaces `undefined` on success, which stays distinguishable from the `null` of a failure._
+- The package now declares `engines.node` of `>=22`. Node 20 reached end of life on 2026-04-30, leaving 22 and 24 as the
+  supported lines. Nothing in the code changed; the constraint was previously undeclared. _Implementers still on Node 20
+  or earlier will see an install failure under pnpm, which enforces `engines` by default, and a warning under npm._
 
 ### Additions
 

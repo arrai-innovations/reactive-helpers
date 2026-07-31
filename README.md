@@ -41,7 +41,8 @@ reaches your backend), so the package stays transport agnostic.
 ## Requirements
 
 - **Vue** `^3.5.13` (peer dependency).
-- **Node.js** with ES module support. This package is ESM only (`"type": "module"`); there is no CommonJS build.
+- **Node.js** `>=22`. Node 20 reached end of life in April 2026, so the supported lines are 22 and 24. This package is
+  ESM only (`"type": "module"`); there is no CommonJS build.
 - Peer dependencies you install alongside it: [`vue`](https://www.npmjs.com/package/vue),
   [`@vueuse/core`](https://www.npmjs.com/package/@vueuse/core), and
   [`lodash-es`](https://www.npmjs.com/package/lodash-es).
@@ -87,7 +88,8 @@ Issues and pull requests are welcome. A few things to know before you start:
     $ git clone git@github.com:arrai-innovations/reactive-helpers.git
     ```
 
-2. Install dependencies:
+2. Install dependencies. Development needs Node `>=22.13`, above the `>=22` the package itself declares, because
+   `eslint-plugin-jsdoc` and `vite` require it:
 
     ```bash
     $ pnpm install
