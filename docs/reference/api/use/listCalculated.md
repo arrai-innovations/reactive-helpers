@@ -122,13 +122,13 @@ The list objects stored by their pks.
 
 ###### objectsInOrder
 
-> **objectsInOrder**: [`ExistingCrudObject`](objectInstance.md#existingcrudobject)[]
+> **objectsInOrder**: readonly [`ExistingCrudObject`](objectInstance.md#existingcrudobject)[]
 
 The objects in the order specified by the list.
 
 ###### objectsMap
 
-> **objectsMap**: `Map`\<`string`, [`ExistingCrudObject`](objectInstance.md#existingcrudobject)\> & `Omit`\<[`ObjectsMap`](listInstance.md#objectsmap-1), keyof `Map`\<`any`, `any`\>\>
+> **objectsMap**: `object`
 
 The map of objects stored by their pks.
 
@@ -140,7 +140,7 @@ Increments when the set of object keys changes.
 
 ###### order
 
-> **order**: `string`[]
+> **order**: readonly `string`[]
 
 The order of objects in the list.
 
@@ -322,13 +322,13 @@ The list objects stored by their pks.
 
 ###### objectsInOrder
 
-> **objectsInOrder**: [`ExistingCrudObject`](objectInstance.md#existingcrudobject)[]
+> **objectsInOrder**: readonly [`ExistingCrudObject`](objectInstance.md#existingcrudobject)[]
 
 The objects in the order specified by the list.
 
 ###### objectsMap
 
-> **objectsMap**: `Map`\<`string`, [`ExistingCrudObject`](objectInstance.md#existingcrudobject)\> & `Omit`\<[`ObjectsMap`](listInstance.md#objectsmap-1), keyof `Map`\<`any`, `any`\>\>
+> **objectsMap**: `object`
 
 The map of objects stored by their pks.
 
@@ -340,7 +340,7 @@ Increments when the set of object keys changes.
 
 ###### order
 
-> **order**: `string`[]
+> **order**: readonly `string`[]
 
 The order of objects in the list.
 
@@ -548,13 +548,13 @@ The list objects stored by their pks.
 
 ###### objectsInOrder
 
-> **objectsInOrder**: [`ExistingCrudObject`](objectInstance.md#existingcrudobject)[]
+> **objectsInOrder**: readonly [`ExistingCrudObject`](objectInstance.md#existingcrudobject)[]
 
 The objects in the order specified by the list.
 
 ###### objectsMap
 
-> **objectsMap**: `Map`\<`string`, [`ExistingCrudObject`](objectInstance.md#existingcrudobject)\> & `Omit`\<[`ObjectsMap`](listInstance.md#objectsmap-1), keyof `Map`\<`any`, `any`\>\>
+> **objectsMap**: `object`
 
 The map of objects stored by their pks.
 
@@ -566,7 +566,7 @@ Increments when the set of object keys changes.
 
 ###### order
 
-> **order**: `string`[]
+> **order**: readonly `string`[]
 
 The order of objects in the list.
 

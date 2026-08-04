@@ -1432,26 +1432,50 @@ describe("use/listInstance.spec.js", function () {
             listInstance.deleteListObject(1);
             expect(listInstance.state.objectsVersion).toBe(3);
         });
-        scopedIt("tracks structural changes made through the objects proxy", () => {
-            // state.objects is an object-shaped view over the underlying map, so mutations applied to
-            // it have to maintain the same signal as the map's own methods.
+        scopedIt("leaves the structural version alone when a write to the objects view is refused", () => {
+            // state.objects is a read-only view, so nothing outside the list's own methods can move
+            // the structural version. Every refusal below has to leave it where it was.
             const listInstance = useListInstance({ props: { pkKey: "id", params: {} } });
-
-            listInstance.state.objects["1"] = { id: 1, name: "one" };
+            listInstance.addListObject({ id: 1, name: "one" });
             expect(listInstance.state.objectsVersion).toBe(1);
 
-            listInstance.state.objects["1"] = { id: 1, name: "one replaced" };
+            listInstance.state.objects["2"] = { id: 2, name: "two" };
+            expect(listInstance.state.objects["2"]).toBeUndefined();
             expect(listInstance.state.objectsVersion).toBe(1);
 
-            // Deleting an absent key reports failure from the trap, which strict mode turns into a
-            // TypeError. A plain object would report success instead, so this is a divergence from
-            // ordinary object semantics rather than an intended guard. Pinned so a deliberate change
-            // to it is visible.
-            expect(() => delete listInstance.state.objects["missing"]).toThrow(TypeError);
+            delete listInstance.state.objects["1"];
+            expect(listInstance.state.objects["1"]).toEqual({ id: 1, name: "one" });
             expect(listInstance.state.objectsVersion).toBe(1);
 
-            expect(delete listInstance.state.objects["1"]).toBe(true);
-            expect(listInstance.state.objectsVersion).toBe(2);
+            // Deleting an absent key used to report failure from the trap, which strict mode turned
+            // into a TypeError. The read-only view reports success and does nothing, which is what a
+            // plain object does for an absent key.
+            expect(delete listInstance.state.objects["missing"]).toBe(true);
+            expect(listInstance.state.objectsVersion).toBe(1);
+        });
+        scopedIt("refuses in-place mutation of order and objectsInOrder", () => {
+            // Both are computeds handing out a fresh array each run. A push used to read back and
+            // then vanish at the next invalidation, showing a key the collection never held.
+            const listInstance = useListInstance({ props: { pkKey: "id", params: {} } });
+            listInstance.pushObjects([
+                { id: 1, name: "one" },
+                { id: 2, name: "two" },
+            ]);
+
+            listInstance.state.order.push("99");
+            listInstance.state.order.splice(0, 1);
+            listInstance.state.order[0] = "99";
+            expect(listInstance.state.order).toEqual(["1", "2"]);
+            expect(listInstance.state.objectsMap.has("99")).toBe(false);
+
+            listInstance.state.objectsInOrder.push({ id: 99, name: "ninety-nine" });
+            expect(listInstance.state.objectsInOrder).toHaveLength(2);
+
+            // the reads a caller renders with are untouched
+            expect(listInstance.state.order.includes("1")).toBe(true);
+            expect([...listInstance.state.order]).toEqual(["1", "2"]);
+            expect(listInstance.state.order.filter((pk) => pk === "2")).toEqual(["2"]);
+            expect(listInstance.state.objectsInOrder.map((o) => o.name)).toEqual(["one", "two"]);
         });
         scopedIt("emits one structural change when clearing a populated list", () => {
             const listInstance = useListInstance({ props: { pkKey: "id", params: {} } });
@@ -1585,14 +1609,22 @@ describe("use/listInstance.spec.js", function () {
         });
     });
     describe("internal objectsMap proxy", function () {
-        scopedIt("lets Map.set bypass string key normalization", function () {
+        scopedIt("refuses the mutation methods that used to bypass string key normalization", function () {
+            // Map.set took the key as given, so a numeric key produced an entry the object-shaped
+            // view could not see and a numeric entry in order. The view no longer accepts set, so
+            // every key in the collection has been through String() in addListObject.
             const listInstance = useListInstance({ props: { pkKey: "id" } });
 
             listInstance.state.objectsMap.set(42, { id: 42, name: "forty-two" });
 
-            expect(listInstance.state.objectsMap.get(42)).toEqual({ id: 42, name: "forty-two" });
+            expect(listInstance.state.objectsMap.get(42)).toBeUndefined();
             expect(listInstance.state.objects["42"]).toBeUndefined();
-            expect(listInstance.state.order).toEqual([42]);
+            expect(listInstance.state.order).toEqual([]);
+
+            listInstance.addListObject({ id: 42, name: "forty-two" });
+
+            expect(listInstance.state.objectsMap.get("42")).toEqual({ id: 42, name: "forty-two" });
+            expect(listInstance.state.order).toEqual(["42"]);
         });
         scopedIt("keeps numeric Map lookups distinct from string object-property lookups", function () {
             const listInstance = useListInstance({ props: { pkKey: "id" } });
@@ -1601,39 +1633,45 @@ describe("use/listInstance.spec.js", function () {
             expect(listInstance.state.objectsMap.get(42)).toBeUndefined();
             expect(listInstance.state.objects[42]).toBe(listInstance.state.objectsMap.get("42"));
         });
-        scopedIt("set wraps objects reactively", function () {
+        scopedIt("wraps a stored object reactively", function () {
             const listInstance = useListInstance({ props: { pkKey: "id" } });
-            const obj = { id: 1, __str__: "one", name: "one" };
-            listInstance.state.objectsMap.set("1", obj);
+            listInstance.addListObject({ id: 1, __str__: "one", name: "one" });
             expect(isReactive(listInstance.state.objectsMap.get("1"))).toBe(true);
         });
-        scopedIt("set passes through reactive objects", function () {
+        scopedIt("passes an already reactive object through", function () {
             const listInstance = useListInstance({ props: { pkKey: "id" } });
             const obj = reactive({ id: 2, __str__: "two", name: "two" });
-            listInstance.state.objectsMap.set("2", obj);
+            listInstance.addListObject(obj);
             expect(listInstance.state.objectsMap.get("2")).toBe(obj);
         });
-        scopedIt("tracks structural changes from map mutation methods", function () {
+        scopedIt("refuses set, delete, and clear on the map view", function () {
             const listInstance = useListInstance({ props: { pkKey: "id" } });
-            const first = { id: 1, __str__: "one", name: "one" };
-            const replacement = { id: 1, __str__: "one replacement", name: "one replacement" };
+            listInstance.addListObject({ id: 1, __str__: "one", name: "one" });
+            expect(listInstance.state.objectsVersion).toBe(1);
 
-            expect(listInstance.state.objectsVersion).toBe(0);
-            listInstance.state.objectsMap.set("1", first);
-            expect(listInstance.state.objectsVersion).toBe(1);
-            listInstance.state.objectsMap.set("1", replacement);
-            expect(listInstance.state.objectsVersion).toBe(1);
-            expect(listInstance.state.objectsMap.delete("missing")).toBe(false);
-            expect(listInstance.state.objectsVersion).toBe(1);
-            expect(listInstance.state.objectsMap.delete("1")).toBe(true);
-            expect(listInstance.state.objectsVersion).toBe(2);
-            listInstance.state.objectsMap.set("1", first);
             listInstance.state.objectsMap.set("2", { id: 2, __str__: "two", name: "two" });
-            expect(listInstance.state.objectsVersion).toBe(4);
+            expect(listInstance.state.objectsMap.has("2")).toBe(false);
+
+            expect(listInstance.state.objectsMap.delete("1")).toBe(false);
+            expect(listInstance.state.objectsMap.get("1")).toEqual({ id: 1, __str__: "one", name: "one" });
+
             listInstance.state.objectsMap.clear();
-            expect(listInstance.state.objectsVersion).toBe(5);
-            listInstance.state.objectsMap.clear();
-            expect(listInstance.state.objectsVersion).toBe(5);
+            expect(listInstance.state.objectsMap.size).toBe(1);
+
+            expect(listInstance.state.objectsVersion).toBe(1);
+        });
+        scopedIt("keeps the collection readable through the map view", function () {
+            const listInstance = useListInstance({ props: { pkKey: "id" } });
+            listInstance.pushObjects([
+                { id: 1, name: "one" },
+                { id: 2, name: "two" },
+            ]);
+
+            expect(listInstance.state.objectsMap.size).toBe(2);
+            expect(listInstance.state.objectsMap.has("1")).toBe(true);
+            expect([...listInstance.state.objectsMap.keys()]).toEqual(["1", "2"]);
+            expect([...listInstance.state.objectsMap.values()].map((o) => o.name)).toEqual(["one", "two"]);
+            expect([...listInstance.state.objectsMap.entries()].map(([pk]) => pk)).toEqual(["1", "2"]);
         });
 
         scopedIt("preventExtensions trap executes", function () {
@@ -1644,17 +1682,37 @@ describe("use/listInstance.spec.js", function () {
         });
     });
     describe("internal objects proxy", function () {
-        scopedIt("direct writes replace the stored row and bypass its embedded pk", function () {
+        scopedIt("refuses a direct write, so a held row reference stays current", function () {
+            // A direct write used to replace the stored row wholesale, which both skipped the
+            // embedded pk check and left anything holding the previous row reading stale values.
             const listInstance = useListInstance({ props: { pkKey: "id" } });
             listInstance.pushObjects([{ id: 1, name: "one" }]);
             const heldRow = listInstance.state.objects["1"];
 
             listInstance.state.objects["1"] = { name: "replacement" };
 
-            expect(listInstance.state.objectsMap.get("1")).toBe(listInstance.state.objects["1"]);
-            expect(listInstance.state.objects["1"]).not.toBe(heldRow);
-            expect(listInstance.state.objects["1"]).toEqual({ name: "replacement" });
-            expect(heldRow).toEqual({ id: 1, name: "one" });
+            expect(listInstance.state.objects["1"]).toBe(heldRow);
+            expect(listInstance.state.objects["1"]).toEqual({ id: 1, name: "one" });
+
+            listInstance.updateListObject({ id: 1, name: "one updated" });
+
+            expect(listInstance.state.objects["1"]).toBe(heldRow);
+            expect(heldRow.name).toBe("one updated");
+        });
+        scopedIt("keeps the rows it holds writable", function () {
+            // shallowReadonly stops structural writes to the collection without freezing the rows,
+            // which callers edit in place through v-model and the object composables.
+            const listInstance = useListInstance({ props: { pkKey: "id" } });
+            listInstance.pushObjects([{ id: 1, name: "one" }]);
+
+            const row = listInstance.state.objects["1"];
+            expect(isReactive(row)).toBe(true);
+
+            row.name = "edited";
+
+            expect(listInstance.state.objects["1"].name).toBe("edited");
+            expect(listInstance.state.objectsMap.get("1").name).toBe("edited");
+            expect(listInstance.state.objectsMap.get("1")).toBe(row);
         });
         scopedIt("prototype and define traps", function () {
             const listInstance = useListInstance({ props: { pkKey: "id" } });
@@ -1667,11 +1725,11 @@ describe("use/listInstance.spec.js", function () {
             const listInstance = useListInstance({ props: { pkKey: "id" } });
             const sym = Symbol("test");
             expect(sym in listInstance.state.objects).toBe(false);
+            // the view refuses symbol keys the same way it refuses pk keys
             Reflect.set(listInstance.state.objects, sym, "foo");
-            expect(sym in listInstance.state.objects).toBe(true);
-            Reflect.deleteProperty(listInstance.state.objects, sym);
             expect(sym in listInstance.state.objects).toBe(false);
             expect(Symbol.iterator in listInstance.state.objects).toBe(false);
+            expect(Object.prototype.toString.call(listInstance.state.objects)).toBe("[object Object]");
         });
     });
 });

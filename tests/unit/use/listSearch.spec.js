@@ -632,4 +632,28 @@ describe("use/listSearch", () => {
         expect(listSearch.state.order).toEqual(["2", "3"]);
         expect(listSearch.state.objectsInOrder.map((e) => e.id)).toEqual([2, 3]);
     });
+
+    scopedIt("refuses structural writes to its objects and order views but keeps the rows writable", async () => {
+        const list = useListInstance({ props: { pkKey: "id" } });
+        const listSearch = useListSearch({ parentState: list.state, props: reactive({}) });
+        list.pushObjects([
+            { id: 1, name: "one" },
+            { id: 2, name: "two" },
+        ]);
+        await nextTick();
+
+        listSearch.state.objects["3"] = { id: 3, name: "three" };
+        expect(listSearch.state.objects["3"]).toBeUndefined();
+
+        delete listSearch.state.objects["1"];
+        expect(listSearch.state.objects["1"]).toEqual({ id: 1, name: "one" });
+
+        listSearch.state.objects["1"].name = "one edited";
+        expect(list.state.objects["1"].name).toBe("one edited");
+
+        listSearch.state.order.push("99");
+        listSearch.state.objectsInOrder.push({ id: 99 });
+        expect(listSearch.state.order).not.toContain("99");
+        expect(listSearch.state.objectsInOrder.some((o) => o.id === 99)).toBe(false);
+    });
 });

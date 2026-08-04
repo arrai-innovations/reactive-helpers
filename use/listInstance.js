@@ -3,7 +3,7 @@ import { assignReactiveObject } from "../utils/assignReactiveObject.js";
 import { getFakePk } from "../utils/getFakePk.js";
 import { useLoadingError } from "./loadingError.js";
 import inspect from "browser-util-inspect";
-import { computed, effectScope, isReactive, reactive, readonly, ref, shallowReactive } from "vue";
+import { computed, effectScope, isReactive, reactive, readonly, ref, shallowReactive, shallowReadonly } from "vue";
 import { assertHandlerPromise, wrapMaybeCancellable } from "../utils/cancellablePromise.js";
 import { refIfReactive } from "../utils/refIfReactive.js";
 
@@ -53,15 +53,15 @@ export class ListInstanceError extends Error {
  */
 
 /**
- * @typedef {{[pk: import('../config/commonCrud.js').Pk]: import('../use/objectInstance.js').ExistingCrudObject}} ObjectsByPk - The objects by pk.
+ * @typedef {{readonly [pk: import('../config/commonCrud.js').Pk]: import('../use/objectInstance.js').ExistingCrudObject}} ObjectsByPk - The objects by pk. The collection itself is read-only; mutate it through the list's own methods. Each object it holds stays reactive and writable.
  */
 
 /**
- * @typedef {import('vue').ComputedRef<import('../use/objectInstance.js').ExistingCrudObject[]>} ObjectsInOrder - The objects in order, based on .order & .objects.
+ * @typedef {import('vue').ComputedRef<readonly import('../use/objectInstance.js').ExistingCrudObject[]>} ObjectsInOrder - The objects in order, based on .order & .objects. The array is read-only; each object in it stays reactive and writable.
  */
 
 /**
- * @typedef {import('vue').ComputedRef<import('../config/commonCrud.js').Pk[]>} ListOrder - The order of the objects in the list.
+ * @typedef {import('vue').ComputedRef<readonly import('../config/commonCrud.js').Pk[]>} ListOrder - The read-only order of the objects in the list. Change presentation order through `useListSort` rather than by writing to it.
  */
 
 /**
@@ -74,7 +74,7 @@ export class ListInstanceError extends Error {
  */
 
 /**
- * @typedef {Map<import('../config/commonCrud.js').Pk, import('vue').Reactive<import('../use/objectInstance.js').ExistingCrudObject>>} ObjectsMap - A Map of primary keys to the list's reactive existing objects.
+ * @typedef {ReadonlyMap<import('../config/commonCrud.js').Pk, import('vue').Reactive<import('../use/objectInstance.js').ExistingCrudObject>>} ObjectsMap - A read-only Map of primary keys to the list's reactive existing objects. Mutate it through the list's own methods. Each object it holds stays reactive and writable.
  */
 
 /**
@@ -419,20 +419,23 @@ export function useListInstance({ props, handlers = {} }) {
         params: refIfReactive(props, "params", {}),
         paginateInfo: shallowReactive({}),
         columnTotals: shallowReactive({}),
-        objectsMap: _objectsMapProxy,
-        // /** @type {{[key: string]: import('../use/objectInstance.js').ExistingCrudObject}} */
-        // objects: /** @type {{[key: string]: import('../use/objectInstance.js').ExistingCrudObject}} */ _objectsProxy,
-        objects: _objectsProxy,
+        // ### the writable proxies stay private; the state exposes read-only views of them ###
+        objectsMap: shallowReadonly(_objectsMapProxy),
+        objects: shallowReadonly(_objectsProxy),
         objectsVersion,
         loading: loadingError.loading,
         errored: loadingError.errored,
         error: loadingError.error,
+        // read-only for the same reason the two collections are: a computed hands out a fresh array each
+        //  run, so an in-place mutation would read back until the next invalidation and then vanish
         order: es.run(() =>
             computed(() => {
-                return [...state.objectsMap.keys()];
+                return shallowReadonly([..._objectsMapProxy.keys()]);
             })
         ),
-        objectsInOrder: es.run(() => computed(() => state.order.map((pk) => state.objectsMap.get(pk)))),
+        objectsInOrder: es.run(() =>
+            computed(() => shallowReadonly(state.order.map((pk) => _objectsMapProxy.get(pk))))
+        ),
     });
 
     getListCrud(state.crud, { props, handlers });
@@ -518,7 +521,7 @@ export function useListInstance({ props, handlers = {} }) {
                 throw new ListInstanceError("already loading.", "already-loading");
             }
             if (!pks) {
-                pks = Object.keys(state.objects);
+                pks = Object.keys(_objectsProxy);
             }
             loadingError.setLoading();
             loadingError.clearError();
@@ -543,7 +546,7 @@ export function useListInstance({ props, handlers = {} }) {
                 bulkDeletePromise
                     .then(() => {
                         batchObjectChanges(() => {
-                            assignReactiveObject(state.objects, {});
+                            assignReactiveObject(_objectsProxy, {});
                         });
                         loadingError.clearError();
                         return true;
@@ -574,7 +577,7 @@ export function useListInstance({ props, handlers = {} }) {
                 throw new ListInstanceError("already loading.", "already-loading");
             }
             if (!pks) {
-                pks = Object.keys(state.objects);
+                pks = Object.keys(_objectsProxy);
             }
             loadingError.setLoading();
             loadingError.clearError();
@@ -629,13 +632,13 @@ export function useListInstance({ props, handlers = {} }) {
                     "missing-pk"
                 );
             }
-            if (pk in state.objects) {
+            if (pk in _objectsProxy) {
                 throw new ListInstanceError(
                     `addListObject: list already has object for pk(${state.pkKey}): ${inspect(pk)}`,
                     "duplicate-pk"
                 );
             }
-            state.objects[pk] = object;
+            _objectsProxy[pk] = object;
         },
         updateListObject: (object) => {
             const pk = String(object[state.pkKey]);
@@ -645,23 +648,23 @@ export function useListInstance({ props, handlers = {} }) {
                     "missing-pk"
                 );
             }
-            if (!(pk in state.objects)) {
+            if (!(pk in _objectsProxy)) {
                 throw new ListInstanceError(
                     `updateListObject: list missing object for update by pk(${state.pkKey}): ${inspect(pk)}`,
                     "missing-object"
                 );
             }
-            assignReactiveObject(state.objects[pk], object);
+            assignReactiveObject(_objectsProxy[pk], object);
         },
         deleteListObject: (pkInput) => {
             const pk = String(pkInput);
-            if (!(pk in state.objects)) {
+            if (!(pk in _objectsProxy)) {
                 throw new ListInstanceError(
                     `deleteListObject: list missing object for removal by pk(${state.pkKey}): ${inspect(pk)}`,
                     "missing-object"
                 );
             }
-            delete state.objects[pk];
+            delete _objectsProxy[pk];
         },
         clearList: (options) => {
             const { keepPagination = false, keepColumnTotals = false, keepError = false } = options || {};
@@ -672,18 +675,18 @@ export function useListInstance({ props, handlers = {} }) {
             if (!keepColumnTotals) {
                 assignReactiveObject(state.columnTotals, {});
             }
-            state.objectsMap.clear();
+            _objectsMapProxy.clear();
             if (!keepError) {
                 loadingError.clearError();
             }
         },
         clearError: loadingError.clearError,
-        getFakePk: () => getFakePk(state.objects, state.pkKey),
+        getFakePk: () => getFakePk(_objectsProxy, state.pkKey),
         pushObjects: (newObjects) => {
             batchObjectChanges(() => {
                 newObjects.forEach((newObject) => {
                     const pk = String(newObject[state.pkKey]);
-                    if (pk in state.objects) {
+                    if (pk in _objectsProxy) {
                         self.updateListObject.call(this, newObject);
                     } else {
                         self.addListObject.call(this, newObject);

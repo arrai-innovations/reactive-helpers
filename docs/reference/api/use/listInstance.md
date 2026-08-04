@@ -400,7 +400,7 @@ The list objects stored by their pks.
 
 ##### objectsInOrder
 
-> **objectsInOrder**: `ComputedRef`\<[`ExistingCrudObject`](objectInstance.md#existingcrudobject)[]\>
+> **objectsInOrder**: `ComputedRef`\<readonly [`ExistingCrudObject`](objectInstance.md#existingcrudobject)[]\>
 
 The objects in the order specified by the list.
 
@@ -418,7 +418,7 @@ Increments when the set of object keys changes.
 
 ##### order
 
-> **order**: `ComputedRef`\<`string`[]\>
+> **order**: `ComputedRef`\<readonly `string`[]\>
 
 The order of objects in the list.
 
@@ -586,7 +586,7 @@ Helper type to facilitate the combination of state and functions into a single t
 
 > **ListOrder** = `ComputedRef`
 
-The order of the objects in the list.
+The read-only order of the objects in the list. Change presentation order through `useListSort` rather than by writing to it.
 
 #### Type Parameters
 
@@ -596,7 +596,7 @@ The order of the objects in the list.
 
 > **ObjectsByPk** = `object`
 
-The objects by pk.
+The objects by pk. The collection itself is read-only; mutate it through the list's own methods. Each object it holds stays reactive and writable.
 
 #### Type Parameters
 
@@ -610,7 +610,7 @@ The objects by pk.
 
 > **ObjectsInOrder** = `ComputedRef`
 
-The objects in order, based on .order & .objects.
+The objects in order, based on .order & .objects. The array is read-only; each object in it stays reactive and writable.
 
 #### Type Parameters
 
@@ -618,9 +618,9 @@ The objects in order, based on .order & .objects.
 
 ### ObjectsMap
 
-> **ObjectsMap** = `Map`\<[`Pk`](../config/commonCrud.md#pk), `Reactive`\>
+> **ObjectsMap** = `ReadonlyMap`\<[`Pk`](../config/commonCrud.md#pk), `Reactive`\>
 
-A Map of primary keys to the list's reactive existing objects.
+A read-only Map of primary keys to the list's reactive existing objects. Mutate it through the list's own methods. Each object it holds stays reactive and writable.
 
 #### Type Parameters
 

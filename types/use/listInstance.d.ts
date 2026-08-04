@@ -18,13 +18,13 @@
  *  subscribe function.
  */
 /**
- * @typedef {{[pk: import('../config/commonCrud.js').Pk]: import('../use/objectInstance.js').ExistingCrudObject}} ObjectsByPk - The objects by pk.
+ * @typedef {{readonly [pk: import('../config/commonCrud.js').Pk]: import('../use/objectInstance.js').ExistingCrudObject}} ObjectsByPk - The objects by pk. The collection itself is read-only; mutate it through the list's own methods. Each object it holds stays reactive and writable.
  */
 /**
- * @typedef {import('vue').ComputedRef<import('../use/objectInstance.js').ExistingCrudObject[]>} ObjectsInOrder - The objects in order, based on .order & .objects.
+ * @typedef {import('vue').ComputedRef<readonly import('../use/objectInstance.js').ExistingCrudObject[]>} ObjectsInOrder - The objects in order, based on .order & .objects. The array is read-only; each object in it stays reactive and writable.
  */
 /**
- * @typedef {import('vue').ComputedRef<import('../config/commonCrud.js').Pk[]>} ListOrder - The order of the objects in the list.
+ * @typedef {import('vue').ComputedRef<readonly import('../config/commonCrud.js').Pk[]>} ListOrder - The read-only order of the objects in the list. Change presentation order through `useListSort` rather than by writing to it.
  */
 /**
  * @typedef {object} ListInstanceRawStateCrud - The raw CRUD handlers and target args stored in a list instance's reactive state.
@@ -35,7 +35,7 @@
  * @property {import('../config/listCrud.js').CrudExecuteActionFn} executeAction - The execute action function.
  */
 /**
- * @typedef {Map<import('../config/commonCrud.js').Pk, import('vue').Reactive<import('../use/objectInstance.js').ExistingCrudObject>>} ObjectsMap - A Map of primary keys to the list's reactive existing objects.
+ * @typedef {ReadonlyMap<import('../config/commonCrud.js').Pk, import('vue').Reactive<import('../use/objectInstance.js').ExistingCrudObject>>} ObjectsMap - A read-only Map of primary keys to the list's reactive existing objects. Mutate it through the list's own methods. Each object it holds stays reactive and writable.
  */
 /**
  * @typedef {object} PaginateInfo - Pagination details for a list, including total records, total pages, per-page count, and current page.
@@ -227,19 +227,19 @@ export type ListInstanceOptions = {
     };
 };
 /**
- * The objects by pk.
+ * The objects by pk. The collection itself is read-only; mutate it through the list's own methods. Each object it holds stays reactive and writable.
  */
 export type ObjectsByPk = {
-    [pk: import("../config/commonCrud.js").Pk]: import("../use/objectInstance.js").ExistingCrudObject;
+    readonly [pk: import("../config/commonCrud.js").Pk]: import("../use/objectInstance.js").ExistingCrudObject;
 };
 /**
- * The objects in order, based on .order & .objects.
+ * The objects in order, based on .order & .objects. The array is read-only; each object in it stays reactive and writable.
  */
-export type ObjectsInOrder = import("vue").ComputedRef<import("../use/objectInstance.js").ExistingCrudObject[]>;
+export type ObjectsInOrder = import("vue").ComputedRef<readonly import("../use/objectInstance.js").ExistingCrudObject[]>;
 /**
- * The order of the objects in the list.
+ * The read-only order of the objects in the list. Change presentation order through `useListSort` rather than by writing to it.
  */
-export type ListOrder = import("vue").ComputedRef<import("../config/commonCrud.js").Pk[]>;
+export type ListOrder = import("vue").ComputedRef<readonly import("../config/commonCrud.js").Pk[]>;
 /**
  * The raw CRUD handlers and target args stored in a list instance's reactive state.
  */
@@ -266,9 +266,9 @@ export type ListInstanceRawStateCrud = {
     executeAction: import("../config/listCrud.js").CrudExecuteActionFn;
 };
 /**
- * A Map of primary keys to the list's reactive existing objects.
+ * A read-only Map of primary keys to the list's reactive existing objects. Mutate it through the list's own methods. Each object it holds stays reactive and writable.
  */
-export type ObjectsMap = Map<import("../config/commonCrud.js").Pk, import("vue").Reactive<import("../use/objectInstance.js").ExistingCrudObject>>;
+export type ObjectsMap = ReadonlyMap<import("../config/commonCrud.js").Pk, import("vue").Reactive<import("../use/objectInstance.js").ExistingCrudObject>>;
 /**
  * Pagination details for a list, including total records, total pages, per-page count, and current page.
  */
