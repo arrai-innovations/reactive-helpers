@@ -1349,17 +1349,28 @@ describe("use/listInstance.spec.js", function () {
             expect(listInstance.state.objects["2"]).toBe(rowBefore);
             expect(listInstance.state.objects["2"]).toEqual({ id: 2, name: "two updated" });
         });
-        scopedIt("rejects rows whose pk value is falsy before coercion, including 0 and false", () => {
+        scopedIt("stores a row keyed 0 or false, and merges numeric 0 with the string key", () => {
             const listInstance = useListInstance({ props: { pkKey: "id", params: {} } });
-            for (const badPk of [0, false, "", null, undefined]) {
+            listInstance.pushObjects([
+                { id: 0, name: "zero" },
+                { id: false, name: "false" },
+            ]);
+            expect(listInstance.state.order).toEqual(["0", "false"]);
+            expect(listInstance.state.objects["0"]).toEqual({ id: 0, name: "zero" });
+            expect(listInstance.state.objects["false"]).toEqual({ id: false, name: "false" });
+            // the number and the string name one row, so this merges rather than adding a second
+            listInstance.pushObjects([{ id: "0", name: "zero updated" }]);
+            expect(listInstance.state.order).toEqual(["0", "false"]);
+            expect(listInstance.state.objects["0"]).toEqual({ id: "0", name: "zero updated" });
+        });
+        scopedIt("rejects a row carrying no pk, counting an empty string and NaN as none", () => {
+            const listInstance = useListInstance({ props: { pkKey: "id", params: {} } });
+            for (const badPk of ["", null, undefined, NaN]) {
                 expect(() => listInstance.pushObjects([{ id: badPk, name: "bad" }])).toThrowError(
                     expect.objectContaining({ name: "ListInstanceError", code: "missing-pk" })
                 );
             }
-            listInstance.pushObjects([{ id: "0", name: "zero" }]);
-            expect(listInstance.state.order).toEqual(["0"]);
-            expect(() => listInstance.pushObjects([{ id: 0, name: "zero again" }])).toThrowError(ListInstanceError);
-            expect(listInstance.state.objects["0"]).toEqual({ id: "0", name: "zero" });
+            expect(listInstance.state.order).toEqual([]);
         });
         scopedIt("partially applies a pushed batch before a missing-pk error", async () => {
             const listInstance = useListInstance({

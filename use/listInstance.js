@@ -1,6 +1,7 @@
 import { defaultListCrud, getListCrud } from "../config/listCrud.js";
 import { assignReactiveObject } from "../utils/assignReactiveObject.js";
 import { getFakePk } from "../utils/getFakePk.js";
+import { normalizePk } from "../utils/refIfReactive.js";
 import { useLoadingError } from "./loadingError.js";
 import inspect from "browser-util-inspect";
 import { computed, effectScope, isReactive, reactive, readonly, ref, shallowReactive, shallowReadonly } from "vue";
@@ -625,8 +626,8 @@ export function useListInstance({ props, handlers = {} }) {
             );
         },
         addListObject: (object) => {
-            const pk = String(object[state.pkKey]);
-            if (!object[state.pkKey]) {
+            const pk = normalizePk(object[state.pkKey]);
+            if (pk === undefined) {
                 throw new ListInstanceError(
                     `addListObject: object missing pk(${state.pkKey}).\n${inspect(object)}`,
                     "missing-pk"
@@ -641,8 +642,8 @@ export function useListInstance({ props, handlers = {} }) {
             _objectsProxy[pk] = object;
         },
         updateListObject: (object) => {
-            const pk = String(object[state.pkKey]);
-            if (!object[state.pkKey]) {
+            const pk = normalizePk(object[state.pkKey]);
+            if (pk === undefined) {
                 throw new ListInstanceError(
                     `updateListObject: object missing pk(${state.pkKey}).\n${inspect(object)}`,
                     "missing-pk"
@@ -685,8 +686,9 @@ export function useListInstance({ props, handlers = {} }) {
         pushObjects: (newObjects) => {
             batchObjectChanges(() => {
                 newObjects.forEach((newObject) => {
-                    const pk = String(newObject[state.pkKey]);
-                    if (pk in _objectsProxy) {
+                    const pk = normalizePk(newObject[state.pkKey]);
+                    // a keyless row routes to add, which is the site that names the missing key
+                    if (pk !== undefined && pk in _objectsProxy) {
                         self.updateListObject.call(this, newObject);
                     } else {
                         self.addListObject.call(this, newObject);

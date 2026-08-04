@@ -41,6 +41,18 @@ _Actions potentially required by implementers are marked with italics._
   assigning `state.order`. One incidental change comes with this: `delete state.objects[absentKey]` used to throw a
   `TypeError` under strict mode and now reports success without doing anything, matching a plain object._
 
+- A primary key of `0` or `false` is now a key on every surface, and the two sides agree on what counts as no key at
+  all. `addListObject`, `updateListObject`, and both subscription event paths tested the raw field for truthiness, so a
+  backend issuing the id `0` got a `ListInstanceError` or `ListSubscriptionError` with the code `missing-pk` on the list
+  side while the same id worked on the object side, which coerced first. All of them now reject only `null`,
+  `undefined`, `""`, and `NaN`, and coerce everything else with `String()`. A row keyed `0` therefore merges with one
+  keyed `"0"` rather than being refused as a duplicate that never was. The related layer drew the same line in a
+  different place: a rule carrying an `order` filtered its array-valued foreign keys for truthiness, silently dropping a
+  foreign key of `0` so the related object never resolved. It now drops only keys that are absent. _Implementers relying
+  on `missing-pk` to reject `0` or `false` should test the value themselves before pushing. A `props.pk` of `""` or
+  `NaN` now reads as `undefined` on `state.pk` rather than `""` or `"NaN"`, so an object instance holds its retrieve
+  back where a `NaN` previously started one against the literal key `"NaN"`._
+
 ### Additions
 
 - Added `ListRelatedError` and `ObjectRelatedError`. A related rule with no `objects` collection now throws one of these

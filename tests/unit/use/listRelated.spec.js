@@ -103,6 +103,31 @@ describe("use/listRelated", () => {
         // Several omitted ids keep their foreign-key order between themselves.
         expect(ids("partialMany")).toEqual(["2", "3", "1"]);
     });
+    scopedIt("keeps a foreign key of 0 in an ordered array relation", async () => {
+        const mainListInstance = useListInstance({ props: { pkKey: "id" } });
+        const relatedListInstance = useListInstance({ props: { pkKey: "id" } });
+        mainListInstance.addListObject({ id: "1", related_items: [2, 0, 1] });
+        relatedListInstance.addListObject({ id: 0, name: "zero" });
+        relatedListInstance.addListObject({ id: 1, name: "one" });
+        relatedListInstance.addListObject({ id: 2, name: "two" });
+        const listRelated = useListRelated({
+            parentState: mainListInstance.state,
+            relatedObjectsRules: {
+                ordered: {
+                    objects: relatedListInstance.state.objects,
+                    fkKey: "related_items",
+                    order: ["0", "1", "2"],
+                },
+            },
+        });
+        await nextTick();
+        // the ordering branch drops entries carrying no key, which used to take 0 with them
+        expect(deepUnref(listRelated.state.relatedObjects[1].ordered).map((e) => e.name)).toEqual([
+            "zero",
+            "one",
+            "two",
+        ]);
+    });
     scopedIt("follows the related list's reactive order", async () => {
         const mainListInstance = useListInstance({ props: { pkKey: "id" } });
         const relatedListInstance = useListInstance({ props: { pkKey: "id" } });

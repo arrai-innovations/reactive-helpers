@@ -67,6 +67,23 @@ describe("use/objectRelated", () => {
         ]);
     });
 
+    scopedIt("keeps a foreign key of 0 in an ordered array relation", async () => {
+        const parentState = createParentState();
+        // numeric on purpose: a string "0" is truthy and would not exercise the filter this pins
+        parentState.object.friend_ids = /** @type {any} */ ([2, 0]);
+        const relatedObjects = { 0: { id: "0", name: "zero" }, 2: { id: "2", name: "two" } };
+        const relatedObjectRules = reactive({
+            friends: { fkKey: "friend_ids", objects: relatedObjects, order: ["0", "2"] },
+        });
+        const objectRelated = useObjectRelated({ parentState, relatedObjectRules });
+        await nextTick();
+        // the ordering branch drops entries carrying no key, which used to take 0 with them
+        expect(deepUnref(objectRelated.state.relatedObject.friends)).toEqual([
+            { id: "0", name: "zero" },
+            { id: "2", name: "two" },
+        ]);
+    });
+
     scopedIt("defaults a rule's foreign key to the rule name when pkKey is omitted", async () => {
         const parentState = createParentState();
         const relatedObjects = { 2: { id: "2", name: "two" } };

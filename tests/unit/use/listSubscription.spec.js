@@ -309,6 +309,34 @@ describe("use/listSubscription.spec.js", function () {
             expect(crudSubscribeResolvable[0].promise.cancel).toHaveBeenCalledTimes(1);
             expect(listSubscription.state.subscribed).toBe(false);
         });
+        scopedIt("applies create and update events for a pk of 0, and rejects an empty-string pk", async function () {
+            const listSubscription = useListSubscription({
+                props: reactive({
+                    pkKey: "id",
+                    params: reactive({ user: 1, fields }),
+                    intendToList: false,
+                    intendToSubscribe: true,
+                }),
+            });
+            crudSubscribeResolvable[0].resolve();
+            await poll(() => listSubscription.state.subscribed);
+
+            passedApplyObjectEvent({ id: 0, __str__: "zero", name: "zero" }, "create");
+            expect(listSubscription.listInstance.state.objects).toEqual({
+                0: { id: 0, __str__: "zero", name: "zero" },
+            });
+
+            passedApplyObjectEvent({ id: 0, __str__: "zero", name: "renamed" }, "update");
+            expect(listSubscription.listInstance.state.objects["0"].name).toBe("renamed");
+            // the update landed on the existing row rather than warning it was absent
+            expect(warnMock).not.toHaveBeenCalled();
+
+            for (const action of ["create", "update"]) {
+                expect(() => passedApplyObjectEvent({ id: "", __str__: "foo", name: "foo" }, action)).toThrow(
+                    ListSubscriptionError
+                );
+            }
+        });
         scopedIt("unsubscribe false", async function () {
             const props = reactive({});
             const listSubscription = useListSubscription({
