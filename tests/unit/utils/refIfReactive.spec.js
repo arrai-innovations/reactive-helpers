@@ -1,6 +1,35 @@
 import { describe, expect, it } from "vitest";
 import { reactive } from "vue";
-import { pkRefIfReactive, refIfReactive } from "../../../utils/refIfReactive.js";
+import { normalizePk, pkRefIfReactive, refIfReactive } from "../../../utils/refIfReactive.js";
+
+describe("normalizePk", () => {
+    it.each([
+        ["a string key", "42", "42"],
+        ["a numeric key", 42, "42"],
+        ["a numeric zero", 0, "0"],
+        ["a negative key, as getFakePk mints", -12, "-12"],
+        ["a boolean false", false, "false"],
+        ["a boolean true", true, "true"],
+    ])("coerces %s", (_label, value, expected) => {
+        expect(normalizePk(value)).toBe(expected);
+    });
+
+    it.each([
+        ["null", null],
+        ["undefined", undefined],
+        ["an empty string", ""],
+        ["NaN", NaN],
+    ])("reports %s as no key", (_label, value) => {
+        expect(normalizePk(value)).toBeUndefined();
+    });
+
+    it("does not let an absent key coerce into a usable one", () => {
+        // the trap this function exists to close: String() turns all three into truthy strings that a
+        //  collection would happily store a row under
+        expect([undefined, null, NaN].map(String)).toEqual(["undefined", "null", "NaN"]);
+        expect([undefined, null, NaN].map(normalizePk)).toEqual([undefined, undefined, undefined]);
+    });
+});
 
 describe("refIfReactive", () => {
     it("returns a ref for reactive sources", () => {
@@ -32,6 +61,16 @@ describe("pkRefIfReactive", () => {
         const pkComputed = pkRefIfReactive(state);
         expect(pkComputed.value).toBeUndefined();
         state.pk = undefined;
+        expect(pkComputed.value).toBeUndefined();
+    });
+
+    it("keeps a pk of 0 or false and reads an empty string as no pk", () => {
+        const state = reactive(/** @type {{ pk: string | number | boolean }} */ ({ pk: 0 }));
+        const pkComputed = pkRefIfReactive(state);
+        expect(pkComputed.value).toBe("0");
+        state.pk = false;
+        expect(pkComputed.value).toBe("false");
+        state.pk = "";
         expect(pkComputed.value).toBeUndefined();
     });
 

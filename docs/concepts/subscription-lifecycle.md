@@ -50,7 +50,7 @@ Nothing runs, nothing errors, and the retrieve starts the moment the key arrives
 Two truthiness edges are worth knowing:
 
 - `props.pk` is coerced to a string. A numeric `0` becomes `"0"`, which is truthy, so it does retrieve. Only `null`,
-  `undefined`, and `""` read as falsy.
+  `undefined`, `""`, and `NaN` read as no key, and each holds the retrieve back.
 - An empty `props.params` object is truthy. Passing `{}` does not hold a run back.
 
 ## Nothing runs during setup

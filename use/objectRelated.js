@@ -1,6 +1,7 @@
 // noinspection ES6PreferShortImport
 import { keyDiff } from "../utils/keyDiff.js";
 import { loadingCombine } from "../utils/loadingCombine.js";
+import { normalizePk } from "../utils/refIfReactive.js";
 import { proxyRunning } from "../utils/proxyRunning.js";
 import {
     getObjectRelatedByKey,
@@ -285,7 +286,9 @@ export function useObjectRelated(options) {
                 }
             }
             if (isArray(value) && ruleOrder?.length) {
-                value = value.filter(identity);
+                // drop entries that carry no key, keeping a foreign key of 0 or false, which a
+                //  truthiness filter would have discarded along with them
+                value = value.filter((fk) => normalizePk(fk) !== undefined);
                 const indexById = Object.fromEntries(ruleOrder.map((e, i) => [e, i]));
                 // An id the order does not list sorts to a shared index past the end, so those ids
                 //  land last and keep their foreign-key order between themselves through a stable

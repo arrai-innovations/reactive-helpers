@@ -47,11 +47,14 @@ Your own lookups and comparisons meet that string key:
 - The row's field keeps the representation from the latest push. If different sources mix numbers and strings, use
   `String(row.contactId)` as a stable `v-for` key.
 
-The instance tests the raw field value before coercing it. It rejects any falsy value as a missing key. That includes
-`null`, `undefined`, `""`, the number `0`, and `false`. The string `"0"` is a valid key. If your backend can issue the
-id `0`, serialize ids as strings before pushing.
+Both instances draw the same line between a key and no key. `null`, `undefined`, `""`, and `NaN` mean the record carries
+no key. Every other value coerces. The number `0` becomes `"0"` and `false` becomes `"false"`, and each names a row the
+way `42` names `"42"`. A backend issuing the id `0` needs no special handling: push the row and it merges with any `"0"`
+already stored.
 
-The object instance differs because it coerces before testing. A `props.pk` of `0` reads as `"0"` and counts as present.
+The empty string is the one value a backend could plausibly send that this reads as absent. Nothing downstream can tell
+it apart from a missing key. It is falsy, it renders as nothing, and a row stored under it would fail the checks every
+other key survives.
 
 ## Four views, one map
 
@@ -170,8 +173,8 @@ string form. With no collection, the object instance has no insertion order or i
 - **A pushed row missing its `pkKey` field.** `pushObjects` throws a `ListInstanceError` with code `missing-pk`. During
   a `contacts.list()` run, the error lands in `contacts.state.error` and the run resolves `false`. Rows earlier in the
   same batch have already landed, so one bad row can leave a page partially applied.
-- **Real ids that read as missing.** The number `0`, `false`, and the empty string fail the same check before coercion.
-  Rows carrying them never merge with their string forms; serialize such ids as strings.
+- **An id that reads as no key.** A row whose `pkKey` field holds `""` or `NaN` counts as keyless. It raises the same
+  `missing-pk` error as a row with no field at all. The number `0` and `false` are keys, and are stored.
 - **Number-keyed map lookups.** `contacts.state.objectsMap.get(42)` misses the row keyed `"42"` and returns `undefined`.
   The symptom is a lookup that fails while `contacts.state.objects[42]` works.
 - **A structural write that appears to do nothing.** Assigning to `contacts.state.objects[pk]`, or calling

@@ -6,8 +6,9 @@
 
 > **pkRefIfReactive**(`source`, `property?`, `defaultValue?`): `ComputedRef`\<`string`\>
 
-Returns a ref to a pk property, coercing string|number input to string output.
-Returns undefined if the source pk is null/undefined.
+Returns a ref to a pk property, coercing the raw value to the library's string key form. A pk of `0`
+or `false` coerces like any other value; the ref reads as undefined only when the source carries no
+key at all, meaning `null`, `undefined`, an empty string, or `NaN`.
 
 #### Parameters
 

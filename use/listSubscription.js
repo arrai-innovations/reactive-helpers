@@ -1,6 +1,7 @@
 import { useCancellableIntent } from "./cancellableIntent.js";
 import { useListInstance } from "./listInstance.js";
 import { useLoadingError } from "./loadingError.js";
+import { normalizePk } from "../utils/refIfReactive.js";
 import inspect from "browser-util-inspect";
 import cloneDeep from "lodash-es/cloneDeep.js";
 import isEmpty from "lodash-es/isEmpty.js";
@@ -236,7 +237,7 @@ export function useListSubscription({ listInstance, props, handlers }) {
                                     }
                                     break;
                                 case "create":
-                                    if (!data[parentState.pkKey]) {
+                                    if (normalizePk(data[parentState.pkKey]) === undefined) {
                                         throw new ListSubscriptionError(
                                             `addFromSubscription: data missing pk(${parentState.pkKey}).\n${inspect(data)}`,
                                             "missing-pk"
@@ -255,7 +256,7 @@ export function useListSubscription({ listInstance, props, handlers }) {
                                     }
                                     break;
                                 case "update":
-                                    if (!data[parentState.pkKey]) {
+                                    if (normalizePk(data[parentState.pkKey]) === undefined) {
                                         throw new ListSubscriptionError(
                                             `updateFromSubscription: data missing pk(${parentState.pkKey}).\n${inspect(data)}`,
                                             "missing-pk"

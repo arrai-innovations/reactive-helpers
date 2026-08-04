@@ -141,7 +141,8 @@ for how the library makes runs cancellable.
 
 - **Missing `pkKey`.** `useListInstance` and `useObjectInstance` both throw at creation when `props.pkKey` is absent
   (the object instance throws an `ObjectError` with code `missing-pkKey`). On the list side, a pushed row whose `pkKey`
-  field is missing or falsy makes `pushObjects` throw; uncaught, that lands in `state.error`.
+  field is absent, `null`, `""`, or `NaN` makes `pushObjects` throw; uncaught, that lands in `state.error`. A field
+  holding `0` or `false` is a key and does not throw.
 - **Mutating list state instead of using callbacks.** Writing `contacts.state.objects[pk] = row` from a handler skips
   the missing-key and duplicate checks and replaces the row instead of merging it. The callbacks exist so the instance
   keeps its invariants; treat state as read-only inside list handlers.
