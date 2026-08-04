@@ -1,6 +1,10 @@
 packages: []
 
 overrides:
+    "brace-expansion@<1.1.18": ">=1.1.18 <2"
+    "brace-expansion@>=2.0.0 <2.1.4": ">=2.1.4 <3"
+    "brace-expansion@>=4.0.0 <5.0.9": ">=5.0.9 <6"
+    "fast-uri@>=3.0.0 <3.1.5": ">=3.1.5 <4"
     "form-data@>=4.0.0 <4.0.6": ">=4.0.6 <5"
     "js-yaml@<=4.1.1": ">=4.2.0 <5"
     "markdown-it@<=14.1.1": ">=14.2.0 <15"
@@ -10,16 +14,6 @@ overrides:
 allowBuilds:
     esbuild: true
     lefthook: false
-
-auditConfig:
-    # GHSA-mh99-v99m-4gvg (brace-expansion DoS via unbounded expansion): the
-    # patched line is >=5.0.8 only; minimatch@3 and @9 pin ^1/^2, which have no
-    # patched release, and v5's CJS export shape ({ expand }) is not callable
-    # the way minimatch@3 requires. Dev-only tooling (eslint, typedoc,
-    # test-utils) expanding repo-authored glob patterns. Revisit when minimatch
-    # consumers move to brace-expansion@5.
-    ignoreGhsas:
-        - GHSA-mh99-v99m-4gvg
 
 # diction-md is a first-party docs-authoring tool, published from
 # arrai-innovations/diction-md and used only to lint prose in docs/. It was added the day it was
