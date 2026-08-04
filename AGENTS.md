@@ -47,5 +47,9 @@ under `docs/reference/`. When authoring documentation pages, follow `docs/AGENTS
 - Prose (JSDoc, code comments, and docs pages) uses Canadian spelling (behaviour, colour, favour; keep `-ize`/`-yze`
   endings). Identifiers, API names, and string literals keep code spelling, even for discretionary names. Full rule in
   `docs/README.md`.
+- Give an `@internal` helper a home in a file that also exports something public. Typedoc's `entryPoints` globs
+  `config/`, `use/`, and `utils/`, and `excludeInternal` drops the member but still emits a module page for the file, so
+  a file whose only export is internal publishes an empty page and an index link. Do not name an `@internal` symbol in
+  the JSDoc of a public one either; the reference renders the name without a target.
 
 Automated agents should run linting, formatting, and tests before committing.
