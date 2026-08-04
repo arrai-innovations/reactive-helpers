@@ -1,5 +1,5 @@
 import { keyDiff } from "../utils/keyDiff.js";
-import { computed, effectScope, isRef, reactive, toRef, toRefs, unref, watch } from "vue";
+import { computed, effectScope, isRef, reactive, shallowReadonly, toRef, toRefs, unref, watch } from "vue";
 
 /**
  * Provides reactive filtering functionality for lists within a Vue application. This composable
@@ -187,20 +187,23 @@ export function useListFilter({ parentState, allowedFilter, excludedFilter }) {
 
     /** @type {import('vue').ComputedRef<import('./listInstance.js').ObjectsByPk>} */
     const objects = computed(() => {
-        /** @type {import('./listInstance.js').ObjectsByPk} */
+        // built mutably here, then handed out read-only below
+        /** @type {{[pk: import('../config/commonCrud.js').Pk]: import('./objectInstance.js').ExistingCrudObject}} */
         const out = {};
         for (const [pk, o] of Object.entries(parentState.objects)) {
             const inc = includeMap[pk]?.include;
             if (inc) out[pk] = o;
         }
-        return out;
+        // the computed rebuilds this object on every run, so a write into it would be discarded
+        //  silently on the next read. Report it instead.
+        return shallowReadonly(out);
     });
 
-    /** @type {import('vue').ComputedRef<string[]>} */
-    const order = computed(() => parentState.order.filter((pk) => includeMap[pk]?.include));
+    /** @type {import('./listInstance.js').ListOrder} */
+    const order = computed(() => shallowReadonly(parentState.order.filter((pk) => includeMap[pk]?.include)));
 
-    /** @type {import('vue').ComputedRef<import('./listInstance.js').ObjectsByPk[]>} */
-    const objectsInOrder = computed(() => order.value.map((pk) => parentState.objects[pk]));
+    /** @type {import('./listInstance.js').ObjectsInOrder} */
+    const objectsInOrder = computed(() => shallowReadonly(order.value.map((pk) => parentState.objects[pk])));
 
     /** @type {ListFilterState} */
     const state = reactive({

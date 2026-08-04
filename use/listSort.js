@@ -4,7 +4,18 @@ import { proxyRunning } from "../utils/proxyRunning.js";
 import get from "lodash-es/get.js";
 import identity from "lodash-es/identity.js";
 import throttle from "lodash-es/throttle.js";
-import { computed, effectScope, onScopeDispose, reactive, ref, toRef, toRefs, unref, watch } from "vue";
+import {
+    computed,
+    effectScope,
+    onScopeDispose,
+    reactive,
+    ref,
+    shallowReadonly,
+    toRef,
+    toRefs,
+    unref,
+    watch,
+} from "vue";
 
 /**
  * Provides a Vue 3 composable for sorting lists based on dynamic and customizable rules. This module integrates
@@ -276,13 +287,16 @@ export function useListSort({ parentState, orderByRules, sortThrottleWait = defa
     });
 
     const objects = computed(() => {
-        /** @type {import('./listInstance.js').ObjectsByPk} */
+        // built mutably here, then handed out read-only below
+        /** @type {{[pk: import('../config/commonCrud.js').Pk]: import('./objectInstance.js').ExistingCrudObject}} */
         const out = {};
         for (const [pk, o] of Object.entries(parentState.objects)) {
             const inc = criteriaMap[pk]?.crit;
             if (inc) out[pk] = o;
         }
-        return out;
+        // the computed rebuilds this object on every run, so a write into it would be discarded
+        //  silently on the next read. Report it instead.
+        return shallowReadonly(out);
     });
 
     const order = ref([]);
@@ -327,7 +341,7 @@ export function useListSort({ parentState, orderByRules, sortThrottleWait = defa
     });
 
     // 6) objectsInOrder just follows that
-    const objectsInOrder = computed(() => order.value.map((pk) => parentState.objects[pk]));
+    const objectsInOrder = computed(() => shallowReadonly(order.value.map((pk) => parentState.objects[pk])));
 
     return {
         state: reactive({
@@ -335,7 +349,8 @@ export function useListSort({ parentState, orderByRules, sortThrottleWait = defa
             orderByRules: toRef(internalState, "orderByRules"),
             orderByDesc: toRef(internalState, "orderByDesc"),
             objects,
-            order,
+            // the ref stays private to writeOrder; the state exposes a read-only view of it
+            order: computed(() => shallowReadonly(order.value)),
             objectsInOrder,
             running,
         }),

@@ -385,4 +385,27 @@ describe("use/listFilter", () => {
         });
         expect(filter2.state.order).toEqual(["2", "8"]);
     });
+
+    scopedIt("refuses structural writes to its objects and order views but keeps the rows writable", () => {
+        const list = useListInstance({ props: { pkKey: "id" } });
+        const filter = useListFilter({ parentState: list.state, allowedFilter: (object) => object.has_things });
+        list.pushObjects([
+            { id: 1, name: "one", has_things: true },
+            { id: 2, name: "two", has_things: false },
+        ]);
+
+        filter.state.objects["3"] = { id: 3, name: "three" };
+        expect(filter.state.objects["3"]).toBeUndefined();
+
+        delete filter.state.objects["1"];
+        expect(filter.state.objects["1"]).toEqual({ id: 1, name: "one", has_things: true });
+
+        filter.state.objects["1"].name = "one edited";
+        expect(list.state.objects["1"].name).toBe("one edited");
+
+        filter.state.order.push("99");
+        filter.state.objectsInOrder.push({ id: 99 });
+        expect(filter.state.order).not.toContain("99");
+        expect(filter.state.objectsInOrder.some((o) => o.id === 99)).toBe(false);
+    });
 });

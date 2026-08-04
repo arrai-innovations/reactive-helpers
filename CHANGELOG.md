@@ -27,6 +27,19 @@ _Actions potentially required by implementers are marked with italics._
 - The package now declares `engines.node` of `>=22`. Node 20 reached end of life on 2026-04-30, leaving 22 and 24 as the
   supported lines. Nothing in the code changed; the constraint was previously undeclared. _Implementers still on Node 20
   or earlier will see an install failure under pnpm, which enforces `engines` by default, and a warning under npm._
+- `state.objects`, `state.objectsMap`, `state.order`, and `state.objectsInOrder` are now read-only views. A structural
+  write is refused: Vue warns in development and nothing changes, where it previously mutated the collection. This
+  covers the list instance and the same four views on `useListFilter`, `useListSearch`, and `useListSort`, so
+  `useList(...).state` is read-only throughout. `objectsMap` is typed `ReadonlyMap` and `objects` gained a readonly
+  index signature. The views are shallow, so the rows they hold stay reactive and writable and an edit form or a
+  `v-model` on a field is unaffected. A direct write to `objects` or `objectsMap` had bypassed the primary-key check and
+  the string coercion, and replaced the stored row rather than merging into it, which silently detached any reference a
+  caller was already holding. `order` and `objectsInOrder` already refused assignment, but each is a computed handing
+  out a fresh array, so an in-place `push` or `splice` read back until the next recompute and then disappeared, showing
+  a key no other view had. _Implementers writing into any of the four should call `addListObject`, `updateListObject`,
+  `deleteListObject`, or `pushObjects` instead, and should drive presentation order through `useListSort` rather than by
+  assigning `state.order`. One incidental change comes with this: `delete state.objects[absentKey]` used to throw a
+  `TypeError` under strict mode and now reports success without doing anything, matching a plain object._
 
 ### Additions
 

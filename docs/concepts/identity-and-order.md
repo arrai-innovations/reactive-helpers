@@ -40,8 +40,8 @@ are strings. Normalizing before insertion keeps the underlying `Map` consistent 
 
 Your own lookups and comparisons meet that string key:
 
-- `contacts.state.order` holds strings. `order.includes(row.contactId)` is `false` for a numeric id; compare against
-  `String(row.contactId)`.
+- `contacts.state.order` holds strings. `contacts.state.order.includes(row.contactId)` is `false` for a numeric id;
+  compare against `String(row.contactId)`.
 - Property access coerces for you, so `contacts.state.objects[42]` finds the row keyed `"42"`.
 - `Map` lookups do not coerce. `contacts.state.objectsMap.get(42)` returns `undefined`; pass the string.
 - The row's field keeps the representation from the latest push. If different sources mix numbers and strings, use
@@ -70,15 +70,41 @@ keys. `objectsInOrder` is a computed array of the rows those keys name, and is t
 Because three views derive from one map, they cannot drift apart. There is no moment where `order` names a row `objects`
 lacks.
 
-Derived views are not writable. `order` and `objectsInOrder` are read-only computeds. Vue rejects assignments to them
-with a warning, and nothing changes. Rows enter, merge, and leave through your handler's `pushObjects` callback and the
-instance's `addListObject`, `updateListObject`, and `deleteListObject` actions. Treat `objects` and `objectsMap` as read
-views of the collection's structure. The runtime still permits direct writes, but they bypass these actions and their
-invariants.
+None of the four views is writable, and that is what holds the previous paragraph up. Rows enter, merge, and leave
+through your handler's `pushObjects` callback and the instance's `addListObject`, `updateListObject`, and
+`deleteListObject` actions. Every other route in is refused. Vue reports the attempt in development and nothing changes:
 
-Writing `contacts.state.objects[pk] = row` reaches the map but swaps the stored row instead of merging. It also skips
-the key checks. Anything holding the old row keeps a detached object that no longer updates. Calling
-`contacts.state.objectsMap.set(pk, row)` also bypasses the checks. It can even introduce a non-string map key.
+```js
+contacts.state.objects["42"] = row; // refused
+delete contacts.state.objects["42"]; // refused
+contacts.state.objectsMap.set("42", row); // refused
+contacts.state.objectsMap.delete("42"); // refused
+contacts.state.objectsMap.clear(); // refused
+contacts.state.order = ["42"]; // refused
+contacts.state.order.push("42"); // refused
+contacts.state.objectsInOrder.splice(0, 1); // refused
+```
+
+The two arrays are refused in place as well as on assignment. Each is a computed handing out a fresh array. A `push`
+that took would read back for a while, then disappear at the next recompute, showing a key no other view had.
+
+The rows themselves stay reactive and writable, which is what makes an edit form or a `v-model` on a field work:
+
+```js
+contacts.state.objects["42"].name = "Ada"; // allowed, and the map sees it
+```
+
+The refusal is what keeps the key checks and the string coercion honest. It also means a reference you hold to a row
+stays the reference the collection holds. A later `updateListObject` merges into the object you are already rendering,
+rather than replacing it underneath you.
+
+::: info
+
+The read-only views are shallow, and the same treatment applies at every layer. `useListFilter`, `useListSearch`, and
+`useListSort` each expose their own `objects`, `order`, and `objectsInOrder`. Those are read-only too, so
+`useList(...).state` behaves the same way as the instance's.
+
+:::
 
 ## Order is arrival order
 
@@ -115,11 +141,17 @@ optimistic row shown while your create handler runs.
 
 `contacts.getFakePk()` mints a placeholder identity:
 
-- drawn from the negative safe-integer space and returned as a string, so it never matches a server-issued key
-- checked against the keys the list holds, so it cannot collide with a loaded row or an earlier placeholder
+- drawn from the negative safe-integer space and returned as a string, so its sign tells it apart from a server-issued
+  key
+- checked against the keys the list already holds, so it cannot collide with a loaded row or an earlier placeholder
 
-Set it as the row's `pkKey` field and add the row with `contacts.addListObject`. The row then behaves like any other: it
-merges, orders, and deletes by its placeholder key.
+The sign is the whole mechanism, so it carries an assumption about your backend: that primary keys are never negative.
+Nothing in the library can check that. A backend issuing negative keys defeats the scheme, including for a record that
+has not loaded yet. Mint placeholder keys another way if yours can.
+
+Set it as the row's identity field, `contactId` here and whatever `contacts.state.pkKey` names in your own list, then
+add the row with `contacts.addListObject`. The row then behaves like any other: it merges, orders, and deletes by its
+placeholder key.
 
 The handoff to the real identity is yours. When the created record arrives under its real key, pushing it adds a second
 row. Nothing detects that the placeholder row and the new row are the same record, because their keys differ. Remove the
@@ -142,9 +174,9 @@ string form. With no collection, the object instance has no insertion order or i
   Rows carrying them never merge with their string forms; serialize such ids as strings.
 - **Number-keyed map lookups.** `contacts.state.objectsMap.get(42)` misses the row keyed `"42"` and returns `undefined`.
   The symptom is a lookup that fails while `contacts.state.objects[42]` works.
-- **Direct writes to the backing views.** Writing `contacts.state.objects[pk]` replaces the stored row and skips the key
-  checks. References to the old row go stale silently. Calling `contacts.state.objectsMap.set` can also add a non-string
-  key, which then appears unchanged in `contacts.state.order`.
+- **A structural write that appears to do nothing.** Assigning to `contacts.state.objects[pk]`, or calling
+  `contacts.state.objectsMap.set`, is refused. The symptom is a row that never appears, with a Vue warning in the
+  development console. Use `addListObject` or `pushObjects`.
 - **A placeholder row that outlives its record.** If you push the real record and leave the placeholder, the list shows
   both. The stale draft stays in its old position, and the real row appears at the end.
 

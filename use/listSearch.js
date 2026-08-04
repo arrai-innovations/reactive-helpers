@@ -4,7 +4,7 @@ import { getObjectRelatedCalculatedByKey } from "../utils/relatedCalculatedHelpe
 import { useSearch } from "./search.js";
 import get from "lodash-es/get.js";
 import isEqual from "lodash-es/isEqual.js";
-import { computed, effectScope, reactive, readonly, ref, toRef, toRefs, unref, watch } from "vue";
+import { computed, effectScope, reactive, readonly, ref, shallowReadonly, toRef, toRefs, unref, watch } from "vue";
 import { deepUnref } from "../utils/deepUnref.js";
 import { assignReactiveObject } from "../utils/assignReactiveObject.js";
 import { loadingCombine } from "../utils/loadingCombine.js";
@@ -181,14 +181,19 @@ export function useListSearch({ parentState, props, throttle = 500, showAllWhenE
         /** @type {boolean} */
         newSearchComputeds: undefined,
     });
+    // ### the writable collection and order stay private; the state exposes read-only views of them ###
+    /** @type {import('./listInstance.js').ObjectsByPk} */
+    const _objects = reactive({});
+    /** @type {import('vue').Ref<import('../config/commonCrud.js').Pk[]>} */
+    const _order = ref([]);
     /** @type {ListSearchState} */
     // @ts-ignore
     const state = reactive(
         /** @type {ListSearchRawState} */ {
             .../** @type {ListSearchParentStateToRefs} */ toRefs(parentState),
-            objects: {},
-            objectsInOrder: computed(() => internalState.objectsInOrderRefs.map((ref) => unref(ref))),
-            order: [],
+            objects: shallowReadonly(_objects),
+            objectsInOrder: computed(() => shallowReadonly(internalState.objectsInOrderRefs.map((ref) => unref(ref)))),
+            order: computed(() => shallowReadonly(_order.value)),
             textSearchRules: refIfReactive(props, "textSearchRules", []),
             textSearchValue: refIfReactive(props, "textSearchValue", ""),
             objectIndexes: {},
@@ -240,7 +245,7 @@ export function useListSearch({ parentState, props, throttle = 500, showAllWhenE
 
     const doPassthrough = (cleanComputed = false) => {
         // pass through the objects if there are no rules.
-        assignReactiveObject(state.objects, showAllWhenEmpty ? parentState.objects : {});
+        assignReactiveObject(_objects, showAllWhenEmpty ? parentState.objects : {});
         if (!cleanComputed) {
             return;
         }
@@ -361,7 +366,7 @@ export function useListSearch({ parentState, props, throttle = 500, showAllWhenE
             return;
         }
         assignReactiveObject(
-            state.objects,
+            _objects,
             Object.fromEntries(
                 Object.entries(textSearchIndex.state.results)
                     .filter(([, value]) => !!value)
@@ -371,10 +376,10 @@ export function useListSearch({ parentState, props, throttle = 500, showAllWhenE
     };
 
     const updateOrder = () => {
-        state.order = parentState.order.filter((pk) => !!state.objects[pk]);
+        _order.value = parentState.order.filter((pk) => !!_objects[pk]);
         assignReactiveObject(
             internalState.objectsInOrderRefs,
-            state.order.map((pk) => toRef(state.objects, pk))
+            _order.value.map((pk) => toRef(_objects, pk))
         );
     };
 
@@ -418,7 +423,7 @@ export function useListSearch({ parentState, props, throttle = 500, showAllWhenE
             }
         );
 
-        watch([() => Object.keys(state.objects), toRef(parentState, "order")], updateOrder, {
+        watch([() => Object.keys(_objects), toRef(parentState, "order")], updateOrder, {
             immediate: true,
             deep: true,
         });

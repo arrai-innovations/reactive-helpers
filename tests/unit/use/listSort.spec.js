@@ -627,4 +627,28 @@ describe("use/useListSort", () => {
             expect(listSort.state.objectsInOrder.map((obj) => obj.id)).toEqual([4, 2]);
         });
     });
+
+    scopedIt("refuses structural writes to its objects and order views but keeps the rows writable", async () => {
+        const list = useListInstance({ props: { pkKey: "id" } });
+        const listSort = useListSort({ parentState: list.state, orderByRules: [{ key: "name" }] });
+        list.pushObjects([
+            { id: 1, name: "one" },
+            { id: 2, name: "two" },
+        ]);
+        await nextTick();
+
+        listSort.state.objects["3"] = { id: 3, name: "three" };
+        expect(listSort.state.objects["3"]).toBeUndefined();
+
+        delete listSort.state.objects["1"];
+        expect(listSort.state.objects["1"]).toEqual({ id: 1, name: "one" });
+
+        listSort.state.objects["1"].name = "one edited";
+        expect(list.state.objects["1"].name).toBe("one edited");
+
+        listSort.state.order.push("99");
+        listSort.state.objectsInOrder.push({ id: 99 });
+        expect(listSort.state.order).not.toContain("99");
+        expect(listSort.state.objectsInOrder.some((o) => o.id === 99)).toBe(false);
+    });
 });
