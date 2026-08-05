@@ -64,10 +64,10 @@
         "node": ">=22"
     },
     "devDependencies": {
-        "@arrai-innovations/commitlint-config": "^2.1.0",
+        "@arrai-innovations/commitlint-config": "^3.0.0",
         "@arrai-innovations/diction-md": "^1.0.0",
         "@arrai-innovations/vitepress-theme": "1.0.1",
-        "@commitlint/cli": "^19.8.1",
+        "@commitlint/cli": "^21.2.1",
         "@eslint/js": "9.39.4",
         "@godaddy/dmd": "^1.0.4",
         "@trivago/prettier-plugin-sort-imports": "^5.2.2",
@@ -87,7 +87,7 @@
         "eslint-plugin-vue": "^10.9.2",
         "flush-promises": "^1.0.2",
         "globals": "^16.5.0",
-        "jsdom": "^26.1.0",
+        "jsdom": "^30.0.1",
         "lefthook": "^1.13.6",
         "prettier": "^3.9.6",
         "typedoc": "^0.28.19",

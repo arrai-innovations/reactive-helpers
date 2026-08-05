@@ -118,6 +118,15 @@ _Actions potentially required by implementers are marked with italics._
   their position undefined. A partial `order` arises during ordinary operation, since a paginated source list covers
   only the pages it has fetched.
 
+### Maintenance
+
+- Updated the jsdom test environment to v30, `@commitlint/cli` to v21, and `@arrai-innovations/commitlint-config` to v3.
+  Both of the former carried a deprecated transitive dependency: `whatwg-encoding` under jsdom, replaced upstream by
+  `@exodus/bytes`, and `git-raw-commits` under commitlint, replaced by `@conventional-changelog/git-client`. The shared
+  configuration's v3 tracks the same commitlint major, so `@commitlint/config-conventional` 19 no longer sits beside the
+  v21 toolchain. Commitlint 21 requires Node.js 22.12.0 or newer to develop against. The package's own `engines.node` of
+  `>=22` is unchanged, so nothing changes for implementers.
+
 ## v22.1.0 (2026-07-30)
 
 ### Additions

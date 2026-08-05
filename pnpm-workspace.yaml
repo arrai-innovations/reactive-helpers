@@ -15,10 +15,10 @@ allowBuilds:
   esbuild: true
   lefthook: false
 
-# diction-md is a first-party docs-authoring tool, published from
-# arrai-innovations/diction-md and used only to lint prose in docs/. It was added the day it was
-# published, before it could satisfy the minimum release age. Drop this entry at the next version
-# bump, when the gate passes on its own.
+# First-party Arrai packages adopted before they aged past pnpm's minimumReleaseAge cooldown,
+# which defaults to 1440 minutes (24 hours) in pnpm v11 and is not set explicitly here. pnpm
+# appends an entry when it resolves such a version. An entry does nothing once that version is
+# more than a day old, so remove it then.
 minimumReleaseAgeExclude:
-  - "@arrai-innovations/diction-md@1.0.0"
   - '@arrai-innovations/vitepress-theme@1.0.0 || 1.0.1'
+  - '@arrai-innovations/commitlint-config@3.0.0'
