@@ -7,7 +7,8 @@ Compact guide for authoring pages under `docs/`. Read `README.md` in this direct
 - `docs/tutorials/`: tutorials (action while acquiring skill).
 - `docs/guide/`: how-to guides (action while applying existing skill).
 - `docs/concepts/`: explanation pages (cognition for study and understanding).
-- `docs/reference/`: generated API reference (cognition while applying skill). Do not edit by hand.
+- `docs/reference/api/`: generated API reference (cognition while applying skill). Do not edit by hand.
+- `docs/reference/index.md` and `docs/reference/glossary.md`: authored pages inside that tree. Edit them directly.
 - `docs/index.md`: site home.
 
 Choose a page type from the reader's need, not from the feature. Keep one dominant need per page and link to another
@@ -59,9 +60,23 @@ Generated reference pages need no frontmatter.
 
 ## Generated reference
 
-`docs/reference/` is generated from JSDoc in `config/`, `use/`, and `utils/` by `pnpm run docs`. Do not edit those
+`docs/reference/api/` is generated from JSDoc in `config/`, `use/`, and `utils/` by `pnpm run docs`. Do not edit those
 files; fix the JSDoc in the source (or the TypeDoc config in `typedoc.json`), then regenerate. CI fails if the committed
-output is stale (`pnpm run docs:check`).
+output is stale (`pnpm run docs:check`). Generation, `docs:check`, and `docs:clean` are all scoped to `api/`, so the two
+authored pages beside it are safe to edit.
+
+## Glossary
+
+`docs/reference/glossary.md` is hand authored. It defines the vocabulary shared by the authored pages and the source
+JSDoc, one short entry per term.
+
+- Define a term that a page or JSDoc block already uses as given, that means something narrower here than in ordinary
+  use (`target`, `params`, `running`), or that the docs coined for a group of API members (verb, layer, proxy variant).
+- Leave out ordinary words, single API members the reference documents, and internal utility mechanics.
+- Groups are `##` headings and terms are `###` headings, alphabetical within their group, compared case-insensitively.
+  Insert a term into its group rather than appending it. Prefer widening a group over adding one.
+- An entry leads with the name the documented version uses, and mentions a renamed predecessor only while it still
+  resolves.
 
 ## Links
 
@@ -110,8 +125,8 @@ documented version. Keep backlog and roadmap notes in planning documents. Frame 
 purpose, tradeoff, and consequence. Reserve warnings for harmful results.
 
 Review authored pages as a corpus for repeated opening formulas, transitions, and boilerplate. Use glossary terms
-consistently. Keep how-to guides on their stated task and link to concept or lifecycle material that is not required for
-the task.
+consistently, and check the source JSDoc for project vocabulary the glossary has not defined yet. Keep how-to guides on
+their stated task and link to concept or lifecycle material that is not required for the task.
 
 Use Canadian spelling in prose (behaviour, colour, favour; keep `-ize`/`-yze`: initialize, analyze). Never respell code:
 identifiers, API names, string literals, and code spans/blocks stay as written, even for discretionary names. JSDoc

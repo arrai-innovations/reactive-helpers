@@ -14,7 +14,8 @@ The site follows the [Diátaxis](https://diataxis.fr/) model:
 - `docs/tutorials/`: tutorials.
 - `docs/guide/`: how-to guides.
 - `docs/concepts/`: explanation pages.
-- `docs/reference/`: generated API reference (not hand edited).
+- `docs/reference/`: the generated API reference under `api/` (not hand edited), plus the authored `index.md` and
+  `glossary.md`.
 - `docs/index.md`: home page.
 
 ### Diátaxis as an authoring contract
@@ -139,12 +140,46 @@ do not need frontmatter.
 
 ## Generated API reference
 
-Pages under `docs/reference/` are generated from JSDoc annotations in `config/`, `use/`, and `utils/` by `pnpm run docs`
-(TypeDoc with typedoc-plugin-markdown; see `typedoc.json`). Do not edit them by hand:
+Pages under `docs/reference/api/` are generated from JSDoc annotations in `config/`, `use/`, and `utils/` by
+`pnpm run docs` (TypeDoc with typedoc-plugin-markdown; see `typedoc.json`). Do not edit them by hand:
 
 - Fix errors or omissions in the source JSDoc, or in `typedoc.json`.
 - Regenerate with `pnpm run docs`.
 - The committed output is verified in CI; `pnpm run docs:check` fails if it is stale.
+
+Generation is scoped to `api/`. `docs/reference/index.md` and `docs/reference/glossary.md` are authored pages carrying
+frontmatter, and `pnpm run docs`, `pnpm run docs:check`, and `pnpm run docs:clean` all leave them untouched. Edit those
+two directly.
+
+## The glossary
+
+`docs/reference/glossary.md` defines the vocabulary the authored pages and the source JSDoc share. Each entry gives the
+shortest definition that lets a reader read the term correctly on the page that used it.
+
+Define a term when:
+
+- an authored page or a JSDoc block uses it as though it were already defined;
+- its meaning here is narrower than its ordinary meaning, as with `target`, `params`, and `running`; or
+- the docs coined it for a group of API members rather than for one member, as with verb, layer, and proxy variant.
+
+Leave a term out when it is an ordinary English word, when it names a single API member the reference already documents,
+or when the entry would restate a generated table. Internal utility mechanics belong in JSDoc.
+
+### Ordering
+
+Terms are grouped by concept area under `##` headings, and each term is a `###` heading. Within a group, terms are
+alphabetical by entry title, comparing case-insensitively so a code name such as `params` sorts with the words. The
+groups run from what a reader meets first to what they meet last; the page's heading order is the record of that
+sequence.
+
+Adding a term means choosing its group and inserting it alphabetically. Do not append to the end of a group or the page.
+Adding a group changes the page's shape, so prefer widening an existing group's scope.
+
+### Keeping it aligned
+
+Check new and renamed terms against the glossary during the corpus review below. An entry describes the version the docs
+target. When a release renames an option, the entry leads with the new name and notes the old one only while it still
+resolves.
 
 ## Links
 
@@ -208,7 +243,9 @@ Review authored pages together, not only one at a time:
 
 - Look for repeated opening formulas, transitions, section boilerplate, and other copied scaffolding. Each page must
   satisfy its opening contract without using identical sentences.
-- Check important terms against the glossary. Define a new term or use an existing one consistently.
+- Check important terms against the glossary, in the source JSDoc as well as the authored pages. Add an entry for a term
+  that carries project meaning, or use the existing entry's term consistently. See "The glossary" above for what earns
+  an entry.
 - Keep how-to guides on the stated task. Link to concept, lifecycle, alternate API, and advanced material instead of
   repeating it when that material is not required to complete the task.
 - Use lexical searches to find possible diction problems, but review every match in context. A flagged word is a review
