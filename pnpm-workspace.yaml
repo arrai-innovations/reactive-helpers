@@ -1,24 +1,24 @@
 packages: []
 
 overrides:
-    "brace-expansion@<1.1.18": ">=1.1.18 <2"
-    "brace-expansion@>=2.0.0 <2.1.4": ">=2.1.4 <3"
-    "brace-expansion@>=4.0.0 <5.0.9": ">=5.0.9 <6"
-    "fast-uri@>=3.0.0 <3.1.5": ">=3.1.5 <4"
-    "form-data@>=4.0.0 <4.0.6": ">=4.0.6 <5"
-    "js-yaml@<=4.1.1": ">=4.2.0 <5"
-    "markdown-it@<=14.1.1": ">=14.2.0 <15"
-    "vite@>=8.0.0 <=8.0.15": ">=8.0.16 <9"
-    "vite@<6.4.3": ">=6.4.3 <7"
+  "brace-expansion@<1.1.18": ">=1.1.18 <2"
+  "brace-expansion@>=2.0.0 <2.1.4": ">=2.1.4 <3"
+  "brace-expansion@>=4.0.0 <5.0.9": ">=5.0.9 <6"
+  "fast-uri@>=3.0.0 <3.1.5": ">=3.1.5 <4"
+  "form-data@>=4.0.0 <4.0.6": ">=4.0.6 <5"
+  "js-yaml@<=4.1.1": ">=4.2.0 <5"
+  "markdown-it@<=14.1.1": ">=14.2.0 <15"
+  "vite@>=8.0.0 <=8.0.15": ">=8.0.16 <9"
+  "vite@<6.4.3": ">=6.4.3 <7"
 
 allowBuilds:
-    esbuild: true
-    lefthook: false
+  esbuild: true
+  lefthook: false
 
 # diction-md is a first-party docs-authoring tool, published from
 # arrai-innovations/diction-md and used only to lint prose in docs/. It was added the day it was
 # published, before it could satisfy the minimum release age. Drop this entry at the next version
 # bump, when the gate passes on its own.
 minimumReleaseAgeExclude:
-    - "@arrai-innovations/diction-md@1.0.0"
-    - "@arrai-innovations/vitepress-theme@1.0.0"
+  - "@arrai-innovations/diction-md@1.0.0"
+  - '@arrai-innovations/vitepress-theme@1.0.0 || 1.0.1'
