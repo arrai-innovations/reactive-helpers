@@ -147,7 +147,14 @@ export default defineConfig({
             { text: "Tutorials", link: "/tutorials/" },
             { text: "How-to", link: "/guide/" },
             { text: "Concepts", link: "/concepts/" },
-            { text: "Reference", link: "/reference/" },
+            {
+                text: "Reference",
+                items: [
+                    { text: "Overview", link: "/reference/" },
+                    { text: "Glossary", link: "/reference/glossary" },
+                    { text: "API index", link: "/reference/api/" },
+                ],
+            },
             { text: "npm", link: "https://www.npmjs.com/package/@arrai-innovations/reactive-helpers" },
         ],
         sidebar: {
