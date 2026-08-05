@@ -1,6 +1,7 @@
 node_modules
 package.json
 pnpm-lock.yaml
+pnpm-workspace.yaml
 coverage
 docs/reference/api
 site
