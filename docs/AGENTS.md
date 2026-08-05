@@ -77,6 +77,9 @@ JSDoc, one short entry per term.
   Insert a term into its group rather than appending it. Prefer widening a group over adding one.
 - An entry leads with the name the documented version uses, and mentions a renamed predecessor only while it still
   resolves.
+- Each entry links out to the page that develops its term. Authored pages do not link back per first use: they carry
+  four to thirteen terms each, and the concept page that teaches a term beats a two-sentence entry. Link a term to the
+  glossary only when the page uses it without teaching it and no other page covers it.
 
 ## Links
 

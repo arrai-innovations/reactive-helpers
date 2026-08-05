@@ -175,6 +175,19 @@ sequence.
 Adding a term means choosing its group and inserting it alphabetically. Do not append to the end of a group or the page.
 Adding a group changes the page's shape, so prefer widening an existing group's scope.
 
+### Linking
+
+Authored pages do not link a term to the glossary at each first use. Pages carry four to thirteen glossary terms each,
+so per-term linking would put many links to one destination on every page. Most terms also have a concept page that
+develops them, which is a better destination than a two-sentence entry. Link that page instead, as the "Related pages"
+sections do.
+
+The glossary is reachable without inline links: the `Reference` nav item lists it from every page, the section index
+pages point at it, and site search finds each entry.
+
+Link a term to the glossary only when a page uses it without teaching it and no other page covers it. Each glossary
+entry carries the reverse link, to the page that develops its term.
+
 ### Keeping it aligned
 
 Check new and renamed terms against the glossary during the corpus review below. An entry describes the version the docs
