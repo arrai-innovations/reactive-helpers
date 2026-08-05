@@ -21,3 +21,4 @@ allowBuilds:
 # bump, when the gate passes on its own.
 minimumReleaseAgeExclude:
     - "@arrai-innovations/diction-md@1.0.0"
+    - "@arrai-innovations/vitepress-theme@1.0.0"

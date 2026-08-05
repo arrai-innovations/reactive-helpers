@@ -1,4 +1,1 @@
-import "./brand.css";
-import DefaultTheme from "vitepress/theme";
-
-export default DefaultTheme;
+export { default } from "@arrai-innovations/vitepress-theme";

@@ -1,12 +1,14 @@
 import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
+import { arraiThemeRoot, buildBreadcrumbRoutes } from "@arrai-innovations/vitepress-theme/config";
 import { defineConfig } from "vitepress";
 
 // configDir is docs/.vitepress; docsRoot is the VitePress source root (docs/).
 const configDir = fileURLToPath(new URL(".", import.meta.url));
 const docsRoot = path.resolve(configDir, "..");
 const apiRoot = path.join(docsRoot, "reference", "api");
+const repoRoot = path.resolve(docsRoot, "..");
 
 // Env-driven base so CI can publish per-major under a subpath (e.g. /v22/);
 // defaults to root for local development.
@@ -37,9 +39,8 @@ const collectDraftFiles = (dir, found = []) => {
 };
 
 const draftFiles = collectDraftFiles(docsRoot);
-const draftRoutes = new Set(
-    draftFiles.map((abs) => `/${path.relative(docsRoot, abs).split(path.sep).join("/").replace(/\.md$/, "")}`)
-);
+const draftRelativeFiles = draftFiles.map((abs) => path.relative(docsRoot, abs).split(path.sep).join("/"));
+const draftRoutes = new Set(draftRelativeFiles.map((relativeFile) => `/${relativeFile.replace(/\.md$/, "")}`));
 
 const withoutDrafts = (items) =>
     items
@@ -58,6 +59,22 @@ const labelFromFile = (absFile) => {
     const heading = match ? match[1].trim() : path.basename(absFile, ".md");
     return heading.includes("/") ? heading.slice(heading.indexOf("/") + 1) : heading;
 };
+
+const breadcrumbRoutes = buildBreadcrumbRoutes({
+    docsRoot,
+    exclude: (relativePath) =>
+        draftRelativeFiles.includes(relativePath) ||
+        relativePath === "AGENTS.md" ||
+        relativePath === "CLAUDE.md" ||
+        relativePath === "README.md" ||
+        relativePath.startsWith("temp/"),
+    getTitle: ({ filePath, route }) => (route.startsWith("/reference/api/") ? labelFromFile(filePath) : null),
+    virtualRoutes: {
+        "/guide": { text: "How-to", link: true },
+        "/reference/api": { text: "API index", link: true },
+        ...Object.fromEntries(REFERENCE_GROUPS.map((group) => [`/reference/api/${group}`, group])),
+    },
+});
 
 const buildReferenceSidebar = () => {
     const apiGroups = fs.existsSync(apiRoot)
@@ -108,13 +125,7 @@ export default defineConfig({
     lastUpdated: true,
     base,
     outDir: "../site",
-    srcExclude: [
-        "**/AGENTS.md",
-        "**/CLAUDE.md",
-        "**/README.md",
-        "temp/**",
-        ...draftFiles.map((abs) => path.relative(docsRoot, abs).split(path.sep).join("/")),
-    ],
+    srcExclude: ["**/AGENTS.md", "**/CLAUDE.md", "**/README.md", "temp/**", ...draftRelativeFiles],
     head: [
         ["link", { rel: "icon", href: `${base}assets/logo-cube-solid.svg` }],
         [
@@ -131,6 +142,7 @@ export default defineConfig({
     themeConfig: {
         logo: "/assets/logo-cube-solid.svg",
         outline: "deep",
+        breadcrumbs: { routes: breadcrumbRoutes },
         nav: [
             { text: "Tutorials", link: "/tutorials/" },
             { text: "How-to", link: "/guide/" },
@@ -207,10 +219,20 @@ export default defineConfig({
         search: { provider: "local" },
     },
     vite: {
+        // The theme publishes Vue SFC source, so include it in VitePress's SSR
+        // bundle instead of letting Node load Layout.vue as an external module.
+        ssr: { noExternal: ["@arrai-innovations/vitepress-theme"] },
         // host: true binds all interfaces; allowedHosts: true accepts custom
         // hostnames (e.g. behind a reverse proxy). config.local.mjs can add
         // https and an hmr host on top.
-        server: { host: true, allowedHosts: true, ...local.server },
+        server: {
+            host: true,
+            allowedHosts: true,
+            // Local `link:` installs resolve the theme and its fonts outside
+            // this repository. Published installs remain inside repoRoot.
+            fs: { allow: [repoRoot, arraiThemeRoot] },
+            ...local.server,
+        },
         preview: { host: true, ...local.preview },
     },
 });
