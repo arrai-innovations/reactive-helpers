@@ -55,15 +55,15 @@ $ npm install @arrai-innovations/reactive-helpers vue @vueuse/core lodash-es
 
 ## Documentation
 
-The [reactive-helpers documentation](https://reactive-helpers.arrai.dev/v22/) is versioned by package major.
+The [reactive-helpers documentation](https://reactive-helpers.arrai.dev/v23/) is versioned by package major.
 
-- [Get started](https://reactive-helpers.arrai.dev/v22/guide/) with installation and a complete reactive list.
-- [Build a reactive list](https://reactive-helpers.arrai.dev/v22/tutorials/build-a-reactive-list) step by step.
-- [Pass backend arguments](https://reactive-helpers.arrai.dev/v22/guide/data-layer) or
-  [register app-wide CRUD defaults](https://reactive-helpers.arrai.dev/v22/guide/register-crud-defaults).
-- Read about [instances and transport](https://reactive-helpers.arrai.dev/v22/concepts/instances-and-transport) to
+- [Get started](https://reactive-helpers.arrai.dev/v23/guide/) with installation and a complete reactive list.
+- [Build a reactive list](https://reactive-helpers.arrai.dev/v23/tutorials/build-a-reactive-list) step by step.
+- [Pass backend arguments](https://reactive-helpers.arrai.dev/v23/guide/data-layer) or
+  [register app-wide CRUD defaults](https://reactive-helpers.arrai.dev/v23/guide/register-crud-defaults).
+- Read about [instances and transport](https://reactive-helpers.arrai.dev/v23/concepts/instances-and-transport) to
   understand the library's core boundary.
-- Use the [API reference](https://reactive-helpers.arrai.dev/v22/reference/api/) for exact signatures and return values.
+- Use the [API reference](https://reactive-helpers.arrai.dev/v23/reference/api/) for exact signatures and return values.
 
 ## Changelog
 
