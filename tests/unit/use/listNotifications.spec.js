@@ -60,6 +60,80 @@ const observeRecords = (scope, state, pks, counts) => {
     });
 };
 
+// A collection-level reader is a different subject from a record observer, and the per-record allowance
+// above cannot bound it. A `v-for` reading the order is one effect over the whole list, so the count it
+// receives is not divided by anything: at 1,600 records, one notification per page and two are 0.01 and
+// 0.02 per record alike. Bounded on its own terms it is exact. An arriving page appends to the order
+// once, so a reader of the order has exactly one thing to hear about, and hearing twice means a layer
+// wrote the order twice while the page landed.
+const maxPerCollectionRead = 1;
+
+/**
+ * Attach one effect per collection-level read, which is what the `v-for` itself does.
+ *
+ * Each read is its own effect so a count belongs to the value that raised it. Both walk the whole list,
+ * so a second evaluation in one page is a second full walk rather than a wasted notification alone.
+ *
+ * @param {import('vue').EffectScope} scope - The scope the effects belong to.
+ * @param {object} state - The layer state to read through.
+ * @param {{[channel: string]: {runs: number, triggers: number}}} counts - Counters, keyed by read.
+ * @returns {void}
+ */
+const observeCollection = (scope, state, counts) => {
+    scope.run(() => {
+        watchEffect(
+            () => {
+                counts.order.runs++;
+                void state.order.length;
+            },
+            { onTrigger: () => counts.order.triggers++ }
+        );
+        watchEffect(
+            () => {
+                counts.objectsInOrder.runs++;
+                for (const object of state.objectsInOrder) {
+                    void object;
+                }
+            },
+            { onTrigger: () => counts.objectsInOrder.triggers++ }
+        );
+    });
+};
+
+/**
+ * Count what a collection-level reader hears as each of a stream's equal pages arrives.
+ *
+ * @param {object} options - The measurement to make.
+ * @param {number} options.pages - How many equal pages to stream.
+ * @param {number} options.pageSize - Records per page.
+ * @returns {Promise<{order: number, objectsInOrder: number}[]>} - One entry per page.
+ */
+const measureCollectionReads = async ({ pages, pageSize }) => {
+    const list = makeReviewList();
+    const scope = effectScope();
+    const counts = { order: { runs: 0, triggers: 0 }, objectsInOrder: { runs: 0, triggers: 0 } };
+    const perPage = [];
+    try {
+        await settle();
+        observeCollection(scope, list.state, counts);
+        await settle();
+
+        for (let page = 0; page < pages; page++) {
+            const before = { order: counts.order.triggers, objectsInOrder: counts.objectsInOrder.triggers };
+            list.pushObjects(makeReviewRows(pageSize, page * pageSize + 1));
+            await settle();
+            perPage.push({
+                order: counts.order.triggers - before.order,
+                objectsInOrder: counts.objectsInOrder.triggers - before.objectsInOrder,
+            });
+        }
+        return perPage;
+    } finally {
+        scope.stop();
+        list.stop();
+    }
+};
+
 /**
  * Count the notifications a page of new records delivers to observers of records already present.
  *
@@ -224,6 +298,22 @@ describe("composed list notifications through the public state", () => {
         expect(perPage.length).toBe(4);
         for (const page of perPage) {
             expect(page.perObserver).toBeLessThanOrEqual(maxPerObserver);
+        }
+    });
+
+    it("notifies a collection reader once for each arriving page", async () => {
+        // A derived layer can hand its order on in two ways. Writing it from a watcher collects a page's
+        // worth of upstream order changes and notifies once, which is what the layers do. Reading the
+        // parent's order live inside the exposed computed instead chains the reader onto every upstream
+        // write, so it hears each of the intermediate states the page passes through on its way to the
+        // one that matters. Both produce the same final order, so nothing about correctness distinguishes
+        // them, and the difference is invisible to every assertion above.
+        const perPage = await measureCollectionReads({ pages: 5, pageSize: 200 });
+
+        expect(perPage.length).toBe(5);
+        for (const page of perPage) {
+            expect(page.order).toBeLessThanOrEqual(maxPerCollectionRead);
+            expect(page.objectsInOrder).toBeLessThanOrEqual(maxPerCollectionRead);
         }
     });
 });

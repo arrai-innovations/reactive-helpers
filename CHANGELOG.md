@@ -31,6 +31,9 @@ _Actions potentially required by implementers are marked with italics._
 
 ### Testing
 
+- Added deterministic coverage for how many notifications a collection-level reader receives per arriving page. The
+  existing per-record bound cannot see this: one effect reads the whole list, so its count is not divided by the record
+  count and a doubling stays far below any per-record allowance.
 - Added deterministic coverage for how many notifications a composed list delivers to a record that did not change,
   counted rather than timed. The existing benchmarks cannot observe this cost: they push records without ever reading
   the collection back, and a computed with no subscriber neither recomputes nor delivers a notification.
