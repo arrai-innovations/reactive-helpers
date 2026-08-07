@@ -243,6 +243,10 @@ export function useListSort({ parentState, orderByRules, sortThrottleWait = defa
     }
 
     es.run(() => {
+        // One structural pass per change. This used to carry a second, deferred watcher on the parent's
+        //  keys, because the filter and search layers moved their own key set without moving the
+        //  version they forwarded. Both own an accurate version now, so the sync watcher sees every
+        //  cause and criteria exist before anything reads them.
         watch(
             () => parentState.objectsVersion,
             () => {
@@ -250,7 +254,6 @@ export function useListSort({ parentState, orderByRules, sortThrottleWait = defa
             },
             { immediate: true, flush: "sync" }
         );
-        watch(() => Object.keys(parentState.objects), syncCriteria);
     });
 
     const rawOrder = computed(() => {

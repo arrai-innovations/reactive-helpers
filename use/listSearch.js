@@ -193,12 +193,18 @@ export function useListSearch({ parentState, props, throttle = 500, showAllWhenE
     const passthrough = computed(() => !textSearchRules.value?.length || !textSearchValue.value?.length);
     // Constant collection for a pass-through that shows nothing, read-only like every other view here.
     const noObjects = shallowReadonly({});
+    // This layer's membership is its own: a query or rule change moves it without the parent's key set
+    //  moving, so the parent's objectsVersion does not describe this collection. Own one here and keep
+    //  the property's contract true for the sort layer downstream, which is what lets it watch the
+    //  version instead of enumerating this layer. Synced by syncObjectsVersion below.
+    const objectsVersion = ref(0);
     const searchedObjects = shallowReadonly(_objects);
     /** @type {ListSearchState} */
     // @ts-ignore
     const state = reactive(
         /** @type {ListSearchRawState} */ {
             .../** @type {ListSearchParentStateToRefs} */ toRefs(parentState),
+            objectsVersion,
             objects: computed(() => {
                 if (!passthrough.value) {
                     return searchedObjects;
@@ -255,6 +261,38 @@ export function useListSearch({ parentState, props, throttle = 500, showAllWhenE
     );
     // @ts-ignore
     textSearchIndex.state.search = toRef(state, "textSearchValue");
+
+    /** @type {import('../config/commonCrud.js').Pk[]} */
+    let previousSearchedKeys = [];
+    /** @type {boolean} */
+    let previousPassthrough;
+    /** @type {number} */
+    let previousParentVersion;
+    const syncObjectsVersion = () => {
+        const parentVersion = parentState.objectsVersion;
+        const flipped = previousPassthrough !== passthrough.value;
+        if (passthrough.value) {
+            // The private collection is released while passing through, so the key set is either the
+            //  parent's or empty. Neither needs enumerating: a shown pass-through moves exactly when
+            //  the parent moves, and a hidden one never moves at all.
+            const moved = flipped || (showAllWhenEmpty && previousParentVersion !== parentVersion);
+            previousSearchedKeys = [];
+            previousPassthrough = true;
+            previousParentVersion = parentVersion;
+            if (moved) {
+                objectsVersion.value++;
+            }
+            return;
+        }
+        const searchedKeys = Object.keys(_objects);
+        const { addedKeys, removedKeys } = keyDiff(searchedKeys, previousSearchedKeys, { sameKeys: false });
+        previousSearchedKeys = searchedKeys;
+        previousPassthrough = false;
+        previousParentVersion = parentVersion;
+        if (flipped || addedKeys.size || removedKeys.size) {
+            objectsVersion.value++;
+        }
+    };
 
     const objectEffectScopes = {};
     const objectComputeds = {};
@@ -393,6 +431,9 @@ export function useListSearch({ parentState, props, throttle = 500, showAllWhenE
                     .map(([pk]) => [pk, toRef(parentState.objects, pk)])
             )
         );
+        // Published once the writes are done. Watching the collection instead would re-enumerate it on
+        //  every key assignReactiveObject writes.
+        syncObjectsVersion();
     };
 
     const updateOrder = () => {
@@ -425,8 +466,18 @@ export function useListSearch({ parentState, props, throttle = 500, showAllWhenE
     };
 
     es.run(() => {
-        watch([() => Object.keys(parentState.objects), toRef(state.textSearchRules)], makeComputeds, {
+        // The parent now owns a version that describes its own key set, so this watches the version
+        //  rather than enumerating the parent's collection on every invalidation of anything it tracks.
+        watch([() => parentState.objectsVersion, toRef(state.textSearchRules)], makeComputeds, {
             immediate: true,
+        });
+
+        // Publish this layer's own key set changes. A parent structural change reaches this collection
+        //  only while passing through; the query-driven case is published by updateObjectsForResults
+        //  once it has finished writing, so nothing here enumerates the private collection per write.
+        watch([passthrough, () => parentState.objectsVersion], syncObjectsVersion, {
+            immediate: true,
+            flush: "sync",
         });
 
         watch(

@@ -4,6 +4,7 @@ import {
     effectScope,
     isRef,
     reactive,
+    ref,
     shallowReactive,
     shallowReadonly,
     toRef,
@@ -181,23 +182,6 @@ export function useListFilter({ parentState, allowedFilter, excludedFilter }) {
         }
     }
 
-    es.run(() => {
-        watch(
-            () => parentState.objectsVersion,
-            () => {
-                const newVal = Object.keys(parentState.objects);
-                const { addedKeys, removedKeys } = keyDiff(newVal, [...includeMap.keys()]);
-                for (const pk of removedKeys) {
-                    disposeIncludeComputed(pk);
-                }
-                for (const pk of addedKeys) {
-                    ensureIncludeComputed(pk);
-                }
-            },
-            { immediate: true, flush: "sync" }
-        );
-    });
-
     const isIncluded = (/** @type {import('../config/commonCrud.js').Pk} */ pk) => {
         const entry = includeMap.get(pk);
         return entry ? entry.include.value : false;
@@ -214,6 +198,68 @@ export function useListFilter({ parentState, allowedFilter, excludedFilter }) {
             }
         }
         return out;
+    });
+
+    // This layer's membership is its own: a rule change or a record edit moves it without the parent's
+    //  key set moving, so the parent's objectsVersion does not describe this collection. Own one here
+    //  and keep the property's contract true for every layer downstream, which is what lets them watch
+    //  it instead of enumerating this layer once each.
+    const objectsVersion = ref(0);
+    /** @type {Set<import('../config/commonCrud.js').Pk>} */
+    const includedKeys = new Set();
+
+    es.run(() => {
+        watch(
+            () => parentState.objectsVersion,
+            () => {
+                const newVal = Object.keys(parentState.objects);
+                const { addedKeys, removedKeys } = keyDiff(newVal, [...includeMap.keys()]);
+                // Only an arriving or departing record can move membership structurally, so the version
+                //  is settled from those keys rather than from a fresh pass over the collection. This
+                //  runs synchronously, and a full pass here would scale the synchronous half of a page
+                //  with the collection behind it.
+                let moved = false;
+                for (const pk of removedKeys) {
+                    disposeIncludeComputed(pk);
+                    moved = includedKeys.delete(pk) || moved;
+                }
+                for (const pk of addedKeys) {
+                    ensureIncludeComputed(pk);
+                    if (isIncluded(pk)) {
+                        includedKeys.add(pk);
+                        moved = true;
+                    }
+                }
+                if (moved) {
+                    objectsVersion.value++;
+                }
+            },
+            { immediate: true, flush: "sync" }
+        );
+
+        // A rule change or a record edit flips inclusion without moving any key set, so neither reaches
+        //  the watcher above. Deferred on purpose: includedObjects invalidates once per record written,
+        //  and a synchronous watcher here would rebuild the whole map once per record in a page.
+        watch(includedObjects, (included) => {
+            let moved = false;
+            for (const pk of Object.keys(included)) {
+                if (!includedKeys.has(pk)) {
+                    includedKeys.add(pk);
+                    moved = true;
+                }
+            }
+            if (includedKeys.size !== Object.keys(included).length) {
+                for (const pk of [...includedKeys]) {
+                    if (!(pk in included)) {
+                        includedKeys.delete(pk);
+                        moved = true;
+                    }
+                }
+            }
+            if (moved) {
+                objectsVersion.value++;
+            }
+        });
     });
 
     // Resolve individual keys without tracking the full collection.
@@ -275,6 +321,7 @@ export function useListFilter({ parentState, allowedFilter, excludedFilter }) {
         allowedFilter,
         excludedFilter,
 
+        objectsVersion,
         objects,
         order,
         objectsInOrder,
