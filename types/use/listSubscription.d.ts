@@ -33,6 +33,7 @@
  * @property {import('./listInstance.js').ListInstance} listInstance - The list instance used by the subscription.
  * @property {import('./cancellableIntent.js').CancellableIntent} listIntent - The `CancellableIntent` instance managing if the list should be (re)fetched.
  * @property {import('./cancellableIntent.js').CancellableIntent} subscribeIntent - The `CancellableIntent` instance managing if the subscription should be (un)subscribed.
+ * @property {import('../utils/watches.js').WatchMembershipChanged} watchMembershipChanged - Registers a callback for changes to the set of object keys this layer holds. The watcher belongs to the effect scope active where it is called, not to this layer, so stopping this layer silences it without disposing it.
  */
 /**
  * @typedef {ListSubscriptionFunctions & ListSubscriptionProperties} ListSubscription - An instance of a list subscription, returned by `useListSubscription`.
@@ -184,6 +185,10 @@ export type ListSubscriptionProperties = {
      * The `CancellableIntent` instance managing if the subscription should be (un)subscribed.
      */
     subscribeIntent: import("./cancellableIntent.js").CancellableIntent;
+    /**
+     * Registers a callback for changes to the set of object keys this layer holds. The watcher belongs to the effect scope active where it is called, not to this layer, so stopping this layer silences it without disposing it.
+     */
+    watchMembershipChanged: import("../utils/watches.js").WatchMembershipChanged;
 };
 /**
  * An instance of a list subscription, returned by `useListSubscription`.

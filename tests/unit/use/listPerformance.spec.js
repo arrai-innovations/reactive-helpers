@@ -118,8 +118,14 @@ describe("use/list.js structural work per pushObjects page", () => {
 
             // Each layer may examine the collection a fixed number of times per page. What must not
             // return is examining it once per record, which multiplied these figures by the page size.
+            //
+            // The settled bound was 25 while the related and calculated handlers reconciled every
+            // record's rules against the whole collection on each page. Consuming the arriving keys
+            // instead brought the measured multiple from 12.0 to 13.3 down to 9.3 to 9.8, so the bound
+            // follows it down. Set from measurement: a multiple that no longer tracks what the code
+            // does stops reporting a regression as one.
             expect(keysScanned).toBeLessThanOrEqual(collection * 5);
-            expect(settledKeysScanned).toBeLessThanOrEqual(collection * 25);
+            expect(settledKeysScanned).toBeLessThanOrEqual(collection * 12);
         }
     });
 });

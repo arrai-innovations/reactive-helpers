@@ -1,4 +1,5 @@
 import { keyDiff } from "../utils/keyDiff.js";
+import { makeMembershipWatcher } from "../utils/watches.js";
 import { loadingCombine } from "../utils/loadingCombine.js";
 import { proxyRunning } from "../utils/proxyRunning.js";
 import isEmpty from "lodash-es/isEmpty.js";
@@ -78,6 +79,7 @@ import { warnWrongSideRuleOptions } from "../utils/relatedCalculatedHelpers.js";
  * @typedef {object} ListCalculatedProperties - The properties for the list computed composition function.
  * @property {ListCalculatedState} state - The state for the list calculated property.
  * @property {ListCalculatedParentState} parentState - The parent state object.
+ * @property {import('../utils/watches.js').WatchMembershipChanged} watchMembershipChanged - Registers a callback for changes to the set of object keys this layer holds. The watcher belongs to the effect scope active where it is called, not to this layer, so stopping this layer silences it without disposing it.
  * @property {() => void} stop - Stops composition's effects and cleans up resources.
  */
 
@@ -181,6 +183,14 @@ export function useListCalculated(options) {
         running: computed(() => loadingCombine(state.calculatedRunning, parentRunning.value)),
     });
     const calculatedObjectsEffectScopes = {};
+    // Records whose rule bag has not been reconciled against the rules yet. A record arriving with an
+    //  empty bag needs every rule applied. A record already carrying the full rule set needs nothing,
+    //  and rediscovering that by diffing its bag cost one keyDiff per record in the collection, per
+    //  page, along with a pair of refs and an effect scope activation for each.
+    const pendingObjectKeys = new Set();
+    // The rule keys the last reconciliation ran against, so a run can tell which of its two causes woke
+    //  it. Only a rule change touches records that were already reconciled.
+    let previousRuleKeys = [];
 
     function parentStateObjectsWatch() {
         const { addedKeys, removedKeys } = keyDiff(
@@ -188,6 +198,7 @@ export function useListCalculated(options) {
             Object.keys(state.calculatedObjects)
         );
         for (const removedKey of removedKeys) {
+            pendingObjectKeys.delete(removedKey);
             delete state.calculatedObjects[removedKey];
             if (calculatedObjectsEffectScopes[removedKey]) {
                 calculatedObjectsEffectScopes[removedKey].objectScope.stop();
@@ -196,6 +207,7 @@ export function useListCalculated(options) {
         }
         for (const addedKey of addedKeys) {
             state.calculatedObjects[addedKey] = {};
+            pendingObjectKeys.add(addedKey);
         }
         nextTick(() => {
             state.calculatedObjectsParentStateObjectsWatchRunning = false;
@@ -204,7 +216,18 @@ export function useListCalculated(options) {
 
     function calculatedObjectsWatch() {
         const calculatedObjectsRulesIsEmpty = !state.calculatedObjectsRules || isEmpty(state.calculatedObjectsRules);
-        for (const objectKey of Object.keys(state.calculatedObjects)) {
+        const ruleKeys = Object.keys(state.calculatedObjectsRules || {});
+        const { addedKeys: addedRules, removedKeys: removedRules } = keyDiff(ruleKeys, previousRuleKeys, {
+            sameKeys: false,
+        });
+        previousRuleKeys = ruleKeys;
+        // A rule change alters the bag of every record, so it is the only cause that has to walk the
+        //  collection. A page arriving leaves every record already present holding the rule set it
+        //  already held, so only the arrivals have anything to reconcile.
+        const rulesChanged = addedRules.size > 0 || removedRules.size > 0;
+        const objectKeys = rulesChanged ? Object.keys(state.calculatedObjects) : [...pendingObjectKeys];
+        pendingObjectKeys.clear();
+        for (const objectKey of objectKeys) {
             if (!state.calculatedObjects[objectKey]) {
                 state.calculatedObjects[objectKey] = {};
             }
@@ -292,6 +315,7 @@ export function useListCalculated(options) {
     return {
         state,
         parentState,
+        watchMembershipChanged: makeMembershipWatcher(state),
         stop: () => {
             es.stop();
             for (const key of Object.keys(calculatedObjectsEffectScopes)) {

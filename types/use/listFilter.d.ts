@@ -51,6 +51,7 @@
  * @typedef {object} ListFilterProperties - The properties of a list filter, including its state and associated Vue composition API utilities.
  * @property {ListFilterState} state - The reactive state managing the filter logic and results.
  * @property {ListFilterParentState} parentState - The state of the list being filtered.
+ * @property {import('../utils/watches.js').WatchMembershipChanged} watchMembershipChanged - Registers a callback for changes to the set of object keys this layer holds. The watcher belongs to the effect scope active where it is called, not to this layer, so stopping this layer silences it without disposing it.
  * @property {() => void} stop - A function to stop the effect scope and clean up resources.
  */
 /**
@@ -166,6 +167,10 @@ export type ListFilterProperties = {
      * The state of the list being filtered.
      */
     parentState: ListFilterParentState;
+    /**
+     * Registers a callback for changes to the set of object keys this layer holds. The watcher belongs to the effect scope active where it is called, not to this layer, so stopping this layer silences it without disposing it.
+     */
+    watchMembershipChanged: import("../utils/watches.js").WatchMembershipChanged;
     /**
      * A function to stop the effect scope and clean up resources.
      */

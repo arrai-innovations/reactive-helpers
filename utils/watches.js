@@ -9,6 +9,38 @@ import { watch, toRef } from "vue";
  */
 
 /**
+ * @callback WatchMembershipChanged - Calls back when a list layer's set of object keys changes.
+ *  Registers in the effect scope active where it is called, not in the layer's own scope, so the
+ *  returned handle and the surrounding scope own the watcher. Stopping the layer does not dispose it,
+ *  because the layer never owned it; it only silences it, since a stopped layer publishes nothing
+ *  further. Stop it through the returned handle or through the enclosing scope.
+ *  The callback takes no arguments: it reports that membership moved, not what it moved to. Read the
+ *  layer's collection views for that.
+ * @param {() => void} callback - Called after the layer's set of object keys changes.
+ * @param {import('vue').WatchOptions} [options] - Passed through to Vue's `watch`, so `immediate`,
+ *  `flush`, and `once` all behave as they do there.
+ * @returns {import('vue').WatchHandle} - Stops the watcher.
+ */
+
+/**
+ * Builds a layer's membership watcher over the counter that layer publishes.
+ *
+ * @internal
+ * @param {{objectsVersion: number}} state - The layer's own state.
+ * @returns {WatchMembershipChanged} - The watcher registration function for that layer.
+ */
+export function makeMembershipWatcher(state) {
+    // The counter is an implementation detail of how membership changes are published, so it is not
+    //  passed to the callback. That keeps how the signal is carried free to change.
+    return (callback, options) =>
+        watch(
+            () => state.objectsVersion,
+            () => callback(),
+            options
+        );
+}
+
+/**
  * Provides a mechanism for immediately starting and potentially stopping a Vue.js watcher
  * during its first invocation. This is useful when the need arises to terminate the watch
  * based on conditions encountered during the initial execution of the watch function.

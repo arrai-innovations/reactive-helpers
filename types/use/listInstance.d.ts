@@ -54,7 +54,7 @@
  * @property {object} params - Arguments passed to the server for listing operations.
  * @property {ObjectsMap} objectsMap - The map of objects stored by their pks.
  * @property {ObjectsByPk} objects - The list objects stored by their pks.
- * @property {number} objectsVersion - Increments when the set of object keys changes.
+ * @property {number} objectsVersion - Increments when this layer's set of object keys changes. Each layer that narrows membership publishes its own, so the value belongs to the state reporting it and is not comparable with another layer's. Watch it rather than reading it, and prefer `watchMembershipChanged`, which carries the same signal without exposing how it is counted.
  * @property {ListOrder} order - The order of objects in the list.
  * @property {ObjectsInOrder} objectsInOrder - The objects in the order specified by the list.
  * @property {import('vue').ShallowReactive<PaginateInfo>} paginateInfo - Pagination information for the list.
@@ -98,6 +98,7 @@
  * @property {(args: {action: string, pks?: import('../config/commonCrud.js').Pk[]} & import('../config/listCrud.js').AdditionalListArgs) => import('../utils/cancellablePromise.js').MaybeCancellablePromise<object|string|boolean|null>} executeAction - Initiates an action on all objects in the list, returning the response, or null if the action failed. The promise carries a `cancel` method when the handler's promise did.
  * @property {(info: PaginateInfo) => void} setPaginateInfo - The method to update pagination information.
  * @property {(total: ColumnTotals) => void} setColumnTotals - The method to update column totals.
+ * @property {import('../utils/watches.js').WatchMembershipChanged} watchMembershipChanged - Registers a callback for changes to the set of object keys this layer holds. The watcher belongs to the effect scope active where it is called, not to this layer, so stopping this layer silences it without disposing it.
  */
 /**
  * @typedef {ListInstanceMyFunctions & Pick<import('./loadingError.js').LoadingErrorStatus, "clearError">} ListInstanceFunctions - The methods contributed by the list instance, including its CRUD operations plus clearError.
@@ -321,7 +322,7 @@ export type ListInstanceRawMyState = {
      */
     objects: ObjectsByPk;
     /**
-     * Increments when the set of object keys changes.
+     * Increments when this layer's set of object keys changes. Each layer that narrows membership publishes its own, so the value belongs to the state reporting it and is not comparable with another layer's. Watch it rather than reading it, and prefer `watchMembershipChanged`, which carries the same signal without exposing how it is counted.
      */
     objectsVersion: number;
     /**
@@ -436,6 +437,10 @@ export type ListInstanceMyFunctions = {
      * The method to update column totals.
      */
     setColumnTotals: (total: ColumnTotals) => void;
+    /**
+     * Registers a callback for changes to the set of object keys this layer holds. The watcher belongs to the effect scope active where it is called, not to this layer, so stopping this layer silences it without disposing it.
+     */
+    watchMembershipChanged: import("../utils/watches.js").WatchMembershipChanged;
 };
 /**
  * The methods contributed by the list instance, including its CRUD operations plus clearError.
