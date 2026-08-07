@@ -1,5 +1,16 @@
 import { keyDiff } from "../utils/keyDiff.js";
-import { computed, effectScope, isRef, reactive, shallowReadonly, toRef, toRefs, unref, watch } from "vue";
+import {
+    computed,
+    effectScope,
+    isRef,
+    reactive,
+    shallowReactive,
+    shallowReadonly,
+    toRef,
+    toRefs,
+    unref,
+    watch,
+} from "vue";
 
 /**
  * Provides reactive filtering functionality for lists within a Vue application. This composable
@@ -125,10 +136,12 @@ export function useListFilter({ parentState, allowedFilter, excludedFilter }) {
     const getAllowed = () => (isRef(allowedFilter) ? allowedFilter.value : allowedFilter);
     const getExcluded = () => (isRef(excludedFilter) ? excludedFilter.value : excludedFilter);
 
-    const includeMap = reactive({});
+    // Track entry changes without proxying entries or unwrapping their computed refs.
+    /** @type {Map<import('../config/commonCrud.js').Pk, {scope: import('vue').EffectScope, include: import('vue').ComputedRef<boolean>}>} */
+    const includeMap = shallowReactive(new Map());
 
     function ensureIncludeComputed(pk) {
-        if (!includeMap[pk]) {
+        if (!includeMap.get(pk)) {
             const child = es.run(() => effectScope());
             const include = child.run(() => {
                 const objRef = toRef(parentState.objects, pk);
@@ -155,16 +168,16 @@ export function useListFilter({ parentState, allowedFilter, excludedFilter }) {
                 });
             });
 
-            includeMap[pk] = { scope: child, include };
+            includeMap.set(pk, { scope: child, include });
         }
-        return includeMap[pk].include;
+        return includeMap.get(pk).include;
     }
 
     function disposeIncludeComputed(pk) {
-        const entry = includeMap[pk];
+        const entry = includeMap.get(pk);
         if (entry) {
             entry.scope.stop();
-            delete includeMap[pk];
+            includeMap.delete(pk);
         }
     }
 
@@ -173,7 +186,7 @@ export function useListFilter({ parentState, allowedFilter, excludedFilter }) {
             () => parentState.objectsVersion,
             () => {
                 const newVal = Object.keys(parentState.objects);
-                const { addedKeys, removedKeys } = keyDiff(newVal, Object.keys(includeMap));
+                const { addedKeys, removedKeys } = keyDiff(newVal, [...includeMap.keys()]);
                 for (const pk of removedKeys) {
                     disposeIncludeComputed(pk);
                 }
@@ -185,22 +198,73 @@ export function useListFilter({ parentState, allowedFilter, excludedFilter }) {
         );
     });
 
+    const isIncluded = (/** @type {import('../config/commonCrud.js').Pk} */ pk) => {
+        const entry = includeMap.get(pk);
+        return entry ? entry.include.value : false;
+    };
+
+    // Cache enumeration separately from per-key reads.
     /** @type {import('vue').ComputedRef<import('./listInstance.js').ObjectsByPk>} */
-    const objects = computed(() => {
-        // built mutably here, then handed out read-only below
+    const includedObjects = computed(() => {
         /** @type {{[pk: import('../config/commonCrud.js').Pk]: import('./objectInstance.js').ExistingCrudObject}} */
         const out = {};
         for (const [pk, o] of Object.entries(parentState.objects)) {
-            const inc = includeMap[pk]?.include;
-            if (inc) out[pk] = o;
+            if (isIncluded(pk)) {
+                out[pk] = o;
+            }
         }
-        // the computed rebuilds this object on every run, so a write into it would be discarded
-        //  silently on the next read. Report it instead.
-        return shallowReadonly(out);
+        return out;
+    });
+
+    // Resolve individual keys without tracking the full collection.
+    // Implement readonly behaviour here to avoid an extra proxy layer.
+    /** @type {import('./listInstance.js').ObjectsByPk} */
+    const objects = new Proxy(/** @type {any} */ ({}), {
+        get(target, prop) {
+            if (typeof prop === "symbol") {
+                return Reflect.get(target, prop);
+            }
+            if (prop === "__v_isReadonly") {
+                return true;
+            }
+            return isIncluded(prop) ? parentState.objects[prop] : undefined;
+        },
+        set(target, prop) {
+            console.warn(`useListFilter: set operation on key "${String(prop)}" failed: objects is read-only.`);
+            return true;
+        },
+        deleteProperty(target, prop) {
+            console.warn(`useListFilter: delete operation on key "${String(prop)}" failed: objects is read-only.`);
+            return true;
+        },
+        has(target, prop) {
+            if (typeof prop === "symbol") {
+                return Reflect.has(target, prop);
+            }
+            return isIncluded(prop) && prop in parentState.objects;
+        },
+        ownKeys() {
+            return Reflect.ownKeys(includedObjects.value);
+        },
+        getOwnPropertyDescriptor(target, prop) {
+            if (typeof prop === "symbol") {
+                return Reflect.getOwnPropertyDescriptor(target, prop);
+            }
+            // Use the cached collection because descriptor lookups occur during enumeration.
+            const object = includedObjects.value[prop];
+            if (object === undefined) {
+                // Keep descriptors consistent with ownKeys().
+                return undefined;
+            }
+            return { configurable: true, enumerable: true, value: object, writable: true };
+        },
+        getPrototypeOf() {
+            return Object.prototype;
+        },
     });
 
     /** @type {import('./listInstance.js').ListOrder} */
-    const order = computed(() => shallowReadonly(parentState.order.filter((pk) => includeMap[pk]?.include)));
+    const order = computed(() => shallowReadonly(parentState.order.filter(isIncluded)));
 
     /** @type {import('./listInstance.js').ObjectsInOrder} */
     const objectsInOrder = computed(() => shallowReadonly(order.value.map((pk) => parentState.objects[pk])));
@@ -225,9 +289,7 @@ export function useListFilter({ parentState, allowedFilter, excludedFilter }) {
         parentState,
         stop: () => {
             es.stop();
-            for (const pk of Object.keys(includeMap)) {
-                delete includeMap[pk];
-            }
+            includeMap.clear();
         },
     };
 }

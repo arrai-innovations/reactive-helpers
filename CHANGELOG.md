@@ -2,6 +2,34 @@
 
 _Actions potentially required by implementers are marked with italics._
 
+## v23.0.1 (Unreleased)
+
+### Fixes
+
+- `useListFilter` and `useListSort` now track each record in `state.objects` separately. Each built the whole collection
+  in one computed that read every record's membership, so an arriving page invalidated the view for every subscriber
+  rather than only for the records the page carried. A component rendering a row heard about every record in the page,
+  whether or not its own record had changed. Notifications therefore grew with the square of the records streamed.
+  Streaming 1,600 records in pages of 200 with one effect per row delivered 1,120,016 notifications to records that had
+  not changed; it now delivers 16. The same stream also takes less wall clock than before with no subscribers attached
+  at all. `useList` hands out the sort layer's state, so every composed list carried both layers' share of this. The
+  cost is not new in v23.
+- A refused structural write to `state.objects` on those two layers now reports through the library's own warning rather
+  than Vue's. Both views are read-only proxies in their own right instead of `shallowReadonly()` wrappers. A readonly
+  wrapper whose target is a proxy makes the engine re-read that target's descriptor on every property access, which ran
+  the membership test three times for each record read. The refusal itself is unchanged, and `isReadonly()` still
+  reports `true` for both views. _Vue's readonly warning appears only in development builds. This one names the
+  composable and the key, and appears in production too, matching the library's other warnings._
+
+### Testing
+
+- Added deterministic coverage for how many notifications a composed list delivers to a record that did not change,
+  counted rather than timed. The existing benchmarks cannot observe this cost: they push records without ever reading
+  the collection back, and a computed with no subscriber neither recomputes nor delivers a notification.
+- Added a review-shaped list fixture carrying chained related rules, calculated rules that read related values, and a
+  sort ordering on a derived value. The existing fixtures give every layer one representative rule, which measures the
+  cost of a layer being present rather than the cost of a layer being busy.
+
 ## v23.0.0 (2026-08-06)
 
 ### Breaking Changes
