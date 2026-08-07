@@ -64,10 +64,10 @@ jobs:
                   name: Run tests with coverage
                   command: pnpm coverage
             - run:
-                  name: Run list performance benchmark
-                  command: pnpm benchmark:list:ci
+                  name: Run list performance benchmarks
+                  command: pnpm benchmark:ci
             - run:
-                  name: Check list insertion scaling
+                  name: Check list insertion and streaming scaling
                   command: pnpm benchmark:check
             - store_artifacts:
                   path: benchmark-results
