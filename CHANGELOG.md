@@ -21,8 +21,19 @@ _Actions potentially required by implementers are marked with italics._
   reports `true` for both views. _Vue's readonly warning appears only in development builds. This one names the
   composable and the key, and appears in production too, matching the library's other warnings._
 
+- `useListSearch` no longer copies the parent's collection into a private one while it has no rules or no query. It
+  resolved every read against that copy, which it rebuilt once per page by walking the parent's whole collection, so a
+  layer that selects nothing still paid for enumerating everything upstream. `state.objects` now resolves against the
+  parent directly in that case, and `state.objectsInOrder` resolves per key rather than through a private ref per
+  record. Pushing 400 records into a composed list drops from 27.02 ms to 17.66 ms, and to 36.15 ms from 42.16 ms with
+  related, calculated, filter, and sort rules populated. Notification counts are unchanged: `state.order` is still
+  written from a watcher, which is what coalesces a page's worth of parent order changes into one notification.
+
 ### Testing
 
+- Added deterministic coverage for how many notifications a collection-level reader receives per arriving page. The
+  existing per-record bound cannot see this: one effect reads the whole list, so its count is not divided by the record
+  count and a doubling stays far below any per-record allowance.
 - Added deterministic coverage for how many notifications a composed list delivers to a record that did not change,
   counted rather than timed. The existing benchmarks cannot observe this cost: they push records without ever reading
   the collection back, and a computed with no subscriber neither recomputes nor delivers a notification.
