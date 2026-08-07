@@ -59,6 +59,7 @@
  * @typedef {object} ListRelatedProperties - The properties for the list related composition function.
  * @property {ListRelatedState} state - The state for the list related property.
  * @property {ListRelatedParentState} parentState - The parent state object.
+ * @property {import('../utils/watches.js').WatchMembershipChanged} watchMembershipChanged - Registers a callback for changes to the set of object keys this layer holds. The watcher belongs to the effect scope active where it is called, not to this layer, so stopping this layer silences it without disposing it.
  * @property {() => void} stop - Stops all effects of the list related property.
  */
 /**
@@ -289,6 +290,10 @@ export type ListRelatedProperties = {
      * The parent state object.
      */
     parentState: ListRelatedParentState;
+    /**
+     * Registers a callback for changes to the set of object keys this layer holds. The watcher belongs to the effect scope active where it is called, not to this layer, so stopping this layer silences it without disposing it.
+     */
+    watchMembershipChanged: import("../utils/watches.js").WatchMembershipChanged;
     /**
      * Stops all effects of the list related property.
      */

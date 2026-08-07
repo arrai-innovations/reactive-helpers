@@ -1,4 +1,34 @@
 /**
+ * @module utils/watches.js
+ * @description
+ *
+ * A collection of utility classes and functions for managing Vue.js watchers.
+ *
+ */
+/**
+ * @callback WatchMembershipChanged - Calls back when a list layer's set of object keys changes.
+ *  Registers in the effect scope active where it is called, not in the layer's own scope, so the
+ *  returned handle and the surrounding scope own the watcher. Stopping the layer does not dispose it,
+ *  because the layer never owned it; it only silences it, since a stopped layer publishes nothing
+ *  further. Stop it through the returned handle or through the enclosing scope.
+ *  The callback takes no arguments: it reports that membership moved, not what it moved to. Read the
+ *  layer's collection views for that.
+ * @param {() => void} callback - Called after the layer's set of object keys changes.
+ * @param {import('vue').WatchOptions} [options] - Passed through to Vue's `watch`, so `immediate`,
+ *  `flush`, and `once` all behave as they do there.
+ * @returns {import('vue').WatchHandle} - Stops the watcher.
+ */
+/**
+ * Builds a layer's membership watcher over the counter that layer publishes.
+ *
+ * @internal
+ * @param {{objectsVersion: number}} state - The layer's own state.
+ * @returns {WatchMembershipChanged} - The watcher registration function for that layer.
+ */
+export function makeMembershipWatcher(state: {
+    objectsVersion: number;
+}): WatchMembershipChanged;
+/**
  * Helper function to get the resulting promise from an AwaitTimeout instance.
  *
  * @param {number} timeout - The timeout in milliseconds.
@@ -23,13 +53,6 @@ export function doAwaitNot({ obj, prop, ref, couldAlreadyBeFalse, timeout }: {
     couldAlreadyBeFalse?: boolean;
     timeout?: number;
 }): Promise<any>;
-/**
- * @module utils/watches.js
- * @description
- *
- * A collection of utility classes and functions for managing Vue.js watchers.
- *
- */
 /**
  * Provides a mechanism for immediately starting and potentially stopping a Vue.js watcher
  * during its first invocation. This is useful when the need arises to terminate the watch
@@ -152,3 +175,13 @@ export class AwaitNot {
      */
     stop(): void;
 }
+/**
+ * Calls back when a list layer's set of object keys changes.
+ *  Registers in the effect scope active where it is called, not in the layer's own scope, so the
+ *  returned handle and the surrounding scope own the watcher. Stopping the layer does not dispose it,
+ *  because the layer never owned it; it only silences it, since a stopped layer publishes nothing
+ *  further. Stop it through the returned handle or through the enclosing scope.
+ *  The callback takes no arguments: it reports that membership moved, not what it moved to. Read the
+ *  layer's collection views for that.
+ */
+export type WatchMembershipChanged = (callback: () => void, options?: import("vue").WatchOptions) => import("vue").WatchHandle;

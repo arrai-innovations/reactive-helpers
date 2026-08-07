@@ -2,6 +2,7 @@ import { useCancellableIntent } from "./cancellableIntent.js";
 import { useListInstance } from "./listInstance.js";
 import { useLoadingError } from "./loadingError.js";
 import { normalizePk } from "../utils/refIfReactive.js";
+import { makeMembershipWatcher } from "../utils/watches.js";
 import inspect from "browser-util-inspect";
 import cloneDeep from "lodash-es/cloneDeep.js";
 import isEmpty from "lodash-es/isEmpty.js";
@@ -74,6 +75,7 @@ export class ListSubscriptionError extends Error {
  * @property {import('./listInstance.js').ListInstance} listInstance - The list instance used by the subscription.
  * @property {import('./cancellableIntent.js').CancellableIntent} listIntent - The `CancellableIntent` instance managing if the list should be (re)fetched.
  * @property {import('./cancellableIntent.js').CancellableIntent} subscribeIntent - The `CancellableIntent` instance managing if the subscription should be (un)subscribed.
+ * @property {import('../utils/watches.js').WatchMembershipChanged} watchMembershipChanged - Registers a callback for changes to the set of object keys this layer holds. The watcher belongs to the effect scope active where it is called, not to this layer, so stopping this layer silences it without disposing it.
  */
 
 /**
@@ -339,6 +341,7 @@ export function useListSubscription({ listInstance, props, handlers }) {
         listInstance,
         listIntent,
         subscribeIntent,
+        watchMembershipChanged: makeMembershipWatcher(state),
         clearError: proxyLoadingError.clearError,
         // Stops both intents, mirroring useObjectSubscription, so a caller that owns this
         // subscription's lifetime does not have to know its intent inventory. The wrapped

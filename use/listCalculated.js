@@ -1,4 +1,5 @@
 import { keyDiff } from "../utils/keyDiff.js";
+import { makeMembershipWatcher } from "../utils/watches.js";
 import { loadingCombine } from "../utils/loadingCombine.js";
 import { proxyRunning } from "../utils/proxyRunning.js";
 import isEmpty from "lodash-es/isEmpty.js";
@@ -78,6 +79,7 @@ import { warnWrongSideRuleOptions } from "../utils/relatedCalculatedHelpers.js";
  * @typedef {object} ListCalculatedProperties - The properties for the list computed composition function.
  * @property {ListCalculatedState} state - The state for the list calculated property.
  * @property {ListCalculatedParentState} parentState - The parent state object.
+ * @property {import('../utils/watches.js').WatchMembershipChanged} watchMembershipChanged - Registers a callback for changes to the set of object keys this layer holds. The watcher belongs to the effect scope active where it is called, not to this layer, so stopping this layer silences it without disposing it.
  * @property {() => void} stop - Stops composition's effects and cleans up resources.
  */
 
@@ -313,6 +315,7 @@ export function useListCalculated(options) {
     return {
         state,
         parentState,
+        watchMembershipChanged: makeMembershipWatcher(state),
         stop: () => {
             es.stop();
             for (const key of Object.keys(calculatedObjectsEffectScopes)) {

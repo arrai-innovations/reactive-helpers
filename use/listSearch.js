@@ -1,4 +1,5 @@
 import { keyDiff } from "../utils/keyDiff.js";
+import { makeMembershipWatcher } from "../utils/watches.js";
 import { proxyRunning } from "../utils/proxyRunning.js";
 import { getObjectRelatedCalculatedByKey } from "../utils/relatedCalculatedHelpers.js";
 import { useSearch } from "./search.js";
@@ -87,6 +88,7 @@ import { refIfReactive } from "../utils/refIfReactive.js";
  * @typedef {object} ListSearchProperties - The properties on a list search instance.
  * @property {ListSearchState} state - The state.
  * @property {import('./search.js').SearchInstance} textSearchIndex - The text search index.
+ * @property {import('../utils/watches.js').WatchMembershipChanged} watchMembershipChanged - Registers a callback for changes to the set of object keys this layer holds. The watcher belongs to the effect scope active where it is called, not to this layer, so stopping this layer silences it without disposing it.
  * @property {() => void} stop - Stops the effect scope and cleans up resources.
  */
 
@@ -517,6 +519,7 @@ export function useListSearch({ parentState, props, throttle = 500, showAllWhenE
     return {
         state,
         textSearchIndex,
+        watchMembershipChanged: makeMembershipWatcher(state),
         stop: () => {
             textSearchIndex.events.removeEventListener("newIndex", indexWasCleared);
             es.stop();

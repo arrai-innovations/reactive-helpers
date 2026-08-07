@@ -410,6 +410,41 @@ Stops the watch.
 
 `void`
 
+## Type Aliases
+
+### WatchMembershipChanged
+
+> **WatchMembershipChanged** = (`callback`, `options?`) => `WatchHandle`
+
+Calls back when a list layer's set of object keys changes.
+ Registers in the effect scope active where it is called, not in the layer's own scope, so the
+ returned handle and the surrounding scope own the watcher. Stopping the layer does not dispose it,
+ because the layer never owned it; it only silences it, since a stopped layer publishes nothing
+ further. Stop it through the returned handle or through the enclosing scope.
+ The callback takes no arguments: it reports that membership moved, not what it moved to. Read the
+ layer's collection views for that.
+
+#### Type Parameters
+
+#### Parameters
+
+##### callback
+
+() => `void`
+
+Called after the layer's set of object keys changes.
+
+##### options?
+
+`WatchOptions`
+
+Passed through to Vue's `watch`, so `immediate`,
+ `flush`, and `once` all behave as they do there.
+
+#### Returns
+
+`WatchHandle`
+
 ## Functions
 
 ### doAwaitNot()

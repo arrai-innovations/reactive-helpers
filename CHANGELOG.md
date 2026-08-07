@@ -4,6 +4,17 @@ _Actions potentially required by implementers are marked with italics._
 
 ## v23.0.1 (Unreleased)
 
+### Additions
+
+- Every list layer now offers `watchMembershipChanged(callback, options)`, which calls back when the set of primary keys
+  that layer holds changes. `useListInstance`, `useListSubscription`, `useListRelated`, `useListCalculated`,
+  `useListFilter`, `useListSearch`, `useListSort`, and the composed `useList` manager all expose it, as does every entry
+  in `manager.managed`. The callback takes no arguments and reports that membership moved, not what it moved to. It is a
+  thin wrapper over Vue's `watch`, so it registers in the effect scope active where you call it, returns that watcher's
+  stop handle, and passes `immediate`, `flush`, and `once` straight through. _Stopping a layer does not stop a watcher
+  registered on it. The layer stops publishing, so the callback goes quiet, but the watcher stays registered until you
+  stop it or its scope ends._ `docs/concepts/list-pipeline.md` covers choosing which layer to watch.
+
 ### Fixes
 
 - `useListFilter` and `useListSort` now track each record in `state.objects` separately. Each built the whole collection

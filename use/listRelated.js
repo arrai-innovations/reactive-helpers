@@ -1,4 +1,5 @@
 import { keyDiff } from "../utils/keyDiff.js";
+import { makeMembershipWatcher } from "../utils/watches.js";
 import { loadingCombine } from "../utils/loadingCombine.js";
 import { normalizePk } from "../utils/refIfReactive.js";
 import { proxyRunning } from "../utils/proxyRunning.js";
@@ -109,6 +110,7 @@ export class ListRelatedError extends Error {
  * @typedef {object} ListRelatedProperties - The properties for the list related composition function.
  * @property {ListRelatedState} state - The state for the list related property.
  * @property {ListRelatedParentState} parentState - The parent state object.
+ * @property {import('../utils/watches.js').WatchMembershipChanged} watchMembershipChanged - Registers a callback for changes to the set of object keys this layer holds. The watcher belongs to the effect scope active where it is called, not to this layer, so stopping this layer silences it without disposing it.
  * @property {() => void} stop - Stops all effects of the list related property.
  */
 
@@ -422,6 +424,7 @@ export function useListRelated(options) {
     return {
         state,
         parentState,
+        watchMembershipChanged: makeMembershipWatcher(state),
         stop: () => {
             es.stop();
             for (const objectKey of Object.keys(relatedObjectsEffectScopes)) {

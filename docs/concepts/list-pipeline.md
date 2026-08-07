@@ -125,7 +125,39 @@ instance's. Whatever layer you read from, the upstream fields are still there.
 
 Actions stay outside the state object. The actions `contacts.list()`, `contacts.bulkDelete()`,
 `contacts.executeAction()`, and `contacts.clearError()` come from the instance and subscription layers. The derived
-layers contribute no actions; they are views.
+layers fetch nothing and write nothing; they are views. The one method they do contribute is
+`contacts.watchMembershipChanged()`, covered below.
+
+## Reacting to membership changes
+
+Each layer holds a different set of rows. The instance holds every loaded contact. Filter and search each hold a
+narrower set. So "did the set of rows change" has a different answer at every layer.
+
+Each layer exposes `watchMembershipChanged` for its own answer:
+
+```js
+const stopWatching = contacts.watchMembershipChanged(() => {
+    selected.value = selected.value.filter((contactId) => contactId in contacts.state.objects);
+});
+```
+
+The callback runs after the set of primary keys that layer holds changes. It takes no arguments. Read
+`contacts.state.objects` or `contacts.state.order` for the new set. Editing a contact's fields does not call it, unless
+that edit changes whether a filter or a search includes the row.
+
+Choose the layer whose membership you care about. `contacts.watchMembershipChanged` reports the composed list, which is
+what you render. `contacts.managed.listInstance.watchMembershipChanged` reports every loaded contact, including the ones
+your filter hides. The two disagree whenever a contact arrives that your filter excludes.
+
+The watcher belongs to the scope you call it from, exactly like Vue's `watch`. Call the returned handle to stop it, or
+let the component's scope stop it for you.
+
+::: warning
+
+Stopping a layer does not stop a watcher you registered on it. The layer stops publishing, so your callback goes quiet,
+but the watcher itself stays registered until you stop it or its scope ends.
+
+:::
 
 ## The instance owns row identity
 
