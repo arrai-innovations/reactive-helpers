@@ -186,16 +186,35 @@ export function useListSearch({ parentState, props, throttle = 500, showAllWhenE
     const _objects = reactive({});
     /** @type {import('vue').Ref<import('../config/commonCrud.js').Pk[]>} */
     const _order = ref([]);
+    const textSearchRules = refIfReactive(props, "textSearchRules", []);
+    const textSearchValue = refIfReactive(props, "textSearchValue", "");
+    // With no rules or no query the layer selects nothing, so it hands the parent's views on unchanged
+    //  rather than copying the collection into `_objects` once per page.
+    const passthrough = computed(() => !textSearchRules.value?.length || !textSearchValue.value?.length);
+    // Constant collection for a pass-through that shows nothing, read-only like every other view here.
+    const noObjects = shallowReadonly({});
+    const searchedObjects = shallowReadonly(_objects);
     /** @type {ListSearchState} */
     // @ts-ignore
     const state = reactive(
         /** @type {ListSearchRawState} */ {
             .../** @type {ListSearchParentStateToRefs} */ toRefs(parentState),
-            objects: shallowReadonly(_objects),
-            objectsInOrder: computed(() => shallowReadonly(internalState.objectsInOrderRefs.map((ref) => unref(ref)))),
+            objects: computed(() => {
+                if (!passthrough.value) {
+                    return searchedObjects;
+                }
+                return showAllWhenEmpty ? parentState.objects : noObjects;
+            }),
+            objectsInOrder: computed(() => {
+                if (passthrough.value) {
+                    // no private collection to hold refs into, so resolve against the parent per key
+                    return shallowReadonly(_order.value.map((pk) => parentState.objects[pk]));
+                }
+                return shallowReadonly(internalState.objectsInOrderRefs.map((ref) => unref(ref)));
+            }),
             order: computed(() => shallowReadonly(_order.value)),
-            textSearchRules: refIfReactive(props, "textSearchRules", []),
-            textSearchValue: refIfReactive(props, "textSearchValue", ""),
+            textSearchRules,
+            textSearchValue,
             objectIndexes: {},
             customDocumentOptions: refIfReactive(props, "customDocumentOptions", {}),
             customSearchOptions: refIfReactive(props, "customSearchOptions", {}),
@@ -244,8 +263,9 @@ export function useListSearch({ parentState, props, throttle = 500, showAllWhenE
     const previousObjectIndexes = {};
 
     const doPassthrough = (cleanComputed = false) => {
-        // pass through the objects if there are no rules.
-        assignReactiveObject(_objects, showAllWhenEmpty ? parentState.objects : {});
+        // the state resolves against the parent while passing through, so the private collection is
+        //  released rather than rebuilt.
+        assignReactiveObject(_objects, {});
         if (!cleanComputed) {
             return;
         }
@@ -361,7 +381,7 @@ export function useListSearch({ parentState, props, throttle = 500, showAllWhenE
     };
 
     const updateObjectsForResults = () => {
-        if (!state.textSearchRules?.length || !state.textSearchValue?.length) {
+        if (passthrough.value) {
             doPassthrough();
             return;
         }
@@ -376,6 +396,15 @@ export function useListSearch({ parentState, props, throttle = 500, showAllWhenE
     };
 
     const updateOrder = () => {
+        if (passthrough.value) {
+            // Every parent key is a member, so the order needs no filtering against a private
+            //  collection and objectsInOrder needs no refs into one. `_order` is still written here
+            //  rather than read from the parent live: the write is what coalesces a page's worth of
+            //  parent order changes into one notification for everything downstream.
+            _order.value = showAllWhenEmpty ? [...parentState.order] : [];
+            assignReactiveObject(internalState.objectsInOrderRefs, []);
+            return;
+        }
         _order.value = parentState.order.filter((pk) => !!_objects[pk]);
         assignReactiveObject(
             internalState.objectsInOrderRefs,
@@ -423,10 +452,15 @@ export function useListSearch({ parentState, props, throttle = 500, showAllWhenE
             }
         );
 
-        watch([() => Object.keys(_objects), toRef(parentState, "order")], updateOrder, {
-            immediate: true,
-            deep: true,
-        });
+        // While passing through, the private collection is empty and enumerating it buys nothing.
+        watch(
+            [passthrough, () => (passthrough.value ? null : Object.keys(_objects)), toRef(parentState, "order")],
+            updateOrder,
+            {
+                immediate: true,
+                deep: true,
+            }
+        );
     });
     textSearchIndex.events.addEventListener("newIndex", indexWasCleared);
     return {
