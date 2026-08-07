@@ -10,6 +10,7 @@ import {
     onScopeDispose,
     reactive,
     ref,
+    shallowReactive,
     shallowReadonly,
     toRef,
     toRefs,
@@ -189,11 +190,14 @@ export function useListSort({ parentState, orderByRules, sortThrottleWait = defa
         ),
     });
 
-    const criteriaMap = reactive({});
+    // Track entry changes without proxying entries or unwrapping their computed refs.
+    /** @type {Map<import('../config/commonCrud.js').Pk, {scope: import('vue').EffectScope, crit: import('vue').ComputedRef<any[]>}>} */
+    const criteriaMap = shallowReactive(new Map());
 
     function ensureCriteria(pk) {
-        if (criteriaMap[pk]) {
-            return criteriaMap[pk];
+        const existing = criteriaMap.get(pk);
+        if (existing) {
+            return existing;
         }
         const scope = es.run(() => effectScope());
         const crit = scope.run(() =>
@@ -223,15 +227,15 @@ export function useListSort({ parentState, orderByRules, sortThrottleWait = defa
                 );
             })
         );
-        criteriaMap[pk] = { scope, crit };
+        criteriaMap.set(pk, { scope, crit });
         return crit;
     }
 
     function syncCriteria(newKeys) {
-        const { addedKeys, removedKeys } = keyDiff(newKeys, Object.keys(criteriaMap));
+        const { addedKeys, removedKeys } = keyDiff(newKeys, [...criteriaMap.keys()]);
         for (const pk of removedKeys) {
-            criteriaMap[pk].scope.stop();
-            delete criteriaMap[pk];
+            criteriaMap.get(pk).scope.stop();
+            criteriaMap.delete(pk);
         }
         for (const pk of addedKeys) {
             ensureCriteria(pk);
@@ -253,8 +257,8 @@ export function useListSort({ parentState, orderByRules, sortThrottleWait = defa
         const arr = [...unref(toRef(parentState, "order"))];
         const rulesArr = internalState.orderByRules?.filter(identity) || [];
         return arr.sort((a, b) => {
-            const aCrit = criteriaMap[a]?.crit ?? [];
-            const bCrit = criteriaMap[b]?.crit ?? [];
+            const aCrit = criteriaMap.get(a)?.crit.value ?? [];
+            const bCrit = criteriaMap.get(b)?.crit.value ?? [];
             for (let i = 0; i < rulesArr.length; i++) {
                 const rule = rulesArr[i];
                 let x = aCrit[i],
@@ -286,17 +290,67 @@ export function useListSort({ parentState, orderByRules, sortThrottleWait = defa
         });
     });
 
-    const objects = computed(() => {
-        // built mutably here, then handed out read-only below
+    // Track membership without reading the record's criteria.
+    const hasCriteria = (/** @type {import('../config/commonCrud.js').Pk} */ pk) => criteriaMap.has(pk);
+
+    // Cache enumeration separately from per-key reads.
+    /** @type {import('vue').ComputedRef<import('./listInstance.js').ObjectsByPk>} */
+    const criteriaObjects = computed(() => {
         /** @type {{[pk: import('../config/commonCrud.js').Pk]: import('./objectInstance.js').ExistingCrudObject}} */
         const out = {};
         for (const [pk, o] of Object.entries(parentState.objects)) {
-            const inc = criteriaMap[pk]?.crit;
-            if (inc) out[pk] = o;
+            if (hasCriteria(pk)) {
+                out[pk] = o;
+            }
         }
-        // the computed rebuilds this object on every run, so a write into it would be discarded
-        //  silently on the next read. Report it instead.
-        return shallowReadonly(out);
+        return out;
+    });
+
+    // Resolve individual keys without tracking the full collection.
+    // Implement readonly behaviour here to avoid an extra proxy layer.
+    /** @type {import('./listInstance.js').ObjectsByPk} */
+    const objects = new Proxy(/** @type {any} */ ({}), {
+        get(target, prop) {
+            if (typeof prop === "symbol") {
+                return Reflect.get(target, prop);
+            }
+            if (prop === "__v_isReadonly") {
+                return true;
+            }
+            return hasCriteria(prop) ? parentState.objects[prop] : undefined;
+        },
+        set(target, prop) {
+            console.warn(`useListSort: set operation on key "${String(prop)}" failed: objects is read-only.`);
+            return true;
+        },
+        deleteProperty(target, prop) {
+            console.warn(`useListSort: delete operation on key "${String(prop)}" failed: objects is read-only.`);
+            return true;
+        },
+        has(target, prop) {
+            if (typeof prop === "symbol") {
+                return Reflect.has(target, prop);
+            }
+            return hasCriteria(prop) && prop in parentState.objects;
+        },
+        ownKeys() {
+            return Reflect.ownKeys(criteriaObjects.value);
+        },
+        getOwnPropertyDescriptor(target, prop) {
+            if (typeof prop === "symbol") {
+                return Reflect.getOwnPropertyDescriptor(target, prop);
+            }
+            // Use the cached collection because descriptor lookups occur during enumeration.
+            const object = criteriaObjects.value[prop];
+            if (object === undefined) {
+                // Keep descriptors consistent with ownKeys().
+                return undefined;
+            }
+            return { configurable: true, enumerable: true, value: object, writable: true };
+        },
+        getPrototypeOf() {
+            return Object.prototype;
+        },
     });
 
     const order = ref([]);
@@ -357,9 +411,7 @@ export function useListSort({ parentState, orderByRules, sortThrottleWait = defa
         parentState,
         stop: () => {
             es.stop();
-            for (const key of Object.keys(criteriaMap)) {
-                delete criteriaMap[key];
-            }
+            criteriaMap.clear();
         },
     };
 }

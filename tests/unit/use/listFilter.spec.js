@@ -408,4 +408,41 @@ describe("use/listFilter", () => {
         expect(filter.state.order).not.toContain("99");
         expect(filter.state.objectsInOrder.some((o) => o.id === 99)).toBe(false);
     });
+
+    scopedIt("presents the filtered collection as an ordinary object", async () => {
+        const list = useListInstance({ props: { pkKey: "id" } });
+        const filter = useListFilter({
+            parentState: list.state,
+            allowedFilter: (object) => object.id !== 2,
+        });
+        list.pushObjects([
+            { id: 1, name: "one" },
+            { id: 2, name: "two" },
+            { id: 3, name: "three" },
+        ]);
+
+        // Exercise enumeration, membership, and prototype behaviour.
+        const objects = filter.state.objects;
+        expect(Object.keys(objects)).toEqual(["1", "3"]);
+        expect({ ...objects }).toEqual({
+            1: { id: 1, name: "one" },
+            3: { id: 3, name: "three" },
+        });
+        expect(JSON.parse(JSON.stringify(objects))).toEqual({
+            1: { id: 1, name: "one" },
+            3: { id: 3, name: "three" },
+        });
+        expect("1" in objects).toBe(true);
+        expect("2" in objects).toBe(false);
+        expect("99" in objects).toBe(false);
+        expect(objects["2"]).toBeUndefined();
+        expect(objects["99"]).toBeUndefined();
+        expect(Object.getPrototypeOf(objects)).toBe(Object.prototype);
+
+        // The view updates when the parent collection changes.
+        list.deleteListObject("1");
+        expect(Object.keys(objects)).toEqual(["3"]);
+        expect("1" in objects).toBe(false);
+        expect(objects["1"]).toBeUndefined();
+    });
 });
