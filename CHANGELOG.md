@@ -40,6 +40,13 @@ _Actions potentially required by implementers are marked with italics._
 - Added a review-shaped list fixture carrying chained related rules, calculated rules that read related values, and a
   sort ordering on a derived value. The existing fixtures give every layer one representative rule, which measures the
   cost of a layer being present rather than the cost of a layer being busy.
+- Added a benchmark that streams pages with subscriber count as an explicit axis, once with no subscribers and once with
+  an effect per row per read channel, attached as each page lands. Every other benchmark pushes records into a list
+  nobody reads, which measures a reactive graph with no subscribers: a computed that has been marked dirty costs nothing
+  to leave dirty, and a notification with no subscriber has nowhere to be delivered.
+- The streaming and layer benchmarks now write reports and are gated. They ran in CI and gated nothing, because the
+  scaling check read only the insertion report. It now reads all four and checks that streaming a longer run costs in
+  proportion to its length, which is what catches a page costing more at the end of a stream than at the start.
 
 ## v23.0.0 (2026-08-06)
 
