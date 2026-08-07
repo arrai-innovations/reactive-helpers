@@ -1,4 +1,5 @@
 import { keyDiff } from "../utils/keyDiff.js";
+import { makeMembershipWatcher } from "../utils/watches.js";
 import { loadingCombine } from "../utils/loadingCombine.js";
 import { proxyRunning } from "../utils/proxyRunning.js";
 import get from "lodash-es/get.js";
@@ -99,6 +100,7 @@ export function setListSortDefaultOptions({ sortThrottleWait }) {
  * @typedef {object} ListSortProperties - The properties available on a list sort instance.
  * @property {ListSortState} state - The reactive state for the list sort.
  * @property {ListSortParentState} parentState - The parent state.
+ * @property {import('../utils/watches.js').WatchMembershipChanged} watchMembershipChanged - Registers a callback for changes to the set of object keys this layer holds. The watcher belongs to the effect scope active where it is called, not to this layer, so stopping this layer silences it without disposing it.
  * @property {() => void} stop - A function to stop the effect scope and clean up resources.
  */
 
@@ -243,6 +245,10 @@ export function useListSort({ parentState, orderByRules, sortThrottleWait = defa
     }
 
     es.run(() => {
+        // One structural pass per change. This used to carry a second, deferred watcher on the parent's
+        //  keys, because the filter and search layers moved their own key set without moving the
+        //  version they forwarded. Both own an accurate version now, so the sync watcher sees every
+        //  cause and criteria exist before anything reads them.
         watch(
             () => parentState.objectsVersion,
             () => {
@@ -250,7 +256,6 @@ export function useListSort({ parentState, orderByRules, sortThrottleWait = defa
             },
             { immediate: true, flush: "sync" }
         );
-        watch(() => Object.keys(parentState.objects), syncCriteria);
     });
 
     const rawOrder = computed(() => {
@@ -397,18 +402,22 @@ export function useListSort({ parentState, orderByRules, sortThrottleWait = defa
     // 6) objectsInOrder just follows that
     const objectsInOrder = computed(() => shallowReadonly(order.value.map((pk) => parentState.objects[pk])));
 
+    /** @type {ListSortState} */
+    const state = reactive({
+        ...toRefs(parentState),
+        orderByRules: toRef(internalState, "orderByRules"),
+        orderByDesc: toRef(internalState, "orderByDesc"),
+        objects,
+        // the ref stays private to writeOrder; the state exposes a read-only view of it
+        order: computed(() => shallowReadonly(order.value)),
+        objectsInOrder,
+        running,
+    });
+
     return {
-        state: reactive({
-            ...toRefs(parentState),
-            orderByRules: toRef(internalState, "orderByRules"),
-            orderByDesc: toRef(internalState, "orderByDesc"),
-            objects,
-            // the ref stays private to writeOrder; the state exposes a read-only view of it
-            order: computed(() => shallowReadonly(order.value)),
-            objectsInOrder,
-            running,
-        }),
+        state,
         parentState,
+        watchMembershipChanged: makeMembershipWatcher(state),
         stop: () => {
             es.stop();
             criteriaMap.clear();

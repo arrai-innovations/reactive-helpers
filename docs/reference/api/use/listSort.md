@@ -198,7 +198,7 @@ The map of objects stored by their pks.
 
 > **objectsVersion**: `number`
 
-Increments when the set of object keys changes.
+Increments when this layer's set of object keys changes. Each layer that narrows membership publishes its own, so the value belongs to the state reporting it and is not comparable with another layer's. Watch it rather than reading it, and prefer `watchMembershipChanged`, which carries the same signal without exposing how it is counted.
 
 ###### order
 
@@ -487,7 +487,7 @@ The map of objects stored by their pks.
 
 > **objectsVersion**: `number`
 
-Increments when the set of object keys changes.
+Increments when this layer's set of object keys changes. Each layer that narrows membership publishes its own, so the value belongs to the state reporting it and is not comparable with another layer's. Watch it rather than reading it, and prefer `watchMembershipChanged`, which carries the same signal without exposing how it is counted.
 
 ###### order
 
@@ -762,7 +762,7 @@ The map of objects stored by their pks.
 
 > **objectsVersion**: `number`
 
-Increments when the set of object keys changes.
+Increments when this layer's set of object keys changes. Each layer that narrows membership publishes its own, so the value belongs to the state reporting it and is not comparable with another layer's. Watch it rather than reading it, and prefer `watchMembershipChanged`, which carries the same signal without exposing how it is counted.
 
 ###### order
 
@@ -874,6 +874,12 @@ A function to stop the effect scope and clean up resources.
 ###### Returns
 
 `void`
+
+##### watchMembershipChanged
+
+> **watchMembershipChanged**: [`WatchMembershipChanged`](../utils/watches.md#watchmembershipchanged)
+
+Registers a callback for changes to the set of object keys this layer holds. The watcher belongs to the effect scope active where it is called, not to this layer, so stopping this layer silences it without disposing it.
 
 ***
 

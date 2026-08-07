@@ -55,6 +55,7 @@ export function setListSortDefaultOptions({ sortThrottleWait }: {
  * @typedef {object} ListSortProperties - The properties available on a list sort instance.
  * @property {ListSortState} state - The reactive state for the list sort.
  * @property {ListSortParentState} parentState - The parent state.
+ * @property {import('../utils/watches.js').WatchMembershipChanged} watchMembershipChanged - Registers a callback for changes to the set of object keys this layer holds. The watcher belongs to the effect scope active where it is called, not to this layer, so stopping this layer silences it without disposing it.
  * @property {() => void} stop - A function to stop the effect scope and clean up resources.
  */
 /**
@@ -183,6 +184,10 @@ export type ListSortProperties = {
      * The parent state.
      */
     parentState: ListSortParentState;
+    /**
+     * Registers a callback for changes to the set of object keys this layer holds. The watcher belongs to the effect scope active where it is called, not to this layer, so stopping this layer silences it without disposing it.
+     */
+    watchMembershipChanged: import("../utils/watches.js").WatchMembershipChanged;
     /**
      * A function to stop the effect scope and clean up resources.
      */

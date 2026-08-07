@@ -4,6 +4,17 @@ _Actions potentially required by implementers are marked with italics._
 
 ## v23.0.1 (Unreleased)
 
+### Additions
+
+- Every list layer now offers `watchMembershipChanged(callback, options)`, which calls back when the set of primary keys
+  that layer holds changes. `useListInstance`, `useListSubscription`, `useListRelated`, `useListCalculated`,
+  `useListFilter`, `useListSearch`, `useListSort`, and the composed `useList` manager all expose it, as does every entry
+  in `manager.managed`. The callback takes no arguments and reports that membership moved, not what it moved to. It is a
+  thin wrapper over Vue's `watch`, so it registers in the effect scope active where you call it, returns that watcher's
+  stop handle, and passes `immediate`, `flush`, and `once` straight through. _Stopping a layer does not stop a watcher
+  registered on it. The layer stops publishing, so the callback goes quiet, but the watcher stays registered until you
+  stop it or its scope ends._ `docs/concepts/list-pipeline.md` covers choosing which layer to watch.
+
 ### Fixes
 
 - `useListFilter` and `useListSort` now track each record in `state.objects` separately. Each built the whole collection
@@ -38,10 +49,22 @@ _Actions potentially required by implementers are marked with italics._
   the cost of a page grows more slowly with the collection behind it: doubling the pages streamed costs 2.16 times as
   much where it cost 2.40.
 
+- `state.objectsVersion` now describes the collection of the layer reporting it. It is documented as incrementing when
+  the set of object keys changes, and every layer forwards it from its parent, but `useListFilter` and `useListSearch`
+  both narrow membership of their own accord. So a filter rule change or a search query moved no counter at all, while a
+  record arriving that the filter excluded moved every counter including theirs. Both layers now report their own.
+  `useListSort` no longer carries a second pass over the parent's keys, which existed only to catch what the forwarded
+  counter missed, and which examined the collection an extra time on every page. _Counters are per layer and are not
+  comparable between layers. They were previously equal across all six, so code comparing one layer's counter to
+  another's got a stable answer by accident and now will not._
+
 ### Testing
 
 - Tightened the bound on keys examined after a page settles, from 25 times the collection to 12, following the
   measurement above. A bound that no longer tracks what the code does stops reporting a regression as one.
+- Added coverage pinning `state.objectsVersion` per layer: that it moves when a layer's own key set moves, holds still
+  when it does not, and reaches a nested filter without a tick. Nothing tested the documented contract before, which is
+  how two layers drifted out of it.
 - Added deterministic coverage for how many notifications a collection-level reader receives per arriving page. The
   existing per-record bound cannot see this: one effect reads the whole list, so its count is not divided by the record
   count and a doubling stays far below any per-record allowance.

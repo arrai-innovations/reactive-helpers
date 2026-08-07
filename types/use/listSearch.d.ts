@@ -67,6 +67,7 @@
  * @typedef {object} ListSearchProperties - The properties on a list search instance.
  * @property {ListSearchState} state - The state.
  * @property {import('./search.js').SearchInstance} textSearchIndex - The text search index.
+ * @property {import('../utils/watches.js').WatchMembershipChanged} watchMembershipChanged - Registers a callback for changes to the set of object keys this layer holds. The watcher belongs to the effect scope active where it is called, not to this layer, so stopping this layer silences it without disposing it.
  * @property {() => void} stop - Stops the effect scope and cleans up resources.
  */
 /**
@@ -253,6 +254,10 @@ export type ListSearchProperties = {
      * The text search index.
      */
     textSearchIndex: import("./search.js").SearchInstance;
+    /**
+     * Registers a callback for changes to the set of object keys this layer holds. The watcher belongs to the effect scope active where it is called, not to this layer, so stopping this layer silences it without disposing it.
+     */
+    watchMembershipChanged: import("../utils/watches.js").WatchMembershipChanged;
     /**
      * Stops the effect scope and cleans up resources.
      */

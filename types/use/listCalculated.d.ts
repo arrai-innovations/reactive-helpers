@@ -64,6 +64,7 @@
  * @typedef {object} ListCalculatedProperties - The properties for the list computed composition function.
  * @property {ListCalculatedState} state - The state for the list calculated property.
  * @property {ListCalculatedParentState} parentState - The parent state object.
+ * @property {import('../utils/watches.js').WatchMembershipChanged} watchMembershipChanged - Registers a callback for changes to the set of object keys this layer holds. The watcher belongs to the effect scope active where it is called, not to this layer, so stopping this layer silences it without disposing it.
  * @property {() => void} stop - Stops composition's effects and cleans up resources.
  */
 /**
@@ -221,6 +222,10 @@ export type ListCalculatedProperties = {
      * The parent state object.
      */
     parentState: ListCalculatedParentState;
+    /**
+     * Registers a callback for changes to the set of object keys this layer holds. The watcher belongs to the effect scope active where it is called, not to this layer, so stopping this layer silences it without disposing it.
+     */
+    watchMembershipChanged: import("../utils/watches.js").WatchMembershipChanged;
     /**
      * Stops composition's effects and cleans up resources.
      */
