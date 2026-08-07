@@ -238,6 +238,14 @@ export function useListRelated(options) {
         }
     );
     const relatedObjectsEffectScopes = {};
+    // Records whose rule bag has not been reconciled against the rules yet. A record arriving with an
+    //  empty bag needs every rule applied. A record already carrying the full rule set needs nothing,
+    //  and rediscovering that by diffing its bag cost one keyDiff per record in the collection, per
+    //  page, which is what made an identical page cost more the further into a stream it arrived.
+    const pendingObjectKeys = new Set();
+    // The rule keys the last reconciliation ran against, so a run can tell which of its two causes woke
+    //  it. Only a rule change touches records that were already reconciled.
+    let previousRuleKeys = [];
 
     function parentStateObjectsWatch() {
         const { addedKeys: addedIds, removedKeys: removedIds } = keyDiff(
@@ -245,6 +253,7 @@ export function useListRelated(options) {
             Object.keys(state.relatedObjects)
         );
         for (const removedId of removedIds) {
+            pendingObjectKeys.delete(removedId);
             delete state.relatedObjects[removedId];
             delete state.objAndKeyForPkAndRule[removedId];
             delete state.fkForPkAndRule[removedId];
@@ -257,6 +266,7 @@ export function useListRelated(options) {
             state.relatedObjects[addedId] = {};
             state.objAndKeyForPkAndRule[addedId] = {};
             state.fkForPkAndRule[addedId] = {};
+            pendingObjectKeys.add(addedId);
         }
         nextTick(() => {
             state.relatedObjectsParentStateObjectsWatchRunning = false;
@@ -326,7 +336,18 @@ export function useListRelated(options) {
 
     function relatedObjectsWatch() {
         const relatedObjectsRulesIsEmpty = !state.relatedObjectsRules || isEmpty(state.relatedObjectsRules);
-        for (const objectKey of Object.keys(state.relatedObjects)) {
+        const ruleKeys = Object.keys(state.relatedObjectsRules || {});
+        const { addedKeys: addedRules, removedKeys: removedRules } = keyDiff(ruleKeys, previousRuleKeys, {
+            sameKeys: false,
+        });
+        previousRuleKeys = ruleKeys;
+        // A rule change alters the bag of every record, so it is the only cause that has to walk the
+        //  collection. A page arriving leaves every record already present holding the rule set it
+        //  already held, so only the arrivals have anything to reconcile.
+        const rulesChanged = addedRules.size > 0 || removedRules.size > 0;
+        const objectKeys = rulesChanged ? Object.keys(state.relatedObjects) : [...pendingObjectKeys];
+        pendingObjectKeys.clear();
+        for (const objectKey of objectKeys) {
             let removedRuleKeys, addedRuleKeys;
             if (!relatedObjectsRulesIsEmpty) {
                 ({ removedKeys: removedRuleKeys, addedKeys: addedRuleKeys } = keyDiff(

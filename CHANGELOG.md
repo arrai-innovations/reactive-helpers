@@ -29,8 +29,19 @@ _Actions potentially required by implementers are marked with italics._
   related, calculated, filter, and sort rules populated. Notification counts are unchanged: `state.order` is still
   written from a watcher, which is what coalesces a page's worth of parent order changes into one notification.
 
+- `useListRelated` and `useListCalculated` now reconcile only the records an arriving page carries, rather than every
+  record in the collection. Both rediscovered which rules a record was missing by diffing that record's rule bag against
+  the rule set, once per record in the collection on every page, when only the arriving records can be missing anything.
+  A rule change still reconciles the whole collection, since that is the only cause that alters a record already
+  reconciled. Keys examined after a page settles drop from 12.0 to 13.3 times the collection to 9.3 to 9.8. Streaming 8
+  pages of 100 records through a list carrying twelve related and four calculated rules drops from 285 ms to 221 ms, and
+  the cost of a page grows more slowly with the collection behind it: doubling the pages streamed costs 2.16 times as
+  much where it cost 2.40.
+
 ### Testing
 
+- Tightened the bound on keys examined after a page settles, from 25 times the collection to 12, following the
+  measurement above. A bound that no longer tracks what the code does stops reporting a regression as one.
 - Added deterministic coverage for how many notifications a collection-level reader receives per arriving page. The
   existing per-record bound cannot see this: one effect reads the whole list, so its count is not divided by the record
   count and a doubling stays far below any per-record allowance.
