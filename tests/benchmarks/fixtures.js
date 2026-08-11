@@ -57,7 +57,7 @@ export const populatedRules = {
     calculatedObjectsRules: { doubled: (object) => object.id * 2 },
     excludedFilter: undefined,
     orderByRules: [{ key: "organization", desc: true, localeCompare: false }],
-    relatedObjectsRules: { org: { pkKey: "organization", objects: relatedOrganizations } },
+    relatedObjectsRules: { org: { fkKey: "organization", objects: relatedOrganizations } },
     textSearchRules: [],
     textSearchValue: "",
 };

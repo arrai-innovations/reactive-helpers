@@ -46,7 +46,7 @@ export namespace populatedRules {
     export { orderByRules_1 as orderByRules };
     export namespace relatedObjectsRules_1 {
         namespace org {
-            export let pkKey: string;
+            export let fkKey: string;
             export { relatedOrganizations as objects };
         }
     }

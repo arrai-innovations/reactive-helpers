@@ -49,7 +49,7 @@ const makeList = () =>
             orderByRules: [{ key: "organization", desc: true, localeCompare: false }],
             params: {},
             pkKey: "id",
-            relatedObjectsRules: { org: { pkKey: "organization", objects: { 1: { id: 1 }, 2: { id: 2 } } } },
+            relatedObjectsRules: { org: { fkKey: "organization", objects: { 1: { id: 1 }, 2: { id: 2 } } } },
             target: {},
             textSearchRules: [],
             textSearchValue: "",

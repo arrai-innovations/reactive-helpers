@@ -226,11 +226,11 @@ describe("use/listCalculated", () => {
             relatedObjectsRules: {
                 relatedItems: {
                     objects: relatedListInstance.state.objects,
-                    pkKey: "related_items",
+                    fkKey: "related_items",
                 },
                 relatedItem: {
                     objects: relatedListInstance.state.objects,
-                    pkKey: "related_id",
+                    fkKey: "related_id",
                 },
             },
         });

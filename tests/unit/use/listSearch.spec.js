@@ -278,7 +278,7 @@ describe("use/listSearch", () => {
                 relatedObjectsRules: {
                     relatedRuleName: {
                         objects: relatedList.state.objects,
-                        pkKey: "related_id",
+                        fkKey: "related_id",
                     },
                 },
             });
@@ -374,7 +374,7 @@ describe("use/listSearch", () => {
                 relatedObjectsRules: reactive({
                     relatedRuleName: {
                         objects: relatedList.state.objects,
-                        pkKey: "related_id",
+                        fkKey: "related_id",
                     },
                 }),
             });
