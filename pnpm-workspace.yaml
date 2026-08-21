@@ -8,6 +8,7 @@ overrides:
   "form-data@>=4.0.0 <4.0.6": ">=4.0.6 <5"
   "js-yaml@<4.3.1": ">=4.3.1 <5"
   "markdown-it@<=14.1.1": ">=14.2.0 <15"
+  "nanoid@<3.3.18": ">=3.3.18 <4"
   "vite@>=8.0.0 <=8.0.15": ">=8.0.16 <9"
   "vite@<6.4.3": ">=6.4.3 <7"
 
@@ -15,10 +16,11 @@ allowBuilds:
   esbuild: true
   lefthook: false
 
-# First-party Arrai packages adopted before they aged past pnpm's minimumReleaseAge cooldown,
-# which defaults to 1440 minutes (24 hours) in pnpm v11 and is not set explicitly here. pnpm
-# appends an entry when it resolves such a version. An entry does nothing once that version is
-# more than a day old, so remove it then.
+# Packages adopted before they aged past pnpm's minimumReleaseAge cooldown, which defaults to
+# 1440 minutes (24 hours) in pnpm v11 and is not set explicitly here. pnpm appends an entry when
+# it resolves such a version. An entry does nothing once that version is more than a day old, so
+# remove it then.
 minimumReleaseAgeExclude:
-  - '@arrai-innovations/vitepress-theme@1.0.0 || 1.0.1'
+  - '@arrai-innovations/vitepress-theme@1.0.0 || 1.0.1 || 1.0.2'
   - '@arrai-innovations/commitlint-config@3.0.0'
+  - 'nanoid@3.3.18'
