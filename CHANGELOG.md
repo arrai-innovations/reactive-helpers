@@ -4,6 +4,17 @@ _Actions potentially required by implementers are marked with italics._
 
 ## v24.1.0 (Unreleased)
 
+### Fixes
+
+- `listInstance.bulkDelete({ pks })` now removes the rows it named and keeps the rest. It emptied `state.objects`
+  entirely, including rows the call did not name, which is why the guide told you to follow every subset delete with a
+  `list()` reload. Omitting `pks` still names every loaded row, so an unscoped `bulkDelete()` still empties the list and
+  behaves exactly as before. The verb now composes `deleteListObject`, the same primitive the subscription path uses to
+  remove a row, rather than clearing the whole collection. A named pk the list does not hold is ignored rather than
+  throwing, because a bulk delete may target rows outside the loaded page. _If you added a `list()` reload only to
+  restore rows the delete should not have removed, it is no longer needed. A reload is still the right move when the
+  server removes rows you did not name, such as a cascade, and `state.paginateInfo` is still stale until you reload._
+
 ### Additions
 
 - Every instance action that writes local state from its handler's result now takes a per-call option to suppress that

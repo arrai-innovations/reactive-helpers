@@ -99,7 +99,8 @@ import { readonly } from "vue";
  * @callback CrudBulkDeleteFn - Signature for the handler that bulk-deletes objects from the backing store.
  * @param {BulkDeleteArgs} args - The arguments to be passed to the crud handlers.
  * @returns {import('../utils/cancellablePromise.js').MaybeCancellablePromise<boolean>} - A promise whose resolution
- *  means the bulk delete succeeded; the resolved value is not inspected, and the instance then empties the list.
+ *  means the bulk delete succeeded; the resolved value is not inspected, and the instance then removes the named rows
+ *  from the list.
  *  Carry a `cancel` method to let the caller abandon the run.
  */
 

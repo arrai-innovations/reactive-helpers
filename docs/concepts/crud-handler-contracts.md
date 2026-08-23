@@ -104,9 +104,10 @@ leave local state alone. The option is consumed by the instance and never reache
 
 The list side never assigns resolved values. Rows enter the instance only through the `pushObjects` callback, and `list`
 resolving means the fetch is complete. A `list` handler that resolves an array of rows changes nothing; the rows are
-silently discarded. `bulkDelete` resolving reports success, after which the instance empties the list, unless the call
-passed `keepObjects: true` (see [Bulk delete rows](/guide/bulk-delete-rows) for both patterns). Why the two sides treat
-resolved values differently is the central rule of [Instances and transport](/concepts/instances-and-transport).
+silently discarded. `bulkDelete` resolving reports success, after which the instance removes the rows the call named and
+keeps the rest, unless the call passed `keepObjects: true` (see [Bulk delete rows](/guide/bulk-delete-rows) for both
+patterns). Why the two sides treat resolved values differently is the central rule of
+[Instances and transport](/concepts/instances-and-transport).
 
 The promise the action itself returns is not your handler's promise. A CRUD action such as `contact.update(...)` or
 `contacts.list()` resolves `true` on success and `false` on a stored failure. `executeAction` is the exception on both

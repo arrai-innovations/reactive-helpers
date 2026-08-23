@@ -93,9 +93,10 @@ Per-call control over whether the list applies its own result to `state.objects`
 
 > `optional` **keepObjects?**: `boolean`
 
-When true, the list leaves `state.objects` untouched on success and the
- caller reconciles it, through `deleteListObject`, `pushObjects`, or `clearList`. Loading and error state still
- update as usual. The option is consumed by the list and is not forwarded to the crud handler.
+When true, the list leaves `state.objects` untouched on success, removing
+ none of the rows the call named, and the caller reconciles it through `deleteListObject`, `pushObjects`, or
+ `clearList`. Loading and error state still update as usual. The option is consumed by the list and is not forwarded
+ to the crud handler.
 
 ***
 
@@ -125,7 +126,7 @@ Adds an object to the list.
 
 > **bulkDelete**: (`args?`) => [`MaybeCancellablePromise`](../utils/cancellablePromise.md#maybecancellablepromise)\<`boolean`\>
 
-Deletes objects from the list by pk, returning a promise to a boolean indicating success. On success the list empties `state.objects`, including rows the call did not name; pass `keepObjects` to keep them and reconcile yourself. The promise carries a `cancel` method when the handler's promise did.
+Deletes objects from the list by pk, returning a promise to a boolean indicating success. Omitting `pks` names every row the list holds. On success the list removes the rows the call named and keeps the rest; a named pk the list does not hold is ignored, since a bulk delete may target rows outside the loaded page. Pass `keepObjects` to remove none of them and reconcile yourself. The promise carries a `cancel` method when the handler's promise did.
 
 ###### Parameters
 
