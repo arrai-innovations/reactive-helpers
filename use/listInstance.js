@@ -137,6 +137,13 @@ export class ListInstanceError extends Error {
  */
 
 /**
+ * @typedef {object} KeepObjectsOption - Per-call control over whether the list applies its own result to `state.objects`.
+ * @property {boolean} [keepObjects=false] - When true, the list leaves `state.objects` untouched on success and the
+ *  caller reconciles it, through `deleteListObject`, `pushObjects`, or `clearList`. Loading and error state still
+ *  update as usual. The option is consumed by the list and is not forwarded to the crud handler.
+ */
+
+/**
  * @typedef {object} ListInstanceMyFunctions - Defines the methods provided by the list instance for managing objects in the list.
  * @property {PushObjectsFn} pushObjects - Customizable callback for handling new objects per page.
  * @property {(object: import('../use/objectInstance.js').ExistingCrudObject) => void} addListObject - Adds an object to the list.
@@ -146,7 +153,7 @@ export class ListInstanceError extends Error {
  *  or error state.
  * @property {() => import('../config/commonCrud.js').Pk} getFakePk - Generates a unique fake pk for use within the list.
  * @property {(args?: import('../config/listCrud.js').AdditionalListArgs) => import('../utils/cancellablePromise.js').MaybeCancellablePromise<boolean|never>} list - Initiates a fetch to retrieve objects according to the CRUD configuration, returning a promise to a boolean indicating success.
- * @property {(args?: {pks?: import('../config/commonCrud.js').Pk[]} & import('../config/listCrud.js').AdditionalListArgs) => import('../utils/cancellablePromise.js').MaybeCancellablePromise<boolean>} bulkDelete - Deletes objects from the list by pk, returning a promise to a boolean indicating success. The promise carries a `cancel` method when the handler's promise did.
+ * @property {(args?: {pks?: import('../config/commonCrud.js').Pk[]} & KeepObjectsOption & import('../config/listCrud.js').AdditionalListArgs) => import('../utils/cancellablePromise.js').MaybeCancellablePromise<boolean>} bulkDelete - Deletes objects from the list by pk, returning a promise to a boolean indicating success. On success the list empties `state.objects`, including rows the call did not name; pass `keepObjects` to keep them and reconcile yourself. The promise carries a `cancel` method when the handler's promise did.
  * @property {(args: {action: string, pks?: import('../config/commonCrud.js').Pk[]} & import('../config/listCrud.js').AdditionalListArgs) => import('../utils/cancellablePromise.js').MaybeCancellablePromise<object|string|boolean|null>} executeAction - Initiates an action on all objects in the list, returning the response, or null if the action failed. The promise carries a `cancel` method when the handler's promise did.
  * @property {(info: PaginateInfo) => void} setPaginateInfo - The method to update pagination information.
  * @property {(total: ColumnTotals) => void} setColumnTotals - The method to update column totals.
@@ -518,7 +525,7 @@ export function useListInstance({ props, handlers = {} }) {
             );
             return promises.list;
         },
-        bulkDelete: ({ pks, ...additionalArgs } = {}) => {
+        bulkDelete: ({ pks, keepObjects = false, ...additionalArgs } = {}) => {
             if (state.loading) {
                 // we throw because we want devs to see this error in the console
                 // state.error should be for user facing errors, or unknown errors
@@ -549,9 +556,11 @@ export function useListInstance({ props, handlers = {} }) {
             return wrapMaybeCancellable(
                 bulkDeletePromise
                     .then(() => {
-                        batchObjectChanges(() => {
-                            assignReactiveObject(_objectsProxy, {});
-                        });
+                        if (!keepObjects) {
+                            batchObjectChanges(() => {
+                                assignReactiveObject(_objectsProxy, {});
+                            });
+                        }
                         loadingError.clearError();
                         return true;
                     })

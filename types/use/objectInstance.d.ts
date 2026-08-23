@@ -122,12 +122,21 @@ export function useObjectInstance({ props, handlers }: ObjectInstanceOptions): O
  * @typedef {{[key:string]: any}} AdditionalArgs - Arbitrary extra arguments forwarded through to an object instance's CRUD operations.
  */
 /**
+ * @typedef {object} KeepObjectOption - Per-call control over whether the instance applies its own result to `state.object`.
+ * @property {boolean} [keepObject=false] - When true, the instance leaves `state.object` and `state.deleted` untouched
+ *  on success and the caller reconciles them, through `clear` or by writing `state.object` directly. Loading and error
+ *  state still update as usual. The option is consumed by the instance and is not forwarded to the crud handler.
+ *
+ *  `retrieve` returns the in-flight promise when one is already running, and that run keeps the option it started
+ *  with. A `keepObject` retrieve that joins a plain one therefore still sees `state.object` written.
+ */
+/**
  * @typedef {object} ObjectInstanceMyFunctions - The functions available on the object instance.
- * @property {(args: ObjectInstanceCreateArgs & AdditionalArgs) => import('../utils/cancellablePromise.js').MaybeCancellablePromise<boolean|never>} create - Called to turn the current object into a new object on the server.
- * @property {(args?: Partial<import('./cancellableIntent.js').CommonRunTracking> & AdditionalArgs) => import('../utils/cancellablePromise.js').MaybeCancellablePromise<boolean|never>} retrieve - Called to retrieve the current object by pk from the server.
- * @property {(args: ObjectInstanceUpdateArgs & AdditionalArgs) => import('../utils/cancellablePromise.js').MaybeCancellablePromise<boolean|never>} update - Called to update the current object on the server.
- * @property {(args?: AdditionalArgs) => import('../utils/cancellablePromise.js').MaybeCancellablePromise<boolean|never>} delete - Called to delete the current object on the server.
- * @property {(args: ObjectInstancePatchArgs & AdditionalArgs) => import('../utils/cancellablePromise.js').MaybeCancellablePromise<boolean|never>} patch - Called to patch the current object on the server.
+ * @property {(args: ObjectInstanceCreateArgs & KeepObjectOption & AdditionalArgs) => import('../utils/cancellablePromise.js').MaybeCancellablePromise<boolean|never>} create - Called to turn the current object into a new object on the server.
+ * @property {(args?: Partial<import('./cancellableIntent.js').CommonRunTracking> & KeepObjectOption & AdditionalArgs) => import('../utils/cancellablePromise.js').MaybeCancellablePromise<boolean|never>} retrieve - Called to retrieve the current object by pk from the server.
+ * @property {(args: ObjectInstanceUpdateArgs & KeepObjectOption & AdditionalArgs) => import('../utils/cancellablePromise.js').MaybeCancellablePromise<boolean|never>} update - Called to update the current object on the server.
+ * @property {(args?: KeepObjectOption & AdditionalArgs) => import('../utils/cancellablePromise.js').MaybeCancellablePromise<boolean|never>} delete - Called to delete the current object on the server.
+ * @property {(args: ObjectInstancePatchArgs & KeepObjectOption & AdditionalArgs) => import('../utils/cancellablePromise.js').MaybeCancellablePromise<boolean|never>} patch - Called to patch the current object on the server.
  * @property {(args: {action: string} & AdditionalArgs) => import('../utils/cancellablePromise.js').MaybeCancellablePromise<object|string|void|null>} executeAction - Called to execute certain action on the current object. Resolves the handler's own resolved value, or `null` when the action failed.
  * @property {() => void} clear - Called to clear the object state.
  */
@@ -314,29 +323,43 @@ export type AdditionalArgs = {
     [key: string]: any;
 };
 /**
+ * Per-call control over whether the instance applies its own result to `state.object`.
+ */
+export type KeepObjectOption = {
+    /**
+     * When true, the instance leaves `state.object` and `state.deleted` untouched
+     * on success and the caller reconciles them, through `clear` or by writing `state.object` directly. Loading and error
+     * state still update as usual. The option is consumed by the instance and is not forwarded to the crud handler.
+     *
+     * `retrieve` returns the in-flight promise when one is already running, and that run keeps the option it started
+     * with. A `keepObject` retrieve that joins a plain one therefore still sees `state.object` written.
+     */
+    keepObject?: boolean;
+};
+/**
  * The functions available on the object instance.
  */
 export type ObjectInstanceMyFunctions = {
     /**
      * Called to turn the current object into a new object on the server.
      */
-    create: (args: ObjectInstanceCreateArgs & AdditionalArgs) => import("../utils/cancellablePromise.js").MaybeCancellablePromise<boolean | never>;
+    create: (args: ObjectInstanceCreateArgs & KeepObjectOption & AdditionalArgs) => import("../utils/cancellablePromise.js").MaybeCancellablePromise<boolean | never>;
     /**
      * Called to retrieve the current object by pk from the server.
      */
-    retrieve: (args?: Partial<import("./cancellableIntent.js").CommonRunTracking> & AdditionalArgs) => import("../utils/cancellablePromise.js").MaybeCancellablePromise<boolean | never>;
+    retrieve: (args?: Partial<import("./cancellableIntent.js").CommonRunTracking> & KeepObjectOption & AdditionalArgs) => import("../utils/cancellablePromise.js").MaybeCancellablePromise<boolean | never>;
     /**
      * Called to update the current object on the server.
      */
-    update: (args: ObjectInstanceUpdateArgs & AdditionalArgs) => import("../utils/cancellablePromise.js").MaybeCancellablePromise<boolean | never>;
+    update: (args: ObjectInstanceUpdateArgs & KeepObjectOption & AdditionalArgs) => import("../utils/cancellablePromise.js").MaybeCancellablePromise<boolean | never>;
     /**
      * Called to delete the current object on the server.
      */
-    delete: (args?: AdditionalArgs) => import("../utils/cancellablePromise.js").MaybeCancellablePromise<boolean | never>;
+    delete: (args?: KeepObjectOption & AdditionalArgs) => import("../utils/cancellablePromise.js").MaybeCancellablePromise<boolean | never>;
     /**
      * Called to patch the current object on the server.
      */
-    patch: (args: ObjectInstancePatchArgs & AdditionalArgs) => import("../utils/cancellablePromise.js").MaybeCancellablePromise<boolean | never>;
+    patch: (args: ObjectInstancePatchArgs & KeepObjectOption & AdditionalArgs) => import("../utils/cancellablePromise.js").MaybeCancellablePromise<boolean | never>;
     /**
      * Called to execute certain action on the current object. Resolves the handler's own resolved value, or `null` when the action failed.
      */

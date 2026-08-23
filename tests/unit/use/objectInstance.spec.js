@@ -1958,6 +1958,94 @@ describe("use/objectInstance.js", function () {
             expect(objectInstance.state.loading).toBe(false);
         });
     });
+    describe("keepObject", function () {
+        const makeInstance = () =>
+            useObjectInstance({
+                props: {
+                    target: { stream: "test_stream" },
+                    pk: ref(1),
+                    pkKey: "id",
+                    params: reactive({ fields }),
+                },
+            });
+        scopedIt("leaves state.object and state.deleted untouched when delete is passed keepObject", async function () {
+            const objectInstance = makeInstance();
+            assignReactiveObject(objectInstance.state.object, crudRetrieveResolved);
+            objectInstance.state.crud.delete = vi.fn().mockResolvedValue(crudDeleteResolved);
+
+            await expect(objectInstance.delete({ keepObject: true })).resolves.toBe(true);
+
+            expect({ ...objectInstance.state.object }).toEqual(crudRetrieveResolved);
+            expect(objectInstance.state.deleted).toBe(false);
+            expect(objectInstance.state.error).toBeNullError();
+            expect(objectInstance.state.errored).toBe(false);
+            expect(objectInstance.state.loading).toBe(false);
+        });
+        scopedIt("does not forward keepObject to the delete handler", async function () {
+            const objectInstance = makeInstance();
+            objectInstance.state.crud.delete = vi.fn().mockResolvedValue(crudDeleteResolved);
+
+            await expect(objectInstance.delete({ keepObject: true, reason: "cleanup" })).resolves.toBe(true);
+
+            expect(objectInstance.state.crud.delete).toHaveBeenCalledWith({
+                reason: "cleanup",
+                target: { stream: "test_stream" },
+                pk: "1",
+                pkKey: "id",
+                isCancelled: expect.any(Object),
+            });
+        });
+        scopedIt("still clears state.object when keepObject is omitted", async function () {
+            const objectInstance = makeInstance();
+            assignReactiveObject(objectInstance.state.object, crudRetrieveResolved);
+            objectInstance.state.crud.delete = vi.fn().mockResolvedValue(crudDeleteResolved);
+
+            await expect(objectInstance.delete()).resolves.toBe(true);
+
+            expect({ ...objectInstance.state.object }).toEqual({});
+            expect(objectInstance.state.deleted).toBe(true);
+        });
+        describe.each([
+            ["retrieve", (objectInstance) => objectInstance.retrieve({ keepObject: true }), crudRetrieveResolved],
+            [
+                "create",
+                (objectInstance) => objectInstance.create({ object: { name: "new" }, keepObject: true }),
+                crudCreateResolved,
+            ],
+            [
+                "update",
+                (objectInstance) => objectInstance.update({ object: crudUpdateResolved, keepObject: true }),
+                crudUpdateResolved,
+            ],
+            [
+                "patch",
+                (objectInstance) => objectInstance.patch({ partialObject: { name: "p" }, keepObject: true }),
+                crudPatchResolved,
+            ],
+        ])("%s", function (verb, call, resolved) {
+            scopedIt("leaves state.object untouched when passed keepObject", async function () {
+                const objectInstance = makeInstance();
+                assignReactiveObject(objectInstance.state.object, crudRetrieveResolvedNonStandardPrimaryKey);
+                objectInstance.state.crud[verb] = vi.fn().mockResolvedValue(resolved);
+
+                await expect(call(objectInstance)).resolves.toBe(true);
+
+                expect({ ...objectInstance.state.object }).toEqual(crudRetrieveResolvedNonStandardPrimaryKey);
+                expect(objectInstance.state.error).toBeNullError();
+                expect(objectInstance.state.errored).toBe(false);
+            });
+            scopedIt("does not forward keepObject to the handler", async function () {
+                const objectInstance = makeInstance();
+                objectInstance.state.crud[verb] = vi.fn().mockResolvedValue(resolved);
+
+                await expect(call(objectInstance)).resolves.toBe(true);
+
+                expect(objectInstance.state.crud[verb]).toHaveBeenCalledWith(
+                    expect.not.objectContaining({ keepObject: expect.anything() })
+                );
+            });
+        });
+    });
     describe("delete", function () {
         scopedIt("success", async function () {
             const pk = ref(1);

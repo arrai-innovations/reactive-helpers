@@ -51,6 +51,30 @@ from the screen too. Call `contacts.list()` after a successful `bulkDelete()` wh
 So the pattern is: build a selection of primary keys, delete them, and reload. The reload refetches the rows the server
 still has, which are every row except the ones you just deleted.
 
+### Remove the deleted rows without reloading
+
+Pass `keepObjects: true` to take that decision back. The instance then leaves `contacts.state.objects` alone on success,
+and you decide which rows go. Remove each deleted row with `contacts.deleteListObject(pk)`:
+
+```javascript
+async function deleteSelected() {
+    const pks = [...selected].map(String);
+    const ok = await contacts.bulkDelete({ pks, keepObjects: true });
+    if (ok) {
+        pks.forEach((pk) => contacts.deleteListObject(pk));
+        selected.clear();
+    }
+}
+```
+
+This saves the reload request, and the rows you kept never leave the screen. Two costs come with it. Pagination counts
+in `contacts.state.paginateInfo` still reflect the last `list()` response, so a page count rendered from them goes
+stale. And `deleteListObject` throws a `ListInstanceError` with code `missing-object` for a pk the list does not hold. A
+bulk delete can target rows outside the loaded page. Filter the keys to loaded rows, or catch that code.
+
+The instance consumes `keepObjects` itself. It does not reach your `bulkDelete` handler, so a handler cannot tell the
+two call styles apart.
+
 ## Render checkboxes, a delete button, and the outcome
 
 Each checkbox toggles a `contactId` in a `selected` set. The delete button passes those keys to `contacts.bulkDelete`,

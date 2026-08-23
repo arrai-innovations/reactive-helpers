@@ -137,6 +137,10 @@ empty `contact.state.object` and record the transition in `contact.state.deleted
 retrieve, create, update, or patch repopulates the object and resets `contact.state.deleted` to `false`. A template can
 key a "this contact was removed" view off `contact.state.deleted` and trust it to clear when the object returns.
 
+Every action that writes the object accepts `keepObject: true` to suppress that write for one call. The request still
+runs and still reports success or failure. See
+[What each verb must resolve](/concepts/crud-handler-contracts#what-each-verb-must-resolve).
+
 ## Enrichment lives beside the object
 
 The last two layers add value without touching the record.

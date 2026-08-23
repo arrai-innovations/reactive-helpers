@@ -97,11 +97,16 @@ resolved value into `contact.state.object` as a mirror, not a merge. Three conse
 
 `delete` is the exception on the object side. Its resolved value is ignored; resolving means the delete succeeded.
 
+Each of those five verbs takes a `keepObject` option, per call. Pass `keepObject: true` and the instance runs the
+handler, reports success or failure as usual, and writes nothing to `contact.state.object` or `contact.state.deleted`.
+The caller reconciles instead. This is how one registered handler can serve both a real write and a request that must
+leave local state alone. The option is consumed by the instance and never reaches the handler.
+
 The list side never assigns resolved values. Rows enter the instance only through the `pushObjects` callback, and `list`
 resolving means the fetch is complete. A `list` handler that resolves an array of rows changes nothing; the rows are
-silently discarded. `bulkDelete` resolving reports success, after which the instance empties the list (see
-[Bulk delete rows](/guide/bulk-delete-rows) for the reload pattern that follows). Why the two sides treat resolved
-values differently is the central rule of [Instances and transport](/concepts/instances-and-transport).
+silently discarded. `bulkDelete` resolving reports success, after which the instance empties the list, unless the call
+passed `keepObjects: true` (see [Bulk delete rows](/guide/bulk-delete-rows) for both patterns). Why the two sides treat
+resolved values differently is the central rule of [Instances and transport](/concepts/instances-and-transport).
 
 The promise the action itself returns is not your handler's promise. A CRUD action such as `contact.update(...)` or
 `contacts.list()` resolves `true` on success and `false` on a stored failure. `executeAction` is the exception on both

@@ -57,6 +57,25 @@ The error code.
 
 ## Interfaces
 
+### KeepObjectOption
+
+Per-call control over whether the instance applies its own result to `state.object`.
+
+#### Properties
+
+##### keepObject?
+
+> `optional` **keepObject?**: `boolean`
+
+When true, the instance leaves `state.object` and `state.deleted` untouched
+ on success and the caller reconciles them, through `clear` or by writing `state.object` directly. Loading and error
+ state still update as usual. The option is consumed by the instance and is not forwarded to the crud handler.
+
+ `retrieve` returns the in-flight promise when one is already running, and that run keeps the option it started
+ with. A `keepObject` retrieve that joins a plain one therefore still sees `state.object` written.
+
+***
+
 ### ObjectInstanceMyFunctions
 
 The functions available on the object instance.
@@ -83,7 +102,7 @@ Called to turn the current object into a new object on the server.
 
 ###### args
 
-[`ObjectInstanceCreateArgs`](#objectinstancecreateargs) & [`AdditionalArgs`](#additionalargs)
+[`ObjectInstanceCreateArgs`](#objectinstancecreateargs) & [`KeepObjectOption`](#keepobjectoption) & [`AdditionalArgs`](#additionalargs)
 
 ###### Returns
 
@@ -99,7 +118,7 @@ Called to delete the current object on the server.
 
 ###### args?
 
-[`AdditionalArgs`](#additionalargs)
+[`KeepObjectOption`](#keepobjectoption) & [`AdditionalArgs`](#additionalargs)
 
 ###### Returns
 
@@ -131,7 +150,7 @@ Called to patch the current object on the server.
 
 ###### args
 
-[`ObjectInstancePatchArgs`](#objectinstancepatchargs) & [`AdditionalArgs`](#additionalargs)
+[`ObjectInstancePatchArgs`](#objectinstancepatchargs) & [`KeepObjectOption`](#keepobjectoption) & [`AdditionalArgs`](#additionalargs)
 
 ###### Returns
 
@@ -147,7 +166,7 @@ Called to retrieve the current object by pk from the server.
 
 ###### args?
 
-`Partial`\<[`CommonRunTracking`](cancellableIntent.md#commonruntracking)\> & [`AdditionalArgs`](#additionalargs)
+`Partial`\<[`CommonRunTracking`](cancellableIntent.md#commonruntracking)\> & [`KeepObjectOption`](#keepobjectoption) & [`AdditionalArgs`](#additionalargs)
 
 ###### Returns
 
@@ -163,7 +182,7 @@ Called to update the current object on the server.
 
 ###### args
 
-[`ObjectInstanceUpdateArgs`](#objectinstanceupdateargs) & [`AdditionalArgs`](#additionalargs)
+[`ObjectInstanceUpdateArgs`](#objectinstanceupdateargs) & [`KeepObjectOption`](#keepobjectoption) & [`AdditionalArgs`](#additionalargs)
 
 ###### Returns
 

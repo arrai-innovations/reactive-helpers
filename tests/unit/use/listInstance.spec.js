@@ -1061,6 +1061,83 @@ describe("use/listInstance.spec.js", function () {
             expect(globalExecuteAction).toHaveBeenCalledTimes(1);
         });
     });
+    describe("keepObjects", function () {
+        const loadPage = async (listInstance) => {
+            /** @type {import("../../../use/listInstance.js").PushObjectsFn} */
+            let passedPushObjects;
+            /** @type {(value: boolean) => void} */
+            let crudListResolve;
+            const crudListPromise = new Promise((resolve) => {
+                crudListResolve = resolve;
+            });
+            globalList.mockImplementation(({ pushObjects }) => {
+                passedPushObjects = pushObjects;
+                return crudListPromise;
+            });
+            const liListResolve = listInstance.list();
+            await nextTick();
+            passedPushObjects(crudListResolvedPage1);
+            passedPushObjects(crudListResolvedPage2);
+            crudListResolve(true);
+            await flushPromises();
+            await expect(liListResolve).resolves.toBe(true);
+        };
+        scopedIt("leaves state.objects untouched when bulkDelete is passed keepObjects", async function () {
+            const listInstance = useListInstance({
+                props: { pkKey: "id", params: reactive({ fields }) },
+            });
+            await loadPage(listInstance);
+            expect({ ...listInstance.state.objects }).toEqual(crudListResolvedObjects2);
+
+            globalBulkDelete.mockResolvedValueOnce(true);
+            await expect(listInstance.bulkDelete({ pks: ["1"], keepObjects: true })).resolves.toBe(true);
+
+            expect({ ...listInstance.state.objects }).toEqual(crudListResolvedObjects2);
+            expect(listInstance.state.error).toBeNullError();
+            expect(listInstance.state.errored).toBe(false);
+            expect(listInstance.state.loading).toBe(false);
+        });
+        scopedIt("does not forward keepObjects to the bulkDelete handler", async function () {
+            const listInstance = useListInstance({
+                props: { pkKey: "id", params: reactive({ fields }) },
+            });
+            globalBulkDelete.mockResolvedValueOnce(true);
+
+            await expect(listInstance.bulkDelete({ pks: ["1"], keepObjects: true })).resolves.toBe(true);
+
+            expect(globalBulkDelete).toHaveBeenCalledWith({
+                target: { stream: "test_stream" },
+                pkKey: "id",
+                pks: ["1"],
+                params: expect.any(Object),
+                isCancelled: expect.any(Object),
+            });
+        });
+        scopedIt("still empties state.objects when keepObjects is omitted", async function () {
+            const listInstance = useListInstance({
+                props: { pkKey: "id", params: reactive({ fields }) },
+            });
+            await loadPage(listInstance);
+
+            globalBulkDelete.mockResolvedValueOnce(true);
+            await expect(listInstance.bulkDelete({ pks: ["1"] })).resolves.toBe(true);
+
+            expect({ ...listInstance.state.objects }).toEqual({});
+        });
+        scopedIt("leaves state.objects untouched when a keepObjects bulkDelete fails", async function () {
+            const listInstance = useListInstance({
+                props: { pkKey: "id", params: reactive({ fields }) },
+            });
+            await loadPage(listInstance);
+
+            globalBulkDelete.mockRejectedValueOnce(new Error("nope"));
+            await expect(listInstance.bulkDelete({ pks: ["1"], keepObjects: true })).resolves.toBe(false);
+
+            expect({ ...listInstance.state.objects }).toEqual(crudListResolvedObjects2);
+            expect(listInstance.state.errored).toBe(true);
+            expect(listInstance.state.error).toEqual(new Error("nope"));
+        });
+    });
     describe("bulkDelete", function () {
         scopedIt("succeeds", async function () {
             const params = reactive({

@@ -2,6 +2,20 @@
 
 _Actions potentially required by implementers are marked with italics._
 
+## v24.1.0 (Unreleased)
+
+### Additions
+
+- Every instance action that writes local state from its handler's result now takes a per-call option to suppress that
+  write. `listInstance.bulkDelete` takes `keepObjects`; `objectInstance.create`, `retrieve`, `update`, `patch`, and
+  `delete` take `keepObject`. Pass it and the action runs the handler, reports success or failure through
+  `state.loading`, `state.error`, and its own resolved boolean as usual, and leaves `state.objects`, or `state.object`
+  and `state.deleted`, untouched. The caller reconciles instead, through `deleteListObject`, `pushObjects`, `clearList`,
+  or `clear`. This lets one registered handler serve both a real write and a request that must not disturb local state,
+  such as a server-side validation pre-flight, without the handler knowing which it is. _The option is consumed by the
+  instance and is not forwarded to your handler, so a handler cannot read it. Nothing changes for calls that omit it._
+  `docs/concepts/crud-handler-contracts.md` and `docs/guide/bulk-delete-rows.md` cover the reconciliation patterns.
+
 ## v24.0.0 (2026-08-22)
 
 ### Breaking Changes
