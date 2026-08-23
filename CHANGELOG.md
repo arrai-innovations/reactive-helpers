@@ -2,6 +2,15 @@
 
 _Actions potentially required by implementers are marked with italics._
 
+## v24.0.0 (Unreleased)
+
+### Breaking Changes
+
+- The `@vueuse/core` peer dependency is now `^14.0.0`. VueUse 14 requires Vue 3.5, which this package already required,
+  and `getLifeCycleTarget`, the only VueUse API used here, is unchanged across the two majors. _Upgrade `@vueuse/core`
+  to 14 alongside this release. npm refuses to install a v23 tree against VueUse 14 rather than warning, so a project
+  already on VueUse 14 needs this release._
+
 ## v23.0.1 (2026-08-11)
 
 ### Additions
