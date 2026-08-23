@@ -42,6 +42,8 @@ ride along on most verbs:
   side, so do `create`, `retrieve`, `update`, `patch`, and `subscribe`. Object `delete` and object `executeAction` do
   not, since they identify their record by key alone.
 - `isCancelled`: a readonly ref that turns `true` once the run is cancelled. Every verb receives it.
+- `setCancelled`: a function that raises that flag from inside the handler, for a run the handler itself judges stale.
+  Every verb receives it except `subscribe`.
 
 The exhaustive shapes live in the generated reference, in [config/listCrud](/reference/api/config/listCrud) and
 [config/objectCrud](/reference/api/config/objectCrud).
@@ -147,6 +149,11 @@ cancelled only if its promise carries a working `.cancel`. A plain promise runs 
 differ by side. The model, the contract behind a "working" cancel, and those consequences are covered in
 [Cancellable intents](/concepts/cancellable-intents). `cancellableFetch` and `makeCancellable` build conforming
 promises, and a cooperative handler also re-checks `isCancelled.value` after each `await`.
+
+A cancelled run's result is withheld however the run was cancelled. The instance writes nothing to `state.object` or
+`state.objects`, stores no error, and the action resolves `false`, or `null` for `executeAction`. This holds whether the
+caller called `.cancel`, or the handler called `setCancelled` on itself, and whether the handler then rejected or
+resolved anyway.
 
 ## The subscribe handler
 

@@ -480,6 +480,9 @@ export function useListInstance({ props, handlers = {} }) {
             loadingError.clearError();
             loadingError.setLoading();
             const isCancelled = ref(false);
+            const setCancelled = () => {
+                isCancelled.value = true;
+            };
             let listPromise = null;
             try {
                 const listCrudArgs = {
@@ -490,6 +493,7 @@ export function useListInstance({ props, handlers = {} }) {
                     pushObjects: self.pushObjects,
                     clearObjects: self.clearList,
                     isCancelled: readonly(isCancelled),
+                    setCancelled,
                     setPaginateInfo: self.setPaginateInfo,
                     setColumnTotals: self.setColumnTotals,
                 };
@@ -503,7 +507,9 @@ export function useListInstance({ props, handlers = {} }) {
             promises.list = wrapMaybeCancellable(
                 listPromise
                     .then(() => {
-                        return true;
+                        // The handler owns the rows on this path, so there is nothing here to withhold. A cancelled
+                        // run still reports false, matching the rejection a cancelling handler usually produces.
+                        return !isCancelled.value;
                     })
                     .catch((/** @type {Error} */ error) => {
                         // A deliberate cancellation rejects with the cancel reason; that is not an error.
@@ -538,6 +544,9 @@ export function useListInstance({ props, handlers = {} }) {
             loadingError.setLoading();
             loadingError.clearError();
             const isCancelled = ref(false);
+            const setCancelled = () => {
+                isCancelled.value = true;
+            };
             let bulkDeletePromise = null;
             try {
                 bulkDeletePromise = state.crud.bulkDelete({
@@ -547,6 +556,7 @@ export function useListInstance({ props, handlers = {} }) {
                     pkKey: state.pkKey,
                     params: state.params,
                     isCancelled: readonly(isCancelled),
+                    setCancelled,
                 });
                 assertHandlerPromise(bulkDeletePromise, ListInstanceError, "bulkDelete");
             } catch (error) {
@@ -557,6 +567,9 @@ export function useListInstance({ props, handlers = {} }) {
             return wrapMaybeCancellable(
                 bulkDeletePromise
                     .then(() => {
+                        if (isCancelled.value) {
+                            return false;
+                        }
                         if (!keepObjects) {
                             batchObjectChanges(() => {
                                 pks.forEach((pk) => {
@@ -608,6 +621,9 @@ export function useListInstance({ props, handlers = {} }) {
             loadingError.setLoading();
             loadingError.clearError();
             const isCancelled = ref(false);
+            const setCancelled = () => {
+                isCancelled.value = true;
+            };
             let executeActionPromise = null;
             try {
                 executeActionPromise = state.crud.executeAction({
@@ -618,6 +634,7 @@ export function useListInstance({ props, handlers = {} }) {
                     pkKey: state.pkKey,
                     params: state.params,
                     isCancelled: readonly(isCancelled),
+                    setCancelled,
                 });
                 assertHandlerPromise(executeActionPromise, ListInstanceError, "executeAction");
             } catch (error) {
@@ -628,6 +645,9 @@ export function useListInstance({ props, handlers = {} }) {
             return wrapMaybeCancellable(
                 executeActionPromise
                     .then((/** @type {object|string} */ responseData) => {
+                        if (isCancelled.value) {
+                            return null;
+                        }
                         loadingError.clearError();
                         return responseData;
                     })

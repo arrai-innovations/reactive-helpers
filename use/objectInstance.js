@@ -278,6 +278,9 @@ export function useObjectInstance({ props, handlers = {} }) {
             loadingError.setLoading();
             loadingError.clearError();
             const isCancelled = ref(false);
+            const setCancelled = () => {
+                isCancelled.value = true;
+            };
             let createPromise = null;
             try {
                 createPromise = state.crud.create({
@@ -287,6 +290,7 @@ export function useObjectInstance({ props, handlers = {} }) {
                     params: state.params,
                     pkKey: state.pkKey,
                     isCancelled: readonly(isCancelled),
+                    setCancelled,
                 });
                 assertHandlerPromise(createPromise, ObjectError, "create");
             } catch (error) {
@@ -298,6 +302,9 @@ export function useObjectInstance({ props, handlers = {} }) {
             return wrapMaybeCancellable(
                 createPromise
                     .then((/** @type {ExistingCrudObject} */ object) => {
+                        if (isCancelled.value) {
+                            return false;
+                        }
                         if (!keepObject) {
                             assignReactiveObject(state.object, object);
                             state.deleted = false;
@@ -338,6 +345,9 @@ export function useObjectInstance({ props, handlers = {} }) {
             loadingError.setLoading();
             loadingError.clearError();
             const isCancelled = ref(false);
+            const setCancelled = () => {
+                isCancelled.value = true;
+            };
             let retrievePromise = null;
             try {
                 retrievePromise = state.crud.retrieve({
@@ -347,6 +357,7 @@ export function useObjectInstance({ props, handlers = {} }) {
                     params: state.params,
                     pkKey: state.pkKey,
                     isCancelled: readonly(isCancelled),
+                    setCancelled,
                 });
                 assertHandlerPromise(retrievePromise, ObjectError, "retrieve");
             } catch (error) {
@@ -358,6 +369,9 @@ export function useObjectInstance({ props, handlers = {} }) {
             promises.retrieve = wrapMaybeCancellable(
                 retrievePromise
                     .then((/** @type {ExistingCrudObject} */ object) => {
+                        if (isCancelled.value) {
+                            return false;
+                        }
                         if (!keepObject) {
                             assignReactiveObject(state.object, object);
                             state.deleted = false;
@@ -396,6 +410,9 @@ export function useObjectInstance({ props, handlers = {} }) {
             loadingError.setLoading();
             loadingError.clearError();
             const isCancelled = ref(false);
+            const setCancelled = () => {
+                isCancelled.value = true;
+            };
             let updatePromise = null;
             try {
                 updatePromise = state.crud.update({
@@ -405,6 +422,7 @@ export function useObjectInstance({ props, handlers = {} }) {
                     params: state.params,
                     pkKey: state.pkKey,
                     isCancelled: readonly(isCancelled),
+                    setCancelled,
                 });
                 assertHandlerPromise(updatePromise, ObjectError, "update");
             } catch (error) {
@@ -415,6 +433,9 @@ export function useObjectInstance({ props, handlers = {} }) {
             return wrapMaybeCancellable(
                 updatePromise
                     .then((/** @type {ExistingCrudObject} */ object) => {
+                        if (isCancelled.value) {
+                            return false;
+                        }
                         if (!keepObject) {
                             assignReactiveObject(state.object, object);
                             state.deleted = false;
@@ -450,6 +471,9 @@ export function useObjectInstance({ props, handlers = {} }) {
             loadingError.setLoading();
             loadingError.clearError();
             const isCancelled = ref(false);
+            const setCancelled = () => {
+                isCancelled.value = true;
+            };
             let deletePromise = null;
             try {
                 deletePromise = state.crud.delete({
@@ -458,6 +482,7 @@ export function useObjectInstance({ props, handlers = {} }) {
                     pk: state.pk,
                     pkKey: state.pkKey,
                     isCancelled: readonly(isCancelled),
+                    setCancelled,
                 });
                 assertHandlerPromise(deletePromise, ObjectError, "delete");
             } catch (error) {
@@ -468,6 +493,9 @@ export function useObjectInstance({ props, handlers = {} }) {
             return wrapMaybeCancellable(
                 deletePromise
                     .then(() => {
+                        if (isCancelled.value) {
+                            return false;
+                        }
                         if (!keepObject) {
                             state.deleted = true;
                             assignReactiveObject(state.object, {});
@@ -503,6 +531,9 @@ export function useObjectInstance({ props, handlers = {} }) {
             loadingError.setLoading();
             loadingError.clearError();
             const isCancelled = ref(false);
+            const setCancelled = () => {
+                isCancelled.value = true;
+            };
             let patchPromise = null;
             try {
                 patchPromise = state.crud.patch({
@@ -513,6 +544,7 @@ export function useObjectInstance({ props, handlers = {} }) {
                     pkKey: state.pkKey,
                     params: state.params,
                     isCancelled: readonly(isCancelled),
+                    setCancelled,
                 });
                 assertHandlerPromise(patchPromise, ObjectError, "patch");
             } catch (error) {
@@ -523,6 +555,9 @@ export function useObjectInstance({ props, handlers = {} }) {
             return wrapMaybeCancellable(
                 patchPromise
                     .then((/** @type {ExistingCrudObject} */ object) => {
+                        if (isCancelled.value) {
+                            return false;
+                        }
                         if (!keepObject) {
                             assignReactiveObject(state.object, object);
                             state.deleted = false;
@@ -555,6 +590,9 @@ export function useObjectInstance({ props, handlers = {} }) {
             loadingError.setLoading();
             loadingError.clearError();
             const isCancelled = ref(false);
+            const setCancelled = () => {
+                isCancelled.value = true;
+            };
             let executeActionPromise = null;
             try {
                 executeActionPromise = state.crud.executeAction({
@@ -564,6 +602,7 @@ export function useObjectInstance({ props, handlers = {} }) {
                     pk: state.pk,
                     pkKey: state.pkKey,
                     isCancelled: readonly(isCancelled),
+                    setCancelled,
                 });
                 assertHandlerPromise(executeActionPromise, ObjectError, "executeAction");
             } catch (error) {
@@ -575,6 +614,9 @@ export function useObjectInstance({ props, handlers = {} }) {
             return wrapMaybeCancellable(
                 executeActionPromise
                     .then((/** @type {object|string|void} */ responseData) => {
+                        if (isCancelled.value) {
+                            return null;
+                        }
                         return responseData;
                     })
                     .catch((/** @type {Error} */ error) => {

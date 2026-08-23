@@ -88,6 +88,7 @@ describe("use/listSubscription.spec.js", function () {
                 pkKey: "id",
                 pushObjects: expect.any(Function),
                 runId: expect.any(Number),
+                setCancelled: expect.any(Function),
                 setPaginateInfo: expect.any(Function),
                 setColumnTotals: expect.any(Function),
                 target: { stream: "test_stream" },

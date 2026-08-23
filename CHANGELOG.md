@@ -6,6 +6,23 @@ _Actions potentially required by implementers are marked with italics._
 
 ### Fixes
 
+- A cancelled run no longer writes its result to local state. `objectInstance.create`, `retrieve`, `update`, `patch`,
+  and `delete` assigned the handler's resolved record, and `listInstance.bulkDelete` emptied the list, without ever
+  checking whether the run had been cancelled. Only the rejection path checked, so a handler that resolved anyway after
+  a cancel, which is what a transport that cannot truly abort does, wrote to state the caller had already abandoned.
+  `docs/concepts/cancellable-intents.md` described the intended behaviour ("its result is never applied"), and the read
+  path delivered it because the handler owns the write there. The write paths now check the same flag before they touch
+  anything. _A cancelled run resolves `false`, or `null` for `executeAction`, and stores no error, matching what a
+  handler that rejects on cancel already produced. If you relied on a cancelled action still reporting `true`, read
+  `state.errored` to tell a cancellation from a failure._
+
+- Crud handlers can now cancel their own run. `isCancelled` reaches a handler as a readonly ref, so a handler that
+  decided mid-flight that its run was stale had no way to say so. Every verb except `subscribe` now also receives
+  `setCancelled`, a function that raises the same flag, with the same effect as the caller cancelling: the result is
+  withheld, no error is stored, and the action resolves its failure value. Cancellation stays one way, with no call to
+  undo it. _`subscribe` is excluded deliberately. It applies its events through its own callback rather than resolving a
+  result for the instance to write, and `isCurrentRun` is what a stream uses to drop a stale event._
+
 - `listInstance.bulkDelete({ pks })` now removes the rows it named and keeps the rest. It emptied `state.objects`
   entirely, including rows the call did not name, which is why the guide told you to follow every subset delete with a
   `list()` reload. Omitting `pks` still names every loaded row, so an unscoped `bulkDelete()` still empties the list and

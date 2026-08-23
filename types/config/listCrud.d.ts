@@ -56,6 +56,10 @@ export type ListArgsRaw = {
      */
     isCancelled: Readonly<import("vue").Ref<boolean>>;
     /**
+     * Marks this run cancelled from inside the handler, with the same effect as the caller cancelling it.
+     */
+    setCancelled: import("./commonCrud.js").SetCancelledFn;
+    /**
      * The method to update pagination information.
      */
     setPaginateInfo: SetPaginateInfo;
@@ -94,6 +98,10 @@ export type BulkDeleteArgsRaw = {
      * A readonly ref that becomes true once the request is cancelled.
      */
     isCancelled: Readonly<import("vue").Ref<boolean>>;
+    /**
+     * Marks this run cancelled from inside the handler, with the same effect as the caller cancelling it.
+     */
+    setCancelled: import("./commonCrud.js").SetCancelledFn;
 };
 /**
  * Arguments for a bulk-delete operation, combining the raw arguments with any additional list CRUD arguments.
@@ -162,6 +170,10 @@ export type ExecuteActionArgsRaw = {
      * A readonly ref that becomes true once the request is cancelled.
      */
     isCancelled: Readonly<import("vue").Ref<boolean>>;
+    /**
+     * Marks this run cancelled from inside the handler, with the same effect as the caller cancelling it.
+     */
+    setCancelled: import("./commonCrud.js").SetCancelledFn;
 };
 /**
  * Arguments for a list execute-action operation, combining the raw arguments with any additional list CRUD arguments.

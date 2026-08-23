@@ -87,6 +87,14 @@ when the run is cancelled. When a transport cannot truly abort, the awaited work
 `isCancelled.value` after each `await` keeps a stale result from reaching state. Here it guards the `clearObjects` and
 `pushObjects` calls.
 
+A `list` handler needs that check because it writes rows itself. Verbs such as `bulkDelete` and `retrieve` hand their
+result back for the instance to write instead. The instance checks the same flag first, so a cancelled run there leaves
+state alone and resolves `false` without your help.
+
+Your handler can raise the flag too, by calling `setCancelled()`. Use it when the handler decides its own run is stale,
+for example after reading a response that names a newer request. The instance then treats the run exactly as it treats
+one the caller cancelled.
+
 ## The anti-pattern: a plain async handler
 
 This is what not to do. The handler below is a plain `async` function. Treat it as a contrast, not as runnable code to

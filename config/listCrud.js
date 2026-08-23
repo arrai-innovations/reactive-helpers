@@ -32,6 +32,7 @@ import { readonly } from "vue";
  * @property {import("../use/listInstance.js").PushObjectsFn} pushObjects - The method to call with new page(s) of data received.
  * @property {ClearObjectsFn} clearObjects - The method to call to clear the objects.
  * @property {Readonly<import('vue').Ref<boolean>>} isCancelled - A readonly ref that becomes true once the request is cancelled.
+ * @property {import('./commonCrud.js').SetCancelledFn} setCancelled - Marks this run cancelled from inside the handler, with the same effect as the caller cancelling it.
  * @property {SetPaginateInfo} setPaginateInfo - The method to update pagination information.
  * @property {SetColumnTotals} setColumnTotals - The method to update column totals.
  */
@@ -47,6 +48,7 @@ import { readonly } from "vue";
  * @property {string} pkKey - The key name of the primary key.
  * @property {{[key:string]: any}} params - Your listing arguments, passed through to the crud handlers.
  * @property {Readonly<import('vue').Ref<boolean>>} isCancelled - A readonly ref that becomes true once the request is cancelled.
+ * @property {import('./commonCrud.js').SetCancelledFn} setCancelled - Marks this run cancelled from inside the handler, with the same effect as the caller cancelling it.
  */
 
 /**
@@ -81,6 +83,7 @@ import { readonly } from "vue";
  * @property {string} action - The action to execute.
  * @property {{[key:string]: any}} params - Your listing arguments, passed through to the crud handlers.
  * @property {Readonly<import('vue').Ref<boolean>>} isCancelled - A readonly ref that becomes true once the request is cancelled.
+ * @property {import('./commonCrud.js').SetCancelledFn} setCancelled - Marks this run cancelled from inside the handler, with the same effect as the caller cancelling it.
  */
 
 /**
