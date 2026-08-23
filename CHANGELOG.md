@@ -11,6 +11,12 @@ _Actions potentially required by implementers are marked with italics._
   to 14 alongside this release. npm refuses to install a v23 tree against VueUse 14 rather than warning, so a project
   already on VueUse 14 needs this release._
 
+### Deprecations
+
+- Removing related-rule `pkKey` moves from v24 to v25. The v23.0.0 entry below said v24, which would have given the
+  deprecation warning about two weeks in the wild before the option disappeared. `pkKey` keeps working and keeps warning
+  through v24. _Rename related-rule `pkKey` to `fkKey` at your convenience; nothing breaks in this release._
+
 ## v23.0.1 (2026-08-11)
 
 ### Additions

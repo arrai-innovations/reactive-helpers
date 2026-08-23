@@ -84,7 +84,7 @@ assume they know this project's CRUD handler pattern, primary key model, subscri
 - Do not duplicate generated reference tables in authored pages. Link to the reference for exhaustive signatures.
 - Explain the current public names even when they are imperfect, rather than describing the name you would prefer.
 - Document a deprecated name alongside its replacement while both work, and say which release removes it. Related-object
-  rules take `fkKey` and still accept `pkKey` until v24.
+  rules take `fkKey` and still accept `pkKey` until v25.
 
 ## Acceptance criteria
 

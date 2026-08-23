@@ -648,7 +648,7 @@ Specifies the order in which related objects should be sorted, if applicable.
 
 > `optional` **pkKey?**: `string`
 
-Deprecated alias for `fkKey`, removed in v24. The option never named a primary key.
+Deprecated alias for `fkKey`, removed in v25. The option never named a primary key.
  A rule setting both uses `fkKey`.
 
 ## Type Aliases

@@ -78,7 +78,7 @@ export function warnDeprecatedRulePkKey(composableName, ruleKey, rule, warned) {
     warned.add(ruleKey);
     const bothNames = rule.fkKey !== undefined ? ` This rule sets both, and "fkKey" is the one used.` : "";
     console.warn(
-        `[${composableName}] Rule "${ruleKey}" uses "pkKey", which is deprecated and will be removed in v24. Rename it to "fkKey", which is what the option has always meant.${bothNames}`
+        `[${composableName}] Rule "${ruleKey}" uses "pkKey", which is deprecated and will be removed in v25. Rename it to "fkKey", which is what the option has always meant.${bothNames}`
     );
 }
 

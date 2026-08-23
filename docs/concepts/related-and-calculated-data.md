@@ -53,8 +53,8 @@ The rule reads the field `fkKey` names, then uses its value to find a record in 
 
 ::: info
 
-Before v23 this option was called `pkKey`, which named a foreign key rather than a primary one. Both names work in v23,
-`fkKey` wins when a rule sets both, and `pkKey` warns and is removed in v24.
+Before v23 this option was called `pkKey`, which named a foreign key rather than a primary one. Both names still work,
+`fkKey` wins when a rule sets both, and `pkKey` warns and is removed in v25.
 
 :::
 

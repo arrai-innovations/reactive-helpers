@@ -223,7 +223,7 @@ describe("use/listRelated", () => {
         await nextTick();
         expect(deepUnref(listRelated.state.relatedObjects[1].legacy)).toEqual({ id: "4", name: "related1" });
         expect(warnSpy).toHaveBeenCalledWith(
-            '[useListRelated] Rule "legacy" uses "pkKey", which is deprecated and will be removed in v24. Rename it to "fkKey", which is what the option has always meant.'
+            '[useListRelated] Rule "legacy" uses "pkKey", which is deprecated and will be removed in v25. Rename it to "fkKey", which is what the option has always meant.'
         );
         expect(warnSpy).toHaveBeenCalledTimes(1);
         warnSpy.mockRestore();
@@ -244,7 +244,7 @@ describe("use/listRelated", () => {
         await nextTick();
         expect(deepUnref(listRelated.state.relatedObjects[1].both)).toEqual({ id: "4", name: "viaFkKey" });
         expect(warnSpy).toHaveBeenCalledWith(
-            '[useListRelated] Rule "both" uses "pkKey", which is deprecated and will be removed in v24. Rename it to "fkKey", which is what the option has always meant. This rule sets both, and "fkKey" is the one used.'
+            '[useListRelated] Rule "both" uses "pkKey", which is deprecated and will be removed in v25. Rename it to "fkKey", which is what the option has always meant. This rule sets both, and "fkKey" is the one used.'
         );
         warnSpy.mockRestore();
     });

@@ -73,7 +73,7 @@ On a related rule, `fkKey` names the foreign-key field on the source row. Here `
 that points at a company. Omit `fkKey` and it defaults to the rule name.
 
 Rules written before v23 name this option `pkKey`. That name still works and resolves the same field, with a console
-warning, and it is removed in v24. Rename it to `fkKey`.
+warning, and it is removed in v25. Rename it to `fkKey`.
 
 :::
 

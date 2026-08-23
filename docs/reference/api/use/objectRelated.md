@@ -468,7 +468,7 @@ The order of the related objects, if the related objects are an array.
 
 > `optional` **pkKey?**: `string`
 
-Deprecated alias for `fkKey`, removed in v24. The option never named a primary key.
+Deprecated alias for `fkKey`, removed in v25. The option never named a primary key.
  A rule setting both uses `fkKey`.
 
 ## Type Aliases

@@ -2,7 +2,7 @@
  * @typedef {object} ListRelatedRule - The rule for defining relationships for objects in a list.
  * @property {string} [fkKey] - Specifies the foreign key on each row used to link objects across lists. Defaults to
  *  the rule's own key when omitted.
- * @property {string} [pkKey] - Deprecated alias for `fkKey`, removed in v24. The option never named a primary key.
+ * @property {string} [pkKey] - Deprecated alias for `fkKey`, removed in v25. The option never named a primary key.
  *  A rule setting both uses `fkKey`.
  * @property {string[]} [order] - Specifies the order in which related objects should be sorted, if applicable.
  * @property {import('./listInstance.js').ObjectsByPk} objects - The objects that can be related based on the foreign key.
@@ -185,7 +185,7 @@ export type ListRelatedRule = {
      */
     fkKey?: string;
     /**
-     * Deprecated alias for `fkKey`, removed in v24. The option never named a primary key.
+     * Deprecated alias for `fkKey`, removed in v25. The option never named a primary key.
      * A rule setting both uses `fkKey`.
      */
     pkKey?: string;
