@@ -13,10 +13,8 @@ import { refIfReactive } from "../utils/refIfReactive.js";
  */
 
 /**
- * @typedef {() => void} SetCancelledFn - Signature for the callback a crud handler calls to mark its own run cancelled.
- *  Cancellation is one way: there is no matching call to undo it. The instance then withholds the run's result, leaving
- *  its local state as it was, and the action resolves its failure value without storing an error. It sits beside
- *  `isCancelled`, which reports the same flag when the caller is the one cancelling.
+ * @typedef {() => void} SetCancelledFn - Callback a CRUD handler calls to mark its current run cancelled. The instance
+ *  withholds that run's result, stores no error, and resolves the action's cancellation value.
  */
 
 /**

@@ -56,7 +56,7 @@ export type ListArgsRaw = {
      */
     isCancelled: Readonly<import("vue").Ref<boolean>>;
     /**
-     * Marks this run cancelled from inside the handler, with the same effect as the caller cancelling it.
+     * Marks this run cancelled from inside the handler.
      */
     setCancelled: import("./commonCrud.js").SetCancelledFn;
     /**
@@ -99,7 +99,7 @@ export type BulkDeleteArgsRaw = {
      */
     isCancelled: Readonly<import("vue").Ref<boolean>>;
     /**
-     * Marks this run cancelled from inside the handler, with the same effect as the caller cancelling it.
+     * Marks this run cancelled from inside the handler.
      */
     setCancelled: import("./commonCrud.js").SetCancelledFn;
 };
@@ -171,7 +171,7 @@ export type ExecuteActionArgsRaw = {
      */
     isCancelled: Readonly<import("vue").Ref<boolean>>;
     /**
-     * Marks this run cancelled from inside the handler, with the same effect as the caller cancelling it.
+     * Marks this run cancelled from inside the handler.
      */
     setCancelled: import("./commonCrud.js").SetCancelledFn;
 };

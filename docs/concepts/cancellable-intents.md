@@ -75,21 +75,18 @@ writes.
 CRUD handlers receive one more signal. `isCancelled` is a readonly ref. It becomes `true` when the run is cancelled. A
 cooperative handler re-checks `isCancelled.value` after each `await`. Once it is true, the handler stops touching state.
 
-Beside it comes `setCancelled`, a function that raises the same flag from inside the handler. A handler calls it when it
-decides for itself that its run is stale, rather than waiting to be told. Cancellation is one way, so there is no call
-that undoes it.
+CRUD handlers also receive `setCancelled`. It raises the same flag from inside the handler, for a run the handler itself
+judges stale. Cancellation is one way, so no API clears the flag.
 
-However the flag is raised, the instance withholds that run's result. `contact.state.object` and
-`contacts.state.objects` stay as they were. No error is stored. The action resolves its failure value, which is `false`
-for most verbs and `null` for `executeAction`. A cancelled run reports that outcome whether the handler rejected or
-resolved anyway.
+Once the flag is true, the instance withholds that run's result. `contact.state.object` and `contacts.state.objects`
+stay as they were. The action stores no error and resolves its cancellation value: `false`, or `null` for
+`executeAction`. That outcome does not depend on whether the handler later resolves or rejects.
 
 This matters most when the transport cannot truly abort. The underlying work may run to completion regardless. Its
 result is still never applied. The latest run owns the screen.
 
-`subscribe` is the exception on both sides. It receives `isCancelled` but not `setCancelled`. A subscription applies its
-events through its own callback, rather than resolving a result for the instance to write. `isCurrentRun` is what a
-stream uses to drop a stale event.
+`subscribe` is different. It receives `isCancelled`, but not `setCancelled`. A subscription writes through callbacks
+rather than through a resolved result, so `isCurrentRun()` is what drops stale stream events.
 
 ## Where the model shows up
 

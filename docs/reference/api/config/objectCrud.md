@@ -44,7 +44,7 @@ The key name of the primary key.
 
 > **setCancelled**: [`SetCancelledFn`](commonCrud.md#setcancelledfn)
 
-Marks this run cancelled from inside the handler, with the same effect as the caller cancelling it.
+Marks this run cancelled from inside the handler.
 
 ##### target
 
@@ -82,7 +82,7 @@ The key name of the primary key.
 
 > **setCancelled**: [`SetCancelledFn`](commonCrud.md#setcancelledfn)
 
-Marks this run cancelled from inside the handler, with the same effect as the caller cancelling it.
+Marks this run cancelled from inside the handler.
 
 ##### target
 
@@ -176,7 +176,7 @@ The key name of the primary key.
 
 > **setCancelled**: [`SetCancelledFn`](commonCrud.md#setcancelledfn)
 
-Marks this run cancelled from inside the handler, with the same effect as the caller cancelling it.
+Marks this run cancelled from inside the handler.
 
 ##### target
 
@@ -310,7 +310,7 @@ The key name of the primary key.
 
 > **setCancelled**: [`SetCancelledFn`](commonCrud.md#setcancelledfn)
 
-Marks this run cancelled from inside the handler, with the same effect as the caller cancelling it.
+Marks this run cancelled from inside the handler.
 
 ##### target
 
@@ -358,7 +358,7 @@ The key name of the primary key.
 
 > **setCancelled**: [`SetCancelledFn`](commonCrud.md#setcancelledfn)
 
-Marks this run cancelled from inside the handler, with the same effect as the caller cancelling it.
+Marks this run cancelled from inside the handler.
 
 ##### target
 
@@ -406,7 +406,7 @@ The key name of the primary key.
 
 > **setCancelled**: [`SetCancelledFn`](commonCrud.md#setcancelledfn)
 
-Marks this run cancelled from inside the handler, with the same effect as the caller cancelling it.
+Marks this run cancelled from inside the handler.
 
 ##### target
 

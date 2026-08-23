@@ -40,7 +40,7 @@ The pks of the objects to be deleted.
 
 > **setCancelled**: [`SetCancelledFn`](commonCrud.md#setcancelledfn)
 
-Marks this run cancelled from inside the handler, with the same effect as the caller cancelling it.
+Marks this run cancelled from inside the handler.
 
 ##### target
 
@@ -94,7 +94,7 @@ The pks of the objects to be acted upon.
 
 > **setCancelled**: [`SetCancelledFn`](commonCrud.md#setcancelledfn)
 
-Marks this run cancelled from inside the handler, with the same effect as the caller cancelling it.
+Marks this run cancelled from inside the handler.
 
 ##### target
 
@@ -144,7 +144,7 @@ The method to call with new page(s) of data received.
 
 > **setCancelled**: [`SetCancelledFn`](commonCrud.md#setcancelledfn)
 
-Marks this run cancelled from inside the handler, with the same effect as the caller cancelling it.
+Marks this run cancelled from inside the handler.
 
 ##### setColumnTotals
 

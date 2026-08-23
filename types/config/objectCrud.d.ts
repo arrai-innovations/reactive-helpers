@@ -68,7 +68,7 @@ export type CreateArgsRaw = {
      */
     isCancelled: Readonly<import("vue").Ref<boolean>>;
     /**
-     * Marks this run cancelled from inside the handler, with the same effect as the caller cancelling it.
+     * Marks this run cancelled from inside the handler.
      */
     setCancelled: import("./commonCrud.js").SetCancelledFn;
 };
@@ -103,7 +103,7 @@ export type RetrieveArgsRaw = {
      */
     isCancelled: Readonly<import("vue").Ref<boolean>>;
     /**
-     * Marks this run cancelled from inside the handler, with the same effect as the caller cancelling it.
+     * Marks this run cancelled from inside the handler.
      */
     setCancelled: import("./commonCrud.js").SetCancelledFn;
 };
@@ -138,7 +138,7 @@ export type UpdateArgsRaw = {
      */
     isCancelled: Readonly<import("vue").Ref<boolean>>;
     /**
-     * Marks this run cancelled from inside the handler, with the same effect as the caller cancelling it.
+     * Marks this run cancelled from inside the handler.
      */
     setCancelled: import("./commonCrud.js").SetCancelledFn;
 };
@@ -167,7 +167,7 @@ export type DeleteArgsRaw = {
      */
     isCancelled: Readonly<import("vue").Ref<boolean>>;
     /**
-     * Marks this run cancelled from inside the handler, with the same effect as the caller cancelling it.
+     * Marks this run cancelled from inside the handler.
      */
     setCancelled: import("./commonCrud.js").SetCancelledFn;
 };
@@ -208,7 +208,7 @@ export type PartialArgsRaw = {
      */
     isCancelled: Readonly<import("vue").Ref<boolean>>;
     /**
-     * Marks this run cancelled from inside the handler, with the same effect as the caller cancelling it.
+     * Marks this run cancelled from inside the handler.
      */
     setCancelled: import("./commonCrud.js").SetCancelledFn;
 };
@@ -241,7 +241,7 @@ export type ObjectExecuteActionArgsRaw = {
      */
     isCancelled: Readonly<import("vue").Ref<boolean>>;
     /**
-     * Marks this run cancelled from inside the handler, with the same effect as the caller cancelling it.
+     * Marks this run cancelled from inside the handler.
      */
     setCancelled: import("./commonCrud.js").SetCancelledFn;
 };

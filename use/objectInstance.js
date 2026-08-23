@@ -79,11 +79,10 @@ import { pkRefIfReactive, refIfReactive } from "../utils/refIfReactive.js";
 /**
  * @typedef {object} KeepObjectOption - Per-call control over whether the instance applies its own result to `state.object`.
  * @property {boolean} [keepObject=false] - When true, the instance leaves `state.object` and `state.deleted` untouched
- *  on success and the caller reconciles them, through `clear` or by writing `state.object` directly. Loading and error
- *  state still update as usual. The option is consumed by the instance and is not forwarded to the crud handler.
+ *  after a successful handler result. The caller reconciles through `clear` or direct state writes. The instance
+ *  consumes the option before calling the crud handler.
  *
- *  `retrieve` returns the in-flight promise when one is already running, and that run keeps the option it started
- *  with. A `keepObject` retrieve that joins a plain one therefore still sees `state.object` written.
+ *  Concurrent `retrieve` calls share the first in-flight promise, including that run's `keepObject` setting.
  */
 
 /**

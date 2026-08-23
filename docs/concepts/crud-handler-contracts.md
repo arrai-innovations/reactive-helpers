@@ -42,8 +42,7 @@ ride along on most verbs:
   side, so do `create`, `retrieve`, `update`, `patch`, and `subscribe`. Object `delete` and object `executeAction` do
   not, since they identify their record by key alone.
 - `isCancelled`: a readonly ref that turns `true` once the run is cancelled. Every verb receives it.
-- `setCancelled`: a function that raises that flag from inside the handler, for a run the handler itself judges stale.
-  Every verb receives it except `subscribe`.
+- `setCancelled`: a function that marks the run cancelled from inside a non-subscribe handler.
 
 The exhaustive shapes live in the generated reference, in [config/listCrud](/reference/api/config/listCrud) and
 [config/objectCrud](/reference/api/config/objectCrud).
@@ -99,16 +98,17 @@ resolved value into `contact.state.object` as a mirror, not a merge. Three conse
 
 `delete` is the exception on the object side. Its resolved value is ignored; resolving means the delete succeeded.
 
-Each of those five verbs takes a `keepObject` option, per call. Pass `keepObject: true` and the instance runs the
-handler, reports success or failure as usual, and writes nothing to `contact.state.object` or `contact.state.deleted`.
-The caller reconciles instead. This is how one registered handler can serve both a real write and a request that must
-leave local state alone. The option is consumed by the instance and never reaches the handler.
+Those five object verbs also take `keepObject: true` per call. The handler still runs and reports success or failure.
+The instance leaves `contact.state.object` and `contact.state.deleted` unchanged, and the caller reconciles instead. The
+instance consumes the option before calling the handler.
 
 The list side never assigns resolved values. Rows enter the instance only through the `pushObjects` callback, and `list`
 resolving means the fetch is complete. A `list` handler that resolves an array of rows changes nothing; the rows are
-silently discarded. `bulkDelete` resolving reports success, after which the instance removes the rows the call named and
-keeps the rest, unless the call passed `keepObjects: true` (see [Bulk delete rows](/guide/bulk-delete-rows) for both
-patterns). Why the two sides treat resolved values differently is the central rule of
+silently discarded.
+
+`bulkDelete` resolving reports success. By default, the instance removes the rows named by the call and keeps the rest.
+Pass `keepObjects: true` to reconcile the list yourself. [Bulk delete rows](/guide/bulk-delete-rows) covers both
+patterns. Why the two sides treat resolved values differently is the central rule of
 [Instances and transport](/concepts/instances-and-transport).
 
 The promise the action itself returns is not your handler's promise. A CRUD action such as `contact.update(...)` or
@@ -150,10 +150,8 @@ differ by side. The model, the contract behind a "working" cancel, and those con
 [Cancellable intents](/concepts/cancellable-intents). `cancellableFetch` and `makeCancellable` build conforming
 promises, and a cooperative handler also re-checks `isCancelled.value` after each `await`.
 
-A cancelled run's result is withheld however the run was cancelled. The instance writes nothing to `state.object` or
-`state.objects`, stores no error, and the action resolves `false`, or `null` for `executeAction`. This holds whether the
-caller called `.cancel`, or the handler called `setCancelled` on itself, and whether the handler then rejected or
-resolved anyway.
+When cancellation reaches a write path, the instance skips the local write. It stores no error and resolves `false`, or
+`null` for `executeAction`. This holds whether the caller used `.cancel()` or the handler called `setCancelled()`.
 
 ## The subscribe handler
 

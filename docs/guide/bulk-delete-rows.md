@@ -41,12 +41,11 @@ the same as any other action. While `contacts.state.loading` is `true`, a new `b
 
 ## What the list does with the deleted rows
 
-On success the instance removes the rows you named from `contacts.state.objects` and leaves the rest in place. The rows
-you kept stay on screen, so a subset delete needs no reload. Omitting `pks` names every loaded row, which empties the
-list.
+On success the instance removes the rows you named from `contacts.state.objects` and leaves the rest in place. A subset
+delete needs no reload. Omitting `pks` names every loaded row, which empties the list.
 
-A pk you name that the list does not hold is ignored. That happens when the delete targets rows outside the loaded page,
-so it reports success rather than an error.
+The list ignores a pk it does not hold. A cross-page delete can name rows outside the loaded page and still report
+success.
 
 Two things the instance does not do for you:
 
@@ -57,9 +56,8 @@ Two things the instance does not do for you:
 
 ### Keep every row and reconcile yourself
 
-Pass `keepObjects: true` when the instance should touch nothing. The request still runs and still reports success or
-failure through `contacts.state.loading`, `contacts.state.error`, and its resolved boolean. You then decide which rows
-go, with `contacts.deleteListObject(pk)`, `contacts.clearList()`, or a reload.
+Pass `keepObjects: true` when the request should not update local rows. The request still reports loading, error, and
+success state. Reconcile with `contacts.deleteListObject(pk)`, `contacts.clearList()`, or a reload.
 
 ```javascript
 const ok = await contacts.bulkDelete({ pks, keepObjects: true });
@@ -68,9 +66,8 @@ if (ok) {
 }
 ```
 
-This is what a pre-flight request needs, such as a server-side validation pass that answers whether the delete would
-succeed. The same registered handler serves both calls, because the instance consumes `keepObjects` itself. It does not
-reach your `bulkDelete` handler, so a handler cannot tell the two call styles apart.
+This fits a validation request or any flow that reconciles from a fresh server response. The instance consumes
+`keepObjects`, so your `bulkDelete` handler does not receive it.
 
 ::: warning
 

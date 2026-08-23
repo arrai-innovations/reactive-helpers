@@ -33,7 +33,7 @@ import { readonly } from "vue";
  * @property {{[key:string]: any}} params - Your listing or retrieval arguments, passed through to the crud handlers.
  * @property {string} pkKey - The key name of the primary key.
  * @property {Readonly<import('vue').Ref<boolean>>} isCancelled - A readonly ref that becomes true once the request is cancelled.
- * @property {import('./commonCrud.js').SetCancelledFn} setCancelled - Marks this run cancelled from inside the handler, with the same effect as the caller cancelling it.
+ * @property {import('./commonCrud.js').SetCancelledFn} setCancelled - Marks this run cancelled from inside the handler.
  */
 
 /**
@@ -47,7 +47,7 @@ import { readonly } from "vue";
  * @property {string} pkKey - The key name of the primary key.
  * @property {{[key:string]: any}} params - Your listing or retrieval arguments, passed through to the crud handlers.
  * @property {Readonly<import('vue').Ref<boolean>>} isCancelled - A readonly ref that becomes true once the request is cancelled.
- * @property {import('./commonCrud.js').SetCancelledFn} setCancelled - Marks this run cancelled from inside the handler, with the same effect as the caller cancelling it.
+ * @property {import('./commonCrud.js').SetCancelledFn} setCancelled - Marks this run cancelled from inside the handler.
  */
 
 /**
@@ -61,7 +61,7 @@ import { readonly } from "vue";
  * @property {{[key:string]: any}} params - Your listing or retrieval arguments, passed through to the crud handlers.
  * @property {string} pkKey - The key name of the primary key.
  * @property {Readonly<import('vue').Ref<boolean>>} isCancelled - A readonly ref that becomes true once the request is cancelled.
- * @property {import('./commonCrud.js').SetCancelledFn} setCancelled - Marks this run cancelled from inside the handler, with the same effect as the caller cancelling it.
+ * @property {import('./commonCrud.js').SetCancelledFn} setCancelled - Marks this run cancelled from inside the handler.
  */
 
 /**
@@ -74,7 +74,7 @@ import { readonly } from "vue";
  * @property {import('./commonCrud.js').Pk} pk - The pk of the object to be acted upon.
  * @property {string} pkKey - The key name of the primary key.
  * @property {Readonly<import('vue').Ref<boolean>>} isCancelled - A readonly ref that becomes true once the request is cancelled.
- * @property {import('./commonCrud.js').SetCancelledFn} setCancelled - Marks this run cancelled from inside the handler, with the same effect as the caller cancelling it.
+ * @property {import('./commonCrud.js').SetCancelledFn} setCancelled - Marks this run cancelled from inside the handler.
  */
 
 /**
@@ -89,7 +89,7 @@ import { readonly } from "vue";
  * @property {{[key:string]: any}} partialObject - The changed fields only.
  * @property {{[key:string]: any}} params - Your listing or retrieval arguments, passed through to the crud handlers.
  * @property {Readonly<import('vue').Ref<boolean>>} isCancelled - A readonly ref that becomes true once the request is cancelled.
- * @property {import('./commonCrud.js').SetCancelledFn} setCancelled - Marks this run cancelled from inside the handler, with the same effect as the caller cancelling it.
+ * @property {import('./commonCrud.js').SetCancelledFn} setCancelled - Marks this run cancelled from inside the handler.
  */
 /**
  * @typedef {PartialArgsRaw & AdditionalCrudArgs} PartialArgs - Arguments for an object patch (partial update) operation, combining the raw arguments with any additional CRUD arguments.
@@ -102,7 +102,7 @@ import { readonly } from "vue";
  * @property {string} pkKey - The key name of the primary key.
  * @property {string} action - The action to execute.
  * @property {Readonly<import('vue').Ref<boolean>>} isCancelled - A readonly ref that becomes true once the request is cancelled.
- * @property {import('./commonCrud.js').SetCancelledFn} setCancelled - Marks this run cancelled from inside the handler, with the same effect as the caller cancelling it.
+ * @property {import('./commonCrud.js').SetCancelledFn} setCancelled - Marks this run cancelled from inside the handler.
  */
 
 /**
