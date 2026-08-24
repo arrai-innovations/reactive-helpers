@@ -2,6 +2,29 @@
 
 _Actions potentially required by implementers are marked with italics._
 
+## v24.1.0 (Unreleased)
+
+### Fixes
+
+- Cancelled instance actions no longer apply resolved results to local state. This covers object `create`, `retrieve`,
+  `update`, `patch`, and `delete`. It also covers list `bulkDelete` and both `executeAction` variants. _A cancelled
+  action resolves `false`, or `null` for `executeAction`, and stores no error. Check `state.errored` when you need to
+  distinguish cancellation from failure._
+
+- CRUD handlers can now call `setCancelled()` to mark their own run stale. The instance passes the callback beside
+  `isCancelled` on every non-subscribe verb. `subscribe` still uses `isCurrentRun()` to drop stale events.
+
+- `listInstance.bulkDelete({ pks })` now removes only the named loaded rows. Omitting `pks` still removes every loaded
+  row. The list ignores named pks outside the current list. _Remove `list()` reloads that existed only to restore
+  unnamed rows. Keep the reload when pagination totals must refresh or the server may delete extra rows._
+
+### Additions
+
+- Instance actions that write local state now have a per-call way to suppress that write. `listInstance.bulkDelete`
+  takes `keepObjects`; object `create`, `retrieve`, `update`, `patch`, and `delete` take `keepObject`. The action still
+  runs the handler. It reports loading, success, and error state as usual. _The instance consumes the option, so
+  handlers do not receive it. Nothing changes for calls that omit it._
+
 ## v24.0.0 (2026-08-22)
 
 ### Breaking Changes

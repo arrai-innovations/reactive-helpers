@@ -42,6 +42,7 @@ ride along on most verbs:
   side, so do `create`, `retrieve`, `update`, `patch`, and `subscribe`. Object `delete` and object `executeAction` do
   not, since they identify their record by key alone.
 - `isCancelled`: a readonly ref that turns `true` once the run is cancelled. Every verb receives it.
+- `setCancelled`: a function that marks the run cancelled from inside a non-subscribe handler.
 
 The exhaustive shapes live in the generated reference, in [config/listCrud](/reference/api/config/listCrud) and
 [config/objectCrud](/reference/api/config/objectCrud).
@@ -97,11 +98,18 @@ resolved value into `contact.state.object` as a mirror, not a merge. Three conse
 
 `delete` is the exception on the object side. Its resolved value is ignored; resolving means the delete succeeded.
 
+Those five object verbs also take `keepObject: true` per call. The handler still runs and reports success or failure.
+The instance leaves `contact.state.object` and `contact.state.deleted` unchanged, and the caller reconciles instead. The
+instance consumes the option before calling the handler.
+
 The list side never assigns resolved values. Rows enter the instance only through the `pushObjects` callback, and `list`
 resolving means the fetch is complete. A `list` handler that resolves an array of rows changes nothing; the rows are
-silently discarded. `bulkDelete` resolving reports success, after which the instance empties the list (see
-[Bulk delete rows](/guide/bulk-delete-rows) for the reload pattern that follows). Why the two sides treat resolved
-values differently is the central rule of [Instances and transport](/concepts/instances-and-transport).
+silently discarded.
+
+`bulkDelete` resolving reports success. By default, the instance removes the rows named by the call and keeps the rest.
+Pass `keepObjects: true` to reconcile the list yourself. [Bulk delete rows](/guide/bulk-delete-rows) covers both
+patterns. Why the two sides treat resolved values differently is the central rule of
+[Instances and transport](/concepts/instances-and-transport).
 
 The promise the action itself returns is not your handler's promise. A CRUD action such as `contact.update(...)` or
 `contacts.list()` resolves `true` on success and `false` on a stored failure. `executeAction` is the exception on both
@@ -141,6 +149,9 @@ cancelled only if its promise carries a working `.cancel`. A plain promise runs 
 differ by side. The model, the contract behind a "working" cancel, and those consequences are covered in
 [Cancellable intents](/concepts/cancellable-intents). `cancellableFetch` and `makeCancellable` build conforming
 promises, and a cooperative handler also re-checks `isCancelled.value` after each `await`.
+
+When cancellation reaches a write path, the instance skips the local write. It stores no error and resolves `false`, or
+`null` for `executeAction`. This holds whether the caller used `.cancel()` or the handler called `setCancelled()`.
 
 ## The subscribe handler
 

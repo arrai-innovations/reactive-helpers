@@ -36,6 +36,12 @@ The key name of the primary key.
 
 The pks of the objects to be deleted.
 
+##### setCancelled
+
+> **setCancelled**: [`SetCancelledFn`](commonCrud.md#setcancelledfn)
+
+Marks this run cancelled from inside the handler.
+
 ##### target
 
 > **target**: [`TargetArgs`](objectCrud.md#targetargs)
@@ -84,6 +90,12 @@ The key name of the primary key.
 
 The pks of the objects to be acted upon.
 
+##### setCancelled
+
+> **setCancelled**: [`SetCancelledFn`](commonCrud.md#setcancelledfn)
+
+Marks this run cancelled from inside the handler.
+
 ##### target
 
 > **target**: [`TargetArgs`](objectCrud.md#targetargs)
@@ -127,6 +139,12 @@ The key name of the primary key.
 > **pushObjects**: [`PushObjectsFn`](../use/listInstance.md#pushobjectsfn)
 
 The method to call with new page(s) of data received.
+
+##### setCancelled
+
+> **setCancelled**: [`SetCancelledFn`](commonCrud.md#setcancelledfn)
+
+Marks this run cancelled from inside the handler.
 
 ##### setColumnTotals
 

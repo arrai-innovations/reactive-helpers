@@ -77,12 +77,21 @@ import { pkRefIfReactive, refIfReactive } from "../utils/refIfReactive.js";
  */
 
 /**
+ * @typedef {object} KeepObjectOption - Per-call control over whether the instance applies its own result to `state.object`.
+ * @property {boolean} [keepObject=false] - When true, the instance leaves `state.object` and `state.deleted` untouched
+ *  after a successful handler result. The caller reconciles through `clear` or direct state writes. The instance
+ *  consumes the option before calling the crud handler.
+ *
+ *  Concurrent `retrieve` calls share the first in-flight promise, including that run's `keepObject` setting.
+ */
+
+/**
  * @typedef {object} ObjectInstanceMyFunctions - The functions available on the object instance.
- * @property {(args: ObjectInstanceCreateArgs & AdditionalArgs) => import('../utils/cancellablePromise.js').MaybeCancellablePromise<boolean|never>} create - Called to turn the current object into a new object on the server.
- * @property {(args?: Partial<import('./cancellableIntent.js').CommonRunTracking> & AdditionalArgs) => import('../utils/cancellablePromise.js').MaybeCancellablePromise<boolean|never>} retrieve - Called to retrieve the current object by pk from the server.
- * @property {(args: ObjectInstanceUpdateArgs & AdditionalArgs) => import('../utils/cancellablePromise.js').MaybeCancellablePromise<boolean|never>} update - Called to update the current object on the server.
- * @property {(args?: AdditionalArgs) => import('../utils/cancellablePromise.js').MaybeCancellablePromise<boolean|never>} delete - Called to delete the current object on the server.
- * @property {(args: ObjectInstancePatchArgs & AdditionalArgs) => import('../utils/cancellablePromise.js').MaybeCancellablePromise<boolean|never>} patch - Called to patch the current object on the server.
+ * @property {(args: ObjectInstanceCreateArgs & KeepObjectOption & AdditionalArgs) => import('../utils/cancellablePromise.js').MaybeCancellablePromise<boolean|never>} create - Called to turn the current object into a new object on the server.
+ * @property {(args?: Partial<import('./cancellableIntent.js').CommonRunTracking> & KeepObjectOption & AdditionalArgs) => import('../utils/cancellablePromise.js').MaybeCancellablePromise<boolean|never>} retrieve - Called to retrieve the current object by pk from the server.
+ * @property {(args: ObjectInstanceUpdateArgs & KeepObjectOption & AdditionalArgs) => import('../utils/cancellablePromise.js').MaybeCancellablePromise<boolean|never>} update - Called to update the current object on the server.
+ * @property {(args?: KeepObjectOption & AdditionalArgs) => import('../utils/cancellablePromise.js').MaybeCancellablePromise<boolean|never>} delete - Called to delete the current object on the server.
+ * @property {(args: ObjectInstancePatchArgs & KeepObjectOption & AdditionalArgs) => import('../utils/cancellablePromise.js').MaybeCancellablePromise<boolean|never>} patch - Called to patch the current object on the server.
  * @property {(args: {action: string} & AdditionalArgs) => import('../utils/cancellablePromise.js').MaybeCancellablePromise<object|string|void|null>} executeAction - Called to execute certain action on the current object. Resolves the handler's own resolved value, or `null` when the action failed.
  * @property {() => void} clear - Called to clear the object state.
  */
@@ -258,7 +267,7 @@ export function useObjectInstance({ props, handlers = {} }) {
     /** @type {ObjectInstance} */
     const instance = {
         state,
-        create: ({ object, ...additionalArgs }) => {
+        create: ({ object, keepObject = false, ...additionalArgs }) => {
             // this function cannot be async, or the resulting promise will lose its .cancel() method
             if (state.loading) {
                 // we throw because we want devs to see this error in the console
@@ -268,6 +277,9 @@ export function useObjectInstance({ props, handlers = {} }) {
             loadingError.setLoading();
             loadingError.clearError();
             const isCancelled = ref(false);
+            const setCancelled = () => {
+                isCancelled.value = true;
+            };
             let createPromise = null;
             try {
                 createPromise = state.crud.create({
@@ -277,6 +289,7 @@ export function useObjectInstance({ props, handlers = {} }) {
                     params: state.params,
                     pkKey: state.pkKey,
                     isCancelled: readonly(isCancelled),
+                    setCancelled,
                 });
                 assertHandlerPromise(createPromise, ObjectError, "create");
             } catch (error) {
@@ -288,8 +301,13 @@ export function useObjectInstance({ props, handlers = {} }) {
             return wrapMaybeCancellable(
                 createPromise
                     .then((/** @type {ExistingCrudObject} */ object) => {
-                        assignReactiveObject(state.object, object);
-                        state.deleted = false;
+                        if (isCancelled.value) {
+                            return false;
+                        }
+                        if (!keepObject) {
+                            assignReactiveObject(state.object, object);
+                            state.deleted = false;
+                        }
                         return true;
                     })
                     .catch((/** @type {Error} */ error) => {
@@ -311,7 +329,7 @@ export function useObjectInstance({ props, handlers = {} }) {
                     : undefined
             );
         },
-        retrieve: (args = {}) => {
+        retrieve: ({ keepObject = false, ...args } = {}) => {
             // this function cannot be async, or the resulting promise will lose its .cancel() method
             if (promises.retrieve) {
                 // if a retrieve is already in progress, return the existing promise
@@ -326,6 +344,9 @@ export function useObjectInstance({ props, handlers = {} }) {
             loadingError.setLoading();
             loadingError.clearError();
             const isCancelled = ref(false);
+            const setCancelled = () => {
+                isCancelled.value = true;
+            };
             let retrievePromise = null;
             try {
                 retrievePromise = state.crud.retrieve({
@@ -335,6 +356,7 @@ export function useObjectInstance({ props, handlers = {} }) {
                     params: state.params,
                     pkKey: state.pkKey,
                     isCancelled: readonly(isCancelled),
+                    setCancelled,
                 });
                 assertHandlerPromise(retrievePromise, ObjectError, "retrieve");
             } catch (error) {
@@ -346,8 +368,13 @@ export function useObjectInstance({ props, handlers = {} }) {
             promises.retrieve = wrapMaybeCancellable(
                 retrievePromise
                     .then((/** @type {ExistingCrudObject} */ object) => {
-                        assignReactiveObject(state.object, object);
-                        state.deleted = false;
+                        if (isCancelled.value) {
+                            return false;
+                        }
+                        if (!keepObject) {
+                            assignReactiveObject(state.object, object);
+                            state.deleted = false;
+                        }
                         return true;
                     })
                     .catch((/** @type {Error} */ error) => {
@@ -372,7 +399,7 @@ export function useObjectInstance({ props, handlers = {} }) {
 
             return promises.retrieve;
         },
-        update: ({ object, ...additionalArgs }) => {
+        update: ({ object, keepObject = false, ...additionalArgs }) => {
             // this function cannot be async, or the resulting promise will lose its .cancel() method
             if (state.loading) {
                 // we throw because we want devs to see this error in the console
@@ -382,6 +409,9 @@ export function useObjectInstance({ props, handlers = {} }) {
             loadingError.setLoading();
             loadingError.clearError();
             const isCancelled = ref(false);
+            const setCancelled = () => {
+                isCancelled.value = true;
+            };
             let updatePromise = null;
             try {
                 updatePromise = state.crud.update({
@@ -391,6 +421,7 @@ export function useObjectInstance({ props, handlers = {} }) {
                     params: state.params,
                     pkKey: state.pkKey,
                     isCancelled: readonly(isCancelled),
+                    setCancelled,
                 });
                 assertHandlerPromise(updatePromise, ObjectError, "update");
             } catch (error) {
@@ -401,8 +432,13 @@ export function useObjectInstance({ props, handlers = {} }) {
             return wrapMaybeCancellable(
                 updatePromise
                     .then((/** @type {ExistingCrudObject} */ object) => {
-                        assignReactiveObject(state.object, object);
-                        state.deleted = false;
+                        if (isCancelled.value) {
+                            return false;
+                        }
+                        if (!keepObject) {
+                            assignReactiveObject(state.object, object);
+                            state.deleted = false;
+                        }
                         return true;
                     })
                     .catch((/** @type {Error} */ error) => {
@@ -424,7 +460,7 @@ export function useObjectInstance({ props, handlers = {} }) {
                     : undefined
             );
         },
-        delete: (args = {}) => {
+        delete: ({ keepObject = false, ...args } = {}) => {
             // this function cannot be async, or the resulting promise will lose its .cancel() method
             if (state.loading) {
                 // we throw because we want devs to see this error in the console
@@ -434,6 +470,9 @@ export function useObjectInstance({ props, handlers = {} }) {
             loadingError.setLoading();
             loadingError.clearError();
             const isCancelled = ref(false);
+            const setCancelled = () => {
+                isCancelled.value = true;
+            };
             let deletePromise = null;
             try {
                 deletePromise = state.crud.delete({
@@ -442,6 +481,7 @@ export function useObjectInstance({ props, handlers = {} }) {
                     pk: state.pk,
                     pkKey: state.pkKey,
                     isCancelled: readonly(isCancelled),
+                    setCancelled,
                 });
                 assertHandlerPromise(deletePromise, ObjectError, "delete");
             } catch (error) {
@@ -452,8 +492,13 @@ export function useObjectInstance({ props, handlers = {} }) {
             return wrapMaybeCancellable(
                 deletePromise
                     .then(() => {
-                        state.deleted = true;
-                        assignReactiveObject(state.object, {});
+                        if (isCancelled.value) {
+                            return false;
+                        }
+                        if (!keepObject) {
+                            state.deleted = true;
+                            assignReactiveObject(state.object, {});
+                        }
                         return true;
                     })
                     .catch((/** @type {Error} */ error) => {
@@ -475,7 +520,7 @@ export function useObjectInstance({ props, handlers = {} }) {
                     : undefined
             );
         },
-        patch: ({ partialObject, ...additionalArgs }) => {
+        patch: ({ partialObject, keepObject = false, ...additionalArgs }) => {
             // this function cannot be async, or the resulting promise will lose its .cancel() method
             if (state.loading) {
                 // we throw because we want devs to see this error in the console
@@ -485,6 +530,9 @@ export function useObjectInstance({ props, handlers = {} }) {
             loadingError.setLoading();
             loadingError.clearError();
             const isCancelled = ref(false);
+            const setCancelled = () => {
+                isCancelled.value = true;
+            };
             let patchPromise = null;
             try {
                 patchPromise = state.crud.patch({
@@ -495,6 +543,7 @@ export function useObjectInstance({ props, handlers = {} }) {
                     pkKey: state.pkKey,
                     params: state.params,
                     isCancelled: readonly(isCancelled),
+                    setCancelled,
                 });
                 assertHandlerPromise(patchPromise, ObjectError, "patch");
             } catch (error) {
@@ -505,8 +554,13 @@ export function useObjectInstance({ props, handlers = {} }) {
             return wrapMaybeCancellable(
                 patchPromise
                     .then((/** @type {ExistingCrudObject} */ object) => {
-                        assignReactiveObject(state.object, object);
-                        state.deleted = false;
+                        if (isCancelled.value) {
+                            return false;
+                        }
+                        if (!keepObject) {
+                            assignReactiveObject(state.object, object);
+                            state.deleted = false;
+                        }
                         return true;
                     })
                     .catch((/** @type {Error} */ error) => {
@@ -535,6 +589,9 @@ export function useObjectInstance({ props, handlers = {} }) {
             loadingError.setLoading();
             loadingError.clearError();
             const isCancelled = ref(false);
+            const setCancelled = () => {
+                isCancelled.value = true;
+            };
             let executeActionPromise = null;
             try {
                 executeActionPromise = state.crud.executeAction({
@@ -544,6 +601,7 @@ export function useObjectInstance({ props, handlers = {} }) {
                     pk: state.pk,
                     pkKey: state.pkKey,
                     isCancelled: readonly(isCancelled),
+                    setCancelled,
                 });
                 assertHandlerPromise(executeActionPromise, ObjectError, "executeAction");
             } catch (error) {
@@ -555,6 +613,9 @@ export function useObjectInstance({ props, handlers = {} }) {
             return wrapMaybeCancellable(
                 executeActionPromise
                     .then((/** @type {object|string|void} */ responseData) => {
+                        if (isCancelled.value) {
+                            return null;
+                        }
                         return responseData;
                     })
                     .catch((/** @type {Error} */ error) => {

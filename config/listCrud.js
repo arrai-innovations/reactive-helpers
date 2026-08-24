@@ -32,6 +32,7 @@ import { readonly } from "vue";
  * @property {import("../use/listInstance.js").PushObjectsFn} pushObjects - The method to call with new page(s) of data received.
  * @property {ClearObjectsFn} clearObjects - The method to call to clear the objects.
  * @property {Readonly<import('vue').Ref<boolean>>} isCancelled - A readonly ref that becomes true once the request is cancelled.
+ * @property {import('./commonCrud.js').SetCancelledFn} setCancelled - Marks this run cancelled from inside the handler.
  * @property {SetPaginateInfo} setPaginateInfo - The method to update pagination information.
  * @property {SetColumnTotals} setColumnTotals - The method to update column totals.
  */
@@ -47,6 +48,7 @@ import { readonly } from "vue";
  * @property {string} pkKey - The key name of the primary key.
  * @property {{[key:string]: any}} params - Your listing arguments, passed through to the crud handlers.
  * @property {Readonly<import('vue').Ref<boolean>>} isCancelled - A readonly ref that becomes true once the request is cancelled.
+ * @property {import('./commonCrud.js').SetCancelledFn} setCancelled - Marks this run cancelled from inside the handler.
  */
 
 /**
@@ -81,6 +83,7 @@ import { readonly } from "vue";
  * @property {string} action - The action to execute.
  * @property {{[key:string]: any}} params - Your listing arguments, passed through to the crud handlers.
  * @property {Readonly<import('vue').Ref<boolean>>} isCancelled - A readonly ref that becomes true once the request is cancelled.
+ * @property {import('./commonCrud.js').SetCancelledFn} setCancelled - Marks this run cancelled from inside the handler.
  */
 
 /**
@@ -99,7 +102,8 @@ import { readonly } from "vue";
  * @callback CrudBulkDeleteFn - Signature for the handler that bulk-deletes objects from the backing store.
  * @param {BulkDeleteArgs} args - The arguments to be passed to the crud handlers.
  * @returns {import('../utils/cancellablePromise.js').MaybeCancellablePromise<boolean>} - A promise whose resolution
- *  means the bulk delete succeeded; the resolved value is not inspected, and the instance then empties the list.
+ *  means the bulk delete succeeded; the resolved value is not inspected, and the instance then removes the named rows
+ *  from the list.
  *  Carry a `cancel` method to let the caller abandon the run.
  */
 

@@ -176,6 +176,7 @@ describe("use/objectInstance.js", function () {
                 pkKey: "id",
                 params: { fields: ["id", "__str__", "name"] },
                 isCancelled: expect.any(Object),
+                setCancelled: expect.any(Function),
             });
             expect(objectInstance.state.crud.retrieve).toHaveBeenCalledTimes(1);
             expect(isRef(objectInstance.state.crud.retrieve.mock.calls[0][0].isCancelled)).toBe(true);
@@ -224,6 +225,7 @@ describe("use/objectInstance.js", function () {
                 pkKey: "unique",
                 params: { fields: ["id", "__str__", "name"] },
                 isCancelled: expect.any(Object),
+                setCancelled: expect.any(Function),
             });
             expect(objectInstance.state.crud.retrieve).toHaveBeenCalledTimes(1);
             expect(isRef(objectInstance.state.crud.retrieve.mock.calls[0][0].isCancelled)).toBe(true);
@@ -253,6 +255,7 @@ describe("use/objectInstance.js", function () {
                 pkKey: "id",
                 params: { fields: ["id", "__str__", "name"] },
                 isCancelled: expect.any(Object),
+                setCancelled: expect.any(Function),
             });
             expect(objectInstance.state.crud.retrieve).toHaveBeenCalledTimes(1);
             expect(isRef(objectInstance.state.crud.retrieve.mock.calls[0][0].isCancelled)).toBe(true);
@@ -297,6 +300,7 @@ describe("use/objectInstance.js", function () {
                 pkKey: "id",
                 params: { fields: ["id", "__str__", "name"] },
                 isCancelled: expect.any(Object),
+                setCancelled: expect.any(Function),
             });
             expect(objectInstance.state.crud.retrieve).toHaveBeenCalledTimes(1);
             const returnValue = await oiRetrieveResolve;
@@ -341,6 +345,7 @@ describe("use/objectInstance.js", function () {
                 pkKey: "id",
                 params: { fields: ["id", "__str__", "name"] },
                 isCancelled: expect.any(Object),
+                setCancelled: expect.any(Function),
             });
             expect(objectInstance.state.crud.retrieve).toHaveBeenCalledTimes(1);
             expect(isRef(objectInstance.state.crud.retrieve.mock.calls[0][0].isCancelled)).toBe(true);
@@ -425,6 +430,7 @@ describe("use/objectInstance.js", function () {
                 pkKey: "pk",
                 params: { fields: ["id", "__str__", "name"] },
                 isCancelled: expect.any(Object),
+                setCancelled: expect.any(Function),
             });
             expect(objectInstance.state.crud.retrieve).toHaveBeenCalledTimes(1);
             expect(isRef(objectInstance.state.crud.retrieve.mock.calls[0][0].isCancelled)).toBe(true);
@@ -490,6 +496,7 @@ describe("use/objectInstance.js", function () {
                 pkKey: "id",
                 params: { fields: ["id", "__str__", "name"] },
                 isCancelled: expect.any(Object),
+                setCancelled: expect.any(Function),
             });
             expect(objectInstance.state.crud.retrieve).toHaveBeenCalledTimes(1);
             expect(isRef(objectInstance.state.crud.retrieve.mock.calls[0][0].isCancelled)).toBe(true);
@@ -588,6 +595,7 @@ describe("use/objectInstance.js", function () {
                 pkKey: "id",
                 params: { fields: ["id", "__str__", "name"] },
                 isCancelled: expect.any(Object),
+                setCancelled: expect.any(Function),
                 fields,
             });
             expect(objectInstance.state.crud.create).toHaveBeenCalledTimes(1);
@@ -630,6 +638,7 @@ describe("use/objectInstance.js", function () {
                 pkKey: "id",
                 params: { fields: ["id", "__str__", "name"] },
                 isCancelled: expect.any(Object),
+                setCancelled: expect.any(Function),
             });
             expect(objectInstance.state.crud.create).toHaveBeenCalledTimes(1);
             expect(isRef(objectInstance.state.crud.create.mock.calls[0][0].isCancelled)).toBe(true);
@@ -682,6 +691,7 @@ describe("use/objectInstance.js", function () {
                 },
                 params: { fields: ["id", "__str__", "name"] },
                 isCancelled: expect.any(Object),
+                setCancelled: expect.any(Function),
             });
             expect(objectInstance.state.crud.create).toHaveBeenCalledTimes(1);
             expect(isRef(objectInstance.state.crud.create.mock.calls[0][0].isCancelled)).toBe(true);
@@ -738,6 +748,7 @@ describe("use/objectInstance.js", function () {
                 pkKey: "unique",
                 params: { fields: ["id", "__str__", "name"] },
                 isCancelled: expect.any(Object),
+                setCancelled: expect.any(Function),
                 fields,
             });
             expect(objectInstance.state.crud.create).toHaveBeenCalledTimes(1);
@@ -794,6 +805,7 @@ describe("use/objectInstance.js", function () {
                 },
                 params: { fields: ["id", "__str__", "name"] },
                 isCancelled: expect.any(Object),
+                setCancelled: expect.any(Function),
                 fields,
             });
             expect(objectInstance.state.crud.create).toHaveBeenCalledTimes(1);
@@ -851,6 +863,7 @@ describe("use/objectInstance.js", function () {
                 params: { fields: ["id", "__str__", "name"] },
                 fields,
                 isCancelled: expect.any(Object),
+                setCancelled: expect.any(Function),
             });
             expect(objectInstance.state.crud.create).toHaveBeenCalledTimes(1);
             expect(isRef(objectInstance.state.crud.create.mock.calls[0][0].isCancelled)).toBe(true);
@@ -898,6 +911,7 @@ describe("use/objectInstance.js", function () {
                 },
                 params: { fields: ["id", "__str__", "name"] },
                 isCancelled: expect.any(Object),
+                setCancelled: expect.any(Function),
             });
             expect(objectInstance.state.crud.create).toHaveBeenCalledTimes(1);
             expect(isRef(objectInstance.state.crud.create.mock.calls[0][0].isCancelled)).toBe(true);
@@ -990,6 +1004,7 @@ describe("use/objectInstance.js", function () {
                 },
                 params: { fields: ["id", "__str__", "name"] },
                 isCancelled: expect.any(Object),
+                setCancelled: expect.any(Function),
             });
             expect(objectInstance.state.crud.update).toHaveBeenCalledTimes(1);
             expect(isRef(objectInstance.state.crud.update.mock.calls[0][0].isCancelled)).toBe(true);
@@ -1031,6 +1046,7 @@ describe("use/objectInstance.js", function () {
                 },
                 params: { fields: ["id", "__str__", "name"] },
                 isCancelled: expect.any(Object),
+                setCancelled: expect.any(Function),
             });
             expect(objectInstance.state.crud.update).toHaveBeenCalledTimes(1);
             expect(isRef(objectInstance.state.crud.update.mock.calls[0][0].isCancelled)).toBe(true);
@@ -1086,6 +1102,7 @@ describe("use/objectInstance.js", function () {
                 },
                 params: { fields: ["id", "__str__", "name"] },
                 isCancelled: expect.any(Object),
+                setCancelled: expect.any(Function),
             });
             expect(objectInstance.state.crud.update).toHaveBeenCalledTimes(1);
             expect(isRef(objectInstance.state.crud.update.mock.calls[0][0].isCancelled)).toBe(true);
@@ -1141,6 +1158,7 @@ describe("use/objectInstance.js", function () {
                 },
                 params: { fields: ["id", "__str__", "name"] },
                 isCancelled: expect.any(Object),
+                setCancelled: expect.any(Function),
             });
             expect(objectInstance.state.crud.update).toHaveBeenCalledTimes(1);
             expect(isRef(objectInstance.state.crud.update.mock.calls[0][0].isCancelled)).toBe(true);
@@ -1196,6 +1214,7 @@ describe("use/objectInstance.js", function () {
                 },
                 params: { fields: ["id", "__str__", "name"] },
                 isCancelled: expect.any(Object),
+                setCancelled: expect.any(Function),
             });
             expect(objectInstance.state.crud.update).toHaveBeenCalledTimes(1);
             expect(isRef(objectInstance.state.crud.update.mock.calls[0][0].isCancelled)).toBe(true);
@@ -1251,6 +1270,7 @@ describe("use/objectInstance.js", function () {
                 },
                 params: { fields: ["id", "__str__", "name"] },
                 isCancelled: expect.any(Object),
+                setCancelled: expect.any(Function),
             });
             expect(objectInstance.state.crud.update).toHaveBeenCalledTimes(1);
             expect(isRef(objectInstance.state.crud.update.mock.calls[0][0].isCancelled)).toBe(true);
@@ -1303,6 +1323,7 @@ describe("use/objectInstance.js", function () {
                 },
                 params: { fields: ["id", "__str__", "name"] },
                 isCancelled: expect.any(Object),
+                setCancelled: expect.any(Function),
             });
             expect(objectInstance.state.crud.update).toHaveBeenCalledTimes(1);
             expect(isRef(objectInstance.state.crud.update.mock.calls[0][0].isCancelled)).toBe(true);
@@ -1450,6 +1471,7 @@ describe("use/objectInstance.js", function () {
                 },
                 params: { fields: ["id", "__str__", "name"] },
                 isCancelled: expect.any(Object),
+                setCancelled: expect.any(Function),
             });
             expect(objectInstance.state.crud.patch).toHaveBeenCalledTimes(1);
             expect(isRef(objectInstance.state.crud.patch.mock.calls[0][0].isCancelled)).toBe(true);
@@ -1492,6 +1514,7 @@ describe("use/objectInstance.js", function () {
                 },
                 params: { fields: ["id", "__str__", "name"] },
                 isCancelled: expect.any(Object),
+                setCancelled: expect.any(Function),
             });
             expect(objectInstance.state.crud.patch).toHaveBeenCalledTimes(1);
             expect(isRef(objectInstance.state.crud.patch.mock.calls[0][0].isCancelled)).toBe(true);
@@ -1550,6 +1573,7 @@ describe("use/objectInstance.js", function () {
                 },
                 params: { fields: ["id", "__str__", "name"] },
                 isCancelled: expect.any(Object),
+                setCancelled: expect.any(Function),
             });
             expect(objectInstance.state.crud.patch).toHaveBeenCalledTimes(1);
             expect(isRef(objectInstance.state.crud.patch.mock.calls[0][0].isCancelled)).toBe(true);
@@ -1606,6 +1630,7 @@ describe("use/objectInstance.js", function () {
                 },
                 params: { fields: ["id", "__str__", "name"] },
                 isCancelled: expect.any(Object),
+                setCancelled: expect.any(Function),
             });
             expect(objectInstance.state.crud.patch).toHaveBeenCalledTimes(1);
             expect(isRef(objectInstance.state.crud.patch.mock.calls[0][0].isCancelled)).toBe(true);
@@ -1662,6 +1687,7 @@ describe("use/objectInstance.js", function () {
                 },
                 params: { fields: ["id", "__str__", "name"] },
                 isCancelled: expect.any(Object),
+                setCancelled: expect.any(Function),
             });
             expect(objectInstance.state.crud.patch).toHaveBeenCalledTimes(1);
             expect(isRef(objectInstance.state.crud.patch.mock.calls[0][0].isCancelled)).toBe(true);
@@ -1707,6 +1733,7 @@ describe("use/objectInstance.js", function () {
                 },
                 params: { fields: ["id", "__str__", "name"] },
                 isCancelled: expect.any(Object),
+                setCancelled: expect.any(Function),
             });
             expect(objectInstance.state.crud.patch).toHaveBeenCalledTimes(1);
             expect(isRef(objectInstance.state.crud.patch.mock.calls[0][0].isCancelled)).toBe(true);
@@ -1794,6 +1821,7 @@ describe("use/objectInstance.js", function () {
                 pk: "1",
                 pkKey: "id",
                 isCancelled: expect.any(Object),
+                setCancelled: expect.any(Function),
                 action: "foo",
                 dryRun: true,
             });
@@ -1849,6 +1877,7 @@ describe("use/objectInstance.js", function () {
                 pk: "1",
                 pkKey: "id",
                 isCancelled: expect.any(Object),
+                setCancelled: expect.any(Function),
                 action: "foo",
             });
             expect(objectInstance.state.crud.executeAction).toHaveBeenCalledTimes(1);
@@ -1894,6 +1923,7 @@ describe("use/objectInstance.js", function () {
                 pk: "1",
                 pkKey: "id",
                 isCancelled: expect.any(Object),
+                setCancelled: expect.any(Function),
                 action: "foo",
             });
             expect(objectInstance.state.crud.executeAction).toHaveBeenCalledTimes(1);
@@ -1923,6 +1953,7 @@ describe("use/objectInstance.js", function () {
                 pk: "1",
                 pkKey: "id",
                 isCancelled: expect.any(Object),
+                setCancelled: expect.any(Function),
                 action: "foo",
             });
             expect(objectInstance.state.crud.executeAction).toHaveBeenCalledTimes(1);
@@ -1956,6 +1987,189 @@ describe("use/objectInstance.js", function () {
             expect(cancelFnCalled).toBe(true);
             expect(unref(objectInstance.state.crud.executeAction.mock.calls[0][0].isCancelled)).toBe(true);
             expect(objectInstance.state.loading).toBe(false);
+        });
+    });
+    describe("cancelled runs withhold their result", function () {
+        const makeInstance = () =>
+            useObjectInstance({
+                props: {
+                    target: { stream: "test_stream" },
+                    pk: ref(1),
+                    pkKey: "id",
+                    params: reactive({ fields }),
+                },
+            });
+        describe.each([
+            ["retrieve", (objectInstance) => objectInstance.retrieve(), crudRetrieveResolved],
+            ["create", (objectInstance) => objectInstance.create({ object: { name: "new" } }), crudCreateResolved],
+            ["update", (objectInstance) => objectInstance.update({ object: crudUpdateResolved }), crudUpdateResolved],
+            ["patch", (objectInstance) => objectInstance.patch({ partialObject: { name: "p" } }), crudPatchResolved],
+        ])("%s", function (verb, call, resolved) {
+            scopedIt("leaves state.object untouched when the handler cancels itself", async function () {
+                const objectInstance = makeInstance();
+                assignReactiveObject(objectInstance.state.object, crudRetrieveResolvedNonStandardPrimaryKey);
+                objectInstance.state.crud[verb] = vi.fn(({ setCancelled }) => {
+                    setCancelled();
+                    return Promise.resolve(resolved);
+                });
+
+                await expect(call(objectInstance)).resolves.toBe(false);
+
+                expect({ ...objectInstance.state.object }).toEqual(crudRetrieveResolvedNonStandardPrimaryKey);
+                expect(objectInstance.state.errored).toBe(false);
+                expect(objectInstance.state.error).toBeNullError();
+                expect(objectInstance.state.loading).toBe(false);
+            });
+        });
+        scopedIt("delete leaves the object in place when the handler cancels itself", async function () {
+            const objectInstance = makeInstance();
+            assignReactiveObject(objectInstance.state.object, crudRetrieveResolved);
+            objectInstance.state.crud.delete = vi.fn(({ setCancelled }) => {
+                setCancelled();
+                return Promise.resolve(crudDeleteResolved);
+            });
+
+            await expect(objectInstance.delete()).resolves.toBe(false);
+
+            expect({ ...objectInstance.state.object }).toEqual(crudRetrieveResolved);
+            expect(objectInstance.state.deleted).toBe(false);
+            expect(objectInstance.state.errored).toBe(false);
+            expect(objectInstance.state.error).toBeNullError();
+        });
+        scopedIt("delete leaves the object in place when the caller cancelled first", async function () {
+            const objectInstance = makeInstance();
+            assignReactiveObject(objectInstance.state.object, crudRetrieveResolved);
+            /** @type {(value: any) => void} */
+            let resolveHandler;
+            const handlerPromise = CancellablePromise(
+                new Promise((resolve) => {
+                    resolveHandler = resolve;
+                }),
+                () => Promise.resolve()
+            );
+            objectInstance.state.crud.delete = vi.fn(() => handlerPromise);
+
+            const call = objectInstance.delete();
+            await call.cancel("superseded");
+            resolveHandler(crudDeleteResolved);
+
+            await expect(call).resolves.toBe(false);
+            expect({ ...objectInstance.state.object }).toEqual(crudRetrieveResolved);
+            expect(objectInstance.state.deleted).toBe(false);
+            expect(objectInstance.state.errored).toBe(false);
+        });
+        scopedIt("executeAction resolves null when the handler cancels itself", async function () {
+            const objectInstance = makeInstance();
+            objectInstance.state.crud.executeAction = vi.fn(({ setCancelled }) => {
+                setCancelled();
+                return Promise.resolve({ report: "done" });
+            });
+
+            await expect(objectInstance.executeAction({ action: "foo" })).resolves.toBe(null);
+
+            expect(objectInstance.state.errored).toBe(false);
+        });
+        scopedIt("a handler that cancels itself and then rejects stores no error", async function () {
+            const objectInstance = makeInstance();
+            objectInstance.state.crud.update = vi.fn(({ setCancelled }) => {
+                setCancelled();
+                return Promise.reject(new Error("aborted"));
+            });
+
+            await expect(objectInstance.update({ object: crudUpdateResolved })).resolves.toBe(false);
+
+            expect(objectInstance.state.errored).toBe(false);
+            expect(objectInstance.state.error).toBeNullError();
+            expect(objectInstance.state.loading).toBe(false);
+        });
+    });
+    describe("keepObject", function () {
+        const makeInstance = () =>
+            useObjectInstance({
+                props: {
+                    target: { stream: "test_stream" },
+                    pk: ref(1),
+                    pkKey: "id",
+                    params: reactive({ fields }),
+                },
+            });
+        scopedIt("leaves state.object and state.deleted untouched when delete is passed keepObject", async function () {
+            const objectInstance = makeInstance();
+            assignReactiveObject(objectInstance.state.object, crudRetrieveResolved);
+            objectInstance.state.crud.delete = vi.fn().mockResolvedValue(crudDeleteResolved);
+
+            await expect(objectInstance.delete({ keepObject: true })).resolves.toBe(true);
+
+            expect({ ...objectInstance.state.object }).toEqual(crudRetrieveResolved);
+            expect(objectInstance.state.deleted).toBe(false);
+            expect(objectInstance.state.error).toBeNullError();
+            expect(objectInstance.state.errored).toBe(false);
+            expect(objectInstance.state.loading).toBe(false);
+        });
+        scopedIt("does not forward keepObject to the delete handler", async function () {
+            const objectInstance = makeInstance();
+            objectInstance.state.crud.delete = vi.fn().mockResolvedValue(crudDeleteResolved);
+
+            await expect(objectInstance.delete({ keepObject: true, reason: "cleanup" })).resolves.toBe(true);
+
+            expect(objectInstance.state.crud.delete).toHaveBeenCalledWith({
+                reason: "cleanup",
+                target: { stream: "test_stream" },
+                pk: "1",
+                pkKey: "id",
+                isCancelled: expect.any(Object),
+                setCancelled: expect.any(Function),
+            });
+        });
+        scopedIt("still clears state.object when keepObject is omitted", async function () {
+            const objectInstance = makeInstance();
+            assignReactiveObject(objectInstance.state.object, crudRetrieveResolved);
+            objectInstance.state.crud.delete = vi.fn().mockResolvedValue(crudDeleteResolved);
+
+            await expect(objectInstance.delete()).resolves.toBe(true);
+
+            expect({ ...objectInstance.state.object }).toEqual({});
+            expect(objectInstance.state.deleted).toBe(true);
+        });
+        describe.each([
+            ["retrieve", (objectInstance) => objectInstance.retrieve({ keepObject: true }), crudRetrieveResolved],
+            [
+                "create",
+                (objectInstance) => objectInstance.create({ object: { name: "new" }, keepObject: true }),
+                crudCreateResolved,
+            ],
+            [
+                "update",
+                (objectInstance) => objectInstance.update({ object: crudUpdateResolved, keepObject: true }),
+                crudUpdateResolved,
+            ],
+            [
+                "patch",
+                (objectInstance) => objectInstance.patch({ partialObject: { name: "p" }, keepObject: true }),
+                crudPatchResolved,
+            ],
+        ])("%s", function (verb, call, resolved) {
+            scopedIt("leaves state.object untouched when passed keepObject", async function () {
+                const objectInstance = makeInstance();
+                assignReactiveObject(objectInstance.state.object, crudRetrieveResolvedNonStandardPrimaryKey);
+                objectInstance.state.crud[verb] = vi.fn().mockResolvedValue(resolved);
+
+                await expect(call(objectInstance)).resolves.toBe(true);
+
+                expect({ ...objectInstance.state.object }).toEqual(crudRetrieveResolvedNonStandardPrimaryKey);
+                expect(objectInstance.state.error).toBeNullError();
+                expect(objectInstance.state.errored).toBe(false);
+            });
+            scopedIt("does not forward keepObject to the handler", async function () {
+                const objectInstance = makeInstance();
+                objectInstance.state.crud[verb] = vi.fn().mockResolvedValue(resolved);
+
+                await expect(call(objectInstance)).resolves.toBe(true);
+
+                expect(objectInstance.state.crud[verb]).toHaveBeenCalledWith(
+                    expect.not.objectContaining({ keepObject: expect.anything() })
+                );
+            });
         });
     });
     describe("delete", function () {
@@ -2010,6 +2224,7 @@ describe("use/objectInstance.js", function () {
                 pk: "1",
                 pkKey: "unique",
                 isCancelled: expect.any(Object),
+                setCancelled: expect.any(Function),
             });
         });
         scopedIt("passes additional args to delete and does not override", async function () {
@@ -2033,6 +2248,7 @@ describe("use/objectInstance.js", function () {
                 pk: "1",
                 pkKey: "id",
                 isCancelled: expect.any(Object),
+                setCancelled: expect.any(Function),
             });
             expect(objectInstance.state.crud.delete).toHaveBeenCalledTimes(1);
         });
@@ -2087,6 +2303,7 @@ describe("use/objectInstance.js", function () {
                 pk: "1",
                 pkKey: "id",
                 isCancelled: expect.any(Object),
+                setCancelled: expect.any(Function),
             });
             expect(objectInstance.state.crud.delete).toHaveBeenCalledTimes(1);
         });
@@ -2141,6 +2358,7 @@ describe("use/objectInstance.js", function () {
                 pk: "1",
                 pkKey: "unique",
                 isCancelled: expect.any(Object),
+                setCancelled: expect.any(Function),
             });
             expect(objectInstance.state.crud.delete).toHaveBeenCalledTimes(1);
         });
@@ -2165,6 +2383,7 @@ describe("use/objectInstance.js", function () {
                 pk: "1",
                 pkKey: "id",
                 isCancelled: expect.any(Object),
+                setCancelled: expect.any(Function),
             });
             expect(objectInstance.state.crud.delete).toHaveBeenCalledTimes(1);
         });
@@ -2189,6 +2408,7 @@ describe("use/objectInstance.js", function () {
                 pk: "1",
                 pkKey: "id",
                 isCancelled: expect.any(Object),
+                setCancelled: expect.any(Function),
             });
             expect(objectInstance.state.crud.delete).toHaveBeenCalledTimes(1);
 

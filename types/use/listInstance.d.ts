@@ -85,6 +85,12 @@
  * @typedef {(total: ColumnTotals) => void} SetColumnTotalsFn - Signature for the handler that updates the list's column totals.
  */
 /**
+ * @typedef {object} KeepObjectsOption - Per-call control over whether the list applies its own result to `state.objects`.
+ * @property {boolean} [keepObjects=false] - When true, `bulkDelete` leaves `state.objects` untouched after a successful
+ *  handler result. The caller reconciles through `deleteListObject`, `pushObjects`, or `clearList`. The instance
+ *  consumes the option before calling the crud handler.
+ */
+/**
  * @typedef {object} ListInstanceMyFunctions - Defines the methods provided by the list instance for managing objects in the list.
  * @property {PushObjectsFn} pushObjects - Customizable callback for handling new objects per page.
  * @property {(object: import('../use/objectInstance.js').ExistingCrudObject) => void} addListObject - Adds an object to the list.
@@ -94,7 +100,7 @@
  *  or error state.
  * @property {() => import('../config/commonCrud.js').Pk} getFakePk - Generates a unique fake pk for use within the list.
  * @property {(args?: import('../config/listCrud.js').AdditionalListArgs) => import('../utils/cancellablePromise.js').MaybeCancellablePromise<boolean|never>} list - Initiates a fetch to retrieve objects according to the CRUD configuration, returning a promise to a boolean indicating success.
- * @property {(args?: {pks?: import('../config/commonCrud.js').Pk[]} & import('../config/listCrud.js').AdditionalListArgs) => import('../utils/cancellablePromise.js').MaybeCancellablePromise<boolean>} bulkDelete - Deletes objects from the list by pk, returning a promise to a boolean indicating success. The promise carries a `cancel` method when the handler's promise did.
+ * @property {(args?: {pks?: import('../config/commonCrud.js').Pk[]} & KeepObjectsOption & import('../config/listCrud.js').AdditionalListArgs) => import('../utils/cancellablePromise.js').MaybeCancellablePromise<boolean>} bulkDelete - Deletes objects from the list by pk, returning a promise to a boolean indicating success. Omitting `pks` names every row the list holds. On success, the list removes named loaded rows unless `keepObjects` is true. Missing loaded rows are ignored. The promise carries a `cancel` method when the handler's promise did.
  * @property {(args: {action: string, pks?: import('../config/commonCrud.js').Pk[]} & import('../config/listCrud.js').AdditionalListArgs) => import('../utils/cancellablePromise.js').MaybeCancellablePromise<object|string|boolean|null>} executeAction - Initiates an action on all objects in the list, returning the response, or null if the action failed. The promise carries a `cancel` method when the handler's promise did.
  * @property {(info: PaginateInfo) => void} setPaginateInfo - The method to update pagination information.
  * @property {(total: ColumnTotals) => void} setColumnTotals - The method to update column totals.
@@ -384,6 +390,17 @@ export type SetPaginateInfoFn = (info: PaginateInfo) => void;
  */
 export type SetColumnTotalsFn = (total: ColumnTotals) => void;
 /**
+ * Per-call control over whether the list applies its own result to `state.objects`.
+ */
+export type KeepObjectsOption = {
+    /**
+     * When true, `bulkDelete` leaves `state.objects` untouched after a successful
+     * handler result. The caller reconciles through `deleteListObject`, `pushObjects`, or `clearList`. The instance
+     * consumes the option before calling the crud handler.
+     */
+    keepObjects?: boolean;
+};
+/**
  * Defines the methods provided by the list instance for managing objects in the list.
  */
 export type ListInstanceMyFunctions = {
@@ -417,11 +434,11 @@ export type ListInstanceMyFunctions = {
      */
     list: (args?: import("../config/listCrud.js").AdditionalListArgs) => import("../utils/cancellablePromise.js").MaybeCancellablePromise<boolean | never>;
     /**
-     * Deletes objects from the list by pk, returning a promise to a boolean indicating success. The promise carries a `cancel` method when the handler's promise did.
+     * Deletes objects from the list by pk, returning a promise to a boolean indicating success. Omitting `pks` names every row the list holds. On success, the list removes named loaded rows unless `keepObjects` is true. Missing loaded rows are ignored. The promise carries a `cancel` method when the handler's promise did.
      */
     bulkDelete: (args?: {
         pks?: import("../config/commonCrud.js").Pk[];
-    } & import("../config/listCrud.js").AdditionalListArgs) => import("../utils/cancellablePromise.js").MaybeCancellablePromise<boolean>;
+    } & KeepObjectsOption & import("../config/listCrud.js").AdditionalListArgs) => import("../utils/cancellablePromise.js").MaybeCancellablePromise<boolean>;
     /**
      * Initiates an action on all objects in the list, returning the response, or null if the action failed. The promise carries a `cancel` method when the handler's promise did.
      */

@@ -137,6 +137,13 @@ export class ListInstanceError extends Error {
  */
 
 /**
+ * @typedef {object} KeepObjectsOption - Per-call control over whether the list applies its own result to `state.objects`.
+ * @property {boolean} [keepObjects=false] - When true, `bulkDelete` leaves `state.objects` untouched after a successful
+ *  handler result. The caller reconciles through `deleteListObject`, `pushObjects`, or `clearList`. The instance
+ *  consumes the option before calling the crud handler.
+ */
+
+/**
  * @typedef {object} ListInstanceMyFunctions - Defines the methods provided by the list instance for managing objects in the list.
  * @property {PushObjectsFn} pushObjects - Customizable callback for handling new objects per page.
  * @property {(object: import('../use/objectInstance.js').ExistingCrudObject) => void} addListObject - Adds an object to the list.
@@ -146,7 +153,7 @@ export class ListInstanceError extends Error {
  *  or error state.
  * @property {() => import('../config/commonCrud.js').Pk} getFakePk - Generates a unique fake pk for use within the list.
  * @property {(args?: import('../config/listCrud.js').AdditionalListArgs) => import('../utils/cancellablePromise.js').MaybeCancellablePromise<boolean|never>} list - Initiates a fetch to retrieve objects according to the CRUD configuration, returning a promise to a boolean indicating success.
- * @property {(args?: {pks?: import('../config/commonCrud.js').Pk[]} & import('../config/listCrud.js').AdditionalListArgs) => import('../utils/cancellablePromise.js').MaybeCancellablePromise<boolean>} bulkDelete - Deletes objects from the list by pk, returning a promise to a boolean indicating success. The promise carries a `cancel` method when the handler's promise did.
+ * @property {(args?: {pks?: import('../config/commonCrud.js').Pk[]} & KeepObjectsOption & import('../config/listCrud.js').AdditionalListArgs) => import('../utils/cancellablePromise.js').MaybeCancellablePromise<boolean>} bulkDelete - Deletes objects from the list by pk, returning a promise to a boolean indicating success. Omitting `pks` names every row the list holds. On success, the list removes named loaded rows unless `keepObjects` is true. Missing loaded rows are ignored. The promise carries a `cancel` method when the handler's promise did.
  * @property {(args: {action: string, pks?: import('../config/commonCrud.js').Pk[]} & import('../config/listCrud.js').AdditionalListArgs) => import('../utils/cancellablePromise.js').MaybeCancellablePromise<object|string|boolean|null>} executeAction - Initiates an action on all objects in the list, returning the response, or null if the action failed. The promise carries a `cancel` method when the handler's promise did.
  * @property {(info: PaginateInfo) => void} setPaginateInfo - The method to update pagination information.
  * @property {(total: ColumnTotals) => void} setColumnTotals - The method to update column totals.
@@ -472,6 +479,9 @@ export function useListInstance({ props, handlers = {} }) {
             loadingError.clearError();
             loadingError.setLoading();
             const isCancelled = ref(false);
+            const setCancelled = () => {
+                isCancelled.value = true;
+            };
             let listPromise = null;
             try {
                 const listCrudArgs = {
@@ -482,6 +492,7 @@ export function useListInstance({ props, handlers = {} }) {
                     pushObjects: self.pushObjects,
                     clearObjects: self.clearList,
                     isCancelled: readonly(isCancelled),
+                    setCancelled,
                     setPaginateInfo: self.setPaginateInfo,
                     setColumnTotals: self.setColumnTotals,
                 };
@@ -495,7 +506,9 @@ export function useListInstance({ props, handlers = {} }) {
             promises.list = wrapMaybeCancellable(
                 listPromise
                     .then(() => {
-                        return true;
+                        // The handler owns the rows on this path, so there is nothing here to withhold. A cancelled
+                        // run still reports false, matching the rejection a cancelling handler usually produces.
+                        return !isCancelled.value;
                     })
                     .catch((/** @type {Error} */ error) => {
                         // A deliberate cancellation rejects with the cancel reason; that is not an error.
@@ -518,7 +531,7 @@ export function useListInstance({ props, handlers = {} }) {
             );
             return promises.list;
         },
-        bulkDelete: ({ pks, ...additionalArgs } = {}) => {
+        bulkDelete: ({ pks, keepObjects = false, ...additionalArgs } = {}) => {
             if (state.loading) {
                 // we throw because we want devs to see this error in the console
                 // state.error should be for user facing errors, or unknown errors
@@ -530,6 +543,9 @@ export function useListInstance({ props, handlers = {} }) {
             loadingError.setLoading();
             loadingError.clearError();
             const isCancelled = ref(false);
+            const setCancelled = () => {
+                isCancelled.value = true;
+            };
             let bulkDeletePromise = null;
             try {
                 bulkDeletePromise = state.crud.bulkDelete({
@@ -539,6 +555,7 @@ export function useListInstance({ props, handlers = {} }) {
                     pkKey: state.pkKey,
                     params: state.params,
                     isCancelled: readonly(isCancelled),
+                    setCancelled,
                 });
                 assertHandlerPromise(bulkDeletePromise, ListInstanceError, "bulkDelete");
             } catch (error) {
@@ -549,9 +566,26 @@ export function useListInstance({ props, handlers = {} }) {
             return wrapMaybeCancellable(
                 bulkDeletePromise
                     .then(() => {
-                        batchObjectChanges(() => {
-                            assignReactiveObject(_objectsProxy, {});
-                        });
+                        if (isCancelled.value) {
+                            return false;
+                        }
+                        if (!keepObjects) {
+                            batchObjectChanges(() => {
+                                pks.forEach((pk) => {
+                                    try {
+                                        self.deleteListObject(pk);
+                                    } catch (err) {
+                                        // A bulk delete may name rows outside the loaded page, so a pk the list does
+                                        // not hold is expected. The subscription path warns here; this one stays quiet,
+                                        // or every cross-page delete would log.
+                                        if (err.name === "ListInstanceError" && err.code === "missing-object") {
+                                            return;
+                                        }
+                                        throw err;
+                                    }
+                                });
+                            });
+                        }
                         loadingError.clearError();
                         return true;
                     })
@@ -586,6 +620,9 @@ export function useListInstance({ props, handlers = {} }) {
             loadingError.setLoading();
             loadingError.clearError();
             const isCancelled = ref(false);
+            const setCancelled = () => {
+                isCancelled.value = true;
+            };
             let executeActionPromise = null;
             try {
                 executeActionPromise = state.crud.executeAction({
@@ -596,6 +633,7 @@ export function useListInstance({ props, handlers = {} }) {
                     pkKey: state.pkKey,
                     params: state.params,
                     isCancelled: readonly(isCancelled),
+                    setCancelled,
                 });
                 assertHandlerPromise(executeActionPromise, ListInstanceError, "executeAction");
             } catch (error) {
@@ -606,6 +644,9 @@ export function useListInstance({ props, handlers = {} }) {
             return wrapMaybeCancellable(
                 executeActionPromise
                     .then((/** @type {object|string} */ responseData) => {
+                        if (isCancelled.value) {
+                            return null;
+                        }
                         loadingError.clearError();
                         return responseData;
                     })

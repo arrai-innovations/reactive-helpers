@@ -83,6 +83,22 @@ When true, keep the current pagination information.
 
 ***
 
+### KeepObjectsOption
+
+Per-call control over whether the list applies its own result to `state.objects`.
+
+#### Properties
+
+##### keepObjects?
+
+> `optional` **keepObjects?**: `boolean`
+
+When true, `bulkDelete` leaves `state.objects` untouched after a successful
+ handler result. The caller reconciles through `deleteListObject`, `pushObjects`, or `clearList`. The instance
+ consumes the option before calling the crud handler.
+
+***
+
 ### ListInstanceMyFunctions
 
 Defines the methods provided by the list instance for managing objects in the list.
@@ -109,13 +125,13 @@ Adds an object to the list.
 
 > **bulkDelete**: (`args?`) => [`MaybeCancellablePromise`](../utils/cancellablePromise.md#maybecancellablepromise)\<`boolean`\>
 
-Deletes objects from the list by pk, returning a promise to a boolean indicating success. The promise carries a `cancel` method when the handler's promise did.
+Deletes objects from the list by pk, returning a promise to a boolean indicating success. Omitting `pks` names every row the list holds. On success, the list removes named loaded rows unless `keepObjects` is true. Missing loaded rows are ignored. The promise carries a `cancel` method when the handler's promise did.
 
 ###### Parameters
 
 ###### args?
 
-`object` & [`AdditionalListArgs`](../config/listCrud.md#additionallistargs)
+`object` & [`KeepObjectsOption`](#keepobjectsoption) & [`AdditionalListArgs`](../config/listCrud.md#additionallistargs)
 
 ###### Returns
 

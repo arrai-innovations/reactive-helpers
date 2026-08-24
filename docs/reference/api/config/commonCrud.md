@@ -20,6 +20,21 @@ Primary key type accepted as input (will be coerced to string).
 
 #### Type Parameters
 
+***
+
+### SetCancelledFn
+
+> **SetCancelledFn** = () => `void`
+
+Callback a CRUD handler calls to mark its current run cancelled. The instance
+ withholds that run's result, stores no error, and resolves the action's cancellation value.
+
+#### Type Parameters
+
+#### Returns
+
+`void`
+
 ## Functions
 
 ### assignCrud()

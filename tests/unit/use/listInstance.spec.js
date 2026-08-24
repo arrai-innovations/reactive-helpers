@@ -180,6 +180,7 @@ describe("use/listInstance.spec.js", function () {
                 params: { user: 1, fields },
                 pushObjects: passedPushObjects,
                 isCancelled: expect.any(Object),
+                setCancelled: expect.any(Function),
                 clearObjects: expect.any(Function),
                 setPaginateInfo: expect.any(Function),
                 setColumnTotals: expect.any(Function),
@@ -205,6 +206,7 @@ describe("use/listInstance.spec.js", function () {
                 params: { user: 1, fields },
                 pushObjects: expect.any(Function),
                 isCancelled: expect.any(Object),
+                setCancelled: expect.any(Function),
                 clearObjects: expect.any(Function),
                 setPaginateInfo: expect.any(Function),
                 setColumnTotals: expect.any(Function),
@@ -259,6 +261,7 @@ describe("use/listInstance.spec.js", function () {
                 params: { user: 1, fields },
                 pushObjects: passedPushObjects,
                 isCancelled: expect.anything(),
+                setCancelled: expect.any(Function),
                 clearObjects: expect.any(Function),
                 setPaginateInfo: expect.any(Function),
                 setColumnTotals: expect.any(Function),
@@ -290,6 +293,7 @@ describe("use/listInstance.spec.js", function () {
                 params: { user: 1, fields },
                 pushObjects: expect.any(Function),
                 isCancelled: expect.any(Object), // ref
+                setCancelled: expect.any(Function),
                 clearObjects: expect.any(Function),
                 setPaginateInfo: expect.any(Function),
                 setColumnTotals: expect.any(Function),
@@ -383,6 +387,7 @@ describe("use/listInstance.spec.js", function () {
                 params: { user: 1, fields },
                 pushObjects: passedPushObjects,
                 isCancelled: expect.any(Object), // ref
+                setCancelled: expect.any(Function),
                 clearObjects: expect.any(Function),
                 setPaginateInfo: expect.any(Function),
                 setColumnTotals: expect.any(Function),
@@ -485,6 +490,7 @@ describe("use/listInstance.spec.js", function () {
                 params: { user: 1, fields },
                 pushObjects: passedPushObjects,
                 isCancelled: expect.any(Object), // ref
+                setCancelled: expect.any(Function),
                 clearObjects: expect.any(Function),
                 setPaginateInfo: expect.any(Function),
                 setColumnTotals: expect.any(Function),
@@ -534,6 +540,7 @@ describe("use/listInstance.spec.js", function () {
                 params: { user: 1, fields },
                 pushObjects: passedPushObjects,
                 isCancelled: expect.any(Object), // ref
+                setCancelled: expect.any(Function),
                 clearObjects: expect.any(Function),
                 setPaginateInfo: expect.any(Function),
                 setColumnTotals: expect.any(Function),
@@ -902,6 +909,7 @@ describe("use/listInstance.spec.js", function () {
                 action: "foo",
                 params: expect.any(Object),
                 isCancelled: expect.any(Object),
+                setCancelled: expect.any(Function),
             });
 
             expect(globalExecuteAction).toHaveBeenCalledTimes(1);
@@ -933,6 +941,7 @@ describe("use/listInstance.spec.js", function () {
                 action: "foo",
                 params: expect.any(Object),
                 isCancelled: expect.any(Object),
+                setCancelled: expect.any(Function),
             });
             expect(globalExecuteAction).toHaveBeenCalledTimes(1);
         });
@@ -974,6 +983,7 @@ describe("use/listInstance.spec.js", function () {
                 action: "foo",
                 params: expect.any(Object),
                 isCancelled: expect.any(Object),
+                setCancelled: expect.any(Function),
             });
 
             expect(globalExecuteAction).toHaveBeenCalledTimes(1);
@@ -1057,8 +1067,289 @@ describe("use/listInstance.spec.js", function () {
                 action: "foo",
                 params: expect.any(Object),
                 isCancelled: expect.any(Object),
+                setCancelled: expect.any(Function),
             });
             expect(globalExecuteAction).toHaveBeenCalledTimes(1);
+        });
+    });
+    describe("keepObjects", function () {
+        const loadPage = async (listInstance) => {
+            /** @type {import("../../../use/listInstance.js").PushObjectsFn} */
+            let passedPushObjects;
+            /** @type {(value: boolean) => void} */
+            let crudListResolve;
+            const crudListPromise = new Promise((resolve) => {
+                crudListResolve = resolve;
+            });
+            globalList.mockImplementation(({ pushObjects }) => {
+                passedPushObjects = pushObjects;
+                return crudListPromise;
+            });
+            const liListResolve = listInstance.list();
+            await nextTick();
+            passedPushObjects(crudListResolvedPage1);
+            passedPushObjects(crudListResolvedPage2);
+            crudListResolve(true);
+            await flushPromises();
+            await expect(liListResolve).resolves.toBe(true);
+        };
+        scopedIt("leaves state.objects untouched when bulkDelete is passed keepObjects", async function () {
+            const listInstance = useListInstance({
+                props: { pkKey: "id", params: reactive({ fields }) },
+            });
+            await loadPage(listInstance);
+            expect({ ...listInstance.state.objects }).toEqual(crudListResolvedObjects2);
+
+            globalBulkDelete.mockResolvedValueOnce(true);
+            await expect(listInstance.bulkDelete({ pks: ["1"], keepObjects: true })).resolves.toBe(true);
+
+            expect({ ...listInstance.state.objects }).toEqual(crudListResolvedObjects2);
+            expect(listInstance.state.error).toBeNullError();
+            expect(listInstance.state.errored).toBe(false);
+            expect(listInstance.state.loading).toBe(false);
+        });
+        scopedIt("does not forward keepObjects to the bulkDelete handler", async function () {
+            const listInstance = useListInstance({
+                props: { pkKey: "id", params: reactive({ fields }) },
+            });
+            globalBulkDelete.mockResolvedValueOnce(true);
+
+            await expect(listInstance.bulkDelete({ pks: ["1"], keepObjects: true })).resolves.toBe(true);
+
+            expect(globalBulkDelete).toHaveBeenCalledWith({
+                target: { stream: "test_stream" },
+                pkKey: "id",
+                pks: ["1"],
+                params: expect.any(Object),
+                isCancelled: expect.any(Object),
+                setCancelled: expect.any(Function),
+            });
+        });
+        scopedIt("removes the named rows when keepObjects is omitted", async function () {
+            const listInstance = useListInstance({
+                props: { pkKey: "id", params: reactive({ fields }) },
+            });
+            await loadPage(listInstance);
+
+            globalBulkDelete.mockResolvedValueOnce(true);
+            await expect(listInstance.bulkDelete({ pks: ["1"] })).resolves.toBe(true);
+
+            expect(Object.keys(listInstance.state.objects)).toEqual(["2", "3", "4", "5", "6"]);
+        });
+        scopedIt("leaves state.objects untouched when a keepObjects bulkDelete fails", async function () {
+            const listInstance = useListInstance({
+                props: { pkKey: "id", params: reactive({ fields }) },
+            });
+            await loadPage(listInstance);
+
+            globalBulkDelete.mockRejectedValueOnce(new Error("nope"));
+            await expect(listInstance.bulkDelete({ pks: ["1"], keepObjects: true })).resolves.toBe(false);
+
+            expect({ ...listInstance.state.objects }).toEqual(crudListResolvedObjects2);
+            expect(listInstance.state.errored).toBe(true);
+            expect(listInstance.state.error).toEqual(new Error("nope"));
+        });
+    });
+    describe("cancelled runs withhold their result", function () {
+        const makeInstance = () => useListInstance({ props: { pkKey: "id", params: reactive({ fields }) } });
+        const loadBothPages = async (listInstance) => {
+            /** @type {import("../../../use/listInstance.js").PushObjectsFn} */
+            let passedPushObjects;
+            /** @type {(value: boolean) => void} */
+            let crudListResolve;
+            const crudListPromise = new Promise((resolve) => {
+                crudListResolve = resolve;
+            });
+            globalList.mockImplementation(({ pushObjects }) => {
+                passedPushObjects = pushObjects;
+                return crudListPromise;
+            });
+            const liListResolve = listInstance.list();
+            await nextTick();
+            passedPushObjects(crudListResolvedPage1);
+            passedPushObjects(crudListResolvedPage2);
+            crudListResolve(true);
+            await flushPromises();
+            await expect(liListResolve).resolves.toBe(true);
+            globalList.mockReset();
+        };
+
+        scopedIt("bulkDelete removes nothing when the caller cancelled first", async function () {
+            const listInstance = makeInstance();
+            await loadBothPages(listInstance);
+            /** @type {(value: boolean) => void} */
+            let resolveHandler;
+            const handlerPromise = CancellablePromise(
+                new Promise((resolve) => {
+                    resolveHandler = resolve;
+                }),
+                () => Promise.resolve()
+            );
+            globalBulkDelete.mockImplementation(() => handlerPromise);
+
+            const call = listInstance.bulkDelete({ pks: ["2"] });
+            await call.cancel("superseded");
+            resolveHandler(true);
+
+            await expect(call).resolves.toBe(false);
+            expect({ ...listInstance.state.objects }).toEqual(crudListResolvedObjects2);
+            expect(listInstance.state.errored).toBe(false);
+            expect(listInstance.state.error).toBeNullError();
+        });
+        scopedIt("bulkDelete removes nothing when the handler cancels itself", async function () {
+            const listInstance = makeInstance();
+            await loadBothPages(listInstance);
+            globalBulkDelete.mockImplementation(({ setCancelled }) => {
+                setCancelled();
+                return Promise.resolve(true);
+            });
+
+            await expect(listInstance.bulkDelete({ pks: ["2"] })).resolves.toBe(false);
+
+            expect({ ...listInstance.state.objects }).toEqual(crudListResolvedObjects2);
+            expect(listInstance.state.errored).toBe(false);
+            expect(listInstance.state.error).toBeNullError();
+        });
+        scopedIt("a handler that cancels itself and then rejects stores no error", async function () {
+            const listInstance = makeInstance();
+            globalBulkDelete.mockImplementation(({ setCancelled }) => {
+                setCancelled();
+                return Promise.reject(new Error("aborted"));
+            });
+
+            await expect(listInstance.bulkDelete({ pks: ["2"] })).resolves.toBe(false);
+
+            expect(listInstance.state.errored).toBe(false);
+            expect(listInstance.state.error).toBeNullError();
+            expect(listInstance.state.loading).toBe(false);
+        });
+        scopedIt("keepObjects still removes nothing, and reports the cancellation", async function () {
+            const listInstance = makeInstance();
+            await loadBothPages(listInstance);
+            globalBulkDelete.mockImplementation(({ setCancelled }) => {
+                setCancelled();
+                return Promise.resolve(true);
+            });
+
+            await expect(listInstance.bulkDelete({ pks: ["2"], keepObjects: true })).resolves.toBe(false);
+
+            expect({ ...listInstance.state.objects }).toEqual(crudListResolvedObjects2);
+        });
+        scopedIt("list reports false when the handler cancels itself", async function () {
+            const listInstance = makeInstance();
+            globalList.mockImplementation(({ setCancelled }) => {
+                setCancelled();
+                return Promise.resolve(true);
+            });
+
+            await expect(listInstance.list()).resolves.toBe(false);
+
+            expect(listInstance.state.errored).toBe(false);
+            expect(listInstance.state.error).toBeNullError();
+        });
+        scopedIt("executeAction resolves null when the handler cancels itself", async function () {
+            const listInstance = makeInstance();
+            globalExecuteAction.mockImplementation(({ setCancelled }) => {
+                setCancelled();
+                return Promise.resolve({ report: "done" });
+            });
+
+            await expect(listInstance.executeAction({ action: "foo", pks: ["1"] })).resolves.toBe(null);
+
+            expect(listInstance.state.errored).toBe(false);
+        });
+        scopedIt("setCancelled is one way and reaches every verb", async function () {
+            const listInstance = makeInstance();
+            /** @type {any} */
+            let seen;
+            globalBulkDelete.mockImplementation((args) => {
+                seen = args;
+                args.setCancelled();
+                return Promise.resolve(true);
+            });
+
+            await listInstance.bulkDelete({ pks: ["1"] });
+
+            expect(seen.setCancelled).toEqual(expect.any(Function));
+            expect(seen.isCancelled.value).toBe(true);
+            expect(isReadonly(seen.isCancelled)).toBe(true);
+        });
+    });
+    describe("bulkDelete row removal", function () {
+        const loadBothPages = async (listInstance) => {
+            /** @type {import("../../../use/listInstance.js").PushObjectsFn} */
+            let passedPushObjects;
+            /** @type {(value: boolean) => void} */
+            let crudListResolve;
+            const crudListPromise = new Promise((resolve) => {
+                crudListResolve = resolve;
+            });
+            globalList.mockImplementation(({ pushObjects }) => {
+                passedPushObjects = pushObjects;
+                return crudListPromise;
+            });
+            const liListResolve = listInstance.list();
+            await nextTick();
+            passedPushObjects(crudListResolvedPage1);
+            passedPushObjects(crudListResolvedPage2);
+            crudListResolve(true);
+            await flushPromises();
+            await expect(liListResolve).resolves.toBe(true);
+        };
+        const makeInstance = () => useListInstance({ props: { pkKey: "id", params: reactive({ fields }) } });
+
+        scopedIt("keeps the rows the call did not name", async function () {
+            const listInstance = makeInstance();
+            await loadBothPages(listInstance);
+
+            globalBulkDelete.mockResolvedValueOnce(true);
+            await expect(listInstance.bulkDelete({ pks: ["2", "5"] })).resolves.toBe(true);
+
+            expect(Object.keys(listInstance.state.objects)).toEqual(["1", "3", "4", "6"]);
+            expect(listInstance.state.error).toBeNullError();
+            expect(listInstance.state.errored).toBe(false);
+        });
+        scopedIt("empties the list when pks is omitted", async function () {
+            const listInstance = makeInstance();
+            await loadBothPages(listInstance);
+
+            globalBulkDelete.mockResolvedValueOnce(true);
+            await expect(listInstance.bulkDelete()).resolves.toBe(true);
+
+            expect({ ...listInstance.state.objects }).toEqual({});
+        });
+        scopedIt("ignores a named pk the list does not hold", async function () {
+            const listInstance = makeInstance();
+            await loadBothPages(listInstance);
+            const warn = vi.spyOn(console, "warn").mockImplementation(() => {});
+
+            globalBulkDelete.mockResolvedValueOnce(true);
+            await expect(listInstance.bulkDelete({ pks: ["2", "999"] })).resolves.toBe(true);
+
+            expect(Object.keys(listInstance.state.objects)).toEqual(["1", "3", "4", "5", "6"]);
+            expect(listInstance.state.error).toBeNullError();
+            expect(listInstance.state.errored).toBe(false);
+            expect(warn).not.toHaveBeenCalled();
+            warn.mockRestore();
+        });
+        scopedIt("accepts numeric pks against string-keyed rows", async function () {
+            const listInstance = makeInstance();
+            await loadBothPages(listInstance);
+
+            globalBulkDelete.mockResolvedValueOnce(true);
+            await expect(listInstance.bulkDelete({ pks: [2, 5] })).resolves.toBe(true);
+
+            expect(Object.keys(listInstance.state.objects)).toEqual(["1", "3", "4", "6"]);
+        });
+        scopedIt("removes nothing when the handler fails", async function () {
+            const listInstance = makeInstance();
+            await loadBothPages(listInstance);
+
+            globalBulkDelete.mockRejectedValueOnce(new Error("nope"));
+            await expect(listInstance.bulkDelete({ pks: ["2"] })).resolves.toBe(false);
+
+            expect({ ...listInstance.state.objects }).toEqual(crudListResolvedObjects2);
+            expect(listInstance.state.errored).toBe(true);
         });
     });
     describe("bulkDelete", function () {
@@ -1100,6 +1391,7 @@ describe("use/listInstance.spec.js", function () {
                 pks: Object.keys(crudListResolvedObjects2),
                 params: expect.any(Object),
                 isCancelled: expect.any(Object),
+                setCancelled: expect.any(Function),
             });
 
             expect(globalBulkDelete).toHaveBeenCalledTimes(1);
@@ -1128,6 +1420,7 @@ describe("use/listInstance.spec.js", function () {
                 pks: ["1"],
                 params: expect.any(Object),
                 isCancelled: expect.any(Object),
+                setCancelled: expect.any(Function),
             });
             expect(globalBulkDelete).toHaveBeenCalledTimes(1);
         });
@@ -1168,6 +1461,7 @@ describe("use/listInstance.spec.js", function () {
                 pks: Object.keys(crudListResolvedObjectsNonStandardPK),
                 params: expect.any(Object),
                 isCancelled: expect.any(Object),
+                setCancelled: expect.any(Function),
             });
 
             expect(globalBulkDelete).toHaveBeenCalledTimes(1);
@@ -1247,6 +1541,7 @@ describe("use/listInstance.spec.js", function () {
                 pks: [],
                 params: expect.any(Object),
                 isCancelled: expect.any(Object),
+                setCancelled: expect.any(Function),
             });
             expect(globalBulkDelete).toHaveBeenCalledTimes(1);
         });

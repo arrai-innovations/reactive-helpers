@@ -75,8 +75,18 @@ writes.
 CRUD handlers receive one more signal. `isCancelled` is a readonly ref. It becomes `true` when the run is cancelled. A
 cooperative handler re-checks `isCancelled.value` after each `await`. Once it is true, the handler stops touching state.
 
-This matters most when the transport cannot truly abort. The underlying work may run to completion regardless. The
-cooperative check means its result is never applied. The latest run still owns the screen.
+CRUD handlers also receive `setCancelled`. It raises the same flag from inside the handler, for a run the handler itself
+judges stale. Cancellation is one way, so no API clears the flag.
+
+Once the flag is true, the instance withholds that run's result. `contact.state.object` and `contacts.state.objects`
+stay as they were. The action stores no error and resolves its cancellation value: `false`, or `null` for
+`executeAction`. That outcome does not depend on whether the handler later resolves or rejects.
+
+This matters most when the transport cannot truly abort. The underlying work may run to completion regardless. Its
+result is still never applied. The latest run owns the screen.
+
+`subscribe` is different. It receives `isCancelled`, but not `setCancelled`. A subscription writes through callbacks
+rather than through a resolved result, so `isCurrentRun()` is what drops stale stream events.
 
 ## Where the model shows up
 

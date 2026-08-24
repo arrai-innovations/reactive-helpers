@@ -13,6 +13,11 @@ import { refIfReactive } from "../utils/refIfReactive.js";
  */
 
 /**
+ * @typedef {() => void} SetCancelledFn - Callback a CRUD handler calls to mark its current run cancelled. The instance
+ *  withholds that run's result, stores no error, and resolves the action's cancellation value.
+ */
+
+/**
  * @internal
  * @param {string} name - The name of the method.
  * @returns {(...args: any[]) => import('../utils/cancellablePromise.js').MaybeCancellablePromise<any>} - A function that returns a rejected promise with an error message.

@@ -67,6 +67,10 @@ export type CreateArgsRaw = {
      * A readonly ref that becomes true once the request is cancelled.
      */
     isCancelled: Readonly<import("vue").Ref<boolean>>;
+    /**
+     * Marks this run cancelled from inside the handler.
+     */
+    setCancelled: import("./commonCrud.js").SetCancelledFn;
 };
 /**
  * Arguments for an object create operation, combining the raw arguments with any additional CRUD arguments.
@@ -98,6 +102,10 @@ export type RetrieveArgsRaw = {
      * A readonly ref that becomes true once the request is cancelled.
      */
     isCancelled: Readonly<import("vue").Ref<boolean>>;
+    /**
+     * Marks this run cancelled from inside the handler.
+     */
+    setCancelled: import("./commonCrud.js").SetCancelledFn;
 };
 /**
  * Arguments for an object retrieve operation, combining the raw arguments with run-tracking and any additional CRUD arguments.
@@ -129,6 +137,10 @@ export type UpdateArgsRaw = {
      * A readonly ref that becomes true once the request is cancelled.
      */
     isCancelled: Readonly<import("vue").Ref<boolean>>;
+    /**
+     * Marks this run cancelled from inside the handler.
+     */
+    setCancelled: import("./commonCrud.js").SetCancelledFn;
 };
 /**
  * Arguments for an object update operation, combining the raw arguments with any additional CRUD arguments.
@@ -154,6 +166,10 @@ export type DeleteArgsRaw = {
      * A readonly ref that becomes true once the request is cancelled.
      */
     isCancelled: Readonly<import("vue").Ref<boolean>>;
+    /**
+     * Marks this run cancelled from inside the handler.
+     */
+    setCancelled: import("./commonCrud.js").SetCancelledFn;
 };
 /**
  * Arguments for an object delete operation, combining the raw arguments with any additional CRUD arguments.
@@ -191,6 +207,10 @@ export type PartialArgsRaw = {
      * A readonly ref that becomes true once the request is cancelled.
      */
     isCancelled: Readonly<import("vue").Ref<boolean>>;
+    /**
+     * Marks this run cancelled from inside the handler.
+     */
+    setCancelled: import("./commonCrud.js").SetCancelledFn;
 };
 /**
  * Arguments for an object patch (partial update) operation, combining the raw arguments with any additional CRUD arguments.
@@ -220,6 +240,10 @@ export type ObjectExecuteActionArgsRaw = {
      * A readonly ref that becomes true once the request is cancelled.
      */
     isCancelled: Readonly<import("vue").Ref<boolean>>;
+    /**
+     * Marks this run cancelled from inside the handler.
+     */
+    setCancelled: import("./commonCrud.js").SetCancelledFn;
 };
 /**
  * Arguments for a single-object execute-action operation, combining the raw arguments with any additional CRUD arguments.

@@ -57,6 +57,24 @@ The error code.
 
 ## Interfaces
 
+### KeepObjectOption
+
+Per-call control over whether the instance applies its own result to `state.object`.
+
+#### Properties
+
+##### keepObject?
+
+> `optional` **keepObject?**: `boolean`
+
+When true, the instance leaves `state.object` and `state.deleted` untouched
+ after a successful handler result. The caller reconciles through `clear` or direct state writes. The instance
+ consumes the option before calling the crud handler.
+
+ Concurrent `retrieve` calls share the first in-flight promise, including that run's `keepObject` setting.
+
+***
+
 ### ObjectInstanceMyFunctions
 
 The functions available on the object instance.
@@ -83,7 +101,7 @@ Called to turn the current object into a new object on the server.
 
 ###### args
 
-[`ObjectInstanceCreateArgs`](#objectinstancecreateargs) & [`AdditionalArgs`](#additionalargs)
+[`ObjectInstanceCreateArgs`](#objectinstancecreateargs) & [`KeepObjectOption`](#keepobjectoption) & [`AdditionalArgs`](#additionalargs)
 
 ###### Returns
 
@@ -99,7 +117,7 @@ Called to delete the current object on the server.
 
 ###### args?
 
-[`AdditionalArgs`](#additionalargs)
+[`KeepObjectOption`](#keepobjectoption) & [`AdditionalArgs`](#additionalargs)
 
 ###### Returns
 
@@ -131,7 +149,7 @@ Called to patch the current object on the server.
 
 ###### args
 
-[`ObjectInstancePatchArgs`](#objectinstancepatchargs) & [`AdditionalArgs`](#additionalargs)
+[`ObjectInstancePatchArgs`](#objectinstancepatchargs) & [`KeepObjectOption`](#keepobjectoption) & [`AdditionalArgs`](#additionalargs)
 
 ###### Returns
 
@@ -147,7 +165,7 @@ Called to retrieve the current object by pk from the server.
 
 ###### args?
 
-`Partial`\<[`CommonRunTracking`](cancellableIntent.md#commonruntracking)\> & [`AdditionalArgs`](#additionalargs)
+`Partial`\<[`CommonRunTracking`](cancellableIntent.md#commonruntracking)\> & [`KeepObjectOption`](#keepobjectoption) & [`AdditionalArgs`](#additionalargs)
 
 ###### Returns
 
@@ -163,7 +181,7 @@ Called to update the current object on the server.
 
 ###### args
 
-[`ObjectInstanceUpdateArgs`](#objectinstanceupdateargs) & [`AdditionalArgs`](#additionalargs)
+[`ObjectInstanceUpdateArgs`](#objectinstanceupdateargs) & [`KeepObjectOption`](#keepobjectoption) & [`AdditionalArgs`](#additionalargs)
 
 ###### Returns
 

@@ -24,3 +24,8 @@ export type PkInput = string | number;
  * Primary key type used for storage and output (always a string).
  */
 export type Pk = string;
+/**
+ * Callback a CRUD handler calls to mark its current run cancelled. The instance
+ *  withholds that run's result, stores no error, and resolves the action's cancellation value.
+ */
+export type SetCancelledFn = () => void;

@@ -82,7 +82,8 @@ A handler receives one argument object. Both instance types pass:
   object handler gets `target` and, per verb, `pk` and `params`
   ([CRUD handler contracts](/concepts/crud-handler-contracts) maps each verb's payload).
 - `pkKey`, the primary key field name, so one handler can serve records keyed by different fields.
-- `isCancelled`, a readonly ref that turns `true` when the run is cancelled.
+- `isCancelled`, a readonly ref that turns `true` when the run is cancelled. Non-subscribe handlers also receive
+  `setCancelled`, which raises that flag from inside the handler.
 - Any extra keys you passed to the action call.
 
 A list handler also gets callbacks: `pushObjects`, `clearObjects`, `setPaginateInfo`, and `setColumnTotals`. An object

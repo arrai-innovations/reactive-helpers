@@ -39,23 +39,47 @@ every row currently in the list. A failure lands in `contacts.state.error`, and 
 the same as any other action. While `contacts.state.loading` is `true`, a new `bulkDelete()` call rejects. See
 [BulkDeleteArgsRaw](/reference/api/config/listCrud#bulkdeleteargsraw) for the full argument shape.
 
-## Reload after deleting a subset
+## What the list does with the deleted rows
+
+On success the instance removes the rows you named from `contacts.state.objects` and leaves the rest in place. A subset
+delete needs no reload. Omitting `pks` names every loaded row, which empties the list.
+
+The list ignores a pk it does not hold. A cross-page delete can name rows outside the loaded page and still report
+success.
+
+Two things the instance does not do for you:
+
+- Pagination counts in `contacts.state.paginateInfo` still reflect the last `list()` response. A total or page count
+  rendered from them goes stale until the next `contacts.list()`.
+- Rows the server deleted as a side effect, such as a cascade, stay on screen. Reload when the server may remove more
+  than you named.
+
+### Keep every row and reconcile yourself
+
+Pass `keepObjects: true` when the request should not update local rows. The request still reports loading, error, and
+success state. Reconcile with `contacts.deleteListObject(pk)`, `contacts.clearList()`, or a reload.
+
+```javascript
+const ok = await contacts.bulkDelete({ pks, keepObjects: true });
+if (ok) {
+    await contacts.list();
+}
+```
+
+This fits a validation request or any flow that reconciles from a fresh server response. The instance consumes
+`keepObjects`, so your `bulkDelete` handler does not receive it.
 
 ::: warning
 
-On success the instance empties `contacts.state.objects` even when you deleted only a subset. The rows you kept vanish
-from the screen too. Call `contacts.list()` after a successful `bulkDelete()` when other rows should stay visible.
+`contacts.deleteListObject(pk)` throws a `ListInstanceError` with code `missing-object` for a pk the list does not hold.
+`bulkDelete` tolerates those keys, but a direct call does not. Filter the keys to loaded rows, or catch that code.
 
 :::
 
-So the pattern is: build a selection of primary keys, delete them, and reload. The reload refetches the rows the server
-still has, which are every row except the ones you just deleted.
-
 ## Render checkboxes, a delete button, and the outcome
 
-Each checkbox toggles a `contactId` in a `selected` set. The delete button passes those keys to `contacts.bulkDelete`,
-then reloads on success so the remaining rows return. It stays disabled while nothing is selected and while a request is
-in flight:
+Each checkbox toggles a `contactId` in a `selected` set. The delete button passes those keys to `contacts.bulkDelete`.
+It stays disabled while nothing is selected and while a request is in flight:
 
 ```vue
 <script setup>
@@ -83,7 +107,6 @@ async function deleteSelected() {
     const ok = await contacts.bulkDelete({ pks });
     if (ok) {
         selected.clear();
-        await contacts.list(); // bring back the rows we did not delete
     }
 }
 </script>
@@ -107,9 +130,9 @@ async function deleteSelected() {
 ```
 
 Check two contacts and the button reads "Delete 2 selected". Clicking it sends one request with both keys. On success
-`contacts.bulkDelete` resolves `true` and the list empties. The `contacts.list()` reload repopulates
-`contacts.state.objectsInOrder` with every remaining contact, so only the two you chose are gone. If the request fails,
-`bulkDelete` resolves `false`, the reload is skipped, and the error message shows.
+`contacts.bulkDelete` resolves `true`, those two rows leave `contacts.state.objectsInOrder`, and every other contact
+stays where it was. If the request fails, `bulkDelete` resolves `false`, no row leaves the list, and the error message
+shows.
 
 ## Related pages
 

@@ -40,6 +40,12 @@ Your listing or retrieval arguments, passed through to the crud handlers.
 
 The key name of the primary key.
 
+##### setCancelled
+
+> **setCancelled**: [`SetCancelledFn`](commonCrud.md#setcancelledfn)
+
+Marks this run cancelled from inside the handler.
+
 ##### target
 
 > **target**: [`TargetArgs`](#targetargs)
@@ -71,6 +77,12 @@ The pk of the object to be acted upon.
 > **pkKey**: `string`
 
 The key name of the primary key.
+
+##### setCancelled
+
+> **setCancelled**: [`SetCancelledFn`](commonCrud.md#setcancelledfn)
+
+Marks this run cancelled from inside the handler.
 
 ##### target
 
@@ -159,6 +171,12 @@ The pk of the object to be acted upon.
 > **pkKey**: `string`
 
 The key name of the primary key.
+
+##### setCancelled
+
+> **setCancelled**: [`SetCancelledFn`](commonCrud.md#setcancelledfn)
+
+Marks this run cancelled from inside the handler.
 
 ##### target
 
@@ -288,6 +306,12 @@ The pk of the object to be acted upon.
 
 The key name of the primary key.
 
+##### setCancelled
+
+> **setCancelled**: [`SetCancelledFn`](commonCrud.md#setcancelledfn)
+
+Marks this run cancelled from inside the handler.
+
 ##### target
 
 > **target**: [`TargetArgs`](#targetargs)
@@ -330,6 +354,12 @@ The pk of the object to be acted upon.
 
 The key name of the primary key.
 
+##### setCancelled
+
+> **setCancelled**: [`SetCancelledFn`](commonCrud.md#setcancelledfn)
+
+Marks this run cancelled from inside the handler.
+
 ##### target
 
 > **target**: [`TargetArgs`](#targetargs)
@@ -371,6 +401,12 @@ Your listing or retrieval arguments, passed through to the crud handlers.
 > **pkKey**: `string`
 
 The key name of the primary key.
+
+##### setCancelled
+
+> **setCancelled**: [`SetCancelledFn`](commonCrud.md#setcancelledfn)
+
+Marks this run cancelled from inside the handler.
 
 ##### target
 
