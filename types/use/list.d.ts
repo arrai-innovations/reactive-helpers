@@ -1,24 +1,3 @@
-/**
- * Provides a comprehensive Vue 3 composable function for managing a list of objects. This module orchestrates several
- * list-related functionalities including instance creation, subscriptions, relationships, calculations, filtering, searching,
- * and sorting. It's designed to handle complex state management seamlessly in larger applications, ensuring optimal
- * performance and reactivity.
- *
- * @module use/list.js
- */
-/**
- * Custom error class for use list errors.
- */
-export class ListError extends Error {
-    /**
-     * Creates a new ListError.
-     *
-     * @param {string} message - The error message.
-     * @param {string} code - The error code.
-     */
-    constructor(message: string, code: string);
-    code: string;
-}
 export function useLists(listOptions: {
     [key: string]: ListOptions;
 }): {

@@ -18,23 +18,6 @@ import { warnWrongSideRuleOptions } from "../utils/relatedCalculatedHelpers.js";
  */
 
 /**
- * Custom error class for use list errors.
- */
-export class ListError extends Error {
-    /**
-     * Creates a new ListError.
-     *
-     * @param {string} message - The error message.
-     * @param {string} code - The error code.
-     */
-    constructor(message, code) {
-        super(message);
-        this.name = "ListError";
-        this.code = code;
-    }
-}
-
-/**
  * @typedef {object} ListRawProps - Defines properties for configuring the list management system.
  * @property {object} params - The arguments to pass to the registered list crud handlers, related to the list itself.
  * @property {string} pkKey - The primary key for the list items.
@@ -145,7 +128,6 @@ export const useLists = (listOptions) => {
  *
  * @param {ListOptions} options - The options for the list./.
  * @returns {ListManager} - The managed stack of list-related composable functions.
- * @throws {ListError} - If required options are not provided.
  */
 export const useList = ({ props, handlers = {}, searchThrottle = 500, sortThrottleWait, searchShowAllWhenEmpty }) => {
     /** @type {ListManaged} */
