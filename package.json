@@ -4,6 +4,7 @@
     "description": "VueJS 3 utility composition functions to help manipulate objects and lists.",
     "main": "index.js",
     "type": "module",
+    "sideEffects": false,
     "types": "types/index.d.ts",
     "publishConfig": {
         "registry": "https://registry.npmjs.org/",
@@ -40,8 +41,9 @@
         "benchmark:observed:ci": "vitest bench --run tests/benchmarks/listObserved.bench.js --outputJson benchmark-results/list-observed.json",
         "benchmark:stream": "vitest bench --run tests/benchmarks/listStream.bench.js",
         "benchmark:stream:ci": "vitest bench --run tests/benchmarks/listStream.bench.js --outputJson benchmark-results/list-stream.json",
+        "bundle:check": "node check_bundle.js",
         "test": "vitest",
-        "eslint": "eslint --fix index.js config/**/*.js tests/**/*.js use/**/*.js utils/**/*.js",
+        "eslint": "eslint --fix index.js check_bundle.js bundle-fixtures/**/*.js config/**/*.js tests/**/*.js use/**/*.js utils/**/*.js",
         "prettier": "prettier --write .",
         "coverage": "vitest run --coverage=true",
         "prepare": "lefthook install",
