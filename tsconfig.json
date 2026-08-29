@@ -12,10 +12,7 @@
         "target": "es2023",
         "types": ["vitest/globals"],
         "skipLibCheck": true,
-        "declaration": true,
-        "emitDeclarationOnly": true,
-        "outDir": "types",
-        "declarationMap": false,
+        "noEmit": true,
         "noErrorTruncation": true
     },
     "include": ["config/**/*.js", "use/**/*.js", "utils/**/*.js", "tests/**/*.js", "tests/unit/setup.d.ts", "index.js"]

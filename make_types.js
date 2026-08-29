@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 import path from "path";
 import { execSync } from "child_process";
+import fs from "fs";
 import { fileURLToPath } from "url";
 import { stripTypedefSeparatorDashes } from "./strip_typedef_dashes.js";
 
@@ -20,7 +21,8 @@ const __dirname = path.dirname(__filename);
 const typesDir = path.join(__dirname, "types");
 
 async function main() {
-    run("pnpm exec tsc");
+    fs.rmSync(typesDir, { recursive: true, force: true });
+    run("pnpm exec tsc -p tsconfig.types.json");
     const filesChanged = stripTypedefSeparatorDashes(typesDir);
     console.log(`[${scriptName}] ${BLUE}Cleaned typedef separator dashes in ${filesChanged} file(s)${RESET}`);
     console.log(`[${scriptName}] ${BLUE}Types generated in types/${RESET}`);

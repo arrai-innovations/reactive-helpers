@@ -18,6 +18,9 @@ function run(cmd, opts = {}) {
 }
 
 async function main() {
+    console.log(`[${scriptName}] ${BLUE}Running source and test type check...${RESET}`);
+    run("pnpm exec tsc -p tsconfig.json");
+
     if (skipGen) {
         console.log(`[${scriptName}] ${BLUE}Skipping type generation (--skip-gen)${RESET}`);
     } else {
