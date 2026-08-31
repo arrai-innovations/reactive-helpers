@@ -1,0 +1,12 @@
+{
+    "extends": "./tsconfig.json",
+    "compilerOptions": {
+        "types": [],
+        "noEmit": false,
+        "declaration": true,
+        "emitDeclarationOnly": true,
+        "outDir": "types",
+        "declarationMap": false
+    },
+    "include": ["config/**/*.js", "use/**/*.js", "utils/**/*.js", "index.js"]
+}
