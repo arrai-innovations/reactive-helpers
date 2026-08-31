@@ -69,6 +69,9 @@ jobs:
             - run:
                   name: Check list insertion and streaming scaling
                   command: pnpm benchmark:check
+            - run:
+                  name: Check package tree shaking
+                  command: pnpm bundle:check
             - store_artifacts:
                   path: benchmark-results
                   destination: benchmark-results

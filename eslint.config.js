@@ -21,7 +21,14 @@ export default [
     // non-tests
     {
         name: "non-tests",
-        files: ["config/**/*.js", "use/**/*.js", "utils/**/*.js", "index.js"],
+        files: [
+            "bundle-fixtures/**/*.js",
+            "check_bundle.js",
+            "config/**/*.js",
+            "use/**/*.js",
+            "utils/**/*.js",
+            "index.js",
+        ],
         plugins: {
             ...pluginVue.configs["flat/recommended"].reduce((acc, config) => {
                 return { ...acc, plugins: { ...acc.plugins, ...config.plugins } };

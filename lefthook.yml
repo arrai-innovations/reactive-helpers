@@ -11,7 +11,7 @@ pre-commit:
                 if [ -z "${CI:-}" ]; then
                   exit 0
                 fi
-                pnpm exec eslint --cache index.js config tests use utils
+                pnpm exec eslint --cache index.js check_bundle.js bundle-fixtures config tests use utils
         prettier:
             run: |
                 if [ -z "${CI:-}" ]; then
