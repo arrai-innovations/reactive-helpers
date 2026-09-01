@@ -2,8 +2,8 @@ import identity from "lodash-es/identity.js";
 import isEmpty from "lodash-es/isEmpty.js";
 import isEqual from "lodash-es/isEqual.js";
 import { computed, effectScope, nextTick, onScopeDispose, reactive, readonly, toRef, watch } from "vue";
+import { deepUnref } from "../utils/deepUnref.js";
 import { tryOnActivated, tryOnDeactivated } from "../utils/keepAliveTry.js";
-import { deepUnref } from "vue-deepunref";
 import { useLoadingError } from "./loadingError.js";
 
 /**
@@ -72,7 +72,7 @@ export class CancellableIntentError extends Error {
 /**
  * @typedef {object} CancellableIntentOptions - The options for the cancellable intent.
  * @property {AwaitableWithCancel} awaitableWithCancel - The function that returns a promise that can be cancelled. Receives the run ID as an argument.
- * @property {WatchGuardArguments} [watchArguments={}] - The reactive object to watch for changes.
+ * @property {WatchGuardArguments} [watchArguments={}] - The reactive object to watch for changes. Replace watch argument values rather than mutating them. In-place `Map` and `Set` mutations are not detected.
  * @property {WatchGuardArguments} [guardArguments={}] - The reactive object to watch for truthiness before running the intent.
  * @property {boolean} [clearActiveOnResolved=true] - Whether to clear the active state when the promise resolves.
  */

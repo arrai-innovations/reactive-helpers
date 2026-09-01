@@ -128,7 +128,7 @@ The reactive object to watch for truthiness before running the intent.
 
 > `optional` **watchArguments?**: `any`
 
-The reactive object to watch for changes.
+The reactive object to watch for changes. Replace watch argument values rather than mutating them. In-place `Map` and `Set` mutations are not detected.
 
 ***
 

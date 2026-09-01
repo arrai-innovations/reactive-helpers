@@ -108,8 +108,7 @@
     "dependencies": {
         "@jcoreio/async-throttle": "^1.7.0",
         "browser-util-inspect": "^0.2.0",
-        "flexsearch": "0.7.21",
-        "vue-deepunref": "^1.0.1"
+        "flexsearch": "0.7.21"
     },
     "peerDependencies": {
         "@vueuse/core": "^14.0.0",
