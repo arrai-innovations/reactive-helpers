@@ -191,6 +191,30 @@ describe("use/cancellableIntent", () => {
             expect(subscribeIntent.state.error).toBe(mockError);
         });
     });
+    describe("Watch arguments", () => {
+        scopedIt.each([
+            ["Date", () => new Date("2020-01-01"), () => new Date("2099-12-31")],
+            ["Map", () => new Map([["key", 1]]), () => new Map([["key", 2]])],
+            ["Set", () => new Set([1]), () => new Set([2])],
+        ])("re-runs when a %s watch argument is replaced", async (name, makeInitial, makeReplacement) => {
+            const watched = ref(makeInitial());
+            const awaitableWithCancel = vi.fn().mockResolvedValue();
+
+            useCancellableIntent({
+                watchArguments: { watched },
+                awaitableWithCancel,
+            });
+
+            await flushPromises();
+            expect(awaitableWithCancel).toHaveBeenCalledTimes(1);
+
+            watched.value = makeReplacement();
+            await flushPromises();
+
+            expect(awaitableWithCancel).toHaveBeenCalledTimes(2);
+        });
+    });
+
     describe("Run ID tracking", () => {
         scopedIt("increments runId on each new watchArguments change", async () => {
             const refVal = ref(1);

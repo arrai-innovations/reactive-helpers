@@ -1,4 +1,4 @@
-import { deepUnref as _deepUnref } from "vue-deepunref";
+import { unref } from "vue";
 
 /**
  * Recursively unwraps refs from a nested object, array, or primitive.
@@ -6,32 +6,49 @@ import { deepUnref as _deepUnref } from "vue-deepunref";
  * @template T
  * @typedef {T extends import('vue').Ref<infer U>
  *   ? DeepUnwrap<U>
- *   : T extends Array<infer V>
- *     ? Array<DeepUnwrap<V>>
- *     : T extends object
- *       ? { [K in keyof T]: DeepUnwrap<T[K]> }
- *       : T
+ *   : T extends (Date | RegExp | Map<any, any> | Set<any> | WeakMap<object, any> | WeakSet<object>)
+ *     ? T
+ *     : T extends Array<infer V>
+ *       ? Array<DeepUnwrap<V>>
+ *       : T extends object
+ *         ? { [K in keyof T]: DeepUnwrap<T[K]> }
+ *         : T
  * } DeepUnwrap - A recursive type that unwraps Vue refs from a nested object, array, or primitive.
  */
 
 /**
- * Safe, recursively-typed deep unref.
+ * Safe, recursively-typed deep unref. Preserves `Date`, `RegExp`, `Map`, `Set`, `WeakMap`, and `WeakSet` values by
+ * identity.
  *
  * @template T
  * @param {T} val - The value to deeply unwrap.
  * @returns {DeepUnwrap<T>|T} - The deeply unwrapped value.
  */
 export const deepUnref = (val) => {
+    const unrefedVal = unref(val);
+
     if (
-        val instanceof Date ||
-        val instanceof RegExp ||
-        val instanceof Map ||
-        val instanceof Set ||
-        val instanceof WeakMap ||
-        val instanceof WeakSet
+        unrefedVal instanceof Date ||
+        unrefedVal instanceof RegExp ||
+        unrefedVal instanceof Map ||
+        unrefedVal instanceof Set ||
+        unrefedVal instanceof WeakMap ||
+        unrefedVal instanceof WeakSet
     ) {
-        return val;
+        return unrefedVal;
     }
 
-    return _deepUnref(val);
+    if (Array.isArray(unrefedVal)) {
+        const unrefedArray = [];
+        unrefedVal.forEach((value) => unrefedArray.push(deepUnref(value)));
+        return /** @type {DeepUnwrap<T>} */ (unrefedArray);
+    }
+
+    if (unrefedVal !== null && typeof unrefedVal === "object") {
+        return /** @type {DeepUnwrap<T>} */ (
+            Object.fromEntries(Object.entries(unrefedVal).map(([key, value]) => [key, deepUnref(value)]))
+        );
+    }
+
+    return unrefedVal;
 };

@@ -35,7 +35,7 @@
 /**
  * @typedef {object} CancellableIntentOptions - The options for the cancellable intent.
  * @property {AwaitableWithCancel} awaitableWithCancel - The function that returns a promise that can be cancelled. Receives the run ID as an argument.
- * @property {WatchGuardArguments} [watchArguments={}] - The reactive object to watch for changes.
+ * @property {WatchGuardArguments} [watchArguments={}] - The reactive object to watch for changes. Replace watch argument values rather than mutating them. In-place `Map` and `Set` mutations are not detected.
  * @property {WatchGuardArguments} [guardArguments={}] - The reactive object to watch for truthiness before running the intent.
  * @property {boolean} [clearActiveOnResolved=true] - Whether to clear the active state when the promise resolves.
  */
@@ -194,7 +194,7 @@ export type CancellableIntentOptions = {
      */
     awaitableWithCancel: AwaitableWithCancel;
     /**
-     * The reactive object to watch for changes.
+     * The reactive object to watch for changes. Replace watch argument values rather than mutating them. In-place `Map` and `Set` mutations are not detected.
      */
     watchArguments?: WatchGuardArguments;
     /**

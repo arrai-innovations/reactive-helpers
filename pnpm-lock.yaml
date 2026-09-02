@@ -38,9 +38,6 @@ importers:
       vue:
         specifier: ^3.5.13
         version: 3.5.38(typescript@5.9.3)
-      vue-deepunref:
-        specifier: ^1.0.1
-        version: 1.0.1(typescript@5.9.3)
     devDependencies:
       '@arrai-innovations/commitlint-config':
         specifier: ^3.0.0
@@ -2967,9 +2964,6 @@ packages:
 
   vue-component-type-helpers@3.3.5:
     resolution: {integrity: sha512-Fe1jyPJoUGpJOYKOri44jduR7My4yYINOMJISuMAbmrs+L5LbIDUc8NTWZYY3EJLK0yPLuCmcd5zoCsE4k2/KA==}
-
-  vue-deepunref@1.0.1:
-    resolution: {integrity: sha512-cZNaEBvG1O0RtdcxLf1icqOe6UhrAPzsByyhJ85nRSA/PnGh0VKoI9+T8S5mcoI3pgz0T6ci2PCn2zy4PATRjg==}
 
   vue-eslint-parser@10.4.1:
     resolution: {integrity: sha512-Gk6gRDj0n/fkRa3C3l0bBheoBckUq/Rs0F/TvMWIS6nzzx67amAViMe9CkNgsP2tXyQONvGiHQESHwFtZ3aYDA==}
@@ -5926,12 +5920,6 @@ snapshots:
       - msw
 
   vue-component-type-helpers@3.3.5: {}
-
-  vue-deepunref@1.0.1(typescript@5.9.3):
-    dependencies:
-      vue: 3.5.38(typescript@5.9.3)
-    transitivePeerDependencies:
-      - typescript
 
   vue-eslint-parser@10.4.1(eslint@9.39.4(jiti@2.6.1)(supports-color@7.2.0))(supports-color@7.2.0):
     dependencies:

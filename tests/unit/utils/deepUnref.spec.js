@@ -1,31 +1,56 @@
+import { deepUnref } from "../../../utils/deepUnref.js";
 import { ref } from "vue";
 
-// We'll set up the mock for vue-deepunref only in the first test
-
 describe("utils/deepUnref", () => {
-    afterEach(() => {
-        vi.resetModules();
-        vi.restoreAllMocks();
-        vi.doUnmock("vue-deepunref");
+    it("recursively unwraps refs into fresh objects and arrays", () => {
+        const input = {
+            direct: ref(1),
+            nested: { value: ref(2) },
+            list: [ref(3), { value: ref(4) }],
+        };
+
+        const result = deepUnref(input);
+
+        expect(result).toEqual({
+            direct: 1,
+            nested: { value: 2 },
+            list: [3, { value: 4 }],
+        });
+        expect(result).not.toBe(input);
+        expect(result.nested).not.toBe(input.nested);
+        expect(result.list).not.toBe(input.list);
+        expect(result.list[1]).not.toBe(input.list[1]);
     });
 
-    it("bails out for built-in complex objects", async () => {
-        const mockDeepUnref = vi.fn();
-        vi.doMock("vue-deepunref", () => ({ deepUnref: mockDeepUnref }));
-        const { deepUnref } = await import("../../../utils/deepUnref.js");
-
-        const specials = [new Date(), /abc/, new Map(), new Set(), new WeakMap(), new WeakSet()];
-
-        for (const val of specials) {
-            expect(deepUnref(val)).toBe(val);
-        }
-        expect(mockDeepUnref).not.toHaveBeenCalled();
+    it.each([
+        ["string", "value"],
+        ["number", 0],
+        ["boolean", false],
+        ["null", null],
+        ["undefined", undefined],
+    ])("returns an unwrapped %s value", (name, value) => {
+        expect(deepUnref(value)).toBe(value);
+        expect(deepUnref(ref(value))).toBe(value);
     });
 
-    it("unwraps refs via vue-deepunref", async () => {
-        const { deepUnref } = await import("../../../utils/deepUnref.js");
+    it.each([
+        ["Date", () => new Date()],
+        ["RegExp", () => /abc/],
+        ["Map", () => new Map()],
+        ["Set", () => new Set()],
+        ["WeakMap", () => new WeakMap()],
+        ["WeakSet", () => new WeakSet()],
+    ])("preserves %s values throughout nested inputs", (name, makeValue) => {
+        const directValue = makeValue();
+        expect(deepUnref(directValue)).toBe(directValue);
 
-        const input = { a: ref(1) };
-        expect(deepUnref(input)).toEqual({ a: 1 });
+        const refValue = ref(makeValue());
+        expect(deepUnref(refValue)).toBe(refValue.value);
+
+        const nestedValue = makeValue();
+        expect(deepUnref({ nestedValue }).nestedValue).toBe(nestedValue);
+
+        const arrayValue = makeValue();
+        expect(deepUnref([arrayValue])[0]).toBe(arrayValue);
     });
 });

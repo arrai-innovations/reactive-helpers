@@ -24,7 +24,6 @@ const external = [
     "@vueuse/core",
     "lodash-es",
     /^lodash-es\//,
-    "vue-deepunref",
     "browser-util-inspect",
     "@jcoreio/async-throttle",
     FORBIDDEN_MODULE,
