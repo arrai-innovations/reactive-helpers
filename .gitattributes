@@ -4,3 +4,6 @@ types/**/*.d.ts.map linguist-generated
 # Mark the generated API reference as generated. Everything else under docs/ is
 # hand-authored, including docs/reference/index.md and docs/reference/glossary.md.
 docs/reference/api/**/*.md linguist-generated
+# Diff check_benchmark.js as text. Its history holds a revision whose map key separator was a literal
+# NUL byte, and git renders a diff as binary when either side of it is.
+check_benchmark.js diff
