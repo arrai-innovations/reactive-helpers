@@ -24,12 +24,15 @@ const KEY_SEPARATOR = "\u0000";
 // build. How the timing responds to a larger input can: inserting a page should cost time
 // proportional to the page, so doubling the page should roughly double the time. Processing each
 // record against the whole accumulated collection instead makes this ratio grow with the page size,
-// which is the regression these thresholds are set to catch. Recorded ratios at the time of writing
-// were 1.7 to 2.1 for the batched implementation and 3.7 for the per-record one.
+// which is the regression these thresholds are set to catch. Recorded ratios were 1.8 to 2.2 for the
+// batched implementation and 3.7 for the per-record one.
 //
-// Every threshold below carries the ratio measured when it was set, so a later reading can tell a
-// drifting cost from a machine that is simply slower. Each leaves roughly a quarter of headroom over
-// the measurement, which covers the run-to-run error these benchmarks report.
+// Every threshold below carries the range measured when it was set, so a later reading can tell a
+// drifting cost from a machine that is simply slower. Each leaves roughly a third of headroom over the
+// top of that range, which covers the run-to-run error these benchmarks report and the wider spread of
+// a shared CI executor. Those ranges come from repeated full-suite runs under the sampling floor set in
+// `tests/benchmarks/fixtures.js`. Readings taken before that floor ran two to three times noisier and
+// do not compare.
 //
 // What this file cannot gate: notification fan-out. Timing separates it far too weakly to threshold.
 // The defect fixed in #175 delivered 1,120,016 notifications where the fix delivers 16, and bought
@@ -61,8 +64,8 @@ const CHECKS = [
     },
     // Streaming equal pages into a collection that grows with every arrival. A page costing the same
     // at the end of a stream as at the start makes the total scale with the page count; a page costing
-    // more as the collection grows makes it scale faster, which a single total hides. Measured 2.38x
-    // to 2.51x and 6.78x to 7.56x against page counts of 1.8x and 3.4x, so per-page cost does still
+    // more as the collection grows makes it scale faster, which a single total hides. Measured 2.19x
+    // to 2.42x and 5.86x to 6.87x against page counts of 1.8x and 3.4x, so per-page cost does still
     // grow here. That is the related and calculated handlers rescanning the collection, tracked
     // separately as the largest remaining win; these limits hold the shape where it is until that
     // lands. The longer stream is the noisiest measurement in the file, which is what the wider gap
@@ -83,9 +86,11 @@ const CHECKS = [
     },
     // The same shape with subscribers as an explicit axis. Both settings are gated, because a cost
     // that accumulates only once something reads the collection back is invisible to every other
-    // benchmark here. Measured 2.38x to 2.53x unobserved and 2.62x to 2.76x observed over several
-    // runs, against a page count of 2x. Those spreads are why neither is tighter: the pre-#175 code
-    // measures 2.78x observed, which overlaps the range the fixed code produces.
+    // benchmark here. Measured 2.21x to 2.33x unobserved and 2.37x to 2.58x observed over several
+    // runs, against a page count of 2x. Neither is tighter because the two states sit close together:
+    // the pre-#175 code measured 2.78x observed, just above the range the fixed code produces. Better
+    // sampling narrows that gap but cannot open it, which is why the counting spec named above is the
+    // real gate and these two report the subscriber axis rather than police it.
     {
         report: OBSERVED,
         group: "useList streamed pages, unobserved",
@@ -101,14 +106,18 @@ const CHECKS = [
         maxRatio: 3.4,
     },
     // Composition rather than scaling: every layer over the bare collection, inserting one fixed page.
-    // A smoke limit, not a tight one. Measured 36.7x to 44.7x, dominated by the related layer, and set
-    // to catch a layer becoming disproportionate rather than to hold any layer to a budget.
+    // A smoke limit, not a tight one. Measured 50.5x to 61.6x, dominated by the related layer, and set
+    // to catch a layer becoming disproportionate rather than to hold any layer to a budget. The bare
+    // collection runs in about 2ms, the cheapest benchmark in the suite, so it gained the most from the
+    // sampling floor: its median settled once it was measured over seconds rather than 20ms, which
+    // raised this ratio from the 36.7x to 44.7x recorded under the old fixed iteration count. What each
+    // layer costs did not change.
     {
         report: LAYERS,
         group: "useList layers inserting 1000 rows",
         smaller: "instance only",
         larger: "up to sort",
-        maxRatio: 60,
+        maxRatio: 85,
     },
 ];
 
