@@ -43,6 +43,8 @@ _Actions potentially required by implementers are marked with italics._
 - Benchmarks now sample for at least three seconds, retaining the ten-iteration minimum. Refreshed measured ranges and
   adjusted the layer composition threshold to match the more stable baseline. Benchmark script diffs now render as text.
 - Updated development dependency overrides for `browserslist` and `fast-uri` security fixes.
+- Updated Vitest and both coverage providers to the patched 4.1.11 release or later, and raised the `js-yaml` override
+  to 4.3.2 or later. These development dependency updates address file-read and CPU exhaustion advisories.
 
 ## v24.1.0 (2026-08-24)
 
