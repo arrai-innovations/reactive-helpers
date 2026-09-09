@@ -229,7 +229,7 @@ describe("use/listFilter", () => {
                 relatedObjectsRules: {
                     relatedRuleName: {
                         objects: relatedList.state.objects,
-                        pkKey: "related_id",
+                        fkKey: "related_id",
                     },
                 },
             });

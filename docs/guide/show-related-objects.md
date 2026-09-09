@@ -72,8 +72,8 @@ this side map, not on the row.
 On a related rule, `fkKey` names the foreign-key field on the source row. Here `companyId` is the field on each contact
 that points at a company. Omit `fkKey` and it defaults to the rule name.
 
-Rules written before v23 name this option `pkKey`. That name still works and resolves the same field, with a console
-warning, and it is removed in v25. Rename it to `fkKey`.
+Rules written before v23 name this option `pkKey`. The alias was removed in v25. Rename it to `fkKey` inside related
+rules, keeping instance-level `props.pkKey` unchanged.
 
 :::
 

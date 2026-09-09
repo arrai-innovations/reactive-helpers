@@ -5,8 +5,6 @@ import { normalizePk } from "../utils/refIfReactive.js";
 import { proxyRunning } from "../utils/proxyRunning.js";
 import {
     getObjectRelatedByKey,
-    ruleForeignKey,
-    warnDeprecatedRulePkKey,
     warnWrongChainingPrefix,
     warnWrongSideRuleOptions,
 } from "../utils/relatedCalculatedHelpers.js";
@@ -47,8 +45,6 @@ export class ObjectRelatedError extends Error {
  * @typedef {object} ObjectRelatedRule - The rule for defining relationships for the managed object to other collections of objects.
  * @property {string} [fkKey] - The foreign key on the managed object that corresponds to the key in the related
  *  object. Defaults to the rule's own key when omitted.
- * @property {string} [pkKey] - Deprecated alias for `fkKey`, removed in v25. The option never named a primary key.
- *  A rule setting both uses `fkKey`.
  * @property {import('./listInstance.js').ObjectsByPk} objects - The related objects, indexed by the key in the related object.
  * @property {string[]} [order] - The order of the related objects, if the related objects are an array.
  */
@@ -236,8 +232,6 @@ export function useObjectRelated(options) {
     const es = effectScope();
     /** @type {Set<string>} */
     const warnedChainingPrefixes = new Set();
-    /** @type {Set<string>} */
-    const warnedDeprecatedPkKeys = new Set();
     /** @type {import('vue').Ref<boolean|undefined>} */
     const parentRunning = ref(undefined);
     proxyRunning(parentState, "running", parentRunning);
@@ -263,12 +257,11 @@ export function useObjectRelated(options) {
 
     function applyRule(ruleKey) {
         const rule = toRef(state.relatedObjectRules, ruleKey);
-        warnDeprecatedRulePkKey("useObjectRelated", ruleKey, unref(rule), warnedDeprecatedPkKeys);
-        warnWrongChainingPrefix("useObjectRelated", ruleKey, ruleForeignKey(unref(rule)), warnedChainingPrefixes);
+        warnWrongChainingPrefix("useObjectRelated", ruleKey, unref(rule)?.fkKey, warnedChainingPrefixes);
         const originalObjectRef = toRef(parentState, "object");
         const relatedObjectRef = toRef(state, "relatedObject");
         internalState.objAndKeyForRule[ruleKey] = computed(() => {
-            const ruleFkKey = ruleForeignKey(unref(rule)) || ruleKey;
+            const ruleFkKey = unref(rule)?.fkKey || ruleKey;
             return getObjectRelatedByKey(unref(originalObjectRef), unref(relatedObjectRef), ruleFkKey);
         });
         internalState.fkForRule[ruleKey] = computed(() => {

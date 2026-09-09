@@ -2,6 +2,48 @@
 
 _Actions potentially required by implementers are marked with italics._
 
+## v25.0.0 (2026-09-09)
+
+### Breaking Changes
+
+- Removed the related-rule `pkKey` alias from `useListRelated` and `useObjectRelated`, as scheduled for v25. Rules now
+  read only `fkKey`, defaulting to the rule name when it is omitted. _Rename `pkKey` to `fkKey` inside
+  `relatedObjectsRules` and `relatedObjectRules`. Keep the instance-level `props.pkKey`, which still names the primary
+  key. Rules carrying only the removed alias now resolve against the rule name and may return missing or different
+  related records._
+
+- Removed the `ListError` export and its stale `useList` throws documentation. The class was exported from the package
+  root, but `useList` did not throw it. _Remove imports and checks for `ListError`. If application code constructs or
+  extends it, define an application-owned error class instead._
+
+### Fixes
+
+- `useCancellableIntent` now detects changes when a `Date`, `Map`, or `Set` watch argument is replaced with a different
+  value. These values were previously lost during deep unwrapping, so the intent could miss the change. _Replace watch
+  argument values rather than mutating them. In-place `Map` and `Set` mutations are not detected._
+
+- `deepUnref` now preserves `Date`, `RegExp`, `Map`, `Set`, `WeakMap`, and `WeakSet` values by identity throughout
+  nested objects and arrays, including values wrapped in refs. Previously, the preservation check applied only to the
+  original top-level input. The recursive return type now preserves these types too. The implementation no longer
+  depends on `vue-deepunref`.
+
+- Declared the package side-effect free so bundlers can discard unused modules when importing from the package root.
+- Published TypeScript declarations now cover only shipped modules. Test and benchmark declarations are no longer
+  included in the package.
+
+### Documentation
+
+- Clarified that `isReactiveTyped` preserves Vue's runtime `isReactive` check while providing a TypeScript type
+  predicate for narrowing.
+
+### Testing and Maintenance
+
+- Added regression coverage for watch argument replacements and recursive `deepUnref` traversal, plus a bundle check for
+  tree shaking imports from the package root.
+- Benchmarks now sample for at least three seconds, retaining the ten-iteration minimum. Refreshed measured ranges and
+  adjusted the layer composition threshold to match the more stable baseline. Benchmark script diffs now render as text.
+- Updated development dependency overrides for `browserslist` and `fast-uri` security fixes.
+
 ## v24.1.0 (2026-08-24)
 
 ### Fixes

@@ -131,8 +131,6 @@ export class ObjectRelatedError extends Error {
  * @typedef {object} ObjectRelatedRule - The rule for defining relationships for the managed object to other collections of objects.
  * @property {string} [fkKey] - The foreign key on the managed object that corresponds to the key in the related
  *  object. Defaults to the rule's own key when omitted.
- * @property {string} [pkKey] - Deprecated alias for `fkKey`, removed in v25. The option never named a primary key.
- *  A rule setting both uses `fkKey`.
  * @property {import('./listInstance.js').ObjectsByPk} objects - The related objects, indexed by the key in the related object.
  * @property {string[]} [order] - The order of the related objects, if the related objects are an array.
  */
@@ -224,11 +222,6 @@ export type ObjectRelatedRule = {
      * object. Defaults to the rule's own key when omitted.
      */
     fkKey?: string;
-    /**
-     * Deprecated alias for `fkKey`, removed in v25. The option never named a primary key.
-     * A rule setting both uses `fkKey`.
-     */
-    pkKey?: string;
     /**
      * The related objects, indexed by the key in the related object.
      */

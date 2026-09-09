@@ -96,7 +96,7 @@ describe("use/list.js", () => {
             pkKey: "id",
             intendToList: true,
             intendToSubscribe: false,
-            relatedObjectsRules: { r1: { pkKey: "fk", objects: {}, order: [] } },
+            relatedObjectsRules: { r1: { fkKey: "fk", objects: {}, order: [] } },
             calculatedObjectsRules: {
                 c1: () => {},
             },

@@ -296,7 +296,7 @@ describe("use/useListSort", () => {
             relatedObjectsRules: reactive({
                 relatedItemName: {
                     objects: relatedListInstance.state.objects,
-                    pkKey: "relatedItem",
+                    fkKey: "relatedItem",
                 },
             }),
         });

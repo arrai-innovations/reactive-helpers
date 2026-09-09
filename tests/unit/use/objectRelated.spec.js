@@ -37,9 +37,9 @@ describe("use/objectRelated", () => {
             3: { id: "3", name: "three" },
         };
         const relatedObjectRules = reactive({
-            friend: { pkKey: "friend_id", objects: relatedObjects },
-            friends: { pkKey: "friend_ids", objects: relatedObjects, order: ["3", "2"] },
-            friendAgain: { pkKey: "relatedItem.friends.id", objects: relatedObjects, order: ["3", "2"] },
+            friend: { fkKey: "friend_id", objects: relatedObjects },
+            friends: { fkKey: "friend_ids", objects: relatedObjects, order: ["3", "2"] },
+            friendAgain: { fkKey: "relatedItem.friends.id", objects: relatedObjects, order: ["3", "2"] },
         });
         const objectRelated = useObjectRelated({ parentState, relatedObjectRules });
         await nextTick();
@@ -84,11 +84,11 @@ describe("use/objectRelated", () => {
         ]);
     });
 
-    scopedIt("defaults a rule's foreign key to the rule name when pkKey is omitted", async () => {
+    scopedIt("defaults a rule's foreign key to the rule name when fkKey is omitted", async () => {
         const parentState = createParentState();
         const relatedObjects = { 2: { id: "2", name: "two" } };
         const relatedObjectRules = reactive({
-            // No pkKey: the rule name "friend_id" is used as the foreign-key field.
+            // No fkKey: the rule name "friend_id" is used as the foreign-key field.
             friend_id: { objects: relatedObjects },
         });
         const objectRelated = useObjectRelated({ parentState, relatedObjectRules });
@@ -104,14 +104,14 @@ describe("use/objectRelated", () => {
         };
         /** @type {import("../../../use/objectRelated.js").ObjectRelatedRawRules} */
         const relatedObjectRules = reactive({
-            friend: { pkKey: "friend_id", objects: relatedObjects, order: [] },
+            friend: { fkKey: "friend_id", objects: relatedObjects, order: [] },
         });
         const objectRelated = useObjectRelated({ parentState, relatedObjectRules });
         await nextTick();
         expect(deepUnref(objectRelated.state.relatedObject.friend)).toEqual(relatedObjects[2]);
         expect(objectRelated.state.relatedObject.friends).toBeUndefined();
 
-        relatedObjectRules.friends = { pkKey: "friend_ids", objects: relatedObjects, order: [] };
+        relatedObjectRules.friends = { fkKey: "friend_ids", objects: relatedObjects, order: [] };
         await nextTick();
         expect(deepUnref(objectRelated.state.relatedObject.friends)).toEqual([relatedObjects[2], relatedObjects[3]]);
 
@@ -122,8 +122,8 @@ describe("use/objectRelated", () => {
         const parentState = createParentState();
         const relatedObjects = { 2: { id: "2" }, 3: { id: "3" } };
         const relatedObjectRules = reactive({
-            friend: { pkKey: "friend_id", objects: relatedObjects },
-            friends: { pkKey: "friend_ids", objects: relatedObjects },
+            friend: { fkKey: "friend_id", objects: relatedObjects },
+            friends: { fkKey: "friend_ids", objects: relatedObjects },
         });
         const objectRelated = useObjectRelated({ parentState, relatedObjectRules });
         await nextTick();
@@ -140,7 +140,7 @@ describe("use/objectRelated", () => {
         const parentState = createParentState();
         const relatedObjectRules = reactive({
             // @ts-ignore - objects is required; this is the failure case
-            friend: { pkKey: "friend_id" },
+            friend: { fkKey: "friend_id" },
         });
         const objectRelated = useObjectRelated({ parentState, relatedObjectRules });
         await nextTick();
@@ -177,24 +177,21 @@ describe("use/objectRelated", () => {
         warnSpy.mockRestore();
     });
 
-    scopedIt("accepts the deprecated pkKey, warning once per rule", async () => {
+    scopedIt.each([undefined, null, ""])("ignores removed pkKey when fkKey is %s", async (fkKey) => {
         const warnSpy = vi.spyOn(console, "warn").mockImplementation(() => {});
         const parentState = createParentState();
-        const relatedObjects = { 2: { id: "2", name: "two" } };
+        const relatedObjects = { 2: { id: "2", name: "two" }, 3: { id: "3", name: "viaRuleName" } };
         const relatedObjectRules = reactive({
-            legacy: { pkKey: "friend_id", objects: relatedObjects },
+            other_id: { pkKey: "friend_id", fkKey, objects: relatedObjects },
         });
         const objectRelated = useObjectRelated({ parentState, relatedObjectRules });
         await nextTick();
-        expect(deepUnref(objectRelated.state.relatedObject.legacy)).toEqual({ id: "2", name: "two" });
-        expect(warnSpy).toHaveBeenCalledWith(
-            '[useObjectRelated] Rule "legacy" uses "pkKey", which is deprecated and will be removed in v25. Rename it to "fkKey", which is what the option has always meant.'
-        );
-        expect(warnSpy).toHaveBeenCalledTimes(1);
+        expect(deepUnref(objectRelated.state.relatedObject.other_id)).toEqual({ id: "3", name: "viaRuleName" });
+        expect(warnSpy).not.toHaveBeenCalled();
         warnSpy.mockRestore();
     });
 
-    scopedIt("prefers fkKey when a rule sets both names, and still warns", async () => {
+    scopedIt("uses fkKey when a rule also carries the removed pkKey", async () => {
         const warnSpy = vi.spyOn(console, "warn").mockImplementation(() => {});
         const parentState = createParentState();
         const relatedObjects = { 2: { id: "2", name: "viaPkKey" }, 3: { id: "3", name: "viaFkKey" } };
@@ -204,9 +201,7 @@ describe("use/objectRelated", () => {
         const objectRelated = useObjectRelated({ parentState, relatedObjectRules });
         await nextTick();
         expect(deepUnref(objectRelated.state.relatedObject.both)).toEqual({ id: "3", name: "viaFkKey" });
-        expect(warnSpy).toHaveBeenCalledWith(
-            '[useObjectRelated] Rule "both" uses "pkKey", which is deprecated and will be removed in v25. Rename it to "fkKey", which is what the option has always meant. This rule sets both, and "fkKey" is the one used.'
-        );
+        expect(warnSpy).not.toHaveBeenCalled();
         warnSpy.mockRestore();
     });
 
@@ -214,7 +209,7 @@ describe("use/objectRelated", () => {
         const parentState = createParentState();
         const relatedObjects = { 2: { id: "2" }, 3: { id: "3" } };
         const rules = reactive({
-            friend: { pkKey: "friend_id", objects: relatedObjects },
+            friend: { fkKey: "friend_id", objects: relatedObjects },
         });
         const or = useObjectRelated({ parentState, relatedObjectRules: rules });
         await nextTick();

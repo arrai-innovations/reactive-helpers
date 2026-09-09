@@ -14,7 +14,7 @@ describe("use/listRelated", () => {
         const watchesModule = await import("../../../utils/watches.js");
         AwaitNot = watchesModule.AwaitNot;
     });
-    scopedIt("defaults a rule's foreign key to the rule name when pkKey is omitted", async () => {
+    scopedIt("defaults a rule's foreign key to the rule name when fkKey is omitted", async () => {
         const mainListInstance = useListInstance({ props: { pkKey: "id" } });
         const relatedListInstance = useListInstance({ props: { pkKey: "id" } });
         mainListInstance.addListObject({ id: "1", name: "main", related_id: "4" });
@@ -22,7 +22,7 @@ describe("use/listRelated", () => {
         const listRelated = useListRelated({
             parentState: mainListInstance.state,
             relatedObjectsRules: {
-                // No pkKey: the rule name "related_id" is used as the foreign-key field.
+                // No fkKey: the rule name "related_id" is used as the foreign-key field.
                 related_id: { objects: relatedListInstance.state.objects },
             },
         });
@@ -50,10 +50,10 @@ describe("use/listRelated", () => {
         const listRelated = useListRelated({
             parentState: mainListInstance.state,
             relatedObjectsRules: {
-                single: { objects: relatedListInstance.state.objects, pkKey: "related_id" },
-                dotted: { objects: relatedListInstance.state.objects, pkKey: "nested.related_id" },
-                many: { objects: relatedListInstance.state.objects, pkKey: "related_items" },
-                none: { objects: relatedListInstance.state.objects, pkKey: "empty_items" },
+                single: { objects: relatedListInstance.state.objects, fkKey: "related_id" },
+                dotted: { objects: relatedListInstance.state.objects, fkKey: "nested.related_id" },
+                many: { objects: relatedListInstance.state.objects, fkKey: "related_items" },
+                none: { objects: relatedListInstance.state.objects, fkKey: "empty_items" },
             },
         });
         await nextTick();
@@ -140,7 +140,7 @@ describe("use/listRelated", () => {
             relatedObjectsRules: {
                 relatedItems: {
                     objects: relatedListInstance.state.objects,
-                    pkKey: "related_items",
+                    fkKey: "related_items",
                     order: toRef(relatedListInstance.state, "order"),
                 },
             },
@@ -206,29 +206,28 @@ describe("use/listRelated", () => {
         expect(warnSpy).toHaveBeenCalledTimes(2);
         warnSpy.mockRestore();
     });
-    scopedIt("accepts the deprecated pkKey, warning once per rule", async () => {
+    scopedIt.each([undefined, null, ""])("ignores removed pkKey when fkKey is %s", async (fkKey) => {
         const warnSpy = vi.spyOn(console, "warn").mockImplementation(() => {});
         const mainListInstance = useListInstance({ props: { pkKey: "id" } });
         const relatedListInstance = useListInstance({ props: { pkKey: "id" } });
-        mainListInstance.addListObject({ id: "1", related_id: "4" });
-        // a second row, so the per-row rule setup does not warn twice
-        mainListInstance.addListObject({ id: "5", related_id: "4" });
+        mainListInstance.addListObject({ id: "1", related_id: "4", legacy: "6" });
+        // Each row resolves the rule name instead of the removed alias.
+        mainListInstance.addListObject({ id: "5", related_id: "4", legacy: "6" });
         relatedListInstance.addListObject({ id: "4", name: "related1" });
+        relatedListInstance.addListObject({ id: "6", name: "viaRuleName" });
         const listRelated = useListRelated({
             parentState: mainListInstance.state,
             relatedObjectsRules: {
-                legacy: { objects: relatedListInstance.state.objects, pkKey: "related_id" },
+                legacy: { objects: relatedListInstance.state.objects, pkKey: "related_id", fkKey },
             },
         });
         await nextTick();
-        expect(deepUnref(listRelated.state.relatedObjects[1].legacy)).toEqual({ id: "4", name: "related1" });
-        expect(warnSpy).toHaveBeenCalledWith(
-            '[useListRelated] Rule "legacy" uses "pkKey", which is deprecated and will be removed in v25. Rename it to "fkKey", which is what the option has always meant.'
-        );
-        expect(warnSpy).toHaveBeenCalledTimes(1);
+        expect(deepUnref(listRelated.state.relatedObjects[1].legacy)).toEqual({ id: "6", name: "viaRuleName" });
+        expect(deepUnref(listRelated.state.relatedObjects[5].legacy)).toEqual({ id: "6", name: "viaRuleName" });
+        expect(warnSpy).not.toHaveBeenCalled();
         warnSpy.mockRestore();
     });
-    scopedIt("prefers fkKey when a rule sets both names, and still warns", async () => {
+    scopedIt("uses fkKey when a rule also carries the removed pkKey", async () => {
         const warnSpy = vi.spyOn(console, "warn").mockImplementation(() => {});
         const mainListInstance = useListInstance({ props: { pkKey: "id" } });
         const relatedListInstance = useListInstance({ props: { pkKey: "id" } });
@@ -243,9 +242,7 @@ describe("use/listRelated", () => {
         });
         await nextTick();
         expect(deepUnref(listRelated.state.relatedObjects[1].both)).toEqual({ id: "4", name: "viaFkKey" });
-        expect(warnSpy).toHaveBeenCalledWith(
-            '[useListRelated] Rule "both" uses "pkKey", which is deprecated and will be removed in v25. Rename it to "fkKey", which is what the option has always meant. This rule sets both, and "fkKey" is the one used.'
-        );
+        expect(warnSpy).not.toHaveBeenCalled();
         warnSpy.mockRestore();
     });
     scopedIt("adds and drops entries as rows and rules change", async () => {
@@ -253,7 +250,7 @@ describe("use/listRelated", () => {
         const relatedListInstance = useListInstance({ props: { pkKey: "id" } });
         relatedListInstance.addListObject({ id: "2", name: "related1" });
         const relatedObjectsRules = reactive({
-            relatedItem: { objects: relatedListInstance.state.objects, pkKey: "related_id" },
+            relatedItem: { objects: relatedListInstance.state.objects, fkKey: "related_id" },
         });
         const listRelated = useListRelated({
             parentState: mainListInstance.state,
@@ -290,7 +287,7 @@ describe("use/listRelated", () => {
             parentState: mainListInstance.state,
             // @ts-ignore - the singular name belongs to useObjectRelated
             relatedObjectRules: {
-                relatedItem: { objects: relatedListInstance.state.objects, pkKey: "related_id" },
+                relatedItem: { objects: relatedListInstance.state.objects, fkKey: "related_id" },
             },
         });
         await nextTick();
@@ -310,8 +307,8 @@ describe("use/listRelated", () => {
             parentState: mainListInstance.state,
             // @ts-ignore - objects is required; this is the failure case
             relatedObjectsRules: {
-                single: { pkKey: "related_id" },
-                many: { pkKey: "related_items" },
+                single: { fkKey: "related_id" },
+                many: { fkKey: "related_items" },
             },
         });
         await nextTick();
@@ -355,11 +352,11 @@ describe("use/listRelated", () => {
             relatedObjectsRules: {
                 relatedItems: {
                     objects: relatedListInstance.state.objects,
-                    pkKey: "related_items",
+                    fkKey: "related_items",
                 },
                 relatedItem: {
                     objects: relatedListInstance.state.objects,
-                    pkKey: "related_id",
+                    fkKey: "related_id",
                 },
             },
         });
@@ -398,7 +395,7 @@ describe("use/listRelated", () => {
         });
     });
     scopedIt(
-        'should allow related objects pkKey to be prefixed with "relatedItem." to reference previously related objects',
+        'should allow related objects fkKey to be prefixed with "relatedItem." to reference previously related objects',
         async () => {
             //
             const mainListInstance = useListInstance({ props: { pkKey: "id" } });
@@ -443,19 +440,19 @@ describe("use/listRelated", () => {
                 relatedObjectsRules: {
                     intermediateItems: {
                         objects: intermediateListInstance.state.objects,
-                        pkKey: "intermediate_ids",
+                        fkKey: "intermediate_ids",
                     },
                     intermediateItem: {
                         objects: intermediateListInstance.state.objects,
-                        pkKey: "intermediate_id",
+                        fkKey: "intermediate_id",
                     },
                     relatedItems: {
                         objects: relatedListInstance.state.objects,
-                        pkKey: "relatedItem.intermediateItems.related_ids",
+                        fkKey: "relatedItem.intermediateItems.related_ids",
                     },
                     relatedItem: {
                         objects: relatedListInstance.state.objects,
-                        pkKey: "relatedItem.intermediateItem.related_id",
+                        fkKey: "relatedItem.intermediateItem.related_id",
                     },
                 },
             });
@@ -592,7 +589,7 @@ describe("use/listRelated", () => {
             const listRelated = useListRelated({
                 parentState: mainListInstance.state,
                 relatedObjectsRules: {
-                    relatedItem: { objects: relatedListInstance.state.objects, pkKey: "related_id" },
+                    relatedItem: { objects: relatedListInstance.state.objects, fkKey: "related_id" },
                 },
             });
             const settled = new AwaitNot({ obj: listRelated.state, prop: "running" });

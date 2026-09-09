@@ -53,8 +53,8 @@ The rule reads the field `fkKey` names, then uses its value to find a record in 
 
 ::: info
 
-Before v23 this option was called `pkKey`, which named a foreign key rather than a primary one. Both names still work,
-`fkKey` wins when a rule sets both, and `pkKey` warns and is removed in v25.
+Before v23 this option was called `pkKey`, which named a foreign key rather than a primary one. The related-rule alias
+was removed in v25. Instance-level `props.pkKey` still names the primary-key field.
 
 :::
 

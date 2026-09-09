@@ -5,8 +5,6 @@ import { normalizePk } from "../utils/refIfReactive.js";
 import { proxyRunning } from "../utils/proxyRunning.js";
 import {
     getObjectRelatedByKey,
-    ruleForeignKey,
-    warnDeprecatedRulePkKey,
     warnWrongChainingPrefix,
     warnWrongSideRuleOptions,
 } from "../utils/relatedCalculatedHelpers.js";
@@ -46,8 +44,6 @@ export class ListRelatedError extends Error {
  * @typedef {object} ListRelatedRule - The rule for defining relationships for objects in a list.
  * @property {string} [fkKey] - Specifies the foreign key on each row used to link objects across lists. Defaults to
  *  the rule's own key when omitted.
- * @property {string} [pkKey] - Deprecated alias for `fkKey`, removed in v25. The option never named a primary key.
- *  A rule setting both uses `fkKey`.
  * @property {string[]} [order] - Specifies the order in which related objects should be sorted, if applicable.
  * @property {import('./listInstance.js').ObjectsByPk} objects - The objects that can be related based on the foreign key.
  */
@@ -219,7 +215,6 @@ export function useListRelated(options) {
     const es = effectScope();
     /** @type {Set<string>} */
     const warnedChainingPrefixes = new Set();
-    const warnedDeprecatedPkKeys = new Set();
     /** @type {import('vue').Ref<boolean|undefined>} */
     const parentRunning = ref(undefined);
     proxyRunning(parentState, "running", parentRunning);
@@ -277,10 +272,9 @@ export function useListRelated(options) {
 
     function applyRuleToObject(objectKey, ruleKey, originalObjectRef, relatedObjectRef) {
         const rule = toRef(state.relatedObjectsRules, ruleKey);
-        warnDeprecatedRulePkKey("useListRelated", ruleKey, unref(rule), warnedDeprecatedPkKeys);
-        warnWrongChainingPrefix("useListRelated", ruleKey, ruleForeignKey(unref(rule)), warnedChainingPrefixes);
+        warnWrongChainingPrefix("useListRelated", ruleKey, unref(rule)?.fkKey, warnedChainingPrefixes);
         state.objAndKeyForPkAndRule[objectKey][ruleKey] = computed(() => {
-            const ruleFkKey = ruleForeignKey(unref(rule)) || ruleKey;
+            const ruleFkKey = unref(rule)?.fkKey || ruleKey;
             const object = unref(originalObjectRef);
             const relatedObject = unref(relatedObjectRef);
             return getObjectRelatedByKey(object, relatedObject, ruleFkKey);
