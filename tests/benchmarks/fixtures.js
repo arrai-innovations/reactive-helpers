@@ -1,9 +1,16 @@
 import { reactive } from "vue";
 import { useList } from "../../use/list.js";
 
+// A minimum sampling time rather than a fixed iteration count. `check_benchmark.js` gates the ratio
+// between a smaller and a larger input, so the smaller benchmark sits in the denominator of every
+// limit. At ten iterations a 140ms case ran for 1.4s in total. A few slow samples moved its median
+// and swung every ratio built on it by half, which put one gate within two percent of its limit on a
+// clean run. Three seconds gives the cheap end of each pair 20 to 2000 samples, which holds its
+// reported error near one percent. The expensive end is unchanged: it passes three seconds well
+// before it reaches ten iterations.
 export const benchmarkOptions = {
     iterations: 10,
-    time: 0,
+    time: 3000,
     warmupIterations: 2,
     warmupTime: 0,
 };
