@@ -137,6 +137,11 @@ export default defineConfig({
     lastUpdated: true,
     base,
     outDir: "../site",
+    // Build output goes to /static/ so that /assets/ holds only the verbatim
+    // copies from docs/public/assets. Hashed files can then be served with
+    // Cache-Control: immutable by directory, and the unhashed logo the README
+    // links from npm keeps a stable /assets/ URL.
+    assetsDir: "static",
     srcExclude: ["**/AGENTS.md", "**/CLAUDE.md", "**/README.md", "temp/**", ...draftRelativeFiles],
     head: [
         ["link", { rel: "icon", href: `${base}assets/logo-cube-solid.svg` }],
