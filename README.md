@@ -57,8 +57,8 @@ Calling `contacts.list()` runs your handler. The handler passes the rows to `pus
 its `contactId`. The template renders `contacts.state.objectsInOrder`, a reactive array in push order. Swap the
 in-memory array for a real request and nothing else changes.
 
-[Build a reactive list](https://reactive-helpers.arrai.dev/v25/tutorials/build-a-reactive-list) walks through the same
-component step by step, including loading and error state.
+[Build a reactive list](https://reactive-helpers.arrai.dev/v25/tutorials/build-a-reactive-list.html) walks through the
+same component step by step, including loading and error state.
 
 ## What it provides
 
@@ -91,9 +91,9 @@ The [documentation](https://reactive-helpers.arrai.dev/v25/) is versioned by pac
 - [Get started](https://reactive-helpers.arrai.dev/v25/guide/) with installation and a complete reactive list.
 - Follow the [tutorials](https://reactive-helpers.arrai.dev/v25/tutorials/) to build a list, then to edit one object.
 - Solve a specific task with the [how-to guides](https://reactive-helpers.arrai.dev/v25/guide/), such as
-  [passing backend arguments](https://reactive-helpers.arrai.dev/v25/guide/data-layer) or
-  [registering app-wide CRUD defaults](https://reactive-helpers.arrai.dev/v25/guide/register-crud-defaults).
-- Read [instances and transport](https://reactive-helpers.arrai.dev/v25/concepts/instances-and-transport) for the
+  [passing backend arguments](https://reactive-helpers.arrai.dev/v25/guide/data-layer.html) or
+  [registering app-wide CRUD defaults](https://reactive-helpers.arrai.dev/v25/guide/register-crud-defaults.html).
+- Read [instances and transport](https://reactive-helpers.arrai.dev/v25/concepts/instances-and-transport.html) for the
   boundary between what an instance owns and what your handlers own.
 - Look up exact signatures in the [API reference](https://reactive-helpers.arrai.dev/v25/reference/api/).
 
