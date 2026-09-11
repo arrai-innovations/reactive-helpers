@@ -12,6 +12,9 @@ node_modules
 # per-developer vitepress dev-server overrides (see config.local.example.mjs)
 docs/.vitepress/config.local.mjs
 
+# working notes and GitHub drafts; VitePress, Prettier, and Git all skip them
+docs/temp/
+
 # e2e coverage
 coverage
 benchmark-results

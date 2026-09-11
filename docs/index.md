@@ -40,8 +40,10 @@ features:
 
 ## Where to start
 
-New here? Build a reactive list first. It is the smallest complete taste of the library, and the rest of the docs route
-back to it.
+The component above fetches contacts through one handler, keys each row by `contactId`, and renders them in push order.
+The composable owns the reactive state; your handler owns the request.
+[Build a reactive list](/tutorials/build-a-reactive-list) walks through it step by step, including loading and error
+state.
 
 - **Learn by building.** The [tutorials](/tutorials/) walk one task end to end. Start with
   [Build a reactive list](/tutorials/build-a-reactive-list), then [Edit one object](/tutorials/edit-one-object).

@@ -2,7 +2,7 @@ import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
 import { arraiThemeRoot, buildBreadcrumbRoutes } from "@arrai-innovations/vitepress-theme/config";
-import { defineConfig } from "vitepress";
+import { createMarkdownRenderer, defineConfig, disposeMdItInstance } from "vitepress";
 
 // configDir is docs/.vitepress; docsRoot is the VitePress source root (docs/).
 const configDir = fileURLToPath(new URL(".", import.meta.url));
@@ -13,6 +13,18 @@ const repoRoot = path.resolve(docsRoot, "..");
 // Env-driven base so CI can publish per-major under a subpath (e.g. /v22/);
 // defaults to root for local development.
 const base = process.env.VITEPRESS_BASE || "/";
+
+// The homepage hero shows this component beside its copy. Rendering the file
+// through VitePress's own Markdown pipeline gives the panel the same Shiki
+// highlighting a fenced block gets. Disposing the renderer afterwards lets
+// VitePress build its own instance from the site's Markdown options.
+const heroSnippet = fs.readFileSync(path.join(configDir, "snippets", "hero-list.vue"), "utf-8").trim();
+const heroRenderer = await createMarkdownRenderer(docsRoot, {}, base);
+const heroCodeHtml = heroRenderer.render(["```vue", heroSnippet, "```"].join("\n"));
+disposeMdItInstance();
+
+const heroCodeModuleId = "virtual:hero-code";
+const resolvedHeroCodeModuleId = `\0${heroCodeModuleId}`;
 
 // Authored pages carry `status` frontmatter (docs/README.md); `draft` marks a
 // page deliberately withheld from publication. Collect draft pages at config
@@ -125,6 +137,11 @@ export default defineConfig({
     lastUpdated: true,
     base,
     outDir: "../site",
+    // Build output goes to /static/ so that /assets/ holds only the verbatim
+    // copies from docs/public/assets. Hashed files can then be served with
+    // Cache-Control: immutable by directory, and the unhashed logo the README
+    // links from npm keeps a stable /assets/ URL.
+    assetsDir: "static",
     srcExclude: ["**/AGENTS.md", "**/CLAUDE.md", "**/README.md", "temp/**", ...draftRelativeFiles],
     head: [
         ["link", { rel: "icon", href: `${base}assets/logo-cube-solid.svg` }],
@@ -226,6 +243,16 @@ export default defineConfig({
         search: { provider: "local" },
     },
     vite: {
+        // Serve the rendered hero panel as a module so it loads once with the
+        // client bundle instead of inlining into every page's site data.
+        plugins: [
+            {
+                name: "reactive-helpers-hero-code",
+                resolveId: (id) => (id === heroCodeModuleId ? resolvedHeroCodeModuleId : null),
+                load: (id) =>
+                    id === resolvedHeroCodeModuleId ? `export default ${JSON.stringify(heroCodeHtml)};` : null,
+            },
+        ],
         // The theme publishes Vue SFC source, so include it in VitePress's SSR
         // bundle instead of letting Node load Layout.vue as an external module.
         ssr: { noExternal: ["@arrai-innovations/vitepress-theme"] },
