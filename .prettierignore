@@ -8,3 +8,5 @@ site
 types
 **/.vitepress/cache
 **/.vitepress/.temp
+# working notes and GitHub drafts; drafts keep one paragraph per line so GitHub can reflow them
+docs/temp/
