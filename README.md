@@ -1,46 +1,77 @@
 # reactive-helpers
 
-[![npm](https://img.shields.io/npm/v/%40arrai-innovations%2Freactive-helpers.svg?style=for-the-badge)](https://www.npmjs.com/package/@arrai-innovations/reactive-helpers)
-![Tests](https://reactive-helpers.arrai.dev/artifacts/main/tests.svg)
-[![Coverage](https://reactive-helpers.arrai.dev/artifacts/main/tests.coverage.svg)](https://reactive-helpers.arrai.dev/artifacts/main/coverage_tests/)
-![ESLint](https://reactive-helpers.arrai.dev/artifacts/main/eslint.svg)
-![Prettier](https://reactive-helpers.arrai.dev/artifacts/main/prettier.svg)
-![Audit](https://reactive-helpers.arrai.dev/artifacts/main/pnpm-audit.svg)
-[![License: BSD-3-Clause](https://img.shields.io/badge/License-BSD--3--Clause-blue.svg?style=for-the-badge)](./LICENSE)
+<a href="https://reactive-helpers.arrai.dev/v25/">
+    <img src="https://reactive-helpers.arrai.dev/v25/assets/logo-cube-solid.png" alt="reactive-helpers" width="96">
+</a>
 
-Vue.js 3 composition utilities to manage reactive lists, objects, loading and error state, and the small helpers that
-support them. The composables give you reactive state plus actions; you supply the data layer (how a list or object
-reaches your backend), so the package stays transport agnostic.
+**Reactive composition utilities for Vue 3.**
 
-<!-- prettier-ignore-start -->
-<!-- START doctoc generated TOC please keep comment here to allow auto update -->
-<!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
+[Documentation](https://reactive-helpers.arrai.dev/v25/) · [Get started](https://reactive-helpers.arrai.dev/v25/guide/)
+· [Tutorials](https://reactive-helpers.arrai.dev/v25/tutorials/) ·
+[API reference](https://reactive-helpers.arrai.dev/v25/reference/api/) · [Changelog](./CHANGELOG.md)
 
-- [Features](#features)
-- [Requirements](#requirements)
-- [Install](#install)
-- [Documentation](#documentation)
-- [Changelog](#changelog)
-- [Contributing](#contributing)
-- [Development](#development)
-  - [Deploy documentation](#deploy-documentation)
-- [License](#license)
+[![npm](https://img.shields.io/npm/v/%40arrai-innovations%2Freactive-helpers.svg)](https://www.npmjs.com/package/@arrai-innovations/reactive-helpers)
+[![License: BSD-3-Clause](https://img.shields.io/badge/License-BSD--3--Clause-blue.svg)](./LICENSE)
 
-<!-- END doctoc generated TOC please keep comment here to allow auto update -->
-<!-- prettier-ignore-end -->
+reactive-helpers manages reactive lists, objects, and loading and error state, plus the small helpers that support them.
+Each composable pairs reactive state with actions and leaves fetching to you. You supply the data layer, so the package
+works with any backend or client.
 
-## Features
+## Render a reactive list
+
+This component fetches contacts through one handler and renders a row per contact. It keys each contact by `contactId`,
+the primary key field the documentation uses throughout.
+
+```vue
+<script setup>
+import { useListInstance } from "@arrai-innovations/reactive-helpers";
+
+// A tiny in-memory source stands in for your backend.
+const contactRows = [
+    { contactId: 1, name: "Ada Lovelace", email: "ada@example.com" },
+    { contactId: 2, name: "Grace Hopper", email: "grace@example.com" },
+];
+
+const contacts = useListInstance({
+    props: { pkKey: "contactId" },
+    handlers: {
+        list: async ({ pushObjects }) => {
+            pushObjects(contactRows);
+        },
+    },
+});
+
+contacts.list();
+</script>
+
+<template>
+    <ul>
+        <li v-for="contact in contacts.state.objectsInOrder" :key="contact.contactId">
+            {{ contact.name }} ({{ contact.email }})
+        </li>
+    </ul>
+</template>
+```
+
+Calling `contacts.list()` runs your handler. The handler passes the rows to `pushObjects`, which stores each one under
+its `contactId`. The template renders `contacts.state.objectsInOrder`, a reactive array in push order. Swap the
+in-memory array for a real request and nothing else changes.
+
+[Build a reactive list](https://reactive-helpers.arrai.dev/v25/tutorials/build-a-reactive-list) walks through the same
+component step by step, including loading and error state.
+
+## What it provides
 
 - **Reactive lists** with stable identity, ordering, filtering, sorting, searching, related data, calculated values, and
   subscriptions.
 - **Reactive objects** that retrieve, edit, create, delete, and subscribe through transport-neutral handlers.
-- **Loading and error state** as small primitives that can be composed across asynchronous work.
+- **Loading and error state** as small primitives you compose across asynchronous work.
 - **Pluggable CRUD configuration** so instances can share app-wide handlers for any backend.
 - **Focused utilities** for reactive data, cancellable work, object paths, classes, and search.
 
 ## Requirements
 
-- **Vue** `^3.5.13` (peer dependency).
+- **Vue** `^3.5.13`, as a peer dependency.
 - **Node.js** `>=22`. Node 20 reached end of life in April 2026, so the supported lines are 22 and 24. This package is
   ESM only (`"type": "module"`); there is no CommonJS build.
 - Peer dependencies you install alongside it: [`vue`](https://www.npmjs.com/package/vue),
@@ -55,89 +86,55 @@ $ npm install @arrai-innovations/reactive-helpers vue @vueuse/core lodash-es
 
 ## Documentation
 
-The [reactive-helpers documentation](https://reactive-helpers.arrai.dev/v25/) is versioned by package major.
+The [documentation](https://reactive-helpers.arrai.dev/v25/) is versioned by package major.
 
 - [Get started](https://reactive-helpers.arrai.dev/v25/guide/) with installation and a complete reactive list.
-- [Build a reactive list](https://reactive-helpers.arrai.dev/v25/tutorials/build-a-reactive-list) step by step.
-- [Pass backend arguments](https://reactive-helpers.arrai.dev/v25/guide/data-layer) or
-  [register app-wide CRUD defaults](https://reactive-helpers.arrai.dev/v25/guide/register-crud-defaults).
-- Read about [instances and transport](https://reactive-helpers.arrai.dev/v25/concepts/instances-and-transport) to
-  understand the library's core boundary.
-- Use the [API reference](https://reactive-helpers.arrai.dev/v25/reference/api/) for exact signatures and return values.
+- Follow the [tutorials](https://reactive-helpers.arrai.dev/v25/tutorials/) to build a list, then to edit one object.
+- Solve a specific task with the [how-to guides](https://reactive-helpers.arrai.dev/v25/guide/), such as
+  [passing backend arguments](https://reactive-helpers.arrai.dev/v25/guide/data-layer) or
+  [registering app-wide CRUD defaults](https://reactive-helpers.arrai.dev/v25/guide/register-crud-defaults).
+- Read [instances and transport](https://reactive-helpers.arrai.dev/v25/concepts/instances-and-transport) for the
+  boundary between what an instance owns and what your handlers own.
+- Look up exact signatures in the [API reference](https://reactive-helpers.arrai.dev/v25/reference/api/).
 
-## Changelog
-
-Since v21.0.0, the changelog is available in the [CHANGELOG.md](./CHANGELOG.md) file.
+Since v21.0.0, the changelog lives in [CHANGELOG.md](./CHANGELOG.md).
 
 ## Contributing
 
-Issues and pull requests are welcome. A few things to know before you start:
+Issues and pull requests are welcome. Read [CONTRIBUTING.md](./CONTRIBUTING.md) before opening either. It covers title
+and commit message conventions, and the generated output that CI checks.
 
-- Commits follow [Conventional Commits](https://www.conventionalcommits.org/) and are validated by commitlint through a
-  git hook (installed automatically by `pnpm install`).
-- Run the tests, linters, and formatter before opening a pull request (see [Development](#development)).
-- Generated output under `types/` and `docs/reference/api/` is committed and checked in CI. Regenerate it with
-  `pnpm run docs` when you change public APIs or their JSDoc. Everything else under `docs/` is hand-authored; see
-  [`docs/README.md`](./docs/README.md) before editing it.
+## Develop
 
-## Development
+Development needs Node `>=22.13`, above the `>=22` the package itself declares, because `eslint-plugin-jsdoc` and `vite`
+require it.
 
-1. Checkout this repo:
+```bash
+$ git clone git@github.com:arrai-innovations/reactive-helpers.git
+$ cd reactive-helpers
+$ pnpm install
+```
 
-    ```bash
-    $ git clone git@github.com:arrai-innovations/reactive-helpers.git
-    ```
+`pnpm install` also installs the Lefthook Git hooks, which run ESLint, Prettier, and commitlint on each commit.
 
-2. Install dependencies. Development needs Node `>=22.13`, above the `>=22` the package itself declares, because
-   `eslint-plugin-jsdoc` and `vite` require it:
+| Command                              | Purpose                                                                                  |
+| ------------------------------------ | ---------------------------------------------------------------------------------------- |
+| `pnpm test run`                      | Run the tests once. `pnpm test` alone starts watch mode                                  |
+| `pnpm coverage`                      | Run the tests with console and HTML coverage output                                      |
+| `pnpm eslint`                        | Lint, rewriting files in place                                                           |
+| `pnpm prettier`                      | Format, rewriting files in place                                                         |
+| `pnpm run docs`                      | Generate types and the API reference                                                     |
+| `pnpm run docs:check`                | Confirm the committed types and reference match their sources                            |
+| `pnpm run types`                     | Generate types without the API reference                                                 |
+| `pnpm run types:check -- --skip-gen` | Smoke-check the emitted types without regenerating them                                  |
+| `pnpm run docs:site:dev`             | Serve the documentation site locally                                                     |
+| `pnpm run docs:site:build`           | Build the site. It fails on dead links, so run it before proposing documentation changes |
 
-    ```bash
-    $ pnpm install
-    ```
-
-3. Run tests via vitest. Pass `run` for a single pass; `pnpm test` on its own starts watch mode:
-
-    ```bash
-    $ pnpm test run
-    ```
-
-4. Run tests with coverage output:
-
-    ```bash
-    $ pnpm coverage
-    ```
-
-5. Lint and format. Both rewrite files in place, and a git hook runs them on staged files:
-
-    ```bash
-    $ pnpm eslint
-    $ pnpm prettier
-    ```
-
-6. Generate types and typedocs, then confirm the committed output matches:
-
-    ```bash
-    $ pnpm run docs
-    $ pnpm run docs:check
-    ```
-
-7. Type-only workflows:
-
-    - Generate types without docs:
-        ```bash
-        $ pnpm run types
-        ```
-    - Smoke-check emitted types without regenerating:
-        ```bash
-        $ pnpm run types:check -- --skip-gen
-        ```
-
-8. Preview the documentation site. The build fails on dead links, so run it before proposing documentation changes:
-
-    ```bash
-    $ pnpm run docs:site:dev
-    $ pnpm run docs:site:build
-    ```
+![Tests](https://reactive-helpers.arrai.dev/artifacts/main/tests.svg)
+[![Coverage](https://reactive-helpers.arrai.dev/artifacts/main/tests.coverage.svg)](https://reactive-helpers.arrai.dev/artifacts/main/coverage_tests/)
+![ESLint](https://reactive-helpers.arrai.dev/artifacts/main/eslint.svg)
+![Prettier](https://reactive-helpers.arrai.dev/artifacts/main/prettier.svg)
+![Audit](https://reactive-helpers.arrai.dev/artifacts/main/pnpm-audit.svg)
 
 ### Deploy documentation
 
@@ -145,8 +142,8 @@ Tagging a release publishes the documentation. The `docs-site` CircleCI job runs
 the major from the tag, and deploys to `https://reactive-helpers.arrai.dev/v<major>/`. Releasing needs no separate
 documentation step.
 
-Publishing between releases is the out-of-band case: a correction or a new page that should not wait for the next tag.
-Authenticate the CircleCI CLI with `circleci setup`, then run:
+Publish out of band when a correction or a new page should not wait for the next tag. Authenticate the CircleCI CLI with
+`circleci setup`, then run:
 
 ```bash
 $ pnpm run docs:site:deploy
