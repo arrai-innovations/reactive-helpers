@@ -1,7 +1,7 @@
 # reactive-helpers
 
 <a href="https://reactive-helpers.arrai.dev/v25/">
-    <img src="https://reactive-helpers.arrai.dev/v25/assets/logo-cube-solid.png" alt="reactive-helpers" width="96">
+    <img src="https://reactive-helpers.arrai.dev/v25/assets/lockup.png" alt="reactive-helpers" width="320">
 </a>
 
 **Reactive composition utilities for Vue 3.**

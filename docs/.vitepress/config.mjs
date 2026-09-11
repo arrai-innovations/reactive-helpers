@@ -1,7 +1,7 @@
 import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
-import { arraiThemeRoot, buildBreadcrumbRoutes } from "@arrai-innovations/vitepress-theme/config";
+import { arraiThemeRoot, buildBreadcrumbRoutes, buildSocialHead } from "@arrai-innovations/vitepress-theme/config";
 import { createMarkdownRenderer, defineConfig, disposeMdItInstance } from "vitepress";
 
 // configDir is docs/.vitepress; docsRoot is the VitePress source root (docs/).
@@ -13,6 +13,9 @@ const repoRoot = path.resolve(docsRoot, "..");
 // Env-driven base so CI can publish per-major under a subpath (e.g. /v22/);
 // defaults to root for local development.
 const base = process.env.VITEPRESS_BASE || "/";
+// Published origin for absolute card URLs. CI publishes each major under
+// /v<major>/ at this host, so the base carries the version, not this constant.
+const siteUrl = "https://reactive-helpers.arrai.dev";
 
 // The homepage hero shows this component beside its copy. Rendering the file
 // through VitePress's own Markdown pipeline gives the panel the same Shiki
@@ -144,20 +147,49 @@ export default defineConfig({
     assetsDir: "static",
     srcExclude: ["**/AGENTS.md", "**/CLAUDE.md", "**/README.md", "temp/**", ...draftRelativeFiles],
     head: [
-        ["link", { rel: "icon", href: `${base}assets/logo-cube-solid.svg` }],
+        ["link", { rel: "icon", href: `${base}assets/arrai-mark.svg` }],
         [
             "link",
             {
                 rel: "icon",
                 type: "image/png",
                 sizes: "32x32",
-                href: `${base}assets/logo-cube-solid.png`,
+                href: `${base}assets/arrai-mark.png`,
             },
         ],
-        ["link", { rel: "apple-touch-icon", href: `${base}assets/logo-cube-solid.png` }],
+        ["link", { rel: "apple-touch-icon", href: `${base}assets/arrai-mark.png` }],
     ],
+    // Link-preview crawlers read the served HTML and run no JavaScript, so the
+    // Open Graph and Twitter card tags have to be in the page before hydration.
+    // The shared theme shapes them; the origin, card image, and colour stay here.
+    //
+    // A page that writes its own og: or twitter: tag keeps it: the generated tag
+    // for that property is dropped rather than emitted twice, since a crawler
+    // reading two og:title tags picks one of them arbitrarily.
+    transformPageData(pageData, { siteConfig }) {
+        const authoredHead = pageData.frontmatter.head ?? [];
+        const authored = new Set(authoredHead.map(([, attributes = {}]) => attributes.property ?? attributes.name));
+        return {
+            frontmatter: {
+                ...pageData.frontmatter,
+                head: [
+                    ...authoredHead,
+                    ...buildSocialHead({
+                        siteUrl,
+                        base: siteConfig.site.base,
+                        pageData,
+                        siteData: siteConfig.site,
+                        image: "/assets/social-card.png",
+                        imageSize: { width: 1200, height: 630 },
+                        imageAlt: "The reactive-helpers lockup above the words: tutorials, guides, and API reference",
+                        themeColor: "#0077f7",
+                    }).filter(([, attributes]) => !authored.has(attributes.property ?? attributes.name)),
+                ],
+            },
+        };
+    },
     themeConfig: {
-        logo: "/assets/logo-cube-solid.svg",
+        logo: "/assets/arrai-mark.svg",
         outline: "deep",
         breadcrumbs: { routes: breadcrumbRoutes },
         nav: [
