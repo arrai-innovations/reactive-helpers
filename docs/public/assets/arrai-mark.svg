@@ -1,5 +1,6 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="19.11 28.40 162.32 162.32">
-<g transform="translate(.7825 27.225)" fill="#0077f7">
+<!-- Shared 100-unit canvas: artwork top 3.93, height 83.71, horizontal centre 46.14. -->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+<g transform="translate(-11.290968 -0.723879) scale(0.616067)" fill="#0077f7">
 <path d="m108.27 64.774-15.045-8.687-14.98 8.731 14.975 8.645 15.05-8.689"></path>
 <path d="m75.92 135 14.931 8.4375v-65.87l-14.931-8.6215v66.054"></path>
 <path d="m95.588 77.565v65.87l15.115-8.4496v-66.147l-15.115 8.726"></path>
