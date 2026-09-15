@@ -22,6 +22,6 @@ allowBuilds:
 # it resolves such a version. An entry does nothing once that version is more than a day old, so
 # remove it then.
 minimumReleaseAgeExclude:
-  - '@arrai-innovations/vitepress-theme@1.0.0 || 1.0.1 || 1.0.2 || 1.1.0'
+  - '@arrai-innovations/vitepress-theme@1.2.0'
   - '@arrai-innovations/commitlint-config@3.0.0'
   - 'nanoid@3.3.18'
