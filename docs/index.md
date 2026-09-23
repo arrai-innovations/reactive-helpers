@@ -4,6 +4,7 @@ title: reactive-helpers
 status: published
 type: index
 hero:
+    layout: wide
     name: reactive-helpers
     text: Reactive composition utilities for Vue 3
     tagline:
